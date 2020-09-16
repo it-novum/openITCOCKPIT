@@ -675,7 +675,7 @@
                             </div>
                             <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
                                 <div class="col-xs-12 col-md-2">
-                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                    <a ui-sref="HostsCopy({ids: linkForCopy()})" class="a-clean">
                                         <i class="fas fa-files-o"></i>
                                         <?php echo __('Copy'); ?>
                                     </a>
