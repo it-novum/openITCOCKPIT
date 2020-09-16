@@ -688,6 +688,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     margin: auto;
 }
 
+.wizard-logo-image-placeholder {
+    border: 5px solid #d6d6d64d;
+}
+
 .wizard-logo-card-height-150 {
     min-height: 150px;
     height: 150px;
@@ -699,4 +703,8 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 
 .wizard-assignments-border-left{
     border-left:5px solid #4285F4;
+}
+
+.card-body-wizard {
+    background-color: transparent!important;
 }

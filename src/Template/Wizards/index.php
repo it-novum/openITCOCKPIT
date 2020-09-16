@@ -88,7 +88,8 @@
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="row">
-                        <div class="col-3" ng-repeat="wizard in wizards" ng-show="filterByCategory(wizard.category)">
+                        <!-- Real Wizards -->
+                        <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3" ng-repeat="wizard in wizards" ng-show="filterByCategory(wizard.category)">
                             <div class="card mb-2 wizard-logo-card-height-150">
                                 <div class="card-body">
                                     <a ui-sref="WizardHostConfiguration({state: wizard.state, selectedOs: wizard.selected_os})"
@@ -111,6 +112,45 @@
                                         <i class="fas fa-tags wizard-info-tags"></i>
                                         <i ng-repeat="category in wizard.category">{{category}}{{$last ? '' : ', '}}</i>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Disabled placeholder wizards because of required Module is not loaded -->
+                        <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3" ng-repeat="possibleWizard in possibleWizards" ng-show="filterByCategory(possibleWizard.category)">
+                            <div class="card mb-2 wizard-logo-card-height-150 bg-placeholder-wizard">
+                                <div class="card-body card-body-wizard">
+                                    <span class="d-flex flex-row align-items-start">
+                                        <div class="wizard-logo-image wizard-logo-image-placeholder">
+                                            <img src="/img/wizards/{{possibleWizard.image}}"/>
+                                        </div>
+                                        <div class="ml-3">
+                                            <strong class="font-md">
+                                                {{possibleWizard.title}}
+                                            </strong>
+                                            <br>
+                                            {{possibleWizard.description}}
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="card-footer no-border border-bottom">
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-3">
+                                            <span class="badge border margin-right-10 border-warning text-warning">
+                                                <i class="fas fa-puzzle-piece"></i>
+                                                <?= __('Require module'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-md-9">
+                                            <div
+                                                    class="wizard-info-tags font-italic font-xs text-right padding-top-10 notify-label-small">
+                                                <i class="fas fa-tags wizard-info-tags"></i>
+                                                <i ng-repeat="category in possibleWizard.category">{{category}}{{$last ? '' : ', '}}</i>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

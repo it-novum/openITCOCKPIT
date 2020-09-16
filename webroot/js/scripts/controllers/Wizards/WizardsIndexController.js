@@ -23,6 +23,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
 
                 $scope.wizards = result.data.wizards;
+                $scope.possibleWizards = result.data.possibleWizards;
                 $scope.init = false;
             });
         };

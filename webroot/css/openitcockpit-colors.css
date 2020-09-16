@@ -958,3 +958,8 @@ div.packetmanager-selection > span::selection {
     border-image-source: linear-gradient(45deg, #4285F4, transparent);
     border-image-slice: 1;
 }
+
+.bg-placeholder-wizard{
+    background-image: linear-gradient(135deg, #d6d6d64D 25%, transparent 25%, transparent 50%, #d6d6d64D 50%, #d6d6d64D 75%, transparent 75%, transparent 100%);
+    background-size: 56.57px 56.57px;
+}
