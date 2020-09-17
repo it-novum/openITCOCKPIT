@@ -1399,6 +1399,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     },
                     selectedOs: {
                         value: null
+                    },
+                    typeId: {
+                        value: null
                     }
                 },
                 templateUrl: "/wizards/hostConfiguration.html",

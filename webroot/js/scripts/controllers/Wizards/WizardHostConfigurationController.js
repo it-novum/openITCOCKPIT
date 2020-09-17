@@ -6,6 +6,7 @@ angular.module('openITCOCKPIT')
         $scope.selectedHostId = null;
         $scope.state = QueryStringService.getStateValue($stateParams, 'state', null);
         $scope.selectedOs = QueryStringService.getStateValue($stateParams, 'selectedOs', null);
+        $scope.typeId = QueryStringService.getStateValue($stateParams, 'typeId', null);
 
         $scope.data = {
             dnsLookUp: LocalStorageService.getItemWithDefault('HostsDnsLookUpEnabled', 'false') === 'true',
@@ -176,7 +177,8 @@ angular.module('openITCOCKPIT')
 
                     $state.go($scope.state, {
                         hostId: $scope.selectedHostId,
-                        selectedOs: $scope.selectedOs
+                        selectedOs: $scope.selectedOs,
+                        typeId: $scope.typeId
                     }).then(function(){
                         NotyService.scrollTop();
                     });

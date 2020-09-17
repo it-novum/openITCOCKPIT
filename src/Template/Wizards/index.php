@@ -92,7 +92,7 @@
                         <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3" ng-repeat="wizard in wizards" ng-show="filterByCategory(wizard.category)">
                             <div class="card mb-2 wizard-logo-card-height-150">
                                 <div class="card-body">
-                                    <a ui-sref="WizardHostConfiguration({state: wizard.state, selectedOs: wizard.selected_os})"
+                                    <a ui-sref="WizardHostConfiguration({state: wizard.state, selectedOs: wizard.selected_os, typeId: wizard.type_id})"
                                        class="d-flex flex-row align-items-start">
                                         <div class="wizard-logo-image">
                                             <img src="/img/wizards/{{wizard.image}}"/>
