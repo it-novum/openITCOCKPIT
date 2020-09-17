@@ -265,6 +265,20 @@ check_openitcockpit_version(){
     fi
 }
 
+check_for_administrator_user_role(){
+    debug_log $(echo "Checking for openITCOCKPIT user role 'Administrator' ..." | tr ' ' '___')
+    COUNT=$(mysql "--defaults-extra-file=$v3MysqlIni" -e "SELECT COUNT(*) FROM openitcockpit.usergroups WHERE name='Administrator';" -B -s 2>/dev/null)
+    rc=$?
+
+    if [ "$rc" != 0 -o "$COUNT" == 0 ] ; then
+      errors+=($(echo "No user role 'Administrator' found! You have to create it via the openITCOCKPIT interface first!" | tr ' ' '___'))
+      ((errorCount++))
+    else
+      oks+=($(echo "User group 'Administrator' found." | tr ' ' '___'))
+      ((okCount++))
+    fi
+}
+
 print_logo(){
 echo -e "\033[38;5;068m
                                         ///
@@ -310,6 +324,8 @@ check_mysql_table_sizes
 check_aptget_working
 
 check_mysql_version
+
+check_for_administrator_user_role
 
 if [ $isAptWorking == 1 ]; then
     debug_log $(echo "Checking installed openITCOCKPIT modules ..." | tr ' ' '___')

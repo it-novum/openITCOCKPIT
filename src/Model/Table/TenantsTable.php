@@ -344,7 +344,7 @@ class TenantsTable extends Table {
                     $tenants
                 )
             )
-            , 'list', 'container_id'
+            , 'all', 'container_id'
         );
     }
 

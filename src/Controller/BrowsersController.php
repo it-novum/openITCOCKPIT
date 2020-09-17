@@ -79,16 +79,19 @@ class BrowsersController extends AppController {
         $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
 
         $tenants = $TenantsTable->getTenantsForBrowsersIndex($this->MY_RIGHTS, $User->getId());
+        $tenants = Hash::sort($tenants, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 
         $tenantsFiltered = [];
-        foreach ($tenants as $tenantId => $tenantName) {
-            if (in_array($tenantId, $this->MY_RIGHTS, true)) {
-                $tenantsFiltered[$tenantId] = $tenantName;
+        foreach ($tenants as $tenant) {
+            if (in_array($tenant['container']['id'], $this->MY_RIGHTS, true)) {
+                $tenantsFiltered[$tenant['container']['id']] = [
+                    'id'               => $tenant['container']['id'],
+                    'name'             => $tenant['container']['name'],
+                    'containertype_id' => $tenant['container']['containertype_id']
+                ];
             }
         }
         $tenants = $tenantsFiltered;
-        natcasesort($tenants);
-
         /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
@@ -99,10 +102,9 @@ class BrowsersController extends AppController {
             $this->set('breadcrumbs', Api::makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
             //Child container (or so)
-            
+
             $containerNest = $ContainersTable->getChildren($containerId, true);
             $browser = $ContainersTable->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
-
 
             $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 
@@ -113,10 +115,13 @@ class BrowsersController extends AppController {
                     }
                 }
             }
-
             $containers = [];
             foreach ($browser as $node) {
-                $containers[$node['id']] = $node['name'];
+                $containers[$node['id']] = [
+                    'id'               => $node['id'],
+                    'name'             => $node['name'],
+                    'containertype_id' => $node['containertype_id']
+                ];
             }
 
             $currentContainer = $ContainersTable->get($containerId)->toArray();

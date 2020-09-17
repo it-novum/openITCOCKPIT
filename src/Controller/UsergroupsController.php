@@ -228,6 +228,12 @@ class UsergroupsController extends AppController {
 
         if ($this->request->is('post')) {
             $usergroup->setAccess('id', false);
+
+            if ($usergroup->get('name') === 'Administrator') {
+                //An 'Administrator' is required!
+                $usergroup->setAccess('name', false);
+            }
+
             $usergroup = $UsergroupsTable->patchEntity($usergroup, $this->request->getData());
             $UsergroupsTable->save($usergroup);
 
@@ -298,6 +304,10 @@ class UsergroupsController extends AppController {
         }
 
         $usergroup = $UsergroupsTable->get($id);
+
+        if ($usergroup->get('name') === 'Administrator') {
+            throw new \RuntimeException('The "Administrator" can not be deleted!');
+        }
 
         if ($UsergroupsTable->delete($usergroup)) {
             $this->set('success', true);
