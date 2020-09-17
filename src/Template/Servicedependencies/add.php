@@ -172,7 +172,15 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <div class="form-group" ng-class="{'has-error': errors.timeperiod_id}">
                             <label class="control-label">
-                                <?php echo __('Timeperiod'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Servicedependency.timeperiod_id})"
+                                       ng-if="post.Servicedependency.timeperiod_id > 0">
+                                        <?php echo __('Timeperiod'); ?>
+                                    </a>
+                                    <span ng-if="!post.Servicedependency.timeperiod_id"><?php echo __('Timeperiod'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Timeperiod'); ?>
+                                <?php endif; ?>
                             </label>
                             <div class="input-group">
                                 <select
