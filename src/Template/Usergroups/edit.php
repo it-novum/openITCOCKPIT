@@ -71,6 +71,7 @@
                             <input
                                 class="form-control"
                                 type="text"
+                                ng-disabled="post.Usergroup.name === 'Administrator'"
                                 ng-model="post.Usergroup.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
