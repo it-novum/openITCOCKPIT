@@ -216,6 +216,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                 <?php echo __('Execution failure criteria'); ?>
                                             </label>
                                         </div>
+                                        <div class="help-block">
+                                            <?= __('Disable active service checking of dependend service/s, if master service state is one of the selected states.'); ?>
+                                        </div>
                                     </legend>
                                     <div class="custom-control custom-checkbox margin-bottom-10"
                                          ng-class="{'has-error': errors.execution_fail_on_ok}">
@@ -309,6 +312,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                             <label>
                                                 <?php echo __('Notification failure criteria'); ?>
                                             </label>
+                                        </div>
+                                        <div class="help-block">
+                                            <?= __('Disable service notifications of dependend service/s, if master service state is one of the selected states.'); ?>
                                         </div>
                                     </legend>
                                     <div class="custom-control custom-checkbox margin-bottom-10"
