@@ -64,12 +64,12 @@
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                id="InstantreportContainer"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                ng-options="container.key as container.value for container in containers"
-                                ng-model="post.Instantreport.container_id">
+                                    id="InstantreportContainer"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Instantreport.container_id">
                             </select>
                             <div ng-show="post.Instantreport.container_id < 1" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -84,9 +84,9 @@
                                 <?php echo __('Name'); ?>
                             </label>
                             <input
-                                class="form-control"
-                                type="text"
-                                ng-model="post.Instantreport.name">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Instantreport.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -97,11 +97,11 @@
                                 <?php echo __('Type'); ?>
                             </label>
                             <select
-                                id="InstantreportType"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="{}"
-                                ng-model="post.Instantreport.type">
+                                    id="InstantreportType"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="{}"
+                                    ng-model="post.Instantreport.type">
                                 <option ng-value="1"><?php echo __('Host groups'); ?></option>
                                 <option ng-value="2"><?php echo __('Hosts'); ?></option>
                                 <option ng-value="3"><?php echo __('Service groups'); ?></option>
@@ -121,13 +121,13 @@
                                     <?php echo __('Host groups'); ?>
                                 </label>
                                 <select
-                                    id="HostgroupId"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="hostgroups"
-                                    multiple
-                                    ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                    ng-model="post.Instantreport.hostgroups._ids">
+                                        id="HostgroupId"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hostgroups"
+                                        multiple
+                                        ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                        ng-model="post.Instantreport.hostgroups._ids">
                                 </select>
                                 <div ng-repeat="error in errors.hostgroups">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -139,14 +139,14 @@
                                     <?php echo __('Hosts'); ?>
                                 </label>
                                 <select
-                                    multiple
-                                    id="HostId"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="hosts"
-                                    callback="loadHosts"
-                                    ng-options="host.key as host.value for host in hosts"
-                                    ng-model="post.Instantreport.hosts._ids">
+                                        multiple
+                                        id="HostId"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosts"
+                                        callback="loadHosts"
+                                        ng-options="host.key as host.value for host in hosts"
+                                        ng-model="post.Instantreport.hosts._ids">
                                 </select>
                                 <div ng-repeat="error in errors.hosts">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -159,13 +159,13 @@
                                     <?php echo __('Service groups'); ?>
                                 </label>
                                 <select
-                                    multiple
-                                    id="ServicegroupId"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="servicegroups"
-                                    ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
-                                    ng-model="post.Instantreport.servicegroups._ids">
+                                        multiple
+                                        id="ServicegroupId"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="servicegroups"
+                                        ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
+                                        ng-model="post.Instantreport.servicegroups._ids">
                                 </select>
                                 <div ng-repeat="error in errors.servicegroups">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -178,14 +178,14 @@
                                     <?php echo __('Services'); ?>
                                 </label>
                                 <select
-                                    multiple
-                                    id="ServiceId"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="services"
-                                    callback="loadServices"
-                                    ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
-                                    ng-model="post.Instantreport.services._ids">
+                                        multiple
+                                        id="ServiceId"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="services"
+                                        callback="loadServices"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
+                                        ng-model="post.Instantreport.services._ids">
                                 </select>
                                 <div ng-repeat="error in errors.services">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -239,15 +239,23 @@
 
                         <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
                             <label class="control-label" for="InstantReportTimeperiod">
-                                <?php echo __('Timeperiod'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Instantreport.timeperiod_id})"
+                                       ng-if="post.Instantreport.timeperiod_id > 0">
+                                        <?php echo __('Timeperiod'); ?>
+                                    </a>
+                                    <span ng-if="!post.Instantreport.timeperiod_id"><?php echo __('Timeperiod'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Timeperiod'); ?>
+                                <?php endif; ?>
                             </label>
                             <select
-                                id="InstantReportTimeperiod"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="timeperiods"
-                                ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                ng-model="post.Instantreport.timeperiod_id">
+                                    id="InstantReportTimeperiod"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="timeperiods"
+                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                    ng-model="post.Instantreport.timeperiod_id">
                             </select>
                             <div ng-repeat="error in errors.timeperiod_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -259,11 +267,11 @@
                                 <?php echo __('Reflection state'); ?>
                             </label>
                             <select
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                id="InstantreportReflection"
-                                chosen="states"
-                                ng-model="post.Instantreport.reflection">
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    id="InstantreportReflection"
+                                    chosen="states"
+                                    ng-model="post.Instantreport.reflection">
                                 <option ng-value="1">
                                     <?php echo __('soft and hard state'); ?>
                                 </option>
@@ -327,11 +335,11 @@
                                     <?php echo __('Send interval'); ?>
                                 </label>
                                 <select
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="{}"
-                                    id="InstantreportSendInterval"
-                                    ng-model="post.Instantreport.send_interval">
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="{}"
+                                        id="InstantreportSendInterval"
+                                        ng-model="post.Instantreport.send_interval">
                                     <option ng-value="0" ng-if="!post.Instantreport.send_interval">
                                         <?php echo __('NEVER'); ?>
                                     </option>
@@ -358,13 +366,13 @@
                                     <?php echo __('Users to send'); ?>
                                 </label>
                                 <select
-                                    multiple
-                                    id="UserId"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="users"
-                                    ng-options="user.key as user.value for user in users"
-                                    ng-model="post.Instantreport.users._ids">
+                                        multiple
+                                        id="UserId"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="users"
+                                        ng-options="user.key as user.value for user in users"
+                                        ng-model="post.Instantreport.users._ids">
                                 </select>
                                 <div ng-repeat="error in errors.users">
                                     <div class="help-block text-danger">{{ error }}</div>

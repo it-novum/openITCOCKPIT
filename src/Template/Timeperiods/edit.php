@@ -65,7 +65,8 @@ $weekdays = [
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'timeperiods')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='TimeperiodsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='TimeperiodsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -81,12 +82,12 @@ $weekdays = [
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                id="ContactContainers"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                ng-options="container.key as container.value for container in containers"
-                                ng-model="post.Timeperiod.container_id">
+                                    id="ContactContainers"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Timeperiod.container_id">
                             </select>
                             <div ng-show="post.Timeperiod.container_id < 1" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -101,9 +102,9 @@ $weekdays = [
                                 <?php echo __('Name'); ?>
                             </label>
                             <input
-                                class="form-control"
-                                type="text"
-                                ng-model="post.Timeperiod.name">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Timeperiod.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -114,9 +115,9 @@ $weekdays = [
                                 <?php echo __('Description'); ?>
                             </label>
                             <input
-                                class="form-control"
-                                type="text"
-                                ng-model="post.Timeperiod.description">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Timeperiod.description">
                             <div ng-repeat="error in errors.description">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -124,15 +125,23 @@ $weekdays = [
 
                         <div class="form-group required" ng-class="{'has-error': errors.containers}">
                             <label class="control-label" for="ContactContainers">
-                                <?php echo __('Calendar'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
+                                    <a ui-sref="CalendarsEdit({id:post.Timeperiod.calendar_id})"
+                                       ng-if="post.Timeperiod.calendar_id > 0">
+                                        <?php echo __('Calendar'); ?>
+                                    </a>
+                                    <span ng-if="!post.Timeperiod.calendar_id"><?php echo __('Calendar'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Calendar'); ?>
+                                <?php endif; ?>
                             </label>
                             <select
-                                id="ContactContainers"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="calendars"
-                                ng-options="calendar.key as calendar.value for calendar in calendars"
-                                ng-model="post.Timeperiod.calendar_id">
+                                    id="ContactContainers"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="calendars"
+                                    ng-options="calendar.key as calendar.value for calendar in calendars"
+                                    ng-model="post.Timeperiod.calendar_id">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -159,7 +168,7 @@ $weekdays = [
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i
-                                                    class="fas fa-calendar-day padding-top-3 padding-bottom-3"></i></span>
+                                                        class="fas fa-calendar-day padding-top-3 padding-bottom-3"></i></span>
                                         </div>
                                         <select class="form-control input-sm select" chosen="" id="tp_day_{{$index}}"
                                                 ng-model="range.day">

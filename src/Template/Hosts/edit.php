@@ -140,7 +140,13 @@
 
                                 <div class="form-group required" ng-class="{'has-error': errors.hosttemplate_id}">
                                     <label class="control-label" for="HostTemplate">
-                                        <?php echo __('Host template'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                            <a ui-sref="HosttemplatesEdit({id:post.Host.hosttemplate_id})">
+                                                <?= __('Host template'); ?>
+                                            </a>
+                                        <?php else: ?>
+                                            <?= __('Host template'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <select
                                             id="HostTemplate"
@@ -321,7 +327,15 @@
                                         <div class="form-group" ng-class="{'has-error': errors.satellite_id}"
                                              ng-if="post.Host.host_type !== <?= EVK_HOST; ?>">
                                             <label class="control-label" for="SatellitesSelect">
-                                                <?php echo __('Satellite'); ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
+                                                    <a ui-sref="SatellitesEdit({id:post.Host.satellite_id})"
+                                                       ng-if="post.Host.satellite_id > 0">
+                                                        <?= __('Satellite'); ?>
+                                                    </a>
+                                                    <span ng-if="post.Host.satellite_id == 0"><?php echo __('Satellite'); ?></span>
+                                                <?php else: ?>
+                                                    <?= __('Satellite'); ?>
+                                                <?php endif; ?>
                                             </label>
                                             <select
                                                     id="SatellitesSelect"
@@ -350,7 +364,13 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.check_period_id}">
                                     <label class="control-label">
-                                        <?php echo __('Check period'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id:post.Host.check_period_id})">
+                                                <?= __('Check period'); ?>
+                                            </a>
+                                        <?php else: ?>
+                                            <?= __('Check period'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
@@ -400,7 +420,13 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.command_id}">
                                     <label class="control-label">
-                                        <?php echo __('Check command'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                            <a ui-sref="CommandsEdit({id:post.Host.command_id})">
+                                                <?= __('Check command'); ?>
+                                            </a>
+                                        <?php else: ?>
+                                            <?= __('Check command'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
@@ -427,7 +453,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.hostcommandargumentvalues}"
                                      ng-repeat="hostcommandargumentvalue in post.Host.hostcommandargumentvalues">
-                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-primary">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
                                         {{hostcommandargumentvalue.commandargument.human_name}}
                                     </label>
                                     <div class="col-xs-12 col-lg-8">
@@ -549,7 +575,13 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.notify_period_id}">
                                     <label class="control-label">
-                                        <?php echo __('Notification Period'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id:post.Host.notify_period_id})">
+                                                <?= __('Notification period'); ?>
+                                            </a>
+                                        <?php else: ?>
+                                            <?= __('Notification period'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
