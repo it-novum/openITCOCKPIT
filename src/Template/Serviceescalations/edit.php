@@ -282,6 +282,9 @@ Once a service escalated, contacts, contact group and notification options will 
                                     <label>
                                         <?php echo __('Escalation options'); ?>
                                     </label>
+                                    <div class="help-block">
+                                        <?= __('Enables the escalation for the selected states'); ?>
+                                    </div>
                                 </div>
                             </legend>
                             <div class="custom-control custom-checkbox margin-bottom-10"
