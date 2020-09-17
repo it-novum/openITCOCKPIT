@@ -770,7 +770,7 @@
 
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.servicetemplateeventcommandargumentvalue}"
-                                     ng-repeat="servicetemplateeventcommandargumentvalue in post.Service.servicetemplateeventcommandargumentvalues">
+                                     ng-repeat="servicetemplateeventcommandargumentvalue in post.Servicetemplate.servicetemplateeventcommandargumentvalues">
                                     <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
                                         {{servicetemplateeventcommandargumentvalue.commandargument.human_name}}
                                     </label>
@@ -791,7 +791,7 @@
                                 </div>
 
                                 <div class="form-group"
-                                     ng-show="post.Servicetemplate.eventhandler_command_id > 0 && post.Service.servicetemplateeventcommandargumentvalue.length == 0">
+                                     ng-show="post.Servicetemplate.eventhandler_command_id > 0 && post.Servicetemplate.servicetemplateeventcommandargumentvalue.length == 0">
                                     <div class="col-xs-12 col-lg-offset-2 text-info">
                                         <i class="fa fa-info-circle"></i>
                                         <?php echo __('This Event Handler command does not have any parameters.'); ?>
