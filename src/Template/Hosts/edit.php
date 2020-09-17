@@ -453,7 +453,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.hostcommandargumentvalues}"
                                      ng-repeat="hostcommandargumentvalue in post.Host.hostcommandargumentvalues">
-                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-primary">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
                                         {{hostcommandargumentvalue.commandargument.human_name}}
                                     </label>
                                     <div class="col-xs-12 col-lg-8">
