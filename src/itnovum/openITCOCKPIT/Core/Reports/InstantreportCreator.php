@@ -199,8 +199,8 @@ class InstantreportCreator {
                             'DowntimeHost' => [
                                 'id'                   => $hostDowntimeObject->get('downtimehistory_id'),
                                 'author_name'          => $hostDowntimeObject->get('author_name'),
-                                'scheduled_start_time' => $hostDowntimeObject->get('scheduled_start_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
-                                'scheduled_end_time'   => $hostDowntimeObject->get('scheduled_end_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
+                                'scheduled_start_time' => $hostDowntimeObject->get('scheduled_start_time'),
+                                'scheduled_end_time'   => $hostDowntimeObject->get('scheduled_end_time'),
                                 'comment_data'         => $hostDowntimeObject->get('comment_data'),
                                 'was_started'          => true,
                                 'was_cancelled'        => false
@@ -337,8 +337,8 @@ class InstantreportCreator {
                                 'DowntimeService' => [
                                     'id'                   => $serviceDowntimeObject->get('downtimehistory_id'),
                                     'author_name'          => $serviceDowntimeObject->get('author_name'),
-                                    'scheduled_start_time' => $serviceDowntimeObject->get('scheduled_start_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
-                                    'scheduled_end_time'   => $serviceDowntimeObject->get('scheduled_end_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
+                                    'scheduled_start_time' => $serviceDowntimeObject->get('scheduled_start_time'),
+                                    'scheduled_end_time'   => $serviceDowntimeObject->get('scheduled_end_time'),
                                     'comment_data'         => $serviceDowntimeObject->get('comment_data'),
                                     'was_started'          => true,
                                     'was_cancelled'        => false
