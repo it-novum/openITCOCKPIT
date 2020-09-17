@@ -210,7 +210,7 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <div class="form-group required"
                              ng-class="{'has-error': errors.notification_interval}">
-                            <label class="col-xs-12 col-lg-2 control-label">
+                            <label class="control-label">
                                 <?php echo __('Notification interval'); ?>
                             </label>
                             <interval-input-directive
@@ -224,7 +224,15 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <div class="form-group">
                             <label class="control-label" for="HostescalationTimeperiod">
-                                <?php echo __('Escalation period'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Hostescalation.timeperiod_id})"
+                                       ng-if="post.Hostescalation.timeperiod_id > 0">
+                                        <?php echo __('Escalation period'); ?>
+                                    </a>
+                                    <span ng-if="!post.Hostescalation.timeperiod_id"><?php echo __('Escalation period'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Escalation period'); ?>
+                                <?php endif; ?>
                             </label>
                             <select
                                 id="HostescalationTimeperiod"
