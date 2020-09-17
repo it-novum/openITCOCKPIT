@@ -15,6 +15,9 @@ angular.module('openITCOCKPIT')
                     host_notifications_enabled: 1,
                     service_notifications_enabled: 1,
 
+                    host_timeperiod_id: 0,
+                    service_timeperiod_id: 0,
+
                     notify_host_recovery: 1,
                     notify_host_down: 1,
                     notify_host_unreachable: 1,
@@ -30,6 +33,9 @@ angular.module('openITCOCKPIT')
 
                     host_push_notifications_enabled: 0,
                     service_push_notifications_enabled: 0,
+
+                    user_id: 0,
+
                     containers: {
                         _ids: []
                     },
