@@ -200,7 +200,15 @@
                             <div class="card-body">
                                 <div class="form-group required" ng-class="{'has-error': errors.check_period_id}">
                                     <label class="control-label" for="CheckPeriodSelect">
-                                        <?php echo __('Check period'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id:post.Hosttemplate.check_period_id})"
+                                               ng-if="post.Hosttemplate.check_period_id > 0">
+                                                <?= __('Check period'); ?>
+                                            </a>
+                                            <span ng-if="post.Hosttemplate.check_period_id == 0"><?php echo __('Check period'); ?></span>
+                                        <?php else: ?>
+                                            <?= __('Check period'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <select
                                         id="CheckPeriodSelect"
@@ -234,7 +242,15 @@
 
                                 <div class="form-group required" ng-class="{'has-error': errors.command_id}">
                                     <label class="control-label" for="HostCheckCommandSelect">
-                                        <?php echo __('Check Command'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                            <a ui-sref="CommandsEdit({id:post.Hosttemplate.command_id})"
+                                               ng-if="post.Hosttemplate.command_id > 0">
+                                                <?= __('Check command'); ?>
+                                            </a>
+                                            <span ng-if="post.Hosttemplate.command_id == 0"><?php echo __('Check command'); ?></span>
+                                        <?php else: ?>
+                                            <?= __('Check command'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <select
                                         id="HostCheckCommandSelect"
@@ -361,7 +377,15 @@
                             <div class="card-body">
                                 <div class="form-group required" ng-class="{'has-error': errors.notify_period_id}">
                                     <label class="control-label" for="NotifyPeriodSelect">
-                                        <?php echo __('Notification period'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id:post.Hosttemplate.notify_period_id})"
+                                               ng-if="post.Hosttemplate.notify_period_id > 0">
+                                                <?php echo __('Notification period'); ?>
+                                            </a>
+                                            <span ng-if="post.Hosttemplate.notify_period_id == 0"><?php echo __('Notification period'); ?></span>
+                                        <?php else: ?>
+                                            <?php echo __('Notification period'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <select
                                         id="NotifyPeriodSelect"
