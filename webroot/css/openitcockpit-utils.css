@@ -626,33 +626,41 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 
 /* Weather icons */
 
-/* <i class="fas fa-sun sun"></i> */
+/* <i class="fas fa-sun sun font-xl"></i> */
 .sun {
     background: rgb(255, 252, 10);
-    font-size: 38px;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-/* <i class="fas fa-cloud-sun sun-cloud-gradient"></i> */
+/* <i class="fas fa-cloud-sun sun-cloud-gradient font-xl"></i> */
 .sun-cloud-gradient {
     background: rgb(255, 252, 10);
-    background: linear-gradient(132deg, rgba(255, 252, 10, 1) 0%, rgba(255, 252, 10, 1) 46%, transparent 46%,
-    transparent 39%, rgb(226, 217, 217) 40%, rgb(213, 204, 204) 100%);
-    font-size: 45px;
+    background: linear-gradient(132deg, rgba(255, 252, 10, 1) 0%, rgba(255, 252, 10, 1) 46%, transparent 46%, transparent 39%,transparent 39%,transparent 39%,
+    transparent 40%,transparent 40%,transparent 100%), linear-gradient(180deg, transparent 0%,transparent 7%,
+    rgba(156, 184, 239, 0.2) 55%, rgba(252, 252, 252, 0.8) 92%, transparent 98%,transparent 100%) aliceblue;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-/* <i class="fas fa-cloud-sun-rain sun-cloud-gradient-rain"></i> */
+/* <i class="fas fa-cloud-sun-rain sun-cloud-gradient-rain font-xl"></i> */
 .sun-cloud-gradient-rain {
-    background: rgb(255, 252, 10);
-    background: linear-gradient(132deg, rgba(255, 252, 10, 1) 0%, rgba(255, 252, 10, 1) 38%, transparent 38%,
-    transparent 39%, rgb(134, 125, 125) 40%, rgb(71, 89, 113) 100%);
-    font-size: 50px;
+    background:linear-gradient(128deg, rgb(255, 252, 10) 4%, rgb(255, 252, 10) 39%, transparent 39%,transparent 39%,
+    transparent 40%,transparent 40%,transparent 100%), linear-gradient(180deg, transparent 0%,transparent 7%,
+    rgba(156, 184, 239, 0.2) 55%, rgb(156, 184, 239) 92%, transparent 98%,transparent 100%) aliceblue;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+/* <i class="fas fa-cloud cloud-gradient font-lg"></i> */
+.cloud-gradient {
+    background:linear-gradient(180deg, transparent 0%,transparent 7%, rgba(7, 19, 42, 0.5) 0%, rgb(156, 184, 239) 92%,
+    transparent 98%,transparent 100%) aliceblue;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Weather icons end */
+
 
 .wizard-logo-image {
     border-radius: 50%;
