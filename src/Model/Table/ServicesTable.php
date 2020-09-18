@@ -18,6 +18,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
@@ -671,6 +672,17 @@ class ServicesTable extends Table {
         if (!empty($selected)) {
             $where['NOT'] = [
                 'Services.id IN' => $selected
+            ];
+        }
+
+        if ($ServiceConditions->hasNotConditions()) {
+            $where['NOT'] = Hash::merge(($where['NOT'] ?? []), $ServiceConditions->getNotConditions());
+        }
+
+        if(!empty($where['NOT'])){
+            // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+            $where['NOT'] = [
+                'OR' => $where['NOT']
             ];
         }
 
