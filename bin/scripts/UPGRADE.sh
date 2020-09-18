@@ -353,6 +353,16 @@ mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(ico
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-exchange', 'fa-exchange-alt');"
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-pencil-square-o', 'fa-pencil-square');"
 
+# Fix flap detection settings ITC-2420
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE hosttemplates SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_up IS NULL AND flap_detection_on_down IS NULL AND flap_detection_on_unreachable IS NULL"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE hosttemplates SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_up=0 AND flap_detection_on_down=0 AND flap_detection_on_unreachable=0"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE hosts SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_up IS NULL AND flap_detection_on_down IS NULL AND flap_detection_on_unreachable IS NULL"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE hosts SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_up=0 AND flap_detection_on_down=0 AND flap_detection_on_unreachable=0"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE servicetemplates SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok IS NULL AND flap_detection_on_warning IS NULL AND flap_detection_on_unknown IS NULL AND flap_detection_on_critical IS NULL"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE servicetemplates SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok=0 AND flap_detection_on_warning=0 AND flap_detection_on_unknown=0 AND flap_detection_on_critical=0"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok IS NULL AND flap_detection_on_warning IS NULL AND flap_detection_on_unknown IS NULL AND flap_detection_on_critical IS NULL"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok=0 AND flap_detection_on_warning=0 AND flap_detection_on_unknown=0 AND flap_detection_on_critical=0"
+
 #ALC dependencies config for itc core
 echo "---------------------------------------------------------------"
 echo "Scan for new user permissions. This will take a while..."
