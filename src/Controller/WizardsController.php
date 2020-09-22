@@ -32,11 +32,13 @@ use App\Form\WizardMysqlServerForm;
 use App\itnovum\openITCOCKPIT\Wizard\CreateService;
 use App\itnovum\openITCOCKPIT\Wizard\UpdateHost;
 use App\Model\Entity\Host;
+use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\WizardAssignmentsTable;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -318,5 +320,49 @@ class WizardsController extends AppController {
             throw new MethodNotAllowedException();
         }
         $type = $this->request->getQuery('type');
+    }
+
+    /**
+     * @param $containerId
+     * @throws \Exception
+     */
+    public function loadElementsByContainerId($containerId) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $hosttemplateType = GENERIC_HOST;
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $hosttemplateType);
+        $hosttemplates = Api::makeItJavaScriptAble($hosttemplates);
+
+
+        $exporters = [];
+        if (Plugin::isLoaded('PrometheusModule')) {
+            /** @var \PrometheusModule\Model\Table\PrometheusExportersTable $PrometheusExportersTable */
+            $PrometheusExportersTable = TableRegistry::getTableLocator()->get('PrometheusModule.PrometheusExporters');
+
+            $exporters = $PrometheusExportersTable->getExportersByContainerId($containerIds, 'list', 'id');
+            $exporters = Api::makeItJavaScriptAble($exporters);
+        }
+
+        $this->set('hosttemplates', $hosttemplates);
+        $this->set('exporters', $exporters);
+
+        $this->viewBuilder()->setOption('serialize', [
+            'hosttemplates',
+            'exporters'
+        ]);
     }
 }

@@ -69,17 +69,18 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadHosttemplates = function(){
+        $scope.loadElements = function(){
             var containerId = $scope.post.Host.container_id;
             //May be triggered by watch from "Create another"
             if(containerId === 0){
                 return;
             }
 
-            $http.post("/hosttemplates/loadHosttemplates/" + containerId + ".json?angular=true", {
+            $http.post("/wizards/loadElementsByContainerId/" + containerId + ".json?angular=true", {
                 empty: true
             }).then(function(result){
                 $scope.hosttemplates = result.data.hosttemplates;
+                $scope.exporters = result.data.exporters;
             });
         };
 
@@ -229,7 +230,7 @@ angular.module('openITCOCKPIT')
             }else{
                 $scope.showRootAlert = false;
             }
-            $scope.loadHosttemplates();
+            $scope.loadElements();
         }, true);
 
         $scope.$watch('post.Host.hosttemplate_id', function(){

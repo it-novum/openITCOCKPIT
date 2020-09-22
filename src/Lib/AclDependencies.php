@@ -588,7 +588,8 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NSTAMaster');
 
         $this
-            ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular');
+            ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular')
+            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadElementsByContainerId');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {
