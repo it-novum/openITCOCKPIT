@@ -145,6 +145,19 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by host description'); ?>"
+                                                   ng-model="filter.Host.hostdescription"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by IP address'); ?>"
                                                    ng-model="filter.Host.address"
                                                    ng-model-options="{debounce: 500}">

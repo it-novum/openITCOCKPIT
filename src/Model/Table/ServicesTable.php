@@ -1769,6 +1769,7 @@ class ServicesTable extends Table {
                 'Services.service_type',
                 'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
                 'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
+                'servicedescription' => $query->newExpr('IF(Services.description IS NULL, Servicetemplates.description, Services.description)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1849,6 +1850,16 @@ class ServicesTable extends Table {
             unset($where['servicepriority IN']);
         }
 
+        if (isset($where['servicedescription LIKE'])) {
+            $where[] = new Comparison(
+                'IF((Services.description IS NULL), Servicetemplates.description, Services.description)',
+                $where['servicedescription LIKE'],
+                'string',
+                'like'
+            );
+            unset($where['servicedescription LIKE']);
+        }
+
         if (!empty($where)) {
             $query->andWhere($where);
         }
@@ -1926,6 +1937,7 @@ class ServicesTable extends Table {
                 'Services.service_type',
                 'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
                 'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
+                'servicedescription' => $query->newExpr('IF(Services.description IS NULL, Servicetemplates.description, Services.description)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1998,6 +2010,16 @@ class ServicesTable extends Table {
                 'IN'
             );
             unset($where['servicepriority IN']);
+        }
+
+        if (isset($where['servicedescription LIKE'])) {
+            $where[] = new Comparison(
+                'IF((Services.description IS NULL), Servicetemplates.description, Services.description)',
+                $where['servicedescription LIKE'],
+                'string',
+                'like'
+            );
+            unset($where['servicedescription LIKE']);
         }
 
         if (!empty($where)) {
