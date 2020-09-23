@@ -2,7 +2,6 @@ angular.module('openITCOCKPIT')
     .controller('WizardHostConfigurationController', function($scope, $http, $state, $stateParams, QueryStringService, NotyService, LocalStorageService){
         /** public vars **/
         $scope.init = true;
-        $scope.useExistingHost = false;
         $scope.selectedHostId = null;
         $scope.state = QueryStringService.getStateValue($stateParams, 'state', null);
         $scope.selectedOs = QueryStringService.getStateValue($stateParams, 'selectedOs', null);
@@ -15,6 +14,9 @@ angular.module('openITCOCKPIT')
             dnsAddressNotFound: false
         };
 
+        $scope.useExistingHost = ($scope.typeId === 'prometheus') ? true : false;
+
+
         $scope.post = {
             Host: {
                 name: '',
@@ -24,7 +26,8 @@ angular.module('openITCOCKPIT')
                 container_id: 0,
                 hosts_to_containers_sharing: {
                     _ids: []
-                }
+                },
+                satellite_id: 0
             }
         };
 
@@ -82,6 +85,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.hosttemplates = result.data.hosttemplates;
                 $scope.exporters = result.data.exporters;
+                $scope.satellites = result.data.satellites;
             });
         };
 

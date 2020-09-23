@@ -37,12 +37,14 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\WizardAssignmentsTable;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -359,12 +361,27 @@ class WizardsController extends AppController {
             $exporters = Api::makeItJavaScriptAble($exporters);
         }
 
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+        $satellites = [];
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var $SatellitesTable SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
+        }
+        $satellites = Api::makeItJavaScriptAble($satellites);
+
         $this->set('hosttemplates', $hosttemplates);
         $this->set('exporters', $exporters);
+        $this->set('satellites', $satellites);
 
         $this->viewBuilder()->setOption('serialize', [
             'hosttemplates',
-            'exporters'
+            'exporters',
+            'satellites'
         ]);
     }
 
@@ -405,7 +422,7 @@ class WizardsController extends AppController {
             $hosts = Api::makeItJavaScriptAble(
                 $PrometheusExportersTable->getPrometheusHostsForAngular($HostCondition, $selected, true)
             );
-            $additionalInfo = __('Only hosts with exporters are listed');
+            $additionalInfo = __('Only hosts with Prometheus exporters are listed');
         } else {
             $hosts = Api::makeItJavaScriptAble(
                 $HostsTable->getHostsForAngular($HostCondition, $selected, true)
