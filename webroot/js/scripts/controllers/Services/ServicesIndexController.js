@@ -30,6 +30,7 @@ angular.module('openITCOCKPIT')
                     name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
                     keywords: '',
                     not_keywords: '',
+                    servicedescription: '',
                     priority: {
                         1: false,
                         2: false,
@@ -95,6 +96,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hosts.name]': $scope.filter.Hosts.name,
                 'filter[Services.id][]': $scope.filter.Services.id,
                 'filter[servicename]': $scope.filter.Services.name,
+                'filter[servicedescription]': $scope.filter.Services.servicedescription,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
                 'filter[keywords][]': $scope.filter.Services.keywords.split(','),
