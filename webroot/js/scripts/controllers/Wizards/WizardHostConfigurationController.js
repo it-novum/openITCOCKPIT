@@ -184,7 +184,7 @@ angular.module('openITCOCKPIT')
                     NotyService.genericSuccess();
 
                     $state.go($scope.state, {
-                        hostId: $scope.selectedHostId,
+                        hostId: hostId,
                         selectedOs: $scope.selectedOs,
                         typeId: $scope.typeId
                     }).then(function(){
