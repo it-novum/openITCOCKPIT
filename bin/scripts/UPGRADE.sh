@@ -471,6 +471,8 @@ chmod 777 /opt/openitc/frontend/tmp
 mkdir -p /opt/openitc/frontend/tmp/nagios
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
+mkdir -p /opt/openitc/etc/nagios/nagios.cfg.d
+
 # Set filesystem permissions after all is done - again
 chown www-data:www-data /opt/openitc/logs/frontend
 oitc rights
