@@ -309,6 +309,8 @@ mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
+mkdir -p /opt/openitc/etc/nagios/nagios.cfg.d
+
 mkdir -p /opt/openitc/frontend/webroot/img/charts
 chown www-data:www-data /opt/openitc/frontend/webroot/img/charts
 
