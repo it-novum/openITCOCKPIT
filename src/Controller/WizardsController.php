@@ -44,7 +44,9 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
  * Class WizardsController
@@ -364,5 +366,54 @@ class WizardsController extends AppController {
             'hosttemplates',
             'exporters'
         ]);
+    }
+
+    /**
+     * @param bool $onlyHostsWithWritePermission
+     */
+    public function loadHostsByString($onlyHostsWithWritePermission = false) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->getQuery('selected');
+        $wizardTypeId = $this->request->getQuery('typeId', 'linux');
+        $includeDisabled = $this->request->getQuery('includeDisabled') === 'true';
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setIncludeDisabled($includeDisabled);
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
+        if ($onlyHostsWithWritePermission) {
+            $writeContainers = [];
+            foreach ($this->MY_RIGHTS_LEVEL as $containerId => $rightLevel) {
+                $rightLevel = (int)$rightLevel;
+                if ($rightLevel === WRITE_RIGHT) {
+                    $writeContainers[$containerId] = $rightLevel;
+                }
+            }
+            $HostCondition->setContainerIds(array_keys($writeContainers));
+        }
+        $additionalInfo = null;
+        if ($wizardTypeId === 'prometheus' && Plugin::isLoaded('PrometheusModule')) {
+            /** @var \PrometheusModule\Model\Table\PrometheusExportersTable $PrometheusExportersTable */
+            $PrometheusExportersTable = TableRegistry::getTableLocator()->get('PrometheusModule.PrometheusExporters');
+            $hosts = Api::makeItJavaScriptAble(
+                $PrometheusExportersTable->getPrometheusHostsForAngular($HostCondition, $selected, true)
+            );
+            $additionalInfo = __('Only hosts with exporters are listed');
+        } else {
+            $hosts = Api::makeItJavaScriptAble(
+                $HostsTable->getHostsForAngular($HostCondition, $selected, true)
+            );
+
+        }
+        $this->set('additionalInfo', $additionalInfo);
+        $this->set('hosts', $hosts);
+        $this->viewBuilder()->setOption('serialize', ['hosts', 'additionalInfo']);
     }
 }

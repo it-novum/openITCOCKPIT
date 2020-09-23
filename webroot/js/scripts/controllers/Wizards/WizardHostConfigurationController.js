@@ -7,6 +7,7 @@ angular.module('openITCOCKPIT')
         $scope.state = QueryStringService.getStateValue($stateParams, 'state', null);
         $scope.selectedOs = QueryStringService.getStateValue($stateParams, 'selectedOs', null);
         $scope.typeId = QueryStringService.getStateValue($stateParams, 'typeId', null);
+        $scope.title = QueryStringService.getStateValue($stateParams, 'title', null);
 
         $scope.data = {
             dnsLookUp: LocalStorageService.getItemWithDefault('HostsDnsLookUpEnabled', 'false') === 'true',
@@ -85,13 +86,15 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHosts = function(searchString){
-            $http.get("/hosts/loadHostsByString.json", {
+            $http.get("/wizards/loadHostsByString.json", {
                 params: {
                     'angular': true,
+                    'typeId': $scope.typeId,
                     'filter[Hosts.name]': searchString
                 }
             }).then(function(result){
                 $scope.hosts = result.data.hosts;
+                $scope.additionalInfo = result.data.additionalInfo;
             });
         };
 

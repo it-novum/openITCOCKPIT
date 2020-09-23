@@ -39,7 +39,7 @@ use Cake\Core\Plugin;
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fas fa-magic"></i> <?php echo __('Monitor Linux Server with Agent'); ?>
+        <i class="fas fa-magic"></i> {{title}}
     </li>
 </ol>
 
@@ -48,7 +48,7 @@ use Cake\Core\Plugin;
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Configuration Wizard: Linux Server'); ?>
+                    <?php echo __('Configuration Wizard: '); ?>{{title}}
                 </h2>
             </div>
             <div class="panel-container show">
@@ -112,6 +112,12 @@ use Cake\Core\Plugin;
                                             </select>
                                             <div ng-repeat="error in errors.Host">
                                                 <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col col-12" ng-show="additionalInfo">
+                                            <div class="help-block text-info">
+                                                <i class="fa fa-info-circle"></i>
+                                                {{additionalInfo}}
                                             </div>
                                         </div>
                                     </div>
@@ -249,7 +255,7 @@ use Cake\Core\Plugin;
                                                                        value="post.Host.prometheus_exporters._ids"
                                                                        template-value="hosttemplate.Hosttemplate.prometheus_exporters._ids"></template-diff>
                                                     </div>
-                                                    <div class="help-block">
+                                                    <div class="help-block text-info">
                                                         <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
                                                     </div>
                                                     <div ng-repeat="error in errors.prometheus_exporters">
