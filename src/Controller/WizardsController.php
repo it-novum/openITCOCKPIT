@@ -129,11 +129,12 @@ class WizardsController extends AppController {
 
         $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
         $wizardAssignments = [];
-        $wizard = Hash::extract($wizards, '{n}[uuid=' . $uuid . ']');
+        $wizard = Hash::extract($wizards, '{s}[uuid=' . $uuid . ']');
         if (!$wizard) {
             throw new NotFoundException(__('Wizard not found'));
         }
         $wizard = $wizard[0];
+
         if ($wizard['necessity_of_assignment'] === true) {
             if ($WizardAssignmentsTable->existsByUuidAndTypeId($wizard['uuid'], $wizard['type_id'])) {
                 $wizardAssignments = Hash::merge($wizard, $WizardAssignmentsTable->getWizardByUuidForEdit($wizard['uuid']));
@@ -182,9 +183,8 @@ class WizardsController extends AppController {
             //Return mysql wizard data
             $servicetemplates = [];
             $wizardAssignments = [];
-            $mysqlWizardData = Hash::extract($wizards, '{n}[type_id=mysql-server]');
+            $mysqlWizardData = $wizards['mysql-server'] ?? null;
             if ($mysqlWizardData) {
-                $mysqlWizardData = $mysqlWizardData[0];
                 if ($WizardAssignmentsTable->existsByUuidAndTypeId($mysqlWizardData['uuid'], $mysqlWizardData['type_id'])) {
                     $wizardAssignments = Hash::merge($mysqlWizardData, $WizardAssignmentsTable->getWizardByUuidForEdit($mysqlWizardData['uuid']));
                 }
