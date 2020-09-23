@@ -325,6 +325,7 @@ if getent group ssl-cert &>/dev/null; then
 fi
 
 oitc config_generator_shell --generate
+oitc nagios_export --resource
 
 echo "Enable new systemd services"
 systemctl daemon-reload

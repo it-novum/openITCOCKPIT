@@ -55,6 +55,7 @@ class NagiosExportCommand extends Command {
         $parser = parent::buildOptionParser($parser);
 
         $parser->addOption('verify', ['help' => 'Verify Nagios/Naemon configuration files and exit.', 'boolean' => true]);
+        $parser->addOption('resource', ['help' => 'Only write the file /opt/openitc/nagios/etc/resource.cfg', 'boolean' => true, 'default' => false]);
         return $parser;
     }
 
@@ -96,6 +97,13 @@ class NagiosExportCommand extends Command {
             }
 
             exit($rc);
+        }
+
+        if ($args->getOption('resource')) {
+            $io->info('Generating /opt/openitc/nagios/etc/resource.cfg');
+            $NagiosConfigGenerator = new NagiosConfigGenerator();
+            $NagiosConfigGenerator->exportMacros();
+            exit(0);
         }
 
         $io->info('Generating new monitoring configuration. This could take awhile...');
