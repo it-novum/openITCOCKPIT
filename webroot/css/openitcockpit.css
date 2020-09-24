@@ -1258,3 +1258,7 @@ label.menu-open-button:hover {
     border-spacing: 1px;
     border-collapse: separate;
 }
+
+.strikethrough {
+    text-decoration: line-through;
+}
