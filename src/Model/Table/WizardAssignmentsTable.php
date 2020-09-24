@@ -202,6 +202,26 @@ class WizardAssignmentsTable extends Table {
                 'directive'               => 'docker', //AngularJS directive
                 'category'                => ['linux', 'docker'],
                 'necessity_of_assignment' => true
+            ],
+            'network-basis'                  => [
+                'type_id'                 => 'network-basis',
+                'uuid'                    => 'cf3abeba-80f8-4307-8b86-c198cc9c576e',
+                'title'                   => __('Network Basic'),
+                'description'             => __('Used to check any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
+                'image'                   => 'network.png',
+                'directive'               => 'network-basis', //AngularJS directive
+                'category'                => ['linux', 'network'],
+                'necessity_of_assignment' => false
+            ],
+            'network-interfaces'                  => [
+                'type_id'                 => 'network-interfaces',
+                'uuid'                    => '834716fb-576e-46e2-a5f1-75878766f2ad',
+                'title'                   => __('Network Interfaces'),
+                'description'             => __('Used to interfaces on any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
+                'image'                   => 'network.png',
+                'directive'               => 'network-interfaces', //AngularJS directive
+                'category'                => ['linux', 'network'],
+                'necessity_of_assignment' => false
             ]
         ];
         $modules = PluginManager::getAvailablePlugins();
