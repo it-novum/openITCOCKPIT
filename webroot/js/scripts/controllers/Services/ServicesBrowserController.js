@@ -179,7 +179,7 @@ angular.module('openITCOCKPIT')
                         autoload: true,
                         serviceId: $scope.mergedService.id,
                         includeServicestatus: true,
-                        showReschedulingButton: true,
+                        showReschedulingButton: $scope.mergedService.service_type !== 32, //do not show for Prometheus Services
                         rescheduleCallback: $scope.serviceBrowserMenuReschedulingCallback,
                         showBackButton: false
                     };

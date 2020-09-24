@@ -791,6 +791,7 @@ use Cake\Core\Plugin;
 
                                     <div ng-if="canSubmitExternalCommands && mergedService.allowEdit">
                                         <div class="browser-action"
+                                             ng-show="mergedService.service_type !== <?= PROMETHEUS_SERVICE ?>"
                                              ng-click="reschedule(getObjectsForExternalCommand())">
                                             <i class="fa fa-refresh"></i>
                                             <?php echo __('Reset check time '); ?>
