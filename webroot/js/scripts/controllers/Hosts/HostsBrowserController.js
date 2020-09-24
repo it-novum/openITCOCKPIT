@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, $stateParams, $state, SortService, $interval, StatusHelperService, UuidService){
+    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, $stateParams, $state, SortService, $interval, StatusHelperService, UuidService, MassChangeService){
 
         //$scope.id = QueryStringService.getCakeId();
         $scope.id = $stateParams.id;
@@ -10,6 +10,8 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
         $scope.selectedTab = 'tab1';
 
+        $scope.massChange = {};
+        $scope.selectedElements = 0;
         $scope.deleteUrl = '/services/delete/';
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';
@@ -285,6 +287,7 @@ angular.module('openITCOCKPIT')
 
         $scope.changepage = function(page){
             if(page !== $scope.currentPage){
+                $scope.undoSelection();
                 $scope.currentPage = page;
                 $scope.load();
             }
@@ -560,6 +563,59 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        /*** Service mass change methods ***/
+        $scope.selectAll = function(){
+            if($scope.services){
+                for(var key in $scope.services){
+                    if($scope.services[key].Service.allow_edit){
+                        var id = $scope.services[key].Service.id;
+                        $scope.massChange[id] = true;
+                    }
+                }
+            }
+        };
+
+        $scope.undoSelection = function(){
+            MassChangeService.clearSelection();
+            $scope.massChange = MassChangeService.getSelected();
+            $scope.selectedElements = MassChangeService.getCount();
+        };
+
+        $scope.getServiceObjectsForDelete = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.services){
+                for(var id in selectedObjects){
+                    if(id == $scope.services[key].Service.id){
+                        objects[id] =
+                            $scope.services[key].Host.hostname + '/' +
+                            $scope.services[key].Service.servicename;
+                    }
+
+                }
+            }
+            return objects;
+        };
+
+        $scope.getServiceObjectsForExternalCommand = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.services){
+                for(var id in selectedObjects){
+                    if(id == $scope.services[key].Service.id){
+                        objects[id] = $scope.services[key];
+                    }
+                }
+            }
+            return objects;
+        };
+
+        $scope.linkForCopy = function(){
+            var ids = Object.keys(MassChangeService.getSelected());
+            return ids.join(',');
+        };
+        /*** End of service mass change methods ***/
+
         //Fire on page load
         $scope.loadIdOrUuid();
         $scope.loadTimezone();
@@ -569,8 +625,14 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+            $scope.undoSelection();
             $scope.currentPage = 1;
             $scope.load();
+        }, true);
+
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
         }, true);
 
     });
