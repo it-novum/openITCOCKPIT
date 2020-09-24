@@ -96,7 +96,7 @@
                                     selectedOs: wizard.selected_os, typeId: wizard.type_id, title: wizard.title})"
                                        class="d-flex flex-row align-items-start">
                                         <div class="wizard-logo-image">
-                                            <img src="/img/wizards/{{wizard.image}}"/>
+                                            <img ng-src="/img/wizards/{{wizard.image}}"/>
                                         </div>
                                         <div class="ml-3">
                                             <strong class="font-md">
@@ -123,7 +123,7 @@
                                 <div class="card-body card-body-wizard">
                                     <span class="d-flex flex-row align-items-start">
                                         <div class="wizard-logo-image wizard-logo-image-placeholder">
-                                            <img src="/img/wizards/{{possibleWizard.image}}"/>
+                                            <img ng-src="/img/wizards/{{possibleWizard.image}}"/>
                                         </div>
                                         <div class="ml-3">
                                             <strong class="font-md">

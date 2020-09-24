@@ -110,6 +110,7 @@ class WizardAssignmentsTable extends Table {
                 'necessity_of_assignment' => false
 
             ],
+            /*
             'linux-server-ssh'        => [
                 'type_id'                 => 'linux-server-ssh',
                 'uuid'                    => 'b5b31647-6095-444b-ad05-22aac099ee45',
@@ -134,6 +135,7 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'linux',
                 'necessity_of_assignment' => true
             ],
+            */
             'windows-server-agent'    => [
                 'type_id'                 => 'windows-server-agent',
                 'uuid'                    => 'e6b36290-9543-4aae-a074-09ff455bc8c9',
@@ -146,6 +148,7 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'windows',
                 'necessity_of_assignment' => false
             ],
+            /*
             'windows-server-snmp'     => [
                 'type_id'                 => 'windows-server-snmp',
                 'uuid'                    => '6b076d6d-296b-4959-a4e8-9ab242ae513f',
@@ -170,6 +173,7 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'windows',
                 'necessity_of_assignment' => true
             ],
+            */
             'macos-server'            => [
                 'type_id'                 => 'macos-server',
                 'uuid'                    => '784c4ee7-9d79-4cf3-b491-fffba497d175',
@@ -184,7 +188,7 @@ class WizardAssignmentsTable extends Table {
             ],
             'mysql-server'            => [
                 'type_id'                 => 'mysql-server',
-                'uuid'                    => '7fb02fac-1ac5-43cf-baf2-b5893f9f9aa8',
+                'uuid'                   => '7fb02fac-1ac5-43cf-baf2-b5893f9f9aa8',
                 'title'                   => __('Mysql'),
                 'description'             => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
                 'image'                   => 'MySQL_logo.svg',
@@ -193,6 +197,7 @@ class WizardAssignmentsTable extends Table {
                 'category'                => ['linux', 'mysql', 'database'],
                 'necessity_of_assignment' => true
             ],
+            /*
             'docker'                  => [
                 'type_id'                 => 'docker',
                 'uuid'                    => '18bf7126-2015-483f-882a-ca4bd55888da',
@@ -203,26 +208,7 @@ class WizardAssignmentsTable extends Table {
                 'category'                => ['linux', 'docker'],
                 'necessity_of_assignment' => true
             ],
-            'network-basis'                  => [
-                'type_id'                 => 'network-basis',
-                'uuid'                    => 'cf3abeba-80f8-4307-8b86-c198cc9c576e',
-                'title'                   => __('Network Basic'),
-                'description'             => __('Used to check any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
-                'image'                   => 'network.png',
-                'directive'               => 'network-basis', //AngularJS directive
-                'category'                => ['linux', 'network'],
-                'necessity_of_assignment' => false
-            ],
-            'network-interfaces'                  => [
-                'type_id'                 => 'network-interfaces',
-                'uuid'                    => '834716fb-576e-46e2-a5f1-75878766f2ad',
-                'title'                   => __('Network Interfaces'),
-                'description'             => __('Used to interfaces on any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
-                'image'                   => 'network.png',
-                'directive'               => 'network-interfaces', //AngularJS directive
-                'category'                => ['linux', 'network'],
-                'necessity_of_assignment' => false
-            ]
+            */
         ];
         $modules = PluginManager::getAvailablePlugins();
         foreach ($modules as $module) {
@@ -261,6 +247,20 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('Metrics based monitoring using Prometheus'),
                 'image'       => 'prometheus.svg',
                 'category'    => ['network', 'linux', 'windows', 'macos']
+            ],
+            'network-basic'                  => [
+                'type_id'                 => 'network-basic',
+                'title'                   => __('Network Basic'),
+                'description'             => __('Used to check any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
+                'image'                   => 'network.png',
+                'category'                => ['linux', 'network']
+            ],
+            'network-interfaces'                  => [
+                'type_id'                 => 'network-interfaces',
+                'title'                   => __('Network Interfaces'),
+                'description'             => __('Used to interfaces on any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
+                'image'                   => 'network.png',
+                'category'                => ['linux', 'network']
             ]
         ];
 
