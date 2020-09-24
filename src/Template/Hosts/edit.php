@@ -617,54 +617,87 @@
                                     </div>
                                 </div>
 
+
                                 <div class="form-group"
-                                     ng-class="{'has-error': errors.contacts}">
-                                    <label class="control-label">
-                                        <?php echo __('Contacts'); ?>
-                                    </label>
-                                    <div class="input-group" style="width: 100%;">
-                                        <select
-                                                id="ContactsPeriodSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="contacts"
-                                                multiple
-                                                ng-options="contact.key as contact.value for contact in contacts"
-                                                ng-model="post.Host.contacts._ids">
-                                        </select>
-                                        <template-diff ng-show="post.Host.hosttemplate_id"
-                                                       value="post.Host.contacts._ids"
-                                                       template-value="hosttemplate.Hosttemplate.contacts._ids"></template-diff>
+                                     ng-show="data.areContactsInheritedFromHosttemplate">
+                                    <div class="custom-control custom-checkbox  margin-bottom-10"
+                                         ng-class="{'has-error': errors.disableInheritance}">
+
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="resetContacts"
+                                               ng-model="data.disableInheritance">
+                                        <label class="custom-control-label" for="resetContacts">
+                                            <?php echo __('Disable inheritance'); ?>
+                                        </label>
                                     </div>
-                                    <div ng-repeat="error in errors.contacts">
-                                        <div class="help-block text-danger">{{ error }}</div>
+                                    <div class="col col-xs-12 col-md-offset-2 help-block"
+                                            ng-class="{'strikethrough': data.disableInheritance}">
+                                        <?php echo __('Contacts and contact groups got inherited from'); ?>
+                                        <span class="bold">
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                <a ui-sref="HosttemplatesEdit({id: post.Host.hosttemplate_id})">
+                                                    <?php echo __('host template'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('host template'); ?>
+                                            <?php endif; ?>
+                                        </span>
+                                        .
                                     </div>
                                 </div>
 
-                                <div class="form-group"
-                                     ng-class="{'has-error': errors.contactgroups}">
-                                    <label class="control-label">
-                                        <?php echo __('Contact groups'); ?>
-                                    </label>
-                                    <div class="input-group" style="width: 100%;">
-                                        <select
-                                                id="ContactgroupsSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="contactgroups"
-                                                multiple
-                                                ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                                ng-model="post.Host.contactgroups._ids">
-                                        </select>
-                                        <template-diff ng-show="post.Host.hosttemplate_id"
-                                                       value="post.Host.contactgroups._ids"
-                                                       template-value="hosttemplate.Hosttemplate.contactgroups._ids"></template-diff>
+                                <div id="ContactBlocker">
+                                    <div class="form-group"
+                                         ng-class="{'has-error': errors.contacts}">
+                                        <label class="control-label">
+                                            <?php echo __('Contacts'); ?>
+                                        </label>
+                                        <div class="input-group" style="width: 100%;">
+                                            <select
+                                                    id="ContactsPeriodSelect"
+                                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                                    class="form-control"
+                                                    chosen="contacts"
+                                                    multiple
+                                                    ng-options="contact.key as contact.value for contact in contacts"
+                                                    ng-model="post.Host.contacts._ids">
+                                            </select>
+                                            <template-diff ng-show="post.Host.hosttemplate_id"
+                                                           value="post.Host.contacts._ids"
+                                                           template-value="hosttemplate.Hosttemplate.contacts._ids"></template-diff>
+                                        </div>
+                                        <div ng-repeat="error in errors.contacts">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
-                                    <div ng-repeat="error in errors.contactgroups">
-                                        <div class="help-block text-danger">{{ error }}</div>
+
+                                    <div class="form-group"
+                                         ng-class="{'has-error': errors.contactgroups}">
+                                        <label class="control-label">
+                                            <?php echo __('Contact groups'); ?>
+                                        </label>
+                                        <div class="input-group" style="width: 100%;">
+                                            <select
+                                                    id="ContactgroupsSelect"
+                                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                                    class="form-control"
+                                                    chosen="contactgroups"
+                                                    multiple
+                                                    ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                                    ng-model="post.Host.contactgroups._ids">
+                                            </select>
+                                            <template-diff ng-show="post.Host.hosttemplate_id"
+                                                           value="post.Host.contactgroups._ids"
+                                                           template-value="hosttemplate.Hosttemplate.contactgroups._ids"></template-diff>
+                                        </div>
+                                        <div ng-repeat="error in errors.contactgroups">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
                                 </div>
 
+                                <hr>
 
                                 <?php
                                 $hostOptions = [
