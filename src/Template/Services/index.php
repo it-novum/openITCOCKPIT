@@ -753,6 +753,15 @@
                                     <a ng-href="{{ linkForPdf() }}" class="dropdown-item">
                                         <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
                                     </a>
+                                    <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                                        <a
+                                           class="dropdown-item"
+                                           href="javascript:void(0);"
+                                           ng-click="confirmDeactivate(getObjectsForDelete())">
+                                            <i class="fa fa-plug"></i>
+                                            <?php echo __('Disable services'); ?>
+                                        </a>
+                                    <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
                                         <a class="dropdown-item" href="javascript:void(0);"
                                            ng-click="confirmAddServicesToServicegroup(getObjectsForDelete())">
