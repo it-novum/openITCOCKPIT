@@ -711,7 +711,7 @@ use Cake\Core\Plugin;
                                                             <?php echo __('Critical'); ?>
                                                         </span>
 
-                                                    <span class="badge badge-default"
+                                                    <span class="badge badge-secondary"
                                                           ng-show="mergedService.notify_on_unknown"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Unknown'); ?>
