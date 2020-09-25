@@ -74,15 +74,86 @@
                                                 <?= __('MySQL Server'); ?>
                                             </h4>
                                         </legend>
+
+                                        <div class="accordion accordion-hover padding-bottom-10">
+                                            <div class="card border-bottom">
+                                                <div class="card-header">
+                                                    <a href="javascript:void(0);" class="card-title collapsed"
+                                                       data-toggle="collapse" data-target="#accordion-body-1"
+                                                       aria-expanded="false">
+                                                        <i class="fas fa-life-ring width-2"></i>
+                                                        <?= __('MySQL configuration help'); ?>
+                                                        <span class="ml-auto">
+                                                            <span class="collapsed-reveal">
+                                                                <i class="fas fa-chevron-up"></i>
+                                                            </span>
+                                                            <span class="collapsed-hidden">
+                                                                <i class="fas fa-chevron-down"></i>
+                                                            </span>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                                <div id="accordion-body-1" class="collapse">
+                                                    <div class="card-body padding-10">
+
+                                                        <ol>
+                                                            <li>
+                                                                <div>
+                                                                    <?= __('To enable external databases access you have to change the {0} of your MySQL server.', '<code>bind-address</code>'); ?>
+                                                                    <div class="alert border-danger bg-transparent text-danger">
+                                                                        <?= __('Changing the bind address can be a potential security issue!'); ?>
+                                                                    </div>
+
+                                                                    <?= __(
+                                                                        'The bind-address is configured in my.cnf. Most likely this file is located at {0} or {1}',
+                                                                        '<code>/etc/mysql/mysql.conf.d/mysqld.cnf</code>',
+                                                                        '<code>/etc/mysql/my.cnf</code>'
+                                                                    ); ?>
+                                                                </div>
+                                                            </li>
+
+                                                            <li>
+                                                                <div>
+                                                                    <?= __('Change the bind-address from 127.0.0.1 to the external address of the system or use 0.0.0.0 to bind to all interfaces.'); ?>
+                                                                    <pre>bind-address = 0.0.0.0</pre>
+                                                                </div>
+                                                            </li>
+
+                                                            <li>
+                                                                <div>
+                                                                    <?= __('Restart the MySQL server to apply the changes.'); ?>
+                                                                    <pre>systemctl restart mysql.service</pre>
+                                                                </div>
+                                                            </li>
+
+                                                            <li>
+                                                                <div>
+                                                                    <?= __('Create a new MySQL user for {0}', h($systemname)); ?>
+                                                                    <pre>CREATE USER 'monitoring'@'<?= h($_SERVER['SERVER_ADDR']); ?>' IDENTIFIED BY 'secure_password';
+GRANT SELECT, SHOW VIEW ON *.* TO 'monitoring'@'<?= h($_SERVER['SERVER_ADDR']); ?>';</pre>
+                                                                    <?= __(
+                                                                        'Please replace {0} with the address of the {1} server and set a secure password',
+                                                                        '<i>' . h($_SERVER['SERVER_ADDR']) . '</i>',
+                                                                        h($systemname)
+                                                                    ); ?>
+                                                                </div>
+                                                            </li>
+
+                                                        </ol>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="form-group required" ng-class="{'has-error': errors.username}">
                                             <label class="control-label">
                                                 <?php echo __('Username'); ?>
                                             </label>
                                             <input
-                                                id="UserName"
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.username">
+                                                    id="UserName"
+                                                    class="form-control"
+                                                    type="text"
+                                                    ng-model="post.username">
                                             <div ng-repeat="error in errors.username">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
@@ -92,10 +163,10 @@
                                                 <?php echo __('Password'); ?>
                                             </label>
                                             <input
-                                                id="UserName"
-                                                class="form-control"
-                                                type="password"
-                                                ng-model="post.password">
+                                                    id="UserName"
+                                                    class="form-control"
+                                                    type="password"
+                                                    ng-model="post.password">
                                             <div ng-repeat="error in errors.password">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
@@ -105,10 +176,10 @@
                                                 <?php echo __('Database'); ?>
                                             </label>
                                             <input
-                                                id="UserName"
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.database">
+                                                    id="UserName"
+                                                    class="form-control"
+                                                    type="text"
+                                                    ng-model="post.database">
                                             <div ng-repeat="error in errors.database">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
@@ -145,8 +216,8 @@
                                                     </div>
                                                 </div>
                                                 <div
-                                                    class="form-group {{detectColor(commandargument.commandargument.human_name)}}"
-                                                    ng-repeat="commandargument in service.servicecommandargumentvalues">
+                                                        class="form-group {{detectColor(commandargument.commandargument.human_name)}}"
+                                                        ng-repeat="commandargument in service.servicecommandargumentvalues">
                                                     {{commandargument.commandargument.human_name}}
                                                     <input class="form-control"
                                                            type="text"

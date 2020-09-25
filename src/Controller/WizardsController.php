@@ -170,9 +170,14 @@ class WizardsController extends AppController {
         return;
     }
 
+    /**
+     * Depencencies:
+     * apt-get install libdbi-perl libdbd-mysql-perl
+     */
     public function mysqlserver() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
+            $this->set('systemname', $this->getSystemname());
             return;
         }
         /** @var WizardAssignmentsTable $WizardAssignmentsTable */

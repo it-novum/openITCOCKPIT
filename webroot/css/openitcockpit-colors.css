@@ -967,3 +967,13 @@ div.packetmanager-selection > span::selection {
 .text-purple {
     color: #bb1bf4 !important;
 }
+
+.accordion.accordion-hover .card-title:not(.collapsed) {
+    color: #fff;
+    background-color: #2198f3;
+}
+
+.accordion.accordion-hover .card-header:hover .card-title.collapsed {
+    color: #fff;
+    background-color: #51aef6;
+}
