@@ -128,7 +128,7 @@ class SslIdentifier extends AbstractIdentifier implements IdentifierInterface {
                     }
 
                     if (!empty($ou)) {
-                        $emailLike = sprintf('@%s', $item);
+                        $emailLike = sprintf('@%s', $ou);
                         $user = $UsersTable->getUserForFhgLogin(
                             $firstname, // = Max AND
                             $lastname,  // = Mustermann AND
