@@ -55,12 +55,25 @@ class TelegramSettingsTable extends Table {
             ->notEmptyString('token');
 
         $validator
+            ->scalar('access_key')
+            ->maxLength('access_key', 255)
+            ->notEmptyString('access_key');
+
+        $validator
             ->integer('last_update_id')
             ->allowEmptyString('last_update_id');
 
         $validator
             ->boolean('two_way')
             ->notEmptyString('two_way');
+
+        $validator
+            ->scalar('external_webhook_domain')
+            ->maxLength('external_webhook_domain', 255);
+
+        $validator
+            ->scalar('webhook_api_key')
+            ->maxLength('webhook_api_key', 255);
 
         $validator
             ->boolean('use_proxy')
@@ -70,17 +83,34 @@ class TelegramSettingsTable extends Table {
     }
 
     /**
+     * @param int $length
+     * @return string
+     */
+    private function generateRandomString($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-.+:!=';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
+    /**
      * @return \TelegramModule\Model\Entity\TelegramSetting
      */
     public function getTelegramSettings() {
         $default = [
-            'token'          => '',
-            'last_update_id' => 0,
-            'two_way'        => false,
-            'use_proxy'      => false
+            'token'                   => '',
+            'access_key'              => $this->generateRandomString(),
+            'last_update_id'          => 0,
+            'two_way'                 => false,
+            'external_webhook_domain' => '',
+            'webhook_api_key'         => '',
+            'use_proxy'               => false
         ];
 
-        if ($this->exists(['id' => 1])){
+        if ($this->exists(['id' => 1])) {
             return $this->get(1);
         }
 

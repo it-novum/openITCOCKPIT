@@ -3,8 +3,11 @@ angular.module('openITCOCKPIT')
 
         $scope.post = {
             token: '',
+            access_key: '',
             two_way: true,
-            use_proxy: false
+            use_proxy: false,
+            external_webhook_domain: '',
+            webhook_api_key: ''
         };
 
         $scope.hasError = null;
@@ -30,18 +33,21 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-            $http.post("/telegram_module/TelegramSettings/index.json?angular=true",
-                $scope.post
-            ).then(function(result){
-                NotyService.genericSuccess();
-                $scope.errors = null;
-            }, function errorCallback(result){
-                NotyService.genericError();
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
-                }
-            });
-
+            if($scope.post.two_way && ($scope.post.external_webhook_domain === "" || $scope.post.webhook_api_key === "")){
+                NotyService.genericError({message: "Fill out all required fields!"});
+            }else{
+                $http.post("/telegram_module/TelegramSettings/index.json?angular=true",
+                    $scope.post
+                ).then(function(result){
+                    NotyService.genericSuccess();
+                    $scope.errors = null;
+                }, function errorCallback(result){
+                    NotyService.genericError();
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+            }
         };
 
         $scope.load();
