@@ -198,7 +198,7 @@ class TelegramNotificationCommand extends Command {
 
         if ($this->isAcknowledgement()) {
             $title = sprintf(
-                'Acknowledgement for [%s](%s/#!/hosts/browser/%s) \(%s\) by %s \(Comment: %s\)',
+                'Acknowledgement for [%s](%s/#!/hosts/browser/%s) (%s) by %s (Comment: %s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -292,7 +292,7 @@ class TelegramNotificationCommand extends Command {
 
         //Default notification
         $title = sprintf(
-            '%s: [%s](%s/#!/hosts/browser/%s) is %s\!',
+            '%s: [%s](%s/#!/hosts/browser/%s) is %s!',
             $this->notificationtype,
             $Host->getHostname(),
             $this->baseUrl,
@@ -304,7 +304,7 @@ class TelegramNotificationCommand extends Command {
             $title = $HoststatusIcon->getEmoji() . ' ' . $title;
         }
 
-        $text = $title . "\n" . $this->escapeTGMessageText($this->output);
+        $text = $title . "\n" . $this->output;
 
         $InlineKeyboardMarkup = new InlineKeyboardMarkup([]);
         if ($HoststatusIcon->getState() !== 0 && $this->telegramSettings->get('two_way')) {
@@ -326,7 +326,7 @@ class TelegramNotificationCommand extends Command {
 
         if ($this->isAcknowledgement()) {
             $title = sprintf(
-                'Acknowledgement for service [%s](%s/#!/hosts/browser/%s)/[%s](%s/#!/services/browser/%s) \(%s\) by %s \(Comment: %s\)',
+                'Acknowledgement for service [%s](%s/#!/hosts/browser/%s)/[%s](%s/#!/services/browser/%s) (%s) by %s (Comment: %s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -443,7 +443,7 @@ class TelegramNotificationCommand extends Command {
 
         //Default notification
         $title = sprintf(
-            '%s: [%s](%s/#!/services/browser/%s) on [%s](%s/#!/hosts/browser/%s) is %s\!',
+            '%s: [%s](%s/#!/services/browser/%s) on [%s](%s/#!/hosts/browser/%s) is %s!',
             $this->notificationtype,
             $Service->getServicename(),
             $this->baseUrl,
@@ -458,7 +458,7 @@ class TelegramNotificationCommand extends Command {
             $title = $ServicestatusIcon->getEmoji() . ' ' . $title;
         }
 
-        $text = $title . "\n" . $this->escapeTGMessageText($this->output);
+        $text = $title . "\n" . $this->output;
 
         $InlineKeyboardMarkup = new InlineKeyboardMarkup([]);
         if ($ServicestatusIcon->getState() !== 0 && $this->telegramSettings->get('two_way')) {
@@ -483,7 +483,7 @@ class TelegramNotificationCommand extends Command {
                         $this->bot->sendMessage(
                             $Chat['chat_id'],
                             $text,
-                            "MarkdownV2",
+                            "Markdown",
                             false,
                             null,
                             $InlineKeyboardMarkup
@@ -494,7 +494,7 @@ class TelegramNotificationCommand extends Command {
                         $this->bot->sendMessage(
                             $Chat->get('chat_id'),
                             $text,
-                            "MarkdownV2",
+                            "Markdown",
                             false,
                             null,
                             $InlineKeyboardMarkup
@@ -593,14 +593,5 @@ class TelegramNotificationCommand extends Command {
         }
 
         $this->noEmoji = $args->getOption('no-emoji');
-    }
-
-    private function escapeTGMessageText($text) {
-        $charactersToEscape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
-
-        foreach ($charactersToEscape as $esc) {
-            $text = str_replace($esc, '\\' . $esc, $text);
-        }
-        return $text;
     }
 }
