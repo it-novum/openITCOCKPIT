@@ -1540,8 +1540,9 @@ class HostsController extends AppController {
                     }
                     foreach ($sourceHost->get('customvariables') as $customvariable) {
                         $customvariables[] = [
-                            'name'  => $customvariable->get('name'),
-                            'value' => $customvariable->get('value')
+                            'name'          => $customvariable->get('name'),
+                            'value'         => $customvariable->get('value'),
+                            'objecttype_id' => OBJECT_HOST
                         ];
                     }
 
@@ -1574,6 +1575,7 @@ class HostsController extends AppController {
 
                     $tmpHost->hostcommandargumentvalues = $hostcommandargumentvalues;
                     $tmpHost->customvariables = $customvariables;
+
 
                     $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
                     $mergedHost = $HostMergerForView->getDataForView();
@@ -2607,7 +2609,7 @@ class HostsController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
-        /** @var SystemsettingsTable $SystemsettingsTable  */
+        /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
@@ -2622,8 +2624,8 @@ class HostsController extends AppController {
         $satellites = Api::makeItJavaScriptAble($satellites);
 
         $exporters = [];
-        if(Plugin::isLoaded('PrometheusModule')){
-            /** @var \PrometheusModule\Model\Table\PrometheusExportersTable $PrometheusExportersTable  */
+        if (Plugin::isLoaded('PrometheusModule')) {
+            /** @var \PrometheusModule\Model\Table\PrometheusExportersTable $PrometheusExportersTable */
             $PrometheusExportersTable = TableRegistry::getTableLocator()->get('PrometheusModule.PrometheusExporters');
 
             $exporters = $PrometheusExportersTable->getExportersByContainerId($containerIds, 'list', 'id');

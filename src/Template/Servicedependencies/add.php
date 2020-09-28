@@ -172,7 +172,15 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <div class="form-group" ng-class="{'has-error': errors.timeperiod_id}">
                             <label class="control-label">
-                                <?php echo __('Timeperiod'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Servicedependency.timeperiod_id})"
+                                       ng-if="post.Servicedependency.timeperiod_id > 0">
+                                        <?php echo __('Timeperiod'); ?>
+                                    </a>
+                                    <span ng-if="!post.Servicedependency.timeperiod_id"><?php echo __('Timeperiod'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Timeperiod'); ?>
+                                <?php endif; ?>
                             </label>
                             <div class="input-group">
                                 <select
@@ -215,6 +223,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                             <label>
                                                 <?php echo __('Execution failure criteria'); ?>
                                             </label>
+                                        </div>
+                                        <div class="help-block">
+                                            <?= __('Disable active service checking of dependend service/s, if master service state is one of the selected states.'); ?>
                                         </div>
                                     </legend>
                                     <div class="custom-control custom-checkbox margin-bottom-10"
@@ -309,6 +320,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                             <label>
                                                 <?php echo __('Notification failure criteria'); ?>
                                             </label>
+                                        </div>
+                                        <div class="help-block">
+                                            <?= __('Disable service notifications of dependend service/s, if master service state is one of the selected states.'); ?>
                                         </div>
                                     </legend>
                                     <div class="custom-control custom-checkbox margin-bottom-10"

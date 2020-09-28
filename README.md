@@ -13,9 +13,9 @@ This is the **BETA VERSION** of openITCOCKPIT 4. [Click here](https://github.com
 openITCOCKPIT 4.x 
 | Distribution | Stable                                                                                                      | Nightly                                                                                                      |
 |--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| Focal       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-focal-stable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-focal&style=flat-square)  |
-| Bionic       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-bionic-stable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-bionic&style=flat-square)  |
-| Buster      | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-buster-stable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-buster&style=flat-square) |
+| Focal       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| Bionic       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| Buster      | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
 
 openITCOCKPIT 3.x 
 | Distribution | Stable                                                                                                      | Nightly                                                                                                      |

@@ -56,7 +56,9 @@ use Cake\Core\Plugin;
 <disable-host-flap-detection callback="showFlashMsg"></disable-host-flap-detection>
 <send-host-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-host-notification>
 <mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>
-
+<?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+    <add-services-to-servicegroup></add-services-to-servicegroup>
+<?php endif; ?>
 
 <div class="row">
     <div class="col-xl-12">
@@ -1028,8 +1030,7 @@ use Cake\Core\Plugin;
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-
-                                <th class="width-120 no-sort" ng-click="orderBy('Servicestatus.current_state')">
+                                <th colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
                                     <i class="fa"
                                        ng-class="getSortClass('Servicestatus.current_state')"></i>
                                     <?php echo __('Service status'); ?>
@@ -1082,7 +1083,7 @@ use Cake\Core\Plugin;
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th colspan="2">
                                     <div class="custom-control-inline">
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox"
@@ -1155,6 +1156,7 @@ use Cake\Core\Plugin;
                                 </th>
 
                                 <th></th>
+                                <th></th>
 
                                 <th>
                                     <div class="form-group">
@@ -1176,8 +1178,12 @@ use Cake\Core\Plugin;
                             <tbody>
 
                             <tr ng-repeat="service in services">
-
-                                <td class="text-center width-90">
+                                <td class="width-5">
+                                    <input type="checkbox"
+                                           ng-model="massChange[service.Service.id]"
+                                           ng-show="service.Service.allow_edit">
+                                </td>
+                                <td class="text-center">
                                     <servicestatusicon service="service"></servicestatusicon>
                                 </td>
 
@@ -1318,6 +1324,90 @@ use Cake\Core\Plugin;
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
+
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fas fa-lg fa-check-square"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fas fa-lg fa-square"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+
+                            <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getServiceObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete selected'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <?php echo __('More actions'); ?>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
+                                     style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+                                    <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                                        <a
+                                                class="dropdown-item"
+                                                href="javascript:void(0);"
+                                                ng-click="confirmDeactivate(getServiceObjectsForDelete())">
+                                            <i class="fa fa-plug"></i>
+                                            <?php echo __('Disable services'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="confirmAddServicesToServicegroup(getServiceObjectsForDelete())">
+                                            <i class="fa fa-cogs"></i>
+                                            <?php echo __('Add to service group'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="reschedule(getServiceObjectsForExternalCommand())">
+                                            <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="disableNotifications(getServiceObjectsForExternalCommand())">
+                                            <i class="fa fa-envelope"></i> <?php echo __('Disable notification'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="enableNotifications(getServiceObjectsForExternalCommand())">
+                                            <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="serviceDowntime(getServiceObjectsForExternalCommand())">
+                                            <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="acknowledgeService(getServiceObjectsForExternalCommand())">
+                                            <i class="fa fa-user"></i> <?php echo __('Acknowledge status'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>
@@ -1520,3 +1610,10 @@ use Cake\Core\Plugin;
         </div>
     </div>
 </div>
+
+<!-- Service mass change directives -->
+<reschedule-service></reschedule-service>
+<disable-notifications></disable-notifications>
+<enable-notifications></enable-notifications>
+<acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
+<service-downtime author="<?php echo h($username); ?>"></service-downtime>

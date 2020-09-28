@@ -432,6 +432,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div ng-repeat="error in errors.password">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <div class="help-block">
+                                <?= __('The password must consist of 6 alphanumeric characters and must contain at least one digit'); ?>
+                            </div>
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.confirm_password}" ng-show="post.User.is_oauth === 0">

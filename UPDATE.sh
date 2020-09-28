@@ -309,8 +309,14 @@ mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
+mkdir -p /opt/openitc/etc/nagios/nagios.cfg.d
+
 mkdir -p /opt/openitc/frontend/webroot/img/charts
 chown www-data:www-data /opt/openitc/frontend/webroot/img/charts
+
+mkdir -p /opt/openitc/var/prometheus
+chown nagios:nagios /opt/openitc/var/prometheus
+mkdir -p /opt/openitc/var/prometheus/victoria-metrics
 
 if [[ -d /opt/openitc/frontend/plugins/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
@@ -323,6 +329,51 @@ if getent group ssl-cert &>/dev/null; then
 fi
 
 oitc config_generator_shell --generate
+oitc nagios_export --resource
+
+ADMIN_PASSWORD=$(cat /opt/openitc/etc/grafana/admin_password)
+if [ -f /opt/openitc/etc/grafana/api_key ]; then
+    echo "Check if Grafana is reachable"
+    COUNTER=0
+
+    set +e
+    while [ "$COUNTER" -lt 30 ]; do
+        echo "Try to connect to Grafana API..."
+        #Is Grafana Server Online?
+        STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+
+        if [ "$STATUSCODE" == "200" ]; then
+          echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
+          DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+
+          if [ "$DS_STATUSCODE" == "404" ]; then
+            echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
+            export NO_PROXY="127.0.0.1"
+            RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+              "name":"Prometheus",
+              "type":"prometheus",
+              "url":"http://victoriametrics:8428",
+              "access":"proxy",
+              "basicAuth":false,
+              "isDefault": false,
+              "jsonData": {}
+            }')
+            echo $RESPONSE | jq .
+          fi
+          echo "Ok: Prometheus/VictoriaMetrics datasource exists."
+          COUNTER=9999 # break while loop bc bash where break does not brake
+          break
+        fi
+        COUNTER=$((COUNTER + 1))
+        sleep 1
+    done
+
+    if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
+        echo "ERROR!"
+        echo "Could not connect to Grafana"
+    fi
+    set -e
+fi
 
 echo "Enable new systemd services"
 systemctl daemon-reload

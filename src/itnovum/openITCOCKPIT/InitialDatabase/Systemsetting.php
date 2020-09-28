@@ -725,6 +725,14 @@ class Systemsetting extends Importer {
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'
             ],
+            (int)84 => [
+                'key'      => 'FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS',
+                'value'    => '0',
+                'info'     => 'If enabled the Website widget is available to the dashboards which allow users to embed 3rd-party websites.',
+                'section'  => 'FRONTEND',
+                'created'  => '2020-09-23 15:55:17',
+                'modified' => '2020-09-23 15:55:17'
+            ],
         ];
 
         return $data;

@@ -50,7 +50,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hostdependencies')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HostdependenciesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HostdependenciesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -65,12 +66,12 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                id="HostdependenciesContainer"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                ng-options="container.key as container.value for container in containers"
-                                ng-model="post.Hostdependency.container_id">
+                                    id="HostdependenciesContainer"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Hostdependency.container_id">
                             </select>
                             <div ng-show="post.Hostdependency.container_id < 1" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -91,14 +92,14 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="HostdependenciesHosts"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="hosts"
-                                    callback="loadHosts"
-                                    ng-options="host.key as host.value disable when host.disabled for host in hosts"
-                                    ng-model="post.Hostdependency.hosts._ids">
+                                        id="HostdependenciesHosts"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="hosts"
+                                        callback="loadHosts"
+                                        ng-options="host.key as host.value disable when host.disabled for host in hosts"
+                                        ng-model="post.Hostdependency.hosts._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hosts">
@@ -113,14 +114,14 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="HostdependenciesDependentHosts"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="hosts_dependent"
-                                    callback="loadDependentHosts"
-                                    ng-options="host.key as host.value disable when host.disabled for host in hosts_dependent"
-                                    ng-model="post.Hostdependency.hosts_dependent._ids">
+                                        id="HostdependenciesDependentHosts"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="hosts_dependent"
+                                        callback="loadDependentHosts"
+                                        ng-options="host.key as host.value disable when host.disabled for host in hosts_dependent"
+                                        ng-model="post.Hostdependency.hosts_dependent._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hosts_dependent">
@@ -135,13 +136,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="HostdependencyHostgroups"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="hostgroups"
-                                    ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
-                                    ng-model="post.Hostdependency.hostgroups._ids">
+                                        id="HostdependencyHostgroups"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="hostgroups"
+                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
+                                        ng-model="post.Hostdependency.hostgroups._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hostgroups">
@@ -156,13 +157,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="HostedepemdenciesDependentHostgroups"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="hostgroups_dependent"
-                                    ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_dependent"
-                                    ng-model="post.Hostdependency.hostgroups_dependent._ids">
+                                        id="HostedepemdenciesDependentHostgroups"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="hostgroups_dependent"
+                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_dependent"
+                                        ng-model="post.Hostdependency.hostgroups_dependent._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hostgroups_dependent">
@@ -172,16 +173,24 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <div class="form-group">
                             <label class="control-label">
-                                <?php echo __('Timeperiod'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Hostdependency.timeperiod_id})"
+                                       ng-if="post.Hostdependency.timeperiod_id > 0">
+                                        <?php echo __('Timeperiod'); ?>
+                                    </a>
+                                    <span ng-if="!post.Hostdependency.timeperiod_id"><?php echo __('Timeperiod'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Timeperiod'); ?>
+                                <?php endif; ?>
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="HostedepemdenciesTimeperiod"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    chosen="timeperiods"
-                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                    ng-model="post.Hostdependency.timeperiod_id">
+                                        id="HostedepemdenciesTimeperiod"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        chosen="timeperiods"
+                                        ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                        ng-model="post.Hostdependency.timeperiod_id">
                                     <option></option>
                                 </select>
                             </div>
@@ -212,6 +221,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                             <label>
                                                 <?php echo __('Execution failure criteria'); ?>
                                             </label>
+                                        </div>
+                                        <div class="help-block">
+                                            <?= __('Disable active host checking of dependend host/s, if master host state is one of the selected states.'); ?>
                                         </div>
                                     </legend>
                                     <div class="custom-control custom-checkbox margin-bottom-10"
@@ -293,6 +305,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                 <?php echo __('Notification failure criteria'); ?>
                                             </label>
                                         </div>
+                                        <div class="help-block">
+                                            <?= __('Disable host notifications of dependend host/s, if master host state is one of the selected states.'); ?>
+                                        </div>
                                     </legend>
                                     <div class="custom-control custom-checkbox margin-bottom-10"
                                          ng-class="{'has-error': errors.notification_fail_on_up}">
@@ -371,7 +386,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
-                                            type="submit" ng-click="submit()"><?php echo __('Create host dependency'); ?></button>
+                                            type="submit"
+                                            ng-click="submit()"><?php echo __('Create host dependency'); ?></button>
                                     <a back-button href="javascript:void(0);" fallback-state='HostdependenciesIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>

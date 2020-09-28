@@ -48,7 +48,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -69,10 +70,10 @@
                                     <?php echo __('Host template name'); ?>
                                 </label>
                                 <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="sourceHosttemplate.Hosttemplate.name"
-                                    id="Hosttemplate{{$index}}Name">
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceHosttemplate.Hosttemplate.name"
+                                        id="Hosttemplate{{$index}}Name">
                                 <span class="help-block">
                                 <?php echo __('Name of the new host template'); ?>
                                 </span>
@@ -87,10 +88,10 @@
                                     <?php echo __('Description'); ?>
                                 </label>
                                 <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="sourceHosttemplate.Hosttemplate.description"
-                                    id="Hosttemplate{{$index}}Description">
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceHosttemplate.Hosttemplate.description"
+                                        id="Hosttemplate{{$index}}Description">
                                 <div ng-repeat="error in sourceHosttemplate.Error.description">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -102,13 +103,13 @@
                                     <?php echo __('Check command'); ?>
                                 </label>
                                 <select
-                                    id="Hosttemplate{{$index}}CommandId"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="commands"
-                                    ng-options="command.key as command.value for command in commands"
-                                    ng-change="loadCommandArguments(sourceHosttemplate.Source.id, sourceHosttemplate.Hosttemplate.command_id, $index)"
-                                    ng-model="sourceHosttemplate.Hosttemplate.command_id">
+                                        id="Hosttemplate{{$index}}CommandId"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="commands"
+                                        ng-options="command.key as command.value for command in commands"
+                                        ng-change="loadCommandArguments(sourceHosttemplate.Source.id, sourceHosttemplate.Hosttemplate.command_id, $index)"
+                                        ng-model="sourceHosttemplate.Hosttemplate.command_id">
                                 </select>
                                 <div ng-repeat="error in sourceHosttemplate.Error.command_id">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -120,20 +121,22 @@
                                  ng-class="{'has-error': sourceHosttemplate.Error.hosttemplatecommandargumentvalues}"
                                  ng-repeat="hosttemplatecommandargumentvalue in sourceHosttemplate.Hosttemplate.hosttemplatecommandargumentvalues">
                                 <label
-                                    for="Hosttemplate{{hosttemplatecommandargumentvalue.commandargument.human_name}}Arg"
-                                    class="control-label required">
+                                        for="Hosttemplate{{hosttemplatecommandargumentvalue.commandargument.human_name}}Arg"
+                                        class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
                                     {{hosttemplatecommandargumentvalue.commandargument.human_name}}
                                 </label>
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="hosttemplatecommandargumentvalue.value"
-                                    id="Hosttemplate{{hosttemplatecommandargumentvalue.commandargument.human_name}}Arg">
-                                <span class="help-block">
+                                <div class="col-xs-12 col-lg-8">
+                                    <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="hosttemplatecommandargumentvalue.value"
+                                            id="Hosttemplate{{hosttemplatecommandargumentvalue.commandargument.human_name}}Arg">
+                                    <span class="help-block">
                                     {{hosttemplatecommandargumentvalue.commandargument.name}}
                                 </span>
-                                <div ng-repeat="error in sourceHosttemplate.Error.hosttemplatecommandargumentvalues">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                                    <div ng-repeat="error in sourceHosttemplate.Error.hosttemplatecommandargumentvalues">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
 

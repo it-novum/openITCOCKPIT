@@ -7,6 +7,7 @@ use App\Lib\PluginManager;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Dashboards\ModuleWidgetsInterface;
 
@@ -148,6 +149,9 @@ class WidgetsTable extends Table {
      * @return array
      */
     public function getAvailableWidgets($ACL_PERMISSIONS = []) {
+        /** @var SystemsettingsTable $SystemsettingsTable  */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
         //Default Widgets static dashboards - no permissions required
         $widgets = [
             [
@@ -317,6 +321,17 @@ class WidgetsTable extends Table {
                 'directive' => 'service-status-overview-widget',
                 'width'     => 3,
                 'height'    => 15
+            ];
+        }
+
+        if($SystemsettingsTable->isWebsiteWidgetEnabled()){
+            $widgets[] = [
+                    'type_id'   => 18,
+                    'title'     => __('Website'),
+                    'icon'      => 'fas fa-globe-europe',
+                    'directive' => 'website-widget',
+                    'width'     => 12,
+                    'height'    => 30
             ];
         }
 

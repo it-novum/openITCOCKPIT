@@ -51,8 +51,10 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.Usergroups){
                 for(var key in $scope.Usergroups){
-                    var id = $scope.Usergroups[key].id;
-                    $scope.massChange[id] = true;
+                    if($scope.Usergroups.name !== 'Administrator'){
+                        var id = $scope.Usergroups[key].id;
+                        $scope.massChange[id] = true;
+                    }
                 }
             }
         };

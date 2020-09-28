@@ -52,6 +52,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\WebsiteJson;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -1583,5 +1584,61 @@ class DashboardsController extends AppController {
 
         $this->set('perfdata', []);
         $this->viewBuilder()->setOption('serialize', ['perfdata']);
+    }
+
+
+    public function websiteWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+        $widgetId = (int)$this->request->getQuery('widgetId');
+        $WebsiteJson = new WebsiteJson();
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        $widget = $WidgetsTable->get($widgetId);
+
+        if ($this->request->is('get')) {
+            $data = [];
+            $url = 'https://openitcockpit.io';
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
+                if (!empty($data['url'])) {
+                    $url = $data['url'];
+                }
+            }
+
+            $config = $WebsiteJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('url', $url);
+
+            $this->viewBuilder()->setOption('serialize', ['config', 'url']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode([
+                    'url' => $this->request->getData('url', '')
+                ])
+            ]);
+
+            $WidgetsTable->save($widget);
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
+
+            $this->set('sucess', true);
+            $this->viewBuilder()->setOption('sucess', ['config']);
+            return;
+        }
+        throw new MethodNotAllowedException();
     }
 }

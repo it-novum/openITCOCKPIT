@@ -267,6 +267,25 @@ class SystemsettingsTable extends Table {
     }
 
     /**
+     * @return bool
+     */
+    public function isWebsiteWidgetEnabled() {
+        try {
+            if (!Cache::read('FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS', 'permissions')) {
+                $result = $this->getSystemsettingByKey('FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS');
+                $value = (int)$result->get('value');
+                $value = $value === 1;
+
+                Cache::write('FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS', $value, 'permissions');
+            }
+
+            return Cache::read('FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS', 'permissions');
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
      * @param string $key
      * @return bool
      */

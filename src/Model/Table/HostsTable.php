@@ -890,7 +890,8 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)')
+                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
                 ]
             ]
         ]);
@@ -936,6 +937,15 @@ class HostsTable extends Table {
             unset($where['hostpriority IN']);
         }
 
+        if (isset($where['hostdescription LIKE'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.description IS NULL OR Hosts.description=""), Hosttemplates.description, Hosts.description)',
+                $where['hostdescription LIKE'],
+                'string',
+                'LIKE'
+            );
+            unset($where['hostdescription LIKE']);
+        }
 
         $query->where($where);
 
@@ -1022,7 +1032,9 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)')
+                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
+
                 ]
             ]
         ]);
@@ -1066,6 +1078,15 @@ class HostsTable extends Table {
             unset($where['hostpriority IN']);
         }
 
+        if (isset($where['hostdescription LIKE'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.description IS NULL OR Hosts.description=""), Hosttemplates.description, Hosts.description)',
+                $where['hostdescription LIKE'],
+                'string',
+                'LIKE'
+            );
+            unset($where['hostdescription LIKE']);
+        }
 
         $query->where($where);
         $query->disableHydration();
@@ -1838,6 +1859,13 @@ class HostsTable extends Table {
             }
         }
 
+        if(!empty($where['NOT'])){
+            // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+            $where['NOT'] = [
+                'OR' => $where['NOT']
+            ];
+        }
+
         if (!empty($where)) {
             $query->where($where);
         }
@@ -1876,6 +1904,13 @@ class HostsTable extends Table {
                 } else {
                     $where['NOT'] = $HostConditions->getNotConditions();
                 }
+            }
+
+            if(!empty($where['NOT'])){
+                // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+                $where['NOT'] = [
+                    'OR' => $where['NOT']
+                ];
             }
 
 

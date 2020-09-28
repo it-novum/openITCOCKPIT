@@ -68,6 +68,22 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </div>
     </div>
 
+    <div class="form-group required" ng-class="{'has-error': errors.Configfile.victoria_metrics_storage_path}">
+        <label class="control-label">
+            <?php echo __('VictoriaMetrics storage path'); ?>
+        </label>
+        <input
+                class="form-control"
+                type="text"
+                ng-model="post.string.victoria_metrics_storage_path">
+        <div ng-repeat="error in errors.Configfile.victoria_metrics_storage_path">
+            <div class="help-block text-danger">{{ error }}</div>
+        </div>
+        <div class="help-block">
+            <?php echo h($GraphingDocker->getHelpText('victoria_metrics_storage_path')); ?>
+        </div>
+    </div>
+
     <div class="form-group required" ng-class="{'has-error': errors.Configfile.number_of_carbon_cache_instances}">
         <label class="control-label">
             <?php echo __('Carbon Cache instances'); ?>
@@ -115,6 +131,24 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </div>
         <div class="help-block">
             <?php echo h($GraphingDocker->getHelpText('carbon_storage_schema')); ?>
+        </div>
+    </div>
+
+    <div class="form-group required" ng-class="{'has-error': errors.Configfile.victoria_metrics_retention_period}">
+        <label class="control-label">
+            <?php echo __('VictoriaMetrics retention period'); ?>
+        </label>
+        <input
+                class="form-control"
+                type="number"
+                min="1"
+                max="120"
+                ng-model="post.int.victoria_metrics_retention_period">
+        <div ng-repeat="error in errors.Configfile.victoria_metrics_retention_period">
+            <div class="help-block text-danger">{{ error }}</div>
+        </div>
+        <div class="help-block">
+            <?php echo h($GraphingDocker->getHelpText('victoria_metrics_retention_period')); ?>
         </div>
     </div>
 
@@ -185,6 +219,23 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </div>
         <div class="help-block">
             <?php echo h($GraphingDocker->getHelpText('local_graphite_plaintext_port')); ?>
+        </div>
+    </div>
+
+    <div class="form-group required" ng-class="{'has-error': errors.Configfile.local_victoria_metrics_http_port}">
+        <label class="control-label">
+            <?php echo __('VictoriaMetrics retention period'); ?>
+        </label>
+        <input
+                class="form-control"
+                type="number"
+                min="1"
+                ng-model="post.int.local_victoria_metrics_http_port">
+        <div ng-repeat="error in errors.Configfile.local_victoria_metrics_http_port">
+            <div class="help-block text-danger">{{ error }}</div>
+        </div>
+        <div class="help-block">
+            <?php echo h($GraphingDocker->getHelpText('local_victoria_metrics_http_port')); ?>
         </div>
     </div>
 

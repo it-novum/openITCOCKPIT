@@ -176,7 +176,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                         <div ng-repeat="arg in args" class="col-lg-12">
                             <div class="row">
                                 <div class="col-lg-1">
-                                    <div style="margin-top: 24px;">
+                                    <div style="margin-top: 24px;" class="text-purple">
                                         {{arg.name}}
                                     </div>
                                 </div>

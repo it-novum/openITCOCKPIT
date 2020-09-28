@@ -120,7 +120,15 @@ $weekdays = [
 
                         <div class="form-group required" ng-class="{'has-error': errors.containers}">
                             <label class="control-label" for="ContactContainers">
-                                <?php echo __('Calendar'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
+                                    <a ui-sref="CalendarsEdit({id:post.Timeperiod.calendar_id})"
+                                       ng-if="post.Timeperiod.calendar_id > 0">
+                                        <?php echo __('Calendar'); ?>
+                                    </a>
+                                    <span ng-if="!post.Timeperiod.calendar_id"><?php echo __('Calendar'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Calendar'); ?>
+                                <?php endif; ?>
                             </label>
                             <select
                                 id="ContactContainers"

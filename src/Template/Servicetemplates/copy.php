@@ -48,7 +48,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'servicetemplates')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -69,10 +70,10 @@
                                     <?php echo __('Service template name'); ?>
                                 </label>
                                 <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="sourceServicetemplate.Servicetemplate.template_name"
-                                    id="Servicetemplate{{$index}}TemplateName">
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceServicetemplate.Servicetemplate.template_name"
+                                        id="Servicetemplate{{$index}}TemplateName">
                                 <span class="help-block">
                                     <?php echo __('Name of the new service template'); ?>
                                 </span>
@@ -86,10 +87,10 @@
                                     <?php echo __('Service name'); ?>
                                 </label>
                                 <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="sourceServicetemplate.Servicetemplate.name"
-                                    id="Servicetemplate{{$index}}Name">
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceServicetemplate.Servicetemplate.name"
+                                        id="Servicetemplate{{$index}}Name">
                                 <div ng-repeat="error in sourceServicetemplate.Error.name">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -101,10 +102,10 @@
                                     <?php echo __('Description'); ?>
                                 </label>
                                 <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="sourceServicetemplate.Servicetemplate.description"
-                                    id="Servicetemplate{{$index}}Description">
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceServicetemplate.Servicetemplate.description"
+                                        id="Servicetemplate{{$index}}Description">
                                 <div ng-repeat="error in sourceServicetemplate.Error.description">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -116,13 +117,13 @@
                                     <?php echo __('Check command'); ?>
                                 </label>
                                 <select
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="commands"
-                                    id="Servicetemplate{{$index}}CommandId"
-                                    ng-options="command.key as command.value for command in commands"
-                                    ng-change="loadCommandArguments(sourceServicetemplate.Source.id, sourceServicetemplate.Servicetemplate.command_id, $index)"
-                                    ng-model="sourceServicetemplate.Servicetemplate.command_id">
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="commands"
+                                        id="Servicetemplate{{$index}}CommandId"
+                                        ng-options="command.key as command.value for command in commands"
+                                        ng-change="loadCommandArguments(sourceServicetemplate.Source.id, sourceServicetemplate.Servicetemplate.command_id, $index)"
+                                        ng-model="sourceServicetemplate.Servicetemplate.command_id">
                                 </select>
                                 <div ng-repeat="error in sourceServicetemplate.Error.command_id">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -137,17 +138,19 @@
                                  ng-class="{'has-error': sourceServicetemplate.Error.servicetemplatecommandargumentvalues}"
                                  ng-repeat="servicetemplatecommandargumentvalue in sourceServicetemplate.Servicetemplate.servicetemplatecommandargumentvalues">
                                 <label
-                                    for="Servicetemplate{{servicetemplatecommandargumentvalue.commandargument.human_name}}}Arg"
-                                    class="control-label required">
+                                        for="Servicetemplate{{servicetemplatecommandargumentvalue.commandargument.human_name}}}Arg"
+                                        class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
                                     {{servicetemplatecommandargumentvalue.commandargument.human_name}}
                                 </label>
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="servicetemplatecommandargumentvalue.value"
-                                    id="Servicetemplate{{servicetemplatecommandargumentvalue.commandargument.human_name}}}Arg">
-                                <div ng-repeat="error in sourceHosttemplate.Error.hosttemplatecommandargumentvalues">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                                <div class="col-xs-12 col-lg-8">
+                                    <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="servicetemplatecommandargumentvalue.value"
+                                            id="Servicetemplate{{servicetemplatecommandargumentvalue.commandargument.human_name}}}Arg">
+                                    <div ng-repeat="error in sourceHosttemplate.Error.hosttemplatecommandargumentvalues">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
 

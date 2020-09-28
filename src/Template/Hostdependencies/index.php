@@ -392,7 +392,7 @@
                                         <li ng-repeat="host in hostdependency.hosts">
                                             <div
                                                 class="label-group label-breadcrumb label-breadcrumb-default padding-2">
-                                                <label class="badge badge-default label-xs">
+                                                <label class="badge badge-secondary label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
@@ -442,7 +442,7 @@
                                         <li ng-repeat="hostgroup in hostdependency.hostgroups">
                                             <div
                                                 class="label-group label-breadcrumb label-breadcrumb-default padding-2">
-                                                <label class="badge badge-default label-xs">
+                                                <label class="badge badge-secondary label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
