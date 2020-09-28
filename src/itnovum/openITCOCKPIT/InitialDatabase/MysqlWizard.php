@@ -51,7 +51,7 @@ class MysqlWizard extends Importer {
     private $WizardAssignmentsTable;
 
     /**
-     * Agent constructor.
+     * MysqlWizard constructor.
      * @param CommandsTable $CommandsTable
      * @param ServicetemplatesTable $ServicetemplatesTable
      * @param WizardAssignmentsTable $WizardAssignmentsTable
