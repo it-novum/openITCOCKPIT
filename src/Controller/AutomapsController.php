@@ -248,36 +248,8 @@ class AutomapsController extends AppController {
             }
         }
 
-        $ServicesConditions = new ServiceConditions();
-        $ServicesConditions->setContainerIds($containerIds);
-        $ServicesConditions->setHostnameRegex($automap['host_regex']);
-        $ServicesConditions->setServicenameRegex($automap['service_regex']);
-
-        $ServiceFilter = new ServiceFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
-
-        if ($automap['use_paginator'] === false) {
-            $PaginateOMat = null;
-        }
-
-        try {
-            $services = $ServicesTable->getServicesByRegularExpression($ServicesConditions, $PaginateOMat, 'all');
-        } catch (Exception $e) {
-            $services = null;
-        }
-        if (!is_array($services)) {
-            $services = [];
-        }
-        $servicesByHost = [];
-        $serviceUuids = Hash::extract($services, '{n}.uuid');
-
-        // Load service status information
-        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
-        $ServicestatusFields
-            ->currentState()
-            ->problemHasBeenAcknowledged()
-            ->scheduledDowntimeDepth();
+        //Add conditions which services should be shown on the automap
+        $conditions = [];
 
         $current_stateConditions = [];
         $state_types = [
@@ -292,31 +264,57 @@ class AutomapsController extends AppController {
             }
         }
         if (sizeof($current_stateConditions) < 4) {
-            $ServicestatusConditions->currentState($current_stateConditions);
+            $conditions['Servicestatus.current_state IN'] = $current_stateConditions;
         }
 
         if ($automap['show_acknowledged'] === false) {
-            $ServicestatusConditions->setProblemHasBeenAcknowledged(0);
+            $conditions['Servicestatus.problem_has_been_acknowledged'] = 0;
         }
 
         if ($automap['show_downtime'] === false) {
-            $ServicestatusConditions->setScheduledDowntimeDepth(0, false);
+            $conditions['Servicestatus.scheduled_downtime_depth'] = 0;
         }
 
-        $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields, $ServicestatusConditions);
+
+        $ServicesConditions = new ServiceConditions($conditions);
+        $ServicesConditions->setContainerIds($containerIds);
+        $ServicesConditions->setHostnameRegex($automap['host_regex']);
+        $ServicesConditions->setServicenameRegex($automap['service_regex']);
+
+        $ServiceFilter = new ServiceFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
+
+        if ($automap['use_paginator'] === false) {
+            $PaginateOMat = null;
+        }
+
+        try {
+            if ($this->DbBackend->isNdoUtils()) {
+                $services = $ServicesTable->getServiceWithStatusByRegularExpressionStatusengine2($ServicesConditions, $PaginateOMat, 'all');
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+            }
+
+            if ($this->DbBackend->isStatusengine3()) {
+                $services = $ServicesTable->getServiceWithStatusByRegularExpressionStatusengine3($ServicesConditions, $PaginateOMat, 'all');
+            }
+        } catch (Exception $e) {
+            $services = null;
+        }
+        if (!is_array($services)) {
+            $services = [];
+        }
+        $servicesByHost = [];
 
         foreach ($services as $service) {
             /** @var \App\Model\Entity\Service $Service */
             $service = $service->toArray();
 
-            if (!isset($servicestatus[$service['uuid']])) {
-                //No service status for given service - may be filtered?
-                continue;
-            }
-
             $Service = new Service($service);
             $Host = new Host($service['_matchingData']['Hosts']);
-            $Servicestatus = new Servicestatus($servicestatus[$Service->getUuid()]['Servicestatus']);
+            $Servicestatus = new Servicestatus($service['Servicestatus']);
 
             if (!isset($servicesByHost[$Host->getId()])) {
                 $servicesByHost[$Host->getId()] = [
@@ -466,7 +464,17 @@ class AutomapsController extends AppController {
             $ServicesConditions->setServicenameRegex($post['service_regex']);
             if ($post['service_regex'] != '') {
                 try {
-                    $serviceCount = $ServicesTable->getServicesByRegularExpression($ServicesConditions, null, 'count');
+                    if ($this->DbBackend->isNdoUtils()) {
+                        $serviceCount = $ServicesTable->getServiceWithStatusByRegularExpressionStatusengine2($ServicesConditions, null, 'count');
+                    }
+
+                    if ($this->DbBackend->isCrateDb()) {
+                        throw new MissingDbBackendException('MissingDbBackendException');
+                    }
+
+                    if ($this->DbBackend->isStatusengine3()) {
+                        $serviceCount = $ServicesTable->getServiceWithStatusByRegularExpressionStatusengine3($ServicesConditions, null, 'count');
+                    }
                 } catch (Exception $e) {
                     $serviceCount = 0;
                 }
