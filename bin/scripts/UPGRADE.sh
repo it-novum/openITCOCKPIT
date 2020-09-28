@@ -71,6 +71,9 @@ mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
+chmod u+s /opt/openitc/nagios/libexec/check_icmp
+chmod u+s /opt/openitc/nagios/libexec/check_dhcp
+
 mkdir -p /opt/openitc/frontend/webroot/img/charts
 chown www-data:www-data /opt/openitc/frontend/webroot/img/charts
 
