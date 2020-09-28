@@ -636,25 +636,26 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 /* <i class="fas fa-cloud-sun sun-cloud-gradient font-xl"></i> */
 .sun-cloud-gradient {
     background: rgb(255, 252, 10);
-    background: linear-gradient(132deg, rgba(255, 252, 10, 1) 0%, rgba(255, 252, 10, 1) 46%, transparent 46%, transparent 39%,transparent 39%,transparent 39%,
-    transparent 40%,transparent 40%,transparent 100%), linear-gradient(180deg, transparent 0%,transparent 7%,
-    rgba(156, 184, 239, 0.2) 55%, rgba(252, 252, 252, 0.8) 92%, transparent 98%,transparent 100%) aliceblue;
+    background: linear-gradient(132deg, rgba(255, 252, 10, 1) 0%, rgba(255, 252, 10, 1) 46%, transparent 46%, transparent 39%, transparent 39%, transparent 39%,
+    transparent 40%, transparent 40%, transparent 100%), linear-gradient(180deg, transparent 0%, transparent 7%,
+    rgba(156, 184, 239, 0.2) 55%, rgba(252, 252, 252, 0.8) 92%, transparent 98%, transparent 100%) aliceblue;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 /* <i class="fas fa-cloud-sun-rain sun-cloud-gradient-rain font-xl"></i> */
 .sun-cloud-gradient-rain {
-    background:linear-gradient(128deg, rgb(255, 252, 10) 4%, rgb(255, 252, 10) 39%, transparent 39%,transparent 39%,
-    transparent 40%,transparent 40%,transparent 100%), linear-gradient(180deg, transparent 0%,transparent 7%,
-    rgba(156, 184, 239, 0.2) 55%, rgb(156, 184, 239) 92%, transparent 98%,transparent 100%) aliceblue;
+    background: linear-gradient(128deg, rgb(255, 252, 10) 4%, rgb(255, 252, 10) 39%, transparent 39%, transparent 39%,
+    transparent 40%, transparent 40%, transparent 100%), linear-gradient(180deg, transparent 0%, transparent 7%,
+    rgba(156, 184, 239, 0.2) 55%, rgb(156, 184, 239) 92%, transparent 98%, transparent 100%) aliceblue;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
 /* <i class="fas fa-cloud cloud-gradient font-lg"></i> */
 .cloud-gradient {
-    background:linear-gradient(180deg, transparent 0%,transparent 7%, rgba(7, 19, 42, 0.5) 0%, rgb(156, 184, 239) 92%,
-    transparent 98%,transparent 100%) aliceblue;
+    background: linear-gradient(180deg, transparent 0%, transparent 7%, rgba(7, 19, 42, 0.5) 0%, rgb(156, 184, 239) 92%,
+    transparent 98%, transparent 100%) aliceblue;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -684,8 +685,9 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 
 
 .wizard-logo-image img,
-.wizard-logo-image-small img{
+.wizard-logo-image-small img {
     max-height: 60%;
+    max-width: 100%;
     width: auto;
     height: auto;
     position: absolute;
@@ -705,14 +707,14 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     height: 150px;
 }
 
-.wizard-fieldset-legend-auto-width legend{
+.wizard-fieldset-legend-auto-width legend {
     width: auto;
 }
 
-.wizard-assignments-border-left{
-    border-left:5px solid #4285F4;
+.wizard-assignments-border-left {
+    border-left: 5px solid #4285F4;
 }
 
 .card-body-wizard {
-    background-color: transparent!important;
+    background-color: transparent !important;
 }

@@ -97,7 +97,7 @@ class WizardAssignmentsTable extends Table {
             return [];
         }
         $wizards = [
-            'linux-server-agent'      => [
+            'linux-server-agent'   => [
                 'type_id'                 => 'linux-server-agent',
                 'uuid'                    => '4bdca652-cf5c-4b85-ab4f-d75695ec725c',
                 'title'                   => __('Linux Server'),
@@ -136,7 +136,7 @@ class WizardAssignmentsTable extends Table {
                 'necessity_of_assignment' => true
             ],
             */
-            'windows-server-agent'    => [
+            'windows-server-agent' => [
                 'type_id'                 => 'windows-server-agent',
                 'uuid'                    => 'e6b36290-9543-4aae-a074-09ff455bc8c9',
                 'title'                   => __('Windows Server'),
@@ -174,7 +174,7 @@ class WizardAssignmentsTable extends Table {
                 'necessity_of_assignment' => true
             ],
             */
-            'macos-server'            => [
+            'macos-server'         => [
                 'type_id'                 => 'macos-server',
                 'uuid'                    => '784c4ee7-9d79-4cf3-b491-fffba497d175',
                 'title'                   => __('macOS Server'),
@@ -186,9 +186,9 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'macos',
                 'necessity_of_assignment' => false
             ],
-            'mysql-server'            => [
+            'mysql-server'         => [
                 'type_id'                 => 'mysql-server',
-                'uuid'                   => '7fb02fac-1ac5-43cf-baf2-b5893f9f9aa8',
+                'uuid'                    => '7fb02fac-1ac5-43cf-baf2-b5893f9f9aa8',
                 'title'                   => __('Mysql'),
                 'description'             => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
                 'image'                   => 'MySQL_logo.svg',
@@ -196,7 +196,7 @@ class WizardAssignmentsTable extends Table {
                 'state'                   => 'WizardsMysqlServer',
                 'category'                => ['linux', 'mysql', 'database'],
                 'necessity_of_assignment' => true
-            ],
+            ]
             /*
             'docker'                  => [
                 'type_id'                 => 'docker',
@@ -234,33 +234,40 @@ class WizardAssignmentsTable extends Table {
     public function getPossibleWizardsOfModules($availableWizards = []) {
         // placeholder wizards if a module is not installed
         $possibleWizards = [
-            'checkmk'    => [
+            'checkmk'            => [
                 'type_id'     => 'checkmk',
                 'title'       => __('Checkmk'),
                 'description' => __('Monitoring for your server with checkmk'),
                 'image'       => 'checkmk_logo_main_vertical.svg',
                 'category'    => ['checkmk', 'linux', 'windows', 'macos']
             ],
-            'prometheus' => [
+            'prometheus'         => [
                 'type_id'     => 'prometheus',
                 'title'       => __('Prometheus'),
                 'description' => __('Metrics based monitoring using Prometheus'),
                 'image'       => 'prometheus.svg',
                 'category'    => ['network', 'linux', 'windows', 'macos']
             ],
-            'network-basic'                  => [
-                'type_id'                 => 'network-basic',
-                'title'                   => __('Network Basic'),
-                'description'             => __('Used to check any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
-                'image'                   => 'network.png',
-                'category'                => ['linux', 'network']
+            'network-basic'      => [
+                'type_id'     => 'network-basic',
+                'title'       => __('Network Basic'),
+                'description' => __('Used to check any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
+                'image'       => 'network.png',
+                'category'    => ['linux', 'network']
             ],
-            'network-interfaces'                  => [
-                'type_id'                 => 'network-interfaces',
-                'title'                   => __('Network Interfaces'),
-                'description'             => __('Used to interfaces on any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
-                'image'                   => 'network.png',
-                'category'                => ['linux', 'network']
+            'network-interfaces' => [
+                'type_id'     => 'network-interfaces',
+                'title'       => __('Network Interfaces'),
+                'description' => __('Used to interfaces on any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
+                'image'       => 'network.png',
+                'category'    => ['linux', 'network']
+            ],
+            'vmware'             => [
+                'type_id'     => 'vmware',
+                'title'       => __('VMware'),
+                'description' => __('Check everything regarding VMWare. ESX Hosts, vCenter, virtual machines...'),
+                'image'       => 'VMware_logo.svg',
+                'category'    => ['linux', 'mail']
             ]
         ];
 
