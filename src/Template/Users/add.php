@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+/**
+ * @var boolean $isOAuth2
+ */
+
 $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 ?>
 <ol class="breadcrumb page-breadcrumb">
@@ -195,6 +200,24 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
+
+                        <?php if($isOAuth2): ?>
+                        <div class="form-group" ng-class="{'has-error': errors.is_oauth}">
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
+                                 ng-class="{'has-error': errors.is_oauth}">
+
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="userIsOAuth"
+                                       ng-model="post.User.is_oauth">
+                                <label class="custom-control-label" for="userIsOAuth">
+                                    <?php echo __('Enable login through oAuth2'); ?>
+                                </label>
+                            </div>
+                        </div>
+                        <?php endif; ?>
 
                         <div class="form-group required" ng-class="{'has-error': errors.firstname}">
                             <label class="control-label">
@@ -397,7 +420,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <!-- Prevent FireFox and Chrome from filling the users email into the timezone select box  :facepalm: -->
                         <input type="text" name="name" style="display:none">
 
-                        <div class="form-group required" ng-class="{'has-error': errors.password}">
+                        <div class="form-group required" ng-class="{'has-error': errors.password}" ng-show="post.User.is_oauth === 0">
                             <label class="control-label">
                                 <?php echo __('New password'); ?>
                             </label>
@@ -414,7 +437,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}">
+                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}" ng-show="post.User.is_oauth === 0">
                             <label class="control-label">
                                 <?php echo __('Confirm new password'); ?>
                             </label>

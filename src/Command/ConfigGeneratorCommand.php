@@ -37,7 +37,6 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 /**

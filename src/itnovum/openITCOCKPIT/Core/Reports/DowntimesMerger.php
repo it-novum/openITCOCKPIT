@@ -25,7 +25,6 @@
 namespace itnovum\openITCOCKPIT\Core\Reports;
 
 use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class DowntimesMerger {
 

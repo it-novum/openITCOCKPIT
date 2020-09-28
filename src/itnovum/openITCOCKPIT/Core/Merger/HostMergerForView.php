@@ -25,7 +25,6 @@
 namespace itnovum\openITCOCKPIT\Core\Merger;
 
 use itnovum\openITCOCKPIT\Core\CustomVariableMerger;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * Class HostMergerForView
