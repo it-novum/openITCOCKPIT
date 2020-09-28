@@ -40,6 +40,23 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
+  victoriametrics:
+    image: victoriametrics/victoria-metrics
+    ports:
+      - "127.0.0.1:{{local_victoria_metrics_http_port}}:8428"
+    volumes:
+      - {{victoria_metrics_storage_path}}:/storage
+    command:
+      - "--storageDataPath=/storage"
+      - "--retentionPeriod={{victoria_metrics_retention_period}}"
+      - "--graphiteListenAddr=:2003"
+      - "--opentsdbListenAddr=:4242"
+      - "--httpListenAddr=:8428"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
   grafana:
     image: grafana/grafana
     environment:

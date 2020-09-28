@@ -47,19 +47,22 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
 
     protected $defaults = [
         'string' => [
-            'carbon_path'           => '/var/lib/graphite/whisper',
-            'carbon_storage_schema' => '60s:365d',
-            'timezone'              => 'Europe/Berlin',
-            'USE_AUTO_NETWORKING'   => '1', //String for AngularJs - sorry,
+            'carbon_path'                   => '/var/lib/graphite/whisper',
+            'carbon_storage_schema'         => '60s:365d',
+            'timezone'                      => 'Europe/Berlin',
+            'USE_AUTO_NETWORKING'           => '1', //String for AngularJs - sorry,
             //'bip'                   => '',
             //'fixed_cidr'            => '',
-            'docker_compose_subnet' => ''
+            'docker_compose_subnet'         => '',
+            'victoria_metrics_storage_path' => '/opt/openitc/var/prometheus/victoria-metrics'
         ],
         'int'    => [
-            'number_of_carbon_cache_instances' => 2,
-            'number_of_carbon_c_relay_workers' => 4,
-            'local_graphite_http_port'         => 8888,
-            'local_graphite_plaintext_port'    => 2003
+            'number_of_carbon_cache_instances'  => 2,
+            'number_of_carbon_c_relay_workers'  => 4,
+            'local_graphite_http_port'          => 8888,
+            'local_graphite_plaintext_port'     => 2003,
+            'victoria_metrics_retention_period' => 1,
+            'local_victoria_metrics_http_port'  => 8428
         ],
         'bool'   => [
             'WHISPER_FALLOCATE_CREATE' => 1
@@ -250,18 +253,21 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
      */
     public function getHelpText($key) {
         $help = [
-            'carbon_path'                      => __('Path where Carbon will store whisper files.'),
-            'carbon_storage_schema'            => __('Carbon storage schema'),
-            'number_of_carbon_cache_instances' => __('Number of carbon cache instances for multi core CPU scaling'),
-            'number_of_carbon_c_relay_workers' => __('Number of Carbon-C-Relay worker threads. (Carbon-Cache load balancer)'),
-            'local_graphite_http_port'         => __('Local HTTP port used by Graphite-Web'),
-            'local_graphite_plaintext_port'    => __('Local plaintext port to send metrics to Carbon-C-Relay.'),
-            'WHISPER_FALLOCATE_CREATE'         => __(' Only beneficial on linux filesystems that support the fallocate system call. It maintains the benefits of contiguous reads/writes, but with a potentially much faster creation speed, by allowing the kernel to handle the block allocation and zero-ing. Enabling this option may allow a large increase of MAX_CREATES_PER_MINUTE. If enabled on an OS or filesystem that is unsupported this option will gracefully fallback to standard POSIX file access methods.'),
-            'timezone'                         => __('Set your local timezone for Graphite-Web. (Django\'s default is America/Chicago) If your graphs appear to be offset by a couple hours then this probably needs to be explicitly set to your local timezone. Set this value to the same timezone, as your servers timezone is!'),
-            'USE_AUTO_NETWORKING'              => __('Determine if docker daemon will automatically configure network interface docker0'),
+            'carbon_path'                       => __('Path where Carbon will store whisper files.'),
+            'carbon_storage_schema'             => __('Carbon storage schema'),
+            'number_of_carbon_cache_instances'  => __('Number of carbon cache instances for multi core CPU scaling'),
+            'number_of_carbon_c_relay_workers'  => __('Number of Carbon-C-Relay worker threads. (Carbon-Cache load balancer)'),
+            'local_graphite_http_port'          => __('Local HTTP port used by Graphite-Web'),
+            'local_graphite_plaintext_port'     => __('Local plaintext port to send metrics to Carbon-C-Relay.'),
+            'WHISPER_FALLOCATE_CREATE'          => __(' Only beneficial on linux filesystems that support the fallocate system call. It maintains the benefits of contiguous reads/writes, but with a potentially much faster creation speed, by allowing the kernel to handle the block allocation and zero-ing. Enabling this option may allow a large increase of MAX_CREATES_PER_MINUTE. If enabled on an OS or filesystem that is unsupported this option will gracefully fallback to standard POSIX file access methods.'),
+            'timezone'                          => __('Set your local timezone for Graphite-Web. (Django\'s default is America/Chicago) If your graphs appear to be offset by a couple hours then this probably needs to be explicitly set to your local timezone. Set this value to the same timezone, as your servers timezone is!'),
+            'USE_AUTO_NETWORKING'               => __('Determine if docker daemon will automatically configure network interface docker0'),
             //'bip'                              => __('Supply a specific IP address and netmask for the docker0 bridge, using standard CIDR notation. For example: 10.253.253.1/24'),
             //'fixed_cidr'                       => __('Restrict the IP range from the docker0 subnet, using standard CIDR notation. For example: 10.253.253.0/24. Needs to be a subnet, where BIP is part of.'),
-            'docker_compose_subnet'            => __('Subnet used by Docker Compose in CIDR notation. For Example  192.168.1.0/24. Needs to be a different subnet than used for Fixed CIDR!')
+            'docker_compose_subnet'             => __('Subnet used by Docker Compose in CIDR notation. For Example  192.168.1.0/24. Needs to be a different subnet than used for Fixed CIDR!'),
+            'victoria_metrics_storage_path'     => __('Path used by VictoriaMetrics to store data.'),
+            'victoria_metrics_retention_period' => __('Period in month how long VictoriaMetrics will keep stored metrics.'),
+            'local_victoria_metrics_http_port'  => __('Local HTTP port used by VictoriaMetrics.')
         ];
 
         if (isset($help[$key])) {
