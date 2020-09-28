@@ -30,7 +30,6 @@ namespace App\Controller;
 use App\Lib\Environments;
 use App\Model\Table\RegistersTable;
 use Cake\ORM\Locator\LocatorAwareTrait;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 
 

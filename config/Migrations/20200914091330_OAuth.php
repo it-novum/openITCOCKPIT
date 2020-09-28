@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2018>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,35 +22,38 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace App\Lib;
 
+declare(strict_types=1);
 
-use Cake\ORM\Locator\TableLocator;
-use Cake\ORM\Table;
+use Migrations\AbstractMigration;
 
-class PluginManagerTableLocator extends TableLocator {
-
-    /**
-     * @param string $alias
-     * @param array $options
-     * @return \Cake\ORM\Table
-     */
-    public function get($alias, array $options = []) :Table {
-        $table = parent::get($alias, $options);
-
-        //Associated Plugins with Core models
-        if (is_object($table) && method_exists($table, 'initializePluginTables')) {
-            $table->initializePluginTables();
-        }
-        return $table;
-    }
+/**
+ * Class OAuth
+ *
+ * Created:
+ * oitc migrations create OAuth
+ *
+ * Usage:
+ * openitcockpit-update
+ */
+class OAuth extends AbstractMigration {
 
     /**
-     * @param string $alias
+     * Change Method.
+     *
+     * More information on this method is available here:
+     * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
+     * @return void
      */
-    public function destroy($alias){
-        if (isset($this->_instances[$alias])) {
-            unset($this->_instances[$alias]);
-        }
+    public function change() {
+        $table = $this->table('users');
+        $table
+            ->addColumn('is_oauth', 'boolean', [
+                'after'   => 'recursive_browser',
+                'default' => '0',
+                'length'  => null,
+                'null'    => false
+            ])
+            ->update();
     }
 }

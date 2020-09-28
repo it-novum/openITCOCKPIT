@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+/**
+ * @var boolean $isLdapAuth
+ */
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -140,13 +145,13 @@
                                                 <span class="input-group-text"><i class="fa fa-users"></i></span>
                                             </div>
                                             <select
-                                                id="UserRoles"
-                                                data-placeholder="<?php echo __('Filter by user role'); ?>"
-                                                class="form-control"
-                                                chosen="usergroups"
-                                                multiple
-                                                ng-model="filter.Users.usergroup_id"
-                                                ng-options="usergroup.key as usergroup.value for usergroup in usergroups">
+                                                    id="UserRoles"
+                                                    data-placeholder="<?php echo __('Filter by user role'); ?>"
+                                                    class="form-control"
+                                                    chosen="usergroups"
+                                                    multiple
+                                                    ng-model="filter.Users.usergroup_id"
+                                                    ng-options="usergroup.key as usergroup.value for usergroup in usergroups">
                                             </select>
                                         </div>
                                     </div>

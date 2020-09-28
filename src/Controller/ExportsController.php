@@ -33,12 +33,9 @@ use App\Model\Table\SystemsettingsTable;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
-use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use DistributeModule\Model\Entity\Satellite;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
-use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 class ExportsController extends AppController {

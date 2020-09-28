@@ -25,7 +25,6 @@
 namespace itnovum\openITCOCKPIT\Core\Comparison;
 
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * Class ServiceComparisonForSave

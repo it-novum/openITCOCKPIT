@@ -31,7 +31,6 @@ use App\Model\Table\ProxiesTable;
 use App\Model\Table\RegistersTable;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;

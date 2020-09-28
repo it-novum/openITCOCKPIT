@@ -25,6 +25,7 @@
 
 /**
  * @var \App\View\AppView $this
+ * @var bool $isSsoEnabled
  */
 
 $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
@@ -35,8 +36,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 </div>
 
 <div
-    ng-controller="UsersLoginController"
-    class="col-12 col-md-4 peer pX-40 pY-80 h-100 scrollable pos-r login-side-bg" style='min-width: 320px;'>
+        ng-controller="UsersLoginController"
+        class="col-12 col-md-4 peer pX-40 pY-80 h-100 scrollable pos-r login-side-bg" style='min-width: 320px;'>
 
     <div class="col-12 text-center">
         <img class="img-fluid" src="<?= h($Logo->getLoginLogoHtml()); ?>" style="max-height: 230px;"/>
@@ -44,38 +45,49 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
     <h4 class="fw-300 c-white mB-40"><?= __('Login') ?></h4>
 
+    <?php if ($isSsoEnabled === true): ?>
+        <div class="form-group">
+            <a
+                    href="/users/login?redirect_sso=true"
+                    class="btn btn-primary btn-block">
+                <i class="fas fa-sign-in-alt"></i>
+                <?= __('Login through Single sign-on') ?>
+            </a>
+        </div>
+    <?php endif; ?>
+
     <!-- Start login form for username and password (Session and LDAP) -->
     <form ng-submit="submit();" ng-if="!hasValidSslCertificate">
         <div class="form-group">
             <label class="text-normal c-white"><?= __('Username') ?></label>
             <input
-                type="text"
-                class="form-control"
-                placeholder="John Doe"
-                ng-disabled="disableLogin"
-                ng-model="post.email">
+                    type="text"
+                    class="form-control"
+                    placeholder="John Doe"
+                    ng-disabled="disableLogin"
+                    ng-model="post.email">
         </div>
         <div class="form-group">
             <label class="text-normal c-white"><?= __('Password') ?></label>
             <input
-                type="password"
-                class="form-control"
-                placeholder="Password"
-                ng-disabled="disableLogin"
-                ng-model="post.password">
+                    type="password"
+                    class="form-control"
+                    placeholder="Password"
+                    ng-disabled="disableLogin"
+                    ng-model="post.password">
         </div>
         <div class="form-group">
             <div class="peers ai-c jc-sb fxw-nw">
                 <div class="peer">
                     <div class="checkbox checkbox-circle checkbox-info peers ai-c">
                         <input
-                            type="checkbox"
-                            ng-true-value="1"
-                            ng-false-value="0"
-                            ng-model="post.remember_me"
-                            ng-disabled="disableLogin"
-                            id="RememberMeCheckbox"
-                            class="peer">
+                                type="checkbox"
+                                ng-true-value="1"
+                                ng-false-value="0"
+                                ng-model="post.remember_me"
+                                ng-disabled="disableLogin"
+                                id="RememberMeCheckbox"
+                                class="peer">
                         <label for="RememberMeCheckbox" class=" peers peer-greed js-sb ai-c">
                             <span class="peer peer-greed"><?= __('Remember Me') ?></span>
                         </label>
@@ -83,9 +95,9 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                 </div>
                 <div class="peer">
                     <button
-                        type="submit"
-                        class="btn btn-primary"
-                        ng-disabled="disableLogin">
+                            type="submit"
+                            class="btn btn-primary"
+                            ng-disabled="disableLogin">
                         <span>
                             <i class="fa fa-spinner fa-spin" ng-show="disableLogin"></i>
                         </span>
@@ -109,8 +121,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                 </div>
                 <div class="peer">
                     <a
-                        href="/"
-                        class="btn btn-primary">
+                            href="/"
+                            class="btn btn-primary">
                         <?= __('Start') ?>
                     </a>
                 </div>

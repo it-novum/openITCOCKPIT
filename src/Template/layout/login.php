@@ -125,6 +125,7 @@ endif;
 <script src="/node_modules/tsparticles/dist/tsparticles.min.js"></script>
 <script src="/node_modules/noty/lib/noty.min.js"></script>
 
+<script src="/js/lib/parseuri.js"></script>
 <script src="/js/login/ng.login-app.js"></script>
 <script src="/js/login/LoginLayoutController.js"></script>
 <script src="/js/login/UsersLoginController.js"></script>
