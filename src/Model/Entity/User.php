@@ -28,6 +28,7 @@ use Cake\ORM\Entity;
  * @property int $dashboard_tab_rotation
  * @property int $paginatorlength
  * @property int $recursive_browser
+ * @property bool $is_oauth
  * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
@@ -88,7 +89,8 @@ class User extends Entity {
         'users_to_containers'         => true,
         'containers'                  => true,
         'usercontainerroles'          => true,
-        'users_to_usercontainerroles' => true
+        'users_to_usercontainerroles' => true,
+        'is_oauth'                    => true
     ];
 
     /**

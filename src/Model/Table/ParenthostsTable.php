@@ -3,19 +3,10 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\Database\Exception;
-use Cake\Log\Log;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
-use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\CakePHP\Set;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
-use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\ChangelogsFilter;
 
 /**
  * Class ParenthostsTable

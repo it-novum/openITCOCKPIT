@@ -51,6 +51,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
+use itnovum\openITCOCKPIT\oAuth\oAuthClient;
 
 
 /**
@@ -72,8 +73,24 @@ class UsersController extends AppController {
 
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-        $disableAnimation = $SystemsettingsTable->isLoginAnimationDisabled();
 
+        $isSsoEnabled = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.AUTH_METHOD')->get('value') === 'sso';
+        $redirectToSsoLoginPage = $this->request->getQuery('redirect_sso', null) === 'true';
+
+        if ($redirectToSsoLoginPage === true) {
+            $oAuthClient = new oAuthClient();
+
+            $authorizationUrl = $oAuthClient->getAuthorizationUrl();
+            $session = $this->request->getSession();
+
+            //Save current state to $_SESSION to mitigate CSRF attack
+            $session->write('oauth2state', $oAuthClient->getState());
+
+            $this->redirect($authorizationUrl);
+            return;
+        }
+
+        $disableAnimation = $SystemsettingsTable->isLoginAnimationDisabled();
         if ($this->getRequest()->getQuery('remote')) {
             $disableAnimation = true;
         }
@@ -88,13 +105,17 @@ class UsersController extends AppController {
             $hasValidSslCertificate = $this->getUser() !== null;
         }
 
+        $isLoggedIn = $identy = $this->getUser() !== null;
+
         $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
         $this->set('images', $images);
         $this->set('disableAnimation', $disableAnimation);
         $this->set('hasValidSslCertificate', $hasValidSslCertificate);
+        $this->set('isSsoEnabled', $isSsoEnabled);
+        $this->set('isLoggedIn', $isLoggedIn);
 
         if ($this->request->is('get')) {
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate', 'isLoggedIn']);
             return;
         }
 
@@ -123,7 +144,17 @@ class UsersController extends AppController {
     }
 
     public function logout() {
+        $Session = $this->request->getSession();
+        $isOAuthLogin = $Session->read('is_oauth_login') === true;
+        $Session->delete('is_oauth_login');
+
         $this->Authentication->logout();
+
+        if($isOAuthLogin === true){
+            $oAuthClient = new oAuthClient();
+            $this->redirect($oAuthClient->getLogoutUrl());
+            return;
+        }
 
         $this->redirect([
             'action' => 'login'
@@ -186,6 +217,10 @@ class UsersController extends AppController {
     public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->set('isOAuth2', $SystemsettingsTable->isOAuth2());
             return;
         }
 
@@ -202,6 +237,15 @@ class UsersController extends AppController {
 
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
+
+            if($user->is_oauth === true) {
+                //remove password validation when user is an oAuth2 user.
+                $user->password = '';
+                $user->confirm_password = '';
+                $UsersTable->getValidator()->remove('password');
+                $UsersTable->getValidator()->remove('confirm_password');
+            }
+
             $UsersTable->save($user);
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -268,6 +312,13 @@ class UsersController extends AppController {
                 $user->setAccess('password', false);
                 $user->setAccess('samaccountname', false);
                 $user->setAccess('ldap_dn', false);
+            }
+
+            if($user->is_oauth === true) {
+                $user->setAccess('is_oauth', false); //do not allow to change is_oauth
+                //oAuth users has no password
+                $data['password'] = '';
+                $data['confirm_password'] = '';
             }
 
             //prevent multiple hash of password
@@ -605,7 +656,7 @@ class UsersController extends AppController {
         $localesPath = Configure::read('App.paths.locales')[0];
         $localeOptions = [];
         $localeDirs = array_filter(glob($localesPath . '*'), 'is_dir');
-        array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath){
+        array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath) {
             $i18n = substr($value, strlen($localesPath));
             $language = Locales::getLanguageByLocalCode($i18n);
 
