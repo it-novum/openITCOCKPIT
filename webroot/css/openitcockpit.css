@@ -115,6 +115,12 @@ div.custom-control-right-badge .custom-control-label::after {
     width: 100% !important;
 }
 
+.chosen-container .chosen-results li em {
+    font-style: normal;
+    color: #1468f5;
+    text-decoration: underline;
+}
+
 #global-loading {
     background: rgba(71, 69, 68, 0.8);
     color: #FFF;
