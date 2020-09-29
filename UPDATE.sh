@@ -309,6 +309,9 @@ mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
+chmod u+s /opt/openitc/nagios/libexec/check_icmp
+chmod u+s /opt/openitc/nagios/libexec/check_dhcp
+
 mkdir -p /opt/openitc/etc/nagios/nagios.cfg.d
 
 mkdir -p /opt/openitc/frontend/webroot/img/charts
@@ -445,4 +448,6 @@ chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+chmod u+s /opt/openitc/nagios/libexec/check_icmp
+chmod u+s /opt/openitc/nagios/libexec/check_dhcp
 
