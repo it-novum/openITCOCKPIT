@@ -309,6 +309,9 @@ mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
+chmod u+s /opt/openitc/nagios/libexec/check_icmp
+chmod u+s /opt/openitc/nagios/libexec/check_dhcp
+
 mkdir -p /opt/openitc/etc/nagios/nagios.cfg.d
 
 mkdir -p /opt/openitc/frontend/webroot/img/charts
@@ -397,8 +400,11 @@ systemctl restart\
 
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
+echo "Restart monitoring engine"
+systemctl restart nagios.service
+
 # Restart services if they are running
-for srv in openitcockpit-graphing.service nagios.service nginx.service nsta.service; do
+for srv in openitcockpit-graphing.service nginx.service nsta.service; do
   if systemctl is-active --quiet $srv; then
     echo "Restart service: $srv"
     systemctl restart $srv
@@ -445,4 +451,6 @@ chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+chmod u+s /opt/openitc/nagios/libexec/check_icmp
+chmod u+s /opt/openitc/nagios/libexec/check_dhcp
 
