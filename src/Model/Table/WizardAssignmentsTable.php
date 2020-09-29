@@ -248,7 +248,7 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'prometheus.svg',
                 'category'    => ['network', 'linux', 'windows', 'macos']
             ],
-            'network-basic'      => [
+            'network'      => [
                 'type_id'     => 'network',
                 'title'       => __('Network'),
                 'description' => __('Used to check any kind of network devices and interfaces like: Switch, Router, Firewall, Access Point, ...'),
