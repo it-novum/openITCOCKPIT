@@ -30,7 +30,7 @@ use App\Model\Table\WizardAssignmentsTable;
 
 
 /**
- * Class Cronjob
+ * Class MysqlWizard
  * @package itnovum\openITCOCKPIT\InitialDatabase
  */
 class MysqlWizard extends Importer {
@@ -75,7 +75,7 @@ class MysqlWizard extends Importer {
         }
 
         foreach ($data['Servicetemplates'] as $servicetemplate) {
-            if (isset($servicetemplate['uuid']) && !$this->ServicetemplatesTable->existsByUuid($servicetemplate['uuid']))
+            if (isset($servicetemplate['uuid']) && !$this->ServicetemplatesTable->existsByUuid($servicetemplate['uuid'])) {
                 if (isset($servicetemplate['command_id']) && $this->CommandsTable->existsByUuid($servicetemplate['command_id'])) {
                     $command = $this->CommandsTable->getCommandByUuid($servicetemplate['command_id'], true, false)[0];
                     $servicetemplate['command_id'] = $command['id'];
@@ -91,6 +91,7 @@ class MysqlWizard extends Importer {
                     $entity = $this->ServicetemplatesTable->newEntity($servicetemplate);
                     $this->ServicetemplatesTable->save($entity);
                 }
+            }
         }
 
         if (!empty($data['Wizardassignment'])) {
@@ -102,19 +103,17 @@ class MysqlWizard extends Importer {
                     $wizardassignmentEntity['servicetemplates']['_ids'][] = $servicetemplate['Servicetemplate']['id'];
                 }
             }
-            if (isset($servicetemplate['Servicetemplate']) && isset($servicetemplate['Servicetemplate']['id'])) {
-                if (!$this->WizardAssignmentsTable->existsByUuidAndTypeId($wizardassignmentEntity['uuid'], $wizardassignmentEntity['type_id'])) {
-                    $entity = $this->WizardAssignmentsTable->newEntity($wizardassignmentEntity);
-                    $this->WizardAssignmentsTable->save($entity);
-                } else {
-                    $existingAssignment = $this->WizardAssignmentsTable->getWizardByUuidForEdit($wizardassignmentEntity['uuid']);
-                    foreach (array_diff($wizardassignmentEntity['servicetemplates']['_ids'], $existingAssignment['servicetemplates']['_ids']) as $missingServicetemplateId) {
-                        $existingAssignment['servicetemplates']['_ids'][] = $missingServicetemplateId;
-                    }
-                    $entity = $this->WizardAssignmentsTable->get($existingAssignment['id']);
-                    $entity = $this->WizardAssignmentsTable->patchEntity($entity, $existingAssignment);
-                    $this->WizardAssignmentsTable->save($entity);
+            if (!$this->WizardAssignmentsTable->existsByUuidAndTypeId($wizardassignmentEntity['uuid'], $wizardassignmentEntity['type_id'])) {
+                $entity = $this->WizardAssignmentsTable->newEntity($wizardassignmentEntity);
+                $this->WizardAssignmentsTable->save($entity);
+            } else {
+                $existingAssignment = $this->WizardAssignmentsTable->getWizardByUuidForEdit($wizardassignmentEntity['uuid']);
+                foreach (array_diff($wizardassignmentEntity['servicetemplates']['_ids'], $existingAssignment['servicetemplates']['_ids']) as $missingServicetemplateId) {
+                    $existingAssignment['servicetemplates']['_ids'][] = $missingServicetemplateId;
                 }
+                $entity = $this->WizardAssignmentsTable->get($existingAssignment['id']);
+                $entity = $this->WizardAssignmentsTable->patchEntity($entity, $existingAssignment);
+                $this->WizardAssignmentsTable->save($entity);
             }
         }
 

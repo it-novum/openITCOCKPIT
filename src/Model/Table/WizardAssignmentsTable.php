@@ -249,16 +249,9 @@ class WizardAssignmentsTable extends Table {
                 'category'    => ['network', 'linux', 'windows', 'macos']
             ],
             'network-basic'      => [
-                'type_id'     => 'network-basic',
-                'title'       => __('Network Basic'),
-                'description' => __('Used to check any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
-                'image'       => 'network.png',
-                'category'    => ['linux', 'network']
-            ],
-            'network-interfaces' => [
-                'type_id'     => 'network-interfaces',
-                'title'       => __('Network Interfaces'),
-                'description' => __('Used to interfaces on any kind of network devices like: Switch, Router, Firewall, Access Point, ...'),
+                'type_id'     => 'network',
+                'title'       => __('Network'),
+                'description' => __('Used to check any kind of network devices and interfaces like: Switch, Router, Firewall, Access Point, ...'),
                 'image'       => 'network.png',
                 'category'    => ['linux', 'network']
             ],
