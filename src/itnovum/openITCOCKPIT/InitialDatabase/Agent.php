@@ -75,7 +75,7 @@ class Agent extends Importer {
         }
 
         foreach ($data['Servicetemplates'] as $servicetemplate) {
-            if (isset($servicetemplate['uuid']) && !$this->ServicetemplatesTable->existsByUuid($servicetemplate['uuid']))
+            if (isset($servicetemplate['uuid']) && !$this->ServicetemplatesTable->existsByUuid($servicetemplate['uuid'])) {
                 if (isset($servicetemplate['command_id']) && $this->CommandsTable->existsByUuid($servicetemplate['command_id'])) {
                     $command = $this->CommandsTable->getCommandByUuid($servicetemplate['command_id'], true, false)[0];
                     $servicetemplate['command_id'] = $command['id'];
@@ -90,6 +90,7 @@ class Agent extends Importer {
                     $entity = $this->ServicetemplatesTable->newEntity($servicetemplate);
                     $this->ServicetemplatesTable->save($entity);
                 }
+            }
         }
 
         foreach ($data['Agentchecks'] as $agentcheck) {
