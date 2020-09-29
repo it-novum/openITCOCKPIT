@@ -400,8 +400,11 @@ systemctl restart\
 
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
+echo "Restart monitoring engine"
+systemctl restart nagios.service
+
 # Restart services if they are running
-for srv in openitcockpit-graphing.service nagios.service nginx.service nsta.service; do
+for srv in openitcockpit-graphing.service nginx.service nsta.service; do
   if systemctl is-active --quiet $srv; then
     echo "Restart service: $srv"
     systemctl restart $srv
