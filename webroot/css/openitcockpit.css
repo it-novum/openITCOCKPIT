@@ -121,6 +121,10 @@ div.custom-control-right-badge .custom-control-label::after {
     text-decoration: underline;
 }
 
+.chosen-container-multi .chosen-choices .search-choice {
+    max-width: initial;
+}
+
 #global-loading {
     background: rgba(71, 69, 68, 0.8);
     color: #FFF;
