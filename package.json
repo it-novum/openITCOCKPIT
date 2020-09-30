@@ -28,7 +28,6 @@
         "flot": "^0.8.3",
         "flot-axislabels": "^1.0.0",
         "font-awesome": "^4.7.0",
-        "highlight-within-textarea": "^2.0.5",
         "javascript-detect-element-resize": "^0.5.3",
         "jquery": "^3.4.1",
         "jquery-blockui": "^2.7.0",
