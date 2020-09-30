@@ -85,6 +85,7 @@ class UsersController extends AppController {
 
             //Save current state to $_SESSION to mitigate CSRF attack
             $session->write('oauth2state', $oAuthClient->getState());
+            $session->write('remember_me', $this->request->getQuery('remember_me', '0') === '1');
 
             $this->redirect($authorizationUrl);
             return;

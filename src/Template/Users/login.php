@@ -48,7 +48,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     <?php if ($isSsoEnabled === true): ?>
         <div class="form-group">
             <a
-                    href="/users/login?redirect_sso=true"
+                    ng-href="/users/login?redirect_sso=true&remember_me={{post.remember_me}}"
                     class="btn btn-primary btn-block">
                 <i class="fas fa-sign-in-alt"></i>
                 <?= __('Login through Single sign-on') ?>

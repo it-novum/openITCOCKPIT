@@ -27,12 +27,15 @@ namespace App\Authenticator;
 
 
 use Authentication\Authenticator\AbstractAuthenticator;
+use Authentication\Authenticator\CookieAuthenticator;
+use Authentication\Authenticator\PersistenceInterface;
 use Authentication\Authenticator\Result;
 use Authentication\Authenticator\ResultInterface;
 use Cake\Http\Session;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class oAuthAuthenticator extends AbstractAuthenticator {
+class oAuthAuthenticator extends CookieAuthenticator implements PersistenceInterface {
 
     /**
      * Authenticate a user based on the request information.
@@ -80,4 +83,49 @@ class oAuthAuthenticator extends AbstractAuthenticator {
         return new Result(null, Result::FAILURE_IDENTITY_NOT_FOUND, $this->_identifier->getErrors());
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array|\ArrayAccess $identity
+     * @return array
+     */
+    public function persistIdentity(ServerRequestInterface $request, ResponseInterface $response, $identity): array {
+
+
+        $field = $this->getConfig('rememberMeField');
+        /** @var Session $session */
+        $session = $request->getAttribute('session');
+
+        if ($session->read($field, false) !== true || !$this->_checkUrl($request)) {
+            // No auth cookie to store
+            return [
+                'request'  => $request,
+                'response' => $response,
+            ];
+        }
+
+        //Send auth cookie to client
+        $value = $this->_createToken($identity);
+        $cookie = $this->_createCookie($value);
+        $session->delete('remember_me');
+
+        return [
+            'request'  => $request,
+            'response' => $response->withAddedHeader('Set-Cookie', $cookie->toHeaderValue()),
+        ];
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return array
+     */
+    public function clearIdentity(ServerRequestInterface $request, ResponseInterface $response): array {
+        $cookie = $this->_createCookie('')->withExpired();
+
+        return [
+            'request'  => $request,
+            'response' => $response->withAddedHeader('Set-Cookie', $cookie->toHeaderValue()),
+        ];
+    }
 }

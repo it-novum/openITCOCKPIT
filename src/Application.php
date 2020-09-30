@@ -177,6 +177,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             ]);
         }
 
+
         // Load the authenticators, you want session first
         $expireAt = new \DateTime();
         $expireAt->setTimestamp(time() + (3600 * 24 * 31)); // In one month
@@ -196,6 +197,12 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         //oAuth
         $service->loadAuthenticator('Authentication.oAuth', [
             'className'    => oAuthAuthenticator::class,
+            'rememberMeField' => 'remember_me',
+            'loginUrl' => '/users/login',
+            'fields'          => $fields,
+            'cookie'          => [
+                'expire' => $expireAt
+            ]
         ]);
 
         //Stateless API Key login
