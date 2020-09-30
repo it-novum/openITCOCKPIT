@@ -25,18 +25,19 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
                 timeout: 3500
             }).show();
 
-            var location = window.location.toString();
-            if(location.includes('#!/')){
-                window.location = '/' + location.substring(location.indexOf('#!/'));
-            }else{
-                window.location = $scope.getLocalStorageItemWithDefaultAndRemoveItem('lastPage', '/');
-            }
-
+            window.location = $scope.getLocalStorageItemWithDefaultAndRemoveItem('lastPage', '/');
         }
 
     };
 
     $scope.loadCsrf = function(){
+        //Check if a state is stored in the URL
+        var location = window.location.toString();
+        if(location.includes('#!/')){
+            //Save state from URL into local storage because oAuth login force an reload of the page...
+            window.localStorage.setItem('lastPage', '/' + location.substring(location.indexOf('#!/')));
+        }
+
         $http.get("/users/login.json",
             {}
         ).then(function(result){
@@ -62,7 +63,7 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
         if(val === null){
             return defaultValue;
         }
-        window.localStorage.removeItem(key);
+        //window.localStorage.removeItem(key);
         return val;
     };
 
@@ -98,12 +99,7 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
                 timeout: 3500
             }).show();
 
-            var location = window.location.toString();
-            if(location.includes('#!/')){
-                window.location = '/' + location.substring(location.indexOf('#!/'));
-            }else{
-                window.location = $scope.getLocalStorageItemWithDefaultAndRemoveItem('lastPage', '/');
-            }
+            window.location = $scope.getLocalStorageItemWithDefaultAndRemoveItem('lastPage', '/');
         }, function(result){
             //Error
 
