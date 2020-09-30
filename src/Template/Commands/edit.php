@@ -327,7 +327,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <?php echo __('Number of used {0} variables:', '<code>$ARGn$</code>'); ?> <strong>{{usedCommandLineArgs}}</strong>
+                        <?php echo __('Number of used {0} variables:', '<code>$ARGn$</code>'); ?> <strong>{{usedCommandLineArgs}}</strong>&nbsp;
                     </div>
                     <div class="col-xs-12">
                         <?php echo __('Number of defined arguments:'); ?> <strong>{{definedCommandArguments}}</strong>
