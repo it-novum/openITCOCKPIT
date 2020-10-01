@@ -741,6 +741,14 @@ class Systemsetting extends Importer {
                 'created'  => '2020-10-01 08:48:17',
                 'modified' => '2020-10-01 08:48:17'
             ],
+            (int)86 => [
+                'key'      => 'FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE',
+                'value'    => '0',
+                'info'     => 'Auto redirect not logged in users to the login page of the oAuth server.',
+                'section'  => 'FRONTEND',
+                'created'  => '2020-10-01 08:48:17',
+                'modified' => '2020-10-01 08:48:17'
+            ],
         ];
 
         return $data;
