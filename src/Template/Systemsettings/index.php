@@ -182,6 +182,13 @@
                                                             </a>
                                                         <?php endif; ?>
                                                     </div>
+                                                    <div ng-switch-when="FRONTEND.SSO.AUTH_PROVIDER">
+                                                        <select class="form-control systemsetting-input"
+                                                                ng-model="systemsetting.value">
+                                                            <option value="generic"><?php echo __('Generic'); ?></option>
+                                                            <option value="PingIdentity"><?php echo __('Ping Identity'); ?></option>
+                                                        </select>
+                                                    </div>
                                                     <div ng-switch-default>
                                                         <input type="text"
                                                                ng-model="systemsetting.value"
