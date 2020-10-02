@@ -743,6 +743,35 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
+     * @param array $ids
+     * @return array
+     */
+    public function getServicetemplateFoWizardDeployInterfaces($uuid, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where([
+                'Servicetemplates.uuid IN' => $uuid
+            ])
+            ->contain([
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ],
+                'CheckCommand'                         => [
+                    'Commandarguments'
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Servicetemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration();
+        if (!is_null($query)) {
+            return $query->first();
+        }
+        return [];
+    }
+
+    /**
      * @param int $id
      * @return array
      */
