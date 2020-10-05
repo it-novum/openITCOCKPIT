@@ -693,6 +693,10 @@ class ServicetemplatesTable extends Table {
             ->where([
                 'Servicetemplates.id IN' => $ids
             ])
+            ->whereNotInList('Servicetemplates.uuid', [
+                'f08d15ab-4de9-4a2d-8d3c-3f5bf13c21e7', // NETWORK_NWC_LIST_INTERFACES - for interfaces scan only
+                'de5e3045-3011-45d8-8ac6-bc5fbb3d396d'  // NETWORK_NWC_INTERFACE_HEALTH - only used by creating of interface services
+            ])
             ->contain([
                 'Servicetemplatecommandargumentvalues' => [
                     'Commandarguments'
@@ -743,13 +747,13 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
-     * @param array $ids
-     * @return array
+     * @param array $MY_RIGHTS
+     * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getServicetemplateFoWizardDeployInterfaces($uuid, $MY_RIGHTS = []) {
+    public function getServicetemplateFoWizardDeployInterfaces($MY_RIGHTS = []) {
         $query = $this->find()
             ->where([
-                'Servicetemplates.uuid IN' => $uuid
+                'Servicetemplates.uuid' => 'de5e3045-3011-45d8-8ac6-bc5fbb3d396d'
             ])
             ->contain([
                 'Servicetemplatecommandargumentvalues' => [
