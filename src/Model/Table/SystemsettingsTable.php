@@ -256,7 +256,8 @@ class SystemsettingsTable extends Table {
                     'FRONTEND.SSO.TOKEN_ENDPOINT',
                     'FRONTEND.SSO.USER_ENDPOINT',
                     'FRONTEND.SSO.NO_EMAIL_MESSAGE',
-                    'FRONTEND.SSO.LOG_OFF_LINK'
+                    'FRONTEND.SSO.LOG_OFF_LINK',
+                    'FRONTEND.SSO.AUTH_PROVIDER'
                 ]
             ])
             ->disableHydration()
