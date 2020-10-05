@@ -26,6 +26,7 @@
 /**
  * @var \App\View\AppView $this
  * @var bool $isSsoEnabled
+ * @var bool $forceRedirectSsousersToLoginScreen
  */
 
 $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
@@ -48,6 +49,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     <?php if ($isSsoEnabled === true): ?>
         <div class="form-group">
             <a
+                    id="sso-redirect-href"
                     href="/users/login?redirect_sso=true"
                     class="btn btn-primary btn-block">
                 <i class="fas fa-sign-in-alt"></i>
@@ -57,56 +59,58 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     <?php endif; ?>
 
     <!-- Start login form for username and password (Session and LDAP) -->
-    <form ng-submit="submit();" ng-if="!hasValidSslCertificate">
-        <div class="form-group">
-            <label class="text-normal c-white"><?= __('Username') ?></label>
-            <input
-                    type="text"
-                    class="form-control"
-                    placeholder="John Doe"
-                    ng-disabled="disableLogin"
-                    ng-model="post.email">
-        </div>
-        <div class="form-group">
-            <label class="text-normal c-white"><?= __('Password') ?></label>
-            <input
-                    type="password"
-                    class="form-control"
-                    placeholder="Password"
-                    ng-disabled="disableLogin"
-                    ng-model="post.password">
-        </div>
-        <div class="form-group">
-            <div class="peers ai-c jc-sb fxw-nw">
-                <div class="peer">
-                    <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                        <input
-                                type="checkbox"
-                                ng-true-value="1"
-                                ng-false-value="0"
-                                ng-model="post.remember_me"
-                                ng-disabled="disableLogin"
-                                id="RememberMeCheckbox"
-                                class="peer">
-                        <label for="RememberMeCheckbox" class=" peers peer-greed js-sb ai-c">
-                            <span class="peer peer-greed"><?= __('Remember Me') ?></span>
-                        </label>
+    <?php if ($forceRedirectSsousersToLoginScreen === false): ?>
+        <form ng-submit="submit();" ng-if="!hasValidSslCertificate">
+            <div class="form-group">
+                <label class="text-normal c-white"><?= __('Username') ?></label>
+                <input
+                        type="text"
+                        class="form-control"
+                        placeholder="John Doe"
+                        ng-disabled="disableLogin"
+                        ng-model="post.email">
+            </div>
+            <div class="form-group">
+                <label class="text-normal c-white"><?= __('Password') ?></label>
+                <input
+                        type="password"
+                        class="form-control"
+                        placeholder="Password"
+                        ng-disabled="disableLogin"
+                        ng-model="post.password">
+            </div>
+            <div class="form-group">
+                <div class="peers ai-c jc-sb fxw-nw">
+                    <div class="peer">
+                        <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+                            <input
+                                    type="checkbox"
+                                    ng-true-value="1"
+                                    ng-false-value="0"
+                                    ng-model="post.remember_me"
+                                    ng-disabled="disableLogin"
+                                    id="RememberMeCheckbox"
+                                    class="peer">
+                            <label for="RememberMeCheckbox" class=" peers peer-greed js-sb ai-c">
+                                <span class="peer peer-greed"><?= __('Remember Me') ?></span>
+                            </label>
+                        </div>
                     </div>
-                </div>
-                <div class="peer">
-                    <button
-                            type="submit"
-                            class="btn btn-primary"
-                            ng-disabled="disableLogin">
+                    <div class="peer">
+                        <button
+                                type="submit"
+                                class="btn btn-primary"
+                                ng-disabled="disableLogin">
                         <span>
                             <i class="fa fa-spinner fa-spin" ng-show="disableLogin"></i>
                         </span>
-                        <?= __('Login') ?>
-                    </button>
+                            <?= __('Login') ?>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    <?php endif; ?>
     <!-- End form login -->
 
     <!-- Users with valid SSL certificates are always logged in -->

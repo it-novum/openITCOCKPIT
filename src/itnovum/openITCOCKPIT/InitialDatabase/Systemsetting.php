@@ -733,6 +733,22 @@ class Systemsetting extends Importer {
                 'created'  => '2020-09-23 15:55:17',
                 'modified' => '2020-09-23 15:55:17'
             ],
+            (int)85 => [
+                'key'      => 'FRONTEND.SSO.AUTH_PROVIDER',
+                'value'    => 'generic',
+                'info'     => 'Select which auth provider should be used by the system.',
+                'section'  => 'FRONTEND',
+                'created'  => '2020-10-01 08:48:17',
+                'modified' => '2020-10-01 08:48:17'
+            ],
+            (int)86 => [
+                'key'      => 'FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE',
+                'value'    => '0',
+                'info'     => 'Auto redirect not logged in users to the login page of the oAuth server.',
+                'section'  => 'FRONTEND',
+                'created'  => '2020-10-01 08:48:17',
+                'modified' => '2020-10-01 08:48:17'
+            ],
         ];
 
         return $data;
