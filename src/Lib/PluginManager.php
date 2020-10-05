@@ -89,9 +89,6 @@ class PluginManager {
             );
             $this->application->addPlugin($moduleName);
 
-            if (is_file(PLUGIN . $moduleName . DS . 'vendor/autoload.php')) {
-                require PLUGIN . $moduleName . DS . 'vendor/autoload.php';
-            }
 
             $pluginAssociationsFile = PLUGIN . $moduleName . DS . 'config' . DS . 'associations.php';
             if (file_exists($pluginAssociationsFile)) {
