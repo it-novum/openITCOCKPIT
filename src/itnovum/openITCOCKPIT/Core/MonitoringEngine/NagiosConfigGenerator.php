@@ -37,6 +37,7 @@ use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\CalendarsTable;
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ConfigurationFilesTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\DeletedHostsTable;
@@ -64,6 +65,8 @@ use Cake\Filesystem\Folder;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\UUID;
 
@@ -2517,13 +2520,30 @@ class NagiosConfigGenerator {
         /** @var $DeletedHostsTable DeletedHostsTable */
         $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
 
+        /** @var ConfigurationFilesTable $ConfigurationFilesTable */
+        $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
+        $GraphingDocker = new GraphingDocker();
+        $config = $GraphingDocker->mergeDbResultWithDefaultConfiguration($ConfigurationFilesTable->getConfigValuesByConfigFile($GraphingDocker->getDbKey()));
+
+        $wspPath = $config['string']['carbon_path'] . DS . 'openitcockpit' . DS; // Default: /var/lib/graphite/whisper/openitcockpit/
+
         foreach ($DeletedHostsTable->getDeletedHostsWherePerfdataWasNotDeletedYet() as $deletedHost) {
             /** @var \App\Model\Entity\DeletedHost $deletedHost */
+
+            //Delete .rrd files (Rrdtool)
             if (is_dir($basePath . $deletedHost->get('uuid'))) {
                 $folder = new Folder($basePath . $deletedHost->get('uuid'));
                 $folder->delete();
                 unset($folder);
             }
+
+            //Delete .wsp files (Graphite)
+            if (is_dir($wspPath . $deletedHost->get('uuid'))) {
+                $folder = new Folder($wspPath . $deletedHost->get('uuid'));
+                $folder->delete();
+                unset($folder);
+            }
+
 
             $deletedHost->set('deleted_perfdata', 1);
             $DeletedHostsTable->save($deletedHost);
@@ -2536,13 +2556,28 @@ class NagiosConfigGenerator {
         /** @var $DeletedServicesTable DeletedServicesTable */
         $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
 
+        /** @var ConfigurationFilesTable $ConfigurationFilesTable */
+        $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
+        $GraphingDocker = new GraphingDocker();
+        $config = $GraphingDocker->mergeDbResultWithDefaultConfiguration($ConfigurationFilesTable->getConfigValuesByConfigFile($GraphingDocker->getDbKey()));
+
+        $wspPath = $config['string']['carbon_path'] . DS . 'openitcockpit' . DS; // Default: /var/lib/graphite/whisper/openitcockpit/
+
         foreach ($DeletedServicesTable->getDeletedServicesWherePerfdataWasNotDeletedYet() as $deletedService) {
             /** @var \App\Model\Entity\DeletedService $deletedService */
             foreach (['rrd', 'xml'] as $extension) {
-                //Check if perfdata files still exists and if we need to delete them
+                //Check if perfdata .rrd and .xml files still exists and if we need to delete them (Rrdtool)
                 $file = $basePath . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'] . '.' . $extension;
                 if (file_exists($file)) {
                     unlink($file);
+                }
+
+                //Checking for .wsp file (Graphite)
+                $wspFilesDir = $wspPath . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'];
+                if (is_dir($wspFilesDir)) {
+                    $folder = new Folder($wspFilesDir);
+                    $folder->delete();
+                    unset($folder);
                 }
             }
             $deletedService->set('deleted_perfdata', 1);
