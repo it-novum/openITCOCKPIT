@@ -160,10 +160,13 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <i class="fa fa-check text-success"
-                                       ng-show="host.DeletedHost.perfdataDeleted"></i>
-                                    <i class="fa fa-times txt-color-red"
-                                       ng-show="!host.DeletedHost.perfdataDeleted"></i>
+                                    <span class="badge badge-info" ng-show="!host.DeletedHost.perfdataDeleted">
+                                        <?= __('Pending'); ?>
+                                    </span>
+
+                                    <span class="badge badge-success" ng-show="host.DeletedHost.perfdataDeleted">
+                                        <?= __('Yes'); ?>
+                                    </span>
                                 </td>
                             </tbody>
                         </table>
