@@ -38,6 +38,7 @@ angular.module('openITCOCKPIT')
             8760: '1 year'
         };
         $scope.currentSelectedTimerange = 3;
+        $scope.currentAggregation = 'avg';
 
         $scope.visTimeline = null;
         $scope.visTimelineInit = true;
@@ -281,6 +282,12 @@ angular.module('openITCOCKPIT')
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
         };
 
+        $scope.changeAggregation = function(aggregation){
+            $scope.currentAggregation = aggregation;
+
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, true, lastGraphStart, lastGraphEnd, false);
+        };
+
         var getServicestatusTextColor = function(){
             switch($scope.servicestatus.currentState){
                 case 0:
@@ -323,7 +330,8 @@ angular.module('openITCOCKPIT')
                     start: start,
                     end: end,
                     jsTimestamp: 1,
-                    gauge: $scope.currentDataSource
+                    gauge: $scope.currentDataSource,
+                    aggregation: $scope.currentAggregation
                 };
 
                 if($scope.currentGraphUnit !== null){

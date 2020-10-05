@@ -77,6 +77,11 @@ class UsersController extends AppController {
         $isSsoEnabled = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.AUTH_METHOD')->get('value') === 'sso';
         $redirectToSsoLoginPage = $this->request->getQuery('redirect_sso', null) === 'true';
 
+        $forceRedirectSsousersToLoginScreen = false;
+        if($isSsoEnabled === true){
+            $forceRedirectSsousersToLoginScreen = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE')->get('value') === '1';
+        }
+
         if ($redirectToSsoLoginPage === true) {
             $oAuthClient = new oAuthClient();
 
@@ -112,10 +117,11 @@ class UsersController extends AppController {
         $this->set('disableAnimation', $disableAnimation);
         $this->set('hasValidSslCertificate', $hasValidSslCertificate);
         $this->set('isSsoEnabled', $isSsoEnabled);
+        $this->set('forceRedirectSsousersToLoginScreen', $forceRedirectSsousersToLoginScreen);
         $this->set('isLoggedIn', $isLoggedIn);
 
         if ($this->request->is('get')) {
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate', 'isLoggedIn']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen']);
             return;
         }
 

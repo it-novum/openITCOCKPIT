@@ -28,6 +28,7 @@ namespace itnovum\openITCOCKPIT\Graphite;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class GraphiteLoader {
 

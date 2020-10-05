@@ -53,13 +53,13 @@
     <div class="col-lg-8 margin-bottom-10">
         <div class="input-group">
             <select
-                id="ServiceListHostSelect"
-                data-placeholder="<?php echo __('Please select...'); ?>"
-                class="form-control"
-                chosen="hosts"
-                callback="loadHosts"
-                ng-options="host.key as host.value for host in hosts"
-                ng-model="data.hostId">
+                    id="ServiceListHostSelect"
+                    data-placeholder="<?php echo __('Please select...'); ?>"
+                    class="form-control"
+                    chosen="hosts"
+                    callback="loadHosts"
+                    ng-options="host.key as host.value for host in hosts"
+                    ng-model="data.hostId">
             </select>
 
 
@@ -190,6 +190,9 @@
                                         <?php echo __('Service name'); ?>
                                     </th>
 
+                                    <th class="no-sort">
+                                        <?php echo __('Service type'); ?>
+                                    </th>
 
                                     <th class="no-sort tableStatewidth"
                                         ng-click="orderBy('Servicestatus.last_state_change')">
@@ -259,9 +262,9 @@
                                             </a>
                                         <?php else: ?>
                                             <div
-                                                ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
-                                                ng-mouseleave="mouseleave()"
-                                                ng-if="service.Service.has_graph">
+                                                    ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
+                                                    ng-mouseleave="mouseleave()"
+                                                    ng-if="service.Service.has_graph">
                                                 <i class="fa fa-lg fa-area-chart">
                                                 </i>
                                             </div>
@@ -286,12 +289,19 @@
                                     </td>
 
                                     <td>
+                                        <span class="badge border margin-right-10 {{service.ServiceType.class}} {{service.ServiceType.color}}">
+                                            <i class="{{service.ServiceType.icon}}"></i>
+                                            {{service.ServiceType.title}}
+                                        </span>
+                                    </td>
+
+                                    <td>
                                         {{ service.Servicestatus.last_state_change }}
                                     </td>
 
                                     <td>
                                         <span
-                                            ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
+                                                ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
                                             service.Servicestatus.lastCheck }}</span>
                                         <span ng-if="service.Service.active_checks_enabled === false">
                                             <?php echo __('n/a'); ?>
@@ -300,17 +310,17 @@
 
                                     <td>
                                         <span
-                                            ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
+                                                ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
                                             service.Servicestatus.nextCheck }}</span>
                                         <span
-                                            ng-if="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
+                                                ng-if="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>
 
                                     <td>
                                         <div
-                                            ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
+                                                ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                     </td>
 
                                     <td class="width-50">
@@ -797,10 +807,15 @@
                                     <td> {{ service.DeletedService.uuid }}</td>
                                     <td> {{ service.DeletedService.created }}</td>
                                     <td class="text-center">
-                                        <i class="fa fa-check text-success"
-                                           ng-show="service.DeletedService.perfdataDeleted"></i>
-                                        <i class="fa fa-times text-danger"
-                                           ng-show="!service.DeletedService.perfdataDeleted"></i>
+                                        <span class="badge badge-info"
+                                              ng-show="!service.DeletedService.perfdataDeleted">
+                                            <?= __('Pending'); ?>
+                                        </span>
+
+                                        <span class="badge badge-success"
+                                              ng-show="service.DeletedService.perfdataDeleted">
+                                            <?= __('Yes'); ?>
+                                        </span>
                                     </td>
                                 </tr>
                                 </tbody>
