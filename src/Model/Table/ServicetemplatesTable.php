@@ -682,29 +682,34 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
-     * @param array $ids
+     * @param $ids
+     * @param array $MY_RIGHTS
+     * @param array $excludedUuids
      * @return array
      */
-    public function getServicetemplatesFoWizardDeploy($ids, $MY_RIGHTS = []) {
+    public function getServicetemplatesFoWizardDeploy($ids, $MY_RIGHTS = [], $excludedUuids = []) {
         if (!is_array($ids)) {
             $ids = [$ids];
+        }
+        if (!is_array($excludedUuids)) {
+            $excludedUuids = [$excludedUuids];
         }
         $query = $this->find()
             ->where([
                 'Servicetemplates.id IN' => $ids
-            ])
-            ->whereNotInList('Servicetemplates.uuid', [
-                'f08d15ab-4de9-4a2d-8d3c-3f5bf13c21e7', // NETWORK_NWC_LIST_INTERFACES - for interfaces scan only
-                'de5e3045-3011-45d8-8ac6-bc5fbb3d396d'  // NETWORK_NWC_INTERFACE_HEALTH - only used by creating of interface services
-            ])
-            ->contain([
-                'Servicetemplatecommandargumentvalues' => [
-                    'Commandarguments'
-                ],
-                'CheckCommand'                         => [
-                    'Commandarguments'
-                ]
             ]);
+        if (!empty($excludedIds)) {
+            $query->whereNotInList('Servicetemplates.uuid', $excludedUuids);
+        }
+
+        $query->contain([
+            'Servicetemplatecommandargumentvalues' => [
+                'Commandarguments'
+            ],
+            'CheckCommand'                         => [
+                'Commandarguments'
+            ]
+        ]);
         if (!empty($MY_RIGHTS)) {
             $query->where([
                 'Servicetemplates.container_id IN' => $MY_RIGHTS
