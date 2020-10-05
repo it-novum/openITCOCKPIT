@@ -957,6 +957,16 @@ use Cake\Core\Plugin;
                                                 </td>
                                             </tr>
 
+                                            <tr ng-show="host.Host.is_satellite_host">
+                                                <td><?php echo __('Satellite'); ?></td>
+                                                <td>
+                                                    <satellite-name
+                                                            satellite-id="host.Host.satelliteId"
+                                                            ng-if="host.Host.is_satellite_host"
+                                                    ></satellite-name>
+                                                </td>
+                                            </tr>
+
                                             <tr ng-show="mergedService.notes">
                                                 <td><?php echo __('Notes'); ?></td>
                                                 <td>
