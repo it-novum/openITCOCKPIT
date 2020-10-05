@@ -1159,6 +1159,7 @@ use Cake\Core\Plugin;
                             <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <?php echo __('Datasource: '); ?>
+                                {{ currentDataSource | limitTo: 15 }}{{currentDataSource.length > 15 ? '...' : ''}}
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
                                  style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
@@ -1167,6 +1168,35 @@ use Cake\Core\Plugin;
                                    ng-click="changeDataSource(dsName)" href="javascript:void(0);">
                                     {{dsName}}
                                 </a>
+                            </div>
+                        </div>
+
+                        <div class="btn-group btn-group-xs panelToolbarInput" ng-show="mergedService.service_type !== <?= PROMETHEUS_SERVICE ?>">
+                            <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <?php echo __('Aggregation: '); ?>
+                                <span ng-show="currentAggregation === 'min'"><?= __('Minimum'); ?></span>
+                                <span ng-show="currentAggregation === 'avg'"><?= __('Average'); ?></span>
+                                <span ng-show="currentAggregation === 'max'"><?= __('Maximum'); ?></span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
+                                 style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+
+                                <a class="dropdown-item dropdown-item-xs"
+                                   ng-click="changeAggregation('min')" href="javascript:void(0);">
+                                    <?= __('Minimum'); ?>
+                                </a>
+
+                                <a class="dropdown-item dropdown-item-xs"
+                                   ng-click="changeAggregation('avg')" href="javascript:void(0);">
+                                    <?= __('Average'); ?>
+                                </a>
+
+                                <a class="dropdown-item dropdown-item-xs"
+                                   ng-click="changeAggregation('max')" href="javascript:void(0);">
+                                    <?= __('Maximum'); ?>
+                                </a>
+
                             </div>
                         </div>
 

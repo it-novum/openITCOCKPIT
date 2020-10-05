@@ -61,6 +61,7 @@ class GraphgeneratorsController extends AppController {
         $gauge = $this->request->getQuery('gauge', '');
         $scale = $this->request->getQuery('scale', 'true') === 'true';
         $forcedUnit = $this->request->getQuery('forcedUnit', null);
+        $aggregation = $this->request->getQuery('aggregation', 'avg');
         $debug = $this->request->getQuery('debug', 'false') === 'true';
 
         $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
@@ -88,7 +89,7 @@ class GraphgeneratorsController extends AppController {
                 $end = (int)$end;
                 $performance_data = $PrometheusPerfdataLoader->getPerfdataByUuid($Service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug);
             } else {
-                $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, 'avg', $gauge, $scale, $forcedUnit, $debug);
+                $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, $aggregation, $gauge, $scale, $forcedUnit, $debug);
                 $this->set('performance_data', $performance_data);
             }
             $this->viewBuilder()->setOption('serialize', ['performance_data']);
