@@ -63,14 +63,7 @@ class oAuthClient {
         // Internal oAuth Test Server
         //$config = $this->getLocalTestConfig();
 
-        $this->Provider = new GenericProvider([
-            'clientId'                => $config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
-            'clientSecret'            => $config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
-            'redirectUri'             => Router::url(['controller' => 'users', 'action' => 'login'], true), //Login screen of openITCOCKPIT itself
-            'urlAuthorize'            => $config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
-            'urlAccessToken'          => $config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
-            'urlResourceOwnerDetails' => $config['FRONTEND.SSO.USER_ENDPOINT']    // Where to get user information from
-        ]);
+        $this->Provider = $this->getAuthProvider($config);
 
         $this->logoutUrl = $config['FRONTEND.SSO.LOG_OFF_LINK'];
     }
@@ -120,6 +113,41 @@ class oAuthClient {
 
     public function getLogoutUrl() {
         return $this->logoutUrl;
+    }
+
+    /**
+     * @param array $config
+     * @return GenericProvider
+     */
+    protected function getAuthProvider(array $config) {
+        switch ($config['FRONTEND.SSO.AUTH_PROVIDER']) {
+            case 'PingIdentity':
+                return new GenericProvider([
+                    'clientId'                => $config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
+                    'clientSecret'            => $config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
+                    'redirectUri'             => Router::url(['controller' => 'users', 'action' => 'login'], true), //Login screen of openITCOCKPIT itself
+                    'urlAuthorize'            => $config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
+                    'urlAccessToken'          => $config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
+                    'urlResourceOwnerDetails' => $config['FRONTEND.SSO.USER_ENDPOINT'],    // Where to get user information from
+
+                    'accessTokenResourceOwnerId' => 'id',
+                    'scopeSeparator'             => ' ',
+                    'scopes'                     => [
+                        'openid',
+                        'profile'
+                    ]
+                ]);
+
+            default:
+                return new GenericProvider([
+                    'clientId'                => $config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
+                    'clientSecret'            => $config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
+                    'redirectUri'             => Router::url(['controller' => 'users', 'action' => 'login'], true), //Login screen of openITCOCKPIT itself
+                    'urlAuthorize'            => $config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
+                    'urlAccessToken'          => $config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
+                    'urlResourceOwnerDetails' => $config['FRONTEND.SSO.USER_ENDPOINT']    // Where to get user information from
+                ]);
+        }
     }
 
     private function getLocalTestConfig() {
