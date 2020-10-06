@@ -18,7 +18,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
@@ -2816,7 +2815,7 @@ class ServicesTable extends Table {
                 'Services.tags',
                 'Services.priority',
                 'Services.service_type',
-                'servicename'        => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -3211,6 +3210,37 @@ class ServicesTable extends Table {
             ])->where([
                 'Services.host_id IN' => $hostIds
             ])->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
+    }
+
+    /**
+     * @param array $hostIds
+     * @return array
+     */
+    public function getServicesByHostIdForWizard($hostIds = [], $enableHydration = false) {
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+        if (empty($hostIds)) {
+            return [];
+        }
+        $hostIds = array_unique($hostIds);
+
+        $query = $this->find();
+        $query->select([
+            'Services.id',
+            'Services.servicetemplate_id',
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+        ])->where([
+            'Services.host_id IN' => $hostIds
+        ])->contain([
+            'Servicetemplates'
+        ])->enableHydration($enableHydration);
 
         $result = $query->toArray();
         if (empty($result)) {
