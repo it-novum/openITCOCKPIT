@@ -45,6 +45,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/node-waves/dist/waves.js',
         'node_modules/angular/angular.min.js',
         'node_modules/angular-ui-router/release/angular-ui-router.min.js',
+        'node_modules/angular-ui-router/release/stateEvents.min.js',
         'node_modules/jquery.cookie/jquery.cookie.js',
         'js/lib/chosen.jquery.min.js',
         'node_modules/bootstrap4-tagsinput/tagsinput.js',
