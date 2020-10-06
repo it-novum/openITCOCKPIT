@@ -694,11 +694,12 @@ class ServicetemplatesTable extends Table {
         if (!is_array($excludedUuids)) {
             $excludedUuids = [$excludedUuids];
         }
+
         $query = $this->find()
             ->where([
                 'Servicetemplates.id IN' => $ids
             ]);
-        if (!empty($excludedIds)) {
+        if (!empty($excludedUuids)) {
             $query->whereNotInList('Servicetemplates.uuid', $excludedUuids);
         }
 
