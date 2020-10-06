@@ -994,7 +994,7 @@ class AngularController extends AppController {
 
             $HostMacroReplacer = new HostMacroReplacer($mergedHost);
             $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
-            
+
             $hostUrl =
                 $HostMacroReplacer->replaceBasicMacros(          // Replace $HOSTNAME$
                     $HostCustomMacroReplacer->replaceAllMacros(  // Replace $_HOSTFOOBAR$
