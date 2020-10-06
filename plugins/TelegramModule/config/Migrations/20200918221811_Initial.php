@@ -19,6 +19,11 @@ class Initial extends AbstractMigration {
                     'limit'   => 255,
                     'null'    => false,
                 ])
+                ->addColumn('access_key', 'string', [
+                    'default' => '',
+                    'limit'   => 255,
+                    'null'    => false,
+                ])
                 ->addColumn('last_update_id', 'integer', [
                     'default' => null,
                     'limit'   => 11,
@@ -26,6 +31,16 @@ class Initial extends AbstractMigration {
                 ])
                 ->addColumn('two_way', 'boolean', [
                     'default' => 0
+                ])
+                ->addColumn('external_webhook_domain', 'string', [
+                    'default' => '',
+                    'limit'   => 255,
+                    'null'    => false,
+                ])
+                ->addColumn('webhook_api_key', 'string', [
+                    'default' => '',
+                    'limit'   => 255,
+                    'null'    => false,
                 ])
                 ->addColumn('use_proxy', 'boolean', [
                     'default' => 0
