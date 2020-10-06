@@ -3222,7 +3222,7 @@ class ServicesTable extends Table {
      * @param array $hostIds
      * @return array
      */
-    public function getServicesByHostIdForWizard($hostIds = [], $enableHydration = false) {
+    public function getServiceNamesByHostIdForWizard($hostIds = [], $enableHydration = false) {
         if (!is_array($hostIds)) {
             $hostIds = [$hostIds];
         }
@@ -3233,9 +3233,7 @@ class ServicesTable extends Table {
 
         $query = $this->find();
         $query->select([
-            'Services.id',
-            'Services.servicetemplate_id',
-            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)')
         ])->where([
             'Services.host_id IN' => $hostIds
         ])->contain([
@@ -3246,7 +3244,11 @@ class ServicesTable extends Table {
         if (empty($result)) {
             return [];
         }
-        return $result;
+        $serviceNames = [];
+        foreach($result as $value){
+            $serviceNames[] = $value['servicename'];
+        }
+        return array_unique($serviceNames);
     }
 
     /**
