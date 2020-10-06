@@ -1875,23 +1875,25 @@ class HostsController extends AppController {
         $HostMacroReplacer = new HostMacroReplacer($mergedHost);
         $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
         $mergedHost['host_url_replaced'] =
-            $HostCustomMacroReplacer->replaceAllMacros(
-                $HostMacroReplacer->replaceBasicMacros($mergedHost['host_url'])
+            $HostMacroReplacer->replaceBasicMacros(          // Replace $HOSTNAME$
+                $HostCustomMacroReplacer->replaceAllMacros(  // Replace $_HOSTFOOBAR$
+                    $mergedHost['host_url']
+                )
             );
 
         $checkCommand = $CommandsTable->getCommandById($mergedHost['command_id']);
         $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['check_period_id']);
         $notifyPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['notify_period_id']);
 
-        // Replace $HOSTNAME$
-        $hostCommandLine = $HostMacroReplacer->replaceBasicMacros($checkCommand['Command']['command_line']);
+        // Replace $ARGn$
+        $ArgnReplacer = new CommandArgReplacer($mergedHost['hostcommandargumentvalues']);
+        $hostCommandLine = $ArgnReplacer->replace($checkCommand['Command']['command_line']);
 
         // Replace $_HOSTFOOBAR$
         $hostCommandLine = $HostCustomMacroReplacer->replaceAllMacros($hostCommandLine);
 
-        // Replace $ARGn$
-        $ArgnReplacer = new CommandArgReplacer($mergedHost['hostcommandargumentvalues']);
-        $hostCommandLine = $ArgnReplacer->replace($hostCommandLine);
+        // Replace $HOSTNAME$
+        $hostCommandLine = $HostMacroReplacer->replaceBasicMacros($hostCommandLine);
 
         // Replace $USERn$ Macros (if enabled)
         try {

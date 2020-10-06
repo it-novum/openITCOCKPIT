@@ -979,8 +979,28 @@ class AngularController extends AppController {
         }
 
         if ($hostUrl) {
-            $HostMacroReplacer = new HostMacroReplacer($host->toArray());
-            $hostUrl = $HostMacroReplacer->replaceBasicMacros($hostUrl);
+            /** @var HosttemplatesTable $HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+            $hostForMerge = $HostsTable->getHostForBrowser($hostId);
+            $hosttemplateForMerge = $HosttemplatesTable->getHosttemplateForHostBrowser($hostForMerge['hosttemplate_id']);
+
+            //Merge host and inheritance data
+            $HostMergerForBrowser = new HostMergerForBrowser(
+                $hostForMerge,
+                $hosttemplateForMerge
+            );
+            $mergedHost = $HostMergerForBrowser->getDataForView();
+
+            $HostMacroReplacer = new HostMacroReplacer($mergedHost);
+            $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
+            
+            $hostUrl =
+                $HostMacroReplacer->replaceBasicMacros(          // Replace $HOSTNAME$
+                    $HostCustomMacroReplacer->replaceAllMacros(  // Replace $_HOSTFOOBAR$
+                        $hostUrl
+                    )
+                );
         }
 
         if ($includeHoststatus) {
