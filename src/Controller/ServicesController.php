@@ -74,6 +74,7 @@ use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
@@ -1423,32 +1424,52 @@ class ServicesController extends AppController {
         $host = $hostObj->toArray();
         $host['is_satellite_host'] = $hostObj->isSatelliteHost();
 
+        //Load required data to merge and display inheritance data
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
+
+        //Merge host and inheritance data
+        $HostMergerForBrowser = new HostMergerForBrowser(
+            $HostsTable->getHostForBrowser($host['id']),
+            $hosttemplate
+        );
+        $mergedHost = $HostMergerForBrowser->getDataForView();
+
+
         //Replace macros in service url
         $HostMacroReplacer = new HostMacroReplacer($host);
         $ServiceMacroReplacer = new ServiceMacroReplacer($mergedService);
         $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE);
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
         $mergedService['service_url_replaced'] =
-            $ServiceCustomMacroReplacer->replaceAllMacros(
-                $HostMacroReplacer->replaceBasicMacros(
-                    $ServiceMacroReplacer->replaceBasicMacros($mergedService['service_url'])
-                ));
+            $ServiceMacroReplacer->replaceBasicMacros(                  // Replace $SERVICEDESCRIPTION$
+                $HostMacroReplacer->replaceBasicMacros(                 // Replace $HOSTNAME$
+                    $HostCustomMacroReplacer->replaceAllMacros(         // Replace $_HOSTFOOBAR$
+                        $ServiceCustomMacroReplacer->replaceAllMacros(  // Replace $_SERVICEFOOBAR$
+                            $mergedService['service_url']
+                        )
+                    )
+                )
+            );
 
         $checkCommand = $CommandsTable->getCommandById($mergedService['command_id']);
         $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedService['check_period_id']);
         $notifyPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedService['notify_period_id']);
 
-        // Replace $HOSTNAME$
-        $serviceCommandLine = $HostMacroReplacer->replaceBasicMacros($checkCommand['Command']['command_line']);
+        // Replace $ARGn$
+        $ArgnReplacer = new CommandArgReplacer($mergedService['servicecommandargumentvalues']);
+        $serviceCommandLine = $ArgnReplacer->replace($checkCommand['Command']['command_line']);
 
         // Replace $_SERVICEFOOBAR$
         $serviceCommandLine = $ServiceCustomMacroReplacer->replaceAllMacros($serviceCommandLine);
 
+        // Replace $_HOSTFOOBAR$
+        $serviceCommandLine = $HostCustomMacroReplacer->replaceAllMacros($serviceCommandLine);
+
+        // Replace $HOSTNAME$
+        $serviceCommandLine = $HostMacroReplacer->replaceBasicMacros($serviceCommandLine);
+
         // Replace $SERVICEDESCRIPTION$
         $serviceCommandLine = $ServiceMacroReplacer->replaceBasicMacros($serviceCommandLine);
-
-        // Replace $ARGn$
-        $ArgnReplacer = new CommandArgReplacer($mergedService['servicecommandargumentvalues']);
-        $serviceCommandLine = $ArgnReplacer->replace($serviceCommandLine);
 
         // Replace $USERn$ Macros (if enabled)
         try {
