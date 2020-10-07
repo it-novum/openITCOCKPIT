@@ -404,6 +404,17 @@ use Cake\Core\Plugin;
                                                          ng-bind-html="hoststatus.outputHtml | trustAsHtml"></div>
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <td>
+                                                    <?php echo __('Last time'); ?>
+                                                    <span class="badge badge-success" style="margin-right: 2px;">
+                                                        UP
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {{ hoststatus.last_time_up }}
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
 
