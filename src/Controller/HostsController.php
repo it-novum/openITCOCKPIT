@@ -123,6 +123,7 @@ class HostsController extends AppController {
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
         $satellites = [];
+
         if (Plugin::isLoaded('DistributeModule')) {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
@@ -245,7 +246,8 @@ class HostsController extends AppController {
 
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
-            if ($Host->isSatelliteHost()) {
+
+            if ($Host->isSatelliteHost() && isset($satellites[$Host->getSatelliteId()])) {
                 $satelliteName = $satellites[$Host->getSatelliteId()];
                 $satellite_id = $Host->getSatelliteId();
             }

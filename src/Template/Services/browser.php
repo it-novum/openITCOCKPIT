@@ -483,6 +483,17 @@ use Cake\Core\Plugin;
                                                     </code>
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <td>
+                                                    <?php echo __('Last time'); ?>
+                                                    <span class="badge badge-success" style="margin-right: 2px;">
+                                                        OK
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {{ servicestatus.last_time_ok }}
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
 

@@ -71,6 +71,8 @@ class Servicestatus {
 
     private $max_check_attempts;
 
+    private $last_time_ok;
+
     /**
      * @var UserTime|null
      */
@@ -163,6 +165,10 @@ class Servicestatus {
 
         if (isset($data['max_check_attempts'])) {
             $this->max_check_attempts = (int)$data['max_check_attempts'];
+        }
+
+        if (isset($data['last_time_ok'])) {
+            $this->last_time_ok = $data['last_time_ok'];
         }
 
         $this->UserTime = $UserTime;
@@ -404,6 +410,13 @@ class Servicestatus {
         return $this->latency;
     }
 
+    public function getLastTimeOk() {
+        if (!is_numeric($this->last_time_ok)) {
+            return strtotime($this->last_time_ok);
+        }
+        return $this->last_time_ok;
+    }
+
     /**
      * @return bool
      */
@@ -427,11 +440,13 @@ class Servicestatus {
         if ($this->UserTime !== null) {
             $arr['lastHardStateChange'] = $this->UserTime->format($this->getLastHardStateChange());
             $arr['last_state_change'] = $this->UserTime->format($this->getLastStateChange());
+            $arr['last_time_ok'] = $this->UserTime->format($this->getLastTimeOk());
             $arr['lastCheck'] = $this->UserTime->format($this->getLastCheck());
             $arr['nextCheck'] = $this->UserTime->format($this->getNextCheck());
         } else {
             $arr['lastHardStateChange'] = $this->getLastHardStateChange();
             $arr['last_state_change'] = $this->getLastStateChange();
+            $arr['last_time_ok'] = $this->getLastTimeOk();
             $arr['lastCheck'] = $this->getLastCheck();
             $arr['nextCheck'] = $this->getNextCheck();
         }
