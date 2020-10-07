@@ -122,6 +122,11 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ]);
 
+        $this->hasMany('Tenants', [
+            'foreignKey'       => 'container_id',
+            'cascadeCallbacks' => true
+        ])->setDependent(true);
+
         //$this->belongsTo('ParentContainers', [
         //    'className' => 'Containers',
         //    'foreignKey' => 'parent_id'
@@ -206,9 +211,6 @@ class ContainersTable extends Table {
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('Servicetemplates', [
-            'foreignKey' => 'container_id'
-        ]);
-        $this->hasMany('Tenants', [
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('Timeperiods', [
@@ -379,15 +381,15 @@ class ContainersTable extends Table {
                 ->toArray();
 
             foreach ($tree as $node) {
-                if(isset($MY_RIGHTS_LEVEL[$node['id']])){
+                if (isset($MY_RIGHTS_LEVEL[$node['id']])) {
                     $result[] = [
-                        'id' => $node['id'],
+                        'id'   => $node['id'],
                         'name' => $node['name']
                     ];
-                }else{
+                } else {
                     //User has no permission to this container
                     $result[] = [
-                        'id' =>null,
+                        'id'   => null,
                         'name' => $node['name']
                     ];
                 }
