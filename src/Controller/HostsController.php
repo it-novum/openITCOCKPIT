@@ -1849,12 +1849,13 @@ class HostsController extends AppController {
         $hostObj = new Host($host, $allowEdit);
 
         //Load containers information
-        $mainContainer = $ContainersTable->treePath($host['container_id']);
+        $mainContainer = $ContainersTable->getTreePathForBrowser($host['container_id'], $this->MY_RIGHTS_LEVEL);
         //Add shared containers
         $sharedContainers = [];
         foreach ($host['hosts_to_containers_sharing'] as $container) {
             if (isset($container['id']) && $container['id'] != $host['container_id']) {
-                $sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+                $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
+                //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
             }
         }
 

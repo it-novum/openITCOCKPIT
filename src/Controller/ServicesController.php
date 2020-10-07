@@ -1336,8 +1336,13 @@ class ServicesController extends AppController {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
         if ($this->isHtmlRequest()) {
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
             //Only ship template
             $this->set('username', $User->getFullName());
+            $this->set('masterInstanceName', $masterInstanceName);
             return;
         }
 
@@ -1380,6 +1385,8 @@ class ServicesController extends AppController {
         $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
         /** @var $DowntimehistoryServicesTable DowntimehistoryServicesTableInterface */
         $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         /** @var $SystemsettingsTable SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -1508,6 +1515,16 @@ class ServicesController extends AppController {
                 if (!empty(array_intersect($contactsWithContainers[$contact['id']], $writeContainers))) {
                     $mergedService['contacts'][$key]['allowEdit'] = true;
                 }
+            }
+        }
+
+        //Load containers information
+        $mainContainer = $ContainersTable->getTreePathForBrowser($hostEntity->get('container_id'), $this->MY_RIGHTS_LEVEL);
+        //Add shared containers
+        $sharedContainers = [];
+        foreach ($hostEntity->getContainerIds() as $sharedContainerId) {
+            if ($sharedContainerId != $hostEntity->get('container_id')) {
+                $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($sharedContainerId, $this->MY_RIGHTS_LEVEL);
             }
         }
 
@@ -1692,6 +1709,8 @@ class ServicesController extends AppController {
         $this->set('checkPeriod', $checkPeriod);
         $this->set('notifyPeriod', $notifyPeriod);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
+        $this->set('mainContainer', $mainContainer);
+        $this->set('sharedContainers', $sharedContainers);
 
 
         $this->viewBuilder()->setOption('serialize', [
@@ -1711,7 +1730,9 @@ class ServicesController extends AppController {
             'checkCommand',
             'checkPeriod',
             'notifyPeriod',
-            'canSubmitExternalCommands'
+            'canSubmitExternalCommands',
+            'mainContainer',
+            'sharedContainers'
         ]);
     }
 
