@@ -27,7 +27,6 @@ namespace App\Lib;
 
 use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\Table;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class PluginManagerTableLocator extends TableLocator {
 

@@ -125,7 +125,7 @@
                                                             <option
                                                                 value="session"><?php echo __('PHP session'); ?></option>
                                                             <option value="ldap"><?php echo __('PHP LDAP'); ?></option>
-                                                            <option value="sso"><?php echo __('SSO'); ?></option>
+                                                            <option value="sso"><?php echo __('SSO oAuth2'); ?></option>
                                                         </select>
                                                     </div>
                                                     <div ng-switch-when="FRONTEND.LDAP.TYPE">
@@ -145,7 +145,7 @@
                                                                class="form-control systemsetting-input">
                                                     </div>
                                                     <div
-                                                        ng-switch-when="FRONTEND.LDAP.USE_TLS|MONITORING.SINGLE_INSTANCE_SYNC|MONITORING.HOST_CHECK_ACTIVE_DEFAULT|MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT|FRONTEND.HIDDEN_USER_IN_CHANGELOG|FRONTEND.DISABLE_LOGIN_ANIMATION|FRONTEND.REPLACE_USER_MACROS"
+                                                        ng-switch-when="FRONTEND.LDAP.USE_TLS|MONITORING.SINGLE_INSTANCE_SYNC|MONITORING.HOST_CHECK_ACTIVE_DEFAULT|MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT|FRONTEND.HIDDEN_USER_IN_CHANGELOG|FRONTEND.DISABLE_LOGIN_ANIMATION|FRONTEND.REPLACE_USER_MACROS|FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS|FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE"
                                                         ng-switch-when-separator="|">
                                                         <select class="form-control systemsetting-input"
                                                                 ng-model="systemsetting.value">
@@ -181,6 +181,13 @@
                                                                 <?php echo __('Click for more information.'); ?>
                                                             </a>
                                                         <?php endif; ?>
+                                                    </div>
+                                                    <div ng-switch-when="FRONTEND.SSO.AUTH_PROVIDER">
+                                                        <select class="form-control systemsetting-input"
+                                                                ng-model="systemsetting.value">
+                                                            <option value="generic"><?php echo __('Generic'); ?></option>
+                                                            <option value="PingIdentity"><?php echo __('Ping Identity'); ?></option>
+                                                        </select>
                                                     </div>
                                                     <div ng-switch-default>
                                                         <input type="text"

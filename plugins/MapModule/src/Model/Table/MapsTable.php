@@ -590,7 +590,7 @@ class MapsTable extends Table {
                 'isAcknowledged' => false,
                 'isInDowntime'   => false,
                 'color'          => 'text-primary',
-                'background'     => 'bg-color-blueLight',
+                'background'     => 'bg-not-monitored',
                 'Host'           => $HostView->toArray(),
                 'Hoststatus'     => $HoststatusView->toArray(),
             ];
@@ -717,7 +717,7 @@ class MapsTable extends Table {
                 'isAcknowledged' => false,
                 'isInDowntime'   => false,
                 'color'          => 'text-primary',
-                'background'     => 'bg-color-blueLight',
+                'background'     => 'bg-not-monitored',
                 'Host'           => $HostView->toArray(),
                 'Service'        => $ServiceView->toArray(),
                 'Servicestatus'  => $tmpServicestatus,
@@ -773,7 +773,6 @@ class MapsTable extends Table {
      * @return array
      */
     public function getHostgroupInformation(ServicesTable $Service, array $hostgroup, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable) {
-        FileDebugger::dump($hostgroup);
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
 
@@ -790,7 +789,7 @@ class MapsTable extends Table {
             return [
                 'icon'       => $this->errorIcon,
                 'color'      => 'text-primary',
-                'background' => 'bg-color-blueLight',
+                'background' => 'bg-not-monitored',
                 'Hostgroup'  => $hostgroupLight
             ];
         }
@@ -904,7 +903,7 @@ class MapsTable extends Table {
             return [
                 'icon'         => $this->errorIcon,
                 'color'        => 'text-primary',
-                'background'   => 'bg-color-blueLight',
+                'background'   => 'bg-not-monitored',
                 'Servicegroup' => $servicegroupLight
             ];
         }
@@ -1132,16 +1131,16 @@ class MapsTable extends Table {
      */
     public function getMapInformation(HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable, array $map, array $hosts, array $services) {
         $map = [
-            'id'    => $map[0]['id'],
-            'name'  => $map[0]['name'],
-            'title' => $map[0]['title']
+            'id'    => $map['id'],
+            'name'  => $map['name'],
+            'title' => $map['title']
         ];
 
         if (empty($hosts) && empty($services)) {
             return [
                 'icon'       => $this->errorIcon,
                 'color'      => 'text-primary',
-                'background' => 'bg-color-blueLight',
+                'background' => 'bg-not-monitored',
                 'Map'        => $map
             ];
         }
@@ -2159,6 +2158,11 @@ class MapsTable extends Table {
                     $map[$mapObjectType][$index]['object_id'] = $mapObjectUuid;
 
                 } else {
+                    if ($mapObjectType === 'maplines' && isset($mapItem['type']) && $mapItem['type'] === 'stateless') {
+                        //Keep stateless map lines
+                        continue;
+                    }
+
                     //Item is not available on this satellite
                     unset($map[$mapObjectType][$index]);
                 }
@@ -2283,5 +2287,21 @@ class MapsTable extends Table {
                 //Unknown object
                 return false;
         }
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getMapById($id) {
+        $query = $this->find()
+            ->contain(['Containers'])
+            ->where([
+                'Maps.id' => $id,
+            ]);
+
+        $result = $query->firstOrFail();
+
+        return $result->toArray();
     }
 }

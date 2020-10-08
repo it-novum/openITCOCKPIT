@@ -127,6 +127,11 @@ class Hoststatus {
     private $latency;
 
     /**
+     * @var string
+     */
+    private $last_time_up;
+
+    /**
      * @var UserTime|null
      */
     private $UserTime;
@@ -213,6 +218,10 @@ class Hoststatus {
 
         if (isset($data['latency'])) {
             $this->latency = (float)$data['latency'];
+        }
+
+        if (isset($data['last_time_up'])) {
+            $this->last_time_up = $data['last_time_up'];
         }
 
         $this->UserTime = $UserTime;
@@ -428,6 +437,13 @@ class Hoststatus {
         return $this->latency;
     }
 
+    public function getLastTimeUp() {
+        if (!is_numeric($this->last_time_up)) {
+            return strtotime($this->last_time_up);
+        }
+        return $this->last_time_up;
+    }
+
     /**
      * @return bool
      */
@@ -447,11 +463,13 @@ class Hoststatus {
         if ($this->UserTime !== null) {
             $arr['lastHardStateChange'] = $this->UserTime->format($this->getLastHardStateChange());
             $arr['last_state_change'] = $this->UserTime->format($this->getLastStateChange());
+            $arr['last_time_up'] = $this->UserTime->format($this->getLastTimeUp());
             $arr['lastCheck'] = $this->UserTime->format($this->getLastCheck());
             $arr['nextCheck'] = $this->UserTime->format($this->getNextCheck());
         } else {
             $arr['lastHardStateChange'] = $this->getLastHardStateChange();
             $arr['last_state_change'] = $this->getLastStateChange();
+            $arr['last_time_up'] = $this->getLastTimeUp();
             $arr['lastCheck'] = $this->getLastCheck();
             $arr['nextCheck'] = $this->getNextCheck();
         }

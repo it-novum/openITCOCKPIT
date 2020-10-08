@@ -31,7 +31,6 @@ use Cake\Datasource\FactoryLocator;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Composer\Autoload\ClassLoader;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 

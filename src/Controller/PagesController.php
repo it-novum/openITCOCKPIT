@@ -38,6 +38,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 use Cake\View\Exception\MissingTemplateException;
+use itnovum\openITCOCKPIT\Core\Locales;
 
 
 /**
@@ -81,6 +82,16 @@ class PagesController extends AppController {
                 }
             }
 
+            $language = Locales::getLanguageByLocalCode($user->get('i18n'));
+            $localesPath = Configure::read('App.paths.locales')[0];
+            $localeOptions = [];
+            $localeDirs = array_filter(glob($localesPath . '*'), 'is_dir');
+            array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath){
+                $i18n = substr($value, strlen($localesPath));
+                $language = Locales::getLanguageByLocalCode($i18n);
+                $localeOptions[] = $language;
+            });
+
             $userFullName = sprintf('%s %s', $user->get('firstname'), $user->get('lastname'));
 
             $this->set('systemname', $systemsettingsArray['FRONTEND']['FRONTEND.SYSTEMNAME']);
@@ -91,6 +102,8 @@ class PagesController extends AppController {
             $this->set('hasRootPrivileges', $this->hasRootPrivileges);
             $this->set('hasSubscription', $hasSubscription);
             $this->set('isCommunityEdition', $isCommunityEdition);
+            $this->set('language', $language);
+            $this->set('localeOptions', $localeOptions);
             // Ship the HTML layout to load JS and CSS files
             $this->viewBuilder()->setLayout('app_frame');
         }

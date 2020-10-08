@@ -36,7 +36,6 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
@@ -300,7 +299,7 @@ class TenantsController extends AppController {
                     'tenants',
                     $containerId,
                     OBJECT_TENANT,
-                    [ROOT_CONTAINER, $tenantForChangelog->get('container_id')],
+                    [ROOT_CONTAINER, $tenantForChangelog['container_id']],
                     $User->getId(),
                     $tenantForChangelog['container']['name'],
                     []

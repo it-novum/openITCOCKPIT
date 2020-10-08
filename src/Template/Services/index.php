@@ -142,6 +142,19 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by service description'); ?>"
+                                                   ng-model="filter.Services.servicedescription"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
                                                    ng-model="filter.Servicestatus.output"
                                                    ng-model-options="{debounce: 500}">
@@ -726,7 +739,7 @@
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                         <i class="fas fa-trash"></i>
-                                        <?php echo __('Delete all'); ?>
+                                        <?php echo __('Delete selected'); ?>
                                     </span>
                                 </div>
                             <?php endif; ?>
@@ -740,6 +753,15 @@
                                     <a ng-href="{{ linkForPdf() }}" class="dropdown-item">
                                         <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
                                     </a>
+                                    <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                                        <a
+                                           class="dropdown-item"
+                                           href="javascript:void(0);"
+                                           ng-click="confirmDeactivate(getObjectsForDelete())">
+                                            <i class="fa fa-plug"></i>
+                                            <?php echo __('Disable services'); ?>
+                                        </a>
+                                    <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
                                         <a class="dropdown-item" href="javascript:void(0);"
                                            ng-click="confirmAddServicesToServicegroup(getObjectsForDelete())">

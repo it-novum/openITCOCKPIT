@@ -24,7 +24,7 @@ angular.module('openITCOCKPIT')
                 Host: {
                     id: QueryStringService.getStateValue($stateParams, 'id', []),
                     name: (filterHostname) ? filterHostname : '',
-                    description: '',
+                    hostdescription: '',
                     keywords: '',
                     not_keywords: '',
                     address: QueryStringService.getValue('filter[Hosts.address]', ''),
@@ -75,7 +75,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Hosts.id][]': $scope.filter.Host.id,
                 'filter[Hosts.name]': $scope.filter.Host.name,
-                'filter[Hosts.description]': $scope.filter.Host.description,
+                'filter[hostdescription]': $scope.filter.Host.hostdescription,
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                 'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),

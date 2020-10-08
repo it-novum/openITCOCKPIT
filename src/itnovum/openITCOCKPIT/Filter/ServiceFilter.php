@@ -39,7 +39,8 @@ class ServiceFilter extends Filter {
             'like'     => [
                 'Hosts.name',
                 'servicename',
-                'Servicestatus.output'
+                'Servicestatus.output',
+                'servicedescription'
             ],
             'rlike'    => [
                 'keywords'

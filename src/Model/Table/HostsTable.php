@@ -442,6 +442,25 @@ class HostsTable extends Table {
             ->requirePresence('usage_flag', 'create')
             ->allowEmptyString('usage_flag', null, false);
 
+        $validator
+            ->add('parenthosts', 'custom', [
+                'rule'    => function ($value, $context) {
+                    if (!isset($context['data']['id'])) {
+                        //Not an update (new hosts can't be in an parent hosts loop) so nothing to check
+                        return true;
+                    }
+
+                    if (empty($value['_ids'])) {
+                        //No parent hosts selected - no loop
+                        return true;
+                    }
+
+                    //Parent host ids of current host
+                    return !$this->hasParentLoop2($value['_ids'], $context['data']['id']);
+                },
+                'message' => __('Parent/child loop detected.')
+            ]);
+
         return $validator;
     }
 
@@ -871,7 +890,8 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)')
+                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
                 ]
             ]
         ]);
@@ -917,6 +937,15 @@ class HostsTable extends Table {
             unset($where['hostpriority IN']);
         }
 
+        if (isset($where['hostdescription LIKE'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.description IS NULL OR Hosts.description=""), Hosttemplates.description, Hosts.description)',
+                $where['hostdescription LIKE'],
+                'string',
+                'LIKE'
+            );
+            unset($where['hostdescription LIKE']);
+        }
 
         $query->where($where);
 
@@ -1003,7 +1032,9 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)')
+                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
+
                 ]
             ]
         ]);
@@ -1047,6 +1078,15 @@ class HostsTable extends Table {
             unset($where['hostpriority IN']);
         }
 
+        if (isset($where['hostdescription LIKE'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.description IS NULL OR Hosts.description=""), Hosttemplates.description, Hosts.description)',
+                $where['hostdescription LIKE'],
+                'string',
+                'LIKE'
+            );
+            unset($where['hostdescription LIKE']);
+        }
 
         $query->where($where);
         $query->disableHydration();
@@ -1819,6 +1859,13 @@ class HostsTable extends Table {
             }
         }
 
+        if(!empty($where['NOT'])){
+            // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+            $where['NOT'] = [
+                'OR' => $where['NOT']
+            ];
+        }
+
         if (!empty($where)) {
             $query->where($where);
         }
@@ -1857,6 +1904,13 @@ class HostsTable extends Table {
                 } else {
                     $where['NOT'] = $HostConditions->getNotConditions();
                 }
+            }
+
+            if(!empty($where['NOT'])){
+                // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+                $where['NOT'] = [
+                    'OR' => $where['NOT']
+                ];
             }
 
 
@@ -3816,5 +3870,105 @@ class HostsTable extends Table {
             ];
         }
         return $types;
+    }
+
+    /**
+     * Returns an array of all parent host ids of a given host id
+     *
+     * @param int $hostId
+     * @return array
+     */
+    public function getParentHostIdsByHostId($hostId) {
+        /** @var HostsToParenthostsSelectTable $HostsToParenthostsTable */
+        $HostsToParenthostsTable = TableRegistry::getTableLocator()->get('HostsToParenthosts');
+
+        $query = $HostsToParenthostsTable->find()
+            ->where([
+                'host_id' => $hostId
+            ])
+            ->disableHydration()
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+
+        return Hash::extract($query->toArray(), '{n}.parenthost_id');
+    }
+
+    /**
+     * @param int[] $parentHostIds
+     * @param int $hostId
+     * @return bool
+     */
+    public function hasParentLoop2($parentHostIds, $hostId) {
+        $parentHostIds = $this->castToIntArray($parentHostIds);
+        $hostId = (int)$hostId;
+
+        if (in_array($hostId, $parentHostIds, true)) {
+            // given $hostId is used by another host as parent
+            return true;
+        }
+
+
+        foreach ($parentHostIds as $parentHostId) {
+            if ($this->hasParentLoop2($this->getParentHostIdsByHostId($parentHostId), $hostId)) {
+                // Loop via parent of a parent
+                return true;
+            }
+        }
+
+        //No parent loop detected
+        return false;
+
+    }
+
+    /**
+     * @param int $hostId
+     * @param int|null $originalHostId
+     * @return bool
+     */
+    public function hasParentLoop($hostId, $originalHostId = null) {
+        $hostId = (int)$hostId;
+        $parentHostIds = $this->getParentHostIdsByHostId($hostId);
+
+        if (in_array($hostId, $parentHostIds, true)) {
+            // given $hostId is used by another host as parent
+            return true;
+        }
+
+
+        foreach ($parentHostIds as $parentHostId) {
+            if ($parentHostId === $originalHostId) {
+                //Got a loop
+                return true;
+            }
+
+            if ($this->hasParentLoop($parentHostId, $originalHostId)) {
+                // Loop via parent of a parent
+                return true;
+            }
+        }
+
+        //No parent loop detected
+        return false;
+
+    }
+
+    /**
+     * @param array|int $arr
+     * @return int[]
+     */
+    protected function castToIntArray($arr) {
+        if (!is_array($arr)) {
+            $arr = [$arr];
+        }
+
+        $intArr = [];
+        foreach ($arr as $item) {
+            $item = (int)$item;
+            $intArr[$item] = $item;
+        }
+        return $intArr;
     }
 }

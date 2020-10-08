@@ -1,7 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('ExportsIndexController', function($scope, $http, NotyService){
         $scope.init = true;
-        $scope.verificationErrors = '';
         $scope.exportSuccessfully = true;
         $scope.selectedElements = 0;
         $scope.showLog = false;
@@ -11,6 +10,21 @@ angular.module('openITCOCKPIT')
         };
 
         var interval = null;
+
+        var resetVerificationErrors = function(){
+            $scope.verificationErrors = {
+                nagios: {
+                    hasError: false,
+                    output: ''
+                },
+                prometheus: {
+                    hasError: false,
+                    output: ''
+                },
+            };
+        };
+        resetVerificationErrors();
+
 
         $scope.load = function(){
             var params = {
@@ -26,6 +40,8 @@ angular.module('openITCOCKPIT')
                 $scope.satellites = result.data.satellites;
                 $scope.useSingleInstanceSync = result.data.useSingleInstanceSync;
                 $scope.init = false;
+            }, function errorCallback(result){
+                $scope.gearmanReachable = false;
             });
         };
 
@@ -48,7 +64,10 @@ angular.module('openITCOCKPIT')
                         $scope.exportSuccessfully = false;
                         for(var index in result.data.tasks){
                             var task = result.data.tasks[index];
-                            if(task.task === 'export_verify_new_configuration' && task.finished === 1 && task.successfully === 0){
+                            if(
+                                (task.task === 'export_verify_new_configuration' && task.finished === 1 && task.successfully === 0) ||
+                                (task.task === 'export_verify_new_prometheus_configuration' && task.finished === 1 && task.successfully === 0)
+                            ){
                                 //No monitoring configuration is not valid
                                 $scope.verifyConfig();
                             }
@@ -71,8 +90,11 @@ angular.module('openITCOCKPIT')
                     empty: true
                 }
             ).then(function(result){
-                $scope.verificationErrors = '';
-                $scope.verificationErrors = result.data.result.join("\n");
+                $scope.verificationErrors.nagios.hasError = result.data.result.nagios.hasError;
+                $scope.verificationErrors.nagios.output = result.data.result.nagios.output.join("\n");
+
+                $scope.verificationErrors.prometheus.hasError = result.data.result.prometheus.hasError;
+                $scope.verificationErrors.prometheus.output = result.data.result.prometheus.output.join("\n");
             });
 
 
@@ -110,7 +132,7 @@ angular.module('openITCOCKPIT')
         $scope.launchExport = function(){
             $scope.exportFinished = false;
             $scope.exportSuccessfully = true;
-            $scope.verificationErrors = '';
+            resetVerificationErrors();
             $scope.exportRunning = true;
             $scope.showLog = true;
             NotyService.scrollTop();

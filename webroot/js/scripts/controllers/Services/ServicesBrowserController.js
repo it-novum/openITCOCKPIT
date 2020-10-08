@@ -38,6 +38,7 @@ angular.module('openITCOCKPIT')
             8760: '1 year'
         };
         $scope.currentSelectedTimerange = 3;
+        $scope.currentAggregation = 'avg';
 
         $scope.visTimeline = null;
         $scope.visTimelineInit = true;
@@ -105,6 +106,7 @@ angular.module('openITCOCKPIT')
                 })
             ]).then(function(results){
                 $scope.mergedService = results[0].data.mergedService;
+                $scope.serviceType = results[0].data.serviceType;
                 $scope.checkCommand = results[0].data.checkCommand;
                 $scope.areContactsFromService = results[0].data.areContactsFromService;
                 $scope.areContactsInheritedFromHosttemplate = results[0].data.areContactsInheritedFromHosttemplate;
@@ -131,6 +133,10 @@ angular.module('openITCOCKPIT')
 
                 $scope.canSubmitExternalCommands = results[0].data.canSubmitExternalCommands;
 
+                //Host container info
+                $scope.mainContainer = results[0].data.mainContainer;
+                $scope.sharedContainers = results[0].data.sharedContainers;
+
                 $scope.priorities = {
                     1: false,
                     2: false,
@@ -155,6 +161,16 @@ angular.module('openITCOCKPIT')
                 for(var dsName in results[0].data.mergedService.Perfdata){
                     $scope.dataSources.push(dsName);
                 }
+
+                if($scope.mergedService.service_type === 32){ //This is a Prometheus Service
+                    //All Prometheus Services have perfdata available.
+                    //The name of the metric is always the name of the service
+                    // One Prometheus Services can also only have one metric (gauge or datasource named in Nagios univers)
+                    $scope.dataSources = [
+                        $scope.mergedService.name
+                    ];
+                }
+
                 if($scope.dataSources.length > 0){
                     $scope.currentDataSource = $scope.dataSources[0];
                 }
@@ -168,7 +184,7 @@ angular.module('openITCOCKPIT')
                         autoload: true,
                         serviceId: $scope.mergedService.id,
                         includeServicestatus: true,
-                        showReschedulingButton: true,
+                        showReschedulingButton: $scope.mergedService.service_type !== 32, //do not show for Prometheus Services
                         rescheduleCallback: $scope.serviceBrowserMenuReschedulingCallback,
                         showBackButton: false
                     };
@@ -270,6 +286,12 @@ angular.module('openITCOCKPIT')
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
         };
 
+        $scope.changeAggregation = function(aggregation){
+            $scope.currentAggregation = aggregation;
+
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, true, lastGraphStart, lastGraphEnd, false);
+        };
+
         var getServicestatusTextColor = function(){
             switch($scope.servicestatus.currentState){
                 case 0:
@@ -312,7 +334,8 @@ angular.module('openITCOCKPIT')
                     start: start,
                     end: end,
                     jsTimestamp: 1,
-                    gauge: $scope.currentDataSource
+                    gauge: $scope.currentDataSource,
+                    aggregation: $scope.currentAggregation
                 };
 
                 if($scope.currentGraphUnit !== null){
@@ -377,6 +400,7 @@ angular.module('openITCOCKPIT')
         var initTooltip = function(){
             var previousPoint = null;
             var $graph_data_tooltip = $('#graph_data_tooltip');
+            var hideTimeout = null;
 
             $graph_data_tooltip.css({
                 position: 'absolute',
@@ -400,6 +424,11 @@ angular.module('openITCOCKPIT')
 
                 if(item){
                     if(previousPoint != item.dataIndex){
+                        if(hideTimeout !== null){
+                            clearTimeout(hideTimeout);
+                            hideTimeout = null;
+                        }
+
                         previousPoint = item.dataIndex;
 
                         $('#graph_data_tooltip').hide();
@@ -413,11 +442,13 @@ angular.module('openITCOCKPIT')
                             tooltip_text += ' ' + $scope.currentGraphUnit;
                         }
 
+                        //Hide the tooltip after 5 seconds
+                        hideTimeout = setTimeout(function(){
+                            $('#graph_data_tooltip').hide();
+                        }, 5000);
+
                         showTooltip(item.pageX, item.pageY, tooltip_text, item.datapoint[0]);
                     }
-                }else{
-                    $("#graph_data_tooltip").hide();
-                    previousPoint = null;
                 }
             });
         };

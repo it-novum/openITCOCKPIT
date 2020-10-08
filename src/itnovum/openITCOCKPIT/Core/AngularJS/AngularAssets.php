@@ -45,6 +45,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/node-waves/dist/waves.js',
         'node_modules/angular/angular.min.js',
         'node_modules/angular-ui-router/release/angular-ui-router.min.js',
+        'node_modules/angular-ui-router/release/stateEvents.min.js',
         'node_modules/jquery.cookie/jquery.cookie.js',
         'js/lib/chosen.jquery.min.js',
         'node_modules/bootstrap4-tagsinput/tagsinput.js',
@@ -92,7 +93,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
         'node_modules/spectrum-colorpicker2/dist/spectrum.min.js',
         'node_modules/chart.js/dist/Chart.min.js',
-        'node_modules/highlight-within-textarea/jquery.highlight-within-textarea.js',
+        'js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js',
         'node_modules/jquery-sparkline/jquery.sparkline.min.js',
         'js/lib/raphael-charts-cust/raphael.js',
         'js/lib/raphael-charts-cust/raphael-charts-0.2.1.js',
@@ -113,7 +114,6 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/node-waves/dist/waves.css',
         '/node_modules/bootstrap4-tagsinput/tagsinput.css',
         '/node_modules/bootstrap4c-chosen/dist/css/component-chosen.css',
-        '/node_modules/highlight-within-textarea/jquery.highlight-within-textarea.css',
         '/node_modules/dropzone/dist/min/dropzone.min.css',
         '/node_modules/font-awesome/css/font-awesome.css',
         '/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
@@ -146,12 +146,14 @@ class AngularAssets implements AngularAssetsInterface {
         '/css/console.css',
         '/css/lib/ansi.css',
         '/css/lib/image-picker.css',
+        '/js/lib/highlight-within-textarea/jquery.highlight-within-textarea.css',
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
         '/css/openitcockpit.css',
         '/css/openitcockpit-menu.css',
         '/css/nestable.css',
-        '/css/openitcockpit-vis.css'
+        '/css/openitcockpit-vis.css',
+        '/css/thresholds.css'
     ];
 
     /**

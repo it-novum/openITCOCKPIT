@@ -36,7 +36,7 @@ WorkerOCHP = "statusngin_worker_ochp"
 WorkerOCSP = "statusngin_worker_ocsp"
 
 SystemCommandData = "statusngin_systemcommands"
-CommentData = "statusngin_comments"
+#CommentData = "statusngin_comments"
 #ExternalCommandData = "statusngin_externalcommands"
 #NotificationData = "statusngin_notifications"
 #ProgramStatusData = "statusngin_programmstatus"

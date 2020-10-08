@@ -16,9 +16,11 @@
 namespace App;
 
 use App\Authenticator\ApikeyAuthenticator;
+use App\Authenticator\oAuthAuthenticator;
 use App\Authenticator\SslAuthenticator;
 use App\Identifier\ApikeyIdentifier;
 use App\Identifier\LdapIdentifier;
+use App\Identifier\oAuthIdentifier;
 use App\Identifier\PasswordIdentifier;
 use App\Identifier\SslIdentifier;
 use App\Lib\PluginManager;
@@ -44,6 +46,7 @@ use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Http\ServerRequest;
+use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
@@ -149,6 +152,13 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             ]);
         }
 
+        // Load oAuth identifier
+        if (isset($_GET['code'])) {
+            $service->loadIdentifier('Authentication.oAuth', [
+                'className' => oAuthIdentifier::class
+            ]);
+        }
+
         // Load Apikey identifier
         $service->loadIdentifier('Authentication.Apikey', [
             'className' => ApikeyIdentifier::class
@@ -172,6 +182,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $expireAt->setTimestamp(time() + (3600 * 24 * 31)); // In one month
         $service->loadAuthenticator('Authentication.Cookie', [
             'rememberMeField' => 'remember_me',
+            'fields'          => $fields,
             'cookie'          => [
                 'expire' => $expireAt
             ]
@@ -182,12 +193,17 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             'loginUrl' => '/users/login',
         ]);
 
+        //oAuth
+        $service->loadAuthenticator('Authentication.oAuth', [
+            'className'    => oAuthAuthenticator::class,
+        ]);
+
         //Stateless API Key login
         $service->loadAuthenticator('Authentication.Apikey', [
-            'queryParam'  => 'apikey',
-            'header'      => 'Authorization',
+            'queryParam'   => 'apikey',
+            'header'       => 'Authorization',
             'apikeyPrefix' => 'X-OITC-API',
-            'className'   => ApikeyAuthenticator::class,
+            'className'    => ApikeyAuthenticator::class,
         ]);
 
         return $service;

@@ -518,15 +518,15 @@ class UnitScaler {
                 'factor' => 1000
             ],
             2 => [
-                'unit'   => ['Mhz'],
+                'unit'   => ['Mhz', 'mhz'],
                 'factor' => 1000
             ],
             3 => [
-                'unit'   => ['Ghz'],
+                'unit'   => ['Ghz', 'ghz'],
                 'factor' => 1000
             ],
             4 => [
-                'unit'   => ['Thz'],
+                'unit'   => ['Thz', 'thz'],
                 'factor' => 1000
             ]
         ];

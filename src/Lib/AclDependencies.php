@@ -136,7 +136,8 @@ class AclDependencies {
             ->allow('Angular', 'calendar')
             ->allow('Angular', 'reload_required')
             ->allow('Angular', 'colorpicker')
-            ->allow('Angular', 'popover_graph');
+            ->allow('Angular', 'popover_graph')
+            ->allow('Angular', 'thresholds');
 
         $this
             ->allow('Agentconnector', 'certificate')
@@ -172,7 +173,8 @@ class AclDependencies {
             ->allow('Profile', 'apikey')
             ->allow('Profile', 'edit_apikey')
             ->allow('Profile', 'delete_apikey')
-            ->allow('Profile', 'create_apikey');
+            ->allow('Profile', 'create_apikey')
+            ->allow('Profile', 'updateI18n');
 
         $this
             ->allow('Proxy', 'getSettings');
@@ -225,7 +227,8 @@ class AclDependencies {
             ->allow('Dashboards', 'getServiceWithStateById')
             ->allow('Dashboards', 'hostStatusOverviewWidget')
             ->allow('Dashboards', 'tachoWidget')
-            ->allow('Dashboards', 'serviceStatusOverviewWidget');
+            ->allow('Dashboards', 'serviceStatusOverviewWidget')
+            ->allow('Dashboards', 'websiteWidget');
 
         $this
             ->allow('Hosts', 'view')
@@ -243,7 +246,8 @@ class AclDependencies {
 
         $this
             ->allow('Users', 'login')
-            ->allow('Users', 'logout');
+            ->allow('Users', 'logout')
+            ->allow('Users', 'getLocaleOptions');
 
         ///////////////////////////////
         //    Add dependencies       //
@@ -499,10 +503,6 @@ class AclDependencies {
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadEventhandlerCommandArguments')
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadElementsByContainerId');
 
-
-        $this
-            ->dependency('Profile', 'edit', 'Users', 'getLocaleOptions');
-
         $this
             ->dependency('Users', 'index', 'Users', 'view')
             ->dependency('Users', 'index', 'Users', 'loadUsersByContainerId')
@@ -513,13 +513,11 @@ class AclDependencies {
             ->dependency('Users', 'add', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'loadContainerRoles')
             ->dependency('Users', 'add', 'Users', 'loadContainerPermissions')
-            ->dependency('Users', 'add', 'Users', 'getLocaleOptions')
             ->dependency('Users', 'edit', 'Users', 'resetPassword')
             ->dependency('Users', 'edit', 'Users', 'loadDateformats')
             ->dependency('Users', 'edit', 'Users', 'loadUsergroups')
             ->dependency('Users', 'edit', 'Users', 'loadContainerRoles')
-            ->dependency('Users', 'edit', 'Users', 'loadContainerPermissions')
-            ->dependency('Users', 'edit', 'Users', 'getLocaleOptions');
+            ->dependency('Users', 'edit', 'Users', 'loadContainerPermissions');
 
 
         $this

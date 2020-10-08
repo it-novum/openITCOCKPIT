@@ -25,6 +25,7 @@ angular.module('openITCOCKPIT')
                     i18n: 'en_US',
                     password: '',
                     confirm_password: '',
+                    is_oauth: 0,
 
                     usergroup_id: 0,
                     usercontainerroles: {
@@ -139,6 +140,12 @@ angular.module('openITCOCKPIT')
                 ContainersUsersMemberships[containerId] = $scope.selectedUserContainerWithPermission[containerId].permission_level;
             }
             $scope.post.User.ContainersUsersMemberships = ContainersUsersMemberships;
+
+            if($scope.post.User.is_oauth === 1){
+                //oAuth 2 users don't have a password
+                $scope.post.User.password = '';
+                $scope.post.User.confirm_password = '';
+            }
 
             $http.post("/users/add.json?angular=true",
                 $scope.post

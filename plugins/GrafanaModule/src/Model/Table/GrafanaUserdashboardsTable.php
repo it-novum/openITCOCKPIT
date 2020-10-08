@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace GrafanaModule\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Core\Plugin;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Query;
@@ -210,8 +211,33 @@ class GrafanaUserdashboardsTable extends Table {
                                     $query->select([
                                         'id',
                                         'name',
-                                        'uuid'
+                                        'uuid',
+                                        'service_type'
                                     ]);
+
+                                    if (Plugin::isLoaded('PrometheusModule')) {
+                                        $query->contain('PrometheusAlertRules', function (Query $query) {
+                                            return $query
+                                                ->disableAutoFields()
+                                                ->select([
+                                                    'id',
+                                                    'host_id',
+                                                    'service_id',
+                                                    'promql',
+                                                    'unit',
+                                                    'threshold_type',
+                                                    'warning_min',
+                                                    'warning_max',
+                                                    'critical_min',
+                                                    'critical_max',
+                                                    'warning_longer_as',
+                                                    'critical_longer_as',
+                                                    'warning_operator',
+                                                    'critical_operator'
+                                                ]);
+                                        });
+                                    }
+
                                     $query->contain([
                                         'Servicetemplates' => function (Query $query) {
                                             $query->disableAutoFields();

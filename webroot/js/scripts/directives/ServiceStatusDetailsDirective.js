@@ -146,6 +146,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
             var initTooltip = function(){
                 var previousPoint = null;
                 var $graph_data_tooltip = $('#graph_data_tooltip');
+                var hideTimeout = null;
 
                 $graph_data_tooltip.css({
                     position: 'absolute',
@@ -170,6 +171,11 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
 
                     if(item){
                         if(previousPoint != item.dataIndex){
+                            if(hideTimeout !== null){
+                                clearTimeout(hideTimeout);
+                                hideTimeout = null;
+                            }
+
                             previousPoint = item.dataIndex;
 
                             $('#graph_data_tooltip').hide();
@@ -183,11 +189,13 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                                 tooltip_text += ' ' + item.series.unit;
                             }
 
+                            //Hide the tooltip after 5 seconds
+                            hideTimeout = setTimeout(function(){
+                                $('#graph_data_tooltip').hide();
+                            }, 5000);
+
                             showTooltip(item.pageX, item.pageY, tooltip_text, item.datapoint[0]);
                         }
-                    }else{
-                        $("#graph_data_tooltip").hide();
-                        previousPoint = null;
                     }
                 });
             };

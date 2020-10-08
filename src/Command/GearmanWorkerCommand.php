@@ -771,6 +771,12 @@ class GearmanWorkerCommand extends Command {
             case 'export_delete_old_configuration':
                 $NagiosConfigGenerator = new NagiosConfigGenerator();
                 $NagiosConfigGenerator->deleteAllConfigfiles();
+
+                if (Plugin::isLoaded('PrometheusModule')) {
+                    $PrometheusConfigGenerator = new \PrometheusModule\Lib\PrometheusConfigGenerator();
+                    $PrometheusConfigGenerator->deleteAllConfigfiles();
+                }
+
                 $return = ['task' => $payload['task']];
                 break;
 
@@ -868,6 +874,24 @@ class GearmanWorkerCommand extends Command {
                 $return = ['task' => $payload['task']];
                 break;
 
+            case 'export_prometheus_yml':
+                $PrometheusConfigGenerator = new \PrometheusModule\Lib\PrometheusConfigGenerator();
+                $PrometheusConfigGenerator->createPrometheusYml();
+                $return = ['task' => $payload['task']];
+                break;
+
+            case 'export_prometheus_targets':
+                $PrometheusConfigGenerator = new \PrometheusModule\Lib\PrometheusConfigGenerator();
+                $PrometheusConfigGenerator->exportTargets();
+                $return = ['task' => $payload['task']];
+                break;
+
+            case 'export_prometheus_alert_rules':
+                $PrometheusConfigGenerator = new \PrometheusModule\Lib\PrometheusConfigGenerator();
+                $PrometheusConfigGenerator->exportAlertRules();
+                $return = ['task' => $payload['task']];
+                break;
+
             case 'export_verify_config':
 
                 /** @var SystemsettingsTable $SystemsettingsTable */
@@ -889,6 +913,31 @@ class GearmanWorkerCommand extends Command {
                     'output'     => $output,
                     'returncode' => $returncode,
                 ];
+                break;
+
+            case 'export_verify_prometheus_config':
+                $return = [
+                    'output'     => [],
+                    'returncode' => 0
+                ];
+
+                if (Plugin::isLoaded('PrometheusModule')) {
+                    /** @var SystemsettingsTable $SystemsettingsTable */
+                    $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                    $systemsettings = $SystemsettingsTable->findAsArray();
+
+                    $cmd = sprintf(
+                        'sudo -u %s /opt/openitc/prometheus/promtool check config /opt/openitc/prometheus/prometheus.yml 2>&1',
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER'])
+                    );
+
+                    exec($cmd, $output, $returncode);
+                    $return = [
+                        'output'     => $output,
+                        'returncode' => $returncode,
+                    ];
+                }
+
                 break;
 
             //case 'export_sync_sat_config':
@@ -1129,6 +1178,42 @@ class GearmanWorkerCommand extends Command {
             $entity->set('successfully', 1);
             $ExportsTable->save($entity);
             unset($entity);
+
+            if (Plugin::isLoaded('PrometheusModule')) {
+                $entity = $ExportsTable->newEntity([
+                    'task' => 'export_create_backup_prometheus',
+                    'text' => __('Create Backup of current Prometheus configuration')
+                ]);
+                $ExportsTable->save($entity);
+
+                //Backup Prometheus related config files
+                if (!is_dir('/opt/openitc/prometheus/backup')) {
+                    mkdir('/opt/openitc/prometheus/backup');
+                }
+
+                if (is_dir('/opt/openitc/prometheus/etc')) {
+                    $backupTarget = '/opt/openitc/prometheus/backup/' . date('d-m-Y_H-i-s');
+
+                    if (!is_dir($backupTarget)) {
+                        mkdir($backupTarget);
+                        mkdir($backupTarget . '/etc');
+                    }
+
+
+                    if (file_exists('/opt/openitc/prometheus/prometheus.yml')) {
+                        copy('/opt/openitc/prometheus/prometheus.yml', $backupTarget . '/prometheus.yml');
+                    }
+
+                    $backupSrc = new Folder('/opt/openitc/prometheus/etc');
+                    $backupSrc->copy($backupTarget . '/etc');
+
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 1);
+                    $ExportsTable->save($entity);
+                    unset($entity);
+                }
+            }
+
         }
 
         $gearmanConfig = Configure::read('gearman');
@@ -1211,6 +1296,18 @@ class GearmanWorkerCommand extends Command {
                 'text' => __('Export user defined macros'),
             ],
         ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $tasks['export_prometheus_yml'] = [
+                'text' => __('Create main Prometheus configuration file'),
+            ];
+            $tasks['export_prometheus_targets'] = [
+                'text' => __('Create Prometheus targets'),
+            ];
+            $tasks['export_prometheus_alert_rules'] = [
+                'text' => __('Create Prometheus alert rules'),
+            ];
+        }
 
         foreach ($tasks as $taskName => $task) {
             if (isset($task['options'])) {
@@ -1361,6 +1458,49 @@ class GearmanWorkerCommand extends Command {
             $successfully = 0;
             $verifyEntity->set('successfully', 0);
             $ExportsTable->save($verifyEntity);
+        }
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            //Verify new Prometheus configuration
+            $verifyEntity = $ExportsTable->newEntity([
+                'task' => 'export_verify_new_prometheus_configuration',
+                'text' => __('Verifying new Prometheus configuration')
+            ]);
+            $ExportsTable->save($verifyEntity);
+
+            $cmd = sprintf(
+                'sudo -u %s /opt/openitc/prometheus/promtool check config /opt/openitc/prometheus/prometheus.yml 2>&1',
+                escapeshellarg($systemsettings['MONITORING']['MONITORING.USER'])
+            );
+            $output = null;
+            exec($cmd, $output, $returncode);
+            $verifyEntity->set('finished', 1);
+            if ($returncode === 0) {
+                //New configuration is valid :-)
+
+                $verifyEntity->set('successfully', 1);
+                $ExportsTable->save($verifyEntity);
+
+                //Restart Prometheus
+                $entity = $ExportsTable->newEntity([
+                    'task' => 'export_restart_prometheus',
+                    'text' => __('Restarting Prometheus monitoring engine')
+                ]);
+                $ExportsTable->save($entity);
+                exec('systemctl restart prometheus.service', $restartOutput, $restartRc);
+                $entity->set('finished', 1);
+                $entity->set('successfully', 0);
+                if ($restartRc === 0) {
+                    $entity->set('successfully', 1);
+                }
+                $ExportsTable->save($entity);
+                unset($entity);
+            } else {
+                //Error with new configuration :-(
+                $successfully = 0;
+                $verifyEntity->set('successfully', 0);
+                $ExportsTable->save($verifyEntity);
+            }
         }
 
         //Export, reload/restart and after export done

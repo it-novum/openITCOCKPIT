@@ -27,9 +27,6 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
-use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
-
 class GrafanaApiConfiguration {
     /**
      * @var string
@@ -240,9 +237,13 @@ class GrafanaApiConfiguration {
      */
     public function getApiUrl() {
         if ($this->isDockerGrafana()) {
+            //The Docker Grafana of openITCOCKPIT can be accessed for API requests via
+            // http://127.0.0.1:8085/grafana
+            // Via this URL an login through the API Keys of Grafana is possible.
+
+            // The external URL https://xxx.xxx.xxx.xxx/grafana requires a valid openITCOCKPIT Auth Cookie - not good for API requests.
             return sprintf(
-                '%s127.0.0.1%s/api',
-                $this->isUseHttps() ? 'https://' : 'http://',
+                'http://127.0.0.1:8085%s/api',
                 $this->getDockerUrl()
             );
         }
@@ -361,7 +362,7 @@ class GrafanaApiConfiguration {
             $timerange
         );
 
-        if($this->isDockerGrafana()){
+        if ($this->isDockerGrafana()) {
             //Remove /grafana prefix to avoid /grafana/grafana
             return substr($url, strlen($this->getDockerUrl()));
         }

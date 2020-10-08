@@ -27,21 +27,16 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use Acl\Controller\Component\AclComponent;
 use Acl\Model\Table\AcosTable;
 use Acl\Model\Table\ArosTable;
 use App\Lib\AclDependencies;
 use App\Model\Table\ArosAcosTable;
 use App\Model\Table\UsergroupsTable;
 use Cake\Cache\Cache;
-use Cake\Controller\ComponentRegistry;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
@@ -228,6 +223,12 @@ class UsergroupsController extends AppController {
 
         if ($this->request->is('post')) {
             $usergroup->setAccess('id', false);
+
+            if ($usergroup->get('name') === 'Administrator') {
+                //An 'Administrator' is required!
+                $usergroup->setAccess('name', false);
+            }
+
             $usergroup = $UsergroupsTable->patchEntity($usergroup, $this->request->getData());
             $UsergroupsTable->save($usergroup);
 
@@ -298,6 +299,10 @@ class UsergroupsController extends AppController {
         }
 
         $usergroup = $UsergroupsTable->get($id);
+
+        if ($usergroup->get('name') === 'Administrator') {
+            throw new \RuntimeException('The "Administrator" can not be deleted!');
+        }
 
         if ($UsergroupsTable->delete($usergroup)) {
             $this->set('success', true);

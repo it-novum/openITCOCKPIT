@@ -318,8 +318,7 @@ class MapeditorsController extends AppController {
                 }
                 break;
             case 'map':
-                $map = $MapsTable->getMapsForMaps($objectId, $mapId);
-
+                $map = $MapsTable->getMapById($objectId);
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}.id'), false)) {
@@ -331,7 +330,19 @@ class MapeditorsController extends AppController {
                     $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
 
                     //fetch all dependent map items after permissions check
-                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map[0]->id, $mapId);
+                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map['id'], $mapId);
+
+                    if (empty($mapItemToResolve)) {
+                        //Empty map
+                        $allowView = true;
+                        $properties = $MapsTable->getMapInformation(
+                            $HoststatusTable,
+                            $ServicestatusTable,
+                            $map,
+                            [],
+                            []
+                        );
+                    }
 
                     if (!empty($mapItemToResolve)) {
                         /** @var HostgroupsTable $HostgroupsTable */
@@ -339,7 +350,7 @@ class MapeditorsController extends AppController {
                         /** @var ServicegroupsTable $ServicegroupsTable */
                         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]->id, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS, false);
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS, false);
                         $mapItemIdToResolve = $mapItemToResolve['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
@@ -410,7 +421,6 @@ class MapeditorsController extends AppController {
                     }
                     break;
                 }
-                $allowView = false;
                 break;
             default:
                 throw new RuntimeException('Unknown map item type');
@@ -434,9 +444,9 @@ class MapeditorsController extends AppController {
 
         $childMapIds = $maps[$parentMapId];
         foreach ($childMapIds as $childMapId) {
-            $allRelatedMapIdsOfParent[] = $childMapId;
+            $allRelatedMapIdsOfParent[] = (int)$childMapId;
             //Is the children map used as parent map in an other relation?
-            if (isset($maps[$childMapId])) {
+            if (isset($maps[$childMapId]) && !in_array($childMapId, $allRelatedMapIdsOfParent, true)) { //in_array to avoid endless loop
                 //Rec
                 $allRelatedMapIdsOfParent = array_merge(
                     $allRelatedMapIdsOfParent,

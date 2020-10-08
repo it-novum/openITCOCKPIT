@@ -893,3 +893,7 @@ div.packetmanager-selection>span::selection {
     color: #1468f5;
     background: #ffffff;
 }
+
+.text-purple {
+    color: #bb1bf4 !important;
+}

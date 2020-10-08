@@ -30,12 +30,11 @@ namespace App\Controller;
 use App\Model\Table\ApikeysTable;
 use App\Model\Table\UsersTable;
 use Cake\Cache\Cache;
+use Cake\Core\Configure;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Apikey;
@@ -449,5 +448,38 @@ class ProfileController extends AppController {
     public function edit_apikey() {
         //Only ship HTML template
         return;
+    }
+
+    public function updateI18n() {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $User = new User($this->getUser());
+
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+
+        $localesPath = Configure::read('App.paths.locales')[0];
+        $locales = [];
+        $localeDirs = array_filter(glob($localesPath . '*'), 'is_dir');
+        array_walk($localeDirs, function ($value, $key) use (&$locales, $localesPath) {
+            $i18n = substr($value, strlen($localesPath));
+            $locales[] = $i18n;
+        });
+
+        $i18n = $this->request->getData('i18n', 'en_US');
+        if (in_array($i18n, $locales, true)) {
+            $user = $UsersTable->get($User->getId());
+            $user->set('i18n', $i18n);
+            $UsersTable->save($user);
+
+            //Update user information in $_SESSION
+            Cache::clearAll();
+            $session = $this->request->getSession();
+            $session->write('Auth', $UsersTable->get($User->getId()));
+        }
+
     }
 }

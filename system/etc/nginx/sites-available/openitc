@@ -29,3 +29,14 @@ server {
     include /etc/nginx/openitc/master.conf;
     include /etc/nginx/openitc/custom.conf;
 }
+
+#Grafana Auth Service
+server {
+    listen 127.0.0.1:8085;
+
+    server_tokens off;
+    add_header X-Frame-Options sameorigin;
+
+    include /etc/nginx/openitc/grafana.conf;
+
+}

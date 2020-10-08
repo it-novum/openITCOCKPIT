@@ -136,6 +136,7 @@
                                 <td class="text-center" class="width-15">
                                     <?php if ($this->Acl->hasPermission('edit', 'usergroups')): ?>
                                         <input type="checkbox"
+                                               ng-show="usergroup.name !== 'Administrator'"
                                                ng-model="massChange[usergroup.id]">
                                     <?php endif; ?>
                                 </td>
@@ -168,8 +169,9 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'usergroups')): ?>
-                                                <div class="dropdown-divider"></div>
+                                                <div class="dropdown-divider" ng-show="usergroup.name !== 'Administrator'"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(usergroup))"
+                                                   ng-show="usergroup.name !== 'Administrator'"
                                                    href="javascript:void(0);"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
@@ -207,7 +209,7 @@
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                         <i class="fas fa-trash"></i>
-                                        <?php echo __('Delete all'); ?>
+                                        <?php echo __('Delete selected'); ?>
                                     </span>
                                 </div>
                             <?php endif; ?>

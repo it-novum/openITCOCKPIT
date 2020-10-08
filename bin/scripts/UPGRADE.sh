@@ -71,6 +71,9 @@ mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
+chmod u+s /opt/openitc/nagios/libexec/check_icmp
+chmod u+s /opt/openitc/nagios/libexec/check_dhcp
+
 mkdir -p /opt/openitc/frontend/webroot/img/charts
 chown www-data:www-data /opt/openitc/frontend/webroot/img/charts
 
@@ -295,6 +298,24 @@ if [ "$DS_STATUSCODE" == "404" ]; then
 fi
 echo "Ok: Graphite datasource exists."
 
+echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
+DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+if [ "$DS_STATUSCODE" == "404" ]; then
+    echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
+    export NO_PROXY="127.0.0.1"
+    RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+      "name":"Prometheus",
+      "type":"prometheus",
+      "url":"http://victoriametrics:8428",
+      "access":"proxy",
+      "basicAuth":false,
+      "isDefault": false,
+      "jsonData": {}
+    }')
+    echo $RESPONSE | jq .
+fi
+echo "Ok: Prometheus/VictoriaMetrics datasource exists."
+
 if [ -f /opt/openitc/etc/grafana/api_key ]; then
     echo "Check for Grafana Configuration in openITCOCKPIT database"
     API_KEY=$(cat /opt/openitc/etc/grafana/api_key)
@@ -352,6 +373,16 @@ mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = RE
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-', 'fas fa-');"
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-exchange', 'fa-exchange-alt');"
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-pencil-square-o', 'fa-pencil-square');"
+
+# Fix flap detection settings ITC-2420
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE hosttemplates SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_up IS NULL AND flap_detection_on_down IS NULL AND flap_detection_on_unreachable IS NULL"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE hosttemplates SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_up=0 AND flap_detection_on_down=0 AND flap_detection_on_unreachable=0"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE hosts SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_up IS NULL AND flap_detection_on_down IS NULL AND flap_detection_on_unreachable IS NULL"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE hosts SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_up=0 AND flap_detection_on_down=0 AND flap_detection_on_unreachable=0"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE servicetemplates SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok IS NULL AND flap_detection_on_warning IS NULL AND flap_detection_on_unknown IS NULL AND flap_detection_on_critical IS NULL"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE servicetemplates SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok=0 AND flap_detection_on_warning=0 AND flap_detection_on_unknown=0 AND flap_detection_on_critical=0"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok IS NULL AND flap_detection_on_warning IS NULL AND flap_detection_on_unknown IS NULL AND flap_detection_on_critical IS NULL"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok=0 AND flap_detection_on_warning=0 AND flap_detection_on_unknown=0 AND flap_detection_on_critical=0"
 
 #ALC dependencies config for itc core
 echo "---------------------------------------------------------------"
@@ -460,6 +491,8 @@ chown www-data:www-data /opt/openitc/frontend/tmp
 chmod 777 /opt/openitc/frontend/tmp
 mkdir -p /opt/openitc/frontend/tmp/nagios
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+
+mkdir -p /opt/openitc/etc/nagios/nagios.cfg.d
 
 # Set filesystem permissions after all is done - again
 chown www-data:www-data /opt/openitc/logs/frontend

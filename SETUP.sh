@@ -33,12 +33,19 @@ chmod +x /usr/bin/oitc
 
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,nsta,statusengine} /opt/openitc/etc/statusengine/Config
+mkdir -p /opt/openitc/nagios/etc/config
+mkdir -p /opt/openitc/etc/nagios/nagios.cfg.d
 
 mkdir -p /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/logs/frontend
 chown nagios:nagios /opt/openitc/logs/frontend/nagios
+chown nagios:www-data /opt/openitc/nagios/etc/config
+chown nagios:www-data /opt/openitc/etc/nagios/nagios.cfg.d
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
+
+chmod u+s /opt/openitc/nagios/libexec/check_icmp
+chmod u+s /opt/openitc/nagios/libexec/check_dhcp
 
 mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
@@ -50,6 +57,10 @@ chown www-data:www-data /opt/openitc/frontend/webroot/img/charts
 if [[ -d /opt/openitc/frontend/plugins/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
 fi
+
+mkdir -p /opt/openitc/var/prometheus
+chown nagios:nagios /opt/openitc/var/prometheus
+mkdir -p /opt/openitc/var/prometheus/victoria-metrics
 
 echo "Enable new systemd services"
 systemctl daemon-reload
@@ -236,6 +247,24 @@ if [ "$DS_STATUSCODE" == "404" ]; then
     echo $RESPONSE | jq .
 fi
 echo "Ok: Graphite datasource exists."
+
+echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
+DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+if [ "$DS_STATUSCODE" == "404" ]; then
+    echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
+    export NO_PROXY="127.0.0.1"
+    RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+      "name":"Prometheus",
+      "type":"prometheus",
+      "url":"http://victoriametrics:8428",
+      "access":"proxy",
+      "basicAuth":false,
+      "isDefault": false,
+      "jsonData": {}
+    }')
+    echo $RESPONSE | jq .
+fi
+echo "Ok: Prometheus/VictoriaMetrics datasource exists."
 
 if [ -f /opt/openitc/etc/grafana/api_key ]; then
     echo "Check for Grafana Configuration in openITCOCKPIT database"

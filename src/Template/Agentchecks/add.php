@@ -97,7 +97,15 @@
 
                         <div class="form-group required" ng-class="{'has-error': errors.servicetemplate_id}">
                             <label class="col col-md-2 control-label">
-                                <?php echo __('Service template'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                    <a ui-sref="ServicetemplatesEdit({id:post.Agentcheck.servicetemplate_id})"
+                                       ng-if="post.Agentcheck.servicetemplate_id > 0">
+                                        <?php echo __('Service template'); ?>
+                                    </a>
+                                    <span ng-if="!post.Agentcheck.servicetemplate_id"><?php echo __('Service template'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Service template'); ?>
+                                <?php endif; ?>
                             </label>
                             <div class="col col-xs-10">
                                 <select data-placeholder="<?php echo __('Please choose'); ?>"

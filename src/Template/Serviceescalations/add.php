@@ -66,12 +66,12 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                id="ServiceescalationContainer"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                ng-options="container.key as container.value for container in containers"
-                                ng-model="post.Serviceescalation.container_id">
+                                    id="ServiceescalationContainer"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Serviceescalation.container_id">
                             </select>
                             <div ng-show="post.Serviceescalation.container_id < 1" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -92,14 +92,14 @@ Once a service escalated, contacts, contact group and notification options will 
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServiceescalationIncludeServices"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="services"
-                                    callback="loadServices"
-                                    ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
-                                    ng-model="post.Serviceescalation.services._ids">
+                                        id="ServiceescalationIncludeServices"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="services"
+                                        callback="loadServices"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
+                                        ng-model="post.Serviceescalation.services._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.services">
@@ -114,14 +114,14 @@ Once a service escalated, contacts, contact group and notification options will 
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServiceescalationExcludeServices"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="services_excluded"
-                                    callback="loadExcludedServices"
-                                    ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services_excluded"
-                                    ng-model="post.Serviceescalation.services_excluded._ids">
+                                        id="ServiceescalationExcludeServices"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="services_excluded"
+                                        callback="loadExcludedServices"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services_excluded"
+                                        ng-model="post.Serviceescalation.services_excluded._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.services_excluded">
@@ -136,13 +136,13 @@ Once a service escalated, contacts, contact group and notification options will 
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServiceescalationIncludeServicegroups"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="servicegroups"
-                                    ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups"
-                                    ng-model="post.Serviceescalation.servicegroups._ids">
+                                        id="ServiceescalationIncludeServicegroups"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="servicegroups"
+                                        ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups"
+                                        ng-model="post.Serviceescalation.servicegroups._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.servicegroups">
@@ -157,13 +157,13 @@ Once a service escalated, contacts, contact group and notification options will 
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServiceescalationServicegroupExcluded"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="servicegroups_excluded"
-                                    ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups_excluded"
-                                    ng-model="post.Serviceescalation.servicegroups_excluded._ids">
+                                        id="ServiceescalationServicegroupExcluded"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="servicegroups_excluded"
+                                        ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups_excluded"
+                                        ng-model="post.Serviceescalation.servicegroups_excluded._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.servicegroups_excluded">
@@ -176,11 +176,11 @@ Once a service escalated, contacts, contact group and notification options will 
                                 <?php echo __('First notification'); ?>
                             </label>
                             <input
-                                class="form-control"
-                                type="number"
-                                min="0"
-                                placeholder="0"
-                                ng-model="post.Serviceescalation.first_notification">
+                                    class="form-control"
+                                    type="number"
+                                    min="0"
+                                    placeholder="0"
+                                    ng-model="post.Serviceescalation.first_notification">
                             <div class="help-block">
                                 <?php echo __('Number of notifications that passed before the escalation rule will
                                     overwrite notification settings.'); ?>
@@ -195,11 +195,11 @@ Once a service escalated, contacts, contact group and notification options will 
                                 <?php echo __('Last notification'); ?>
                             </label>
                             <input
-                                class="form-control"
-                                type="number"
-                                min="0"
-                                placeholder="0"
-                                ng-model="post.Serviceescalation.last_notification">
+                                    class="form-control"
+                                    type="number"
+                                    min="0"
+                                    placeholder="0"
+                                    ng-model="post.Serviceescalation.last_notification">
                             <div class="help-block">
                                 <?php echo __('If number of last_notification is reached, the notification rule
                                     will be disabled and the notification options of the service will be used again.'); ?>
@@ -211,11 +211,11 @@ Once a service escalated, contacts, contact group and notification options will 
 
                         <div class="form-group required"
                              ng-class="{'has-error': errors.notification_interval}">
-                            <label class="col-xs-12 col-lg-2 control-label">
+                            <label class="control-label">
                                 <?php echo __('Notification interval'); ?>
                             </label>
                             <interval-input-directive
-                                interval="post.Serviceescalation.notification_interval"></interval-input-directive>
+                                    interval="post.Serviceescalation.notification_interval"></interval-input-directive>
                             <div class="col-xs-12 col-lg-offset-2">
                                 <div ng-repeat="error in errors.notification_interval">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -225,15 +225,23 @@ Once a service escalated, contacts, contact group and notification options will 
 
                         <div class="form-group">
                             <label class="control-label" for="ServiceescalationTimeperiod">
-                                <?php echo __('Escalation period'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Serviceescalation.timeperiod_id})"
+                                       ng-if="post.Serviceescalation.timeperiod_id > 0">
+                                        <?php echo __('Escalation period'); ?>
+                                    </a>
+                                    <span ng-if="!post.Serviceescalation.timeperiod_id"><?php echo __('Escalation period'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Escalation period'); ?>
+                                <?php endif; ?>
                             </label>
                             <select
-                                id="ServiceescalationTimeperiod"
-                                data-placeholder="<?php echo __('Please choose a escalation timeperiod'); ?>"
-                                class="form-control"
-                                chosen="timeperiods"
-                                ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                ng-model="post.Serviceescalation.timeperiod_id">
+                                    id="ServiceescalationTimeperiod"
+                                    data-placeholder="<?php echo __('Please choose a escalation timeperiod'); ?>"
+                                    class="form-control"
+                                    chosen="timeperiods"
+                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                    ng-model="post.Serviceescalation.timeperiod_id">
                                 <option></option>
                             </select>
                         </div>
@@ -244,13 +252,13 @@ Once a service escalated, contacts, contact group and notification options will 
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServiceescalationContacts"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="contacts"
-                                    ng-options="contact.key as contact.value for contact in contacts"
-                                    ng-model="post.Serviceescalation.contacts._ids">
+                                        id="ServiceescalationContacts"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="contacts"
+                                        ng-options="contact.key as contact.value for contact in contacts"
+                                        ng-model="post.Serviceescalation.contacts._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.contacts">
@@ -264,13 +272,13 @@ Once a service escalated, contacts, contact group and notification options will 
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServiceescalationContactgroups"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="contactgroups"
-                                    ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                    ng-model="post.Serviceescalation.contactgroups._ids">
+                                        id="ServiceescalationContactgroups"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="contactgroups"
+                                        ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                        ng-model="post.Serviceescalation.contactgroups._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.contactgroups">
@@ -283,6 +291,9 @@ Once a service escalated, contacts, contact group and notification options will 
                                     <label>
                                         <?php echo __('Escalation options'); ?>
                                     </label>
+                                    <div class="help-block">
+                                        <?= __('Enables the escalation for the selected states'); ?>
+                                    </div>
                                 </div>
                             </legend>
                             <div class="custom-control custom-checkbox margin-bottom-10"

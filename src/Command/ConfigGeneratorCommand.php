@@ -37,7 +37,6 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 /**
@@ -145,6 +144,11 @@ class ConfigGeneratorCommand extends Command implements CronjobInterface {
             case 'NSTAMaster':
                 $command = $systemsettings['INIT']['INIT.NSTA_RESTART'];
                 $this->restartService($command, 'Restart NSTA service', $io);
+                break;
+
+            case 'PrometheusCfgs_prometheus':
+                $this->restartService('prometheus.service', 'Restart Prometheus service', $io);
+                $this->restartService('prometheus_bridge.service', 'Restart Prometheus Bridge service', $io);
                 break;
 
             default:

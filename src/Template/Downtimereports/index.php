@@ -138,7 +138,15 @@
 
                                 <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
                                     <label class="control-label" for="ReportTimeperiod">
-                                        <?php echo __('Timeperiod'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id:post.timeperiod_id})"
+                                               ng-if="post.timeperiod_id > 0">
+                                                <?php echo __('Timeperiod'); ?>
+                                            </a>
+                                            <span ng-if="!post.timeperiod_id"><?php echo __('Timeperiod'); ?></span>
+                                        <?php else: ?>
+                                            <?php echo __('Timeperiod'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <select
                                         id="ReportTimeperiod"

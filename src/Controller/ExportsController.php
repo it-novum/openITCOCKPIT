@@ -33,12 +33,9 @@ use App\Model\Table\SystemsettingsTable;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
-use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use DistributeModule\Model\Entity\Satellite;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
-use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 class ExportsController extends AppController {
@@ -67,7 +64,7 @@ class ExportsController extends AppController {
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
             $satellitesEntities = $SatellitesTable->getSatellitesForExportIndex($this->MY_RIGHTS);
 
-            foreach($satellitesEntities as $satellitesEntity){
+            foreach ($satellitesEntities as $satellitesEntity) {
                 /** @var Satellite $satellitesEntity */
                 $satellites[] = $satellitesEntity->toAngularArray($UserTime);
             }
@@ -247,7 +244,7 @@ class ExportsController extends AppController {
      */
     public function verifyConfig() {
         if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
+            //throw new MethodNotAllowedException();
         }
 
         if (!$this->isAngularJsRequest()) {
@@ -260,10 +257,28 @@ class ExportsController extends AppController {
             throw new \Exception('Could not connect to Gearman Job Server');
         }
 
-        $result = $GearmanClient->send('export_verify_config');
-        $output = [];
-        if (isset($result['output'])) {
-            $output = $result['output'];
+        $nagiosResult = $GearmanClient->send('export_verify_config');
+        $output = [
+            'nagios'     => [
+                'hasError' => false,
+                'output'   => []
+            ],
+            'prometheus' => [
+                'hasError' => false,
+                'output'   => []
+            ]
+        ];
+        if (isset($nagiosResult['output']) && isset($nagiosResult['returncode'])) {
+            $output['nagios']['hasError'] = $nagiosResult['returncode'] > 0;
+            $output['nagios']['output'] = $nagiosResult['output'];
+        }
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $promResult = $GearmanClient->send('export_verify_prometheus_config');
+            if (isset($promResult['output']) && isset($promResult['returncode'])) {
+                $output['prometheus']['hasError'] = $promResult['returncode'] > 0;
+                $output['prometheus']['output'] = $promResult['output'];
+            }
         }
 
         $this->set('result', $output);

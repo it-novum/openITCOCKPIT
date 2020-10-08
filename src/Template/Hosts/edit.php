@@ -58,6 +58,13 @@
                         {{hostType.title}}
                     </span>
 
+                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                        <a ui-sref="HostsBrowser({id: post.Host.id})" class="btn btn-primary btn-xs mr-1 shadow-0">
+                            <i class="fa fa-desktop"></i>
+                            <?= __('View'); ?>
+                        </a>
+                    <?php endif; ?>
+
                     <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='HostsIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
@@ -140,7 +147,13 @@
 
                                 <div class="form-group required" ng-class="{'has-error': errors.hosttemplate_id}">
                                     <label class="control-label" for="HostTemplate">
-                                        <?php echo __('Host template'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                            <a ui-sref="HosttemplatesEdit({id:post.Host.hosttemplate_id})">
+                                                <?= __('Host template'); ?>
+                                            </a>
+                                        <?php else: ?>
+                                            <?= __('Host template'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <select
                                             id="HostTemplate"
@@ -321,7 +334,15 @@
                                         <div class="form-group" ng-class="{'has-error': errors.satellite_id}"
                                              ng-if="post.Host.host_type !== <?= EVK_HOST; ?>">
                                             <label class="control-label" for="SatellitesSelect">
-                                                <?php echo __('Satellite'); ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
+                                                    <a ui-sref="SatellitesEdit({id:post.Host.satellite_id})"
+                                                       ng-if="post.Host.satellite_id > 0">
+                                                        <?= __('Satellite'); ?>
+                                                    </a>
+                                                    <span ng-if="post.Host.satellite_id == 0"><?php echo __('Satellite'); ?></span>
+                                                <?php else: ?>
+                                                    <?= __('Satellite'); ?>
+                                                <?php endif; ?>
                                             </label>
                                             <select
                                                     id="SatellitesSelect"
@@ -350,7 +371,13 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.check_period_id}">
                                     <label class="control-label">
-                                        <?php echo __('Check period'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id:post.Host.check_period_id})">
+                                                <?= __('Check period'); ?>
+                                            </a>
+                                        <?php else: ?>
+                                            <?= __('Check period'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
@@ -400,7 +427,13 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.command_id}">
                                     <label class="control-label">
-                                        <?php echo __('Check command'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                            <a ui-sref="CommandsEdit({id:post.Host.command_id})">
+                                                <?= __('Check command'); ?>
+                                            </a>
+                                        <?php else: ?>
+                                            <?= __('Check command'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
@@ -427,7 +460,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.hostcommandargumentvalues}"
                                      ng-repeat="hostcommandargumentvalue in post.Host.hostcommandargumentvalues">
-                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-primary">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
                                         {{hostcommandargumentvalue.commandargument.human_name}}
                                     </label>
                                     <div class="col-xs-12 col-lg-8">
@@ -549,7 +582,13 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.notify_period_id}">
                                     <label class="control-label">
-                                        <?php echo __('Notification Period'); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id:post.Host.notify_period_id})">
+                                                <?= __('Notification period'); ?>
+                                            </a>
+                                        <?php else: ?>
+                                            <?= __('Notification period'); ?>
+                                        <?php endif; ?>
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
@@ -585,54 +624,87 @@
                                     </div>
                                 </div>
 
+
                                 <div class="form-group"
-                                     ng-class="{'has-error': errors.contacts}">
-                                    <label class="control-label">
-                                        <?php echo __('Contacts'); ?>
-                                    </label>
-                                    <div class="input-group" style="width: 100%;">
-                                        <select
-                                                id="ContactsPeriodSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="contacts"
-                                                multiple
-                                                ng-options="contact.key as contact.value for contact in contacts"
-                                                ng-model="post.Host.contacts._ids">
-                                        </select>
-                                        <template-diff ng-show="post.Host.hosttemplate_id"
-                                                       value="post.Host.contacts._ids"
-                                                       template-value="hosttemplate.Hosttemplate.contacts._ids"></template-diff>
+                                     ng-show="data.areContactsInheritedFromHosttemplate">
+                                    <div class="custom-control custom-checkbox  margin-bottom-10"
+                                         ng-class="{'has-error': errors.disableInheritance}">
+
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="resetContacts"
+                                               ng-model="data.disableInheritance">
+                                        <label class="custom-control-label" for="resetContacts">
+                                            <?php echo __('Disable inheritance'); ?>
+                                        </label>
                                     </div>
-                                    <div ng-repeat="error in errors.contacts">
-                                        <div class="help-block text-danger">{{ error }}</div>
+                                    <div class="col col-xs-12 col-md-offset-2 help-block"
+                                            ng-class="{'strikethrough': data.disableInheritance}">
+                                        <?php echo __('Contacts and contact groups got inherited from'); ?>
+                                        <span class="bold">
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                <a ui-sref="HosttemplatesEdit({id: post.Host.hosttemplate_id})">
+                                                    <?php echo __('host template'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('host template'); ?>
+                                            <?php endif; ?>
+                                        </span>
+                                        .
                                     </div>
                                 </div>
 
-                                <div class="form-group"
-                                     ng-class="{'has-error': errors.contactgroups}">
-                                    <label class="control-label">
-                                        <?php echo __('Contact groups'); ?>
-                                    </label>
-                                    <div class="input-group" style="width: 100%;">
-                                        <select
-                                                id="ContactgroupsSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="contactgroups"
-                                                multiple
-                                                ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                                ng-model="post.Host.contactgroups._ids">
-                                        </select>
-                                        <template-diff ng-show="post.Host.hosttemplate_id"
-                                                       value="post.Host.contactgroups._ids"
-                                                       template-value="hosttemplate.Hosttemplate.contactgroups._ids"></template-diff>
+                                <div id="ContactBlocker">
+                                    <div class="form-group"
+                                         ng-class="{'has-error': errors.contacts}">
+                                        <label class="control-label">
+                                            <?php echo __('Contacts'); ?>
+                                        </label>
+                                        <div class="input-group" style="width: 100%;">
+                                            <select
+                                                    id="ContactsPeriodSelect"
+                                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                                    class="form-control"
+                                                    chosen="contacts"
+                                                    multiple
+                                                    ng-options="contact.key as contact.value for contact in contacts"
+                                                    ng-model="post.Host.contacts._ids">
+                                            </select>
+                                            <template-diff ng-show="post.Host.hosttemplate_id"
+                                                           value="post.Host.contacts._ids"
+                                                           template-value="hosttemplate.Hosttemplate.contacts._ids"></template-diff>
+                                        </div>
+                                        <div ng-repeat="error in errors.contacts">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
-                                    <div ng-repeat="error in errors.contactgroups">
-                                        <div class="help-block text-danger">{{ error }}</div>
+
+                                    <div class="form-group"
+                                         ng-class="{'has-error': errors.contactgroups}">
+                                        <label class="control-label">
+                                            <?php echo __('Contact groups'); ?>
+                                        </label>
+                                        <div class="input-group" style="width: 100%;">
+                                            <select
+                                                    id="ContactgroupsSelect"
+                                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                                    class="form-control"
+                                                    chosen="contactgroups"
+                                                    multiple
+                                                    ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                                    ng-model="post.Host.contactgroups._ids">
+                                            </select>
+                                            <template-diff ng-show="post.Host.hosttemplate_id"
+                                                           value="post.Host.contactgroups._ids"
+                                                           template-value="hosttemplate.Hosttemplate.contactgroups._ids"></template-diff>
+                                        </div>
+                                        <div ng-repeat="error in errors.contactgroups">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
                                 </div>
 
+                                <hr>
 
                                 <?php
                                 $hostOptions = [

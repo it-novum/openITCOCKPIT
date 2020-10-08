@@ -27,9 +27,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\ServicesTable;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\ORM\TableRegistry;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 
 
@@ -57,6 +61,7 @@ class GraphgeneratorsController extends AppController {
         $gauge = $this->request->getQuery('gauge', '');
         $scale = $this->request->getQuery('scale', 'true') === 'true';
         $forcedUnit = $this->request->getQuery('forcedUnit', null);
+        $aggregation = $this->request->getQuery('aggregation', 'avg');
         $debug = $this->request->getQuery('debug', 'false') === 'true';
 
         $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
@@ -72,10 +77,22 @@ class GraphgeneratorsController extends AppController {
         }
 
         try {
-            $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, 'avg', $gauge, $scale, $forcedUnit, $debug);
-            $this->set('performance_data', $performance_data);
-            $this->viewBuilder()->setOption('serialize', ['performance_data']);
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
+            $service = $ServicesTable->getServiceByUuid($serviceUuid);
+            $Service = new Service($service);
+
+            if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
+                $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                $start = (int)$start;
+                $end = (int)$end;
+                $performance_data = $PrometheusPerfdataLoader->getPerfdataByUuid($Service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug);
+            } else {
+                $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, $aggregation, $gauge, $scale, $forcedUnit, $debug);
+                $this->set('performance_data', $performance_data);
+            }
+            $this->viewBuilder()->setOption('serialize', ['performance_data']);
         } catch (Exception $e) {
             error_log($e->getMessage());
             $performance_data[] = [

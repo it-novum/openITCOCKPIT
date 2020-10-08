@@ -29,13 +29,12 @@
     </li>
 
     <li ng-class="{active: container.key == containerId}" ng-repeat="container in breadcrumbs" class="breadcrumb-item">
-        <a ng-show="container.key == containerId">
+        <a ng-show="container.key == containerId" href="javascript:void(0);">
             {{container.value}}
         </a>
 
         <a ng-click="changeContainerId(container.key)"
-           class="pointer"
-           style="color:#337ab7;"
+           class="pointer text-primary" href="javascript:void(0);"
            ng-show="container.key != containerId">
             {{container.value}}
         </a>
@@ -72,13 +71,14 @@
                             </div>
                         </div>
                         <div class="padding-10">
-                            <div class="widget-body">
+                            <div class="widget-body text-primary">
                                 <div ng-repeat="container in containers">
-                                    <i class="fa fa-home" ng-show="containerId === 1"></i>
-                                    <i class="fa fa-link" ng-show="containerId !== 1"></i>
-                                    <span ng-click="changeContainerId(container.key)" class="pointer"
-                                          style="color:#337ab7;">
-                                        {{container.value}}
+                                    <i class="fa fa-globe" ng-show="container.value.containertype_id === 1"></i>
+                                    <i class="fa fa-home" ng-show="container.value.containertype_id === 2"></i>
+                                    <i class="fa fa-location-arrow" ng-show="container.value.containertype_id === 3"></i>
+                                    <i class="fa fa-link" ng-show="container.value.containertype_id === 5"></i>
+                                    <span ng-click="changeContainerId(container.value.id)" class="pointer">
+                                        {{container.value.name}}
                                     </span>
                                 </div>
                             </div>
@@ -675,7 +675,7 @@
                             </div>
                             <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
                                 <div class="col-xs-12 col-md-2">
-                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                    <a ui-sref="HostsCopy({ids: linkForCopy()})" class="a-clean">
                                         <i class="fas fa-files-o"></i>
                                         <?php echo __('Copy'); ?>
                                     </a>
@@ -685,7 +685,7 @@
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                         <i class="fas fa-trash"></i>
-                                        <?php echo __('Delete all'); ?>
+                                        <?php echo __('Delete selected'); ?>
                                     </span>
                                 </div>
                             <?php endif; ?>

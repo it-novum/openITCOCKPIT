@@ -116,7 +116,7 @@
                title="<?php echo __('External link'); ?>"
                target="_blank"
                class="btn btn-default btn-sm">
-                <i class="fa fa-external-link fa-lg">
+                <i class="fas fa-external-link-alt fa-lg">
                 </i>
             </a>
 

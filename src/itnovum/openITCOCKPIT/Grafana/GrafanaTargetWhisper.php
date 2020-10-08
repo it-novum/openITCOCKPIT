@@ -27,7 +27,7 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
-class GrafanaTarget {
+class GrafanaTargetWhisper implements GrafanaTargetInterface {
 
     /**
      * @var string
@@ -55,7 +55,7 @@ class GrafanaTarget {
     private $color = null;
 
     /**
-     * GrafanaTarget constructor.
+     * GrafanaTargetWhisper constructor.
      * @param $target
      * @param GrafanaTargetUnit $grafanaTargetUnit
      * @param GrafanaThresholds $grafanaThresholds
@@ -109,7 +109,29 @@ class GrafanaTarget {
     /**
      * @return null|string
      */
-    public function getColor(){
+    public function getColor() {
         return $this->color;
+    }
+
+    /**
+     * @param string $refId
+     * @return array
+     */
+    public function toJson(string $refId) {
+        $target = $this->getTarget();
+
+        if ($this->getAlias()) {
+            $target = sprintf(
+                'alias(%s, \'%s\')',
+                $this->getTarget(),
+                str_replace("'", '', $this->getAlias())
+            );
+        }
+
+        return [
+            'refId'      => $refId,
+            'datasource' => 'Graphite',
+            'target'     => $target
+        ];
     }
 }

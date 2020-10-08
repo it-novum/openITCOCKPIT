@@ -7,6 +7,7 @@ use Cake\Cache\Cache;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Model;
 
@@ -184,6 +185,15 @@ class SystemsettingsTable extends Table {
         return Cache::read('systemsettings_is_ldap_auth', 'permissions');
     }
 
+    public function isOAuth2() {
+        if (!Cache::read('systemsettings_is_o_auth_2', 'permissions')) {
+            $settings = $this->findAsArraySection('FRONTEND');
+            $value = $settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso';
+            Cache::write('systemsettings_is_o_auth_2', $value, 'permissions');
+        }
+        return Cache::read('systemsettings_is_o_auth_2', 'permissions');
+    }
+
     /**
      * @param string $key
      * @return array
@@ -231,6 +241,46 @@ class SystemsettingsTable extends Table {
             $result = $this->getSystemsettingByKey('FRONTEND.LDAP.TYPE');
 
             return $result->get('value') === 'openldap';
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function getOAuthConfig(){
+        $query = $this->find()
+            ->where([
+                'Systemsettings.key IN' => [
+                    'FRONTEND.SSO.CLIENT_ID',
+                    'FRONTEND.SSO.CLIENT_SECRET',
+                    'FRONTEND.SSO.AUTH_ENDPOINT',
+                    'FRONTEND.SSO.TOKEN_ENDPOINT',
+                    'FRONTEND.SSO.USER_ENDPOINT',
+                    'FRONTEND.SSO.NO_EMAIL_MESSAGE',
+                    'FRONTEND.SSO.LOG_OFF_LINK',
+                    'FRONTEND.SSO.AUTH_PROVIDER'
+                ]
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        return Hash::combine($result, '{n}.key', '{n}.value');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWebsiteWidgetEnabled() {
+        try {
+            if (!Cache::read('FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS', 'permissions')) {
+                $result = $this->getSystemsettingByKey('FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS');
+                $value = (int)$result->get('value');
+                $value = $value === 1;
+
+                Cache::write('FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS', $value, 'permissions');
+            }
+
+            return Cache::read('FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS', 'permissions');
         } catch (\Exception $e) {
             return false;
         }

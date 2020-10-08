@@ -32,7 +32,9 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Cache\Cache;
 use Cake\Http\CallbackStream;
@@ -44,10 +46,13 @@ use Cake\Utility\Hash;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Menu\Menu;
+use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
+use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
@@ -109,7 +114,7 @@ class AngularController extends AppController {
         return;
     }
 
-    public function popover_graph(){
+    public function popover_graph() {
         //Return HTML Template for PaginatorDirective
         return;
     }
@@ -209,7 +214,7 @@ class AngularController extends AppController {
         if ($showstatsinmenu) {
 
             $MY_RIGHTS = [];
-            if($this->hasRootPrivileges === false){
+            if ($this->hasRootPrivileges === false) {
                 $MY_RIGHTS = $this->MY_RIGHTS;
             }
 
@@ -974,8 +979,28 @@ class AngularController extends AppController {
         }
 
         if ($hostUrl) {
-            $HostMacroReplacer = new HostMacroReplacer($host->toArray());
-            $hostUrl = $HostMacroReplacer->replaceBasicMacros($hostUrl);
+            /** @var HosttemplatesTable $HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+            $hostForMerge = $HostsTable->getHostForBrowser($hostId);
+            $hosttemplateForMerge = $HosttemplatesTable->getHosttemplateForHostBrowser($hostForMerge['hosttemplate_id']);
+
+            //Merge host and inheritance data
+            $HostMergerForBrowser = new HostMergerForBrowser(
+                $hostForMerge,
+                $hosttemplateForMerge
+            );
+            $mergedHost = $HostMergerForBrowser->getDataForView();
+
+            $HostMacroReplacer = new HostMacroReplacer($mergedHost);
+            $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
+
+            $hostUrl =
+                $HostMacroReplacer->replaceBasicMacros(          // Replace $HOSTNAME$
+                    $HostCustomMacroReplacer->replaceAllMacros(  // Replace $_HOSTFOOBAR$
+                        $hostUrl
+                    )
+                );
         }
 
         if ($includeHoststatus) {
@@ -1054,10 +1079,52 @@ class AngularController extends AppController {
         }
 
         if ($serviceUrl) {
-            $HostMacroReplacer = new HostMacroReplacer($service->get('host')->toArray());
-            $ServiceMacroReplacer = new ServiceMacroReplacer($service->toArray());
-            $serviceUrl = $HostMacroReplacer->replaceBasicMacros($serviceUrl);
-            $serviceUrl = $ServiceMacroReplacer->replaceBasicMacros($serviceUrl);
+            $serviceForMerge = $ServicesTable->getServiceForBrowser($serviceId);
+            /** @var ServicetemplatesTable $ServicetemplatesTable */
+            $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+            $servicetemplateForMerge = $ServicetemplatesTable->getServicetemplateForServiceBrowser($service['servicetemplate_id']);
+
+            //Merge service and inheritance data
+            $ServiceMergerForView = new ServiceMergerForBrowser(
+                $serviceForMerge,
+                $servicetemplateForMerge,
+                [],
+                []
+            );
+            $mergedService = $ServiceMergerForView->getDataForView();
+
+            /** @var HosttemplatesTable $HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            $hostForMerge = $HostsTable->getHostForBrowser($serviceForMerge['host_id']);
+            $hosttemplateForMerge = $HosttemplatesTable->getHosttemplateForHostBrowser($hostForMerge['hosttemplate_id']);
+
+            //Merge host and inheritance data
+            $HostMergerForBrowser = new HostMergerForBrowser(
+                $hostForMerge,
+                $hosttemplateForMerge
+            );
+            $mergedHost = $HostMergerForBrowser->getDataForView();
+
+
+            //Replace macros in service url
+            $HostMacroReplacer = new HostMacroReplacer($mergedHost);
+            $ServiceMacroReplacer = new ServiceMacroReplacer($mergedService);
+            $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE);
+            $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
+            $serviceUrl =
+                $ServiceMacroReplacer->replaceBasicMacros(                  // Replace $SERVICEDESCRIPTION$
+                    $HostMacroReplacer->replaceBasicMacros(                 // Replace $HOSTNAME$
+                        $HostCustomMacroReplacer->replaceAllMacros(         // Replace $_HOSTFOOBAR$
+                            $ServiceCustomMacroReplacer->replaceAllMacros(  // Replace $_SERVICEFOOBAR$
+                                $serviceUrl
+                            )
+                        )
+                    )
+                );
+
         }
 
         if ($includeServicestatus) {
@@ -1110,6 +1177,11 @@ class AngularController extends AppController {
     public function sidebar() {
         //Only ship HTML template
         $this->set('hasRootPrivileges', $this->hasRootPrivileges);
+        return;
+    }
+
+    public function thresholds() {
+        //Return HTML Template for PaginatorDirective
         return;
     }
 }

@@ -50,7 +50,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'servicedependencies')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='ServicedependenciesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='ServicedependenciesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -65,12 +66,12 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                id="ServicedependenciesContainer"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                ng-options="container.key as container.value for container in containers"
-                                ng-model="post.Servicedependency.container_id">
+                                    id="ServicedependenciesContainer"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Servicedependency.container_id">
                             </select>
                             <div ng-show="post.Servicedependency.container_id < 1" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -91,14 +92,14 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServicedependenciesServices"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="services"
-                                    callback="loadServices"
-                                    ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
-                                    ng-model="post.Servicedependency.services._ids">
+                                        id="ServicedependenciesServices"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="services"
+                                        callback="loadServices"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
+                                        ng-model="post.Servicedependency.services._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.services">
@@ -113,14 +114,14 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServicedependenciesDependentServices"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="services_dependent"
-                                    callback="loadDependentServices"
-                                    ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services_dependent"
-                                    ng-model="post.Servicedependency.services_dependent._ids">
+                                        id="ServicedependenciesDependentServices"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="services_dependent"
+                                        callback="loadDependentServices"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services_dependent"
+                                        ng-model="post.Servicedependency.services_dependent._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.services_dependent">
@@ -135,13 +136,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServicedependencyServicegroups"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="servicegroups"
-                                    ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups"
-                                    ng-model="post.Servicedependency.servicegroups._ids">
+                                        id="ServicedependencyServicegroups"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="servicegroups"
+                                        ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups"
+                                        ng-model="post.Servicedependency.servicegroups._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.servicegroups">
@@ -156,13 +157,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServicedependenciesDependentServicegroups"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="servicegroups_dependent"
-                                    ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups_dependent"
-                                    ng-model="post.Servicedependency.servicegroups_dependent._ids">
+                                        id="ServicedependenciesDependentServicegroups"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="servicegroups_dependent"
+                                        ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups_dependent"
+                                        ng-model="post.Servicedependency.servicegroups_dependent._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.servicegroups_dependent">
@@ -172,16 +173,24 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <div class="form-group">
                             <label class="control-label">
-                                <?php echo __('Timeperiod'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Servicedependency.timeperiod_id})"
+                                       ng-if="post.Servicedependency.timeperiod_id > 0">
+                                        <?php echo __('Timeperiod'); ?>
+                                    </a>
+                                    <span ng-if="!post.Servicedependency.timeperiod_id"><?php echo __('Timeperiod'); ?></span>
+                                <?php else: ?>
+                                    <?php echo __('Timeperiod'); ?>
+                                <?php endif; ?>
                             </label>
                             <div class="input-group">
                                 <select
-                                    id="ServicedependenciesTimeperiod"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    chosen="timeperiods"
-                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                    ng-model="post.Servicedependency.timeperiod_id">
+                                        id="ServicedependenciesTimeperiod"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        chosen="timeperiods"
+                                        ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                        ng-model="post.Servicedependency.timeperiod_id">
                                     <option></option>
                                 </select>
                             </div>
@@ -399,7 +408,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
-                                            type="submit" ng-click="submit()"><?php echo __('Update service dependency'); ?></button>
+                                            type="submit"
+                                            ng-click="submit()"><?php echo __('Update service dependency'); ?></button>
                                     <a back-button href="javascript:void(0);" fallback-state='ServicedependenciesIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>

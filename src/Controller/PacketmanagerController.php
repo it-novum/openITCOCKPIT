@@ -31,7 +31,6 @@ use App\Model\Table\ProxiesTable;
 use App\Model\Table\RegistersTable;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
@@ -77,7 +76,7 @@ class PacketmanagerController extends AppController {
             if (!$http->error) {
                 if (strlen($http->data) > 0) {
                     $result['data'] = json_decode($http->data, true);
-                    if(!empty($result['data']['changelog'])) {
+                    if (!empty($result['data']['changelog'])) {
                         foreach ($result['data']['changelog'] as $index => $changelog) {
                             $result['data']['changelog'][$index]['Changelog']['changes'] = nl2br($result['data']['changelog'][$index]['Changelog']['changes']);
                         }
@@ -93,10 +92,14 @@ class PacketmanagerController extends AppController {
             exec('dpkg -l |grep openitcockpit-module', $output, $rc);
             //$output = $this->getTestDpkgOutput();
             foreach ($output as $line) {
-                $line = explode('  ', $line);
-                if (isset($line[1]) && preg_match('/openitcockpit-module-/', $line[1])) {
-                    $module = trim($line[1]);
+                preg_match_all('/(openitcockpit\-module\-)([^\s]+)/', $line, $matches);
+                if (isset($matches[0][0])) {
+                    $module = $matches[0][0];
                     $installedModules[$module] = true;
+                }
+
+                if (isset($matches)) {
+                    unset($matches);
                 }
             }
 
@@ -111,7 +114,7 @@ class PacketmanagerController extends AppController {
     /**
      * @return array
      */
-    private function getTestDpkgOutput(){
+    private function getTestDpkgOutput() {
         $output = [
             'ii  openitcockpit-module-autoreport       3.7.3-4ubuntu16.04~201912170227                 amd64        Auto Reporting module for openITCOCKPIT',
             'ii  openitcockpit-module-design           3.7.3-4ubuntu16.04~201912170227                 amd64        Change design of openITCOCKPIT',
@@ -124,7 +127,8 @@ class PacketmanagerController extends AppController {
             'ii  openitcockpit-module-openstreetmap    3.7.3-4ubuntu16.04~201912170227                 amd64        OpenStreetMap Module for openITCOCKPIT',
             'ii  openitcockpit-module-slack            3.7.3-4ubuntu16.04~201912170227                 amd64        Slack module for openITCOCKPIT',
             'ii  openitcockpit-module-wmi              3.7.3-4ubuntu16.04~201912170227                 amd64        WMI module for openITCOCKPIT',
-            'ii  openitcockpit-module-wmi-plugins      1.3.15-0ubuntu16.04~201912170224                amd64        plugins for wmi module.'
+            'ii  openitcockpit-module-wmi-plugins      1.3.15-0ubuntu16.04~201912170224                amd64        plugins for wmi module.',
+            'ii  openitcockpit-module-windows-basic-monitoring-nscp 4.1.0-20200923181004focal          all          openITCOCKPIT Frontend module windows-basic-monitoring-nscp package'
         ];
         return $output;
     }

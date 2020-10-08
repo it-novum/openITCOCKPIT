@@ -46,7 +46,7 @@ class GrafanaSeriesOverrides {
             }
 
             foreach ($targetCollection->getTargets() as $target) {
-                /** @var GrafanaTarget $target */
+                /** @var GrafanaTargetInterface $target */
 
                 // Get Y-axis id for current metric / unit
                 $axisId = $unitsToAxis[$target->getUnit()];
