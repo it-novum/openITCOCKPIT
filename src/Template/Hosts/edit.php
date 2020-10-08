@@ -979,6 +979,8 @@
                                         </div>
                                         <div class="help-block">
                                             <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
+                                            <br />
+                                            <?php echo __('Before you could query the host through Prometheus, you need to refresh the monitoring configuration.'); ?>
                                         </div>
                                         <div ng-repeat="error in errors.prometheus_exporters">
                                             <div class="help-block text-danger">{{ error }}</div>
