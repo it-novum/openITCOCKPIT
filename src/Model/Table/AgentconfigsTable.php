@@ -9,6 +9,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
 
@@ -247,15 +248,14 @@ class AgentconfigsTable extends Table {
             $hostId = $HostsTable->getHostIdByUuid($hostUuid);
 
             $query = $this->find()
-                ->enableAutoFields()
                 ->where([
                     'host_id' => $hostId,
                 ])
-                ->first();
+                ->firstOrFail();
 
-            if (!empty($query)) {
-                $this->_update($query, ['push_noticed' => $pushNoticed]);
-            }
+            $query->set('push_noticed', (int)$pushNoticed);
+            $this->save($query);
+
         } catch (\Exception $e) {
             //do nothing
         }
