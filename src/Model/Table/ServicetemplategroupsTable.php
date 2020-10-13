@@ -508,4 +508,39 @@ class ServicetemplategroupsTable extends Table {
 
         return $list;
     }
+
+    /**
+     * @param array $containerIds
+     * @return array
+     */
+    public function getServicetemplategroupsByContainerId(array $containerIds) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this->find()
+            ->contain([
+                'Containers'
+            ])
+            ->select([
+                'Containers.name',
+                'Servicetemplategroups.id'
+            ])
+            ->where([
+                'Containers.parent_id IN ' => $containerIds
+            ])
+            ->order([
+                'Containers.name' => 'asc'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $servicetemplategroups = [];
+        $result = $this->emptyArrayIfNull($query->toArray());
+        foreach ($result as $row) {
+            $servicetemplategroups[$row['id']] = $row['container']['name'];
+        }
+
+        return $servicetemplategroups;
+    }
+
 }
