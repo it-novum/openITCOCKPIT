@@ -221,7 +221,7 @@ if [ "$VERSION_CODENAME" == "stretch" ]; then
     openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e 'openitcockpit-statusengine3-oitc-mysql' -e 'openitcockpit-nagios-sat' -e 'openitcockpit-naemon-sat' -e 'openitcockpit-checkmk-sat' -e 'openitcockpit-statusengine3-broker-sat-nagios' -e 'openitcockpit-statusengine3-broker-sat-naemon' -e 'openitcockpit-statusengine-broker-sat-nagios' -e 'openitcockpit-statusengine-broker-sat-naemon' | xargs echo)
     openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /openitcockpit-/ {print $2}' | grep -e 'openitcockpit-statusengine3-oitc-mysql' -e 'openitcockpit-nagios-sat' -e 'openitcockpit-naemon-sat' -e 'openitcockpit-checkmk-sat' -e 'openitcockpit-statusengine3-broker-sat-nagios' -e 'openitcockpit-statusengine3-broker-sat-naemon' -e 'openitcockpit-statusengine-broker-sat-nagios' -e 'openitcockpit-statusengine-broker-sat-naemon') | xargs echo)
     php_upd=$(while read pkg; do echo "$pkg-"; if [ "$pkg" != "php7.0-mcrypt" ]; then echo "$pkg"|sed 's/php7.0/php7.3/'; fi; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /php7.0/ {print $2}') | xargs echo)
-    php5_rm=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l |  awk '$1 ~ /ii/ && $2 ~ /php5/') | xargs echo)
+    php5_rm=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l |  awk '$1 ~ /ii/ && $2 ~ /php5/ {print $2}') | xargs echo)
     always="openitcockpit-satellite"
 
     if [ ! -z "$(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /openitcockpit-checkmk-sat/')" ]; then
@@ -274,7 +274,7 @@ if [ "$VERSION_CODENAME" == "xenial" ]; then
     openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e 'openitcockpit-statusengine3-oitc-mysql' -e 'openitcockpit-nagios-sat' -e 'openitcockpit-naemon-sat' -e 'openitcockpit-checkmk-sat' -e 'openitcockpit-statusengine3-broker-sat-nagios' -e 'openitcockpit-statusengine3-broker-sat-naemon' -e 'openitcockpit-statusengine-broker-sat-nagios' -e 'openitcockpit-statusengine-broker-sat-naemon' | xargs echo)
     openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /openitcockpit-/ {print $2}' | grep -e 'openitcockpit-statusengine3-oitc-mysql' -e 'openitcockpit-nagios-sat' -e 'openitcockpit-naemon-sat' -e 'openitcockpit-checkmk-sat' -e 'openitcockpit-statusengine3-broker-sat-nagios' -e 'openitcockpit-statusengine3-broker-sat-naemon' -e 'openitcockpit-statusengine-broker-sat-nagios' -e 'openitcockpit-statusengine-broker-sat-naemon') | xargs echo)
     php_upd=$(while read pkg; do echo "$pkg-"; if [ "$pkg" != "php7.0-mcrypt" ]; then echo "$pkg"|sed 's/php7.0/php7.2/'; fi; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /php7.0/ {print $2}') | xargs echo)
-    php5_rm=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l |  awk '$1 ~ /ii/ && $2 ~ /php5/') | xargs echo)
+    php5_rm=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l |  awk '$1 ~ /ii/ && $2 ~ /php5/ {print $2}') | xargs echo)
     always="openitcockpit-satellite"
 
     if [ ! -z "$(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /openitcockpit-checkmk-sat/')" ]; then
@@ -322,7 +322,7 @@ if [ "$VERSION_CODENAME" == "bionic" ]; then
 
     openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e 'openitcockpit-statusengine3-oitc-mysql' -e 'openitcockpit-nagios-sat' -e 'openitcockpit-naemon-sat' -e 'openitcockpit-checkmk-sat' -e 'openitcockpit-statusengine3-broker-sat-nagios' -e 'openitcockpit-statusengine3-broker-sat-naemon' -e 'openitcockpit-statusengine-broker-sat-nagios' -e 'openitcockpit-statusengine-broker-sat-naemon' | xargs echo)
     openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /openitcockpit-/ {print $2}' | grep -e 'openitcockpit-statusengine3-oitc-mysql' -e 'openitcockpit-nagios-sat' -e 'openitcockpit-naemon-sat' -e 'openitcockpit-checkmk-sat' -e 'openitcockpit-statusengine3-broker-sat-nagios' -e 'openitcockpit-statusengine3-broker-sat-naemon' -e 'openitcockpit-statusengine-broker-sat-nagios' -e 'openitcockpit-statusengine-broker-sat-naemon') | xargs echo)
-    php5_rm=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l |  awk '$1 ~ /ii/ && $2 ~ /php5/') | xargs echo)
+    php5_rm=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l |  awk '$1 ~ /ii/ && $2 ~ /php5/ {print $2}') | xargs echo)
     always="openitcockpit-satellite"
 
     if [ ! -z "$(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /openitcockpit-checkmk-sat/')" ]; then
