@@ -2785,6 +2785,11 @@ class NagiosConfigGenerator {
         $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
         $proxySettings = $ProxiesTable->getSettings();
 
+        $isSystemsettingsProxyEnabled = false;
+        if ($proxySettings['enabled']) {
+            $isSystemsettingsProxyEnabled = true;
+        }
+
         $hosts = $HostsTable->getHostsThatUseOitcAgentForExport();
         if (empty($hosts)) {
             return;
@@ -2801,12 +2806,18 @@ class NagiosConfigGenerator {
 
                 if (!empty($services)) {
                     if (!empty($host['agentconfig']) && $host['agentconfig']['push_noticed'] == 0) {
+                        $proxy = false;
+                        if ($isSystemsettingsProxyEnabled === true && $host['agentconfig']['proxy'] === true) {
+                            //Proxy is enabled in systemsettings and enabled for this host.
+                            $proxy = $proxySettings['ipaddress'] . ':' . $proxySettings['port'];
+                        }
+
                         $config[$hostUuid] = [
                             'name'       => $host['name'],
                             'address'    => $host['address'],
                             'uuid'       => $hostUuid,
                             'port'       => $host['agentconfig'] && $host['agentconfig']['port'] ? $host['agentconfig']['port'] : '',
-                            'proxy'      => $host['agentconfig'] && $host['agentconfig']['proxy'] && $host['agentconfig']['proxy'] == 1 && $proxySettings['ipaddress'] != '' ? $proxySettings['ipaddress'] . ':' . $proxySettings['port'] : '',
+                            'proxy'      => $proxy,
                             'use_https'  => $host['agentconfig'] && $host['agentconfig']['use_https'] ? $host['agentconfig']['use_https'] : '',
                             'insecure'   => $host['agentconfig'] && $host['agentconfig']['insecure'] ? $host['agentconfig']['insecure'] : '',
                             'basic_auth' => $host['agentconfig'] && $host['agentconfig']['basic_auth'] ? $host['agentconfig']['basic_auth'] : '',

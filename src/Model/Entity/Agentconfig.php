@@ -13,6 +13,7 @@ use Cake\ORM\Entity;
  * @property bool $insecure
  * @property bool $basic_auth
  * @property string $password
+ * @property bool $proxy
  * @property bool $push_noticed
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
@@ -37,6 +38,7 @@ class Agentconfig extends Entity {
         'basic_auth'   => true,
         'username'     => true,
         'password'     => true,
+        'proxy'        => true,
         'push_noticed' => true,
         'created'      => true,
         'modified'     => true,

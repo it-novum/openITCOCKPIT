@@ -36,6 +36,7 @@ use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -191,6 +192,8 @@ class AgentconnectorController extends AppController {
             if ($AgentconfigsTable->existsById($id)) {
                 if ($action == 'edit') {
                     $Agentconfig = $AgentconfigsTable->get($id);
+                    $Agentconfig->setAccess('id', false);
+                    $Agentconfig->setAccess('push_noticed', false);
                     $Agentconfig = $AgentconfigsTable->patchEntity($Agentconfig, $this->request->getData('Agentconfig'));
                     $AgentconfigsTable->save($Agentconfig);
                     if (!$Agentconfig->hasErrors()) {
