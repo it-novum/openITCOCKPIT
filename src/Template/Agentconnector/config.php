@@ -566,6 +566,30 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
+                                                        <div class="form-group col-12" ng-show="pullMode">
+                                                            <div
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
+                                                                <input type="checkbox"
+                                                                       class="custom-control-input"
+                                                                       id="agentconfig.proxy"
+                                                                       ng-model="agentconfig.proxy">
+                                                                <label class="custom-control-label"
+                                                                       for="agentconfig.proxy">
+                                                                    <?php echo __('Use Proxy'); ?>
+                                                                </label>
+                                                                <div class="help-block">
+                                                                    <?php
+                                                                    if ($this->Acl->hasPermission('index', 'proxy', '')):
+                                                                        echo __('Determine if the <a href="/#!/proxy/index">configured proxy</a> should be used.');
+                                                                    else:
+                                                                        echo __('Determine if the configured proxy should be used.');
+                                                                    endif;
+                                                                    ?>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                     </div>
 
                                                 </div>

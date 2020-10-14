@@ -165,12 +165,21 @@ class AgentconfigsTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getConfigByHostId($hostId, $defaultIfNoConfig = true) {
+        /** @var ProxiesTable $ProxiesTable */
+        $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
+        $proxySettings = $ProxiesTable->getSettings();
+
+        $isSystemsettingsProxyEnabled = false;
+        if ($proxySettings['enabled']) {
+            $isSystemsettingsProxyEnabled = true;
+        }
+
         $default = [
             'port'         => 3333,
             'use_https'    => 0,
             'insecure'     => 1,
             'basic_auth'   => 0,
-            'proxy'        => 1,
+            'proxy'        => $isSystemsettingsProxyEnabled,
             'username'     => '',
             'password'     => '',
             'push_noticed' => 0
@@ -190,7 +199,7 @@ class AgentconfigsTable extends Table {
                 'use_https'    => (int)$record->get('use_https'),
                 'insecure'     => (int)$record->get('insecure'),
                 'basic_auth'   => (int)$record->get('basic_auth'),
-                'proxy'        => (int)$record->get('proxy'),
+                'proxy'        => $record->get('proxy'),
                 'username'     => $record->get('username'),
                 'password'     => $record->get('password'),
                 'push_noticed' => (int)$record->get('push_noticed'),

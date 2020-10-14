@@ -306,6 +306,15 @@
                             <input type="checkbox" id="proxy" class="custom-control-input"
                                    name="checkbox" ng-model="edit.proxy">
                             <label class="custom-control-label" for="proxy"><?php echo __('Use proxy'); ?></label>
+                            <span class="help-block">
+                                <?php
+                                if ($this->Acl->hasPermission('index', 'proxy', '')):
+                                    echo __('Determine if the <a href="/#!/proxy/index">configured proxy</a> should be used.');
+                                else:
+                                    echo __('Determine if the configured proxy should be used.');
+                                endif;
+                                ?>
+                            </span>
                         </div>
 
                         <div class="custom-control custom-checkbox">
@@ -331,6 +340,7 @@
 
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" id="push_noticed" class="custom-control-input"
+                                   disabled
                                    name="checkbox" ng-model="edit.push_noticed">
                             <label class="custom-control-label"
                                    for="push_noticed"><?php echo __('Push noticed'); ?></label>
