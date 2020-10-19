@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -35,6 +36,7 @@ class ServicetemplategroupsTable extends Table {
 
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method
