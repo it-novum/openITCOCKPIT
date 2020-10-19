@@ -345,9 +345,10 @@ echo ""
 
 if [ "$VERSION_CODENAME" == "stretch" ]; then
 
-    openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e openitcockpit-message -e openitcockpit-statusengine-naemon -e openitcockpit-module-nrpe -e openitcockpit-module-mk | xargs echo)
-    openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$2 ~ /openitcockpit-/ {print $2} $2 ~ /phpnsta/ {print $2}' | grep -e 'openitcockpit-wkhtmltopdf' -e 'phpnsta') | xargs echo)
-    php_upd=$(while read pkg; do echo "$pkg-"; if [ "$pkg" != "php7.0-mcrypt" ]; then echo "$pkg"|sed 's/php7.0/php7.3/'; fi; done< <(dpkg -l | awk '$2 ~ /php7.0/ {print $2}') | xargs echo)
+    openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e openitcockpit-message -e openitcockpit-statusengine-naemon -e openitcockpit-module-nrpe -e openitcockpit-module-mk -e openitcockpit-release -e openitcockpit-mysql -e openitcockpit-npcd | xargs echo)
+    openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /openitcockpit-/ {print $2} $1 ~ /ii/ && $2 ~ /phpnsta/ {print $2}' | grep -e 'openitcockpit-wkhtmltopdf' -e 'phpnsta' -e openitcockpit-release -e openitcockpit-mysql -e openitcockpit-npcd) | xargs echo)
+    php_upd=$(while read pkg; do echo "$pkg-"; if [ "$pkg" != "php7.0-mcrypt" ]; then echo "$pkg"|sed 's/php7.0/php7.3/'; fi; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /php7.0/ {print $2}') | xargs echo)
+    php5_rm=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l |  awk '$1 ~ /ii/ && $2 ~ /php5/ {print $2}') | xargs echo)
     always="openitcockpit openitcockpit-graphing wkhtmltox"
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-module-distribute/')" ]; then
@@ -382,7 +383,7 @@ if [ "$VERSION_CODENAME" == "stretch" ]; then
     echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
-    echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $always"
+    echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $php5_rm $always"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "###############################################################################"
     echo "${Reset}"
@@ -390,9 +391,10 @@ fi
 
 if [ "$VERSION_CODENAME" == "xenial" ]; then
 
-    openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e openitcockpit-message -e openitcockpit-statusengine-naemon -e openitcockpit-module-nrpe -e openitcockpit-module-mk | xargs echo)
-    openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$2 ~ /openitcockpit-/ {print $2} $2 ~ /phpnsta/ {print $2}' | grep -e 'openitcockpit-wkhtmltopdf' -e 'phpnsta') | xargs echo)
-    php_upd=$(while read pkg; do echo "$pkg-"; if [ "$pkg" != "php7.0-mcrypt" ]; then echo "$pkg"|sed 's/php7.0/php7.2/'; fi; done< <(dpkg -l | awk '$2 ~ /php7.0/ {print $2}') | xargs echo)
+    openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e openitcockpit-message -e openitcockpit-statusengine-naemon -e openitcockpit-module-nrpe -e openitcockpit-module-mk -e openitcockpit-release -e openitcockpit-mysql -e openitcockpit-npcd | xargs echo)
+    openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /openitcockpit-/ {print $2} $1 ~ /ii/ && $2 ~ /phpnsta/ {print $2}' | grep -e 'openitcockpit-wkhtmltopdf' -e 'phpnsta' -e openitcockpit-release -e openitcockpit-mysql -e openitcockpit-npcd) | xargs echo)
+    php_upd=$(while read pkg; do echo "$pkg-"; if [ "$pkg" != "php7.0-mcrypt" ]; then echo "$pkg"|sed 's/php7.0/php7.2/'; fi; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /php7.0/ {print $2}') | xargs echo)
+    php5_rm=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l |  awk '$1 ~ /ii/ && $2 ~ /php5/' {print $2}) | xargs echo)
     always="openitcockpit openitcockpit-graphing wkhtmltox"
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-module-distribute/')" ]; then
@@ -423,7 +425,7 @@ if [ "$VERSION_CODENAME" == "xenial" ]; then
     echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
-    echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $always"
+    echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $php5_rm $always"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "###############################################################################"
     echo "${Reset}"
@@ -431,8 +433,9 @@ fi
 
 if [ "$VERSION_CODENAME" == "bionic" ]; then
 
-    openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e openitcockpit-message -e openitcockpit-statusengine-naemon -e openitcockpit-module-nrpe -e openitcockpit-module-mk | xargs echo)
-    openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$2 ~ /openitcockpit-/ {print $2} $2 ~ /phpnsta/ {print $2}' | grep -e 'openitcockpit-wkhtmltopdf' -e 'phpnsta') | xargs echo)
+    openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e openitcockpit-message -e openitcockpit-statusengine-naemon -e openitcockpit-module-nrpe -e openitcockpit-module-mk -e openitcockpit-release -e openitcockpit-mysql -e openitcockpit-npcd | xargs echo)
+    openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /openitcockpit-/ {print $2} $1 ~ /ii/ && $2 ~ /phpnsta/ {print $2}' | grep -e 'openitcockpit-wkhtmltopdf' -e 'phpnsta' -e openitcockpit-release -e openitcockpit-mysql -e openitcockpit-npcd) | xargs echo)
+    php5_rm=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l |  awk '$1 ~ /ii/ && $2 ~ /php5/' {print $2}) | xargs echo)
     always="openitcockpit openitcockpit-graphing wkhtmltox"
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-module-distribute/')" ]; then
@@ -459,7 +462,7 @@ if [ "$VERSION_CODENAME" == "bionic" ]; then
     echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
-    echo "apt-get dist-upgrade $openitcockpit_upd $openitcockpit_rem $always"
+    echo "apt-get dist-upgrade $openitcockpit_upd $openitcockpit_rem $php5_rm $always"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "###############################################################################"
     echo "${Reset}"

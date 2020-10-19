@@ -54,7 +54,7 @@ class HttpLoader {
      */
     public function __construct($config, $hostaddress) {
         if (!isset($config['proxy'])) {
-            $config['proxy'] = 1;
+            $config['proxy'] = false;
         }
         $this->config = $config;
         $this->hostaddress = $hostaddress;
@@ -77,7 +77,7 @@ class HttpLoader {
             'timeout' => 4
         ];
 
-        if ($proxySettings['enabled'] === 1 && $config['proxy'] === 1) {
+        if ($proxySettings['enabled'] && $config['proxy']) {
             $this->guzzleOptions['proxy'] = [
                 'http'  => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port']),
                 'https' => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port'])

@@ -106,6 +106,14 @@ class AgentCertificateData {
         return ["signed" => $signedPublic, "ca" => $ca];
     }
 
+    /**
+     * @return string
+     */
+    public function getCaChecksum(){
+        $ca = file_get_contents($this->getCaCertPath());
+        return strtoupper(hash('sha512', $ca));
+    }
+
     public function generateServerCA() {
         // Generate initial agent server ca certificate
         $SystemId = new SystemId();

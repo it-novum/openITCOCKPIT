@@ -36,6 +36,7 @@ use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -49,6 +50,7 @@ use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
 use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -190,6 +192,8 @@ class AgentconnectorController extends AppController {
             if ($AgentconfigsTable->existsById($id)) {
                 if ($action == 'edit') {
                     $Agentconfig = $AgentconfigsTable->get($id);
+                    $Agentconfig->setAccess('id', false);
+                    $Agentconfig->setAccess('push_noticed', false);
                     $Agentconfig = $AgentconfigsTable->patchEntity($Agentconfig, $this->request->getData('Agentconfig'));
                     $AgentconfigsTable->save($Agentconfig);
                     if (!$Agentconfig->hasErrors()) {
@@ -350,7 +354,7 @@ class AgentconnectorController extends AppController {
         if (!empty($this->request->getData('checkdata')) && !empty($this->request->getData('hostuuid'))) {
             $AgentconfigsTable->updatePushNoticedForHostIfConfigExists($this->request->getData('hostuuid'), true);
 
-            if ($AgentconnectorTable->isTrustedFromUser($this->request->getData('hostuuid'))) {
+            if ($AgentconnectorTable->isTrustedFromUserAndSaveAgentconnectorIfMissing($this->request->getData())) {
                 if (!$AgentconnectorTable->certificateNotYetGenerated($this->request->getData('hostuuid')) && !empty($this->request->getData('checksum'))) {  //should have a certificate!
                     if ($AgentconnectorTable->trustIsValid($this->request->getData('checksum'), $this->request->getData('hostuuid'))) {
                         $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'));
@@ -359,10 +363,10 @@ class AgentconnectorController extends AppController {
                         //maybe frontend hint, that the agent certificate has changed (and if it should be trusted)
                     }
                 } else {    //does not have a certificate or autossl option was disabled after creation
-                    $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'));
+                    $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}', false));
                 }
             } else {
-                $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'));
+                $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}', false));
             }
         }
 
@@ -373,9 +377,10 @@ class AgentconnectorController extends AppController {
     /**
      * @param $hostuuid
      * @param $checkdata
+     * @param bool $passDataToNagios
      * @return int
      */
-    private function processUpdateCheckdata($hostuuid, $checkdata) {
+    private function processUpdateCheckdata($hostuuid, $checkdata, $passDataToNagios = true) {
         /** @var AgenthostscacheTable $AgenthostscacheTable */
         $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
         $AgenthostscacheTable->saveCacheData($hostuuid, $checkdata);
@@ -389,7 +394,7 @@ class AgentconnectorController extends AppController {
         $GearmanClient = new Gearman();
         $receivedChecks = 0;
 
-        if (isset($config['checks']) && is_array($config['checks']) && isset($config['mode']) && $config['mode'] === 'push') {
+        if (isset($config['checks']) && is_array($config['checks']) && isset($config['mode']) && $config['mode'] === 'push' && $passDataToNagios === true) {
             foreach ($config['checks'] as $pluginConfig) {
                 $pluginName = $pluginConfig['plugin'];
 

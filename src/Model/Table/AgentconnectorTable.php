@@ -6,8 +6,12 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
 
@@ -174,6 +178,52 @@ class AgentconnectorTable extends Table {
             ])->first();
         return (!empty($query));
     }
+
+    /**
+     * @param array $hostuuid
+     * @return bool
+     */
+    public function isTrustedFromUserAndSaveAgentconnectorIfMissing(array $request) {
+        $hostUuid = $request['hostuuid'];
+        $checksum = $request['checksum'];
+
+        try {
+            $query = $this->find()
+                ->where([
+                    'hostuuid' => $hostUuid,
+                    'trusted'  => 1
+                ])->firstOrFail();
+            return (!empty($query));
+        } catch (RecordNotFoundException $e) {
+            //No agent connector config found. Store the checksum of the agent cert into the database
+
+            $AgentCertificateData = new AgentCertificateData();
+
+            $record = $this->newEntity([
+                //'hostuuid'             => $hostUuid,
+                //'checksum'             => $checksum,
+                //'ca_checksum'          => $AgentCertificateData->getCaChecksum(),
+                //'generation_date'      => FrozenTime::now(),
+                //'remote_addr'          => $_SERVER['REMOTE_ADDR'] ?? null,
+                //'http_x_forwarded_for' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
+                //'trusted'              => 0,
+
+                'hostuuid'             => $hostUuid,
+                'checksum'             => null,
+                'ca_checksum'          => null,
+                'generation_date'      => null,
+                'remote_addr'          => $_SERVER['REMOTE_ADDR'] ?? null,
+                'http_x_forwarded_for' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
+                'trusted'              => 0
+            ]);
+
+            $this->save($record);
+
+            //Agent is not trusted yet
+            return false;
+        }
+    }
+
 
     /**
      * @param string $hostuuid
