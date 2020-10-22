@@ -2147,7 +2147,7 @@ class ServicesController extends AppController {
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
-                $statehistoriesService[] = $StatehistoryService;
+                $statehistoriesService[] = $StatehistoryService->toArray();
             }
         }
 
