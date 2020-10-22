@@ -1196,7 +1196,7 @@
                                                             <?= __('Copy and paste the shown configuration file to'); ?>
                                                             <code ng-show="selectedOs === 'windows'"><?= __('C:\Program Files\it-novum\openitcockpit-agent\config.cnf'); ?></code>
                                                             <code ng-show="selectedOs === 'linux'"><?= __('/etc/openitcockpit-agent/config.cnf'); ?></code>
-                                                            <code ng-show="selectedOs === 'macos'"><?= __('/Library/openitcockpit-agent/config.cnf'); ?></code>
+                                                            <code ng-show="selectedOs === 'macos'"><?= __('/Applications/openitcockpit-agent/config.cnf'); ?></code>
                                                         </div>
                                                     </div>
 
@@ -1247,7 +1247,9 @@
                                                         </div>
 
                                                         <div class="col-12" ng-show="selectedOs === 'macos'">
-                                                            <code><?= __('sudo /bin/launchctl restart com.it-novum.openitcockpit.agent'); ?></code>
+                                                            <code><?= __('sudo /bin/launchctl stop com.it-novum.openitcockpit.agent'); ?></code>
+                                                            <br>
+                                                            <code><?= __('sudo /bin/launchctl start com.it-novum.openitcockpit.agent'); ?></code>
                                                         </div>
 
                                                     </div>

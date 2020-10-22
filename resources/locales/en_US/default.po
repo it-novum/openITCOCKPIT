@@ -7719,7 +7719,7 @@ msgid "/etc/openitcockpit-agent/config.cnf"
 msgstr ""
 
 #: src/Template/Agentconnector/config.php:1175
-msgid "/Library/openitcockpit-agent/config.cnf"
+msgid "/Applications/openitcockpit-agent/config.cnf"
 msgstr ""
 
 #: src/Template/Agentconnector/config.php:1181
@@ -7751,7 +7751,7 @@ msgid "sudo systemctl restart openitcockpit-agent.service"
 msgstr ""
 
 #: src/Template/Agentconnector/config.php:1226
-msgid "sudo /bin/launchctl restart com.it-novum.openitcockpit.agent"
+msgid "sudo /bin/launchctl stop com.it-novum.openitcockpit.agent"
 msgstr ""
 
 #: src/Template/Agentconnector/config.php:1257
