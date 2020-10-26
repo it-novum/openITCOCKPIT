@@ -7720,8 +7720,8 @@ msgid "/etc/openitcockpit-agent/config.cnf"
 msgstr "/etc/openitcockpit-agent/config.cnf"
 
 #: src/Template/Agentconnector/config.php:1175
-msgid "/Library/openitcockpit-agent/config.cnf"
-msgstr "/Library/openitcockpit-agent/config.cnf"
+msgid "/Applications/openitcockpit-agent/config.cnf"
+msgstr "/Applications/openitcockpit-agent/config.cnf"
 
 #: src/Template/Agentconnector/config.php:1181
 msgid "config.cnf:"
@@ -7752,8 +7752,8 @@ msgid "sudo systemctl restart openitcockpit-agent.service"
 msgstr "sudo systemctl restart openitcockpit-agent.service"
 
 #: src/Template/Agentconnector/config.php:1226
-msgid "sudo /bin/launchctl restart com.it-novum.openitcockpit.agent"
-msgstr "sudo /bin/launchctl restart com.it-novum.openitcockpit.agent"
+msgid "sudo /bin/launchctl stop com.it-novum.openitcockpit.agent"
+msgstr "sudo /bin/launchctl stop com.it-novum.openitcockpit.agent"
 
 #: src/Template/Agentconnector/config.php:1257
 msgid "Waiting for results..."

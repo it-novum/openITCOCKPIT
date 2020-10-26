@@ -161,6 +161,10 @@ fi
 
 echo "---------------------------------------------------------------"
 echo "Import openITCOCKPIT Core database schema"
+# drop old custom design module settings because version 4 has a new schema and no migration
+mysql "--defaults-extra-file=${INIFILE}" -e "DROP TABLE IF EXISTS designs;"
+
+# Load openITCOCKPIT 4 database schema
 oitc migrations migrate
 
 

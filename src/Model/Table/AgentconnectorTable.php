@@ -197,27 +197,36 @@ class AgentconnectorTable extends Table {
         } catch (RecordNotFoundException $e) {
             //No agent connector config found. Store the checksum of the agent cert into the database
 
-            $AgentCertificateData = new AgentCertificateData();
+            $result = $this->find()
+                ->where([
+                    'hostuuid' => $hostUuid,
+                ])->first();
 
-            $record = $this->newEntity([
-                //'hostuuid'             => $hostUuid,
-                //'checksum'             => $checksum,
-                //'ca_checksum'          => $AgentCertificateData->getCaChecksum(),
-                //'generation_date'      => FrozenTime::now(),
-                //'remote_addr'          => $_SERVER['REMOTE_ADDR'] ?? null,
-                //'http_x_forwarded_for' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
-                //'trusted'              => 0,
+            if(empty($result)){
+                //No record for given agent
 
-                'hostuuid'             => $hostUuid,
-                'checksum'             => null,
-                'ca_checksum'          => null,
-                'generation_date'      => null,
-                'remote_addr'          => $_SERVER['REMOTE_ADDR'] ?? null,
-                'http_x_forwarded_for' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
-                'trusted'              => 0
-            ]);
+                $AgentCertificateData = new AgentCertificateData();
 
-            $this->save($record);
+                $record = $this->newEntity([
+                    //'hostuuid'             => $hostUuid,
+                    //'checksum'             => $checksum,
+                    //'ca_checksum'          => $AgentCertificateData->getCaChecksum(),
+                    //'generation_date'      => FrozenTime::now(),
+                    //'remote_addr'          => $_SERVER['REMOTE_ADDR'] ?? null,
+                    //'http_x_forwarded_for' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
+                    //'trusted'              => 0,
+
+                    'hostuuid'             => $hostUuid,
+                    'checksum'             => null,
+                    'ca_checksum'          => null,
+                    'generation_date'      => null,
+                    'remote_addr'          => $_SERVER['REMOTE_ADDR'] ?? null,
+                    'http_x_forwarded_for' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
+                    'trusted'              => 0
+                ]);
+
+                $this->save($record);
+            }
 
             //Agent is not trusted yet
             return false;
