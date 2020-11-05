@@ -92,6 +92,7 @@ plugins/CheckmkModule
 plugins/OpenstreetmapModule
 plugins/SAPModule
 plugins/SlackModule
+plugins/SupportModule
 plugins/ServicenowModule
 plugins/PagerdutyModule
 plugins/PostgresModule
@@ -106,5 +107,4 @@ plugins/WMIModule
 plugins/VMWAREModule
 plugins/UCSModule
 plugins/SatelliteSelfMonitoringModule
-plugins/SAPModule
 plugins/MassenversandDeModule
