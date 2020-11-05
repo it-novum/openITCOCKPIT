@@ -37,6 +37,7 @@ use FreeDSx\Ldap\LdapClient;
 use FreeDSx\Ldap\Operation\ResultCode;
 use FreeDSx\Ldap\Operations;
 use FreeDSx\Ldap\Search\Filters;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
 
@@ -132,6 +133,8 @@ class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
             );
         }
 
+        //Print the filters as string for ldapsearch
+        //FileDebugger::dump((string)$filter);
         $search = Operations::search($filter, 'cn', 'memberof', 'dn');
 
         /** @var \FreeDSx\Ldap\Entry\Entries $entries */
