@@ -289,6 +289,12 @@ oitc setup
 
 oitc nagios_export
 
+if [[ -d "/opt/openitc/nagios/rollout" ]]; then
+    if [[ ! -f "/opt/openitc/nagios/rollout/resource.cfg" ]]; then
+        ln -s /opt/openitc/nagios/etc/resource.cfg /opt/openitc/nagios/rollout/resource.cfg
+    fi
+fi
+
 echo "Enabling webserver configuration"
 ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
 rm -f /etc/nginx/sites-enabled/default
