@@ -2515,6 +2515,7 @@ class NagiosConfigGenerator {
     }
 
     public function deleteHostPerfdata() {
+        return true; // @todo fix me
         $basePath = Configure::read('rrd.path');
 
         /** @var $DeletedHostsTable DeletedHostsTable */
@@ -2551,6 +2552,7 @@ class NagiosConfigGenerator {
     }
 
     public function deleteServicePerfdata() {
+        return true; // @todo fix me
         $basePath = Configure::read('rrd.path');
 
         /** @var $DeletedServicesTable DeletedServicesTable */
