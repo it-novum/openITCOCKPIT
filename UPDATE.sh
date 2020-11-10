@@ -339,6 +339,12 @@ fi
 oitc config_generator_shell --generate
 oitc nagios_export --resource
 
+if [[ -d "/opt/openitc/nagios/rollout" ]]; then
+    if [[ ! -f "/opt/openitc/nagios/rollout/resource.cfg" ]]; then
+        ln -s /opt/openitc/nagios/etc/resource.cfg /opt/openitc/nagios/rollout/resource.cfg
+    fi
+fi
+
 ADMIN_PASSWORD=$(cat /opt/openitc/etc/grafana/admin_password)
 if [ -f /opt/openitc/etc/grafana/api_key ]; then
     echo "Check if Grafana is reachable"
