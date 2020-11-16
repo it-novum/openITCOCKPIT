@@ -363,10 +363,13 @@ class AgentconnectorController extends AppController {
                         //maybe frontend hint, that the agent certificate has changed (and if it should be trusted)
                     }
                 } else {    //does not have a certificate or autossl option was disabled after creation
-                    $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}', false));
+                    $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'), false);
                 }
             } else {
-                $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}', false));
+                //Agent is not trusted yet - only sache data to cache
+                /** @var AgenthostscacheTable $AgenthostscacheTable */
+                $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
+                $AgenthostscacheTable->saveCacheData($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'));
             }
         }
 
