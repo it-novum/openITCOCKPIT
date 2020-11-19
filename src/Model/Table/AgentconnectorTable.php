@@ -185,7 +185,6 @@ class AgentconnectorTable extends Table {
      */
     public function isTrustedFromUserAndSaveAgentconnectorIfMissing(array $request) {
         $hostUuid = $request['hostuuid'];
-        $checksum = $request['checksum'];
 
         try {
             $query = $this->find()
@@ -209,7 +208,7 @@ class AgentconnectorTable extends Table {
 
                 $record = $this->newEntity([
                     //'hostuuid'             => $hostUuid,
-                    //'checksum'             => $checksum,
+                    //'checksum'             => $request['checksum'],
                     //'ca_checksum'          => $AgentCertificateData->getCaChecksum(),
                     //'generation_date'      => FrozenTime::now(),
                     //'remote_addr'          => $_SERVER['REMOTE_ADDR'] ?? null,
