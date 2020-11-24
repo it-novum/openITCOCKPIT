@@ -7743,7 +7743,7 @@ msgid "Run as administrator (via cmd.exe)"
 msgstr ""
 
 #: src/Template/Agentconnector/config.php:1218
-msgid "sc stop oitcAgentSvc && sc start oitcAgentSvc"
+msgid "sc stop openITCOCKPITAgent && sc start openITCOCKPITAgent"
 msgstr ""
 
 #: src/Template/Agentconnector/config.php:1222
