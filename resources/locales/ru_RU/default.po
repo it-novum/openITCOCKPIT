@@ -7744,8 +7744,8 @@ msgid "Run as administrator (via cmd.exe)"
 msgstr "Запуск от имени администратора (через cmd.exe)"
 
 #: src/Template/Agentconnector/config.php:1218
-msgid "sc stop oitcAgentSvc && sc start oitcAgentSvc"
-msgstr "sc stop oitcAgentSvc && sc start oitcAgentSvc"
+msgid "sc stop openITCOCKPITAgent && sc start openITCOCKPITAgent"
+msgstr "sc stop openITCOCKPITAgent && sc start openITCOCKPITAgent"
 
 #: src/Template/Agentconnector/config.php:1222
 msgid "sudo systemctl restart openitcockpit-agent.service"

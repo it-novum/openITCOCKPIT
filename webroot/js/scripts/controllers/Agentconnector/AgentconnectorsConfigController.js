@@ -186,7 +186,7 @@ angular.module('openITCOCKPIT')
                                 break;
 
                             case 'macos':
-                                value = '/Library/openitcockpit-agent/customchecks.cnf';
+                                value = '/Applications/openitcockpit-agent/customchecks.cnf';
                                 break;
 
                             default:
