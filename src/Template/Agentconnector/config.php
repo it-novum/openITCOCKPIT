@@ -1239,7 +1239,7 @@
 
                                                         <div class="col-12" ng-show="selectedOs === 'windows'">
                                                             <?= __('Run as administrator (via cmd.exe)'); ?>
-                                                            <code><?= __('sc stop oitcAgentSvc && sc start oitcAgentSvc'); ?></code>
+                                                            <code><?= __('sc stop openITCOCKPITAgent && sc start openITCOCKPITAgent'); ?></code>
                                                         </div>
 
                                                         <div class="col-12" ng-show="selectedOs === 'linux'">
