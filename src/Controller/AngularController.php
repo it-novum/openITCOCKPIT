@@ -493,6 +493,8 @@ class AngularController extends AppController {
         $websocketConfig['SUDO_SERVER.URL'] = 'wss://' . env('HTTP_HOST') . '/sudo_server';
         $websocketConfig['QUERY_LOG.URL'] = 'wss://' . env('HTTP_HOST') . '/query_log';
         $websocketConfig['PUSH_NOTIFICATIONS.URL'] = 'wss://' . env('HTTP_HOST') . '/push_notifications';
+        $websocketConfig['DISCORD.URL'] = 'wss://' . env('HTTP_HOST') . '/discord';
+        $websocketConfig['IRC.URL'] = 'wss://' . env('HTTP_HOST') . '/irc';
 
         $this->set('websocket', $websocketConfig);
         $this->viewBuilder()->setOption('serialize', ['websocket']);

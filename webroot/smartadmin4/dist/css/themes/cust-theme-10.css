@@ -1012,12 +1012,6 @@ label.menu-open-button:hover {
 .status:before {
   background: #424242;
   border: 2px solid #fff; }
-.status.status-success:before {
-  background: #8eff37; }
-.status.status-danger:before {
-  background: #af37ff; }
-.status.status-warning:before {
-  background: #37ffa8; }
 
 /* display frame */
 .frame-heading {

@@ -1272,3 +1272,18 @@ label.menu-open-button:hover {
 .strikethrough {
     text-decoration: line-through;
 }
+
+.text-small {
+    font-size: 0.9rem;
+}
+
+.messages-box,
+.chat-box {
+    height: 510px;
+    overflow-y: scroll;
+}
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
