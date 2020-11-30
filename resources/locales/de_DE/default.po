@@ -141,7 +141,7 @@ msgstr "Aktualisiere alle 15m"
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:51
 #: src/Template/Hosts/browser.php:108
 msgid "Grafana"
-msgstr ""
+msgstr "Grafana"
 
 #: plugins/GrafanaModule/src/Lib/Menu.php:60
 #: plugins/MattermostModule/src/Lib/Menu.php:44
@@ -151,7 +151,7 @@ msgstr ""
 #: ServicenowModule/src/Lib/Menu.php:43
 #: SlackModule/src/Lib/Menu.php:43
 msgid "APIs"
-msgstr ""
+msgstr "APIs"
 
 #: plugins/GrafanaModule/src/Lib/Widgets.php:52
 msgid "Grafana (auto generated)"
@@ -1021,11 +1021,11 @@ msgstr "Bearbeiten"
 
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:60
 msgid "Grafana URL"
-msgstr ""
+msgstr "Grafana URL"
 
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:74
 msgid "Grafana API Key"
-msgstr ""
+msgstr "Grafana API Schlüssel"
 
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:88
 msgid "Grafana Prefix"
@@ -1438,7 +1438,7 @@ msgstr "erfolgreich erstellt"
 #: PrometheusModule/templates/PrometheusExporters/edit.php:53
 #: PrometheusModule/templates/PrometheusExporters/index.php:141
 msgid "Container"
-msgstr ""
+msgstr "Container"
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:93
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:94
@@ -1650,7 +1650,7 @@ msgstr "Benutzerdefiniertes Grafana Dashboard bearbeiten"
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:41
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:64
 msgid "Please make sure to synchronize your changes with Grafana after you have made modifications."
@@ -1661,7 +1661,7 @@ msgstr "Bitte stelle sicher, dass Änderungen mit Grafana synchronisiert werden,
 #: src/Template/Dashboards/index.php:33
 #: src/Template/Dashboards/index.php:48
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:79
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:197
@@ -2227,7 +2227,7 @@ msgstr "Neu"
 #: SnmpTrapModule/templates/SnmpttList/index.php:61
 #: SnmpTrapModule/templates/SnmpttList/index.php:71
 msgid "Filter"
-msgstr ""
+msgstr "Filter"
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:88
 #: src/Template/Changelogs/index.php:96
@@ -2763,7 +2763,7 @@ msgstr "Ausgewählte löschen"
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:81
 #: src/Template/Angular/not_found.php:37
 msgid "404 Ooops..."
-msgstr ""
+msgstr "404 Ooops..."
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:100
 msgid "Dashboard not found in Grafana"
@@ -2927,11 +2927,11 @@ msgstr "Eine PHP-Erweiterung hat den Datei-Upload gestoppt."
 
 #: plugins/MapModule/src/Model/Table/MapgadgetsTable.php:161
 msgid "Please select a metric."
-msgstr ""
+msgstr "Bitte wählen Sie eine Metrik."
 
 #: plugins/MapModule/src/Model/Table/MapgadgetsTable.php:168
 msgid "Please select an output type."
-msgstr ""
+msgstr "Bitte wählen Sie einen Ausgabetyp."
 
 #: plugins/MapModule/src/Model/Table/MapsTable.php:212
 #: plugins/MapModule/src/Model/Table/MapsTable.php:216
@@ -3073,7 +3073,7 @@ msgstr "Objekttyp auswählen"
 #: AutoreportModule/templates/email/text/default_mail.php:12
 #: EventcorrelationModule/templates/Eventcorrelations/host_used_by.php:29
 msgid "Host"
-msgstr ""
+msgstr "Host"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:279
 #: plugins/MapModule/templates/Mapeditors/edit.php:542
@@ -3122,7 +3122,7 @@ msgstr ""
 #: PrometheusModule/templates/PrometheusExporters/edit.php:132
 #: PrometheusModule/templates/PrometheusExporters/index.php:132
 msgid "Service"
-msgstr ""
+msgstr "Service"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:282
 #: plugins/MapModule/templates/Mapeditors/edit.php:545
@@ -3155,7 +3155,7 @@ msgstr "Iconset auswählen"
 #: plugins/MapModule/templates/Mapeditors/edit.php:1375
 #: plugins/MapModule/templates/Mapeditors/edit.php:1543
 msgid "Position X"
-msgstr ""
+msgstr "Position X"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:353
 #: plugins/MapModule/templates/Mapeditors/edit.php:373
@@ -3175,7 +3175,7 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/edit.php:1574
 #: plugins/MapModule/templates/Mapeditors/edit.php:1596
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:362
 #: plugins/MapModule/templates/Mapeditors/edit.php:869
@@ -3183,7 +3183,7 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/edit.php:1395
 #: plugins/MapModule/templates/Mapeditors/edit.php:1563
 msgid "Position Y"
-msgstr ""
+msgstr "Position Y"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:384
 #: plugins/MapModule/templates/Mapeditors/edit.php:665
@@ -3290,11 +3290,11 @@ msgstr "Statuslose Linie"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:581
 msgid "Start X"
-msgstr ""
+msgstr "Start X"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:601
 msgid "Start Y"
-msgstr ""
+msgstr "Start Y"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:623
 msgid "End X"
@@ -3341,7 +3341,7 @@ msgstr "Schriftgröße"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:836
 msgid "13"
-msgstr ""
+msgstr "13"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:891
 msgid "Width"
@@ -3376,7 +3376,7 @@ msgstr "Statuslosen Text hinzufügen oder bearbeiten"
 #: ServicenowModule/templates/Elements/host_configuration.php:31
 #: ServicenowModule/templates/Elements/service_configuration.php:31
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1100
 #: src/Template/Documentations/view.php:256
@@ -3453,7 +3453,7 @@ msgstr "Zusammenfassungsstatuselement hinzufügen oder bearbeiten"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1585
 msgid "Radius"
-msgstr ""
+msgstr "Radius"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1603
 msgid "Keep blank for default radius"
@@ -3468,7 +3468,7 @@ msgstr " (DEAKTIVIERT)"
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:48
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:226
 msgid "Hostname"
-msgstr ""
+msgstr "Hostname"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:58
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:263
@@ -3719,7 +3719,7 @@ msgstr "Zusammenfassende Ausgabe"
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:659
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:60
 msgid "Services: "
-msgstr ""
+msgstr "Services: "
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:236
 #: src/Template/Services/browser.php:556
@@ -3785,7 +3785,7 @@ msgstr "Zusammengefasste Ausgabe"
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:656
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:57
 msgid "Hosts: "
-msgstr ""
+msgstr "Hosts: "
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:396
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:664
@@ -4053,18 +4053,18 @@ msgstr "Erstelle neue Kartenrotation"
 #: plugins/MapModule/templates/Rotations/add.php:64
 #: plugins/MapModule/templates/Rotations/edit.php:65
 msgid "Rotation"
-msgstr ""
+msgstr "Rotation"
 
 #: plugins/MapModule/templates/Rotations/add.php:88
 #: plugins/MapModule/templates/Rotations/edit.php:89
 msgid "Rotation Name"
-msgstr ""
+msgstr "Rotationsname"
 
 #: plugins/MapModule/templates/Rotations/add.php:101
 #: plugins/MapModule/templates/Rotations/edit.php:102
 #: plugins/MapModule/templates/Rotations/index.php:131
 msgid "Rotation interval"
-msgstr "Rotation Intervall"
+msgstr "Rotationsintervall"
 
 #: plugins/MapModule/templates/Rotations/add.php:135
 msgid "Create rotation"
@@ -4118,7 +4118,7 @@ msgstr "Das Problem wurde von **@{0}** über Mattermost bestätigt."
 #: plugins/MattermostModule/src/Lib/Menu.php:47
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:50
 msgid "Mattermost"
-msgstr ""
+msgstr "Mattermost"
 
 #: plugins/MattermostModule/src/Model/Table/MattermostSettingsTable.php:89
 msgid "For Two-way integration an API key is required."
@@ -4132,11 +4132,11 @@ msgstr "Mattermost Modul"
 #: PagerdutyModule/templates/Settings/edit.php:118
 #: SlackModule/templates/SlackSettings/index.php:44
 msgid "Webhook URL"
-msgstr ""
+msgstr "Webhook URL"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:70
 msgid "Mattermost Webhook URL."
-msgstr ""
+msgstr "Mattermost Webhook URL."
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:83
 msgid "Enable Two-way integration"
@@ -4144,7 +4144,7 @@ msgstr "Aktivieren Sie die bidirektionale Integration"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:90
 msgid "openITCOCKPIT API Key"
-msgstr ""
+msgstr "openITCOCKPIT API Schlüssel"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:102
 #: DistributeModule/templates/Satellites/add.php:320
@@ -4152,7 +4152,7 @@ msgstr ""
 #: DistributeModule/templates/Satellites/edit.php:321
 #: DistributeModule/templates/Satellites/edit.php:385
 msgid "API Key"
-msgstr ""
+msgstr "API Schlüssel"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:104
 msgid "used by Mattermost for authentication against openITCOCKPIT."
@@ -4173,7 +4173,7 @@ msgstr "Befehl erfolgreich zur Warteschlange hinzugefügt"
 
 #: plugins/NagiosModule/src/Lib/Menu.php:44
 msgid "API"
-msgstr ""
+msgstr "API"
 
 #: plugins/NagiosModule/src/Lib/Menu.php:49
 #: plugins/NagiosModule/templates/Cmd/index.php:53
@@ -4183,7 +4183,7 @@ msgstr "Externe Kommandos"
 #: plugins/NagiosModule/templates/Cmd/index.php:40
 #: src/Template/Administrators/debug.php:130
 msgid "Monitoring Engine"
-msgstr ""
+msgstr "Monitoring Engine"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:44
 msgid "External Command"
@@ -4210,7 +4210,7 @@ msgstr "Kommandotyp"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:98
 msgid "Parameter"
-msgstr ""
+msgstr "Parameter"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:99
 msgid "Default value"
@@ -4275,7 +4275,7 @@ msgstr "Erstelle Backup der aktuellen Konfiguration"
 
 #: src/Command/GearmanWorkerCommand.php:1185
 msgid "Create Backup of current Prometheus configuration"
-msgstr ""
+msgstr "Erstellen Sie ein Backup der aktuellen Prometheus-Konfiguration"
 
 #: src/Command/GearmanWorkerCommand.php:1228
 msgid "Delete old configuration"
@@ -4351,15 +4351,15 @@ msgstr "Exportiere benutzerdefinierte Makros"
 
 #: src/Command/GearmanWorkerCommand.php:1302
 msgid "Create main Prometheus configuration file"
-msgstr ""
+msgstr "Erstelle die Hauptkonfigurationsdatei von Prometheus"
 
 #: src/Command/GearmanWorkerCommand.php:1305
 msgid "Create Prometheus targets"
-msgstr ""
+msgstr "Erstelle Prometheus-Ziele"
 
 #: src/Command/GearmanWorkerCommand.php:1308
 msgid "Create Prometheus alert rules"
-msgstr ""
+msgstr "Erstelle Prometheus-Warnregeln"
 
 #: src/Command/GearmanWorkerCommand.php:1340
 msgid "Execute post export tasks"
@@ -4387,11 +4387,11 @@ msgstr "Nach-Export Kommando ausführen"
 
 #: src/Command/GearmanWorkerCommand.php:1467
 msgid "Verifying new Prometheus configuration"
-msgstr ""
+msgstr "Überprüfung der neuen Prometheus-Konfiguration"
 
 #: src/Command/GearmanWorkerCommand.php:1487
 msgid "Restarting Prometheus monitoring engine"
-msgstr ""
+msgstr "Prometheus Monitoring Engine neu starten"
 
 #: src/Command/GearmanWorkerCommand.php:1509
 msgid "Refresh of configuration finished"
@@ -4451,7 +4451,7 @@ msgstr "Sende das neue Passwort nicht per E-Mail"
 
 #: src/Command/ResetPasswordCommand.php:51
 msgid "If set the user will also be marked as enabled in the database. If not set the is_active field will be left untouched."
-msgstr ""
+msgstr "Wenn festgelegt, wird der Benutzer auch in der Datenbank als verfügbar markiert. Wenn nicht gesetzt, bleibt das is_active Feld unberührt."
 
 #: src/Command/ResetPasswordCommand.php:136
 msgid "New password is: {0}"
@@ -4541,51 +4541,51 @@ msgstr "Migriere die E-Mail-Konfiguration von openITCOCKPIT V3"
 
 #: src/Command/Update3To4Command.php:92
 msgid "Enable users from the file /root/.openitcockpit_active_user_migration.json"
-msgstr ""
+msgstr "Aktiviert Benutzer aus der Datei /root/.openitcockpit_active_user_migration.json"
 
 #: src/Command/Update3To4Command.php:98
 msgid "Send a new random password to all local users per mail."
-msgstr ""
+msgstr "Sendet ein neues zufälliges Passwort per E-Mail an alle lokalen Benutzer."
 
 #: src/Command/Update3To4Command.php:104
 msgid "Migrate notification history records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Migriert Benachrichtigungshistorie von nagios_ zu statusengine_-Tabellen."
 
 #: src/Command/Update3To4Command.php:110
 msgid "Migrate statehistory records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Migriert Statusänderungshistorie von nagios_ zu statusengine_-Tabellen."
 
 #: src/Command/Update3To4Command.php:116
 msgid "Migrate acknowledgements history records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Migriert Problembestätigungshistorie von nagios_ zu statusengine_-Tabellen."
 
 #: src/Command/Update3To4Command.php:122
 msgid "Migrate downtimes history records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Migriert Wartungszeitenhistorie von nagios_ zu statusengine_-Tabellen."
 
 #: src/Command/Update3To4Command.php:128
 msgid "Migrate hostchecks records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Migriert Hostchecks von nagios_ zu statusengine_-Tabellen."
 
 #: src/Command/Update3To4Command.php:134
 msgid "Migrate servicechecks records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Migriert Servicechecks von nagios_ zu statusengine_-Tabellen."
 
 #: src/Command/Update3To4Command.php:140
 msgid "Migrate logentries records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Migriert Logeinträge von nagios_ zu statusengine_-Tabellen."
 
 #: src/Command/Update3To4Command.php:146
 msgid "Set the Statusengine Broker as default submit method for EVC results"
-msgstr ""
+msgstr "Legt den Statusengine Broker als Standardübermittlungsmethode für EVC-Ergebnisse fest"
 
 #: src/Command/Update3To4Command.php:152
 msgid "Migrate the SSH configuration of V3 satellite systems"
-msgstr ""
+msgstr "Migriert die SSH-Konfiguration von V3-Satellitensystemen"
 
 #: src/Command/Update3To4Command.php:1487
 msgid "Create partition {0} in table {1}"
-msgstr ""
+msgstr "Erstellt die Partition {0} in Tabelle {1}"
 
 #: src/Controller/AcknowledgementsController.php:69
 #: src/Controller/AgentconfigsController.php:74
@@ -4630,7 +4630,7 @@ msgstr "Community - nicht registriert"
 #: src/Controller/AdministratorsController.php:78
 #: src/Template/Packetmanager/index.php:211
 msgid "Enterprise"
-msgstr ""
+msgstr "Enterprise"
 
 #: src/Controller/AdministratorsController.php:80
 msgid "Community - registered"
@@ -4695,7 +4695,7 @@ msgstr "Ungültige Automap"
 
 #: src/Controller/BrowsersController.php:102
 msgid "root"
-msgstr ""
+msgstr "root"
 
 #: src/Controller/CalendarsController.php:139
 #: src/Controller/CalendarsController.php:221
@@ -4802,7 +4802,7 @@ msgstr "Ungültiger Cronjob"
 
 #: src/Controller/CurrentstatereportsController.php:178
 msgid "Currentstatereport_"
-msgstr ""
+msgstr "Aktueller Zustandsbericht_"
 
 #: src/Controller/DashboardsController.php:216
 #: src/Controller/DashboardsController.php:272
@@ -4843,7 +4843,7 @@ msgstr "! Keine Wartungszeiten innerhalb der angegebenen Zeit gefunden ({0} - {1
 
 #: src/Controller/DowntimereportsController.php:250
 msgid "Downtimereport_"
-msgstr ""
+msgstr "Wartungsbericht_"
 
 #: src/Controller/DowntimesController.php:219
 msgid "Comment can not be empty"
@@ -4914,7 +4914,7 @@ msgstr "Ungültige Hostgruppe"
 
 #: src/Controller/HostgroupsController.php:564
 msgid "Hostgroups_"
-msgstr ""
+msgstr "Hostgruppen_"
 
 #: src/Controller/HostsController.php:467
 #: src/Controller/HostsController.php:472
@@ -4986,7 +4986,7 @@ msgstr "Fehler beim Löschen des Hosts"
 
 #: src/Controller/HostsController.php:2162
 msgid "Hosts_"
-msgstr ""
+msgstr "Hosts_"
 
 #: src/Controller/HostsController.php:2234
 msgid "Invalid request parameter"
@@ -5111,7 +5111,7 @@ msgstr "Ungültige Servicegruppe"
 
 #: src/Controller/ServicegroupsController.php:592
 msgid "Servicegroups_"
-msgstr ""
+msgstr "Servicegruppen_"
 
 #: src/Controller/ServicesController.php:552
 #: src/Controller/ServicesController.php:709
@@ -5167,7 +5167,7 @@ msgstr "Service erfolgreich aktiviert"
 
 #: src/Controller/ServicesController.php:1857
 msgid "Services_"
-msgstr ""
+msgstr "Services_"
 
 #: src/Controller/ServicesController.php:2415
 #: src/Controller/ServicetemplatesController.php:247
@@ -5631,7 +5631,7 @@ msgstr "Knoten"
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:78
 #: DistributeModule/templates/Satellites/used_by.php:61
 msgid "Hosts"
-msgstr ""
+msgstr "Hosts"
 
 #: src/Model/Table/ContainersTable.php:963
 #: src/Template/Changelogs/index.php:131
@@ -5848,7 +5848,7 @@ msgstr "Sofortige Berichte"
 #: src/Template/Timeperiods/used_by.php:246
 #: AutoreportModule/templates/Autoreports/create_report.php:14
 msgid "Autoreports"
-msgstr ""
+msgstr "Autoreports"
 
 #: src/Model/Table/ContainersTable.php:977
 #: src/Template/Containers/show_details.php:187
@@ -6034,7 +6034,7 @@ msgstr "Sie müssen mindestens eine Flattererkennungsoption angeben."
 
 #: src/Model/Table/HostsTable.php:461
 msgid "Parent/child loop detected."
-msgstr ""
+msgstr "Eltern/Kind-Schleife erkannt."
 
 #: src/Model/Table/HostsTable.php:3858
 msgid "Generic host"
@@ -6337,7 +6337,7 @@ msgstr "Servicestatus Übersicht"
 
 #: src/Model/Table/WidgetsTable.php:330
 msgid "Website"
-msgstr ""
+msgstr "Website"
 
 #: src/Template/Acknowledgements/host.php:38
 #: src/Template/Acknowledgements/service.php:38
@@ -6890,7 +6890,7 @@ msgstr "Systemname"
 #: src/Template/Administrators/debug.php:124
 #: src/Template/Nagiostats/index.php:194
 msgid "Version"
-msgstr ""
+msgstr "Version"
 
 #: src/Template/Administrators/debug.php:127
 msgid "Edition"
@@ -6984,7 +6984,7 @@ msgstr "Datenbank-Konnektor"
 #: src/Template/Administrators/debug.php:255
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:81
 msgid "Statusengine"
-msgstr ""
+msgstr "Statusengine"
 
 #: src/Template/Administrators/debug.php:243
 msgid "Perfdata processor"
@@ -6997,16 +6997,16 @@ msgstr "Warteschlangen-Engine"
 
 #: src/Template/Administrators/debug.php:280
 msgid "Gearman Worker"
-msgstr ""
+msgstr "Gearman Worker"
 
 #: src/Template/Administrators/debug.php:301
 msgid "OITC Cmd"
-msgstr ""
+msgstr "OITC Cmd"
 
 #: src/Template/Administrators/debug.php:322
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:88
 msgid "NSTA"
-msgstr ""
+msgstr "NSTA"
 
 #: src/Template/Administrators/debug.php:343
 msgid "Push notification service"
@@ -7014,7 +7014,7 @@ msgstr "Push-Benachrichtigungsdienst"
 
 #: src/Template/Administrators/debug.php:364
 msgid "NodeJS Server"
-msgstr ""
+msgstr "NodeJS Server"
 
 #: src/Template/Administrators/debug.php:402
 msgid "Server information"
@@ -7032,19 +7032,19 @@ msgstr "Adresse"
 
 #: src/Template/Administrators/debug.php:412
 msgid "Webserver"
-msgstr ""
+msgstr "Webserver"
 
 #: src/Template/Administrators/debug.php:415
 msgid "HTTPS / TLS"
-msgstr ""
+msgstr "HTTPS / TLS"
 
 #: src/Template/Administrators/debug.php:418
 msgid "OS"
-msgstr ""
+msgstr "OS"
 
 #: src/Template/Administrators/debug.php:421
 msgid "Kernel"
-msgstr ""
+msgstr "Kernel"
 
 #: src/Template/Administrators/debug.php:424
 msgid "Architecture"
@@ -7088,7 +7088,7 @@ msgstr "Aktuelle Last:"
 
 #: src/Template/Administrators/debug.php:498
 msgid "1 Minute"
-msgstr ""
+msgstr "1 Minute"
 
 #: src/Template/Administrators/debug.php:506
 msgid "5 Minutes"
@@ -7205,7 +7205,7 @@ msgstr "Client Information"
 
 #: src/Template/Administrators/debug.php:747
 msgid "Client OS"
-msgstr ""
+msgstr "Client OS"
 
 #: src/Template/Administrators/debug.php:750
 msgid "Client browser"
@@ -7259,7 +7259,7 @@ msgstr "Es konnte keine Verbindung zum Query Log WebSocket Server hergestellt we
 #: src/Template/Agentconnector/config.php:78
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:577
 msgid "openITCOCKPIT Agent"
-msgstr ""
+msgstr "openITCOCKPIT Agent"
 
 #: src/Template/Agentchecks/add.php:39
 #: src/Template/Agentchecks/edit.php:39
@@ -7340,7 +7340,7 @@ msgstr "Agent Prüfung"
 #: PrometheusModule/templates/PrometheusExporters/index.php:127
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:613
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: src/Template/Agentchecks/add.php:78
 #: src/Template/Agentchecks/edit.php:79
@@ -7653,15 +7653,15 @@ msgstr "Welches Betriebssystem möchten Sie überwachen?"
 
 #: src/Template/Agentconnector/config.php:422
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: src/Template/Agentconnector/config.php:430
 msgid "Linux"
-msgstr ""
+msgstr "Linux"
 
 #: src/Template/Agentconnector/config.php:438
 msgid "macOS"
-msgstr ""
+msgstr "macOS"
 
 #: src/Template/Agentconnector/config.php:454
 msgid "Basic configuration "
@@ -7681,7 +7681,7 @@ msgstr "Externe Adresse des openITCOCKPIT Servers."
 
 #: src/Template/Agentconnector/config.php:483
 msgid "openITCOCKPIT Api-Key"
-msgstr ""
+msgstr "openITCOCKPIT Api-Schlüssel"
 
 #: src/Template/Agentconnector/config.php:507
 msgid "Agent bind address"
@@ -7712,7 +7712,7 @@ msgstr "Agent Verbindungsport"
 #: PrometheusModule/templates/PrometheusExporters/add.php:164
 #: PrometheusModule/templates/PrometheusExporters/edit.php:165
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: src/Template/Agentconnector/config.php:542
 msgid "Port number that openITCOCKPIT Agent should bind to."
@@ -7954,11 +7954,11 @@ msgstr "Java muss auf dem Agent-Hostsystem installiert sein, wenn Sie alfrescost
 
 #: src/Template/Agentconnector/config.php:1109
 msgid "config.cnf"
-msgstr ""
+msgstr "config.cnf"
 
 #: src/Template/Agentconnector/config.php:1123
 msgid "customchecks.cnf"
-msgstr ""
+msgstr "customchecks.cnf"
 
 #: src/Template/Agentconnector/config.php:1150
 msgid "Download and install openITCOCKPIT Monitoring Agent"
@@ -7990,23 +7990,23 @@ msgstr "Kopieren Sie die angezeigte Konfigurationsdatei und fügen Sie sie ein i
 
 #: src/Template/Agentconnector/config.php:1197
 msgid "C:\\Program Files\\it-novum\\openitcockpit-agent\\config.cnf"
-msgstr ""
+msgstr "C:\\Program Files\\it-novum\\openitcockpit-agent\\config.cnf"
 
 #: src/Template/Agentconnector/config.php:1198
 msgid "/etc/openitcockpit-agent/config.cnf"
-msgstr ""
+msgstr "/etc/openitcockpit-agent/config.cnf"
 
 #: src/Template/Agentconnector/config.php:1199
 msgid "/Applications/openitcockpit-agent/config.cnf"
-msgstr ""
+msgstr "/Applications/openitcockpit-agent/config.cnf"
 
 #: src/Template/Agentconnector/config.php:1205
 msgid "config.cnf:"
-msgstr ""
+msgstr "config.cnf:"
 
 #: src/Template/Agentconnector/config.php:1215
 msgid "customchecks.cnf:"
-msgstr ""
+msgstr "customchecks.cnf:"
 
 #: src/Template/Agentconnector/config.php:1231
 msgid "Restart openITCOCKPIT Agent"
@@ -8022,19 +8022,19 @@ msgstr "Als Administrator ausführen (über cmd.exe)"
 
 #: src/Template/Agentconnector/config.php:1242
 msgid "sc stop openITCOCKPITAgent && sc start openITCOCKPITAgent"
-msgstr ""
+msgstr "sc stop openITCOCKPITAgent && sc start openITCOCKPITAgent"
 
 #: src/Template/Agentconnector/config.php:1246
 msgid "sudo systemctl restart openitcockpit-agent.service"
-msgstr ""
+msgstr "sudo systemctl restart openitcockpit-agent.service"
 
 #: src/Template/Agentconnector/config.php:1250
 msgid "sudo /bin/launchctl stop com.it-novum.openitcockpit.agent"
-msgstr ""
+msgstr "sudo /bin/launchctl stop com.it-novum.openitcockpit.agent"
 
 #: src/Template/Agentconnector/config.php:1252
 msgid "sudo /bin/launchctl start com.it-novum.openitcockpit.agent"
-msgstr ""
+msgstr "sudo /bin/launchctl start com.it-novum.openitcockpit.agent"
 
 #: src/Template/Agentconnector/config.php:1283
 msgid "Waiting for results..."
@@ -8062,7 +8062,7 @@ msgstr "Systemlast"
 
 #: src/Template/Agentconnector/config.php:1409
 msgid "Disk IO"
-msgstr ""
+msgstr "Disk IO"
 
 #: src/Template/Agentconnector/config.php:1449
 msgid "Fans"
@@ -8095,7 +8095,7 @@ msgstr "Windows-Services"
 
 #: src/Template/Agentconnector/config.php:1586
 msgid "Systemd services"
-msgstr ""
+msgstr "Systemd services"
 
 #: src/Template/Agentconnector/config.php:1606
 msgid "Windows event log"
@@ -8103,7 +8103,7 @@ msgstr "Windows Eventlog"
 
 #: src/Template/Agentconnector/config.php:1626
 msgid "Alfresco checks"
-msgstr ""
+msgstr "Alfresco checks"
 
 #: src/Template/Agentconnector/config.php:1646
 msgid "Docker container running"
@@ -8578,7 +8578,7 @@ msgstr "In Bearbeitung"
 #: src/Template/Angular/interval_input.php:33
 #: src/Template/Angular/interval_input_with_differ.php:33
 msgid "1m"
-msgstr ""
+msgstr "1m"
 
 #: src/Template/Angular/duration_input.php:29
 #: src/Template/Angular/interval_input.php:34
@@ -8592,7 +8592,7 @@ msgstr "1 Minute"
 #: src/Template/Angular/interval_input.php:38
 #: src/Template/Angular/interval_input_with_differ.php:38
 msgid "2m"
-msgstr ""
+msgstr "2m"
 
 #: src/Template/Angular/duration_input.php:34
 #: src/Template/Angular/interval_input.php:39
@@ -8606,7 +8606,7 @@ msgstr "2 Minuten"
 #: src/Template/Angular/interval_input.php:43
 #: src/Template/Angular/interval_input_with_differ.php:43
 msgid "5m"
-msgstr ""
+msgstr "5m"
 
 #: src/Template/Angular/duration_input.php:39
 #: src/Template/Angular/interval_input.php:44
@@ -8620,7 +8620,7 @@ msgstr "5 Minuten"
 #: src/Template/Angular/interval_input.php:48
 #: src/Template/Angular/interval_input_with_differ.php:48
 msgid "10m"
-msgstr ""
+msgstr "10m"
 
 #: src/Template/Angular/duration_input.php:44
 #: src/Template/Angular/interval_input.php:49
@@ -8634,7 +8634,7 @@ msgstr "10 Minuten"
 #: src/Template/Angular/interval_input.php:53
 #: src/Template/Angular/interval_input_with_differ.php:53
 msgid "15m"
-msgstr ""
+msgstr "15m"
 
 #: src/Template/Angular/duration_input.php:49
 #: src/Template/Angular/interval_input.php:54
@@ -8647,7 +8647,7 @@ msgstr "15 Minuten"
 #: src/Template/Angular/interval_input.php:58
 #: src/Template/Angular/interval_input_with_differ.php:58
 msgid "30m"
-msgstr ""
+msgstr "30m"
 
 #: src/Template/Angular/duration_input.php:54
 #: src/Template/Angular/interval_input.php:59
@@ -8661,7 +8661,7 @@ msgstr "30 Minuten"
 #: src/Template/Angular/interval_input.php:63
 #: src/Template/Angular/interval_input_with_differ.php:63
 msgid "45m"
-msgstr ""
+msgstr "45m"
 
 #: src/Template/Angular/duration_input.php:59
 #: src/Template/Angular/interval_input.php:64
@@ -8673,7 +8673,7 @@ msgstr "45 Minuten"
 #: src/Template/Angular/interval_input.php:68
 #: src/Template/Angular/interval_input_with_differ.php:68
 msgid "1h"
-msgstr ""
+msgstr "1h"
 
 #: src/Template/Angular/duration_input.php:64
 #: src/Template/Angular/interval_input.php:69
@@ -8687,7 +8687,7 @@ msgstr "1 Stunde"
 #: src/Template/Angular/interval_input.php:73
 #: src/Template/Angular/interval_input_with_differ.php:73
 msgid "1.5h"
-msgstr ""
+msgstr "1.5h Stunden"
 
 #: src/Template/Angular/duration_input.php:69
 #: src/Template/Angular/interval_input.php:74
@@ -8699,7 +8699,7 @@ msgstr "1.5 Stunden"
 #: src/Template/Angular/interval_input.php:78
 #: src/Template/Angular/interval_input_with_differ.php:78
 msgid "2h"
-msgstr ""
+msgstr "2 Stunden"
 
 #: src/Template/Angular/duration_input.php:74
 #: src/Template/Angular/interval_input.php:79
@@ -8712,7 +8712,7 @@ msgstr "2 Stunden"
 #: src/Template/Angular/interval_input.php:83
 #: src/Template/Angular/interval_input_with_differ.php:83
 msgid "4h"
-msgstr ""
+msgstr "4 Stunden"
 
 #: src/Template/Angular/duration_input.php:79
 #: src/Template/Angular/interval_input.php:84
@@ -8723,7 +8723,7 @@ msgstr "4 Stunden"
 
 #: src/Template/Angular/duration_input.php:83
 msgid "8h"
-msgstr ""
+msgstr "8 Stunden"
 
 #: src/Template/Angular/duration_input.php:84
 msgid "8 hours"
@@ -8917,7 +8917,7 @@ msgstr "Sekunden"
 #: src/Template/Angular/interval_input.php:28
 #: src/Template/Angular/interval_input_with_differ.php:28
 msgid "30s"
-msgstr ""
+msgstr "30s"
 
 #: src/Template/Angular/interval_input.php:29
 #: src/Template/Angular/interval_input_with_differ.php:29
@@ -9181,7 +9181,7 @@ msgstr "Passive Übertragung des Prüfergebnisses"
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:88
 #: src/Template/Services/pdf/list_to_pdf.php:72
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: src/Template/Angular/submit_host_result.php:25
 #: src/Template/Browsers/index.php:304
@@ -9239,7 +9239,7 @@ msgstr "Auf harten Zustand zwingen"
 #: EventcorrelationModule/templates/Eventcorrelations/summary_view.php:78
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:81
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: src/Template/Angular/system_health.php:26
 msgid "Display of system health notifications"
@@ -9405,7 +9405,7 @@ msgstr "Klicken Sie hier, um den Standardwert der Vorlage wiederherzustellen:"
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:255
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:608
 msgid "Services"
-msgstr ""
+msgstr "Services"
 
 #: src/Template/Angular/top_search.php:48
 #: src/Template/Angular/top_search.php:51
@@ -9414,7 +9414,7 @@ msgstr ""
 #: src/Template/Hosts/disabled.php:190
 #: src/Template/Services/service_list.php:791
 msgid "UUID"
-msgstr ""
+msgstr "UUID"
 
 #: src/Template/Angular/user_timezone.php:26
 msgid "Display of server and client times"
@@ -9465,7 +9465,7 @@ msgstr "Rekursiv"
 #: src/Template/Automaps/edit.php:132
 #: src/Template/Automaps/index.php:129
 msgid "Host RegEx"
-msgstr ""
+msgstr "Host RegEx"
 
 #: src/Template/Automaps/add.php:141
 #: src/Template/Automaps/edit.php:143
@@ -9478,7 +9478,7 @@ msgstr "{0} Hosts, die dem regulären Ausdruck entsprechen."
 #: AutoreportModule/templates/Autoreports/add_step_two.php:98
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:98
 msgid "Service RegEx"
-msgstr ""
+msgstr "Service RegEx"
 
 #: src/Template/Automaps/add.php:158
 #: src/Template/Automaps/edit.php:160
@@ -9548,7 +9548,7 @@ msgstr "Icon Größe"
 #: src/Template/Automaps/add.php:333
 #: src/Template/Automaps/edit.php:335
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: src/Template/Automaps/add.php:339
 #: src/Template/Automaps/edit.php:341
@@ -9604,7 +9604,7 @@ msgstr "Beispiel Host"
 #: src/Template/Automaps/edit.php:422
 #: src/Template/Automaps/edit.php:423
 msgid "Service 1"
-msgstr ""
+msgstr "Service 1"
 
 #: src/Template/Automaps/add.php:377
 #: src/Template/Automaps/add.php:378
@@ -9619,7 +9619,7 @@ msgstr ""
 #: src/Template/Automaps/edit.php:429
 #: src/Template/Automaps/edit.php:430
 msgid "Service 2"
-msgstr ""
+msgstr "Service 2"
 
 #: src/Template/Automaps/add.php:444
 msgid "Create auto map"
@@ -9662,7 +9662,7 @@ msgstr "Rekursiver Container"
 #: src/Template/Servicedependencies/index.php:535
 #: src/Template/Servicedependencies/index.php:569
 msgid "O"
-msgstr ""
+msgstr "O"
 
 #: src/Template/Automaps/index.php:176
 #: src/Template/Contacts/index.php:237
@@ -9670,7 +9670,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:574
 #: src/Template/Serviceescalations/index.php:474
 msgid "W"
-msgstr ""
+msgstr "W"
 
 #: src/Template/Automaps/index.php:181
 #: src/Template/Contacts/index.php:242
@@ -9678,7 +9678,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:579
 #: src/Template/Serviceescalations/index.php:479
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: src/Template/Automaps/index.php:186
 #: src/Template/Contacts/index.php:204
@@ -9690,7 +9690,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:584
 #: src/Template/Serviceescalations/index.php:484
 msgid "U"
-msgstr ""
+msgstr "U"
 
 #: src/Template/Automaps/index.php:189
 #: src/Template/Dashboards/hosts_status_list_widget.php:83
@@ -9920,7 +9920,7 @@ msgstr "ist in Wartungszeit"
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:139
 #: PrometheusModule/templates/PrometheusQuery/index.php:154
 msgid "Grapher"
-msgstr ""
+msgstr "Grapher"
 
 #: src/Template/Browsers/index.php:431
 #: src/Template/Browsers/index.php:516
@@ -10154,7 +10154,7 @@ msgstr "Aktualisiere Kalender"
 #: src/Template/Contacts/index.php:38
 #: src/Template/Systemsettings/index.php:38
 msgid "index"
-msgstr ""
+msgstr "index"
 
 #: src/Template/Calendars/index.php:81
 msgid "Filter by calendar name"
@@ -10399,7 +10399,7 @@ msgstr "Kommando aktualisieren"
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:23
 #: SnmpTrapModule/templates/SnmpttList/index.php:41
 msgid "Index"
-msgstr ""
+msgstr "Index"
 
 #: src/Template/Commands/index.php:82
 msgid "Filter by command name"
@@ -10466,15 +10466,15 @@ msgstr "Datenbank-Backend"
 
 #: src/Template/ConfigurationFiles/db_backend.php:44
 msgid "Statusengine 3 - MySQL"
-msgstr ""
+msgstr "Statusengine 3 - MySQL"
 
 #: src/Template/ConfigurationFiles/db_backend.php:45
 msgid "Statusengine 3 - CrateDB"
-msgstr ""
+msgstr "Statusengine 3 - CrateDB"
 
 #: src/Template/ConfigurationFiles/db_backend.php:46
 msgid "Statusengine 2 / NDOUtils - MySQL"
-msgstr ""
+msgstr "Statusengine 2 / NDOUtils - MySQL"
 
 #: src/Template/ConfigurationFiles/edit.php:34
 msgid "Configuration file"
@@ -10500,7 +10500,7 @@ msgstr "Carbon Speicherpfad"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:73
 msgid "VictoriaMetrics storage path"
-msgstr ""
+msgstr "VictoriaMetrics-Speicherpfad"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:89
 msgid "Carbon Cache instances"
@@ -10508,7 +10508,7 @@ msgstr "Carbon Cache-Instanzen"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:106
 msgid "Carbon C Relay workers"
-msgstr ""
+msgstr "Carbon C Relay workers"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:123
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:257
@@ -10518,7 +10518,7 @@ msgstr "Carbon Speicherschema"
 #: src/Template/ConfigurationFiles/graphing_docker.php:139
 #: src/Template/ConfigurationFiles/graphing_docker.php:227
 msgid "VictoriaMetrics retention period"
-msgstr ""
+msgstr "Aufbewahrungsfrist für VictoriaMetrics"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:157
 msgid "Local Graphite-Web port"
@@ -10601,19 +10601,19 @@ msgstr "Kritisch (Standard)"
 #: src/Template/ConfigurationFiles/nagios_cfg.php:110
 #: PrometheusModule/src/Command/PrometheusBridgeCommand.php:128
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: src/Template/ConfigurationFiles/perfdata_backend.php:44
 msgid "Whisper (Statusengine 3 / Statusengine 2)"
-msgstr ""
+msgstr "Whisper (Statusengine 3 / Statusengine 2)"
 
 #: src/Template/ConfigurationFiles/perfdata_backend.php:45
 msgid "Crate (Statusengine 3)"
-msgstr ""
+msgstr "Crate (Statusengine 3)"
 
 #: src/Template/ConfigurationFiles/perfdata_backend.php:46
 msgid "Rrdtool (Statusengine 2 / NPCD)"
-msgstr ""
+msgstr "Rrdtool (Statusengine 2 / NPCD)"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:47
 msgid "Use check_result_path"
@@ -10689,7 +10689,7 @@ msgstr "ALLES"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:291
 msgid "Supervisor"
-msgstr ""
+msgstr "Supervisor"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:326
 msgid "Time synchronisation"
@@ -10707,7 +10707,7 @@ msgstr "Tag"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:360
 msgid "Minute"
-msgstr ""
+msgstr "Minute"
 
 #: src/Template/Contactgroups/add.php:34
 #: src/Template/Contactgroups/add.php:62
@@ -11119,7 +11119,7 @@ msgstr "Importiere Kontakt von LDAP"
 #: src/Template/Users/add_from_ldap.php:189
 #: src/Template/Users/edit.php:191
 msgid "SAM-Account-Name"
-msgstr ""
+msgstr "SAM-Account-Name"
 
 #: src/Template/Contacts/add_from_ldap.php:103
 #: src/Template/Users/add_from_ldap.php:226
@@ -11196,7 +11196,7 @@ msgstr "Service Benachrichtigungen"
 #: src/Template/Hostescalations/index.php:456
 #: src/Template/Serviceescalations/index.php:469
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: src/Template/Contacts/index.php:199
 #: src/Template/Hostdependencies/index.php:514
@@ -11206,7 +11206,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:130
 msgid "D"
-msgstr ""
+msgstr "D"
 
 #: src/Template/Contacts/used_by.php:47
 msgid "Used by..."
@@ -11227,7 +11227,7 @@ msgstr "Container"
 
 #: src/Template/Containers/index.php:75
 msgid "Global"
-msgstr ""
+msgstr "Global"
 
 #: src/Template/Containers/index.php:91
 msgid "Contactgroup"
@@ -11334,7 +11334,7 @@ msgstr "Vorname"
 #: src/Template/Containers/index.php:626
 #: src/Template/Containers/index.php:645
 msgid "John"
-msgstr ""
+msgstr "Max"
 
 #: src/Template/Containers/index.php:636
 #: src/Template/Profile/edit.php:77
@@ -11367,7 +11367,7 @@ msgstr "Postleitzahl"
 
 #: src/Template/Containers/index.php:702
 msgid "12345"
-msgstr ""
+msgstr "12345"
 
 #: src/Template/Containers/index.php:712
 #: src/Template/Tenants/add.php:146
@@ -11411,7 +11411,7 @@ msgstr "Auto Reports"
 
 #: src/Template/Containers/show_details.php:249
 msgid "Container "
-msgstr ""
+msgstr "Container "
 
 #: src/Template/Containers/show_details.php:250
 msgid "details"
@@ -11437,7 +11437,7 @@ msgstr "Cronjobs"
 
 #: src/Template/Cronjobs/index.php:50
 msgid "Cronjobs"
-msgstr ""
+msgstr "Cronjobs"
 
 #: src/Template/Cronjobs/index.php:70
 #: src/Template/Cronjobs/index.php:157
@@ -11523,7 +11523,7 @@ msgstr "Berichtsformat"
 #: AutoreportModule/templates/Autoreports/create_report.php:51
 #: AutoreportModule/templates/Autoreports/generate.php:119
 msgid "PDF"
-msgstr ""
+msgstr "PDF"
 
 #: src/Template/Currentstatereports/index.php:86
 #: src/Template/Downtimereports/index.php:132
@@ -11531,7 +11531,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/create_report.php:51
 #: AutoreportModule/templates/Autoreports/generate.php:120
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: src/Template/Currentstatereports/index.php:214
 #: src/Template/Services/index.php:325
@@ -11590,7 +11590,7 @@ msgstr "Status Typ"
 #: src/Template/Services/service_list.php:307
 #: src/Template/Services/service_list.php:317
 msgid "n/a"
-msgstr ""
+msgstr "n/a"
 
 #: src/Template/Currentstatereports/index.php:299
 #: src/Template/Currentstatereports/index.php:406
@@ -11767,7 +11767,7 @@ msgstr "Erstellt"
 #: src/Template/Timeperiods/edit.php:191
 #: src/Template/Users/login.php:130
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:141
 #: src/Template/Dashboards/services_downtime_widget.php:161
@@ -11997,11 +11997,11 @@ msgstr "Label anzeigen"
 
 #: src/Template/Dashboards/website_widget.php:52
 msgid "To embed a website the {0} HTML tag is used."
-msgstr ""
+msgstr "Zum Einbetten einer Website wird das HTML-Tag {0} verwendet."
 
 #: src/Template/Dashboards/website_widget.php:54
 msgid "Most websites have restrictions for embedding and my not work. Depending on the security settings of the web browser mixing of http and https connections can cause issues."
-msgstr ""
+msgstr "Die meisten Websites haben Einschränkungen beim Einbetten und funktionieren nicht. Abhängig von den Sicherheitseinstellungen des Webbrowsers kann das Mischen von http- und https-Verbindungen zu Problemen führen."
 
 #: src/Template/Dashboards/welcome_widget.php:31
 msgid "hosts are monitored"
@@ -12119,11 +12119,11 @@ msgstr "Einfügen"
 
 #: src/Template/Documentations/wiki.php:38
 msgid "Wiki"
-msgstr ""
+msgstr "Wiki"
 
 #: src/Template/Documentations/wiki.php:48
 msgid "wiki"
-msgstr ""
+msgstr "wiki"
 
 #: src/Template/Documentations/wiki.php:56
 msgid "New to openITCOCKPIT?"
@@ -12155,11 +12155,11 @@ msgstr "Die technische Dokumentation von openITCOCKPIT enthält detaillierte Inf
 
 #: src/Template/Documentations/wiki.php:84
 msgid "Technical documentation (EN)"
-msgstr ""
+msgstr "Technische Dokumentation (EN)"
 
 #: src/Template/Documentations/wiki.php:89
 msgid "Technische Dokumentation (DE)"
-msgstr ""
+msgstr "Technische Dokumentation (DE)"
 
 #: src/Template/Documentations/wiki.php:97
 msgid "Additional help"
@@ -12243,7 +12243,7 @@ msgstr "Bitte einen Zeitraum auswählen"
 #: AutoreportModule/templates/Autoreports/generate.php:135
 #: AutoreportModule/templates/Autoreports/generate.php:151
 msgid "DD.MM.YYYY"
-msgstr ""
+msgstr "DD.MM.YYYY"
 
 #: src/Template/Downtimereports/index.php:194
 #: src/Template/Instantreports/add.php:267
@@ -12434,7 +12434,7 @@ msgstr "Optionen"
 #: src/Template/Downtimes/host.php:411
 #: src/Template/Downtimes/service.php:437
 msgid "Cancel selected"
-msgstr ""
+msgstr "Abbrechen ausgewählt"
 
 #: src/Template/Downtimes/icon.php:28
 msgid "Downtime currently running"
@@ -12454,11 +12454,11 @@ msgstr "Wartungszeit noch nicht gestartet"
 
 #: src/Template/Errors/error403.php:32
 msgid "403"
-msgstr ""
+msgstr "403"
 
 #: src/Template/Errors/error404.php:32
 msgid "404"
-msgstr ""
+msgstr "404"
 
 #: src/Template/Exports/index.php:34
 #: src/Template/Exports/index.php:47
@@ -12521,7 +12521,7 @@ msgstr "Neue Konfiguration ist ungültig"
 
 #: src/Template/Exports/index.php:214
 msgid "New Prometheus configuration is invalid"
-msgstr ""
+msgstr "Die neue Prometheus-Konfiguration ist ungültig"
 
 #: src/Template/Exports/index.php:246
 msgid "Refresh in progress "
@@ -12623,7 +12623,7 @@ msgstr "Ausführungsfehlerkriterien"
 #: src/Template/Hostdependencies/add.php:226
 #: src/Template/Hostdependencies/edit.php:227
 msgid "Disable active host checking of dependend host/s, if master host state is one of the selected states."
-msgstr ""
+msgstr "Deaktivieren Sie die aktive Hostprüfung von abhängigen Hosts, wenn der Master-Host-Status einer der ausgewählten Status ist."
 
 #: src/Template/Hostdependencies/add.php:294
 #: src/Template/Hostdependencies/edit.php:295
@@ -12648,7 +12648,7 @@ msgstr "Kriterien für Benachrichtigungsfehler"
 #: src/Template/Hostdependencies/add.php:309
 #: src/Template/Hostdependencies/edit.php:310
 msgid "Disable host notifications of dependend host/s, if master host state is one of the selected states."
-msgstr ""
+msgstr "Deaktivieren Sie Host-Benachrichtigungen für abhängige Hosts, wenn der Master-Host-Status einer der ausgewählten Status ist."
 
 #: src/Template/Hostdependencies/add.php:377
 #: src/Template/Hostdependencies/edit.php:378
@@ -12717,14 +12717,14 @@ msgstr "Erbt nicht vom Elternteil"
 #: src/Template/Servicedependencies/index.php:589
 #: src/Template/Servicegroups/extended.php:211
 msgid "P"
-msgstr ""
+msgstr "P"
 
 #: src/Template/Hostdependencies/index.php:529
 #: src/Template/Hostdependencies/index.php:558
 #: src/Template/Servicedependencies/index.php:560
 #: src/Template/Servicedependencies/index.php:594
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #: src/Template/Hostescalations/add.php:49
 msgid "Create new host escalation"
@@ -12831,7 +12831,7 @@ msgstr "Eskalationsoptionen"
 #: src/Template/Serviceescalations/add.php:295
 #: src/Template/Serviceescalations/edit.php:295
 msgid "Enables the escalation for the selected states"
-msgstr ""
+msgstr "Aktiviert die Eskalation für die ausgewählten Zustände"
 
 #: src/Template/Hostescalations/add.php:344
 msgid "Create host escalation"
@@ -12979,7 +12979,7 @@ msgstr "Hostgruppen (0)"
 #: src/Template/Hostgroups/extended.php:67
 #: src/Template/Servicegroups/extended.php:67
 msgid "UUID: "
-msgstr ""
+msgstr "UUID: "
 
 #: src/Template/Hostgroups/extended.php:107
 #: src/Template/Servicegroups/extended.php:107
@@ -13086,7 +13086,7 @@ msgstr "Hostname konnte nicht aufgelöst werden."
 #: src/Template/Hosts/add.php:183
 #: src/Template/Hosts/edit.php:201
 msgid "DNS Lookup"
-msgstr ""
+msgstr "DNS-Suche"
 
 #: src/Template/Hosts/add.php:190
 #: src/Template/Hosts/edit.php:209
@@ -13122,7 +13122,7 @@ msgstr "Eltern-Host"
 #: src/Template/Servicetemplates/add.php:190
 #: src/Template/Servicetemplates/edit.php:194
 msgid "Tags"
-msgstr ""
+msgstr "Stichworte"
 
 #: src/Template/Hosts/add.php:296
 #: src/Template/Hosts/edit.php:315
@@ -13394,7 +13394,7 @@ msgstr "Diverse Konfiguration"
 #: src/Template/Hosttemplates/add.php:530
 #: src/Template/Hosttemplates/edit.php:527
 msgid "Host URL"
-msgstr ""
+msgstr "Host URL"
 
 #: src/Template/Hosts/add.php:753
 #: src/Template/Hosts/edit.php:804
@@ -13454,7 +13454,7 @@ msgstr "Host-Makro-Konfiguration"
 #: src/Template/Hosttemplates/add.php:649
 #: src/Template/Hosttemplates/edit.php:647
 msgid "HOST"
-msgstr ""
+msgstr "HOST"
 
 #: src/Template/Hosts/add.php:890
 #: src/Template/Hosts/edit.php:939
@@ -13466,7 +13466,7 @@ msgstr "Makros in grüner Farbe werden von der Hostvorlage geerbt."
 #: src/Template/Hosttemplates/add.php:674
 #: src/Template/Hosttemplates/edit.php:672
 msgid "Prometheus Exporters"
-msgstr ""
+msgstr "Prometheus Exporters"
 
 #: src/Template/Hosts/add.php:914
 #: src/Template/Hosts/edit.php:963
@@ -13474,7 +13474,7 @@ msgstr ""
 #: src/Template/Hosttemplates/edit.php:677
 #: PrometheusModule/src/Lib/Menu.php:40
 msgid "Exporters"
-msgstr ""
+msgstr "Exporters"
 
 #: src/Template/Hosts/add.php:932
 #: src/Template/Hosts/edit.php:981
@@ -13486,7 +13486,7 @@ msgstr "Um diesen Host mit Prometheus zu überwachen, wähle bitte die Exporter 
 #: src/Template/Hosts/add.php:934
 #: src/Template/Hosts/edit.php:983
 msgid "Before you could query the host through Prometheus, you need to refresh the monitoring configuration."
-msgstr ""
+msgstr "Bevor Sie den Host über Prometheus abfragen können, müssen Sie die Monitoring-Konfiguration aktualisieren."
 
 #: src/Template/Hosts/add.php:958
 msgid "Create host and setup agent"
@@ -13532,7 +13532,7 @@ msgstr "Zeitleiste"
 #: src/Template/Services/browser.php:98
 #: ServicenowModule/src/Lib/Menu.php:46
 msgid "ServiceNow"
-msgstr ""
+msgstr "ServiceNow"
 
 #: src/Template/Hosts/browser.php:256
 msgid "This host is currently disabled!"
@@ -13618,7 +13618,7 @@ msgstr "Problem mit übergeordnetem Host erkannt!"
 #: src/Template/Hosts/browser.php:410
 #: src/Template/Services/browser.php:488
 msgid "Last time"
-msgstr ""
+msgstr "Letztes Mal"
 
 #: src/Template/Hosts/browser.php:450
 #: src/Template/Services/browser.php:528
@@ -13803,12 +13803,12 @@ msgstr "in Wartungszeit"
 #: src/Template/Services/browser.php:949
 #: src/Template/Services/service_list.php:194
 msgid "Service type"
-msgstr ""
+msgstr "Servicetyp"
 
 #: src/Template/Hosts/browser.php:1410
 #: src/Template/Services/index.php:762
 msgid "Disable services"
-msgstr ""
+msgstr "Dienste deaktivieren"
 
 #: src/Template/Hosts/browser.php:1417
 #: src/Template/Services/index.php:769
@@ -13826,7 +13826,7 @@ msgstr "Bestätige Status"
 #: src/Template/Hosts/browser.php:1458
 #: src/Template/Hosts/browser.php:1554
 msgid "Servicestatus"
-msgstr ""
+msgstr "Servicestatus"
 
 #: src/Template/Hosts/copy.php:47
 msgid "Copy host/s"
@@ -13928,7 +13928,7 @@ msgstr "Nur unbehandelte"
 
 #: src/Template/Hosts/index.php:148
 msgid "Filter by host description"
-msgstr ""
+msgstr "Nach Hostbeschreibung filtern"
 
 #: src/Template/Hosts/index.php:210
 #: src/Template/Services/index.php:194
@@ -14327,11 +14327,11 @@ msgstr "Wenn Sie den Makronamen ändern, müssen Sie alle Vorkommen des Makros m
 #: src/Template/Nagiostats/index.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:545
 msgid "Performance Info"
-msgstr ""
+msgstr "Leistungsinfo"
 
 #: src/Template/Nagiostats/index.php:48
 msgid "Performance Information"
-msgstr ""
+msgstr "Leistungsinfo"
 
 #: src/Template/Nagiostats/index.php:64
 msgid "Executed Active Service Checks"
@@ -14368,21 +14368,21 @@ msgstr "Aktive Service-Prüfung Timings"
 #: src/Template/Systemsettings/index.php:78
 #: AutoreportModule/templates/AutoreportSettings/index.php:58
 msgid "Key"
-msgstr ""
+msgstr "Schlüssel"
 
 #: src/Template/Nagiostats/index.php:135
 #: src/Template/Nagiostats/index.php:291
 #: src/Template/Nagiostats/index.php:387
 #: src/Template/Nagiostats/index.php:501
 msgid "Min."
-msgstr ""
+msgstr "Min."
 
 #: src/Template/Nagiostats/index.php:136
 #: src/Template/Nagiostats/index.php:292
 #: src/Template/Nagiostats/index.php:388
 #: src/Template/Nagiostats/index.php:502
 msgid "Max."
-msgstr ""
+msgstr "Max."
 
 #: src/Template/Nagiostats/index.php:142
 #: src/Template/Nagiostats/index.php:394
@@ -14407,7 +14407,7 @@ msgstr "Zusätzliche Informationen"
 
 #: src/Template/Nagiostats/index.php:198
 msgid "Core PID"
-msgstr ""
+msgstr "Core PID"
 
 #: src/Template/Nagiostats/index.php:202
 msgid "Total hosts"
@@ -14662,7 +14662,7 @@ msgstr "Neues Passwort"
 #: src/Template/Users/add.php:436
 #: src/Template/Users/edit.php:466
 msgid "The password must consist of 6 alphanumeric characters and must contain at least one digit"
-msgstr ""
+msgstr "Das Passwort muss aus 6 alphanumerischen Zeichen bestehen und mindestens eine Ziffer enthalten"
 
 #: src/Template/Profile/edit.php:407
 #: src/Template/Users/add.php:442
@@ -14692,7 +14692,7 @@ msgstr "Es wird empfohlen, für jede externe Anwendung einen eigenen API-Key zu 
 
 #: src/Template/Profile/edit.php:470
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: src/Template/Profile/edit.php:476
 #: src/Template/Profile/edit.php:489
@@ -14734,7 +14734,7 @@ msgstr "Bearbeite API-Key"
 #: src/Template/Proxy/index.php:34
 #: src/Template/Proxy/index.php:47
 msgid "HTTP-Proxy"
-msgstr ""
+msgstr "HTTP-Proxy"
 
 #: src/Template/Proxy/index.php:48
 msgid "Edit configuration"
@@ -14826,11 +14826,11 @@ msgstr "Abhängige Servicegruppen"
 
 #: src/Template/Servicedependencies/add.php:228
 msgid "Disable active service checking of dependend service/s, if master service state is one of the selected states."
-msgstr ""
+msgstr "Deaktivieren Sie die aktive Serviceprüfung von abhängigen Services, wenn der Hauptservicestatus einer der ausgewählten Zustände ist."
 
 #: src/Template/Servicedependencies/add.php:325
 msgid "Disable service notifications of dependend service/s, if master service state is one of the selected states."
-msgstr ""
+msgstr "Deaktivieren Sie Servicebenachrichtigungen für abhängige Services, wenn der Hauptservicestatus einer der ausgewählten Status ist."
 
 #: src/Template/Servicedependencies/add.php:419
 msgid "Create service dependency"
@@ -15067,7 +15067,7 @@ msgstr "Host"
 #: src/Template/Servicetemplates/add.php:623
 #: src/Template/Servicetemplates/edit.php:620
 msgid "Service URL"
-msgstr ""
+msgstr "Service URL"
 
 #: src/Template/Services/add.php:755
 #: src/Template/Services/edit.php:805
@@ -15117,7 +15117,7 @@ msgstr "Event Handler Konfiguration"
 #: src/Template/Servicetemplates/edit.php:776
 #: src/Template/Servicetemplates/edit.php:778
 msgid "Event Handler"
-msgstr ""
+msgstr "Ereignishandler"
 
 #: src/Template/Services/add.php:969
 #: src/Template/Services/edit.php:1019
@@ -15138,7 +15138,7 @@ msgstr "Service Makro Konfiguration"
 #: src/Template/Servicetemplates/add.php:846
 #: src/Template/Servicetemplates/edit.php:843
 msgid "SERVICE"
-msgstr ""
+msgstr "SERVICE"
 
 #: src/Template/Services/add.php:1002
 #: src/Template/Services/edit.php:1053
@@ -15205,11 +15205,11 @@ msgstr "Host IP-Adresse"
 
 #: src/Template/Services/browser.php:921
 msgid "Host UUID"
-msgstr ""
+msgstr "Host UUID"
 
 #: src/Template/Services/browser.php:935
 msgid "Service UUID"
-msgstr ""
+msgstr "Service UUID"
 
 #: src/Template/Services/browser.php:1091
 msgid "Ok soft"
@@ -15245,22 +15245,22 @@ msgstr "Datenquelle: "
 
 #: src/Template/Services/browser.php:1247
 msgid "Aggregation: "
-msgstr ""
+msgstr "Aggregation: "
 
 #: src/Template/Services/browser.php:1248
 #: src/Template/Services/browser.php:1257
 msgid "Minimum"
-msgstr ""
+msgstr "Minimum"
 
 #: src/Template/Services/browser.php:1249
 #: src/Template/Services/browser.php:1262
 msgid "Average"
-msgstr ""
+msgstr "Durchschnitt"
 
 #: src/Template/Services/browser.php:1250
 #: src/Template/Services/browser.php:1267
 msgid "Maximum"
-msgstr ""
+msgstr "Maximum"
 
 #: src/Template/Services/copy.php:46
 msgid "Copy service/s"
@@ -15307,7 +15307,7 @@ msgstr "Aktualisiere Service"
 
 #: src/Template/Services/index.php:145
 msgid "Filter by service description"
-msgstr ""
+msgstr "Filtern nach Servicebeschreibung"
 
 #: src/Template/Services/load_arguments.php:68
 msgid "no parameters for this command defined"
@@ -15319,7 +15319,7 @@ msgstr "Services Übersicht"
 
 #: src/Template/Services/pdf/list_to_pdf.php:75
 msgid "Servicename"
-msgstr ""
+msgstr "Servicename"
 
 #: src/Template/Services/service_list.php:38
 #: src/Template/Services/service_list.php:107
@@ -15329,7 +15329,7 @@ msgstr "Services dieses Host"
 #: src/Template/Services/service_list.php:75
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:67
 msgid "Browser"
-msgstr ""
+msgstr "Browser"
 
 #: src/Template/Services/service_list.php:88
 msgid "Allocate Service Template Group"
@@ -15341,7 +15341,7 @@ msgstr "Öffne Host im Browser"
 
 #: src/Template/Services/service_list.php:787
 msgid "Service Name"
-msgstr ""
+msgstr "Servicename"
 
 #: src/Template/Servicetemplategroups/add.php:34
 #: src/Template/Servicetemplategroups/add.php:62
@@ -15776,7 +15776,7 @@ msgstr "Erstelle ein Ticket"
 
 #: src/Template/Supports/issue.php:126
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: src/Template/Supports/issue.php:158
 msgid "Create an issue"
@@ -15922,7 +15922,7 @@ msgstr "Startzeit"
 #: src/Template/Systemdowntimes/add_servicedowntime.php:215
 #: src/Template/Systemdowntimes/add_servicedowntime.php:248
 msgid "hh:mm"
-msgstr ""
+msgstr "hh:mm"
 
 #: src/Template/Systemdowntimes/add_hostdowntime.php:50
 msgid "Create new host downtime"
@@ -16019,27 +16019,27 @@ msgstr "Systemeinstellungen"
 #: src/Template/Systemsettings/index.php:80
 #: AutoreportModule/templates/AutoreportSettings/index.php:64
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: src/Template/Systemsettings/index.php:126
 msgid "PHP session"
-msgstr ""
+msgstr "PHP session"
 
 #: src/Template/Systemsettings/index.php:127
 msgid "PHP LDAP"
-msgstr ""
+msgstr "PHP LDAP"
 
 #: src/Template/Systemsettings/index.php:128
 msgid "SSO oAuth2"
-msgstr ""
+msgstr "SSO oAuth2"
 
 #: src/Template/Systemsettings/index.php:135
 msgid "Active Directory LDAP"
-msgstr ""
+msgstr "Active Directory LDAP"
 
 #: src/Template/Systemsettings/index.php:137
 msgid "OpenLDAP"
-msgstr ""
+msgstr "OpenLDAP"
 
 #: src/Template/Systemsettings/index.php:181
 msgid "Click for more information."
@@ -16047,11 +16047,11 @@ msgstr "Klicken Sie für weitere Informationen."
 
 #: src/Template/Systemsettings/index.php:188
 msgid "Generic"
-msgstr ""
+msgstr "Generic"
 
 #: src/Template/Systemsettings/index.php:189
 msgid "Ping Identity"
-msgstr ""
+msgstr "Ping Identity"
 
 #: src/Template/Tenants/add.php:165
 msgid "Create tenant"
@@ -16087,12 +16087,12 @@ msgstr "Geben Sie keine überlappenden Zeiträume ein"
 #: src/Template/Timeperiods/add.php:188
 #: src/Template/Timeperiods/edit.php:193
 msgid "(00:00)"
-msgstr ""
+msgstr "(00:00)"
 
 #: src/Template/Timeperiods/add.php:210
 #: src/Template/Timeperiods/edit.php:215
 msgid "(24:00)"
-msgstr ""
+msgstr "(24:00)"
 
 #: src/Template/Timeperiods/add.php:241
 msgid "Create time period"
@@ -16348,7 +16348,7 @@ msgstr "Ist aktiv"
 #: src/Template/Users/add.php:216
 #: src/Template/Users/edit.php:238
 msgid "Enable login through oAuth2"
-msgstr ""
+msgstr "Aktivieren Sie die Anmeldung über oAuth2"
 
 #: src/Template/Users/add.php:263
 #: src/Template/Users/add_from_ldap.php:307
@@ -16379,7 +16379,7 @@ msgstr "Importiere neuen Benutzer von LDAP"
 
 #: src/Template/Users/add_from_ldap.php:207
 msgid "DN"
-msgstr ""
+msgstr "DN"
 
 #: src/Template/Users/add_from_ldap.php:454
 msgid "Create user from LDAP"
@@ -16458,7 +16458,7 @@ msgstr "Anmelden"
 
 #: src/Template/Users/login.php:56
 msgid "Login through Single sign-on"
-msgstr ""
+msgstr "Melden Sie sich über Single Sign-On an"
 
 #: src/Template/Users/login.php:95
 msgid "Remember Me"
@@ -16517,15 +16517,15 @@ msgstr "Wollen Sie für diesen Host auch die Service-Wartungszeiten löschen?"
 #: src/Template/element/header.php:36
 #: src/Template/element/header.php:39
 msgid "No active subscription"
-msgstr ""
+msgstr "Kein aktive Subscription"
 
 #: src/Template/element/header.php:49
 msgid "Community Edition"
-msgstr ""
+msgstr "Community Edition"
 
 #: src/Template/element/header.php:52
 msgid "CE"
-msgstr ""
+msgstr "CE"
 
 #: src/Template/element/header.php:68
 msgid "Loading..."
@@ -16688,7 +16688,7 @@ msgstr "Im Anhang finden Sie den automatisch generierten Bericht: "
 #: AutoreportModule/templates/email/html/autoreport_mail.php:78
 #: AutoreportModule/templates/email/html/default_mail.php:93
 msgid "openITCOCKPIT"
-msgstr ""
+msgstr "openITCOCKPIT"
 
 #: src/Template/email/html/notification_host.php:61
 #: src/Template/email/html/notification_service.php:65
@@ -16723,7 +16723,7 @@ msgstr "Lange Hostbeschreibung"
 #: src/Template/email/html/notification_host.php:197
 #: src/Template/email/html/notification_service.php:241
 msgid "it-novum"
-msgstr ""
+msgstr "it-novum"
 
 #: src/Template/email/html/notification_service.php:144
 msgid "Service description"
@@ -16745,12 +16745,12 @@ msgstr "Bitte ändern Sie das Passwort nach dem ersten Login."
 
 #: src/Template/email/html/test_mail.php:50
 msgid "Test mail"
-msgstr ""
+msgstr "Test Email"
 
 #: src/Template/email/html/test_mail.php:73
 #: src/Template/email/text/test_mail.php:3
 msgid "System test mail"
-msgstr ""
+msgstr "Systemtest-Email"
 
 #: src/Template/email/html/test_mail.php:77
 #: src/Template/email/text/test_mail.php:9
@@ -16864,15 +16864,15 @@ msgstr "openITCOCKPIT Schnittstellen Konfigurationsdateien"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:91
 msgid "Carbon and Whisper (Graphing)"
-msgstr ""
+msgstr "Carbon und Whisper (Graphing)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:97
 msgid "SnmpTrapModule"
-msgstr ""
+msgstr "SnmpTrapModule"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:105
 msgid "PrometheusModule"
-msgstr ""
+msgstr "PrometheusModule"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:175
 msgid "Value is not in CIDR notation"
@@ -16932,15 +16932,15 @@ msgstr "Von Docker Compose verwendetes Subnetz in CIDR-Notation. Zum Beispiel 19
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:268
 msgid "Path used by VictoriaMetrics to store data."
-msgstr ""
+msgstr "Pfad, der von VictoriaMetrics zum Speichern von Daten verwendet wird."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:269
 msgid "Period in month how long VictoriaMetrics will keep stored metrics."
-msgstr ""
+msgstr "Zeitraum im Monat, wie lange VictoriaMetrics gespeicherte Metriken aufbewahrt werden."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:270
 msgid "Local HTTP port used by VictoriaMetrics."
-msgstr ""
+msgstr "Lokaler HTTP-Port, der von VictoriaMetrics verwendet wird."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:87
 msgid "IP-Address of the Graphite-Web server openITCOCKPIT should use to query data."
@@ -17085,147 +17085,147 @@ msgstr "PHP-Erweiterung php5-curl nicht geladen oder installiert!"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:14
 msgid "Australia"
-msgstr ""
+msgstr "Australien"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:15
 msgid "Austria"
-msgstr ""
+msgstr "Österreich"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:16
 msgid "Belgium"
-msgstr ""
+msgstr "Belgien"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:17
 msgid "Bosnia and Herzegovina"
-msgstr ""
+msgstr "Bosnien und Herzegowina"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:18
 msgid "Czech Republic"
-msgstr ""
+msgstr "Tschechien"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:19
 msgid "Denmark"
-msgstr ""
+msgstr "Dänemark"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:20
 msgid "Estonia"
-msgstr ""
+msgstr "Estland"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:21
 msgid "Finland"
-msgstr ""
+msgstr "Finnland"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:22
 msgid "France"
-msgstr ""
+msgstr "Frankreich"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:23
 msgid "Germany"
-msgstr ""
+msgstr "Deutschland"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:24
 msgid "Greece"
-msgstr ""
+msgstr "Griechenland"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:25
 msgid "Hungary"
-msgstr ""
+msgstr "Ungarn"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:26
 msgid "Ireland"
-msgstr ""
+msgstr "Irland"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:27
 msgid "Italy"
-msgstr ""
+msgstr "Italien"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:28
 msgid "Japan"
-msgstr ""
+msgstr "Japan"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:29
 msgid "Latvia"
-msgstr ""
+msgstr "Lettland"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:30
 msgid "Lithuania"
-msgstr ""
+msgstr "Litauen"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:31
 msgid "Netherlands"
-msgstr ""
+msgstr "Niederlande"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:32
 msgid "New Zealand"
-msgstr ""
+msgstr "Neuseeland"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:33
 msgid "Norway"
-msgstr ""
+msgstr "Norwegen"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:34
 msgid "Poland"
-msgstr ""
+msgstr "Polen"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:35
 msgid "Portugal"
-msgstr ""
+msgstr "Portugal"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:36
 msgid "Romania"
-msgstr ""
+msgstr "Rumänien"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:37
 msgid "Russian Federation"
-msgstr ""
+msgstr "Russische Föderation"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:38
 msgid "Slovakia"
-msgstr ""
+msgstr "Slowakei"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:39
 msgid "South Africa"
-msgstr ""
+msgstr "Südafrika"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:40
 msgid "Spain"
-msgstr ""
+msgstr "Spanien"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:41
 msgid "Sweden"
-msgstr ""
+msgstr "Schweden"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:42
 msgid "Switzerland"
-msgstr ""
+msgstr "Schweiz"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:43
 msgid "Ukraine"
-msgstr ""
+msgstr "Ukraine"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:44
 msgid "United Kingdom"
-msgstr ""
+msgstr "Vereinigtes Königreich"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:45
 msgid "United States"
-msgstr ""
+msgstr "Vereinigte Staaten"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:104
 msgid "German"
-msgstr ""
+msgstr "Deutsch"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:113
 msgid "English"
-msgstr ""
+msgstr "Englisch"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:123
 msgid "French"
-msgstr ""
+msgstr "Französisch"
 
 #: src/itnovum/openITCOCKPIT/Core/Locales.php:132
 msgid "Russian"
-msgstr ""
+msgstr "Russisch"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:113
 msgid "Happy Easter"
@@ -17257,7 +17257,7 @@ msgstr "Fröhliche Weihnachten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:57
 msgid "Dashboards"
-msgstr ""
+msgstr "Dashboards"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:107
 msgid "Reports"
@@ -17281,7 +17281,7 @@ msgstr "Änderungsprotokoll"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:181
 msgid "Monitoring"
-msgstr ""
+msgstr "Monitoring"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:205
 msgid "Objects"
@@ -17397,7 +17397,7 @@ msgstr "Agent Konfiguration"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:592
 msgid "Agent Overview"
-msgstr ""
+msgstr "Agentenübersicht"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:602
 msgid "Agent Checks"
@@ -17538,19 +17538,19 @@ msgstr "Zeitlicher Übergang"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
 msgid "M"
-msgstr ""
+msgstr "M"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:130
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:133
 msgid "h"
-msgstr ""
+msgstr "h"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
@@ -17558,7 +17558,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:133
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:136
 msgid "m"
-msgstr ""
+msgstr "m"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
@@ -17567,7 +17567,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:136
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:139
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:17
 msgid "Green"
@@ -17587,7 +17587,7 @@ msgstr "Blau"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:61
 msgid "Orange"
-msgstr ""
+msgstr "Orange"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:72
 msgid "Purple"
@@ -17631,7 +17631,7 @@ msgstr "Sprachformat"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:78
 msgid "Herz"
-msgstr ""
+msgstr "Herz"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:79
 msgid "Nanoseconds (ns)"
@@ -17670,80 +17670,80 @@ msgstr "Daten (IEC)"
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:90
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:99
 msgid "Bits"
-msgstr ""
+msgstr "Bits"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:91
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:100
 msgid "Bytes"
-msgstr ""
+msgstr "Bytes"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:92
 msgid "Kibibytes (KiB)"
-msgstr ""
+msgstr "Kibibytes (KiB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:93
 msgid "Mebibytes (MiB)"
-msgstr ""
+msgstr "Mebibytes (MiB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:94
 msgid "Gibibytes (GiB)"
-msgstr ""
+msgstr "Gibibytes (GiB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:98
 msgid "Data (Metric)"
-msgstr ""
+msgstr "Daten (Metrik)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:101
 msgid "Kilobytes (KB)"
-msgstr ""
+msgstr "Kilobytes (KB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:102
 msgid "Megabytes (MB)"
-msgstr ""
+msgstr "Megabytes (MB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:103
 msgid "Gigabytes (GB)"
-msgstr ""
+msgstr "Gigabytes (GB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:107
 msgid "Data rates"
-msgstr ""
+msgstr "Datenraten"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:108
 msgid "Packets/sec"
-msgstr ""
+msgstr "Pakete/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:109
 msgid "Bits/sec"
-msgstr ""
+msgstr "Bits/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:110
 msgid "Bytes/sec"
-msgstr ""
+msgstr "Bytes/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:111
 msgid "Kilobits/sec (kbit/s)"
-msgstr ""
+msgstr "Kilobit/s (kbit/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:112
 msgid "Kilobytes/ses (KB/s)"
-msgstr ""
+msgstr "Kilobyte/s (KB/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:113
 msgid "Megabits/sec (mbit/s)"
-msgstr ""
+msgstr "Megabit/s (mbit/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:114
 msgid "Megabytes/sec (MB/s)"
-msgstr ""
+msgstr "Megabyte/s (MB/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:115
 msgid "Gigabits/sec (gbit/s)"
-msgstr ""
+msgstr "Gigabit/Sek. (Gbit/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:116
 msgid "Gigabytes/sec (GB/s)"
-msgstr ""
+msgstr "Gigabyte/s (GB/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:120
 msgid "Data throughput"
@@ -17751,35 +17751,35 @@ msgstr "Datendurchsatz"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:121
 msgid "ops/sec (ops)"
-msgstr ""
+msgstr "ops/sec (ops)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:122
 msgid "requests/sec (rps)"
-msgstr ""
+msgstr "Anfragen/Sek. (rps)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:123
 msgid "reads/sec (rps)"
-msgstr ""
+msgstr "reads/sec (rps)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:124
 msgid "writes/sec (wps)"
-msgstr ""
+msgstr "writes/sec (wps)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:125
 msgid "I/O ops/sec (iops)"
-msgstr ""
+msgstr "E/A-Operationen/Sek. (iops)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:126
 msgid "ops/min (opm)"
-msgstr ""
+msgstr "ops/min (opm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:127
 msgid "reads/min (rpm)"
-msgstr ""
+msgstr "reads/min (rpm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:128
 msgid "writes/min (wpm)"
-msgstr ""
+msgstr "writes/min (wpm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:132
 msgid "Temperature"
@@ -17787,15 +17787,15 @@ msgstr "Temperatur"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:133
 msgid "Celsius (°C)"
-msgstr ""
+msgstr "Celsius (°C)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:134
 msgid "Farenheit (°F)"
-msgstr ""
+msgstr "Farenheit (°F)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:135
 msgid "Kelvin (K)"
-msgstr ""
+msgstr "Kelvin (K)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:139
 msgid "Currencies"
@@ -17803,63 +17803,63 @@ msgstr "Währungen"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:140
 msgid "Dollars ($)"
-msgstr ""
+msgstr "Dollar ($)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:141
 msgid "Euro (€)"
-msgstr ""
+msgstr "Euro (€)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:142
 msgid "Pounds (£)"
-msgstr ""
+msgstr "Pfund (£)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:143
 msgid "Yen (¥)"
-msgstr ""
+msgstr "Yen (¥)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:144
 msgid "Rubles (₽)"
-msgstr ""
+msgstr "Rubel (₽)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:145
 msgid "Hryvnias (₴)"
-msgstr ""
+msgstr "Griwna (₴)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:146
 msgid "Real (R$)"
-msgstr ""
+msgstr "Real (R$)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:147
 msgid "Danish Krone (kr)"
-msgstr ""
+msgstr "Dänische Krone (kr)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:148
 msgid "Icelandic Króna (kr)"
-msgstr ""
+msgstr "Isländische Króna (kr)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:149
 msgid "Norwegian Krone (kr)"
-msgstr ""
+msgstr "Norwegische Krone (kr)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:150
 msgid "Swedish Krona (kr)"
-msgstr ""
+msgstr "Schwedische Krone (kr)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:151
 msgid "Czech koruna (czk)"
-msgstr ""
+msgstr "Tschechische Krone (czk)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:152
 msgid "Swiss franc (CHF)"
-msgstr ""
+msgstr "Schweizer Franken (CHF)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:153
 msgid "Polish Złoty (PLN)"
-msgstr ""
+msgstr "Polnischer Złoty (PLN)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:154
 msgid "Bitcoin (฿)"
-msgstr ""
+msgstr "Bitcoin (฿)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:158
 msgid "Length"
@@ -17867,39 +17867,39 @@ msgstr "Längen"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:159
 msgid "Millimetre (mm)"
-msgstr ""
+msgstr "Millimeter (mm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:160
 msgid "Meter (m)"
-msgstr ""
+msgstr "Meter (m)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:161
 msgid "Kilometer (km)"
-msgstr ""
+msgstr "Kilometer (km)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:162
 msgid "Feet (ft)"
-msgstr ""
+msgstr "Fuß (ft)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:163
 msgid "Mile (mi)"
-msgstr ""
+msgstr "Meile (mi)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:168
 msgid "Area"
-msgstr ""
+msgstr "Bereich"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:169
 msgid "Square Meters (m²)"
-msgstr ""
+msgstr "Quadratmeter (m²)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:170
 msgid "Square Feet (ft²)"
-msgstr ""
+msgstr "Quadratfuß (ft²)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:171
 msgid "Square Miles (mi²)"
-msgstr ""
+msgstr "Quadratmeilen (mi²)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:175
 msgid "Mass"
@@ -17907,19 +17907,19 @@ msgstr "Masse"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:176
 msgid "Milligram (mg)"
-msgstr ""
+msgstr "Milligramm (mg)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:177
 msgid "Gram (g)"
-msgstr ""
+msgstr "Gramm (g)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:178
 msgid "Kilogram (kg)"
-msgstr ""
+msgstr "Kilogramm (kg)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:179
 msgid "Ton (t)"
-msgstr ""
+msgstr "Tonne (t)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:183
 msgid "Velocity"
@@ -17927,19 +17927,19 @@ msgstr "Geschwindigkeit"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:184
 msgid "Metres/second (m/s)"
-msgstr ""
+msgstr "Meter/Sekunde (m/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:185
 msgid "Kilometers/hour (km/h)"
-msgstr ""
+msgstr "Kilometer/Stunde (km/h)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:186
 msgid "Miles/hour (mph)"
-msgstr ""
+msgstr "Meilen/Stunde (mph)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:187
 msgid "Knot (kn)"
-msgstr ""
+msgstr "Knoten (kn)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:192
 msgid "Volume"
@@ -17947,19 +17947,19 @@ msgstr "Volumen"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:193
 msgid "Millilitre (ml)"
-msgstr ""
+msgstr "Milliliter (ml)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:194
 msgid "Litre (l)"
-msgstr ""
+msgstr "Liter (l)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:195
 msgid "Cubic metre (m3)"
-msgstr ""
+msgstr "Kubikmeter (m3)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:196
 msgid "Cubic decimetre (dm3)"
-msgstr ""
+msgstr "Kubikdezimeter (dm3)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:197
 msgid "Gallons"
@@ -17971,91 +17971,91 @@ msgstr "Energie"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:202
 msgid "Watt (W)"
-msgstr ""
+msgstr "Watt (W)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:203
 msgid "Kilowatt (kW)"
-msgstr ""
+msgstr "Kilowatt (kW)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:204
 msgid "Milliwatt (mW)"
-msgstr ""
+msgstr "Milliwatt (mW)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:205
 msgid "Watt per square metre (W/m²)"
-msgstr ""
+msgstr "Watt pro Quadratmeter (W/m²)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:206
 msgid "Volt-ampere (VA)"
-msgstr ""
+msgstr "Volt-ampere (VA)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:207
 msgid "Kilovolt-ampere (kVA)"
-msgstr ""
+msgstr "Kilovolt-ampere (kVA)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:208
 msgid "Volt-ampere reactive (var)"
-msgstr ""
+msgstr "Voltampere reaktiv (var)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:209
 msgid "Kilovolt-ampere reactive (kvar)"
-msgstr ""
+msgstr "Kilovoltampere reaktiv (kvar)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:210
 msgid "Watt-hour (Wh)"
-msgstr ""
+msgstr "Wattstunde (Wh)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:211
 msgid "Kilowatt-hour (kWh)"
-msgstr ""
+msgstr "Kilowattstunde (kWh)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:212
 msgid "Kilowatt-min (kWm)"
-msgstr ""
+msgstr "Kilowattmin (kWm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:213
 msgid "Joule (J)"
-msgstr ""
+msgstr "Joule (J)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:214
 msgid "Electron volt (eV)"
-msgstr ""
+msgstr "Elektronenvolt (eV)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:215
 msgid "Ampere (A)"
-msgstr ""
+msgstr "Ampere (A)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:216
 msgid "Kiloampere (kA)"
-msgstr ""
+msgstr "Kiloampere (kA)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:217
 msgid "Milliampere (mA)"
-msgstr ""
+msgstr "Milliampere (mA)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:218
 msgid "Volt (V)"
-msgstr ""
+msgstr "Volt (V)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:219
 msgid "Kilovolt (kV)"
-msgstr ""
+msgstr "Kilovolt (kV)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:220
 msgid "Millivolt (mV)"
-msgstr ""
+msgstr "Millivolt (mV)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:221
 msgid "Decibel-milliwatt (dBm)"
-msgstr ""
+msgstr "Dezibel-Milliwatt (dBm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:222
 msgid "Ohm (Ω)"
-msgstr ""
+msgstr "Ohm (Ω)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:223
 msgid "Lumens (Lm)"
-msgstr ""
+msgstr "Lumen (Lm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:227
 msgid "Pressure"
@@ -18063,47 +18063,47 @@ msgstr "Druck"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:228
 msgid "Millibars"
-msgstr ""
+msgstr "Millibars"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:229
 msgid "Bars"
-msgstr ""
+msgstr "Bars"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:230
 msgid "Kilobars"
-msgstr ""
+msgstr "Kilobars"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:231
 msgid "Hectopascals"
-msgstr ""
+msgstr "Hektopascals"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:232
 msgid "Kilopascals"
-msgstr ""
+msgstr "Kilopascal"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:233
 msgid "Inches of mercury"
-msgstr ""
+msgstr "Zoll Quecksilber"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:234
 msgid "PSI"
-msgstr ""
+msgstr "PSI"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:239
 msgid "Newton-meters (Nm)"
-msgstr ""
+msgstr "Newtonmeter (Nm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:240
 msgid "Kilonewton-meters (kNm)"
-msgstr ""
+msgstr "Kilonewton-Meter (kNm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:241
 msgid "Newtons (N)"
-msgstr ""
+msgstr "Newton (N)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:242
 msgid "Kilonewtons (kN)"
-msgstr ""
+msgstr "Kilonewton (kN)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:246
 msgid "Flow"
@@ -18111,31 +18111,31 @@ msgstr "Fluss"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:247
 msgid "Litre/hour (l/h)"
-msgstr ""
+msgstr "Liter/Stunde (l/h)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:248
 msgid "Litre/min (l/min)"
-msgstr ""
+msgstr "Liter/min (l/min)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:249
 msgid "Millilitre/min (ml/min)"
-msgstr ""
+msgstr "Milliliter/min (ml/min)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:250
 msgid "Cubic meters/sec (cms)"
-msgstr ""
+msgstr "Kubikmeter/Sek. (Cms)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:251
 msgid "Gallons/min (gpm)"
-msgstr ""
+msgstr "Gallonen/min (gpm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:252
 msgid "Cubic feet/sec (cfs)"
-msgstr ""
+msgstr "Kubikfuß/Sek. (Cfs)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:253
 msgid "Cubic feet/min (cfm)"
-msgstr ""
+msgstr "Kubikfuß/min (cfm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:257
 msgid "Angle"
@@ -18143,15 +18143,15 @@ msgstr "Winkel"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:258
 msgid "Degrees (°)"
-msgstr ""
+msgstr "Grad (°)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:259
 msgid "Radians"
-msgstr ""
+msgstr "Bogenmaß"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:260
 msgid "Gradian"
-msgstr ""
+msgstr "Gradian"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:264
 msgid "Date and time"
@@ -18159,147 +18159,147 @@ msgstr "Datum und Uhrzeit"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:265
 msgid "YYYY-MM-DD HH:mm:ss"
-msgstr ""
+msgstr "YYYY-MM-DD HH:mm:ss"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:266
 msgid "DD/MM/YYYY h:mm:ss a"
-msgstr ""
+msgstr "DD/MM/YYYY h:mm:ss a"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:267
 msgid "From Now"
-msgstr ""
+msgstr "Von jetzt an"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:271
 msgid "Hash rates"
-msgstr ""
+msgstr "Hash-Raten"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:272
 msgid "Hashes/sec"
-msgstr ""
+msgstr "Hashes/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:273
 msgid "Kilohashes/sec"
-msgstr ""
+msgstr "Kilohashes/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:274
 msgid "Megahashes/sec"
-msgstr ""
+msgstr "Megahashes/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:275
 msgid "Gigahashes/sec"
-msgstr ""
+msgstr "Gigahashes/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:276
 msgid "Terahashes/sec"
-msgstr ""
+msgstr "Terahashes/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:277
 msgid "Petahashes/sec"
-msgstr ""
+msgstr "Petahashes/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:278
 msgid "Exahashes/sec"
-msgstr ""
+msgstr "Exahashes/Sek"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:282
 msgid "Acceleration"
-msgstr ""
+msgstr "Beschleunigung"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:283
 msgid "Meters/sec²"
-msgstr ""
+msgstr "Meter/Sek²"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:284
 msgid "Feet/sec²"
-msgstr ""
+msgstr "Fuß/Sek²"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:285
 msgid "G unit"
-msgstr ""
+msgstr "G-Einheit"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:289
 msgid "Radiation"
-msgstr ""
+msgstr "Strahlung"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:290
 msgid "Becquerel (Bq)"
-msgstr ""
+msgstr "Becquerel (Bq)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:291
 msgid "curie (Ci)"
-msgstr ""
+msgstr "Curie (Ci)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:292
 msgid "Gray (Gy)"
-msgstr ""
+msgstr "Gray (Gy)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:293
 msgid "rad"
-msgstr ""
+msgstr "rad"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:294
 msgid "Sievert (Sv)"
-msgstr ""
+msgstr "Sievert (Sv)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:295
 msgid "rem"
-msgstr ""
+msgstr "rem"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:296
 msgid "Exposure (C/kg)"
-msgstr ""
+msgstr "Exposition (C/kg)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:297
 msgid "roentgen (R)"
-msgstr ""
+msgstr "Röntgen (R)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:298
 msgid "Sievert/hour (Sv/h)"
-msgstr ""
+msgstr "Sievert/Stunde (Sv/h)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:302
 msgid "Concentration"
-msgstr ""
+msgstr "Konzentration"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:303
 msgid "parts-per-million (ppm)"
-msgstr ""
+msgstr "Teile pro Million (ppm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:304
 msgid "parts-per-billion (ppb)"
-msgstr ""
+msgstr "Teile pro Milliarde (ppb)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:305
 msgid "nanogram per cubic metre (ng/m³)"
-msgstr ""
+msgstr "Nanogramm pro Kubikmeter (ng/m³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:306
 msgid "nanogram per normal cubic metre (ng/Nm³)"
-msgstr ""
+msgstr "Nanogramm pro normalem Kubikmeter (ng/Nm³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:307
 msgid "microgram per cubic metre (μg/m³)"
-msgstr ""
+msgstr "Mikrogramm pro Kubikmeter (μg/m³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:308
 msgid "microgram per normal cubic metre (μg/Nm³)"
-msgstr ""
+msgstr "Mikrogramm pro normalem Kubikmeter (μg/Nm³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:309
 msgid "milligram per cubic metre (mg/m³)"
-msgstr ""
+msgstr "Milligramm pro Kubikmeter (mg/m³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:310
 msgid "milligram per normal cubic metre (mg/Nm³)"
-msgstr ""
+msgstr "Milligramm pro normalem Kubikmeter (mg/Nm³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:311
 msgid "gram per cubic metre (g/m³)"
-msgstr ""
+msgstr "Gramm pro Kubikmeter (g / m³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:312
 msgid "gram per normal cubic metre (g/Nm³)"
-msgstr ""
+msgstr "Gramm pro normalem Kubikmeter (g/Nm³)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:49
 msgid "Host Macros"
@@ -18788,12 +18788,12 @@ msgstr "Beim Senden der automatischen Berichtsmail ist ein Fehler aufgetreten: \
 #: AutoreportModule/src/Command/AutoreportCommand.php:159
 #: AutoreportModule/src/Command/AutoreportCommand.php:402
 msgid "Host {0}"
-msgstr ""
+msgstr "Host {0}"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:162
 #: AutoreportModule/src/Command/AutoreportCommand.php:405
 msgid "Service {0}"
-msgstr ""
+msgstr "Service {0}"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:254
 msgid "Sending Report {0} to {1}"
@@ -18860,7 +18860,7 @@ msgstr "{0} wurde nicht generiert."
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:556
 msgid "Mo"
-msgstr ""
+msgstr "Mo"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:557
 msgid "Tu"
@@ -18876,11 +18876,11 @@ msgstr "Do"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:560
 msgid "Fr"
-msgstr ""
+msgstr "Fr"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:561
 msgid "Sa"
-msgstr ""
+msgstr "Sa"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:562
 msgid "Su"
@@ -18944,11 +18944,11 @@ msgstr "Geplante Wartungszeit"
 #: AutoreportModule/src/Lib/Menu.php:27
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:103
 msgid "Autoreport"
-msgstr ""
+msgstr "Autoreport"
 
 #: AutoreportModule/src/Lib/Menu.php:44
 msgid "Autoreport Globals"
-msgstr ""
+msgstr "Autoreport Globals"
 
 #: AutoreportModule/src/Lib/Widgets.php:36
 msgid "Autoreport Overview"
@@ -19051,7 +19051,7 @@ msgstr "Sie müssen mindestens eine Option für Host und / oder Service auswähl
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:613
 msgid "{0} %"
-msgstr ""
+msgstr "{0} %"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:615
 msgid "{0} minutes"
@@ -19068,7 +19068,7 @@ msgstr "{0} Minuten"
 #: AutoreportModule/templates/Autoreports/index.php:15
 #: AutoreportModule/templates/Autoreports/service_used_by.php:15
 msgid "Autoreport Module"
-msgstr ""
+msgstr "Autoreport-Modul"
 
 #: AutoreportModule/templates/AutoreportSettings/index.php:37
 msgid "This changes affects all reports"
@@ -19223,7 +19223,7 @@ msgstr "Maximale Anzahl von Ausfällen"
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:259
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:130
 msgid "Graph"
-msgstr ""
+msgstr "Graph"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:306
 #: AutoreportModule/templates/Autoreports/add_step_two.php:126
@@ -19231,7 +19231,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:255
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:126
 msgid "in %"
-msgstr ""
+msgstr "in %"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:307
 #: AutoreportModule/templates/Autoreports/add_step_two.php:127
@@ -19239,7 +19239,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:256
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:127
 msgid "in h"
-msgstr ""
+msgstr "in h"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:352
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:354
@@ -19271,7 +19271,7 @@ msgstr "Berichtskonfiguration für Hosts und Services"
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:258
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:129
 msgid "Alias"
-msgstr ""
+msgstr "Alias"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:133
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:133
@@ -19281,7 +19281,7 @@ msgstr "Verwenden Sie minimale, durchschnittliche oder maximale Werte für den G
 #: AutoreportModule/templates/Autoreports/add_step_two.php:134
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:134
 msgid "MIN|AVG|MAX"
-msgstr ""
+msgstr "MIN|AVG|MAX"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:136
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:261
@@ -19327,11 +19327,11 @@ msgstr "Verfügbarkeit"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:127
 msgid " in %"
-msgstr ""
+msgstr " in %"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:140
 msgid " in h"
-msgstr ""
+msgstr " in h"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:149
 msgid "Show log data"
@@ -19356,7 +19356,7 @@ msgstr "Bericht"
 #: AutoreportModule/templates/Autoreports/create_report.php:51
 #: AutoreportModule/templates/Autoreports/generate.php:121
 msgid "CSV"
-msgstr ""
+msgstr "CSV"
 
 #: AutoreportModule/templates/Autoreports/create_report.php:74
 #: CheckmkModule/templates/Mkagents/add.php:151
@@ -19651,15 +19651,15 @@ msgstr "Ungültige Checkmk-Satellitenaufgabe"
 
 #: CheckmkModule/src/Controller/SnmpController.php:81
 msgid "SNMP V 1"
-msgstr ""
+msgstr "SNMP V 1"
 
 #: CheckmkModule/src/Controller/SnmpController.php:82
 msgid "SNMP V 2c"
-msgstr ""
+msgstr "SNMP V 2c"
 
 #: CheckmkModule/src/Controller/SnmpController.php:83
 msgid "SNMP V 3"
-msgstr ""
+msgstr "SNMP V 3"
 
 #: CheckmkModule/src/Controller/SnmpController.php:210
 msgid "SNMP configuration not found!"
@@ -19676,21 +19676,21 @@ msgstr "Checkmk Erkennung"
 #: CheckmkModule/templates/Mkagents/index.php:53
 #: CheckmkModule/templates/Mkchecks/index.php:53
 msgid "Checkmk"
-msgstr ""
+msgstr "Checkmk"
 
 #: CheckmkModule/src/Lib/Menu.php:48
 #: CheckmkModule/templates/Mkchecks/add.php:38
 #: CheckmkModule/templates/Mkchecks/edit.php:38
 #: CheckmkModule/templates/Mkchecks/index.php:38
 msgid "Checkmk Checks"
-msgstr ""
+msgstr "Checkmk Checks"
 
 #: CheckmkModule/src/Lib/Menu.php:58
 #: CheckmkModule/templates/Mkagents/add.php:38
 #: CheckmkModule/templates/Mkagents/edit.php:38
 #: CheckmkModule/templates/Mkagents/index.php:38
 msgid "Checkmk Agents"
-msgstr ""
+msgstr "Checkmk-Agenten"
 
 #: CheckmkModule/templates/Mkagents/add.php:34
 #: CheckmkModule/templates/Mkagents/edit.php:34
@@ -19701,7 +19701,7 @@ msgstr ""
 #: CheckmkModule/templates/Scans/index.php:34
 #: CheckmkModule/templates/Snmp/index.php:34
 msgid "Checkmk Module"
-msgstr ""
+msgstr "Checkmk-Modul"
 
 #: CheckmkModule/templates/Mkagents/add.php:70
 msgid "Create new Checkmk agent"
@@ -19772,7 +19772,7 @@ msgstr "Servicevorlagenname"
 
 #: CheckmkModule/templates/Scans/index.php:38
 msgid "Scans"
-msgstr ""
+msgstr "Scans"
 
 #: CheckmkModule/templates/Scans/index.php:52
 #: CheckmkModule/templates/Snmp/index.php:52
@@ -19808,11 +19808,11 @@ msgstr "Gesundheit"
 
 #: CheckmkModule/templates/Scans/index.php:170
 msgid "Windows Services"
-msgstr ""
+msgstr "Windows Services"
 
 #: CheckmkModule/templates/Scans/index.php:186
 msgid "Systemd Services"
-msgstr ""
+msgstr "Systemd Services"
 
 #: CheckmkModule/templates/Scans/index.php:210
 #: CheckmkModule/templates/Snmp/index.php:274
@@ -19837,7 +19837,7 @@ msgstr "Gehe zu \"Agentenchecks\""
 #: CheckmkModule/templates/Scans/index.php:238
 #: CheckmkModule/templates/Snmp/index.php:301
 msgid "Checkmk Check"
-msgstr ""
+msgstr "Checkmk Check"
 
 #: CheckmkModule/templates/Scans/index.php:239
 #: CheckmkModule/templates/Snmp/index.php:302
@@ -19851,7 +19851,7 @@ msgstr "Parameter"
 
 #: CheckmkModule/templates/Snmp/index.php:38
 msgid "Snmp"
-msgstr ""
+msgstr "Snmp"
 
 #: CheckmkModule/templates/Snmp/index.php:100
 msgid "SNMP version"
@@ -19859,7 +19859,7 @@ msgstr "SNMP Version"
 
 #: CheckmkModule/templates/Snmp/index.php:116
 msgid "Community"
-msgstr ""
+msgstr "Community"
 
 #: CheckmkModule/templates/Snmp/index.php:131
 msgid "Security level"
@@ -19927,19 +19927,19 @@ msgstr "Kein benutzerdefiniertes Logo gefunden"
 
 #: DesignModule/src/Lib/Menu.php:27
 msgid "Design Editor"
-msgstr ""
+msgstr "Design Editor"
 
 #: DesignModule/templates/Designs/edit.php:17
 msgid "Design Module"
-msgstr ""
+msgstr "Design-Modul"
 
 #: DesignModule/templates/Designs/edit.php:21
 msgid "Design"
-msgstr ""
+msgstr "Design"
 
 #: DesignModule/templates/Designs/edit.php:36
 msgid "Designs"
-msgstr ""
+msgstr "Designs"
 
 #: DesignModule/templates/Designs/edit.php:46
 msgid "Layout, Header and Menu"
@@ -19959,7 +19959,7 @@ msgstr "Seitenleiste"
 
 #: DesignModule/templates/Designs/edit.php:93
 msgid "Gradient"
-msgstr ""
+msgstr "Gradient"
 
 #: DesignModule/templates/Designs/edit.php:98
 msgid "Sidebar gradient"
@@ -20007,7 +20007,7 @@ msgstr "Schriftart der Tabelle beim Hover"
 
 #: DesignModule/templates/Designs/edit.php:203
 msgid "Tabs"
-msgstr ""
+msgstr "Tabs"
 
 #: DesignModule/templates/Designs/edit.php:206
 msgid "Tab background"
@@ -20055,7 +20055,7 @@ msgstr "Panel- und Kartenheader-Schriftart"
 
 #: DesignModule/templates/Designs/edit.php:338
 msgid "Breadcrumbs"
-msgstr ""
+msgstr "Breadcrumbs"
 
 #: DesignModule/templates/Designs/edit.php:341
 msgid "Breadcrumb font color"
@@ -20095,7 +20095,7 @@ msgstr "Stil aktualisieren"
 
 #: DesignModule/templates/Designs/edit.php:436
 msgid "Logos"
-msgstr ""
+msgstr "Logos"
 
 #: DesignModule/templates/Designs/edit.php:440
 msgid "Upload logo"
@@ -20190,7 +20190,7 @@ msgstr "Satellitenstatus"
 
 #: DistributeModule/src/Lib/SatSyncMethods.php:11
 msgid "SSH"
-msgstr ""
+msgstr "SSH"
 
 #: DistributeModule/src/Lib/SatSyncMethods.php:12
 msgid "HTTPS pull mode"
@@ -20227,7 +20227,7 @@ msgstr "Die eingegebene Proxy-URL ist ungültig"
 #: DistributeModule/templates/Satellites/status.php:23
 #: DistributeModule/templates/Satellites/used_by.php:16
 msgid "Distribute Module"
-msgstr ""
+msgstr "Distribute Modul"
 
 #: DistributeModule/templates/Satellites/add.php:36
 msgid "Create new satellite"
@@ -20271,7 +20271,7 @@ msgstr "SSH-Port des Remote-Computers."
 #: DistributeModule/templates/Satellites/add.php:165
 #: DistributeModule/templates/Satellites/edit.php:166
 msgid "PrivateKeyPath"
-msgstr ""
+msgstr "PrivateKeyPath"
 
 #: DistributeModule/templates/Satellites/add.php:176
 #: DistributeModule/templates/Satellites/edit.php:177
@@ -20281,7 +20281,7 @@ msgstr "Wir verwenden einen Standardpfad zum privaten Schlüssel, wenn dieses Fe
 #: DistributeModule/templates/Satellites/add.php:181
 #: DistributeModule/templates/Satellites/edit.php:182
 msgid "RemotePort"
-msgstr ""
+msgstr "RemotePort"
 
 #: DistributeModule/templates/Satellites/add.php:195
 #: DistributeModule/templates/Satellites/edit.php:196
@@ -20301,7 +20301,7 @@ msgstr "Wenn aktiviert, wird der Proxyserver verwendet."
 #: DistributeModule/templates/Satellites/add.php:281
 #: DistributeModule/templates/Satellites/edit.php:282
 msgid "Proxy URL"
-msgstr ""
+msgstr "Proxy URL"
 
 #: DistributeModule/templates/Satellites/add.php:359
 #: DistributeModule/templates/Satellites/edit.php:360
@@ -20313,7 +20313,7 @@ msgstr "Zeitintervall in Sekunden, in welchem das Mastersystem die Prüfergebnis
 #: DistributeModule/templates/Satellites/edit.php:365
 #: DistributeModule/templates/Satellites/edit.php:411
 msgid "Timeout"
-msgstr ""
+msgstr "Time-out"
 
 #: DistributeModule/templates/Satellites/add.php:377
 #: DistributeModule/templates/Satellites/add.php:423
@@ -20485,7 +20485,7 @@ msgstr "Wenn aktiviert, wird der Ereigniskorrelationshost in den Status \"unten\
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:108
 msgid "Monitoring System"
-msgstr ""
+msgstr "Monitoring System"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:15
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:14
@@ -20631,7 +20631,7 @@ msgstr "Dienste, die korreliert werden sollten"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:277
 msgid "vServices"
-msgstr ""
+msgstr "vServices"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:296
 msgid "Virtual services that should be correlated"
@@ -20647,7 +20647,7 @@ msgstr "Virtuelle Dienste, die korreliert werden sollten"
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:399
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:422
 msgid "Operator"
-msgstr ""
+msgstr "Operator"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:310
 msgid "AND"
@@ -20663,7 +20663,7 @@ msgstr "GLEICH"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:313
 msgid "MIN"
-msgstr ""
+msgstr "MIN"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:323
 msgid "Operator modifier"
@@ -20725,7 +20725,7 @@ msgstr "Beschreibung der Ereigniskorrelation"
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:134
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:140
 msgid "This EVC contains Hosts you are not permitted to view"
-msgstr ""
+msgstr "Dieser EVC enthält Hosts, die Sie nicht sehen dürfen"
 
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:144
 msgid "DISABLED"
@@ -20777,192 +20777,192 @@ msgstr "Ereigniskorrelation:"
 #: ImportModule/src/Controller/HostDefaultsController.php:105
 #: ImportModule/src/Controller/HostDefaultsController.php:155
 msgid "Host defaults not found"
-msgstr ""
+msgstr "Host-Standardeinstellungen nicht gefunden"
 
 #: ImportModule/src/Controller/HostDefaultsController.php:173
 msgid "Used by Importer {0}"
-msgstr ""
+msgstr "Wird vom Importer {0} verwendet"
 
 #: ImportModule/src/Controller/HostDefaultsController.php:183
 msgid "Issue while deleting host defaults"
-msgstr ""
+msgstr "Problem beim Löschen der Host-Standardeinstellungen"
 
 #: ImportModule/src/Controller/HostDefaultsController.php:195
 msgid "Issue while deleting host defaults..."
-msgstr ""
+msgstr "Problem beim Löschen der Host-Standardeinstellungen ..."
 
 #: ImportModule/src/Controller/HostDefaultsController.php:202
 msgid "Host defaults successfully deleted"
-msgstr ""
+msgstr "Host-Standardeinstellungen erfolgreich gelöscht"
 
 #: ImportModule/src/Controller/ImportedFilesController.php:79
 #: ImportModule/src/Controller/ImportedFilesController.php:112
 msgid "Imported file not found"
-msgstr ""
+msgstr "Importierte Datei nicht gefunden"
 
 #: ImportModule/src/Controller/ImportedFilesController.php:128
 msgid "Imported file successfully removed"
-msgstr ""
+msgstr "Importierte Datei erfolgreich entfernt"
 
 #: ImportModule/src/Controller/ImportedFilesController.php:137
 msgid "Error while deleting imported file"
-msgstr ""
+msgstr "Fehler beim Löschen der importierten Datei"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:132
 #: ImportModule/src/Controller/ImportedHostsController.php:685
 msgid "Imported host not found"
-msgstr ""
+msgstr "Importierter Host nicht gefunden"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:181
 msgid "Importers not found"
-msgstr ""
+msgstr "Importeurs nicht gefunden"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:220
 msgid "No valid records exists"
-msgstr ""
+msgstr "Es sind keine gültigen Datensätze vorhanden"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:265
 msgid "Import data from uploaded CSV file successfully finished"
-msgstr ""
+msgstr "Der Import von Daten aus der hochgeladenen CSV-Datei wurde erfolgreich abgeschlossen"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:275
 msgid "Error while importing host data"
-msgstr ""
+msgstr "Fehler beim Importieren der Hostdaten"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:735
 #: ImportModule/src/Controller/ImportersController.php:124
 #: ImportModule/src/Controller/ImportersController.php:193
 msgid "Importer not found"
-msgstr ""
+msgstr "Importeur nicht gefunden"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:844
 msgid "Temporary uploaded CSV file successfully removed"
-msgstr ""
+msgstr "Temporär hochgeladene CSV-Datei erfolgreich entfernt"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:855
 msgid "Error while deleting uploaded CSV File."
-msgstr ""
+msgstr "Fehler beim Löschen der hochgeladenen CSV-Datei."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:31
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:31
 msgid "Delimiter"
-msgstr ""
+msgstr "Trennzeichen"
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:32
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:32
 msgid "Chose CSV file delimeter"
-msgstr ""
+msgstr "Auswahl des Trennzeichens für CSV Datei"
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:33
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:33
 msgid "Any character may be used to separate the values. In a comma-separated valuen a comma-separated values (CSV) file the data items are separated using commas as a delimiter, while in a tab-separated values (TSV) file, the data items are separated using tabs as a delimiter."
-msgstr ""
+msgstr "Jedes Zeichen kann verwendet werden, um die Werte zu trennen. In einer CSV-Datei (Comma Separated Valuen) werden die Datenelemente durch Kommas als Trennzeichen getrennt, während in einer TSV-Datei (Tab-Separated Values) die Datenelemente mithilfe von Tabulatoren als Trennzeichen getrennt werden."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:61
 msgid "Column name of the CSV file which will be used as host name. This column must be present in the CSV file."
-msgstr ""
+msgstr "Spaltenname der CSV-Datei, die als Hostname verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:70
 msgid "Column name of the CSV file which will be used as host address. This column must be present in the CSV file."
-msgstr ""
+msgstr "Spaltenname der CSV-Datei, die als Hostadresse verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:79
 msgid "Column name of the CSV file which will be used as host description."
-msgstr ""
+msgstr "Spaltenname der CSV-Datei, die als Hostbeschreibung verwendet wird."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:86
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:86
 #: ImportModule/src/Lib/ImporterOptions.php:14
 msgid "Software"
-msgstr ""
+msgstr "Software"
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:88
 msgid "Column name of the CSV file which will be used as software assignment."
-msgstr ""
+msgstr "Spaltenname der CSV-Datei, die für die Softwarezuweisung verwendet wird."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:95
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:95
 msgid "Use host name as address"
-msgstr ""
+msgstr "Verwende den Hostnamen als Adresse"
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:96
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:96
 msgid "Use host name as address if address column is empty or does not exists."
-msgstr ""
+msgstr "Verwende den Hostnamen als Adresse, wenn die Adressspalte leer ist oder nicht vorhanden ist."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:104
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:104
 msgid "Use address as host name"
-msgstr ""
+msgstr "Verwende die Adresse als Hostnamen"
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:105
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:105
 msgid "Use address as host name if host name column is empty or does not exists."
-msgstr ""
+msgstr "Verwende die Adresse als Hostnamen, wenn die Spalte Hostname leer ist oder nicht vorhanden ist."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:61
 msgid "Column number of the CSV file which will be used as host name. This column must be present in the CSV file."
-msgstr ""
+msgstr "Spaltennummer der CSV-Datei, die als Hostname verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:70
 msgid "Column number of the CSV file which will be used as host address. This column must be present in the CSV file."
-msgstr ""
+msgstr "Spaltennummer der CSV-Datei, die als Hostadresse verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:79
 msgid "Column number of the CSV file which will be used as host description."
-msgstr ""
+msgstr "Spaltennummer der CSV-Datei, die als Hostbeschreibung verwendet wird."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:88
 msgid "Column number of the CSV file which will be used as software assignment."
-msgstr ""
+msgstr "Spaltennummer der CSV-Datei, die als Softwarezuweisung verwendet wird."
 
 #: ImportModule/src/Lib/ImporterCsvParser.php:180
 #: ImportModule/src/Lib/ImporterCsvParser.php:257
 msgid "Matching not possible"
-msgstr ""
+msgstr "Matching nicht möglich"
 
 #: ImportModule/src/Lib/ImporterCsvParser.php:181
 msgid "A possible cause for this could be the wrong delimiter or CSV structure is not consistent. Please check your importer configuration."
-msgstr ""
+msgstr "Eine mögliche Ursache hierfür könnte das falsche Trennzeichen sein oder die CSV-Struktur ist nicht konsistent. Bitte um die Prüfung der Importeurkonfiguration."
 
 #: ImportModule/src/Lib/ImporterCsvParser.php:188
 msgid "Data preview not possible"
-msgstr ""
+msgstr "Datenvorschau nicht möglich"
 
 #: ImportModule/src/Lib/ImporterCsvParser.php:189
 #: ImportModule/src/Lib/ImporterCsvParser.php:258
 msgid "Uploading the CSV file works, but the elements are empty. Data preview is not possible."
-msgstr ""
+msgstr "Das Hochladen der CSV-Datei funktioniert, aber die Elemente sind leer. Datenvorschau ist nicht möglich."
 
 #: ImportModule/src/Lib/ImporterCsvParser.php:273
 msgid "Matching for header fields is not possible"
-msgstr ""
+msgstr "Ein Abgleich für Headerfelder ist nicht möglich"
 
 #: ImportModule/src/Lib/ImporterCsvParser.php:274
 msgid "A possible reason for this could be the wrong configuration mapping or wrong delimiter. Please check your importer configuration."
-msgstr ""
+msgstr "Ein möglicher Grund hierfür könnte die falsche Konfigurationszuordnung oder das falsche Trennzeichen sein. Bitte um die Prüfung der Importeurkonfiguration."
 
 #: ImportModule/src/Lib/ImporterDataTypes.php:11
 #: ImportModule/templates/Importers/add.php:152
 #: ImportModule/templates/Importers/edit.php:155
 msgid "CSV with header"
-msgstr ""
+msgstr "CSV mit Header"
 
 #: ImportModule/src/Lib/ImporterDataTypes.php:12
 #: ImportModule/templates/Importers/add.php:155
 #: ImportModule/templates/Importers/edit.php:158
 msgid "CSV without header"
-msgstr ""
+msgstr "CSV ohne Header"
 
 #: ImportModule/src/Lib/Menu.php:25
 msgid "Object Import"
-msgstr ""
+msgstr "Objektimport"
 
 #: ImportModule/src/Lib/Menu.php:30
 #: ImportModule/templates/HostDefaults/index.php:30
 #: ImportModule/templates/ImportedFiles/index.php:30
 msgid "Host Defaults"
-msgstr ""
+msgstr "Host-Standardeinstellungen"
 
 #: ImportModule/src/Lib/Menu.php:40
 #: ImportModule/templates/ImportedHosts/index.php:224
@@ -20970,30 +20970,30 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:23
 #: ImportModule/templates/Importers/index.php:61
 msgid "Importers"
-msgstr ""
+msgstr "Importeure"
 
 #: ImportModule/src/Lib/Menu.php:50
 #: ImportModule/templates/ImportedHosts/index.php:30
 msgid "Imported Hosts"
-msgstr ""
+msgstr "Importierte Hosts"
 
 #: ImportModule/src/Lib/Menu.php:60
 #: ImportModule/templates/ImportedFiles/view.php:19
 msgid "Imported Files"
-msgstr ""
+msgstr "Importierte Dateien"
 
 #: ImportModule/src/Model/Table/ImportedHostsTable.php:517
 msgid "Host template missing"
-msgstr ""
+msgstr "Hostvorlage fehlt"
 
 #: ImportModule/src/Model/Table/ImportedHostsTable.php:522
 msgid "Container missing"
-msgstr ""
+msgstr "Container fehlt"
 
 #: ImportModule/src/Model/Table/ImportedHostsTable.php:526
 #: ImportModule/templates/ImportedHosts/index.php:446
 msgid "No service template groups defined"
-msgstr ""
+msgstr "Keine Servicevorlagengruppen definiert"
 
 #: ImportModule/templates/HostDefaults/add.php:19
 #: ImportModule/templates/HostDefaults/edit.php:19
@@ -21006,7 +21006,7 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:19
 #: ImportModule/templates/Importers/index.php:15
 msgid "Import Module"
-msgstr ""
+msgstr "Import-Modul"
 
 #: ImportModule/templates/HostDefaults/add.php:23
 #: ImportModule/templates/HostDefaults/add.php:71
@@ -21019,90 +21019,90 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:355
 #: ImportModule/templates/Importers/edit.php:358
 msgid "Host defaults"
-msgstr ""
+msgstr "Host-Standardeinstellungen"
 
 #: ImportModule/templates/HostDefaults/add.php:27
 msgid "Add host defaults"
-msgstr ""
+msgstr "Host-Standardeinstellungen hinzufügen"
 
 #: ImportModule/templates/HostDefaults/add.php:37
 msgid "Create new host defaults"
-msgstr ""
+msgstr "Erstelle neue Host-Standardeinstellungen"
 
 #: ImportModule/templates/HostDefaults/add.php:61
 msgid "What are host defaults?"
-msgstr ""
+msgstr "Was sind Host-Standardeinstellungen?"
 
 #: ImportModule/templates/HostDefaults/add.php:64
 msgid "Define defaults like which Container and services should assigned to imported hosts, depending on the used data source (Importer)."
-msgstr ""
+msgstr "Definieren Sie Standardeinstellungen, z. B. welche Container und Dienste importierten Hosts zugewiesen werden sollen, abhängig von der verwendeten Datenquelle (Importer)."
 
 #: ImportModule/templates/HostDefaults/add.php:105
 #: ImportModule/templates/HostDefaults/edit.php:87
 msgid "Name of default assigment. E.g.: CSV Import from i-doit"
-msgstr ""
+msgstr "Name der Standardzuordnung. Zum Beispiel: CSV-Import von i-doit"
 
 #: ImportModule/templates/HostDefaults/add.php:126
 #: ImportModule/templates/HostDefaults/edit.php:108
 msgid "Host details"
-msgstr ""
+msgstr "Host-Details"
 
 #: ImportModule/templates/HostDefaults/add.php:129
 #: ImportModule/templates/HostDefaults/edit.php:111
 msgid "Predefined host settings that are automatically assigned when hosts are imported."
-msgstr ""
+msgstr "Vordefinierte Hosteinstellungen, die beim Import von Hosts automatisch zugewiesen werden."
 
 #: ImportModule/templates/HostDefaults/add.php:134
 #: ImportModule/templates/HostDefaults/edit.php:116
 msgid "Host container"
-msgstr ""
+msgstr "Host-Container"
 
 #: ImportModule/templates/HostDefaults/add.php:139
 #: ImportModule/templates/HostDefaults/edit.php:121
 msgid "Will be automatically selected"
-msgstr ""
+msgstr "Wird automatisch ausgewählt"
 
 #: ImportModule/templates/HostDefaults/add.php:159
 #: ImportModule/templates/HostDefaults/edit.php:141
 msgid "Use this host template as default"
-msgstr ""
+msgstr "Verwenden Sie diese Hostvorlage als Standard"
 
 #: ImportModule/templates/HostDefaults/add.php:235
 #: ImportModule/templates/HostDefaults/edit.php:217
 msgid "Service template groups matches"
-msgstr ""
+msgstr "Servicevorlagengruppen-Übereinstimmungen"
 
 #: ImportModule/templates/HostDefaults/add.php:236
 #: ImportModule/templates/HostDefaults/edit.php:218
 msgid " (optional):"
-msgstr ""
+msgstr "(optional):"
 
 #: ImportModule/templates/HostDefaults/add.php:238
 #: ImportModule/templates/HostDefaults/edit.php:220
 msgid "If the match is successful, these service template groups are assigned to the imported hosts."
-msgstr ""
+msgstr "Wenn die Übereinstimmung erfolgreich ist, werden diese Servicevorlagengruppen den importierten Hosts zugewiesen."
 
 #: ImportModule/templates/HostDefaults/add.php:242
 #: ImportModule/templates/HostDefaults/edit.php:224
 #: ImportModule/templates/Importers/add.php:313
 #: ImportModule/templates/Importers/edit.php:316
 msgid "Do not enter empty matches"
-msgstr ""
+msgstr "Geben Sie keine leeren Übereinstimmungen ein"
 
 #: ImportModule/templates/HostDefaults/add.php:255
 #: ImportModule/templates/HostDefaults/edit.php:237
 msgid "No service template groups are defined"
-msgstr ""
+msgstr "Es sind keine Servicevorlagengruppen definiert"
 
 #: ImportModule/templates/HostDefaults/add.php:258
 #: ImportModule/templates/HostDefaults/edit.php:240
 msgid "Please create at least one \"Service template groups\""
-msgstr ""
+msgstr "Bitte erstellen Sie mindestens eine \"Servicevorlagengruppe\"."
 
 #: ImportModule/templates/HostDefaults/add.php:265
 #: ImportModule/templates/HostDefaults/edit.php:247
 msgid "Go to \"Service template groups\""
-msgstr ""
+msgstr "Gehe zu \"Servicevorlagengruppen\"."
 
 #: ImportModule/templates/HostDefaults/add.php:292
 #: ImportModule/templates/HostDefaults/edit.php:274
@@ -21113,198 +21113,198 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:472
 #: ImportModule/templates/Importers/edit.php:560
 msgid "Field to match"
-msgstr ""
+msgstr "Feld zur Übereinstimmung"
 
 #: ImportModule/templates/HostDefaults/add.php:307
 #: ImportModule/templates/HostDefaults/edit.php:289
 #: ImportModule/templates/Importers/add.php:483
 #: ImportModule/templates/Importers/edit.php:486
 msgid "RegEx"
-msgstr ""
+msgstr "RegEx"
 
 #: ImportModule/templates/HostDefaults/add.php:312
 #: ImportModule/templates/HostDefaults/edit.php:297
 msgid "RegEx that needs to match"
-msgstr ""
+msgstr "RegEx, das übereinstimmen muss"
 
 #: ImportModule/templates/HostDefaults/add.php:335
 #: ImportModule/templates/HostDefaults/edit.php:317
 msgid "Service template group to assign on match"
-msgstr ""
+msgstr "Service-Vorlagengruppe, die bei Übereinstimmung zugewiesen werden soll"
 
 #: ImportModule/templates/HostDefaults/add.php:367
 msgid "Create host defaults"
-msgstr ""
+msgstr "Host-Standardeinstellungen erstellen"
 
 #: ImportModule/templates/HostDefaults/edit.php:27
 msgid "Edit host defaults"
-msgstr ""
+msgstr "Host-Standardeinstellungen bearbeiten"
 
 #: ImportModule/templates/HostDefaults/edit.php:37
 #: ImportModule/templates/ImportedHosts/edit.php:34
 msgid "Edit host defaults: "
-msgstr ""
+msgstr "Host-Standardeinstellungen bearbeiten: "
 
 #: ImportModule/templates/HostDefaults/edit.php:344
 msgid "Update host defaults"
-msgstr ""
+msgstr "Host-Standardeinstellungen aktualisieren"
 
 #: ImportModule/templates/HostDefaults/index.php:18
 msgid "Host Defaults Overview"
-msgstr ""
+msgstr "Übersicht über die Host-Standardeinstellungen"
 
 #: ImportModule/templates/HostDefaults/index.php:66
 msgid "Filter by host defaults name"
-msgstr ""
+msgstr "Nach \"Host-Standardeinstellungen\" Namen filtern"
 
 #: ImportModule/templates/HostDefaults/index.php:79
 msgid "Filter by host defaults description"
-msgstr ""
+msgstr "Nach \"Host-Standardeinstellungen\" Beschreibung filtern"
 
 #: ImportModule/templates/ImportedFiles/index.php:18
 msgid "Imported Files Overview"
-msgstr ""
+msgstr "Übersicht über importierte Dateien"
 
 #: ImportModule/templates/ImportedFiles/index.php:60
 msgid "Filter by imported file name"
-msgstr ""
+msgstr "Filtern nach importiertem Dateinamen"
 
 #: ImportModule/templates/ImportedFiles/index.php:73
 msgid "Filter by file extension"
-msgstr ""
+msgstr "Nach Dateierweiterung filtern"
 
 #: ImportModule/templates/ImportedFiles/index.php:104
 #: ImportModule/templates/ImportedHosts/index.php:276
 #: ImportModule/templates/Importers/add.php:51
 #: ImportModule/templates/Importers/edit.php:54
 msgid "Importer"
-msgstr ""
+msgstr "Importeur"
 
 #: ImportModule/templates/ImportedFiles/index.php:116
 msgid "File size"
-msgstr ""
+msgstr "Dateigröße"
 
 #: ImportModule/templates/ImportedFiles/view.php:23
 msgid "Imported file view"
-msgstr ""
+msgstr "Ansicht der importierten Datei"
 
 #: ImportModule/templates/ImportedFiles/view.php:33
 #: ImportModule/templates/ImportedHosts/index.php:299
 msgid "Imported file"
-msgstr ""
+msgstr "Importierte Datei"
 
 #: ImportModule/templates/ImportedFiles/view.php:63
 msgid "Can't read imported csv file"
-msgstr ""
+msgstr "Importierte CSV-Datei kann nicht gelesen werden"
 
 #: ImportModule/templates/ImportedFiles/view.php:66
 msgid "The imported file may have been deleted."
-msgstr ""
+msgstr "Die importierte Datei wurde möglicherweise gelöscht."
 
 #: ImportModule/templates/ImportedFiles/view.php:84
 msgid "File Content is not available in imported file"
-msgstr ""
+msgstr "Der Dateiinhalt ist in der importierten Datei nicht verfügbar"
 
 #: ImportModule/templates/ImportedFiles/view.php:87
 msgid "Maybe the file is no: CSV, or the file is empty"
-msgstr ""
+msgstr "Möglicherweise ist die Datei: keine CSV Datei oder die Datei ist leer"
 
 #: ImportModule/templates/ImportedHosts/edit.php:20
 msgid "Imported hosts"
-msgstr ""
+msgstr "Importierte Hosts"
 
 #: ImportModule/templates/ImportedHosts/edit.php:24
 msgid "Edit imported host"
-msgstr ""
+msgstr "Importierten Host bearbeiten"
 
 #: ImportModule/templates/ImportedHosts/edit.php:50
 msgid "Imported host"
-msgstr ""
+msgstr "Importierter Host"
 
 #: ImportModule/templates/ImportedHosts/edit.php:198
 msgid "Update imported host"
-msgstr ""
+msgstr "Importierten Host aktualisieren"
 
 #: ImportModule/templates/ImportedHosts/index.php:18
 msgid "Imported Hosts Overview"
-msgstr ""
+msgstr "Übersicht über importierte Hosts"
 
 #: ImportModule/templates/ImportedHosts/index.php:37
 #: ImportModule/templates/ImportedHosts/index.php:506
 msgid "Completely"
-msgstr ""
+msgstr "Vollständig"
 
 #: ImportModule/templates/ImportedHosts/index.php:41
 msgid "Some optional fields are missing"
-msgstr ""
+msgstr "Einige optionale Felder fehlen"
 
 #: ImportModule/templates/ImportedHosts/index.php:45
 msgid "Some required fields are missing"
-msgstr ""
+msgstr "Einige Pflichtfelder fehlen"
 
 #: ImportModule/templates/ImportedHosts/index.php:59
 msgid "Start import"
-msgstr ""
+msgstr "Import starten"
 
 #: ImportModule/templates/ImportedHosts/index.php:81
 msgid "Synchronize with monitoring"
-msgstr ""
+msgstr "Mit dem Monitoring-System synchronisieren"
 
 #: ImportModule/templates/ImportedHosts/index.php:87
 msgid "No importers defined"
-msgstr ""
+msgstr "Keine Importeure definiert"
 
 #: ImportModule/templates/ImportedHosts/index.php:114
 msgid "Filter by imported host name"
-msgstr ""
+msgstr "Filtern nach dem Namen des importierten Hosts"
 
 #: ImportModule/templates/ImportedHosts/index.php:127
 msgid "Filter by imported host address"
-msgstr ""
+msgstr "Filtern nach der Adresse des importierten Hosts"
 
 #: ImportModule/templates/ImportedHosts/index.php:140
 msgid "Filter by imported host description"
-msgstr ""
+msgstr "Filtern nach der Beschreibung des importierten Hosts"
 
 #: ImportModule/templates/ImportedHosts/index.php:148
 msgid "Already synchronized"
-msgstr ""
+msgstr "Bereits synchronisiert"
 
 #: ImportModule/templates/ImportedHosts/index.php:161
 #: ImportModule/templates/ImportedHosts/index.php:349
 #: ImportModule/templates/ImportedHosts/index.php:352
 msgid "In monitoring"
-msgstr ""
+msgstr "In Monitoring"
 
 #: ImportModule/templates/ImportedHosts/index.php:177
 #: ImportModule/templates/ImportedHosts/index.php:343
 msgid "NEW"
-msgstr ""
+msgstr "NEU"
 
 #: ImportModule/templates/ImportedHosts/index.php:186
 msgid "Ready for synchronization"
-msgstr ""
+msgstr "Bereit zur Synchronisation"
 
 #: ImportModule/templates/ImportedHosts/index.php:228
 msgid "Filter by importer"
-msgstr ""
+msgstr "Nach Importeur filtern"
 
 #: ImportModule/templates/ImportedHosts/index.php:285
 msgid "Reserved settings"
-msgstr ""
+msgstr "Vorgemerkte Einstellungen"
 
 #: ImportModule/templates/ImportedHosts/index.php:290
 msgid "Import date"
-msgstr ""
+msgstr "Importdatum"
 
 #: ImportModule/templates/ImportedHosts/index.php:303
 msgid "Progress"
-msgstr ""
+msgstr "Fortschritt"
 
 #: ImportModule/templates/ImportedHosts/index.php:397
 #: ImportModule/templates/ImportedHosts/index.php:410
 msgid "missing data"
-msgstr ""
+msgstr "fehlende Daten"
 
 #: ImportModule/templates/ImportedHosts/index.php:403
 #: ImportModule/templates/Importers/add.php:383
@@ -21312,7 +21312,7 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:386
 #: ImportModule/templates/Importers/edit.php:539
 msgid "Container:"
-msgstr ""
+msgstr "Container:"
 
 #: ImportModule/templates/ImportedHosts/index.php:414
 #: ImportModule/templates/Importers/add.php:388
@@ -21320,153 +21320,153 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:391
 #: ImportModule/templates/Importers/edit.php:544
 msgid "Shared containers:"
-msgstr ""
+msgstr "Geteilte Container:"
 
 #: ImportModule/templates/ImportedHosts/index.php:428
 msgid "Service template groups:"
-msgstr ""
+msgstr "Servicevorlagengruppen:"
 
 #: ImportModule/templates/ImportedHosts/index.php:452
 msgid "Services:"
-msgstr ""
+msgstr "Services:"
 
 #: ImportModule/templates/ImportedHosts/index.php:478
 msgid " Service used by other objects."
-msgstr ""
+msgstr " Service, der von anderen Objekten verwendet wird."
 
 #: ImportModule/templates/ImportedHosts/index.php:608
 msgid "Import CSV File with header"
-msgstr ""
+msgstr "CSV-Datei mit Header importiere"
 
 #: ImportModule/templates/ImportedHosts/index.php:621
 msgid "Overview importer configuration"
-msgstr ""
+msgstr "Übersicht Importerkonfiguration"
 
 #: ImportModule/templates/ImportedHosts/index.php:734
 msgid "Go to \"Importer configuration\""
-msgstr ""
+msgstr "Gehe zu \"Importer-Konfiguration\"."
 
 #: ImportModule/templates/ImportedHosts/index.php:750
 msgid "Drop CSV file here or click to upload."
-msgstr ""
+msgstr "Lege die CSV-Datei hier ab oder klicke zum Hochladen."
 
 #: ImportModule/templates/ImportedHosts/index.php:759
 msgid "Upload CSV File and create preview"
-msgstr ""
+msgstr "Hochladen der CSV-Datei und erstelle eine Vorschau"
 
 #: ImportModule/templates/ImportedHosts/index.php:775
 msgid "CSV Data preview"
-msgstr ""
+msgstr "CSV-Datenvorschau"
 
 #: ImportModule/templates/ImportedHosts/index.php:793
 msgid "This preview shows maximal 10 first valid records from csv file."
-msgstr ""
+msgstr "Diese Vorschau zeigt maximal 10 erste gültige Datensätze aus der CSV-Datei."
 
 #: ImportModule/templates/ImportedHosts/index.php:795
 msgid "Lines with duplicate hostnames are automatically ignored"
-msgstr ""
+msgstr "Zeilen mit doppelten Hostnamen werden automatisch ignoriert"
 
 #: ImportModule/templates/ImportedHosts/index.php:810
 msgid "Is missing"
-msgstr ""
+msgstr "Wird vermisst"
 
 #: ImportModule/templates/ImportedHosts/index.php:829
 msgid "Invalid rows (show maximal 5 rows for preview)"
-msgstr ""
+msgstr "Ungültige Zeilen (maximal 5 Zeilen für die Vorschau anzeigen)"
 
 #: ImportModule/templates/ImportedHosts/index.php:854
 msgid "Start data import"
-msgstr ""
+msgstr "Starte Datenimport"
 
 #: ImportModule/templates/Importers/add.php:26
 msgid "Add importer"
-msgstr ""
+msgstr "Importeur hinzufügen"
 
 #: ImportModule/templates/Importers/add.php:36
 msgid "Create new importer"
-msgstr ""
+msgstr "Neuen Importer erstellen"
 
 #: ImportModule/templates/Importers/add.php:75
 #: ImportModule/templates/Importers/edit.php:78
 msgid "Importer name"
-msgstr ""
+msgstr "Name des Importeurs"
 
 #: ImportModule/templates/Importers/add.php:100
 #: ImportModule/templates/Importers/edit.php:103
 msgid "Data source"
-msgstr ""
+msgstr "Datenquelle"
 
 #: ImportModule/templates/Importers/add.php:112
 #: ImportModule/templates/Importers/edit.php:115
 msgid "The first row of the CSV file will be treated as column names"
-msgstr ""
+msgstr "Die erste Zeile der CSV-Datei wird als Spaltenname behandelt"
 
 #: ImportModule/templates/Importers/add.php:115
 #: ImportModule/templates/Importers/edit.php:118
 msgid "The CSV file consists only data sets without column names as header"
-msgstr ""
+msgstr "Die CSV-Datei besteht nur aus Datensätzen ohne Spaltennamen als Header"
 
 #: ImportModule/templates/Importers/add.php:118
 #: ImportModule/templates/Importers/edit.php:121
 msgid "Importing Data from JSON Files"
-msgstr ""
+msgstr "Daten aus JSON-Dateien importieren"
 
 #: ImportModule/templates/Importers/add.php:132
 #: ImportModule/templates/Importers/edit.php:135
 msgid "Force delete services if not in mapping"
-msgstr ""
+msgstr "Löschen von Services erzwingen, wenn nicht im Mapping"
 
 #: ImportModule/templates/Importers/add.php:139
 #: ImportModule/templates/Importers/edit.php:142
 msgid "If disabled all services outside of the service template group assignment will get deleted automatically"
-msgstr ""
+msgstr "Wenn deaktiviert, werden alle Services außerhalb der Servicevorlagengruppenzuweisung automatisch gelöscht"
 
 #: ImportModule/templates/Importers/add.php:149
 #: ImportModule/templates/Importers/edit.php:152
 msgid "Data source mapping configuration for:"
-msgstr ""
+msgstr "Konfiguration der Datenquellenzuordnung für:"
 
 #: ImportModule/templates/Importers/add.php:158
 #: ImportModule/templates/Importers/edit.php:161
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #: ImportModule/templates/Importers/add.php:237
 #: ImportModule/templates/Importers/edit.php:240
 msgid "Press return to separate"
-msgstr ""
+msgstr "Drücken Sie die Eingabetaste, um zu trennen"
 
 #: ImportModule/templates/Importers/add.php:310
 #: ImportModule/templates/Importers/edit.php:313
 msgid "Host defaults assignments"
-msgstr ""
+msgstr "Zuweisungen von Host-Standardeinstellungen"
 
 #: ImportModule/templates/Importers/add.php:326
 #: ImportModule/templates/Importers/edit.php:329
 msgid "No host defaults are defined"
-msgstr ""
+msgstr "Es sind keine Host-Standardeinstellungen definiert"
 
 #: ImportModule/templates/Importers/add.php:329
 #: ImportModule/templates/Importers/edit.php:332
 #: ImportModule/templates/Importers/index.php:40
 msgid "Please create at least one \"Host defaults\""
-msgstr ""
+msgstr "Bitte erstellen Sie mindestens eine \"Host-Standardeinstellung\"."
 
 #: ImportModule/templates/Importers/add.php:336
 #: ImportModule/templates/Importers/edit.php:339
 #: ImportModule/templates/Importers/index.php:47
 msgid "Go to \"Host defaults\""
-msgstr ""
+msgstr "Gehe zu \"Host-Standardeinstellungen\"."
 
 #: ImportModule/templates/Importers/add.php:357
 #: ImportModule/templates/Importers/edit.php:360
 msgid "assignment"
-msgstr ""
+msgstr "Zuordnung"
 
 #: ImportModule/templates/Importers/add.php:371
 #: ImportModule/templates/Importers/edit.php:374
 msgid "The saved settings get applied to all imported hosts."
-msgstr ""
+msgstr "Die gespeicherten Einstellungen werden auf alle importierten Hosts angewendet."
 
 #: ImportModule/templates/Importers/add.php:408
 #: ImportModule/templates/Importers/add.php:491
@@ -21475,65 +21475,65 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:494
 #: ImportModule/templates/Importers/edit.php:564
 msgid "RegEx that needs to match "
-msgstr ""
+msgstr "RegEx, das übereinstimmen muss "
 
 #: ImportModule/templates/Importers/add.php:439
 #: ImportModule/templates/Importers/edit.php:442
 msgid "Optional overwrites"
-msgstr ""
+msgstr "Optionale Überschreibungen"
 
 #: ImportModule/templates/Importers/add.php:442
 #: ImportModule/templates/Importers/edit.php:445
 msgid "Define exceptions for particular hosts, that should get imported using a different configuration."
-msgstr ""
+msgstr "Definieren Sie Ausnahmen für bestimmte Hosts, die mit einer anderen Konfiguration importiert werden sollen."
 
 #: ImportModule/templates/Importers/add.php:444
 #: ImportModule/templates/Importers/edit.php:447
 msgid "Matching is done in the shown order."
-msgstr ""
+msgstr "Der Abgleich erfolgt in der angegebenen Reihenfolge."
 
 #: ImportModule/templates/Importers/add.php:446
 #: ImportModule/templates/Importers/edit.php:449
 msgid "The last matching overwrite configuration gets used by the Importer."
-msgstr ""
+msgstr "Die letzte übereinstimmende Konfiguration wird vom Importer verwendet."
 
 #: ImportModule/templates/Importers/add.php:511
 #: ImportModule/templates/Importers/edit.php:514
 msgid "Host defaults to assign on match"
-msgstr ""
+msgstr "Host-Standardeinstellungen, die einer Übereinstimmung zugewiesen werden"
 
 #: ImportModule/templates/Importers/add.php:611
 msgid "Create importer"
-msgstr ""
+msgstr "Importer erstellen"
 
 #: ImportModule/templates/Importers/edit.php:27
 msgid "Edit importer"
-msgstr ""
+msgstr "Importeur bearbeiten"
 
 #: ImportModule/templates/Importers/edit.php:37
 #: ImportModule/templates/Importers/edit.php:614
 msgid "Update importer"
-msgstr ""
+msgstr "Importer aktualisieren"
 
 #: ImportModule/templates/Importers/index.php:18
 msgid "Importers Overview"
-msgstr ""
+msgstr "Importeure Übersicht"
 
 #: ImportModule/templates/Importers/index.php:23
 msgid "When the importer is deleted, also all associated hosts in the Imported Hosts list get deleted. This means that no further updates are possible for these hosts. All hosts that have already been included in the monitoring will retained."
-msgstr ""
+msgstr "Wenn der Importer gelöscht wird, werden auch alle zugeordneten Hosts in der Liste der importierten Hosts gelöscht. Dies bedeutet, dass für diese Hosts keine weiteren Updates möglich sind. Alle Hosts, die bereits in die Überwachung einbezogen wurden, bleiben erhalten."
 
 #: ImportModule/templates/Importers/index.php:37
 msgid "No \"Host defaults\" defined"
-msgstr ""
+msgstr "Es sind keine \"Host-Standardeinstellungen\" definiert"
 
 #: ImportModule/templates/Importers/index.php:97
 msgid "Filter by importer name"
-msgstr ""
+msgstr "Filtern nach Importeurnamen"
 
 #: ImportModule/templates/Importers/index.php:110
 msgid "Filter by importer description"
-msgstr ""
+msgstr "Filtern nach Importerbeschreibung"
 
 #: OpenstreetmapModule/src/Controller/OpenstreetmapController.php:183
 msgid "Reset map"
@@ -21544,7 +21544,7 @@ msgstr "Karte zurücksetzen"
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:19
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:33
 msgid "OpenStreetMap"
-msgstr ""
+msgstr "OpenStreetMap"
 
 #: OpenstreetmapModule/src/Model/Table/OpenstreetmapSettingsTable.php:66
 msgid "Value needs to be greater or equal 15."
@@ -21553,7 +21553,7 @@ msgstr "Der Wert muss größer oder gleich 15 sein."
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:15
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:14
 msgid "OpenStreetMap Module"
-msgstr ""
+msgstr "OpenStreetMap-Modul"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:61
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:76
@@ -21563,17 +21563,17 @@ msgstr "Standorte mit Status anzeigen"
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:70
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:85
 msgid "Up / Ok"
-msgstr ""
+msgstr "Up / Ok"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:94
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:109
 msgid "Down / Critical"
-msgstr ""
+msgstr "Down / Critical"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:107
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:121
 msgid "Unreachable / Unknown"
-msgstr ""
+msgstr "Unreachable / Unknown"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:118
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:132
@@ -21596,15 +21596,15 @@ msgstr "Leere Standorte"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:193
 msgid "Unreachable | Unknown"
-msgstr ""
+msgstr "Unreachable | Unknown"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:196
 msgid "Down | Critical"
-msgstr ""
+msgstr "Down | Critical"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:202
 msgid "Up | Ok"
-msgstr ""
+msgstr "Up | Ok"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:216
 msgid "Missing configuration or location settings"
@@ -21667,11 +21667,11 @@ msgstr "Falscher Vorfalltyp"
 
 #: PagerdutyModule/src/Lib/Menu.php:46
 msgid "PagerDuty"
-msgstr ""
+msgstr "PagerDuty"
 
 #: PagerdutyModule/templates/Settings/edit.php:15
 msgid "PagerDuty Module"
-msgstr ""
+msgstr "PagerDuty-Modul"
 
 #: PagerdutyModule/templates/Settings/edit.php:19
 msgid "PagerDuty Settings"
@@ -21683,7 +21683,7 @@ msgstr "Bearbeite PagerDuty Einstellungen"
 
 #: PagerdutyModule/templates/Settings/edit.php:45
 msgid "API key"
-msgstr ""
+msgstr "API Schlüssel"
 
 #: PagerdutyModule/templates/Settings/edit.php:57
 msgid "The API Key you got from PagerDuty"
@@ -21746,7 +21746,7 @@ msgstr "Fehler beim Löschen des Prometheus-Exporters"
 
 #: PrometheusModule/src/Controller/PrometheusQueryController.php:224
 msgid "Invalid alert rule"
-msgstr ""
+msgstr "Ungültige Warnregel"
 
 #: PrometheusModule/src/Controller/PrometheusQueryController.php:340
 #: PrometheusModule/src/Controller/PrometheusQueryController.php:475
@@ -21764,7 +21764,7 @@ msgstr "Schwellenwerttyp wie außerhalb der Grenzen: [{0}]"
 #: PrometheusModule/src/Lib/AlertRuleValidationRules.php:74
 #: PrometheusModule/src/Lib/AlertRuleValidationRules.php:115
 msgid "Warning and Critical can not be equal."
-msgstr ""
+msgstr "Warnung und Kritisch können nicht gleich sein."
 
 #: PrometheusModule/src/Lib/AlertRuleValidationRules.php:133
 #: PrometheusModule/src/Lib/AlertRuleValidationRules.php:140
@@ -21846,7 +21846,7 @@ msgstr "1 Tag"
 #: PrometheusModule/src/Lib/Menu.php:36
 #: PrometheusModule/src/Lib/Menu.php:46
 msgid "Prometheus"
-msgstr ""
+msgstr "Prometheus"
 
 #: PrometheusModule/src/Lib/Menu.php:30
 #: PrometheusModule/src/Lib/Menu.php:36
@@ -21873,7 +21873,7 @@ msgstr "Dies ist keine gültige YAML-Konfiguration."
 #: PrometheusModule/templates/PrometheusQuery/index.php:16
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:18
 msgid "Prometheus Module"
-msgstr ""
+msgstr "Prometheus-Modul"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:20
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:65
@@ -21902,7 +21902,7 @@ msgstr "Filter nach PromQL"
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:149
 #: PrometheusModule/templates/PrometheusQuery/browser_directive.php:11
 msgid "PromQL"
-msgstr ""
+msgstr "PromQL"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:153
 #: PrometheusModule/templates/PrometheusQuery/browser_directive.php:13
@@ -21913,7 +21913,7 @@ msgstr "Einheit"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:226
 msgid "Edit alert rule"
-msgstr ""
+msgstr "Warnregel bearbeiten"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:22
 #: PrometheusModule/templates/PrometheusExporters/edit.php:22
@@ -21928,7 +21928,7 @@ msgstr "Neuen Exporter erstellen"
 #: PrometheusModule/templates/PrometheusExporters/add.php:48
 #: PrometheusModule/templates/PrometheusExporters/edit.php:49
 msgid "Exporter"
-msgstr ""
+msgstr "Exporter"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:87
 #: PrometheusModule/templates/PrometheusExporters/edit.php:88
@@ -21974,17 +21974,17 @@ msgstr "Standardportzuweisungen."
 #: PrometheusModule/templates/PrometheusExporters/add.php:192
 #: PrometheusModule/templates/PrometheusExporters/edit.php:193
 msgid "Add port to targets"
-msgstr ""
+msgstr "Fügen Sie den Zielen einen Port hinzu"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:196
 #: PrometheusModule/templates/PrometheusExporters/edit.php:197
 msgid "Most exports requires that the port number gets added to the target address (e.g node_exporter)."
-msgstr ""
+msgstr "Bei den meisten Exporten muss die Portnummer zur Zieladresse hinzugefügt werden (z. B. node_exporter)"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:197
 #: PrometheusModule/templates/PrometheusExporters/edit.php:198
 msgid "For the snmp_exporter you have to untick this."
-msgstr ""
+msgstr "Für den snmp_exporter müssen Sie dies deaktivieren."
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:203
 #: PrometheusModule/templates/PrometheusExporters/edit.php:204
@@ -22026,12 +22026,12 @@ msgstr "Filter nach Scrape-Intervall"
 
 #: PrometheusModule/templates/PrometheusQuery/browser_directive.php:4
 msgid "Prometheus state overview"
-msgstr ""
+msgstr "Prometheus Statusübersicht"
 
 #: PrometheusModule/templates/PrometheusQuery/edit_service.php:22
 #: PrometheusModule/templates/PrometheusQuery/edit_service.php:32
 msgid "Edit Prometheus alert rule"
-msgstr ""
+msgstr "Prometheus-Warnregel bearbeiten"
 
 #: PrometheusModule/templates/PrometheusQuery/edit_service.php:40
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:40
@@ -22257,7 +22257,7 @@ msgstr "Warnung max"
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:354
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:482
 msgid "Longer than..."
-msgstr ""
+msgstr "Länger als ..."
 
 #: PrometheusModule/templates/PrometheusQuery/edit_service.php:455
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:453
@@ -22311,7 +22311,7 @@ msgstr "\"MB/s\" für Megabytes pro Sekunde"
 
 #: PrometheusModule/templates/PrometheusQuery/edit_service.php:602
 msgid "Update alert rule"
-msgstr ""
+msgstr "Alarmregel aktualisieren"
 
 #: PrometheusModule/templates/PrometheusQuery/edit_service.php:618
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:681
@@ -22321,7 +22321,7 @@ msgstr "Aktuelle Werte"
 #: PrometheusModule/templates/PrometheusQuery/edit_service.php:622
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:685
 msgid "Element"
-msgstr ""
+msgstr "Element"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:20
 msgid "Query Overview"
@@ -22329,11 +22329,11 @@ msgstr "Abfrageübersicht"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:53
 msgid "Metrics missing?"
-msgstr ""
+msgstr "Metriken fehlen?"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:56
 msgid "Have you refreshed the monitoring configuration?"
-msgstr ""
+msgstr "Wurde die Überwachungskonfiguration aktualisiert?"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:77
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:32
@@ -22354,11 +22354,11 @@ msgstr "Hilfe"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:244
 msgid "Create service from metric"
-msgstr ""
+msgstr "Service aus einer Metrik erstellen"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:287
 msgid "Create service from metrics"
-msgstr ""
+msgstr "Service aus Metriken erstellen"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:22
 msgid "Add metric to monitoring"
@@ -22370,7 +22370,7 @@ msgstr "Zu Service hinzufügen"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:614
 msgid "PromQL Query"
-msgstr ""
+msgstr "PromQL Query"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:620
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:654
@@ -22387,7 +22387,7 @@ msgstr "PromQL-Hilfe und Beispielabfragen"
 
 #: PrometheusModule/templates/element/promql_modal.php:24
 msgid "Linux memory usage in percent"
-msgstr ""
+msgstr "Linux-Speicherauslastung in Prozent"
 
 #: PrometheusModule/templates/element/promql_modal.php:34
 msgid "Average MB/s network traffic (transmit) over the last 2 minutes"
@@ -22407,15 +22407,15 @@ msgstr "Durchschnittliche MB/s, die in den letzten 2 Minuten auf die Festplatte 
 
 #: PrometheusModule/templates/element/promql_modal.php:74
 msgid "Windows CPU usage in percentage"
-msgstr ""
+msgstr "Windows-CPU-Auslastung in Prozent"
 
 #: PrometheusModule/templates/element/promql_modal.php:85
 msgid "Windows Disk usage in percentage"
-msgstr ""
+msgstr "Windows-Datenträgernutzung in Prozent"
 
 #: PrometheusModule/templates/element/promql_modal.php:97
 msgid "Windows memory usage in percentage"
-msgstr ""
+msgstr "Windows-Speichernutzung in Prozent"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:9
 #: ServicenowModule/templates/Elements/service_configuration.php:9
@@ -22529,13 +22529,13 @@ msgstr "ServiceNow Incident zugeordnet zu (setzt den Status automatisch auf \"In
 #: ServicenowModule/templates/Elements/service_configuration.php:145
 #: ServicenowModule/templates/ServicenowEdit/index.php:227
 msgid "Business Service"
-msgstr ""
+msgstr "Business Service"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:157
 #: ServicenowModule/templates/Elements/service_configuration.php:157
 #: ServicenowModule/templates/ServicenowEdit/index.php:238
 msgid "ServiceNow Incident Business Service"
-msgstr ""
+msgstr "ServiceNow Incident Business Service"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:175
 #: ServicenowModule/templates/Elements/service_configuration.php:175
@@ -22548,7 +22548,7 @@ msgstr "Bearbeite servicespezifische Einstellungen"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:15
 msgid "ServiceNow Module"
-msgstr ""
+msgstr "ServiceNow-Modul"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:19
 msgid "ServiceNow Settings"
@@ -22560,7 +22560,7 @@ msgstr "Bearbeite ServiceNow Einstellungen"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:44
 msgid "ServiceNow URL"
-msgstr ""
+msgstr "ServiceNow URL"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:57
 msgid "URL to your ServiceNow Instance"
@@ -22608,11 +22608,11 @@ msgstr "Über die Zwei-Wege-Integration kann ServiceNow Host- und Serviceproblem
 
 #: SlackModule/src/Lib/Menu.php:46
 msgid "Slack"
-msgstr ""
+msgstr "Slack"
 
 #: SlackModule/templates/SlackSettings/index.php:15
 msgid "Slack Module"
-msgstr ""
+msgstr "Slack-Modul"
 
 #: SlackModule/templates/SlackSettings/index.php:19
 msgid "Slack Settings"
@@ -22652,7 +22652,7 @@ msgstr "Wenn Sie die Zwei-Wege-Integration verwenden möchten, benötigt Ihr ope
 
 #: SlackModule/templates/SlackSettings/index.php:115
 msgid "Slack FAQ"
-msgstr ""
+msgstr "Slack FAQ"
 
 #: SnmpTrapModule/src/Controller/SnmpttListController.php:69
 msgid "Snmptt entry not found"
@@ -22660,34 +22660,34 @@ msgstr "Snmptt-Eintrag nicht gefunden"
 
 #: SnmpTrapModule/src/Lib/Menu.php:27
 msgid "Snmp Trap Logs"
-msgstr ""
+msgstr "Snmp Trap Logs"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:33
 msgid "Snmp Trap Module"
-msgstr ""
+msgstr "Snmp Trap-Modul"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:37
 msgid "SnmpttList"
-msgstr ""
+msgstr "SnmpttList"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:53
 msgid "Snmp trap logs"
-msgstr ""
+msgstr "Snmp trap Logs"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:82
 #: SnmpTrapModule/templates/SnmpttList/index.php:179
 msgid "Event name"
-msgstr ""
+msgstr "Ereignisname"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:95
 #: SnmpTrapModule/templates/SnmpttList/index.php:187
 msgid "Event ID"
-msgstr ""
+msgstr "Ereignis-ID"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:109
 #: SnmpTrapModule/templates/SnmpttList/index.php:191
 msgid "Trap OID"
-msgstr ""
+msgstr "Trap OID"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:122
 #: SnmpTrapModule/templates/SnmpttList/index.php:199
@@ -22697,7 +22697,7 @@ msgstr "Formatierte Zeile"
 #: SnmpTrapModule/templates/SnmpttList/index.php:149
 #: SnmpTrapModule/templates/SnmpttList/index.php:195
 msgid "Agent IP"
-msgstr ""
+msgstr "Agenten-IP"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:175
 msgid "Severity"
