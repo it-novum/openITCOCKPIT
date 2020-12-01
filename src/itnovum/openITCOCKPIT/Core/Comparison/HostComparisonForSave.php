@@ -82,7 +82,7 @@ class HostComparisonForSave {
 
         //Add host default data
         $data['host_type'] = isset($this->host['host_type']) ? $this->host['host_type'] : GENERIC_HOST;
-        $data['usage_flag'] = 0;
+        $data['usage_flag'] = isset($this->host['usage_flag']) ? $this->host['usage_flag'] : 0;
         $data['own_contacts'] = (int)$this->hasOwnContacts;
         $data['own_contactgroups'] = (int)$this->hasOwnContacts;
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
