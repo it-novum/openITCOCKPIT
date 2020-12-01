@@ -37,6 +37,7 @@ use Authentication\Authenticator\ResultInterface;
 use Authentication\Controller\Component\AuthenticationComponent;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -44,6 +45,7 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -78,7 +80,7 @@ class UsersController extends AppController {
         $redirectToSsoLoginPage = $this->request->getQuery('redirect_sso', null) === 'true';
 
         $forceRedirectSsousersToLoginScreen = false;
-        if($isSsoEnabled === true){
+        if ($isSsoEnabled === true) {
             $forceRedirectSsousersToLoginScreen = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE')->get('value') === '1';
         }
 
@@ -111,6 +113,32 @@ class UsersController extends AppController {
         }
 
         $isLoggedIn = $identy = $this->getUser() !== null;
+        $errorMessages = [];
+
+        if ($this->request->is('GET') && $this->request->getQuery('code', null) !== null && $isSsoEnabled) {
+            // The user came back from the oAuth login page.
+            // Check if we have any errors during the oAuth login
+            $result = $this->Authentication->getResult();
+            if ($result->getStatus() !== ResultInterface::SUCCESS) {
+                if ($result->getStatus() === 'FAILURE_IDENTITY_NOT_FOUND') {
+
+                    // The browser fires two requests.
+                    // One is is GET request, when the user gets redirrected from the oAuth Login Page back to openITCOCKPIT.
+                    // This is the request where the oauth Login happens.
+                    //
+                    // The second request is also a GET Request done by Angular to query status information.
+                    // S we need to store any errors to the session that we can return errors for angularjs
+                    $Session = $this->request->getSession();
+                    try {
+                        $oauth_error = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.NO_EMAIL_MESSAGE')->get('value');
+                    } catch (RecordNotFoundException $e) {
+                        // Only a fallback if the key is missing in the database
+                        $oauth_error = __('E-Mail address not found in openITCOCKPIT Database.');
+                    }
+                    $Session->write('oauth_user_not_found', $oauth_error);
+                }
+            }
+        }
 
         $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
         $this->set('images', $images);
@@ -121,7 +149,16 @@ class UsersController extends AppController {
         $this->set('isLoggedIn', $isLoggedIn);
 
         if ($this->request->is('get')) {
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen']);
+            if ($this->isJsonRequest()) {
+                $Session = $this->request->getSession();
+                if ($Session->read('oauth_user_not_found', null) !== null) {
+                    $errorMessages[] = $Session->read('oauth_user_not_found');
+                    $Session->delete('oauth_user_not_found');
+                }
+            }
+
+            $this->set('errorMessages', $errorMessages);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages']);
             return;
         }
 
@@ -156,7 +193,7 @@ class UsersController extends AppController {
 
         $this->Authentication->logout();
 
-        if($isOAuthLogin === true){
+        if ($isOAuthLogin === true) {
             $oAuthClient = new oAuthClient();
             $this->redirect($oAuthClient->getLogoutUrl());
             return;
@@ -244,7 +281,7 @@ class UsersController extends AppController {
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
 
-            if($user->is_oauth === true) {
+            if ($user->is_oauth === true) {
                 //remove password validation when user is an oAuth2 user.
                 $user->password = '';
                 $user->confirm_password = '';
@@ -320,7 +357,7 @@ class UsersController extends AppController {
                 $user->setAccess('ldap_dn', false);
             }
 
-            if($user->is_oauth === true) {
+            if ($user->is_oauth === true) {
                 $user->setAccess('is_oauth', false); //do not allow to change is_oauth
                 //oAuth users has no password
                 $data['password'] = '';
