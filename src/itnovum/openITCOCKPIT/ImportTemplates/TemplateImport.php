@@ -233,17 +233,19 @@ class TemplateImport {
                 continue;
             }
 
+            $test = [];
             foreach ($servicetemplategroup['servicetemplates'] as $key => $servicetemplate) {
-                if (!$this->CommandsTable->existsByUuid($servicetemplate['id'])) {
+                if (!$this->ServicetemplatesTable->existsByUuid($servicetemplate['id'])) {
                     //delete missing servictemplate from group
                     unset($servicetemplategroup['servicetemplates'][$key]);
                     continue;
                 }
                 //replace servicetemplate id
                 $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($servicetemplate['id']);
-                $servicetemplategroup['servicetemplates'][$key]['id'] = $servicetemplate['id'];
-
+                $servicetemplategroup['servicetemplates'][$key]['id'] = $servicetemplate['Servicetemplate']['id'];
+                $test[] = $servicetemplate['Servicetemplate']['id'];
             }
+            $servicetemplategroup['servicetemplates']['_ids'] = $test;
             $entity = $this->ServicetemplategroupsTable->newEntity($servicetemplategroup);
             $this->ServicetemplategroupsTable->save($entity);
         }
