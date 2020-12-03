@@ -140,6 +140,10 @@ class TemplateImport {
         if (!empty($data['Servicetemplategroups'])) {
             $this->importServicetemplategroups($data['Servicetemplategroups']);
         }
+
+        if (!empty($data['Hosttemplates'])) {
+            $this->importHosttemplates($data['Hosttemplates']);
+        }
     }
 
     /**
@@ -209,7 +213,7 @@ class TemplateImport {
 
             $command = $this->CommandsTable->getCommandByUuid($servicetemplate['command_id'], true, false)[0];
             $servicetemplate['command_id'] = $command['id'];
-//print_r($servicetemplate['servicetemplatecommandargumentvalues']);
+
             if (!empty($servicetemplate['servicetemplatecommandargumentvalues']) && !empty($command['commandarguments'])) {
                 foreach ($servicetemplate['servicetemplatecommandargumentvalues'] as $templateArgumentKey => $templateArgumentValue) {
                     $servicetemplate['servicetemplatecommandargumentvalues'][$templateArgumentKey] = [
@@ -233,7 +237,7 @@ class TemplateImport {
                 continue;
             }
 
-            $test = [];
+            $servicetemplates = [];
             foreach ($servicetemplategroup['servicetemplates'] as $key => $servicetemplate) {
                 if (!$this->ServicetemplatesTable->existsByUuid($servicetemplate['id'])) {
                     //delete missing servictemplate from group
@@ -243,11 +247,44 @@ class TemplateImport {
                 //replace servicetemplate id
                 $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($servicetemplate['id']);
                 $servicetemplategroup['servicetemplates'][$key]['id'] = $servicetemplate['Servicetemplate']['id'];
-                $test[] = $servicetemplate['Servicetemplate']['id'];
+                $servicetemplates[] = $servicetemplate['Servicetemplate']['id'];
             }
-            $servicetemplategroup['servicetemplates']['_ids'] = $test;
+            $servicetemplategroup['servicetemplates']['_ids'] = $servicetemplates;
             $entity = $this->ServicetemplategroupsTable->newEntity($servicetemplategroup);
             $this->ServicetemplategroupsTable->save($entity);
+        }
+    }
+
+
+    /**
+     * @param $hosttemplates
+     */
+    private function importHosttemplates($hosttemplates): void {
+        foreach ($hosttemplates as $hosttemplate) {
+
+            if ($this->HosttemplatesTable->existsByUuid($hosttemplate['uuid'])) {
+                //skip current template if it already exists
+                continue;
+            }
+
+            if (!$this->CommandsTable->existsByUuid($hosttemplate['command_id'])) {
+                //skip template if command does not exist
+                continue;
+            }
+
+            $command = $this->CommandsTable->getCommandByUuid($hosttemplate['command_id'], true, false)[0];
+            $hosttemplate['command_id'] = $command['id'];
+
+            if (!empty($hosttemplate['hosttemplatecommandargumentvalues']) && !empty($command['commandarguments'])) {
+                foreach ($hosttemplate['hosttemplatecommandargumentvalues'] as $templateArgumentKey => $templateArgumentValue) {
+                    $hosttemplate['hosttemplatecommandargumentvalues'][$templateArgumentKey] = [
+                        'commandargument_id' => $this->getCommandArgumentIdByName($templateArgumentValue['commandargument_id'], $command['commandarguments']),
+                        'value'              => $templateArgumentValue['value'],
+                    ];
+                }
+            }
+            $entity = $this->HosttemplatesTable->newEntity($hosttemplate);
+            $this->HosttemplatesTable->save($entity);
         }
     }
 }
