@@ -508,4 +508,78 @@ class ServicetemplategroupsTable extends Table {
 
         return $list;
     }
+
+    public function getServicetemplategroupsByNames($names) {
+        if (!is_array($names)) {
+            $names = [$names];
+        }
+
+        $query = $this->find()
+            ->contain([
+                'Containers',
+                'Servicetemplates'
+            ])
+            ->where([
+                'Containers.name IN'          => $names,
+                'Containers.containertype_id' => CT_SERVICETEMPLATEGROUP
+            ])
+            ->disableHydration();
+
+        return $query->toArray();
+
+    }
+
+    public function assignMatchingServicetemplategroupsByHostgroupsToHost($hostId, $MY_RIGHTS = []) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $host = $HostsTable->getHostgroupsWithServicesByHostId($hostId);
+        $hostgroupNames = Hash::extract($host, 'hostgroups_merged.{n}.container.name');
+
+        if (empty($hostgroupNames)) {
+            //Host has no hostgroups
+            return false;
+        }
+
+        $servicetemplategroups_tmp = $this->getServicetemplategroupsByNames($hostgroupNames);
+        $servicetemplategroups_removed = [];
+        $servicetemplategroups = [];
+
+        if(empty($MY_RIGHTS)){
+            //Permission check is disabled
+            $servicetemplategroups = $servicetemplategroups_tmp;
+        }
+
+        //Check container permissions - do not this in SQL so we know what servicetemplategroups got removed so we can print error messages
+        if (!empty($MY_RIGHTS)) {
+            foreach ($servicetemplategroups_tmp as $servicetemplategroup) {
+                if (in_array($servicetemplategroup['container']['parent_id'], $MY_RIGHTS, true)) {
+                    $servicetemplategroups[] = $servicetemplategroup;
+                } else {
+                    //User has no permissions to this servicetemplategroup
+                    $servicetemplategroups_removed[] = $servicetemplategroup;
+                }
+            }
+        }
+
+        if(empty($servicetemplategroups)){
+            return false;
+        }
+
+        $existingServicetemplateIds = Hash::combine($host['services'], '{n}.servicetemplate_id', '{n}.servicetemplate_id');
+        $servicetemplatesToCreate = [];
+
+        foreach($servicetemplategroups as $servicetemplategroup){
+            foreach($servicetemplategroup['servicetemplates'] as $servicetemplate){
+                if(!isset($existingServicetemplateIds[$servicetemplate['id']])){
+                    $servicetemplatesToCreate[] = $servicetemplate['id'];
+                }
+            }
+        }
+
+
+
+        dd($servicetemplatesToCreate);
+
+    }
 }

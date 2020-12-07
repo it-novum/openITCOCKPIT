@@ -364,6 +364,11 @@ angular.module('openITCOCKPIT')
             $('#HostTagsInput').tagsinput('add', $scope.hosttemplate.Hosttemplate.tags);
         };
 
+        $scope.submitSaveHostAndAssignMatchingServicetemplateGroups = function(){
+            $scope.post.save_host_and_assign_matching_servicetemplate_groups = true;
+            $scope.submit();
+        };
+
         $scope.submit = function(redirectState){
             $http.post("/hosts/add.json?angular=true",
                 $scope.post

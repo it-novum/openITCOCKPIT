@@ -47,6 +47,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
@@ -487,6 +488,8 @@ class HostsController extends AppController {
                 throw new NotFoundException(__('Invalid host template'));
             }
 
+            $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
+
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
             $HostComparisonForSave = new HostComparisonForSave($this->request->getData(), $hosttemplate);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
@@ -533,6 +536,12 @@ class HostsController extends AppController {
                     $ChangelogsTable->save($changelogEntry);
                 }
 
+                if ($saveHostAndAssignMatchingServicetemplateGroups === true) {
+                    /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+
+                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($host); // REST API ID serialization

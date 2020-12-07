@@ -969,7 +969,7 @@
                                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
-                                        <div class="dropdown-menu">
+                                        <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
                                                    ng-click="submit('ServicesAdd')">
@@ -983,6 +983,15 @@
                                                    ng-if="!data.createAnother">
                                                     <i class="fa fa fa-gear"></i>
                                                     <?php echo __('Save and setup agent'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('add', 'services')): ?>
+                                                <a class="dropdown-item" href="javascript:void(0);"
+                                                   ng-click="submitSaveHostAndAssignMatchingServicetemplateGroups()"
+                                                   ng-if="!data.createAnother">
+                                                    <i class="fa fa-external-link-alt"></i>
+                                                    <?php echo __('Save host and assign matching service template groups'); ?>
                                                 </a>
                                             <?php endif; ?>
 

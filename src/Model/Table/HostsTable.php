@@ -890,7 +890,7 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
                     'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
                 ]
             ]
@@ -1032,7 +1032,7 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
                     'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
 
                 ]
@@ -1859,7 +1859,7 @@ class HostsTable extends Table {
             }
         }
 
-        if(!empty($where['NOT'])){
+        if (!empty($where['NOT'])) {
             // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
             $where['NOT'] = [
                 'OR' => $where['NOT']
@@ -1906,7 +1906,7 @@ class HostsTable extends Table {
                 }
             }
 
-            if(!empty($where['NOT'])){
+            if (!empty($where['NOT'])) {
                 // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
                 $where['NOT'] = [
                     'OR' => $where['NOT']
@@ -3970,5 +3970,55 @@ class HostsTable extends Table {
             $intArr[$item] = $item;
         }
         return $intArr;
+    }
+
+    /**
+     * @param $uuid
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getHostgroupsWithServicesByHostId($hostId) {
+        $query = $this->find()
+            ->contain([
+                'Hosttemplates' => function (Query $query) {
+                    return $query->contain([
+                        'Hostgroups' => [
+                            'Containers'
+                        ]
+                    ]);
+                },
+                'Hostgroups'    => [
+                    'Containers'
+                ],
+                'Services'      => function (Query $query) {
+                    return $query
+                        ->select([
+                            'Services.id',
+                            'Services.host_id',
+                            'Services.disabled',
+                            'Services.servicetemplate_id'
+                        ]);
+                }
+            ])
+            ->where([
+                'Hosts.id' => $hostId
+            ])
+            ->disableHydration()
+            ->first();
+
+        $host = $query;
+        $host['hostgroups_merged'] = [];
+
+        // Merge hostgroups of host and host template
+        foreach ($query['hostgroups'] as $hostgroup) {
+            $hostgroupId = $hostgroup['id'];
+            $host['hostgroups_merged'][$hostgroupId] = $hostgroup;
+        }
+
+        foreach ($query['hosttemplate']['hostgroups'] as $hostgroup) {
+            $hostgroupId = $hostgroup['id'];
+            $host['hostgroups_merged'][$hostgroupId] = $hostgroup;
+        }
+
+        return $host;
     }
 }
