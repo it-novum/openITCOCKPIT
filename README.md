@@ -1,6 +1,6 @@
 # openITCOCKPIT - next generation monitoring
 
-This is the **BETA VERSION** of openITCOCKPIT 4. [Click here](https://github.com/it-novum/openITCOCKPIT/tree/3.x-master) to get to the latest stable release.
+The open source configuration interface for [Nagios](https://www.nagios.org/), [Naemon](http://www.naemon.org/) and [Prometheus](https://prometheus.io/)
 
 <center>
 <img src="https://openitcockpit.io/img/openitcockpit_logo_webseite_weisse_kacheln_nur_logo.svg" alt="openITCOCKPIT logo" width="auto" height="200">
@@ -10,23 +10,9 @@ This is the **BETA VERSION** of openITCOCKPIT 4. [Click here](https://github.com
 [![Chat on Matrix](https://img.shields.io/badge/style-matrix-blue.svg?style=flat&label=chat)](https://riot.im/app/#/room/#openitcockpit:matrix.org)
 [![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-freenode-blue.svg)](https://kiwiirc.com/client/chat.freenode.net/#openitcockpit)
 
-openITCOCKPIT 4.x 
-| Distribution | Stable                                                                                                      | Nightly                                                                                                      |
-|--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| Focal       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
-| Bionic       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
-| Buster      | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
-
-openITCOCKPIT 3.x 
-| Distribution | Stable                                                                                                      | Nightly                                                                                                      |
-|--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| Bionic       | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-stable&style=flat-square)  | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-nightly&style=flat-square)  |
-| Xenial       | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=xenial-openitcockpit-stable&style=flat-square)  | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=xenial-openitcockpit-nightly&style=flat-square)  |
-| Stretch      | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=stretch-openitcockpit-stable&style=flat-square) | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=stretch-openitcockpit-nightly&style=flat-square) |
-
 
 # What is openITCOCKPIT?
-openITCOCKPIT is an Open Source system monitoring tool built for different monitoring engines like [Nagios](https://www.nagios.org/) or [Naemon](http://www.naemon.org/).
+openITCOCKPIT is an Open Source system monitoring tool built for different monitoring engines like Nagios, Naemon and Prometheus.
 
 So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart interface written in PHP
 
@@ -41,8 +27,23 @@ Username(Email): demo@openitcockpit.io
 Password: demo123
 ````
 
+# Build status
+openITCOCKPIT 4.x 
+| Distribution | Stable                                                                                                      | Nightly                                                                                                      |
+|--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| Focal       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| Bionic       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| Buster      | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
+
+openITCOCKPIT 3.x 
+| Distribution | Stable                                                                                                      | Nightly                                                                                                      |
+|--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| Bionic       | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-stable&style=flat-square)  | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-nightly&style=flat-square)  |
+| Xenial       | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=xenial-openitcockpit-stable&style=flat-square)  | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=xenial-openitcockpit-nightly&style=flat-square)  |
+| Stretch      | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=stretch-openitcockpit-stable&style=flat-square) | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=stretch-openitcockpit-nightly&style=flat-square) |
+
 # System requirements
-* Ubuntu Linux 64 bit (16.04 LTS "xenial" and 18.04 LTS "bionic"), Debian Linux 64 bit (10 "buster")
+* Ubuntu Linux 64 bit (20.04 LTS "focal" and 18.04 LTS "bionic"), Debian Linux 64 bit (10 "buster")
 * PHP >= 7.2
 * 2 CPU cores (x86-64)
 * 2 GB RAM
@@ -61,27 +62,9 @@ A rough guide:
 * 500 GB space
 
 # Installation
-openITCOCKPIT runs on Ubuntu and Debian Linux systems and is available for download/installation via apt repositories.
+openITCOCKPIT runs on Ubuntu and Debian Linux systems and is available for download/installation via a apt repository.
 
-To install openITCOCKPIT on your system, just run the following commands.
-
-If [phpMyAdmin](https://www.phpmyadmin.net/) asks you for your web server **leave the selection blank** and continue with **Ok**.
-
-openITCOCKPIT uses Nginx as webserver and will generate a configuration for phpMyAdmin automatically for you.
-
-Please execute all commands as user `root` or via `sudo`.
-
-**openITCOCKPIT + Naemon (recommended)**
-````
-apt-get install apt-transport-https curl gnupg2 ca-certificates
-curl https://packages.openitcockpit.io/repokey.txt | apt-key add -
-
-echo "deb https://packages.openitcockpit.io/openitcockpit/$(lsb_release -sc)/stable $(lsb_release -sc) main" > /etc/apt/sources.list.d/openitcockpit.list
-apt-get update
-
-apt-get install openitcockpit
-````
-
+To install openITCOCKPIT on your system, please follow the official documentation: https://openitcockpit.io/download_server/
 
 # Register openitcockpit community version:
 
@@ -122,6 +105,11 @@ After successful registration you can install the free community modules at Syst
 # Developers welcome
 openITCOCKPIT's development is publicly available in GitHub. Everybody is welcome to join :-)
 
+- [Setup an openITCOCKPIT development system](https://docs.it-novum.com/display/ODE/Creating+a+openITCOCKPIT+Development+System)
+- [Create your own translation](https://docs.it-novum.com/display/ODE/Create+your+own+openITCOCKPIT+translation)
+- [Creating a new openITCOCKPIT module](https://docs.it-novum.com/display/ODE/Creating+a+new+openITCOCKPIT+Module)
+- [Creating a new check plugin](https://docs.it-novum.com/display/ODE/Creating+a+new+openITCOCKPIT+check+plugin)
+
 # Need help or support?
 * Join [#openitcockpit](http://webchat.freenode.net/?channels=openitcockpit) on freenode.net
 * [it-novum GmbH](https://it-novum.com/en/it-service-management/openitcockpit/openitcockpit-enterprise-subscription-license) provides commercial support
@@ -133,7 +121,7 @@ All disclosed vulnerabilities are available here: [https://openitcockpit.io/secu
 
 # License
 ```
-Copyright (C) 2015-2017  it-novum GmbH
+Copyright (C) 2015-2020  it-novum GmbH
 
 
 openITCOCKPIT is dual licensed

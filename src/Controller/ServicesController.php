@@ -1325,13 +1325,19 @@ class ServicesController extends AppController {
      * @param int|string|null $idOrUuid
      * @throws MissingDbBackendException
      * @throws GuzzleException
+     * @throws \Exception
      */
     public function browser($idOrUuid = null) {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
         if ($this->isHtmlRequest()) {
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
             //Only ship template
             $this->set('username', $User->getFullName());
+            $this->set('masterInstanceName', $masterInstanceName);
             return;
         }
 
@@ -1374,6 +1380,8 @@ class ServicesController extends AppController {
         $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
         /** @var $DowntimehistoryServicesTable DowntimehistoryServicesTableInterface */
         $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         /** @var $SystemsettingsTable SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -1418,27 +1426,29 @@ class ServicesController extends AppController {
         $host = $hostObj->toArray();
         $host['is_satellite_host'] = $hostObj->isSatelliteHost();
 
-        /***** Data to replace all macros ****/
         //Load required data to merge and display inheritance data
-        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($hostObj->getHosttemplateId());
-        $hostForCustomVariables = $HostsTable->getHostForBrowser($hostObj->getId());
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
+
         //Merge host and inheritance data
         $HostMergerForBrowser = new HostMergerForBrowser(
-            $hostForCustomVariables,
+            $HostsTable->getHostForBrowser($host['id']),
             $hosttemplate
         );
         $mergedHost = $HostMergerForBrowser->getDataForView();
 
+
         //Replace macros in service url
         $HostMacroReplacer = new HostMacroReplacer($host);
-        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
         $ServiceMacroReplacer = new ServiceMacroReplacer($mergedService);
         $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE);
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
         $mergedService['service_url_replaced'] =
-            $ServiceCustomMacroReplacer->replaceAllMacros(
-                $HostCustomMacroReplacer->replaceAllMacros(
-                    $HostMacroReplacer->replaceBasicMacros(
-                        $ServiceMacroReplacer->replaceBasicMacros($mergedService['service_url'])
+            $ServiceMacroReplacer->replaceBasicMacros(                  // Replace $SERVICEDESCRIPTION$
+                $HostMacroReplacer->replaceBasicMacros(                 // Replace $HOSTNAME$
+                    $HostCustomMacroReplacer->replaceAllMacros(         // Replace $_HOSTFOOBAR$
+                        $ServiceCustomMacroReplacer->replaceAllMacros(  // Replace $_SERVICEFOOBAR$
+                            $mergedService['service_url']
+                        )
                     )
                 )
             );
@@ -1447,21 +1457,21 @@ class ServicesController extends AppController {
         $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedService['check_period_id']);
         $notifyPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedService['notify_period_id']);
 
-        // Replace $HOSTNAME$
-        $serviceCommandLine = $HostMacroReplacer->replaceBasicMacros($checkCommand['Command']['command_line']);
-
-        // Replace $_HOSTFOOBAR$
-        $serviceCommandLine = $HostCustomMacroReplacer->replaceAllMacros($serviceCommandLine);
+        // Replace $ARGn$
+        $ArgnReplacer = new CommandArgReplacer($mergedService['servicecommandargumentvalues']);
+        $serviceCommandLine = $ArgnReplacer->replace($checkCommand['Command']['command_line']);
 
         // Replace $_SERVICEFOOBAR$
         $serviceCommandLine = $ServiceCustomMacroReplacer->replaceAllMacros($serviceCommandLine);
 
+        // Replace $_HOSTFOOBAR$
+        $serviceCommandLine = $HostCustomMacroReplacer->replaceAllMacros($serviceCommandLine);
+
+        // Replace $HOSTNAME$
+        $serviceCommandLine = $HostMacroReplacer->replaceBasicMacros($serviceCommandLine);
+
         // Replace $SERVICEDESCRIPTION$
         $serviceCommandLine = $ServiceMacroReplacer->replaceBasicMacros($serviceCommandLine);
-
-        // Replace $ARGn$
-        $ArgnReplacer = new CommandArgReplacer($mergedService['servicecommandargumentvalues']);
-        $serviceCommandLine = $ArgnReplacer->replace($serviceCommandLine);
 
         // Replace $USERn$ Macros (if enabled)
         try {
@@ -1500,6 +1510,16 @@ class ServicesController extends AppController {
                 if (!empty(array_intersect($contactsWithContainers[$contact['id']], $writeContainers))) {
                     $mergedService['contacts'][$key]['allowEdit'] = true;
                 }
+            }
+        }
+
+        //Load containers information
+        $mainContainer = $ContainersTable->getTreePathForBrowser($hostEntity->get('container_id'), $this->MY_RIGHTS_LEVEL);
+        //Add shared containers
+        $sharedContainers = [];
+        foreach ($hostEntity->getContainerIds() as $sharedContainerId) {
+            if ($sharedContainerId != $hostEntity->get('container_id')) {
+                $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($sharedContainerId, $this->MY_RIGHTS_LEVEL);
             }
         }
 
@@ -1684,6 +1704,8 @@ class ServicesController extends AppController {
         $this->set('checkPeriod', $checkPeriod);
         $this->set('notifyPeriod', $notifyPeriod);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
+        $this->set('mainContainer', $mainContainer);
+        $this->set('sharedContainers', $sharedContainers);
 
 
         $this->viewBuilder()->setOption('serialize', [
@@ -1703,7 +1725,9 @@ class ServicesController extends AppController {
             'checkCommand',
             'checkPeriod',
             'notifyPeriod',
-            'canSubmitExternalCommands'
+            'canSubmitExternalCommands',
+            'mainContainer',
+            'sharedContainers'
         ]);
     }
 
@@ -2118,7 +2142,7 @@ class ServicesController extends AppController {
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
-                $statehistoriesService[] = $StatehistoryService;
+                $statehistoriesService[] = $StatehistoryService->toArray();
             }
         }
 

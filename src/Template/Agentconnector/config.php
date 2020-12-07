@@ -566,6 +566,30 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
+                                                        <div class="form-group col-12" ng-show="pullMode">
+                                                            <div
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
+                                                                <input type="checkbox"
+                                                                       class="custom-control-input"
+                                                                       id="agentconfig.proxy"
+                                                                       ng-model="agentconfig.proxy">
+                                                                <label class="custom-control-label"
+                                                                       for="agentconfig.proxy">
+                                                                    <?php echo __('Use Proxy'); ?>
+                                                                </label>
+                                                                <div class="help-block">
+                                                                    <?php
+                                                                    if ($this->Acl->hasPermission('index', 'proxy', '')):
+                                                                        echo __('Determine if the <a href="/#!/proxy/index">configured proxy</a> should be used.');
+                                                                    else:
+                                                                        echo __('Determine if the configured proxy should be used.');
+                                                                    endif;
+                                                                    ?>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                     </div>
 
                                                 </div>
@@ -1172,7 +1196,7 @@
                                                             <?= __('Copy and paste the shown configuration file to'); ?>
                                                             <code ng-show="selectedOs === 'windows'"><?= __('C:\Program Files\it-novum\openitcockpit-agent\config.cnf'); ?></code>
                                                             <code ng-show="selectedOs === 'linux'"><?= __('/etc/openitcockpit-agent/config.cnf'); ?></code>
-                                                            <code ng-show="selectedOs === 'macos'"><?= __('/Library/openitcockpit-agent/config.cnf'); ?></code>
+                                                            <code ng-show="selectedOs === 'macos'"><?= __('/Applications/openitcockpit-agent/config.cnf'); ?></code>
                                                         </div>
                                                     </div>
 
@@ -1215,7 +1239,7 @@
 
                                                         <div class="col-12" ng-show="selectedOs === 'windows'">
                                                             <?= __('Run as administrator (via cmd.exe)'); ?>
-                                                            <code><?= __('sc stop oitcAgentSvc && sc start oitcAgentSvc'); ?></code>
+                                                            <code><?= __('sc stop openITCOCKPITAgent && sc start openITCOCKPITAgent'); ?></code>
                                                         </div>
 
                                                         <div class="col-12" ng-show="selectedOs === 'linux'">
@@ -1223,7 +1247,9 @@
                                                         </div>
 
                                                         <div class="col-12" ng-show="selectedOs === 'macos'">
-                                                            <code><?= __('sudo /bin/launchctl restart com.it-novum.openitcockpit.agent'); ?></code>
+                                                            <code><?= __('sudo /bin/launchctl stop com.it-novum.openitcockpit.agent'); ?></code>
+                                                            <br>
+                                                            <code><?= __('sudo /bin/launchctl start com.it-novum.openitcockpit.agent'); ?></code>
                                                         </div>
 
                                                     </div>

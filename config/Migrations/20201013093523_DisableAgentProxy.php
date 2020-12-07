@@ -21,9 +21,34 @@
 //  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //  License agreement and license key will be shipped with the order
 //  confirmation.
-?>
-<a href="javascript:void(0);" class="btn btn-{{btnColor}} status-circle" ng-if="!isFlapping"></a>
-<span class="flapping_airport stateClass" ng-if="isFlapping">
-    <i class="{{flappingColor}}" ng-class="flappingState === 1 ? 'fa fa-circle' : 'far fa-circle'"></i>
-    <i class="{{flappingColor}}" ng-class="flappingState === 0 ? 'fa fa-circle' : 'far fa-circle'"></i>
-</span>
+
+declare(strict_types=1);
+
+use Migrations\AbstractMigration;
+
+/**
+ * Class OAuth
+ *
+ * Created:
+ * oitc migrations create DisableAgentProxy
+ *
+ * Usage:
+ * openitcockpit-update
+ */
+class DisableAgentProxy extends AbstractMigration {
+
+    /**
+     * Change Method.
+     *
+     * More information on this method is available here:
+     * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
+     * @return void
+     */
+    public function change() {
+        $this->table('agentconfigs')
+            ->changeColumn('proxy', 'boolean', [
+                'default' => false
+            ])
+            ->update();
+    }
+}

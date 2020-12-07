@@ -71,6 +71,8 @@ class Servicestatus {
 
     private $max_check_attempts;
 
+    private $last_time_ok;
+
     /**
      * @var UserTime|null
      */
@@ -165,6 +167,10 @@ class Servicestatus {
             $this->max_check_attempts = (int)$data['max_check_attempts'];
         }
 
+        if (isset($data['last_time_ok'])) {
+            $this->last_time_ok = $data['last_time_ok'];
+        }
+
         $this->UserTime = $UserTime;
     }
 
@@ -210,10 +216,10 @@ class Servicestatus {
 
         if ($this->isFlapping() === true) {
             if ($this->currentState !== null) {
-                return '<span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fas fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
+                return '<span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="far fa-circle ' . $stateColors[$this->currentState] . '"></i></span>';
             }
 
-            return '<span class="flapping_airport text-primary ' . $class . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fas fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
+            return '<span class="flapping_airport text-primary ' . $class . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i></span>';
         }
 
         return '';
@@ -404,6 +410,13 @@ class Servicestatus {
         return $this->latency;
     }
 
+    public function getLastTimeOk() {
+        if (!is_numeric($this->last_time_ok)) {
+            return strtotime($this->last_time_ok);
+        }
+        return $this->last_time_ok;
+    }
+
     /**
      * @return bool
      */
@@ -427,11 +440,13 @@ class Servicestatus {
         if ($this->UserTime !== null) {
             $arr['lastHardStateChange'] = $this->UserTime->format($this->getLastHardStateChange());
             $arr['last_state_change'] = $this->UserTime->format($this->getLastStateChange());
+            $arr['last_time_ok'] = $this->UserTime->format($this->getLastTimeOk());
             $arr['lastCheck'] = $this->UserTime->format($this->getLastCheck());
             $arr['nextCheck'] = $this->UserTime->format($this->getNextCheck());
         } else {
             $arr['lastHardStateChange'] = $this->getLastHardStateChange();
             $arr['last_state_change'] = $this->getLastStateChange();
+            $arr['last_time_ok'] = $this->getLastTimeOk();
             $arr['lastCheck'] = $this->getLastCheck();
             $arr['nextCheck'] = $this->getNextCheck();
         }
@@ -475,10 +490,10 @@ class Servicestatus {
 
         if ($this->isFlapping()) {
             if ($this->currentState !== null && $this->currentState >= 0) {
-                return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fas fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
+                return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="far fa-circle ' . $stateColors[$this->currentState] . '"></i></span></span>';
             }
 
-            return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport text-primary ' . $class . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fas fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
+            return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport text-primary ' . $class . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="far fa-circle ' . $stateColors[$this->currentState] . '"></i></span></span>';
         }
 
         return '';

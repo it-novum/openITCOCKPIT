@@ -217,6 +217,11 @@ mysql "--defaults-extra-file=$INIFILE" -e "UPDATE containers SET containertype_i
 #Check and create missing cronjobs
 #oitc api --model Cronjob --action create_missing_cronjobs --data ""
 
+echo "Cleanup agentconnector table"
+#https://github.com/it-novum/openITCOCKPIT/issues/1078
+mysql "--defaults-extra-file=$INIFILE" -e "DELETE FROM agentconnector WHERE checksum IS NULL AND ca_checksum IS NULL AND generation_date IS NULL"
+mysql "--defaults-extra-file=$INIFILE" -e "DELETE agenthostscache FROM agenthostscache LEFT JOIN hosts ON agenthostscache.hostuuid = hosts.uuid WHERE hosts.uuid IS NULL"
+
 #Compress and minify javascript files
 oitc compress
 
@@ -333,6 +338,12 @@ fi
 
 oitc config_generator_shell --generate
 oitc nagios_export --resource
+
+if [[ -d "/opt/openitc/nagios/rollout" ]]; then
+    if [[ ! -f "/opt/openitc/nagios/rollout/resource.cfg" ]]; then
+        ln -s /opt/openitc/nagios/etc/resource.cfg /opt/openitc/nagios/rollout/resource.cfg
+    fi
+fi
 
 ADMIN_PASSWORD=$(cat /opt/openitc/etc/grafana/admin_password)
 if [ -f /opt/openitc/etc/grafana/api_key ]; then

@@ -7,7 +7,11 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
     $scope.disableLogin = false;
     $scope.hasValidSslCertificate = false;
 
-    var isOAuthResponse = function(){
+    var isOAuthResponse = function(hasSsoError){
+        if(hasSsoError === true){
+            return;
+        }
+
         var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
         if(sourceUrl.includes('/#!/')){
             sourceUrl = sourceUrl.replace('/#!', '');
@@ -36,7 +40,7 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
         var location = window.location.toString();
         if(location.includes('#!/')){
             //Save state from URL into local storage because oAuth login force an reload of the page...
-            console.log('SAVE: ' + '/' + location.substring(location.indexOf('#!/')));
+            //console.log('SAVE: ' + '/' + location.substring(location.indexOf('#!/')));
             window.localStorage.setItem('lastPage', '/' + location.substring(location.indexOf('#!/')));
         }
 
@@ -46,12 +50,26 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
             $scope._csrfToken = result.data._csrfToken;
             $scope.hasValidSslCertificate = result.data.hasValidSslCertificate;
 
-            if(result.data.isLoggedIn === true){
-                //User maybe logged in via oAuth?
-                isOAuthResponse();
+            var hasSsoError = false;
+            if(result.data.hasOwnProperty('errorMessages')){
+                for(var index in result.data.errorMessages){
+                    hasSsoError = true;
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'error',
+                        layout: 'topCenter',
+                        text: result.data.errorMessages[index],
+                        timeout: 5500
+                    }).show();
+                }
             }
 
-            if(result.data.isLoggedIn === false){
+            if(result.data.isLoggedIn === true){
+                //User maybe logged in via oAuth?
+                isOAuthResponse(hasSsoError);
+            }
+
+            if(result.data.isLoggedIn === false && hasSsoError === false){
                 if(result.data.isSsoEnabled === true && result.data.forceRedirectSsousersToLoginScreen === true){
                     setTimeout(function(){
                         window.location = '/users/login?redirect_sso=true';

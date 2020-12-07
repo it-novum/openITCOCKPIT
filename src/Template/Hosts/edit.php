@@ -58,6 +58,13 @@
                         {{hostType.title}}
                     </span>
 
+                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                        <a ui-sref="HostsBrowser({id: post.Host.id})" class="btn btn-primary btn-xs mr-1 shadow-0">
+                            <i class="fa fa-desktop"></i>
+                            <?= __('View'); ?>
+                        </a>
+                    <?php endif; ?>
+
                     <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='HostsIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
@@ -972,6 +979,8 @@
                                         </div>
                                         <div class="help-block">
                                             <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
+                                            <br />
+                                            <?php echo __('Before you could query the host through Prometheus, you need to refresh the monitoring configuration.'); ?>
                                         </div>
                                         <div ng-repeat="error in errors.prometheus_exporters">
                                             <div class="help-block text-danger">{{ error }}</div>

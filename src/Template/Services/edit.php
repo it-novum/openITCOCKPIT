@@ -61,6 +61,13 @@
                         {{serviceType.title}}
                     </span>
 
+                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                        <a ui-sref="ServicesBrowser({id: post.Service.id})" class="btn btn-primary btn-xs mr-1 shadow-0">
+                            <i class="fa fa-desktop"></i>
+                            <?= __('View'); ?>
+                        </a>
+                    <?php endif; ?>
+
                     <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='ServicesIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">

@@ -34,7 +34,8 @@ angular.module('openITCOCKPIT')
                 address: '0.0.0.0',
                 port: 3333,
                 interval: 30,
-                'try-autossl': false,
+                'try-autossl': true,
+                proxy: false,
                 verbose: false,
                 stacktrace: false,
                 'config-update-mode': false,
@@ -167,6 +168,10 @@ angular.module('openITCOCKPIT')
             var tmpDefaultTemplate = '[default]\n';
             var tmpOitcTemplate = '\n[oitc]\n';
             for(var option in $scope.agentconfig){
+                if(option === 'proxy'){
+                    continue;
+                }
+
                 var value = $scope.agentconfig[option];
 
                 if(option.includes('oitc-')){
@@ -182,7 +187,7 @@ angular.module('openITCOCKPIT')
                                 break;
 
                             case 'macos':
-                                value = '/Library/openitcockpit-agent/customchecks.cnf';
+                                value = '/Applications/openitcockpit-agent/customchecks.cnf';
                                 break;
 
                             default:
@@ -211,6 +216,8 @@ angular.module('openITCOCKPIT')
                     if(result.data.config.id){
                         $scope.agentconfigId = result.data.config.id;
                     }
+
+                    $scope.agentconfig.proxy = result.data.config.proxy;
                 }
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -241,6 +248,7 @@ angular.module('openITCOCKPIT')
                             basic_auth: basicAuth,
                             username: basicAuthUsername,
                             password: basicAuthPassword,
+                            proxy: $scope.agentconfig.proxy,
                             push_noticed: $scope.pushMode ? 1 : 0
                         }
                     }
@@ -253,6 +261,7 @@ angular.module('openITCOCKPIT')
                             port: $scope.agentconfig.port,
                             use_https: $scope.agentconfig['try-autossl'],
                             basic_auth: basicAuth,
+                            proxy: $scope.agentconfig.proxy,
                             username: basicAuthUsername,
                             password: basicAuthPassword
                         }

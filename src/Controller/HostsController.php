@@ -123,6 +123,7 @@ class HostsController extends AppController {
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
         $satellites = [];
+
         if (Plugin::isLoaded('DistributeModule')) {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
@@ -245,7 +246,8 @@ class HostsController extends AppController {
 
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
-            if ($Host->isSatelliteHost()) {
+
+            if ($Host->isSatelliteHost() && isset($satellites[$Host->getSatelliteId()])) {
                 $satelliteName = $satellites[$Host->getSatelliteId()];
                 $satellite_id = $Host->getSatelliteId();
             }
@@ -1849,12 +1851,13 @@ class HostsController extends AppController {
         $hostObj = new Host($host, $allowEdit);
 
         //Load containers information
-        $mainContainer = $ContainersTable->treePath($host['container_id']);
+        $mainContainer = $ContainersTable->getTreePathForBrowser($host['container_id'], $this->MY_RIGHTS_LEVEL);
         //Add shared containers
         $sharedContainers = [];
         foreach ($host['hosts_to_containers_sharing'] as $container) {
             if (isset($container['id']) && $container['id'] != $host['container_id']) {
-                $sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+                $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
+                //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
             }
         }
 
@@ -1875,23 +1878,25 @@ class HostsController extends AppController {
         $HostMacroReplacer = new HostMacroReplacer($mergedHost);
         $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
         $mergedHost['host_url_replaced'] =
-            $HostCustomMacroReplacer->replaceAllMacros(
-                $HostMacroReplacer->replaceBasicMacros($mergedHost['host_url'])
+            $HostMacroReplacer->replaceBasicMacros(          // Replace $HOSTNAME$
+                $HostCustomMacroReplacer->replaceAllMacros(  // Replace $_HOSTFOOBAR$
+                    $mergedHost['host_url']
+                )
             );
 
         $checkCommand = $CommandsTable->getCommandById($mergedHost['command_id']);
         $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['check_period_id']);
         $notifyPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['notify_period_id']);
 
-        // Replace $HOSTNAME$
-        $hostCommandLine = $HostMacroReplacer->replaceBasicMacros($checkCommand['Command']['command_line']);
+        // Replace $ARGn$
+        $ArgnReplacer = new CommandArgReplacer($mergedHost['hostcommandargumentvalues']);
+        $hostCommandLine = $ArgnReplacer->replace($checkCommand['Command']['command_line']);
 
         // Replace $_HOSTFOOBAR$
         $hostCommandLine = $HostCustomMacroReplacer->replaceAllMacros($hostCommandLine);
 
-        // Replace $ARGn$
-        $ArgnReplacer = new CommandArgReplacer($mergedHost['hostcommandargumentvalues']);
-        $hostCommandLine = $ArgnReplacer->replace($hostCommandLine);
+        // Replace $HOSTNAME$
+        $hostCommandLine = $HostMacroReplacer->replaceBasicMacros($hostCommandLine);
 
         // Replace $USERn$ Macros (if enabled)
         try {

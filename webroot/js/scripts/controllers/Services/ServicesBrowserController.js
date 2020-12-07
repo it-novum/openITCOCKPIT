@@ -133,6 +133,10 @@ angular.module('openITCOCKPIT')
 
                 $scope.canSubmitExternalCommands = results[0].data.canSubmitExternalCommands;
 
+                //Host container info
+                $scope.mainContainer = results[0].data.mainContainer;
+                $scope.sharedContainers = results[0].data.sharedContainers;
+
                 $scope.priorities = {
                     1: false,
                     2: false,

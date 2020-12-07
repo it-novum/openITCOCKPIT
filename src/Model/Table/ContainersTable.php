@@ -122,6 +122,11 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ]);
 
+        $this->hasMany('Tenants', [
+            'foreignKey'       => 'container_id',
+            'cascadeCallbacks' => true
+        ])->setDependent(true);
+
         //$this->belongsTo('ParentContainers', [
         //    'className' => 'Containers',
         //    'foreignKey' => 'parent_id'
@@ -206,9 +211,6 @@ class ContainersTable extends Table {
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('Servicetemplates', [
-            'foreignKey' => 'container_id'
-        ]);
-        $this->hasMany('Tenants', [
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('Timeperiods', [
@@ -361,6 +363,41 @@ class ContainersTable extends Table {
 
         } catch (RecordNotFoundException $e) {
             return '';
+        }
+    }
+
+    /**
+     *
+     * @param int $id of the container
+     * @param array $MY_RIGHTS_LEVEL
+     *
+     * @return array
+     */
+    public function getTreePathForBrowser($id, $MY_RIGHTS_LEVEL = []) {
+        try {
+            $result = [];
+            $tree = $this->find('path', ['for' => $id])
+                ->disableHydration()
+                ->toArray();
+
+            foreach ($tree as $node) {
+                if (isset($MY_RIGHTS_LEVEL[$node['id']])) {
+                    $result[] = [
+                        'id'   => $node['id'],
+                        'name' => $node['name']
+                    ];
+                } else {
+                    //User has no permission to this container
+                    $result[] = [
+                        'id'   => null,
+                        'name' => $node['name']
+                    ];
+                }
+            }
+
+            return $result;
+        } catch (RecordNotFoundException $e) {
+            return [];
         }
     }
 
@@ -595,7 +632,7 @@ class ContainersTable extends Table {
     public function getFirstContainers($browserAsNest, $MY_RIGHTS, $containerTypes) {
         $containers = [];
         foreach ($browserAsNest as $container) {
-            if (in_array($container['id'], $MY_RIGHTS) && in_array($container['containertype_id'], $containerTypes)) {
+            if (in_array($container['id'], $MY_RIGHTS) && in_array($container['containertype_id'], $containerTypes, true)) {
                 $containers[] = $container;
                 continue;
             }

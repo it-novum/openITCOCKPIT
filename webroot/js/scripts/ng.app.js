@@ -1,4 +1,4 @@
-var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'ng-nestable'])
+var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'ng-nestable', 'ui.router.state.events'])
     .factory("httpInterceptor", function($q, $rootScope, $timeout, LocalStorageService){
         return {
             response: function(result){
@@ -1568,14 +1568,11 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         $rootScope.$on('$stateChangeStart', function(event, to, toParams, from, fromParams){
             from.params = fromParams;
             $state.previous = from;
-            $state.previousUrl = null;
-            $state.currentUrl = null;
         });
 
         $rootScope.$on('$locationChangeStart', function(event, next, current){
             $state.previousUrl = current;
             $state.currentUrl = next;
-            $state.previous = null;
         });
 
         $rootScope.runningAjaxCalls = 0;
