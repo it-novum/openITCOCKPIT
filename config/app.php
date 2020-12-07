@@ -1,4 +1,10 @@
 <?php
+
+$timezone = date_default_timezone_get();
+if (empty($timezone)) {
+    $timezone = 'UTC';
+}
+
 return [
     /**
      * Debug Level:
@@ -43,7 +49,7 @@ return [
         'namespace'       => 'App',
         'encoding'        => 'UTF-8',
         'defaultLocale'   => 'en_US',
-        'defaultTimezone' => 'Europe/Berlin',
+        'defaultTimezone' => $timezone,
         'base'            => false,
         'dir'             => 'src',
         'webroot'         => 'webroot',
