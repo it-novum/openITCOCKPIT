@@ -3610,6 +3610,12 @@ class ServicesTable extends Table {
         return $types;
     }
 
+    /**
+     * @param array $servicetemplateIds
+     * @param int $hostId
+     * @param int $userId
+     * @return array
+     */
     public function createServiceByServicetemplateIds($servicetemplateIds, $hostId, $userId = 0) {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
