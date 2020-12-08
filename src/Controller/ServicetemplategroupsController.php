@@ -695,7 +695,7 @@ class ServicetemplategroupsController extends AppController {
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
             $User = new User($this->getUser());
-            
+
             $result = $ServicesTable->createServiceByServicetemplateIds($servicetemplateIds, $hostId, $User->getId());
             $newServiceIds = $result['newServiceIds'];
             $errors = $result['errors'];

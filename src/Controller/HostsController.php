@@ -540,6 +540,19 @@ class HostsController extends AppController {
                     /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
                     $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
 
+                    $result = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
+                        $host->get('id'),
+                        $User->getId(),
+                        $this->MY_RIGHTS
+                    );
+
+                    if ($this->isJsonRequest()) {
+                        $this->set('id', $host->get('id'));
+                        $this->set('services', ['_ids' => $result['newServiceIds']]);
+                        $this->set('errors', $result['errors']);
+                        $this->viewBuilder()->setOption('serialize', ['id', 'services', 'errors']);
+                        return;
+                    }
 
                 }
 

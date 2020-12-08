@@ -529,10 +529,17 @@ class ServicetemplategroupsTable extends Table {
 
     }
 
-    public function assignMatchingServicetemplategroupsByHostgroupsToHost($hostId, $MY_RIGHTS = []) {
+    /**
+     * @param int $hostId
+     * @param int $userId
+     * @param array $MY_RIGHTS
+     * @return array|bool
+     */
+    public function assignMatchingServicetemplategroupsByHostgroupsToHost($hostId, $userId = 0, $MY_RIGHTS = []) {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $host = $HostsTable->getHostgroupsWithServicesByHostId($hostId);
         $hostgroupNames = Hash::extract($host, 'hostgroups_merged.{n}.container.name');
@@ -546,7 +553,7 @@ class ServicetemplategroupsTable extends Table {
         $servicetemplategroups_removed = [];
         $servicetemplategroups = [];
 
-        if(empty($MY_RIGHTS)){
+        if (empty($MY_RIGHTS)) {
             //Permission check is disabled
             $servicetemplategroups = $servicetemplategroups_tmp;
         }
@@ -563,24 +570,21 @@ class ServicetemplategroupsTable extends Table {
             }
         }
 
-        if(empty($servicetemplategroups)){
+        if (empty($servicetemplategroups)) {
             return false;
         }
 
         $existingServicetemplateIds = Hash::combine($host['services'], '{n}.servicetemplate_id', '{n}.servicetemplate_id');
         $servicetemplatesToCreate = [];
 
-        foreach($servicetemplategroups as $servicetemplategroup){
-            foreach($servicetemplategroup['servicetemplates'] as $servicetemplate){
-                if(!isset($existingServicetemplateIds[$servicetemplate['id']])){
+        foreach ($servicetemplategroups as $servicetemplategroup) {
+            foreach ($servicetemplategroup['servicetemplates'] as $servicetemplate) {
+                if (!isset($existingServicetemplateIds[$servicetemplate['id']])) {
                     $servicetemplatesToCreate[$servicetemplate['id']] = $servicetemplate['id'];
                 }
             }
         }
 
-
-
-        dd($servicetemplatesToCreate);
-
+        return $ServicesTable->createServiceByServicetemplateIds($servicetemplatesToCreate, $hostId, $userId);
     }
 }

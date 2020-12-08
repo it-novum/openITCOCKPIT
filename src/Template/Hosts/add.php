@@ -78,7 +78,7 @@
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
-                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('created successfully'); ?>', allocate_message: '<?php echo __('+ %s Services created successfully'); ?>'}">
 
                         <!-- BASIC CONFIGURATION START -->
 
