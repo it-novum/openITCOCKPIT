@@ -78,7 +78,7 @@
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
-                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('created successfully'); ?>', allocate_message: '<?php echo __('+ %s Services created successfully'); ?>'}">
+                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('created successfully'); ?>', allocate_message: '<?php echo __('+ %s Services created successfully'); ?>', allocate_warning: '<?php echo __('. %s service template groups has been removed due to insufficient permissions'); ?>'}">
 
                         <!-- BASIC CONFIGURATION START -->
 
@@ -930,7 +930,7 @@
                                         </div>
                                         <div class="help-block">
                                             <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
-                                            <br />
+                                            <br/>
                                             <?php echo __('Before you could query the host through Prometheus, you need to refresh the monitoring configuration.'); ?>
                                         </div>
                                         <div ng-repeat="error in errors.prometheus_exporters">

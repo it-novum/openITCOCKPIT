@@ -570,8 +570,22 @@ class ServicetemplategroupsTable extends Table {
             }
         }
 
+        if (!empty($servicetemplategroups_removed) && empty($servicetemplategroups)) {
+            //Removed all service template groups due to insufficient permissions
+            return [
+                'newServiceIds'                       => [],
+                'errors'                              => [],
+                'servicetemplategroups_removed_count' => sizeof($servicetemplategroups_removed)
+            ];
+        }
+
         if (empty($servicetemplategroups)) {
-            return false;
+            //No matching service template groups found
+            return [
+                'newServiceIds'                       => [],
+                'errors'                              => [],
+                'servicetemplategroups_removed_count' => 0
+            ];
         }
 
         $existingServicetemplateIds = Hash::combine($host['services'], '{n}.servicetemplate_id', '{n}.servicetemplate_id');
@@ -585,6 +599,8 @@ class ServicetemplategroupsTable extends Table {
             }
         }
 
-        return $ServicesTable->createServiceByServicetemplateIds($servicetemplatesToCreate, $hostId, $userId);
+        $result = $ServicesTable->createServiceByServicetemplateIds($servicetemplatesToCreate, $hostId, $userId);
+        $result['servicetemplategroups_removed_count'] = sizeof($servicetemplategroups_removed);
+        return $result;
     }
 }

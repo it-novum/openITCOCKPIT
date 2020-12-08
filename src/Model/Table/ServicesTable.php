@@ -3615,6 +3615,16 @@ class ServicesTable extends Table {
      * @param int $hostId
      * @param int $userId
      * @return array
+     *
+     * return looks like
+     * [
+     *     'newServiceIds' => [
+     *         1, 2, 3, 1337, ...
+     *     ],
+     *     'errors' => [
+     *         $service->getErrors()
+     *     ]
+     * ]
      */
     public function createServiceByServicetemplateIds($servicetemplateIds, $hostId, $userId = 0) {
         /** @var $HosttemplatesTable HosttemplatesTable */

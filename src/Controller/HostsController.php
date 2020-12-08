@@ -550,7 +550,8 @@ class HostsController extends AppController {
                         $this->set('id', $host->get('id'));
                         $this->set('services', ['_ids' => $result['newServiceIds']]);
                         $this->set('errors', $result['errors']);
-                        $this->viewBuilder()->setOption('serialize', ['id', 'services', 'errors']);
+                        $this->set('servicetemplategroups_removed_count', $result['servicetemplategroups_removed_count']);
+                        $this->viewBuilder()->setOption('serialize', ['id', 'services', 'errors', 'servicetemplategroups_removed_count']);
                         return;
                     }
 

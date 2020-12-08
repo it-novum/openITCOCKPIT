@@ -375,17 +375,30 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 var url = $state.href('HostsEdit', {id: result.data.id});
 
+                var showWarning = false;
+                var message = '<u><a href="' + url + '" class="txt-color-white"> '
+                    + $scope.successMessage.objectName
+                    + '</a></u> ' + $scope.successMessage.message;
+
                 if($scope.post.hasOwnProperty('save_host_and_assign_matching_servicetemplate_groups') && $scope.post.save_host_and_assign_matching_servicetemplate_groups){
-                    NotyService.genericSuccess({
-                        message: '<u><a href="' + url + '" class="txt-color-white"> '
-                            + $scope.successMessage.objectName
-                            + '</a></u> ' + sprintf($scope.successMessage.allocate_message, result.data.services._ids.length)
+                    message = '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + sprintf($scope.successMessage.allocate_message, result.data.services._ids.length);
+
+                    if(result.data.servicetemplategroups_removed_count > 0){
+                        showWarning = true;
+                        message += sprintf($scope.successMessage.allocate_warning, result.data.servicetemplategroups_removed_count);
+                    }
+                }
+
+                if(showWarning === true){
+                    NotyService.genericWarning({
+                        message: message,
+                        timeout: 15000
                     });
                 }else{
                     NotyService.genericSuccess({
-                        message: '<u><a href="' + url + '" class="txt-color-white"> '
-                            + $scope.successMessage.objectName
-                            + '</a></u> ' + $scope.successMessage.message
+                        message: message
                     });
                 }
 
