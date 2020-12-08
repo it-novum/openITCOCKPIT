@@ -572,7 +572,7 @@ class ServicetemplategroupsTable extends Table {
         foreach($servicetemplategroups as $servicetemplategroup){
             foreach($servicetemplategroup['servicetemplates'] as $servicetemplate){
                 if(!isset($existingServicetemplateIds[$servicetemplate['id']])){
-                    $servicetemplatesToCreate[] = $servicetemplate['id'];
+                    $servicetemplatesToCreate[$servicetemplate['id']] = $servicetemplate['id'];
                 }
             }
         }
