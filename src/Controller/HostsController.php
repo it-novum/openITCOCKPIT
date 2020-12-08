@@ -663,6 +663,8 @@ class HostsController extends AppController {
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
             }
+            $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
+
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
 
             $HostContainersPermissions = new HostContainersPermissions(
@@ -724,6 +726,28 @@ class HostsController extends AppController {
                     $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                     $ChangelogsTable->save($changelogEntry);
                 }
+
+                if ($saveHostAndAssignMatchingServicetemplateGroups === true) {
+                    /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+                    $result = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
+                        $hostEntity->get('id'),
+                        $User->getId(),
+                        $this->MY_RIGHTS
+                    );
+
+                    if ($this->isJsonRequest()) {
+                        $this->set('id', $hostEntity->get('id'));
+                        $this->set('services', ['_ids' => $result['newServiceIds']]);
+                        $this->set('errors', $result['errors']);
+                        $this->set('servicetemplategroups_removed_count', $result['servicetemplategroups_removed_count']);
+                        $this->viewBuilder()->setOption('serialize', ['id', 'services', 'errors', 'servicetemplategroups_removed_count']);
+                        return;
+                    }
+
+                }
+
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization

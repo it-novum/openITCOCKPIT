@@ -99,6 +99,11 @@ angular.module('openITCOCKPIT')
             $('#HostTagsInput').tagsinput('add', $scope.post.Host.tags);
         };
 
+        $scope.submitSaveHostAndAssignMatchingServicetemplateGroups = function(){
+            $scope.post.save_host_and_assign_matching_servicetemplate_groups = true;
+            $scope.submit();
+        };
+
         var highlight = function($selector){
             $selector = $selector.parent();
             var $div = $('<div class="highlight"></div>');
@@ -337,11 +342,34 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 var url = $state.href('HostsEdit', {id: $scope.id});
-                NotyService.genericSuccess({
-                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                var showWarning = false;
+                var message = '<u><a href="' + url + '" class="txt-color-white"> '
+                    + $scope.successMessage.objectName
+                    + '</a></u> ' + $scope.successMessage.message;
+
+                if($scope.post.hasOwnProperty('save_host_and_assign_matching_servicetemplate_groups')
+                    && $scope.post.save_host_and_assign_matching_servicetemplate_groups
+                    && !!result.data.services._ids){
+                    message = '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
-                        + '</a></u> ' + $scope.successMessage.message
-                });
+                        + '</a></u> ' + sprintf($scope.successMessage.allocate_message, result.data.services._ids.length);
+
+                    if(result.data.servicetemplategroups_removed_count > 0){
+                        showWarning = true;
+                        message += sprintf($scope.successMessage.allocate_warning, result.data.servicetemplategroups_removed_count);
+                    }
+                }
+
+                if(showWarning === true){
+                    NotyService.genericWarning({
+                        message: message,
+                        timeout: 15000
+                    });
+                }else{
+                    NotyService.genericSuccess({
+                        message: message
+                    });
+                }
 
                 if($state.hasOwnProperty('previous') && $state.previous !== null && $state.previous.name !== "" && $state.previous.url !== "^"){
                     $state.go($state.previous.name, $state.previous.params).then(function(){
