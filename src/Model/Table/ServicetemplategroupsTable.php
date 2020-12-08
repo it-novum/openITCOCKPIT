@@ -533,6 +533,7 @@ class ServicetemplategroupsTable extends Table {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
+
         $host = $HostsTable->getHostgroupsWithServicesByHostId($hostId);
         $hostgroupNames = Hash::extract($host, 'hostgroups_merged.{n}.container.name');
 
