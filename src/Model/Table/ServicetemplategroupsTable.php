@@ -631,7 +631,6 @@ class ServicetemplategroupsTable extends Table {
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
-        $serviceTemplateIdsToDisable = [];
         $hostgroupNames = [];
 
         if (!empty($oldHostgroupsIds) && empty($newHostgroupsIds)) {
@@ -641,7 +640,7 @@ class ServicetemplategroupsTable extends Table {
 
         if (!empty($oldHostgroupsIds) && !empty($newHostgroupsIds)) {
             // disable services from host if matching host group has been removed
-            $hostGroupIdsHasBeenRemoved = array_diff($oldHostgroupsIds, $oldHostgroupsIds);
+            $hostGroupIdsHasBeenRemoved = array_diff($oldHostgroupsIds, $newHostgroupsIds);
             if (!empty($hostGroupIdsHasBeenRemoved)) {
                 $hostgroupNames = $HostgroupsTable->getHostgroupNamesByIds($hostGroupIdsHasBeenRemoved);
             }

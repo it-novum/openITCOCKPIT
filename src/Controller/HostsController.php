@@ -753,7 +753,15 @@ class HostsController extends AppController {
                         $this->set('disabled_errors', $resultForDisable['errors']);
                         $this->set('servicetemplategroups_removed_count', $resultForAssign['servicetemplategroups_removed_count']);
                         $this->set('services_disabled_count', $resultForDisable['services_disabled_count']);
-                        $this->viewBuilder()->setOption('serialize', ['id', 'services', 'errors', 'servicetemplategroups_removed_count']);
+                        $this->viewBuilder()->setOption('serialize', [
+                            'id',
+                            'services',
+                            'disabled_services',
+                            'errors',
+                            'disabled_errors',
+                            'servicetemplategroups_removed_count',
+                            'services_disabled_count'
+                        ]);
                         return;
                     }
 

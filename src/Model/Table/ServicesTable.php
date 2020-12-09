@@ -3719,15 +3719,14 @@ class ServicesTable extends Table {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         $host = $HostsTable->get($hostId);
-        $query = $this->find();
-        $query
-            ->innerJoinWith('Servicetemplates')
-            ->innerJoinWith('Hosts')
+        $servicesToDisable = $this->find()
+            ->contain('Servicetemplates')
             ->where([
                 'Services.host_id'               => $hostId,
                 'Services.servicetemplate_id IN' => $servicetemplateIds,
                 'Services.disabled'              => 0
-            ]);
+            ])
+            ->all();
 
         $disabledServiceIds = [];
         $errors = [];

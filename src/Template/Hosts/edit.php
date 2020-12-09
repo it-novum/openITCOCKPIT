@@ -77,7 +77,7 @@
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
-                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('updated successfully'); ?>', allocate_message: '<?php echo __('+ %s Services created successfully'); ?>', allocate_warning: '<?php echo __('. %s service template groups has been removed due to insufficient permissions'); ?>', disable_message: '<?php echo __('+ %s Services has been disabled'); ?>'}">
+                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('updated successfully'); ?>', allocate_message: '<?php echo __('+ %s Services created successfully'); ?>', allocate_warning: '<?php echo __('. %s service template groups has been removed due to insufficient permissions'); ?>', disable_message: '<?php echo __(' + %s Services has been disabled'); ?>'}">
 
                         <!-- BASIC CONFIGURATION START -->
 
