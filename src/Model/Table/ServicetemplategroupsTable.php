@@ -609,17 +609,17 @@ class ServicetemplategroupsTable extends Table {
      * @param $hostId
      * @param int $userId
      * @param array|null $oldHostgroupsIds
-     * @param array|null $newHostgroupsIds
+     * @param array|null $currentHostgroupsIds
      * @return array
      */
-    public function disableServicesIfMatchingHostgroupsHasBeenRemoved($hostId, $userId, $oldHostgroupsIds, $newHostgroupsIds) {
+    public function disableServicesIfMatchingHostgroupsHasBeenRemoved($hostId, $userId, $oldHostgroupsIds, $currentHostgroupsIds) {
         $result = [
             'disabledServiceIds'      => [],
             'errors'                  => [],
             'services_disabled_count' => 0
         ];
 
-        if (empty($oldHostgroupsIds) && empty($newHostgroupsIds)) {
+        if (empty($oldHostgroupsIds) && empty($currentHostgroupsIds)) {
             //Host has no old host groups and no new host groups
             return $result;
         }
@@ -631,26 +631,45 @@ class ServicetemplategroupsTable extends Table {
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
-        $hostgroupNames = [];
+        $hostgroupNamesToRemove = [];
+        $hostgroupNamesInUse = [];
 
-        if (!empty($oldHostgroupsIds) && empty($newHostgroupsIds)) {
+        if (!empty($oldHostgroupsIds) && empty($currentHostgroupsIds)) {
             // all services from matching old matching by service template groups must be disabled
-            $hostgroupNames = $HostgroupsTable->getHostgroupNamesByIds($oldHostgroupsIds);
+            $hostgroupNamesToRemove = $HostgroupsTable->getHostgroupNamesByIds($oldHostgroupsIds);
         }
 
-        if (!empty($oldHostgroupsIds) && !empty($newHostgroupsIds)) {
+        if (!empty($oldHostgroupsIds) && !empty($currentHostgroupsIds)) {
             // disable services from host if matching host group has been removed
-            $hostGroupIdsHasBeenRemoved = array_diff($oldHostgroupsIds, $newHostgroupsIds);
+            $hostGroupIdsHasBeenRemoved = array_diff($oldHostgroupsIds, $currentHostgroupsIds);
             if (!empty($hostGroupIdsHasBeenRemoved)) {
-                $hostgroupNames = $HostgroupsTable->getHostgroupNamesByIds($hostGroupIdsHasBeenRemoved);
+                $hostgroupNamesToRemove = $HostgroupsTable->getHostgroupNamesByIds($hostGroupIdsHasBeenRemoved);
+            }
+            if (!empty($currentHostgroupsIds)) {
+                $hostGroupNamesInUse = $HostgroupsTable->getHostgroupNamesByIds($currentHostgroupsIds);
             }
         }
 
-        if (!empty($hostgroupNames)) {
-            $servicetemplateGroups = $this->getServicetemplategroupsByNames($hostgroupNames);
+        if (!empty($hostgroupNamesToRemove)) {
+            $servicetemplateGroups = $this->getServicetemplategroupsByNames($hostgroupNamesToRemove);
             $serviceTemplateIdsToDisable = array_unique(Hash::extract($servicetemplateGroups, '{n}.servicetemplates.{n}.id'));
             if (empty($serviceTemplateIdsToDisable)) {
                 return $result;
+            }
+
+            if (!empty($hostGroupNamesInUse)) {
+                $servicetemplateGroupsInUse = $this->getServicetemplategroupsByNames($hostGroupNamesInUse);
+                $serviceTemplateIdsInUse = array_unique(Hash::extract($servicetemplateGroupsInUse, '{n}.servicetemplates.{n}.id'));
+                $serviceTemplateIdsToDisable_tmp = [];
+                foreach ($serviceTemplateIdsToDisable as $serviceTemplateIdToDisable) {
+                    if (!in_array($serviceTemplateIdToDisable, $serviceTemplateIdsInUse, true)) {
+                        $serviceTemplateIdsToDisable_tmp[] = $serviceTemplateIdToDisable;
+                    }
+                }
+                if (empty($serviceTemplateIdsToDisable_tmp)) {
+                    return $result;
+                }
+                $serviceTemplateIdsToDisable = $serviceTemplateIdsToDisable_tmp;
             }
         }
 
