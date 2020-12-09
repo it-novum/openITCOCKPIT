@@ -603,4 +603,63 @@ class ServicetemplategroupsTable extends Table {
         $result['servicetemplategroups_removed_count'] = sizeof($servicetemplategroups_removed);
         return $result;
     }
+
+
+    /**
+     * @param $hostId
+     * @param int $userId
+     * @param array|null $oldHostgroupsIds
+     * @param array|null $newHostgroupsIds
+     * @return array
+     */
+    public function disableServicesIfMatchingHostgroupsHasBeenRemoved($hostId, $userId, $oldHostgroupsIds, $newHostgroupsIds) {
+        $result = [
+            'disabledServiceIds'      => [],
+            'errors'                  => [],
+            'services_disabled_count' => 0
+        ];
+
+        if (empty($oldHostgroupsIds) && empty($newHostgroupsIds)) {
+            //Host has no old host groups and no new host groups
+            return $result;
+        }
+        if (empty($oldHostgroupsIds)) {
+            //Host has no old host groups - no check needed
+            return $result;
+        }
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $serviceTemplateIdsToDisable = [];
+        $hostgroupNames = [];
+
+        if (!empty($oldHostgroupsIds) && empty($newHostgroupsIds)) {
+            // all services from matching old matching by service template groups must be disabled
+            $hostgroupNames = $HostgroupsTable->getHostgroupNamesByIds($oldHostgroupsIds);
+        }
+
+        if (!empty($oldHostgroupsIds) && !empty($newHostgroupsIds)) {
+            // disable services from host if matching host group has been removed
+            $hostGroupIdsHasBeenRemoved = array_diff($oldHostgroupsIds, $oldHostgroupsIds);
+            if (!empty($hostGroupIdsHasBeenRemoved)) {
+                $hostgroupNames = $HostgroupsTable->getHostgroupNamesByIds($hostGroupIdsHasBeenRemoved);
+            }
+        }
+
+        if (!empty($hostgroupNames)) {
+            $servicetemplateGroups = $this->getServicetemplategroupsByNames($hostgroupNames);
+            $serviceTemplateIdsToDisable = array_unique(Hash::extract($servicetemplateGroups, '{n}.servicetemplates.{n}.id'));
+            if (empty($serviceTemplateIdsToDisable)) {
+                return $result;
+            }
+        }
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $result = $ServicesTable->disableServiceByServicetemplateIds($serviceTemplateIdsToDisable, $hostId, $userId);
+        $result['services_disabled_count'] = sizeof($result['disabledServiceIds']);
+
+        return $result;
+    }
 }

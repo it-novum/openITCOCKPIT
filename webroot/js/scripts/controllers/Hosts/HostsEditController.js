@@ -358,6 +358,10 @@ angular.module('openITCOCKPIT')
                         showWarning = true;
                         message += sprintf($scope.successMessage.allocate_warning, result.data.servicetemplategroups_removed_count);
                     }
+
+                    if(result.data.services_disabled_count > 0){
+                        message += sprintf($scope.successMessage.disable_message, result.data.services_disabled_count);
+                    }
                 }
 
                 if(showWarning === true){

@@ -19,7 +19,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
@@ -1876,9 +1875,6 @@ class ServicesTable extends Table {
 
         $query->order($ServiceConditions->getOrder());
 
-        //FileDebugger::dieQuery($query);
-
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->emptyArrayIfNull($query->toArray());
@@ -3067,7 +3063,6 @@ class ServicesTable extends Table {
         }
 
         $query->andWhere($where);
-        //FileDebugger::dieQuery($query);
         $result = $query->first();
 
         if ($result === null) {
@@ -3135,7 +3130,6 @@ class ServicesTable extends Table {
         }
 
         $query->andWhere($where);
-        //FileDebugger::dieQuery($query);
         $result = $query->first();
 
         if ($result === null) {
@@ -3698,6 +3692,81 @@ class ServicesTable extends Table {
         return [
             'newServiceIds' => $newServiceIds,
             'errors'        => $errors
+        ];
+    }
+
+    /**
+     * @param array $servicetemplateIds
+     * @param int $hostId
+     * @param int $userId
+     * @return array
+     *
+     * return looks like
+     * [
+     *     'disabledServiceIds' => [
+     *         1, 2, 3, 1337, ...
+     *     ],
+     *     'errors' => [
+     *         $service->getErrors()
+     *     ]
+     * ]
+     */
+    public function disableServiceByServicetemplateIds($servicetemplateIds, $hostId, $userId = 0) {
+        if (!is_array($servicetemplateIds)) {
+            $servicetemplateIds = [$servicetemplateIds];
+        }
+        /** @var $HosttemplatesTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $host = $HostsTable->get($hostId);
+        $query = $this->find();
+        $query
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoinWith('Hosts')
+            ->where([
+                'Services.host_id'               => $hostId,
+                'Services.servicetemplate_id IN' => $servicetemplateIds,
+                'Services.disabled'              => 0
+            ]);
+
+        $disabledServiceIds = [];
+        $errors = [];
+
+        if (!empty($servicesToDisable)) {
+            /** @var ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            foreach ($servicesToDisable as $service) {
+                $service->set('disabled', 1);
+                $this->save($service);
+                if ($service->hasErrors()) {
+                    $errors[] = $service->getErrors();
+                } else {
+                    // has no errors
+                    $serviceName = !empty($service->get('name')) ? $service->get('name') : $service->get('servicetemplate')->get('name');
+                    $serviceId = $service->get('id');
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        'deactivate',
+                        'services',
+                        $serviceId,
+                        OBJECT_SERVICE,
+                        $host['Host']['container_id'],
+                        $userId,
+                        $host['Host']['name'] . '/' . $serviceName,
+                        []
+                    );
+                    if ($changelog_data) {
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
+                    $disabledServiceIds[] = $serviceId;
+                }
+            }
+        }
+
+        return [
+            'disabledServiceIds' => $disabledServiceIds,
+            'errors'             => $errors
         ];
     }
 }

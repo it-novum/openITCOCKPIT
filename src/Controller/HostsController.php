@@ -731,17 +731,28 @@ class HostsController extends AppController {
                     /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
                     $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
 
-                    $result = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
+                    $resultForAssign = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
                         $hostEntity->get('id'),
                         $User->getId(),
                         $this->MY_RIGHTS
                     );
 
+
+                    $resultForDisable = $ServicetemplategroupsTable->disableServicesIfMatchingHostgroupsHasBeenRemoved(
+                        $hostEntity->get('id'),
+                        $User->getId(),
+                        $mergedHost['Host']['hostgroups']['_ids'],
+                        $requestData['Host']['hostgroups']['_ids']
+                    );
+
                     if ($this->isJsonRequest()) {
                         $this->set('id', $hostEntity->get('id'));
-                        $this->set('services', ['_ids' => $result['newServiceIds']]);
-                        $this->set('errors', $result['errors']);
-                        $this->set('servicetemplategroups_removed_count', $result['servicetemplategroups_removed_count']);
+                        $this->set('services', ['_ids' => $resultForAssign['newServiceIds']]);
+                        $this->set('disabled_services', ['_ids' => $resultForDisable['disabledServiceIds']]);
+                        $this->set('errors', $resultForAssign['errors']);
+                        $this->set('disabled_errors', $resultForDisable['errors']);
+                        $this->set('servicetemplategroups_removed_count', $resultForAssign['servicetemplategroups_removed_count']);
+                        $this->set('services_disabled_count', $resultForDisable['services_disabled_count']);
                         $this->viewBuilder()->setOption('serialize', ['id', 'services', 'errors', 'servicetemplategroups_removed_count']);
                         return;
                     }
