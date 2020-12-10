@@ -671,13 +671,12 @@ class ServicetemplategroupsTable extends Table {
                 }
                 $serviceTemplateIdsToDisable = $serviceTemplateIdsToDisable_tmp;
             }
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $result = $ServicesTable->disableServiceByServicetemplateIds($serviceTemplateIdsToDisable, $hostId, $userId);
+            $result['services_disabled_count'] = sizeof($result['disabledServiceIds']);
         }
-
-        /** @var $ServicesTable ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        $result = $ServicesTable->disableServiceByServicetemplateIds($serviceTemplateIdsToDisable, $hostId, $userId);
-        $result['services_disabled_count'] = sizeof($result['disabledServiceIds']);
-
+        
         return $result;
     }
 }

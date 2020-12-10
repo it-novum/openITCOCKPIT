@@ -348,19 +348,20 @@ angular.module('openITCOCKPIT')
                     + '</a></u> ' + $scope.successMessage.message;
 
                 if($scope.post.hasOwnProperty('save_host_and_assign_matching_servicetemplate_groups')
-                    && $scope.post.save_host_and_assign_matching_servicetemplate_groups
-                    && !!result.data.services._ids){
-                    message = '<u><a href="' + url + '" class="txt-color-white"> '
-                        + $scope.successMessage.objectName
-                        + '</a></u> ' + sprintf($scope.successMessage.allocate_message, result.data.services._ids.length);
-
+                    && $scope.post.save_host_and_assign_matching_servicetemplate_groups){
+                    if(!!result.data.services._ids){
+                        message = '<u><a href="' + url + '" class="txt-color-white"> '
+                            + $scope.successMessage.objectName
+                            + '</a></u> ' + sprintf($scope.successMessage.allocate_message, result.data.services._ids.length);
+                    }
                     if(result.data.servicetemplategroups_removed_count > 0){
                         showWarning = true;
                         message += sprintf($scope.successMessage.allocate_warning, result.data.servicetemplategroups_removed_count);
                     }
-
-                    if(result.data.services_disabled_count > 0){
-                        message += sprintf($scope.successMessage.disable_message, result.data.services_disabled_count);
+                    if(!!result.data.disabled_services._ids){
+                        if(result.data.services_disabled_count > 0){
+                            message += sprintf($scope.successMessage.disable_message, result.data.services_disabled_count);
+                        }
                     }
                 }
 
