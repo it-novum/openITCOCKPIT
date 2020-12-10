@@ -533,7 +533,7 @@ class ServicetemplategroupsTable extends Table {
      * @param int $hostId
      * @param int $userId
      * @param array $MY_RIGHTS
-     * @return array|bool
+     * @return array
      */
     public function assignMatchingServicetemplategroupsByHostgroupsToHost($hostId, $userId = 0, $MY_RIGHTS = []) {
         /** @var $HostsTable HostsTable */
@@ -546,7 +546,11 @@ class ServicetemplategroupsTable extends Table {
 
         if (empty($hostgroupNames)) {
             //Host has no hostgroups
-            return false;
+            return [
+                'newServiceIds'                       => [],
+                'errors'                              => [],
+                'servicetemplategroups_removed_count' => 0
+            ];
         }
 
         $servicetemplategroups_tmp = $this->getServicetemplategroupsByNames($hostgroupNames);
@@ -676,7 +680,7 @@ class ServicetemplategroupsTable extends Table {
             $result = $ServicesTable->disableServiceByServicetemplateIds($serviceTemplateIdsToDisable, $hostId, $userId);
             $result['services_disabled_count'] = sizeof($result['disabledServiceIds']);
         }
-        
+
         return $result;
     }
 }

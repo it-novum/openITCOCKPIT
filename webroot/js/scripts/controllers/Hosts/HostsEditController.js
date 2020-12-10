@@ -343,6 +343,7 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 var url = $state.href('HostsEdit', {id: $scope.id});
                 var showWarning = false;
+                var timeout = 3500;
                 var message = '<u><a href="' + url + '" class="txt-color-white"> '
                     + $scope.successMessage.objectName
                     + '</a></u> ' + $scope.successMessage.message;
@@ -353,14 +354,17 @@ angular.module('openITCOCKPIT')
                         message = '<u><a href="' + url + '" class="txt-color-white"> '
                             + $scope.successMessage.objectName
                             + '</a></u> ' + sprintf($scope.successMessage.allocate_message, result.data.services._ids.length);
+                        timeout = 15000;
                     }
                     if(result.data.servicetemplategroups_removed_count > 0){
                         showWarning = true;
                         message += sprintf($scope.successMessage.allocate_warning, result.data.servicetemplategroups_removed_count);
+                        timeout = 15000;
                     }
                     if(!!result.data.disabled_services._ids){
                         if(result.data.services_disabled_count > 0){
                             message += sprintf($scope.successMessage.disable_message, result.data.services_disabled_count);
+                            timeout = 15000;
                         }
                     }
                 }
@@ -372,7 +376,8 @@ angular.module('openITCOCKPIT')
                     });
                 }else{
                     NotyService.genericSuccess({
-                        message: message
+                        message: message,
+                        timeout: timeout
                     });
                 }
 
