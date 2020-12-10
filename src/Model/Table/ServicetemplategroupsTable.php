@@ -530,21 +530,21 @@ class ServicetemplategroupsTable extends Table {
     }
 
     /**
+     * @param array $hostgroupIds
      * @param int $hostId
      * @param int $userId
      * @param array $MY_RIGHTS
      * @return array
      */
-    public function assignMatchingServicetemplategroupsByHostgroupsToHost($hostId, $userId = 0, $MY_RIGHTS = []) {
+    public function assignMatchingServicetemplategroupsByHostgroupsToHost($hostgroupIds, $hostId, $userId = 0, $MY_RIGHTS = []) {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
-        $host = $HostsTable->getHostgroupsWithServicesByHostId($hostId);
-        $hostgroupNames = Hash::extract($host, 'hostgroups_merged.{n}.container.name');
-
-        if (empty($hostgroupNames)) {
+        if (empty($hostgroupIds)) {
             //Host has no hostgroups
             return [
                 'newServiceIds'                       => [],
@@ -552,6 +552,11 @@ class ServicetemplategroupsTable extends Table {
                 'servicetemplategroups_removed_count' => 0
             ];
         }
+
+        $host = $HostsTable->getServicesByHostIdForAllocation($hostId);
+
+        $hostgroupNames = $HostgroupsTable->getHostgroupNamesByIds($hostgroupIds);
+
 
         $servicetemplategroups_tmp = $this->getServicetemplategroupsByNames($hostgroupNames);
         $servicetemplategroups_removed = [];

@@ -3973,23 +3973,13 @@ class HostsTable extends Table {
     }
 
     /**
-     * @param $uuid
+     * @param int $hostId
      * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getHostgroupsWithServicesByHostId($hostId) {
+    public function getServicesByHostIdForAllocation($hostId) {
         $query = $this->find()
             ->contain([
-                'Hosttemplates' => function (Query $query) {
-                    return $query->contain([
-                        'Hostgroups' => [
-                            'Containers'
-                        ]
-                    ]);
-                },
-                'Hostgroups'    => [
-                    'Containers'
-                ],
-                'Services'      => function (Query $query) {
+                'Services' => function (Query $query) {
                     return $query
                         ->select([
                             'Services.id',
@@ -4005,20 +3995,6 @@ class HostsTable extends Table {
             ->disableHydration()
             ->first();
 
-        $host = $query;
-        $host['hostgroups_merged'] = [];
-
-        // Merge hostgroups of host and host template
-        foreach ($query['hostgroups'] as $hostgroup) {
-            $hostgroupId = $hostgroup['id'];
-            $host['hostgroups_merged'][$hostgroupId] = $hostgroup;
-        }
-
-        foreach ($query['hosttemplate']['hostgroups'] as $hostgroup) {
-            $hostgroupId = $hostgroup['id'];
-            $host['hostgroups_merged'][$hostgroupId] = $hostgroup;
-        }
-
-        return $host;
+        return $query;
     }
 }

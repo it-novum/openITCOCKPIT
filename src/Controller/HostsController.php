@@ -541,6 +541,7 @@ class HostsController extends AppController {
                     $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
 
                     $result = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
+                        $requestData['Host']['hostgroups']['_ids'],
                         $host->get('id'),
                         $User->getId(),
                         $this->MY_RIGHTS
@@ -732,6 +733,7 @@ class HostsController extends AppController {
                     $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
 
                     $resultForAssign = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
+                        $requestData['Host']['hostgroups']['_ids'],
                         $hostEntity->get('id'),
                         $User->getId(),
                         $this->MY_RIGHTS
