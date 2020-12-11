@@ -53,7 +53,7 @@
     <div class="col-lg-1">
         <label></label>
         <br>
-        <button type="button" class="btn btn-default btn-sx txt-color-red" ng-click="callback(macro, index)"
+        <button type="button" class="btn btn-danger btn-sm waves-effect waves-themed " ng-click="callback(macro, index)"
                 style="margin-top: 7px;">
             <i class="fa fa-trash fa-lg"></i>
         </button>
