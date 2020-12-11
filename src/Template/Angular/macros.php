@@ -23,8 +23,8 @@
 //  confirmation.
 ?>
 <div class="row">
-    <div class="col-lg-3 hidden-mobile text-primary"
-         ng-class="{'text-success': macro.objecttype_id === 512 || macro.objecttype_id === 4096}">
+    <div class="col-lg-3 hidden-mobile"
+         ng-class="{'text-success': (macro.objecttype_id === 512 || macro.objecttype_id === 4096), 'text-primary': (macro.objecttype_id !== 512 && macro.objecttype_id !== 4096)}">
         <div style="padding-top: 29px; width: 100%;">
         </div>
         <span ng-show="macro.name">
