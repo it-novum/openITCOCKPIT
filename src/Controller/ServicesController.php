@@ -27,7 +27,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
 use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
@@ -44,7 +43,6 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
-use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
@@ -55,7 +53,6 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
-use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -68,7 +65,6 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
@@ -77,7 +73,6 @@ use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
-use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
@@ -110,7 +105,6 @@ use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
@@ -1441,12 +1435,22 @@ class ServicesController extends AppController {
         );
         $mergedHost = $HostMergerForBrowser->getDataForView();
 
+        $replacePasswordInObjectMacros = false;
+        try {
+            $systemsettingsReplacePasswordsEntity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.REPLACE_PASSWORD_IN_OBJECT_MACROS');
+            if ($systemsettingsReplacePasswordsEntity->get('value') === '1') {
+                $replacePasswordInObjectMacros = true;
+            }
+        } catch (RecordNotFoundException $e) {
+            // Rocket not found in system settings - do replace passwords in $_HOSTFOOBAR$ custom variables
+        }
 
         //Replace macros in service url
         $HostMacroReplacer = new HostMacroReplacer($host);
         $ServiceMacroReplacer = new ServiceMacroReplacer($mergedService);
-        $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE);
-        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
+        $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE, $replacePasswordInObjectMacros);
+
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacrosq);
         $mergedService['service_url_replaced'] =
             $ServiceMacroReplacer->replaceBasicMacros(                  // Replace $SERVICEDESCRIPTION$
                 $HostMacroReplacer->replaceBasicMacros(                 // Replace $HOSTNAME$

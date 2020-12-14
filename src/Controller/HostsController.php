@@ -1941,9 +1941,19 @@ class HostsController extends AppController {
         $mergedHost['is_satellite_host'] = $hostObj->isSatelliteHost();
         $mergedHost['allowEdit'] = $allowEdit;
 
+        $replacePasswordInObjectMacros = false;
+        try {
+            $systemsettingsReplacePasswordsEntity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.REPLACE_PASSWORD_IN_OBJECT_MACROS');
+            if ($systemsettingsReplacePasswordsEntity->get('value') === '1') {
+                $replacePasswordInObjectMacros = true;
+            }
+        } catch (RecordNotFoundException $e) {
+            // Rocket not found in system settings - do not replace passwords in $_HOSTFOOBAR$ custom variables
+        }
+
         //Replace macros in host url
         $HostMacroReplacer = new HostMacroReplacer($mergedHost);
-        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacros);
         $mergedHost['host_url_replaced'] =
             $HostMacroReplacer->replaceBasicMacros(          // Replace $HOSTNAME$
                 $HostCustomMacroReplacer->replaceAllMacros(  // Replace $_HOSTFOOBAR$
