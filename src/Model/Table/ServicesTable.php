@@ -18,10 +18,11 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
@@ -1874,9 +1875,6 @@ class ServicesTable extends Table {
 
         $query->order($ServiceConditions->getOrder());
 
-        //FileDebugger::dieQuery($query);
-
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->emptyArrayIfNull($query->toArray());
@@ -2816,7 +2814,7 @@ class ServicesTable extends Table {
                 'Services.tags',
                 'Services.priority',
                 'Services.service_type',
-                'servicename'        => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -3065,7 +3063,6 @@ class ServicesTable extends Table {
         }
 
         $query->andWhere($where);
-        //FileDebugger::dieQuery($query);
         $result = $query->first();
 
         if ($result === null) {
@@ -3133,7 +3130,6 @@ class ServicesTable extends Table {
         }
 
         $query->andWhere($where);
-        //FileDebugger::dieQuery($query);
         $result = $query->first();
 
         if ($result === null) {
@@ -3606,5 +3602,170 @@ class ServicesTable extends Table {
         ];
 
         return $types;
+    }
+
+    /**
+     * @param array $servicetemplateIds
+     * @param int $hostId
+     * @param int $userId
+     * @return array
+     *
+     * return looks like
+     * [
+     *     'newServiceIds' => [
+     *         1, 2, 3, 1337, ...
+     *     ],
+     *     'errors' => [
+     *         $service->getErrors()
+     *     ]
+     * ]
+     */
+    public function createServiceByServicetemplateIds($servicetemplateIds, $hostId, $userId = 0) {
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $HosttemplatesTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        $host = $HostsTable->get($hostId);
+        $hostContactsAndContactgroupsById = $HostsTable->getContactsAndContactgroupsById($host->get('id'));
+        $hosttemplateContactsAndContactgroupsById = $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'));
+
+        $newServiceIds = [];
+        $errors = [];
+        foreach ($servicetemplateIds as $servicetemplateId) {
+            $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
+
+            $servicename = $servicetemplate['Servicetemplate']['name'];
+
+            $serviceData = ServiceComparisonForSave::getServiceSkeleton($hostId, $servicetemplateId);
+            $ServiceComparisonForSave = new ServiceComparisonForSave(
+                ['Service' => $serviceData],
+                $servicetemplate,
+                $hostContactsAndContactgroupsById,
+                $hosttemplateContactsAndContactgroupsById
+            );
+            $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
+            $serviceData['uuid'] = UUID::v4();
+
+            //Add required fields for validation
+            $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+            $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+            $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+            $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+            $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
+
+            $service = $this->newEntity($serviceData);
+
+            $this->save($service);
+            if ($service->hasErrors()) {
+                $errors[] = $service->getErrors();
+            } else {
+                //No errors
+
+                $extDataForChangelog = $this->resolveDataForChangelog(['Service' => $serviceData]);
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'add',
+                    'services',
+                    $service->get('id'),
+                    OBJECT_SERVICE,
+                    $host->get('container_id'),
+                    $userId,
+                    $host->get('name') . '/' . $servicename,
+                    array_merge(['Service' => $serviceData], $extDataForChangelog)
+                );
+
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
+
+                $newServiceIds[] = $service->get('id');
+            }
+        }
+
+        return [
+            'newServiceIds' => $newServiceIds,
+            'errors'        => $errors
+        ];
+    }
+
+    /**
+     * @param array $servicetemplateIds
+     * @param int $hostId
+     * @param int $userId
+     * @return array
+     *
+     * return looks like
+     * [
+     *     'disabledServiceIds' => [
+     *         1, 2, 3, 1337, ...
+     *     ],
+     *     'errors' => [
+     *         $service->getErrors()
+     *     ]
+     * ]
+     */
+    public function disableServiceByServicetemplateIds($servicetemplateIds, $hostId, $userId = 0) {
+        if (!is_array($servicetemplateIds)) {
+            $servicetemplateIds = [$servicetemplateIds];
+        }
+        /** @var $HosttemplatesTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $host = $HostsTable->get($hostId);
+        $servicesToDisable = $this->find()
+            ->contain('Servicetemplates')
+            ->where([
+                'Services.host_id'               => $hostId,
+                'Services.servicetemplate_id IN' => $servicetemplateIds,
+                'Services.disabled'              => 0
+            ])
+            ->all();
+
+        $disabledServiceIds = [];
+        $errors = [];
+
+        if (!empty($servicesToDisable)) {
+            /** @var ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            foreach ($servicesToDisable as $service) {
+                $service->set('disabled', 1);
+                $this->save($service);
+                if ($service->hasErrors()) {
+                    $errors[] = $service->getErrors();
+                } else {
+                    // has no errors
+                    $serviceName = !empty($service->get('name')) ? $service->get('name') : $service->get('servicetemplate')->get('name');
+                    $serviceId = $service->get('id');
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        'deactivate',
+                        'services',
+                        $serviceId,
+                        OBJECT_SERVICE,
+                        $host['Host']['container_id'],
+                        $userId,
+                        $host['Host']['name'] . '/' . $serviceName,
+                        []
+                    );
+                    if ($changelog_data) {
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
+                    $disabledServiceIds[] = $serviceId;
+                }
+            }
+        }
+
+        return [
+            'disabledServiceIds' => $disabledServiceIds,
+            'errors'             => $errors
+        ];
     }
 }

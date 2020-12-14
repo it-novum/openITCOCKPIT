@@ -78,7 +78,7 @@
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
-                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('created successfully'); ?>', allocate_message: '<?php echo __('+ %s Services created successfully'); ?>', allocate_warning: '<?php echo __('. %s service template groups has been removed due to insufficient permissions'); ?>'}">
 
                         <!-- BASIC CONFIGURATION START -->
 
@@ -930,7 +930,7 @@
                                         </div>
                                         <div class="help-block">
                                             <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
-                                            <br />
+                                            <br/>
                                             <?php echo __('Before you could query the host through Prometheus, you need to refresh the monitoring configuration.'); ?>
                                         </div>
                                         <div ng-repeat="error in errors.prometheus_exporters">
@@ -967,9 +967,11 @@
                                         <button type="button"
                                                 class="btn btn-primary dropdown-toggle dropdown-toggle-split waves-effect waves-themed"
                                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span class="sr-only">Toggle Dropdown</span>
+                                            <span class="sr-only">
+                                                Toggle Dropdown
+                                            </span>
                                         </button>
-                                        <div class="dropdown-menu">
+                                        <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
                                                    ng-click="submit('ServicesAdd')">
@@ -983,6 +985,15 @@
                                                    ng-if="!data.createAnother">
                                                     <i class="fa fa fa-gear"></i>
                                                     <?php echo __('Save and setup agent'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('add', 'services')): ?>
+                                                <a class="dropdown-item" href="javascript:void(0);"
+                                                   ng-click="submitSaveHostAndAssignMatchingServicetemplateGroups()"
+                                                   ng-if="!data.createAnother">
+                                                    <i class="fa fa-external-link-alt"></i>
+                                                    <?php echo __('Save host and assign matching service template groups'); ?>
                                                 </a>
                                             <?php endif; ?>
 
