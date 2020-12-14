@@ -50,10 +50,26 @@
             <div class="text-danger">{{ error }}</div>
         </div>
     </div>
-    <div class="col-lg-1">
+    <div class="col-lg-1 no-padding">
         <label></label>
         <br>
-        <button type="button" class="btn btn-danger btn-sm waves-effect waves-themed " ng-click="callback(macro, index)"
+        <button class="btn btn-default text-primary btn-sm waves-effect waves-themed" type="button"
+                title="<?php echo __('Is password'); ?>"
+                ng-click="macro.password = 1"
+                ng-hide="macro.password"
+                style="margin-top: 7px;">
+            <i class="fas fa-unlock fa-lg"></i>
+        </button>
+
+        <button class="btn btn-default text-warning btn-sm waves-effect waves-themed" type="button"
+                title="<?php echo __('Is not a password'); ?>"
+                ng-click="macro.password = 0"
+                ng-show="macro.password"
+                style="margin-top: 7px;">
+            <i class="fas fa-lock fa-lg"></i>
+        </button>
+        <button type="button" class="btn btn-danger btn-sm waves-effect waves-themed margin-left-10"
+                ng-click="callback(macro, index)"
                 style="margin-top: 7px;">
             <i class="fa fa-trash fa-lg"></i>
         </button>

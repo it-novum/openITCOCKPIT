@@ -324,7 +324,8 @@ angular.module('openITCOCKPIT')
             $scope.post.Service.customvariables.push({
                 objecttype_id: 2048, //OBJECT_SERVICE
                 name: '',
-                value: ''
+                value: '',
+                password: 0
             });
         };
 
