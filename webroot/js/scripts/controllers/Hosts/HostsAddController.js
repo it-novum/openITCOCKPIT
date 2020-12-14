@@ -141,7 +141,8 @@ angular.module('openITCOCKPIT')
                 $scope.post.Host.customvariables.push({
                     objecttype_id: 512, //OBJECT_HOSTTEMPLATE because value from host template
                     name: $scope.hosttemplate.Hosttemplate.customvariables[index].name,
-                    value: $scope.hosttemplate.Hosttemplate.customvariables[index].value
+                    value: $scope.hosttemplate.Hosttemplate.customvariables[index].value,
+                    password: $scope.hosttemplate.Hosttemplate.customvariables[index].password
                 });
             }
 

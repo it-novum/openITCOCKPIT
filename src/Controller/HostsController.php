@@ -592,10 +592,8 @@ class HostsController extends AppController {
 
         $host = $HostsTable->getHostForEdit($id);
         $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
-
         $HostMergerForView = new HostMergerForView($host, $hosttemplate);
         $mergedHost = $HostMergerForView->getDataForView();
-
         $hostForChangelog = $mergedHost;
 
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
@@ -1612,7 +1610,8 @@ class HostsController extends AppController {
                         $customvariables[] = [
                             'name'          => $customvariable->get('name'),
                             'value'         => $customvariable->get('value'),
-                            'objecttype_id' => OBJECT_HOST
+                            'objecttype_id' => OBJECT_HOST,
+                            'password'      => $customvariable->get('password')
                         ];
                     }
 
