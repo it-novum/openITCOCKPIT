@@ -12,8 +12,16 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-xs-12">
+                    <div class="col-12" ng-if="!massDeleteMessage">
                         <?php echo __('Do you really want delete the selected object?'); ?>
+                    </div>
+
+                    <div class="col-12" ng-if="massDeleteMessage">
+                        {{massDeleteMessage}}
+                    </div>
+
+                    <div class="col-12 help-block" ng-if="massDeleteHelp">
+                        {{massDeleteHelp}}
                     </div>
                 </div>
                 <div class="row">
