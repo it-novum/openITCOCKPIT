@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -35,6 +36,7 @@ class ServicetemplategroupsTable extends Table {
 
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method
@@ -687,5 +689,39 @@ class ServicetemplategroupsTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $containerIds
+     * @return array
+     */
+    public function getServicetemplategroupsByContainerId(array $containerIds) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this->find()
+            ->contain([
+                'Containers'
+            ])
+            ->select([
+                'Containers.name',
+                'Servicetemplategroups.id'
+            ])
+            ->where([
+                'Containers.parent_id IN ' => $containerIds
+            ])
+            ->order([
+                'Containers.name' => 'asc'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $servicetemplategroups = [];
+        $result = $this->emptyArrayIfNull($query->toArray());
+        foreach ($result as $row) {
+            $servicetemplategroups[$row['id']] = $row['container']['name'];
+        }
+
+        return $servicetemplategroups;
     }
 }

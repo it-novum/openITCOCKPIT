@@ -78,6 +78,14 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
 
         link: function($scope, element, attr){
             $scope.confirmDelete = function(objects){
+                if(attr.hasOwnProperty('message')){
+                    $scope.massDeleteMessage = attr.message;
+                }
+
+                if(attr.hasOwnProperty('help')){
+                    $scope.massDeleteHelp = attr.help;
+                }
+
                 $scope.setObjectsForMassDelete(objects);
                 $('#angularMassDelete').modal('show');
             };
