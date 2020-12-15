@@ -53,7 +53,7 @@ $Logo = new Logo();
     <div class="row no-padding">
         <div class="col-md-9 text-left">
             <i class="fa fa-file-invoice txt-color-blueDark"></i>
-            <?php echo __(h($instantReportDetails['name'])); ?>
+            <?php echo h($instantReportDetails['name']); ?>
         </div>
         <div class="col-md-3 text-left">
             <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>

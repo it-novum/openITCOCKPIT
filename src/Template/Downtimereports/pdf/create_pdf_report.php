@@ -233,10 +233,7 @@ if (!empty($downtimeReport['hostsWithoutOutages']['hosts'])): ?>
     <div class="pdf-card">
         <div class="pdf-card-header">
             <h2>
-                <span class="fa-stack">
-                    <i class="fa fa-circle-o fa-stack-2x txt-color-blueLight"></i>
-                    <i class="fa fa-check fa-stack-1x ok"></i>
-                </span>
+                <i class="far fa-check-square"></i>
                 <?= __(' Hosts without outages:'); ?>
             </h2>
         </div>

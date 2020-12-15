@@ -33,15 +33,15 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                 switch(currentstate){
                     case 0:
                         $scope.btnColor = 'success';
-                        $scope.flappingColor = 'txt-color-green';
+                        $scope.flappingColor = 'text-success';
                         return;
                     case 1:
                         $scope.btnColor = 'danger';
-                        $scope.flappingColor = 'txt-color-red';
+                        $scope.flappingColor = 'text-danger';
                         return;
                     case 2:
                         $scope.btnColor = 'secondary';
-                        $scope.flappingColor = 'txt-color-blueDark';
+                        $scope.flappingColor = 'text-secondary';
                         return;
                     default:
                         $scope.btnColor = 'primary';

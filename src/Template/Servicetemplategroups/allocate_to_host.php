@@ -97,26 +97,34 @@
                             </div>
                         </div>
 
-                        <div class="col-xs-12 col-md-9 col-lg-7" ng-show="hostId > 0">
-                            <div class="col col-md-2 control-label">
-                                <!-- Fancy layout -->
-                            </div>
-                            <div class="col col-xs-10">
-                                <div class="text-info">
-                                    <i class="fa fa-info-circle"></i>
-                                    <?php echo __('Please notice:'); ?>
-                                    <?php echo __('Services which use a service template that could not be assigned to the selected host due to container permissions, will be removed automatically.'); ?>
+                        <div class="row" ng-show="hostId > 0">
+                            <div class="col-12">
+                                <div class="alert border-faded bg-transparent text-secondary margin-top-20 margin-bottom-10">
+                                    <div class="d-flex align-items-center">
+                                        <div class="alert-icon">
+                                            <span class="icon-stack icon-stack-md">
+                                                <i class="base-7 icon-stack-3x color-info-600"></i>
+                                                <i class="fas fa-info icon-stack-1x text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <span class="h5 color-info-600">
+                                                <?= __('Please notice'); ?>
+                                            </span>
+                                            <br>
+                                            <?= __('Services which use a service template that could not be assigned to the selected host due to container permissions, will be removed automatically.'); ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
                         <!-- Service deployment -->
 
                         <div class="col-xs-12 col-md-12 col-lg-12" ng-show="hostId > 0">
-                            <hr>
                             <fieldset>
-                                <h4><?php echo __('Service/s to deploy on target host:'); ?></h4>
-
+                                <legend class="margin-0 padding-top-10">
+                                    <h4><?php echo __('Service/s to deploy on target host:'); ?></h4>
+                                </legend>
                                 <div ng-repeat="serviceToDeploy in servicesToDeploy"
                                      class="padding-bottom-5 padding-left-10">
 
@@ -147,24 +155,22 @@
 
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-xs-6 col-md-2 no-padding">
+                                <div class="row padding-left-10 padding-top-10" ng-show="hostgroupId > 0">
+                                    <div class="col-xs-6 col-md-2">
                                         <span ng-click="selectAll()" class="pointer">
-                                            <i class="fa fa-lg fa-check-square"></i>
+                                            <i class="fa fa-check-square"></i>
                                             <?php echo __('Select all'); ?>
                                         </span>
                                     </div>
-                                    <div class="col-xs-6 col-md-2 no-padding">
+                                    <div class="col-xs-6 col-md-2">
                                         <span ng-click="undoSelection()" class="pointer">
-                                            <i class="fa fa-lg fa-square"></i>
+                                            <i class="fa fa-square"></i>
                                             <?php echo __('Undo selection'); ?>
                                         </span>
                                     </div>
                                 </div>
-
                             </fieldset>
                         </div>
-
 
                         <div class="card margin-top-10">
                             <div class="card-body">
@@ -173,12 +179,12 @@
                                         <?php echo __('Allocate to host'); ?>
                                     </button>
                                     <?php if ($this->Acl->hasPermission('index', 'servicetemplategroups')): ?>
-                                        <a back-button href="javascript:void(0);" fallback-state='ServicetemplategroupsIndex'
+                                        <a back-button href="javascript:void(0);"
+                                           fallback-state='ServicetemplategroupsIndex'
                                            class="btn btn-default">
                                             <?php echo __('Cancel'); ?>
                                         </a>
                                     <?php endif; ?>
-
                                 </div>
                             </div>
                         </div>

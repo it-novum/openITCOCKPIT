@@ -34,19 +34,19 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
                 switch(currentstate){
                     case 0:
                         $scope.btnColor = 'success';
-                        $scope.flappingColor = 'txt-color-green';
+                        $scope.flappingColor = 'text-success';
                         return;
                     case 1:
                         $scope.btnColor = 'warning';
-                        $scope.flappingColor = 'warning';
+                        $scope.flappingColor = 'text-warning';
                         return;
                     case 2:
                         $scope.btnColor = 'danger';
-                        $scope.flappingColor = 'txt-color-red';
+                        $scope.flappingColor = 'text-danger';
                         return;
                     case 3:
                         $scope.btnColor = 'secondary';
-                        $scope.flappingColor = 'txt-color-blueDark';
+                        $scope.flappingColor = 'text-secondary';
                         return;
                     default:
                         $scope.btnColor = 'primary';

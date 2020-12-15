@@ -24,6 +24,6 @@
 ?>
 <a href="javascript:void(0);" class="btn btn-{{btnColor}} status-circle" ng-if="!isFlapping"></a>
 <span class="flapping_airport stateClass" ng-if="isFlapping">
-    <i class="{{flappingColor}} fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
-    <i class="{{flappingColor}} fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
+    <i class="{{flappingColor}}" ng-class="flappingState === 1 ? ' fa fa-circle' : 'far fa-circle'"></i>
+    <i class="{{flappingColor}}" ng-class="flappingState === 0 ? 'fa fa-circle' : 'far fa-circle'"></i>
 </span>

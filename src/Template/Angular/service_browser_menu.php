@@ -31,8 +31,8 @@
         <h1 class="status_headline" ng-class="serviceStatusTextClass" ng-if="config.includeServicestatus">
 
             <span class="flapping_airport stateClass" ng-show="servicestatus.isFlapping">
-                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
-                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
+                <i ng-class="flappingState === 1 ? 'fa fa-circle' : 'far fa-circle'"></i>
+                <i ng-class="flappingState === 0 ? 'fa fa-circle' : 'far fa-circle'"></i>
             </span>
 
             <i class="fa fa-cog fa-fw"></i>

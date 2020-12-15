@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT')
                 $scope.eventhandlerCommands = result.data.eventhandlerCommands;
                 $scope.servicetemplatetypes = result.data.types;
                 $scope.setDetailsForType($scope.post.Servicetemplate.servicetemplatetype_id);
-                
+
                 jQuery(function(){
                     $('.tagsinput').tagsinput();
                 });
@@ -101,7 +101,8 @@ angular.module('openITCOCKPIT')
             $scope.post.Servicetemplate.customvariables.push({
                 objecttype_id: 4096, //OBJECT_SERVICETEMPLATE
                 name: '',
-                value: ''
+                value: '',
+                password: 0
             });
         };
 
