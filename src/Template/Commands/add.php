@@ -63,7 +63,8 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                     <?php endif; ?>
 
                     <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='CommandsIndex' class="btn btn-xs btn-default shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='CommandsIndex'
+                           class="btn btn-xs btn-default shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -131,7 +132,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                                 <?php echo __('Command line'); ?>
                             </label>
                             <textarea class="form-control code-font" type="text" ng-model="post.Command.command_line"
-                                      cols="30" rows="6" id="commandLineTextArea" >
+                                      cols="30" rows="6" id="commandLineTextArea">
                             </textarea>
                             <div ng-repeat="error in errors.command_line">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -191,7 +192,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                                            style="width:100%;">
                                 </div>
                                 <div class="col-md-1 col-lg-1">
-                                    <a class="btn btn-default btn-sm txt-color-red deleteCommandArg margin-top-25"
+                                    <a class="btn btn-danger btn-sm waves-effect waves-themed deleteCommandArg margin-top-25"
                                        href="javascript:void(0);"
                                        ng-click="removeArg(arg)">
                                         <i class="fa fa-trash fa-lg"></i>
@@ -201,7 +202,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                         </div>
                         <div class="row ml-1">
                             <div ng-show="args.length > 0">
-                                <span class="col col-lg-3 col-xs-12 txt-color-redLight">
+                                <span class="col col-lg-3 col-xs-12 text-danger">
                                     <i class="fa fa-exclamation-circle"></i>
                                     <?php echo __('empty arguments will be removed automatically'); ?>
                                 </span>
@@ -219,7 +220,8 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
-                                            type="button" ng-click="checkForMisingArguments()"><?php echo __('Create command'); ?></button>
+                                            type="button"
+                                            ng-click="checkForMisingArguments()"><?php echo __('Create command'); ?></button>
                                     <a back-button href="javascript:void(0);" fallback-state='CommandsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
@@ -247,7 +249,8 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                     <div class="row">
                         <div class="col-12">
                             <div id="MacroContent">
-                                <table id="macrosTable" class="table table-striped m-0 table-bordered table-hover table-sm">
+                                <table id="macrosTable"
+                                       class="table table-striped m-0 table-bordered table-hover table-sm">
                                     <thead>
                                     <tr>
                                         <th class="no-sort">
@@ -363,7 +366,8 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                             <h4>
                                 <?php echo h($macroCategory['category']); ?>
                             </h4>
-                            <table id="macrosTable" class="table table-striped m-0 table-bordered table-hover padding-bottom-20">
+                            <table id="macrosTable"
+                                   class="table table-striped m-0 table-bordered table-hover padding-bottom-20">
                                 <thead>
                                 <tr>
                                     <th class="no-sort">

@@ -246,7 +246,7 @@ openITCOCKPIT v4 Utilities
 }
 
 .margin-bottom-5 {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .margin-bottom-10 {
@@ -580,7 +580,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 }
 
 .border-color-error {
-    border-color: #A90329;
+    border-color: #CC0000;
 }
 
 /* menu search stuff */

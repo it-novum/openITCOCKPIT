@@ -73,6 +73,7 @@ angular.module('openITCOCKPIT')
                 argsCount++;
             }
             $scope.args.push({
+                id: argsCount,
                 name: '$ARG' + argsCount + '$',
                 human_name: ''
             });
