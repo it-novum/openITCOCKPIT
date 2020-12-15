@@ -82,7 +82,8 @@ angular.module('openITCOCKPIT')
                 $scope.post.Host.customvariables.push({
                     objecttype_id: 512, //OBJECT_HOSTTEMPLATE because value from host template
                     name: $scope.hosttemplate.Hosttemplate.customvariables[index].name,
-                    value: $scope.hosttemplate.Hosttemplate.customvariables[index].value
+                    value: $scope.hosttemplate.Hosttemplate.customvariables[index].value,
+                    password: $scope.hosttemplate.Hosttemplate.customvariables[index].password
                 });
             }
 
@@ -97,6 +98,11 @@ angular.module('openITCOCKPIT')
 
             $('#HostTagsInput').tagsinput('removeAll');
             $('#HostTagsInput').tagsinput('add', $scope.post.Host.tags);
+        };
+
+        $scope.submitSaveHostAndAssignMatchingServicetemplateGroups = function(){
+            $scope.post.save_host_and_assign_matching_servicetemplate_groups = true;
+            $scope.submit();
         };
 
         var highlight = function($selector){
@@ -255,7 +261,8 @@ angular.module('openITCOCKPIT')
             $scope.post.Host.customvariables.push({
                 objecttype_id: 256, //OBJECT_HOST
                 name: '',
-                value: ''
+                value: '',
+                password: 0
             });
         };
 
@@ -337,11 +344,44 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 var url = $state.href('HostsEdit', {id: $scope.id});
-                NotyService.genericSuccess({
-                    message: '<u><a href="' + url + '" class="txt-color-white"> '
-                        + $scope.successMessage.objectName
-                        + '</a></u> ' + $scope.successMessage.message
-                });
+                var showWarning = false;
+                var timeout = 3500;
+                var message = '<u><a href="' + url + '" class="txt-color-white"> '
+                    + $scope.successMessage.objectName
+                    + '</a></u> ' + $scope.successMessage.message;
+
+                if($scope.post.hasOwnProperty('save_host_and_assign_matching_servicetemplate_groups')
+                    && $scope.post.save_host_and_assign_matching_servicetemplate_groups){
+                    if(!!result.data.services._ids){
+                        message = '<u><a href="' + url + '" class="txt-color-white"> '
+                            + $scope.successMessage.objectName
+                            + '</a></u> ' + sprintf($scope.successMessage.allocate_message, result.data.services._ids.length);
+                        timeout = 15000;
+                    }
+                    if(result.data.servicetemplategroups_removed_count > 0){
+                        showWarning = true;
+                        message += sprintf($scope.successMessage.allocate_warning, result.data.servicetemplategroups_removed_count);
+                        timeout = 15000;
+                    }
+                    if(!!result.data.disabled_services._ids){
+                        if(result.data.services_disabled_count > 0){
+                            message += sprintf($scope.successMessage.disable_message, result.data.services_disabled_count);
+                            timeout = 15000;
+                        }
+                    }
+                }
+
+                if(showWarning === true){
+                    NotyService.genericWarning({
+                        message: message,
+                        timeout: 15000
+                    });
+                }else{
+                    NotyService.genericSuccess({
+                        message: message,
+                        timeout: timeout
+                    });
+                }
 
                 if($state.hasOwnProperty('previous') && $state.previous !== null && $state.previous.name !== "" && $state.previous.url !== "^"){
                     $state.go($state.previous.name, $state.previous.params).then(function(){

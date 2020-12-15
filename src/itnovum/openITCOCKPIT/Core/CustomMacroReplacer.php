@@ -38,6 +38,11 @@ class CustomMacroReplacer {
     private $objecttype_id;
 
     /**
+     * @var boolean
+     */
+    private $replace_passwords;
+
+    /**
      * @var array
      */
     private $mapping = [
@@ -51,10 +56,12 @@ class CustomMacroReplacer {
      *
      * @param $customvariables
      * @param $objecttype_id
+     * @param $replace_passwords
      */
-    public function __construct($customvariables, $objecttype_id) {
+    public function __construct($customvariables, $objecttype_id, $replace_passwords = true) {
         $this->customvariables = $customvariables;
         $this->objecttype_id = $objecttype_id;
+        $this->replace_passwords = $replace_passwords;
         $this->buildMapping();
     }
 
@@ -103,8 +110,10 @@ class CustomMacroReplacer {
             'search'  => [],
             'replace' => [],
         ];
-
         foreach ($this->customvariables as $customvariable) {
+            if ($this->replace_passwords === false && $customvariable['password'] === 1) {
+                continue;
+            }
             $name = sprintf('%s%s$', $this->getMacroPrefix(), $customvariable['name']);
             $mapping['search'][] = $name;
             $mapping['replace'][] = $customvariable['value'];

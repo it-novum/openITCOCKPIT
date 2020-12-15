@@ -47,6 +47,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
@@ -487,6 +488,8 @@ class HostsController extends AppController {
                 throw new NotFoundException(__('Invalid host template'));
             }
 
+            $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
+
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
             $HostComparisonForSave = new HostComparisonForSave($this->request->getData(), $hosttemplate);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
@@ -533,6 +536,27 @@ class HostsController extends AppController {
                     $ChangelogsTable->save($changelogEntry);
                 }
 
+                if ($saveHostAndAssignMatchingServicetemplateGroups === true) {
+                    /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+                    $result = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
+                        $requestData['Host']['hostgroups']['_ids'],
+                        $host->get('id'),
+                        $User->getId(),
+                        $this->MY_RIGHTS
+                    );
+
+                    if ($this->isJsonRequest()) {
+                        $this->set('id', $host->get('id'));
+                        $this->set('services', ['_ids' => $result['newServiceIds']]);
+                        $this->set('errors', $result['errors']);
+                        $this->set('servicetemplategroups_removed_count', $result['servicetemplategroups_removed_count']);
+                        $this->viewBuilder()->setOption('serialize', ['id', 'services', 'errors', 'servicetemplategroups_removed_count']);
+                        return;
+                    }
+
+                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($host); // REST API ID serialization
@@ -568,10 +592,8 @@ class HostsController extends AppController {
 
         $host = $HostsTable->getHostForEdit($id);
         $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
-
         $HostMergerForView = new HostMergerForView($host, $hosttemplate);
         $mergedHost = $HostMergerForView->getDataForView();
-
         $hostForChangelog = $mergedHost;
 
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
@@ -640,6 +662,8 @@ class HostsController extends AppController {
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
             }
+            $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
+
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
 
             $HostContainersPermissions = new HostContainersPermissions(
@@ -701,6 +725,48 @@ class HostsController extends AppController {
                     $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                     $ChangelogsTable->save($changelogEntry);
                 }
+
+                if ($saveHostAndAssignMatchingServicetemplateGroups === true) {
+                    /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+                    $resultForAssign = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
+                        $requestData['Host']['hostgroups']['_ids'],
+                        $hostEntity->get('id'),
+                        $User->getId(),
+                        $this->MY_RIGHTS
+                    );
+
+
+                    $resultForDisable = $ServicetemplategroupsTable->disableServicesIfMatchingHostgroupsHasBeenRemoved(
+                        $hostEntity->get('id'),
+                        $User->getId(),
+                        $mergedHost['Host']['hostgroups']['_ids'],
+                        $requestData['Host']['hostgroups']['_ids']
+                    );
+
+                    if ($this->isJsonRequest()) {
+                        $this->set('id', $hostEntity->get('id'));
+                        $this->set('services', ['_ids' => $resultForAssign['newServiceIds']]);
+                        $this->set('disabled_services', ['_ids' => $resultForDisable['disabledServiceIds']]);
+                        $this->set('errors', $resultForAssign['errors']);
+                        $this->set('disabled_errors', $resultForDisable['errors']);
+                        $this->set('servicetemplategroups_removed_count', $resultForAssign['servicetemplategroups_removed_count']);
+                        $this->set('services_disabled_count', $resultForDisable['services_disabled_count']);
+                        $this->viewBuilder()->setOption('serialize', [
+                            'id',
+                            'services',
+                            'disabled_services',
+                            'errors',
+                            'disabled_errors',
+                            'servicetemplategroups_removed_count',
+                            'services_disabled_count'
+                        ]);
+                        return;
+                    }
+
+                }
+
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization
@@ -1544,7 +1610,8 @@ class HostsController extends AppController {
                         $customvariables[] = [
                             'name'          => $customvariable->get('name'),
                             'value'         => $customvariable->get('value'),
-                            'objecttype_id' => OBJECT_HOST
+                            'objecttype_id' => OBJECT_HOST,
+                            'password'      => $customvariable->get('password')
                         ];
                     }
 
@@ -1874,9 +1941,19 @@ class HostsController extends AppController {
         $mergedHost['is_satellite_host'] = $hostObj->isSatelliteHost();
         $mergedHost['allowEdit'] = $allowEdit;
 
+        $replacePasswordInObjectMacros = false;
+        try {
+            $systemsettingsReplacePasswordsEntity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.REPLACE_PASSWORD_IN_OBJECT_MACROS');
+            if ($systemsettingsReplacePasswordsEntity->get('value') === '1') {
+                $replacePasswordInObjectMacros = true;
+            }
+        } catch (RecordNotFoundException $e) {
+            // Rocket not found in system settings - do not replace passwords in $_HOSTFOOBAR$ custom variables
+        }
+
         //Replace macros in host url
         $HostMacroReplacer = new HostMacroReplacer($mergedHost);
-        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacros);
         $mergedHost['host_url_replaced'] =
             $HostMacroReplacer->replaceBasicMacros(          // Replace $HOSTNAME$
                 $HostCustomMacroReplacer->replaceAllMacros(  // Replace $_HOSTFOOBAR$

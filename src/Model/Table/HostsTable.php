@@ -890,7 +890,7 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
                     'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
                 ]
             ]
@@ -1032,7 +1032,7 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
                     'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
 
                 ]
@@ -1859,7 +1859,7 @@ class HostsTable extends Table {
             }
         }
 
-        if(!empty($where['NOT'])){
+        if (!empty($where['NOT'])) {
             // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
             $where['NOT'] = [
                 'OR' => $where['NOT']
@@ -1906,7 +1906,7 @@ class HostsTable extends Table {
                 }
             }
 
-            if(!empty($where['NOT'])){
+            if (!empty($where['NOT'])) {
                 // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
                 $where['NOT'] = [
                     'OR' => $where['NOT']
@@ -3970,5 +3970,31 @@ class HostsTable extends Table {
             $intArr[$item] = $item;
         }
         return $intArr;
+    }
+
+    /**
+     * @param int $hostId
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getServicesByHostIdForAllocation($hostId) {
+        $query = $this->find()
+            ->contain([
+                'Services' => function (Query $query) {
+                    return $query
+                        ->select([
+                            'Services.id',
+                            'Services.host_id',
+                            'Services.disabled',
+                            'Services.servicetemplate_id'
+                        ]);
+                }
+            ])
+            ->where([
+                'Hosts.id' => $hostId
+            ])
+            ->disableHydration()
+            ->first();
+
+        return $query;
     }
 }

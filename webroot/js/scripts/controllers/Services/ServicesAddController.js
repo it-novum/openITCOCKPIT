@@ -143,7 +143,8 @@ angular.module('openITCOCKPIT')
                 $scope.post.Service.customvariables.push({
                     objecttype_id: 4096, //OBJECT_SERVICETEMPLATE because value from service template
                     name: $scope.servicetemplate.Servicetemplate.customvariables[index].name,
-                    value: $scope.servicetemplate.Servicetemplate.customvariables[index].value
+                    value: $scope.servicetemplate.Servicetemplate.customvariables[index].value,
+                    password: $scope.servicetemplate.Servicetemplate.customvariables[index].password
                 });
             }
 
@@ -324,7 +325,8 @@ angular.module('openITCOCKPIT')
             $scope.post.Service.customvariables.push({
                 objecttype_id: 2048, //OBJECT_SERVICE
                 name: '',
-                value: ''
+                value: '',
+                password: 0
             });
         };
 
