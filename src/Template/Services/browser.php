@@ -483,7 +483,7 @@ use Cake\Core\Plugin;
                                                     </code>
                                                 </td>
                                             </tr>
-                                            <tr>
+                                            <tr  ng-show="servicestatus.currentState > 0">
                                                 <td>
                                                     <?php echo __('Last time'); ?>
                                                     <span class="badge badge-success" style="margin-right: 2px;">

@@ -84,7 +84,8 @@ angular.module('openITCOCKPIT')
             $scope.post.Contact.customvariables.push({
                 objecttype_id: 32, //OBJECT_CONTACT
                 name: '',
-                value: ''
+                value: '',
+                password: 0
             });
         };
 

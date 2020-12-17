@@ -48,16 +48,24 @@ class CustomVariable {
     private $objecttype_id;
 
     /**
-     * CustomVariableKeyValue constructor.
-     *
-     * @param string $key
-     * @param string $value
+     * @var int
      */
-    public function __construct($name, $value, $id = 0, $objecttype_id = 0) {
+    private $password;
+
+    /**
+     * CustomVariableKeyValue constructor.
+     * @param $name
+     * @param $value
+     * @param int $id
+     * @param int $objecttype_id
+     * @param int $password
+     */
+    public function __construct($name, $value, $id = 0, $objecttype_id = 0, $password = 0) {
         $this->name = $name;
         $this->value = $value;
         $this->id = $id;
         $this->objecttype_id = $objecttype_id;
+        $this->password = $password;
     }
 
     /**
@@ -89,6 +97,13 @@ class CustomVariable {
     }
 
     /**
+     * @return int
+     */
+    public function getPassword() {
+        return $this->password;
+    }
+
+    /**
      * reset Id -> to avoid overwriting from custom variables (host templates)
      */
     public function resetId() {
@@ -100,7 +115,7 @@ class CustomVariable {
     /**
      * @param int $objecttype_id
      */
-    public function setObjecttypeId($objecttype_id){
+    public function setObjecttypeId($objecttype_id) {
         $this->objecttype_id = $objecttype_id;
     }
 
@@ -110,8 +125,9 @@ class CustomVariable {
      */
     public function asArray() {
         $customVariable = [
-            'name'  => $this->name,
-            'value' => $this->value,
+            'name'     => $this->name,
+            'value'    => $this->value,
+            'password' => $this->password
         ];
 
         if ($this->id > 0) {

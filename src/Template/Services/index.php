@@ -511,7 +511,7 @@
 
                             <tbody>
                             <tr ng-repeat-start="service in services"
-                                ng-if="services[$index-1].Host.hostname !== service.Host.hostname">
+                                ng-if="services[$index-1].Host.uuid !== service.Host.uuid">
                                 <td colspan="13" class="service_table_host_header">
 
                                     <hoststatusicon host="service"></hoststatusicon>

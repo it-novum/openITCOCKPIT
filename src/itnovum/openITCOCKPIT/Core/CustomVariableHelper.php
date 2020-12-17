@@ -33,6 +33,7 @@ class CustomVariableHelper {
         foreach ($customVariables as $customVariable) {
             $key = $customVariable['name'];
             $value = $customVariable['value'];
+            $password = $customVariable['password'];
 
             $id = 0;
             if (isset($customVariable['id'])) {
@@ -45,7 +46,7 @@ class CustomVariableHelper {
             }
 
             $repository->addCustomVariable(
-                new CustomVariable($key, $value, $id, $objecttype_id)
+                new CustomVariable($key, $value, $id, $objecttype_id, $password)
             );
         }
 

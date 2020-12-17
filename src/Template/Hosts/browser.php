@@ -405,7 +405,7 @@ use Cake\Core\Plugin;
                                                          ng-bind-html="hoststatus.outputHtml | trustAsHtml"></div>
                                                 </td>
                                             </tr>
-                                            <tr>
+                                            <tr ng-show="hoststatus.currentState > 0">
                                                 <td>
                                                     <?php echo __('Last time'); ?>
                                                     <span class="badge badge-success" style="margin-right: 2px;">

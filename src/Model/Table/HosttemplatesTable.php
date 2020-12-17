@@ -1075,6 +1075,14 @@ class HosttemplatesTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid) {
+        return $this->exists(['Hosttemplates.uuid' => $uuid]);
+    }
+
+    /**
      * @param int $commandId
      * @param array $MY_RIGHTS
      * @param bool $enableHydration

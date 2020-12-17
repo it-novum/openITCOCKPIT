@@ -23,18 +23,18 @@ msgstr ""
 #: src/Template/Errors/error400.php:18
 #: src/Template/Errors/error500.php:18
 msgid "Error"
-msgstr ""
+msgstr "Fehler"
 
 #: src/Template/Error/error400.php:37
 #: src/Template/Errors/error400.php:20
 msgid "The requested address {0} was not found on this server."
-msgstr ""
+msgstr "Die angeforderte Adresse {0} wurde auf diesem Server nicht gefunden."
 
 #: src/Template/Error/error500.php:38
 msgid "An Internal Error Has Occurred"
-msgstr ""
+msgstr "Ein interner Fehler ist aufgetreten"
 
 #: src/Template/Errors/error500.php:19
 msgid "An Internal Error Has Occurred."
-msgstr ""
+msgstr "Ein interner Fehler ist aufgetreten."
 

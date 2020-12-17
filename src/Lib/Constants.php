@@ -48,8 +48,6 @@ class Constants {
 
         $this->defineAjaxLimit();
 
-        $this->defineImportSourceTypeConstants();
-
         $this->attachContainerpropertiesToContainers();
     }
 
@@ -239,14 +237,6 @@ class Constants {
     public function defineAjaxLimit() {
         $this->define([
             'ITN_AJAX_LIMIT' => 150
-        ]);
-    }
-
-    private function defineImportSourceTypeConstants() {
-        $this->define([
-            'IMPORT_CSV'   => 1,
-            'IMPORT_NMAP'  => 2,
-            'IMPORT_IDOIT' => 3
         ]);
     }
 
