@@ -1450,7 +1450,7 @@ class ServicesController extends AppController {
         $ServiceMacroReplacer = new ServiceMacroReplacer($mergedService);
         $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE, $replacePasswordInObjectMacros);
 
-        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacrosq);
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacros);
         $mergedService['service_url_replaced'] =
             $ServiceMacroReplacer->replaceBasicMacros(                  // Replace $SERVICEDESCRIPTION$
                 $HostMacroReplacer->replaceBasicMacros(                 // Replace $HOSTNAME$
