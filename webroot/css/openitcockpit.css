@@ -1257,13 +1257,14 @@ label.menu-open-button:hover {
     word-spacing: 100vw;
 }
 
-.font-size-90{
+.font-size-90 {
     font-size: 90px;
 }
 
 .system-health-item {
-    white-space:normal;
+    white-space: normal;
 }
+
 .container-table {
     border-spacing: 1px;
     border-collapse: separate;
@@ -1287,3 +1288,26 @@ label.menu-open-button:hover {
     border-radius: 0.5rem;
 }
 
+
+.chat-component .chat-header, .chat-component .chat-body {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    border-left: 1px solid rgba(0, 0, 0, 0.07);
+    border-right: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.chat-component .user-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.chat-message-author {
+    color: #000;
+}
+
+.chat-message-date {
+    font-size: 8px;
+    display: none;
+}
+
+.chat-message-container:hover .chat-message-date {
+    display: block;
+}
