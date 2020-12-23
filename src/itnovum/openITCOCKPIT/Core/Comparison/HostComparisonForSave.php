@@ -56,14 +56,22 @@ class HostComparisonForSave {
      */
     private $hasOwnCustomvariables = false;
 
+
+    /**
+     * @var bool
+     */
+    private $newHost;
+
+
     /**
      * HostComparison constructor.
      * @param array $host
      * @param array $hosttemplate HosttemplatesTable::$getHosttemplateForDiff()
      */
-    public function __construct($host, $hosttemplate) {
+    public function __construct($host, $hosttemplate, $newHost = false) {
         $this->host = $host['Host'];
         $this->hosttemplate = $hosttemplate['Hosttemplate'];
+        $this->newHost = $newHost;
     }
 
     /**
@@ -96,6 +104,11 @@ class HostComparisonForSave {
         if (isset($data['hosts_to_containers_sharing']['_ids'])) {
             $data['hosts_to_containers_sharing']['_ids'][] = $data['container_id'];
             $data['hosts_to_containers_sharing']['_ids'] = array_unique($data['hosts_to_containers_sharing']['_ids']);
+        }
+
+        //only for new host (add)
+        if (!isset($data['hosts_to_containers_sharing']['_ids']) && $this->newHost === true) {
+            $data['hosts_to_containers_sharing']['_ids'][] = $data['container_id'];
         }
 
         $data['parenthosts'] = isset($this->host['parenthosts']) ? $this->host['parenthosts'] : [];
