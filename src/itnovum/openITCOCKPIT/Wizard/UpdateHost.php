@@ -63,15 +63,14 @@ class UpdateHost {
                     'name'          => $hostCustomvariableName,
                     'value'         => $postData[$postDataKey],
                     'objecttype_id' => OBJECT_HOST,
+                    'password'      => 0
                 ];
             }
 
         $mergedHost['Host']['customvariables'] = $currentHostCustomVariables;
-
         $HostComparisonForSave = new HostComparisonForSave($mergedHost, $hosttemplate);
 
         $dataForSave = $HostComparisonForSave->getDataForSaveForAllFields();
-
 
         //Add required fields for validation
         $dataForSave['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
@@ -80,14 +79,17 @@ class UpdateHost {
         $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
         //Update contact data
+
         $hostEntity = $HostsTable->get($host['Host']['id']);
+
         $hostEntity = $HostsTable->patchEntity($hostEntity, $dataForSave);
+
+
         $HostsTable->save($hostEntity);
         if ($hostEntity->hasErrors()) {
             return $hostEntity->getErrors();
         } else {
             //No errors
-
             /** @var  ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
