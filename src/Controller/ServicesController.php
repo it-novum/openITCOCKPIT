@@ -1325,6 +1325,7 @@ class ServicesController extends AppController {
      * @param int|string|null $idOrUuid
      * @throws MissingDbBackendException
      * @throws GuzzleException
+     * @throws \Exception
      */
     public function browser($idOrUuid = null) {
         $User = new User($this->getUser());

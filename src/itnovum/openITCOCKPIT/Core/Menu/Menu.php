@@ -200,6 +200,16 @@ class Menu {
                 ['hosts'],
                 2
             ))
+            ->addLink(new MenuLink(
+                __('Wizard'),
+                'WizardsIndex',
+                'wizards',
+                'index',
+                '',
+                'fas fa-magic',
+                [],
+                3
+            ))
             ->addCategory((new MenuCategory(
                 'objects_category',
                 __('Objects'),
@@ -670,6 +680,16 @@ class Menu {
                     'issue',
                     '',
                     'fa fa-bug',
+                    [],
+                    4
+                ))
+                ->addLink(new MenuLink(
+                    __('Wizard assignments'),
+                    'WizardsAssignments',
+                    'wizards',
+                    'assignments',
+                    '',
+                    'fas fa-magic',
                     [],
                     4
                 ))
