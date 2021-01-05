@@ -1311,3 +1311,13 @@ label.menu-open-button:hover {
 .chat-message-container:hover .chat-message-date {
     display: block;
 }
+
+.discord-invite-button {
+    background-color: #7289da !important;
+    background-image: linear-gradient(to bottom, #7289da, #7289da) !important;
+    color: #fff;
+}
+
+.discord-svg{
+    max-width:100px !important;
+}
