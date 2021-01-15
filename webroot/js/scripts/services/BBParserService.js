@@ -1,8 +1,8 @@
 angular.module('openITCOCKPIT')
-    .service('BBParserService', function() {
+    .service('BBParserService', function(){
 
         return {
-            parse: function(bbCode) {
+            parse: function(bbCode){
                 //ITC-732 This is not default bb code!
                 var resString = bbCode;
                 resString = resString.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -28,8 +28,8 @@ angular.module('openITCOCKPIT')
                 resString = resString.replace(/\[text ?= ?'([\w\-]+)' ?\]/gi, '<span style="font-size:$1">');
                 resString = resString.replace(/\[\/text\]/gi, '</span>');
 
-                resString = resString.replace(/\[url ?= ?'([\w\-:\/\[\]\. ]+)' ?tab ?\]/gi, '<a href="$1" target="_blank">');
-                resString = resString.replace(/\[url ?= ?'([\w\-:\/\[\]\. ]+)' ?\]/gi, '<a href="$1">');
+                resString = resString.replace(/\[url ?= ?'([\w\-:\/\[\]\.\#\! ]+)' ?tab ?\]/gi, '<a href="$1" target="_blank">');
+                resString = resString.replace(/\[url ?= ?'([\w\-:\/\[\]\.\#\! ]+)' ?\]/gi, '<a href="$1">');
                 resString = resString.replace(/\[\/url\]/gi, '</a>');
                 return resString;
             }
