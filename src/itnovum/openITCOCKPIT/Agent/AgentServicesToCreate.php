@@ -326,8 +326,10 @@ class AgentServicesToCreate {
                             if ($process['exec'] !== '') {
                                 $value = $process['exec'];
                             }
-                            if ($process['cmdline'] !== '') {
+                            if (is_array($process['cmdline']) && !empty($process['cmdline'])) {
                                 $value = implode(' ', $process['cmdline']);
+                            } else if($process['cmdline'] !== '') {
+                                $value = $process['cmdline'];
                             }
                             $service['servicecommandargumentvalues'][6]['value'] = $value;
                             $service['agent_wizard_option_description'] = $value;

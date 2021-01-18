@@ -43,10 +43,10 @@ use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
  */
 class ConnectToAgentCommand extends Command {
 
-    private $guzzleOptions = [];
-    private $basicUsername = '';
-    private $basicPassword = '';
-    private $noProxy = false;
+    private array $guzzleOptions = [];
+    private string $basicUsername = '';
+    private string $basicPassword = '';
+    private bool $noProxy = false;
 
     /**
      * @param ConsoleOptionParser $parser
@@ -138,25 +138,28 @@ class ConnectToAgentCommand extends Command {
             $result = json_decode($response->getBody()->getContents(), true);
 
             if ($result === false) {
-                return false;
+                $io->abort(sprintf('Could not fetch csr from agent or invalid body: %i %s', $response->getStatusCode(), $response->getBody()), 3);
             }
         }
 
         try {
             if (isset($result['csr']) && $result['csr'] != "disabled") {
-                $data_string = json_encode($AgentCertificateData->signAgentCsr($result['csr']));
-                $this->guzzleOptions['json'] = $data_string;
-                //$this->guzzleOptions['headers']['Content-Length'] = strlen($data_string);
+                $this->guzzleOptions['json'] = $AgentCertificateData->signAgentCsr($result['csr']);
 
+                $response = null;
                 if ($useSSL) {
                     $response = $guzzleclient->post('https://' . $args->getOption('ip') . ':' . $args->getOption('port') . '/updateCrt', $this->guzzleOptions);
                 } else {
                     $response = $guzzleclient->post('http://' . $args->getOption('ip') . ':' . $args->getOption('port') . '/updateCrt', $this->guzzleOptions);
                 }
+
+                if ($response->getStatusCode() !== 200) {
+                    $io->abort(sprintf('Error: could not update agent certificate: %s', $response->getBody()), 3);
+                }
             }
         } catch (\Exception $e) {
             if (!$e->getCode() == 0) {     //else: got no response; need to be fixed in a future version
-                echo 'Error: ' . $e->getCode() . ' - ' . $e->getMessage();
+                $io->abort('Error: ' . $e->getCode() . ' - ' . $e->getMessage(), 3);
             }
         }
 

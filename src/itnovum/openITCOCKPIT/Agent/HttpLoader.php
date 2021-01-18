@@ -52,7 +52,7 @@ class HttpLoader {
      * @param array $config
      * @param string $hostaddress
      */
-    public function __construct($config, $hostaddress) {
+    public function __construct(array $config, string $hostaddress) {
         if (!isset($config['proxy'])) {
             $config['proxy'] = false;
         }
@@ -60,7 +60,7 @@ class HttpLoader {
         $this->hostaddress = $hostaddress;
     }
 
-    private function buildConnectionOptions($config) {
+    private function buildConnectionOptions(array $config) {
         /** @var ProxiesTable $ProxiesTable */
         $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
         $proxySettings = $ProxiesTable->getSettings();
@@ -266,9 +266,7 @@ class HttpLoader {
 
         try {
             if (isset($result['csr']) && $result['csr'] != "disabled") {
-                $data_string = json_encode($AgentCertificateData->signAgentCsr($result['csr']));
-                $this->guzzleOptions['json'] = $data_string;
-                //$this->guzzleOptions['headers']['Content-Length'] = strlen($data_string);
+                $this->guzzleOptions['json'] = $AgentCertificateData->signAgentCsr($result['csr']);
 
                 if ($useSSL) {
                     $responseThree = $Client->post('https://' . $this->hostaddress . ':' . $this->config['port'] . '/updateCrt', $this->guzzleOptions);

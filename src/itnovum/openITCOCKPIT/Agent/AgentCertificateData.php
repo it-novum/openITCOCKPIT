@@ -16,11 +16,11 @@ use itnovum\openITCOCKPIT\Core\System\Health\SystemId;
  */
 class AgentCertificateData {
 
-    private $ECC_CA = false;
-    private $days_CA = 36500; //36500 = 100 years (with 365 days)
+    private bool $ECC_CA = false;
+    private int $days_CA = 36500; //36500 = 100 years (with 365 days)
 
-    private $caCertPath = '/opt/openitc/agent/server_ca.pem';
-    private $caKeyPath = '/opt/openitc/agent/server_ca.key';
+    private string $caCertPath = '/opt/openitc/agent/server_ca.pem';
+    private string $caKeyPath = '/opt/openitc/agent/server_ca.key';
 
     //needs: mkdir -p /opt/openitc/agent && chown www-data:www-data -R /opt/openitc/agent
 
@@ -31,23 +31,23 @@ class AgentCertificateData {
         }
     }
 
-    public function isEccCa() {
+    public function isEccCa(): bool {
         return $this->ECC_CA;
     }
 
-    public function getCaDayLifetime() {
+    public function getCaDayLifetime(): int {
         return $this->days_CA;
     }
 
-    public function getCaCertPath() {
+    public function getCaCertPath(): string {
         return $this->caCertPath;
     }
 
-    public function getCaKeyPath() {
+    public function getCaKeyPath(): string {
         return $this->caKeyPath;
     }
 
-    public function getAgentCsr($hostuuid, $csr, AgentconnectorTable $AgentconnectorTable) {
+    public function getAgentCsr($hostuuid, $csr, AgentconnectorTable $AgentconnectorTable): array {
         $AgentConnectionEntity = $AgentconnectorTable->getByHostUuid($hostuuid);
 
         $output = $this->signAgentCsr($csr);
@@ -65,7 +65,7 @@ class AgentCertificateData {
         return $output;
     }
 
-    public function signAgentCsr($csr, $updateDatabaseUsingHostUuid = '') {
+    public function signAgentCsr($csr, $updateDatabaseUsingHostUuid = ''): array {
         if (!is_file($this->getCaCertPath())) {
             $this->generateServerCA();
         }
