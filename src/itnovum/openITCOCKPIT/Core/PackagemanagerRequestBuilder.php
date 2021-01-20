@@ -62,6 +62,11 @@ class PackagemanagerRequestBuilder {
     /**
      * @var string
      */
+    private $supportCredentialUrl = '%s/licenses/checkSupportQualification/%s.json';
+
+    /**
+     * @var string
+     */
     private $ENVIRONMENT;
 
     /**
@@ -105,6 +110,13 @@ class PackagemanagerRequestBuilder {
 //        }
 
         return sprintf($this->checkLicenseUrl, $this->externalAddress, $this->license);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlForSupportCredentials() {
+        return sprintf($this->supportCredentialUrl, $this->externalAddress, $this->license);
     }
 
     /**
