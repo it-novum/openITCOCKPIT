@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
  * @method \App\Model\Entity\Agentconfig findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @deprecated
  */
 class AgentconfigsTable extends Table {
 

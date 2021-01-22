@@ -13,6 +13,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\SystemId;
 
 /**
  * Class AgentCertificateData
+ * @deprecated
  */
 class AgentCertificateData {
 

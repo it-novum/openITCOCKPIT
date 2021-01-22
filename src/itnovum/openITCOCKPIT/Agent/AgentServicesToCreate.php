@@ -28,6 +28,7 @@ namespace itnovum\openITCOCKPIT\Agent;
 /**
  * Class AgentServicesToCreate
  * @package itnovum\openITCOCKPIT\Agent
+ * @deprecated
  */
 class AgentServicesToCreate {
 

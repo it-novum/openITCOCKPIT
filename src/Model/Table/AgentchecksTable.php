@@ -24,6 +24,7 @@ use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
  * @method \App\Model\Entity\Agentcheck findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @deprecated
  */
 class AgentchecksTable extends Table {
 

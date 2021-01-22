@@ -27,6 +27,11 @@ namespace itnovum\openITCOCKPIT\Agent;
 
 use App\Model\Entity\Agentcheck;
 
+/**
+ * Class AgentResponseToServicetemplateMapper
+ * @package itnovum\openITCOCKPIT\Agent
+ * @deprecated
+ */
 class AgentResponseToServicetemplateMapper {
 
     private $agentResponse = [];
