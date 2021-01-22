@@ -43,10 +43,10 @@ use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
  */
 class ConnectToAgentCommand extends Command {
 
-    private array $guzzleOptions = [];
-    private string $basicUsername = '';
-    private string $basicPassword = '';
-    private bool $noProxy = false;
+    private $guzzleOptions = [];
+    private $basicUsername = '';
+    private $basicPassword = '';
+    private $noProxy = false;
 
     /**
      * @param ConsoleOptionParser $parser
