@@ -263,6 +263,7 @@ class AclDependencies {
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'config')
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'add')
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'edit')
+            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'loadHostsByString')
             ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'changetrust')
             ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'delete')
             ->dependency('Agentconnector', 'pushCache', 'Agentconnector', 'downloadPushedCheckdata');
