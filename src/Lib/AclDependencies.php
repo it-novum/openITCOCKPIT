@@ -258,12 +258,18 @@ class AclDependencies {
 
 
         $this
+            ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'loadHostsByString')
+            ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'loadAgentConfigByHostId');
+
+        //old delete
+        $this
             ->dependency('Agentconnector', 'config', 'Agentconnector', 'createServices')
             ->dependency('Agentconnector', 'config', 'Agentconnector', 'getServicesToCreateByHostUuid')
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'config')
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'add')
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'edit')
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'loadHostsByString')
+            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'loadAgentConfigByHostId')
             ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'changetrust')
             ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'delete')
             ->dependency('Agentconnector', 'pushCache', 'Agentconnector', 'downloadPushedCheckdata');

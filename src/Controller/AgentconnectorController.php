@@ -517,9 +517,12 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
-    /**
-     * @deprecated
-     */
+    public function wizard() {
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+    }
+
     public function config() {
         if(!$this->isApiRequest()){
             //Only ship HTML Template
@@ -843,6 +846,12 @@ class AgentconnectorController extends AppController {
 
         $this->set('hosts', $hosts);
         $this->viewBuilder()->setOption('serialize', ['hosts']);
+    }
+
+    public function loadAgentConfigByHostId(){
+        $agentConfig  = null;
+        $this->set('agentConfig', $agentConfig);
+        $this->viewBuilder()->setOption('serialize', ['agentConfig']);
     }
 
 
