@@ -36,11 +36,11 @@ use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
-use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
@@ -49,8 +49,9 @@ use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
 use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
 use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -58,6 +59,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
 use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
 use itnovum\openITCOCKPIT\Filter\AgenthostscacheFilter;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 class AgentconnectorController extends AppController {
 
@@ -783,11 +785,55 @@ class AgentconnectorController extends AppController {
         }
     }
 
+
     /****************************
      *       AJAX METHODS       *
      ****************************/
 
+    /**
+     * @param bool $onlyHostsWithWritePermission
+     */
+    public function loadHostsByString($onlyHostsWithWritePermission = false) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->getQuery('selected');
+        $includeDisabled = $this->request->getQuery('includeDisabled') === 'true';
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setIncludeDisabled($includeDisabled);
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
+        if ($onlyHostsWithWritePermission) {
+            $writeContainers = [];
+            foreach ($this->MY_RIGHTS_LEVEL as $containerId => $rightLevel) {
+                $rightLevel = (int)$rightLevel;
+                if ($rightLevel === WRITE_RIGHT) {
+                    $writeContainers[$containerId] = $rightLevel;
+                }
+            }
+            $HostCondition->setContainerIds(array_keys($writeContainers));
+        }
+
+        $hosts = Api::makeItJavaScriptAble(
+            $HostsTable->getHostsByTypeIdAsList(GENERIC_HOST, $HostCondition->getContainerIds(), [
+                'Hosts.disabled' => 0
+            ])
+        );
+
+        $this->set('hosts', $hosts);
+        $this->viewBuilder()->setOption('serialize', ['hosts']);
+    }
+
+
     /************************************
      *    AGENT API METHODS FOR PUSH    *
      ************************************/
+
+
 }
