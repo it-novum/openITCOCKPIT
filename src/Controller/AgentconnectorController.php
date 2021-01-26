@@ -46,6 +46,7 @@ use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
+use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
 use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
@@ -520,9 +521,23 @@ class AgentconnectorController extends AppController {
      * @deprecated
      */
     public function config() {
-        if (!$this->isAngularJsRequest()) {
+        if(!$this->isApiRequest()){
+            //Only ship HTML Template
             return;
         }
+
+        if ($this->request->is('get')){
+            $hostId = $this->request->getQuery('hostId', 0);
+
+            //todo check that config exists
+
+            $AgentConfiguration = new AgentConfiguration();
+            $config = $AgentConfiguration->unmarshal('{}');
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+        }
+
     }
 
     /**
