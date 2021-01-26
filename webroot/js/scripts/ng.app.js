@@ -180,15 +180,15 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconfigsScanController"
             })
 
-            .state('AgentconnectorsConfig', {
-                url: '/agentconnector/config',
+            .state('AgentconnectorsWizard', {
+                url: '/agentconnector/wizard',
                 params: {
                     hostId: {
                         value: null
                     }
                 },
-                templateUrl: "/agentconnector/config.html",
-                controller: "AgentconnectorsConfigController"
+                templateUrl: "/agentconnector/wizard.html",
+                controller: "AgentconnectorsWizardController"
             })
 
             .state('AgentconnectorsAgent', {

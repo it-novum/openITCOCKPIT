@@ -74,9 +74,12 @@
                                 callback="loadHostsCallback"
                                 ng-model="post.Host.id">
                             </select>
+                            <div ng-show="post.Host.id < 1" class="warning-glow">
+                                <?php echo __('Please select a host.'); ?>
+                            </div>
                         </div>
                     </div>
-                    <div class="row padding-top-20">
+                    <div class="row padding-top-20" ng-show="post.Host.id">
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 offset-lg-2 offset-xl-2">
                             <div class="panel panel-default agent-mode-box-pull">
                                 <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
@@ -147,6 +150,78 @@
                                             ng-click="continueWithPushMode()">
 
                                             <?= __('Continue with push mode'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CONFIG ALREADY EXISTS  -->
+
+                    <div class="row padding-top-20" ng-show="post.Host.id">
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4  offset-lg-2 offset-xl-2">
+                            <div class="panel panel-default agent-mode-box-create-services">
+                                <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
+                                    <h4>
+                                        <?= __('Create new services'); ?>
+                                    </h4>
+                                    <hr/>
+                                </div>
+
+                                <div class="panel-container padding-left-20 padding-right-20"
+                                     style="min-height: 180px;">
+                                    <h5><?= __('You agent is already configured'); ?></h5>
+                                    <div class="text">
+                                        <ul>
+                                            <li><?= __('Add new services to your monitoring'); ?></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="panel-footer padding-20">
+                                    <div class="col-xs-12 padding-right-0">
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-success pull-right"
+                                            ng-click="continueWithPushMode()">
+
+                                            <?= __('Continue with service creation'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                            <div class="panel panel-default agent-mode-box-config-edit">
+                                <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
+                                    <h4>
+                                        <?= __('Edit agent configuration'); ?>
+                                    </h4>
+                                    <hr/>
+                                </div>
+
+                                <div class="panel-container padding-left-20 padding-right-20"
+                                     style="min-height: 180px;">
+                                    <h5><?= __('When is a configuration change required?'); ?></h5>
+                                    <div class="text">
+                                        <ul>
+                                            <li><?= __('To enable new agent checks/features'); ?></li>
+
+                                            <li><?= __('To switch from "Push" to "Pull" mode and vice versa'); ?></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="panel-footer padding-20">
+                                    <div class="col-xs-12 padding-right-0">
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-primary pull-right"
+                                            ng-click="continueWithPullMode()">
+
+                                            <?= __('Edit agent configuration'); ?>
                                         </button>
                                     </div>
                                 </div>

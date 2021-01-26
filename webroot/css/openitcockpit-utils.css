@@ -665,10 +665,6 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     position: absolute;
     top:0;
     right:10px;
-    /*
-    bottom:-18px;
-    left: 5px;
-    */
     font-size: 40px;
     padding:0;
     text-shadow: 1px 1px #4285F4;
@@ -681,11 +677,31 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     position: absolute;
     top:-3px;
     right:10px;
-    /*
-    bottom:-14px;
-    left: 5px;
-    */
     font-size: 40px;
     padding:0;
     text-shadow: 1px 1px #4285F4;
+}
+
+.agent-mode-box-config-edit:before {
+    content: "\f21b";
+    font-family: FontAwesome;
+    color: #72a4f7;
+    position: absolute;
+    top:-3px;
+    right:10px;
+    font-size: 40px;
+    padding:0;
+    text-shadow: 1px 1px #4285F4;
+}
+
+.agent-mode-box-create-services:before {
+    content: "\f085";
+    font-family: FontAwesome;
+    color: #36D47E;
+    position: absolute;
+    top:-3px;
+    right:10px;
+    font-size: 40px;
+    padding:0;
+    text-shadow: 1px 1px #00C851;
 }
