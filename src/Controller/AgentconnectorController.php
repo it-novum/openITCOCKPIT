@@ -86,6 +86,10 @@ class AgentconnectorController extends AppController {
      */
 
 
+    /**
+     * @return \Cake\Http\Response
+     * @deprecated
+     */
     public function certificate() {
         if (!$this->isJsonRequest()) {
             throw new BadRequestException();
@@ -132,6 +136,9 @@ class AgentconnectorController extends AppController {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public function agents() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
@@ -177,10 +184,18 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
+    /**
+     * @deprecated
+     */
     public function untrustedAgents() {
         return;
     }
 
+    /**
+     * @param null $action
+     * @param null $id
+     * @deprecated
+     */
     public function pullConfigurations($action = null, $id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML Template
@@ -236,6 +251,7 @@ class AgentconnectorController extends AppController {
 
     /**
      * @param null $id
+     * @deprecated
      */
     public function pushCache($id = null) {
         if (!$this->isApiRequest()) {
@@ -272,6 +288,10 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
+    /**
+     * @param $agenthostscacheId
+     * @deprecated
+     */
     public function downloadPushedCheckdata($agenthostscacheId) {
         /** @var AgenthostscacheTable $AgenthostscacheTable */
         $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
@@ -290,6 +310,7 @@ class AgentconnectorController extends AppController {
 
     /**
      * @throws MissingParameterExceptions
+     * @deprecated
      */
     public function changetrust() {
         if (!$this->isAngularJsRequest()) {
@@ -321,6 +342,7 @@ class AgentconnectorController extends AppController {
     /**
      * @param null $id
      * @throws MissingParameterExceptions
+     * @deprecated
      */
     public function delete($id = null) {
         if (!$this->isJsonRequest()) {
@@ -341,6 +363,9 @@ class AgentconnectorController extends AppController {
         $AgentconnectorTable->delete($AgentconnectorTable->get($id));
     }
 
+    /**
+     * @deprecated
+     */
     public function updateCheckdata() {
         if (!$this->isJsonRequest()) {
             throw new BadRequestException();
@@ -384,6 +409,7 @@ class AgentconnectorController extends AppController {
      * @param $checkdata
      * @param bool $passDataToNagios
      * @return int
+     * @deprecated
      */
     private function processUpdateCheckdata($hostuuid, $checkdata, $passDataToNagios = true) {
         /** @var AgenthostscacheTable $AgenthostscacheTable */
@@ -439,6 +465,7 @@ class AgentconnectorController extends AppController {
     /**
      * @param null $uuid
      * @throws MissingParameterExceptions
+     * @deprecated
      */
     public function sendNewAgentConfig($uuid = null) {
         if (!$this->isJsonRequest()) {
@@ -489,6 +516,9 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
+    /**
+     * @deprecated
+     */
     public function config() {
         if (!$this->isAngularJsRequest()) {
             return;
@@ -498,6 +528,7 @@ class AgentconnectorController extends AppController {
     /**
      * @param null $uuid
      * @throws MissingParameterExceptions
+     * @deprecated
      */
     public function getServicesToCreateByHostUuid($uuid = null) {
         if (!$this->isJsonRequest()) {
@@ -581,6 +612,7 @@ class AgentconnectorController extends AppController {
 
     /**
      * @throws MissingParameterExceptions
+     * @deprecated
      */
     public function createServices() {
         if (!$this->isJsonRequest()) {
@@ -673,6 +705,7 @@ class AgentconnectorController extends AppController {
     /**
      * @param $serviceInput
      * @param Host $host
+     * @deprecated
      */
     private function createRealService($serviceInput, Host $host) {
         /** @var $HosttemplatesTable HosttemplatesTable */
@@ -752,6 +785,11 @@ class AgentconnectorController extends AppController {
         }
     }
 
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
     /**
      * @param bool $onlyHostsWithWritePermission
      */
@@ -791,4 +829,11 @@ class AgentconnectorController extends AppController {
         $this->set('hosts', $hosts);
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
+
+
+    /************************************
+     *    AGENT API METHODS FOR PUSH    *
+     ************************************/
+
+
 }

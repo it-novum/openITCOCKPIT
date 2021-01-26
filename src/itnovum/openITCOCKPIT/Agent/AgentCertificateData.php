@@ -13,14 +13,15 @@ use itnovum\openITCOCKPIT\Core\System\Health\SystemId;
 
 /**
  * Class AgentCertificateData
+ * @deprecated
  */
 class AgentCertificateData {
 
-    private bool $ECC_CA = false;
-    private int $days_CA = 36500; //36500 = 100 years (with 365 days)
+    private $ECC_CA = false;
+    private $days_CA = 36500; //36500 = 100 years (with 365 days)
 
-    private string $caCertPath = '/opt/openitc/agent/server_ca.pem';
-    private string $caKeyPath = '/opt/openitc/agent/server_ca.key';
+    private $caCertPath = '/opt/openitc/agent/server_ca.pem';
+    private $caKeyPath = '/opt/openitc/agent/server_ca.key';
 
     //needs: mkdir -p /opt/openitc/agent && chown www-data:www-data -R /opt/openitc/agent
 

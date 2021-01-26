@@ -40,6 +40,7 @@ use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
 
 /**
  * ConfigGeneratorShell command.
+ * @deprecated
  */
 class ConnectToAgentCommand extends Command {
 

@@ -26,6 +26,7 @@ use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
  * @method \App\Model\Entity\Agentconnector patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \App\Model\Entity\Agentconnector[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Agentconnector findOrCreate($search, callable $callback = null, $options = [])
+ * @deprecated
  */
 class AgentconnectorTable extends Table {
 
