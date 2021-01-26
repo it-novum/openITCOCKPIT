@@ -1,8 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsConfigController', function($scope, $http){
         console.log('DEBUG On !!!');
-        $scope.loadHosts = function(searchString, selected){
-
+        $scope.load = function(searchString, selected){
             $http.get("/agentconnector/loadHostsByString/1.json", {
                 params: {
                     'angular': true,
@@ -14,6 +13,6 @@ angular.module('openITCOCKPIT')
         };
 
         //Fire on page load
-        $scope.loadHosts();
+        $scope.load();
 
     });

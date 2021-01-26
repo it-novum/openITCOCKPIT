@@ -78,7 +78,7 @@
                     </div>
                     <div class="row padding-top-20">
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 offset-lg-2 offset-xl-2">
-                            <div class="panel panel-default">
+                            <div class="panel panel-default agent-mode-box-pull">
                                 <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
                                     <h4>
                                         <?= __('Register Agent in pull mode'); ?>
@@ -116,8 +116,7 @@
                         </div>
 
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
-                            <div class="panel panel-default">
-
+                            <div class="panel panel-default agent-mode-box-push">
                                 <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
                                     <h4>
                                         <?= __('Register Agent in push mode'); ?>
