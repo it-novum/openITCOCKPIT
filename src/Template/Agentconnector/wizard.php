@@ -72,14 +72,14 @@
                                 chosen="hosts"
                                 ng-options="host.key as host.value for host in hosts"
                                 callback="loadHostsCallback"
-                                ng-model="post.Host.id">
+                                ng-model="Host.id">
                             </select>
-                            <div ng-show="post.Host.id < 1" class="warning-glow">
+                            <div ng-show="Host.id < 1" class="warning-glow">
                                 <?php echo __('Please select a host.'); ?>
                             </div>
                         </div>
                     </div>
-                    <div class="row padding-top-20" ng-show="post.Host.id">
+                    <div class="row padding-top-20" ng-show="Host.id">
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 offset-lg-2 offset-xl-2">
                             <div class="panel panel-default agent-mode-box-pull">
                                 <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
@@ -106,13 +106,11 @@
 
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-primary pull-right"
-                                            ng-click="continueWithPullMode()">
+                                        <a class="btn btn-outline-primary pull-right"
+                                            ui-sref="AgentconnectorsConfig({hostId: Host.id, mode: 'pull'})">
 
                                             <?= __('Continue with pull mode'); ?>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -144,13 +142,11 @@
 
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-primary pull-right"
-                                            ng-click="continueWithPushMode()">
+                                        <a class="btn btn-outline-primary pull-right"
+                                           ui-sref="AgentconnectorsConfig({hostId: Host.id, mode: 'push'})">
 
                                             <?= __('Continue with push mode'); ?>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -159,7 +155,7 @@
 
                     <!-- CONFIG ALREADY EXISTS  -->
 
-                    <div class="row padding-top-20" ng-show="post.Host.id">
+                    <div class="row padding-top-20" ng-show="Host.id">
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4  offset-lg-2 offset-xl-2">
                             <div class="panel panel-default agent-mode-box-create-services">
                                 <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
@@ -185,7 +181,6 @@
                                             type="button"
                                             class="btn btn-outline-success pull-right"
                                             ng-click="continueWithPushMode()">
-
                                             <?= __('Continue with service creation'); ?>
                                         </button>
                                     </div>

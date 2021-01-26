@@ -1,11 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsWizardController', function($scope, $http, $stateParams){
-        console.log('DEBUG On !!!');
-
-        $scope.post = {
-            Host: {
-                id: null
-            }
+        $scope.Host = {
+            id: null
         };
 
         $scope.connectorConfig = {};
@@ -26,7 +22,7 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-            $http.get("/agentconnector/loadAgentConfigByHostId/" + $scope.post.Host.id + ".json", {
+            $http.get("/agentconnector/loadAgentConfigByHostId/" + $scope.Host.id + ".json", {
                 params: params
             }).then(function(result){
                 $scope.connectorConfig = result.data.connectorConfig;
@@ -45,7 +41,7 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         $scope.load();
 
-        $scope.$watch('post.Host.id', function(){
+        $scope.$watch('Host.id', function(){
             $scope.loadConfigForSelectedHostId();
         }, true);
     });
