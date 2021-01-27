@@ -59,6 +59,43 @@
                     <?php endif; ?>
                 </div>
             </div>
+
+            <!-- Wizard progressbar -->
+            <div class="row margin-0 text-center">
+                <div class="col-xs-12 col-md-4 col-lg-2 bg-primary text-white">
+                    <?= __('Select host') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2 bg-light-gray">
+                    <?= __('Configure Agent') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2 bg-light-gray">
+                    <?= __('Install Agent') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2 bg-light-gray">
+                    <?= __('Exchange TLS Certificate') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2  bg-light-gray">
+                    <?= __('Create services') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2 padding-left-0 padding-right-0 bg-light-gray">
+                    <div class="btn-group btn-group-xs w-100">
+                        <button type="button" class="btn btn-xs btn-primary waves-effect waves-themed"
+                                disabled="disabled"
+                                title="<?= __('Back') ?>"
+                                style="border-radius: 0; height: 22px;">
+                            <i class="fa fa-arrow-left"></i>
+                        </button>
+
+                        <button type="button" class="btn btn-xs btn-success btn-block waves-effect waves-themed"
+                                style="border-radius: 0;height: 22px;" disabled="disabled">
+                            <?= __('Next') ?>
+                            <i class="fa fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- End progressbar -->
+
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="row">
@@ -67,19 +104,19 @@
                                 <?php echo __('Host'); ?>
                             </label>
                             <select
-                                id="HostsSelect"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                chosen="hosts"
-                                ng-options="host.key as host.value for host in hosts"
-                                callback="loadHostsCallback"
-                                ng-model="Host.id">
+                                    id="HostsSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    chosen="hosts"
+                                    ng-options="host.key as host.value for host in hosts"
+                                    callback="load"
+                                    ng-model="hostId">
                             </select>
-                            <div ng-show="Host.id < 1" class="warning-glow">
+                            <div ng-show="hostId < 1" class="warning-glow">
                                 <?php echo __('Please select a host.'); ?>
                             </div>
                         </div>
                     </div>
-                    <div class="row padding-top-20" ng-show="Host.id">
+                    <div class="row padding-top-20" ng-show="hostId">
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 offset-lg-2 offset-xl-2">
                             <div class="panel panel-default agent-mode-box-pull">
                                 <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
@@ -107,7 +144,7 @@
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
                                         <a class="btn btn-outline-primary pull-right"
-                                            ui-sref="AgentconnectorsConfig({hostId: Host.id, mode: 'pull'})">
+                                           ui-sref="AgentconnectorsConfig({hostId: hostId, mode: 'pull'})">
 
                                             <?= __('Continue with pull mode'); ?>
                                         </a>
@@ -143,7 +180,7 @@
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
                                         <a class="btn btn-outline-primary pull-right"
-                                           ui-sref="AgentconnectorsConfig({hostId: Host.id, mode: 'push'})">
+                                           ui-sref="AgentconnectorsConfig({hostId: hostId, mode: 'push'})">
 
                                             <?= __('Continue with push mode'); ?>
                                         </a>
@@ -155,7 +192,7 @@
 
                     <!-- CONFIG ALREADY EXISTS  -->
 
-                    <div class="row padding-top-20" ng-show="Host.id">
+                    <div class="row padding-top-20" ng-show="hostId">
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4  offset-lg-2 offset-xl-2">
                             <div class="panel panel-default agent-mode-box-create-services">
                                 <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
@@ -178,9 +215,9 @@
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
                                         <button
-                                            type="button"
-                                            class="btn btn-outline-success pull-right"
-                                            ng-click="continueWithPushMode()">
+                                                type="button"
+                                                class="btn btn-outline-success pull-right"
+                                                ng-click="continueWithPushMode()">
                                             <?= __('Continue with service creation'); ?>
                                         </button>
                                     </div>
@@ -212,9 +249,9 @@
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
                                         <button
-                                            type="button"
-                                            class="btn btn-outline-primary pull-right"
-                                            ng-click="continueWithPullMode()">
+                                                type="button"
+                                                class="btn btn-outline-primary pull-right"
+                                                ng-click="continueWithPullMode()">
 
                                             <?= __('Edit agent configuration'); ?>
                                         </button>

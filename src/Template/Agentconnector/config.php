@@ -43,30 +43,52 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?= __('openITCOCKPIT Agent'); ?>
+                    <?= __('openITCOCKPIT Agent Configuration for:'); ?>
                     <span class="fw-300">
                         <i>
-                            <?= __('Configuration'); ?>
+                            {{host.name}} ({{host.address}})
                         </i>
                     </span>
                 </h2>
-                <div class="panel-toolbar">
-                    <?php if ($this->Acl->hasPermission('agents', 'agentconnector')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='AgentconnectorsAgent'
-                           class="btn btn-default btn-xs mr-1 shadow-0">
-                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
-                        </a>
-                    <?php endif; ?>
-                </div>
             </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="progress progress-lg position-relative">
-                        <div class="progress-bar" role="progressbar" style="width: 10%"></div>
-                        <span class="justify-content-center d-flex position-absolute w-100">10% complete</span>
+
+            <!-- Wizard progressbar -->
+            <div class="row margin-0 text-center">
+                <div class="col-xs-12 col-md-4 col-lg-2 bg-success text-white">
+                    <i class="fas fa-check"></i>
+                    <?= __('Select host') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2 bg-primary text-white">
+                    <?= __('Configure Agent') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2 bg-light-gray">
+                    <?= __('Install Agent') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2 bg-light-gray">
+                    <?= __('Exchange TLS Certificate') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2  bg-light-gray">
+                    <?= __('Create services') ?>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2 padding-left-0 padding-right-0 bg-light-gray">
+                    <div class="btn-group btn-group-xs w-100">
+                        <a type="button" class="btn btn-xs btn-primary waves-effect waves-themed"
+                           ui-sref="AgentconnectorsWizard({'hostId': hostId})"
+                           title="<?= __('Back') ?>"
+                           style="border-radius: 0; height: 22px;">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+
+                        <button type="button" class="btn btn-xs btn-success btn-block waves-effect waves-themed"
+                                style="border-radius: 0;height: 22px;">
+                            <?= __('Next') ?>
+                            <i class="fa fa-arrow-right"></i>
+                        </button>
                     </div>
                 </div>
             </div>
+            <!-- End progressbar -->
+
             <div class="row">
                 <div class="col-12">
                     <div class="panel-container show">
@@ -137,11 +159,11 @@
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
+                                                            id="enable_push_mode"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            chosen="{}"
+                                                            ng-model="config.bool.enable_push_mode">
                                                         <option ng-value="false"><?= __('Pull mode'); ?></option>
                                                         <option ng-value="true"><?= __('Push mode'); ?></option>
                                                     </select>
@@ -157,11 +179,11 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                        id="bind_address"
-                                                        class="form-control"
-                                                        type="text"
-                                                        placeholder="<?php echo __('0.0.0.0'); ?>"
-                                                        ng-model="config.string.bind_address">
+                                                            id="bind_address"
+                                                            class="form-control"
+                                                            type="text"
+                                                            placeholder="<?php echo __('0.0.0.0'); ?>"
+                                                            ng-model="config.string.bind_address">
 
                                                     <div class="help-block">
                                                         <?= __('IP address that openITCOCKPIT Agent should bind to.'); ?>
@@ -178,13 +200,13 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                        id="bind_port"
-                                                        class="form-control"
-                                                        type="number"
-                                                        min="1"
-                                                        max="65536"
-                                                        placeholder="3333"
-                                                        ng-model="config.int.bind_port">
+                                                            id="bind_port"
+                                                            class="form-control"
+                                                            type="number"
+                                                            min="1"
+                                                            max="65536"
+                                                            placeholder="3333"
+                                                            ng-model="config.int.bind_port">
 
                                                     <div class="help-block">
                                                         <?= __('Port number that openITCOCKPIT Agent should bind to.'); ?>
@@ -201,13 +223,13 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                        id="bind_port"
-                                                        class="form-control"
-                                                        type="number"
-                                                        min="1"
-                                                        max="7200"
-                                                        placeholder="30"
-                                                        ng-model="config.int.check_interval">
+                                                            id="bind_port"
+                                                            class="form-control"
+                                                            type="number"
+                                                            min="1"
+                                                            max="7200"
+                                                            placeholder="30"
+                                                            ng-model="config.int.check_interval">
 
                                                     <div class="help-block">
                                                         <?= __('Determines in seconds how often the openITCOCKPIT Agent will execute all checks.'); ?>
@@ -244,11 +266,11 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                        id="push_oitc_server_url"
-                                                        class="form-control"
-                                                        type="text"
-                                                        placeholder="https://<?= $_SERVER['SERVER_ADDR']; ?>"
-                                                        ng-model="config.string.push_oitc_server_url">
+                                                            id="push_oitc_server_url"
+                                                            class="form-control"
+                                                            type="text"
+                                                            placeholder="https://<?= $_SERVER['SERVER_ADDR']; ?>"
+                                                            ng-model="config.string.push_oitc_server_url">
                                                     <div class="help-block">
                                                         <?= __('External address of your openITCOCKPIT Server.'); ?>
                                                     </div>
@@ -263,11 +285,11 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                        id="push_oitc_api_key"
-                                                        class="form-control"
-                                                        type="text"
-                                                        placeholder="b803b7fb76524e1514bed81cf3a936845cc160511a1c0d51672c..."
-                                                        ng-model="config.string.push_oitc_api_key">
+                                                            id="push_oitc_api_key"
+                                                            class="form-control"
+                                                            type="text"
+                                                            placeholder="b803b7fb76524e1514bed81cf3a936845cc160511a1c0d51672c..."
+                                                            ng-model="config.string.push_oitc_api_key">
                                                     <div class="help-block">
                                                         <?php echo __('You need to create an openITCOCKPIT user defined API key first.'); ?>
                                                         <a href="javascript:void(0);"
@@ -286,11 +308,11 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                        id="push_proxy_address"
-                                                        class="form-control"
-                                                        type="text"
-                                                        placeholder="http://proxy.example.org:3128"
-                                                        ng-model="config.string.push_proxy_address">
+                                                            id="push_proxy_address"
+                                                            class="form-control"
+                                                            type="text"
+                                                            placeholder="http://proxy.example.org:3128"
+                                                            ng-model="config.string.push_proxy_address">
                                                     <div class="help-block">
                                                         <?= __('HTTP Proxy that should be used by the agent. Leave blank for no proxy.'); ?>
                                                     </div>
@@ -320,13 +342,13 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                        id="push_timeout"
-                                                        class="form-control"
-                                                        type="number"
-                                                        min="1"
-                                                        max="40"
-                                                        placeholder="1"
-                                                        ng-model="config.int.push_timeout">
+                                                            id="push_timeout"
+                                                            class="form-control"
+                                                            type="number"
+                                                            min="1"
+                                                            max="40"
+                                                            placeholder="1"
+                                                            ng-model="config.int.push_timeout">
                                                     <div class="help-block">
                                                         <?php echo __('HTTP timeout in seconds'); ?>
                                                     </div>
@@ -453,7 +475,7 @@
                                             </div>
 
                                             <div class="form-group col-12 padding-left-0"
-                                            ng-class="{'required': config.bool.use_http_basic_auth}">
+                                                 ng-class="{'required': config.bool.use_http_basic_auth}">
                                                 <label class="col-12 control-label"
                                                        for="username">
                                                     <?php echo __('Username'); ?>
@@ -461,12 +483,12 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                        id="username"
-                                                        class="form-control"
-                                                        ng-disabled="!config.bool.use_http_basic_auth"
-                                                        type="text"
-                                                        placeholder="<?= __('Username'); ?>"
-                                                        ng-model="config.string.username">
+                                                            id="username"
+                                                            class="form-control"
+                                                            ng-disabled="!config.bool.use_http_basic_auth"
+                                                            type="text"
+                                                            placeholder="<?= __('Username'); ?>"
+                                                            ng-model="config.string.username">
                                                 </div>
                                             </div>
 
@@ -479,12 +501,12 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                        id="password"
-                                                        class="form-control"
-                                                        ng-disabled="!config.bool.use_http_basic_auth"
-                                                        type="text"
-                                                        placeholder="<?= __('Password'); ?>"
-                                                        ng-model="config.string.password">
+                                                            id="password"
+                                                            class="form-control"
+                                                            ng-disabled="!config.bool.use_http_basic_auth"
+                                                            type="text"
+                                                            placeholder="<?= __('Password'); ?>"
+                                                            ng-model="config.string.password">
                                                 </div>
                                             </div>
                                         </div>

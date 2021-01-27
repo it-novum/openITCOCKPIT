@@ -532,13 +532,23 @@ class AgentconnectorController extends AppController {
         if ($this->request->is('get')){
             $hostId = $this->request->getQuery('hostId', 0);
 
+            /** @var HostsTable $HostsTable  */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            if(!$HostsTable->existsById($hostId)){
+                throw new NotFoundException();
+            }
+
+            $host = $HostsTable->get($hostId);
+
             //todo check that config exists
 
             $AgentConfiguration = new AgentConfiguration();
             $config = $AgentConfiguration->unmarshal('{}');
 
             $this->set('config', $config);
-            $this->viewBuilder()->setOption('serialize', ['config']);
+            $this->set('host', $host);
+            $this->viewBuilder()->setOption('serialize', ['config', 'host']);
         }
 
     }
@@ -817,15 +827,18 @@ class AgentconnectorController extends AppController {
         }
 
         $selected = $this->request->getQuery('selected');
-        $includeDisabled = $this->request->getQuery('includeDisabled') === 'true';
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         $HostFilter = new HostFilter($this->request);
 
-        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
-        $HostCondition->setIncludeDisabled($includeDisabled);
+        $where = $HostFilter->ajaxFilter();
+        $where['Hosts.host_type']   = GENERIC_HOST;
+
+
+        $HostCondition = new HostConditions($where);
+        $HostCondition->setIncludeDisabled(false);
         $HostCondition->setContainerIds($this->MY_RIGHTS);
         if ($onlyHostsWithWritePermission) {
             $writeContainers = [];
@@ -839,9 +852,7 @@ class AgentconnectorController extends AppController {
         }
 
         $hosts = Api::makeItJavaScriptAble(
-            $HostsTable->getHostsByTypeIdAsList(GENERIC_HOST, $HostCondition->getContainerIds(), [
-                'Hosts.disabled' => 0
-            ])
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
 
         $this->set('hosts', $hosts);

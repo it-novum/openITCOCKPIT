@@ -3851,46 +3851,6 @@ class HostsTable extends Table {
     }
 
     /**
-     * @param int $hostTypeId
-     * @param array $MY_RIGHTS
-     * @param array $where
-     * @return array
-     */
-    public function getHostsByTypeIdAsList($hostTypeId = GENERIC_HOST, $MY_RIGHTS = [], $where = []) {
-        $_where = [
-            'Hosts.disabled IN' => [0],
-            'Hosts.host_type'   => $hostTypeId
-        ];
-
-        $where = Hash::merge($_where, $where);
-
-        $query = $this->find('list');
-        $query->where($where);
-
-        if (!empty($MY_RIGHTS)) {
-            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
-                'HostsToContainersSharing.host_id = Hosts.id'
-            ]);
-            $query->where([
-                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
-            ]);
-        }
-
-        $query->disableHydration();
-        $query->group(['Hosts.id']);
-        $query->order([
-            'Hosts.name' => 'asc'
-        ]);
-
-        $result = $query->toArray();
-        if (empty($result)) {
-            return [];
-        }
-
-        return $result;
-    }
-
-    /**
      * @return array
      */
     public function getHostTypesWithStyles() {

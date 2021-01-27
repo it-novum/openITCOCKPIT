@@ -2,17 +2,18 @@ angular.module('openITCOCKPIT')
     .controller('AgentconnectorsConfigController', function($scope, $http, $state, $stateParams){
 
         $scope.connectorConfig = {};
-        $state.hostId = $stateParams.hostId;
+        $scope.hostId = $stateParams.hostId;
         var urlMode = $stateParams.mode || null;
 
         $scope.load = function(searchString, selected){
             $http.get("/agentconnector/config.json", {
                 params: {
-                    hostId: $state.hostId,
+                    hostId: $scope.hostId,
                     'angular': true
                 }
             }).then(function(result){
                 $scope.config = result.data.config;
+                $scope.host = result.data.host;
 
                 if(urlMode !== null){
                     // The current AngularJS state has an "mode"

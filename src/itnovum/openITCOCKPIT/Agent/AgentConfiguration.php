@@ -97,7 +97,7 @@ class AgentConfiguration {
         'int'    => [
             'bind_port'      => 3333, // Bind port of the Agents web server
             'check_interval' => 30,   // Interval in seconds how often the Agent should execute all default checks
-            'push_timeout'   => 1,   // HTTP Timeout in seconds the Agent uses to push check results to the server
+            'push_timeout'   => 1,    // HTTP Timeout in seconds the Agent uses to push check results to the server
         ],
         'array'  => [
             'win_eventlog_types' => [  // Types that should be monitored in the Windows Event log

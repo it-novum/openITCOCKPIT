@@ -1,8 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsWizardController', function($scope, $http, $stateParams){
-        $scope.Host = {
-            id: null
-        };
+        $scope.hostId = $stateParams.hostId;
 
         $scope.connectorConfig = {};
 
@@ -10,7 +8,8 @@ angular.module('openITCOCKPIT')
             $http.get("/agentconnector/loadHostsByString/1.json", {
                 params: {
                     'angular': true,
-                    'filter[Hosts.name]': searchString
+                    'filter[Hosts.name]': searchString,
+                    'selected[]': selected
                 }
             }).then(function(result){
                 $scope.hosts = result.data.hosts;
@@ -22,7 +21,7 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-            $http.get("/agentconnector/loadAgentConfigByHostId/" + $scope.Host.id + ".json", {
+            $http.get("/agentconnector/loadAgentConfigByHostId/" + $scope.hostId + ".json", {
                 params: params
             }).then(function(result){
                 $scope.connectorConfig = result.data.connectorConfig;
@@ -39,9 +38,15 @@ angular.module('openITCOCKPIT')
         };
 
         //Fire on page load
-        $scope.load();
+        var selected = [];
+        if($scope.hostId){
+            $scope.hostId = parseInt($scope.hostId, 10);
+            selected.push($scope.hostId);
+        }
 
-        $scope.$watch('Host.id', function(){
+        $scope.load('', selected);
+
+        $scope.$watch('hostId', function(){
             $scope.loadConfigForSelectedHostId();
         }, true);
     });
