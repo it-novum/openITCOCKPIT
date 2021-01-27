@@ -519,7 +519,6 @@ class AgentconnectorController extends AppController {
     }
 
 
-
     /**
      * @param null $uuid
      * @throws MissingParameterExceptions
@@ -785,9 +784,8 @@ class AgentconnectorController extends AppController {
      ****************************/
 
     public function wizard() {
-        if (!$this->isAngularJsRequest()) {
-            return;
-        }
+        //Only ship HTML Template
+        return;
     }
 
     public function config() {
@@ -838,8 +836,22 @@ class AgentconnectorController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
-
         }
+    }
+
+    public function generate_config() {
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
+        $hostId = $this->request->getQuery('hostId', 0);
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException();
+        }
+
+
     }
 
     /****************************
