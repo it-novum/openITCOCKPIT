@@ -33,12 +33,15 @@ angular.module('openITCOCKPIT')
         // Validate and save agent config
         $scope.submit = function(){
             $http.post("/agentconnector/config.json", {
-                config: $scope.config,
-                hostId: $scope.hostId
+                    config: $scope.config,
+                    hostId: $scope.hostId
                 }
             ).then(function(result){
-                console.log('this works fine!!!');
-                //RedirectService.redirectWithFallback('CommandsIndex');
+                $state.go('AgentconnectorsInstall', {
+                    hostId: $scope.hostId
+                }).then(function(){
+                    NotyService.scrollTop();
+                });
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();

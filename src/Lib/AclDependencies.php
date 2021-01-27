@@ -260,7 +260,7 @@ class AclDependencies {
         $this
             ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'loadHostsByString')
             ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'loadAgentConfigByHostId')
-            ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'generate_config');
+            ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'install');
 
 
         //old delete

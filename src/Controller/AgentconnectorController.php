@@ -852,6 +852,8 @@ class AgentconnectorController extends AppController {
                 throw new NotFoundException();
             }
 
+            $host = $HostsTable->get($hostId);
+
             //Remote data type keys for validation (string, int, bool etc)
             $data = [];
             foreach ($dataWithDatatypes as $datatype => $fields) {
@@ -876,7 +878,7 @@ class AgentconnectorController extends AppController {
             }
 
             $AgentConfiguration = new AgentConfiguration();
-            $AgentConfiguration->setConfigForJson($config);
+            $AgentConfiguration->setConfigForJson($dataWithDatatypes);
 
             // Legacy configuration for Agent version < 3.x
             $data = [
@@ -888,8 +890,8 @@ class AgentconnectorController extends AppController {
                 'proxy'         => $dataWithDatatypes['bool']['use_proxy'],
                 'insecure'      => false, // Validate TLS certificate in PULL mode
                 'use_https'     => true,
-                'use_autossl'   => $dataWithDatatypes['int']['use_autossl'], // New field with agent 3.x
-                'use_push_mode' => $dataWithDatatypes['int']['enable_push_mode'], // New field with agent 3.x
+                'use_autossl'   => $dataWithDatatypes['bool']['use_autossl'], // New field with agent 3.x
+                'use_push_mode' => $dataWithDatatypes['bool']['enable_push_mode'], // New field with agent 3.x
                 'config'        => $AgentConfiguration->marshal(), // New field with agent 3.x
             ];
             $entity = $AgentconfigsTable->patchEntity($entity, $data);
@@ -902,11 +904,11 @@ class AgentconnectorController extends AppController {
             }
 
             $this->set('id', $entity->id);
-            $this->viewBuilder()->setOption('id', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['id']);
         }
     }
 
-    public function generate_config() {
+    public function install() {
         if (!$this->isAngularJsRequest()) {
             return;
         }
@@ -914,11 +916,29 @@ class AgentconnectorController extends AppController {
         $hostId = $this->request->getQuery('hostId', 0);
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
         if (!$HostsTable->existsById($hostId)) {
             throw new NotFoundException();
         }
 
+        $host = $HostsTable->get($hostId);
 
+        if (!$AgentconfigsTable->existsByHostId($host->id)) {
+            throw new NotFoundException();
+        }
+
+        $record = $AgentconfigsTable->getConfigByHostId($host->id);
+
+        $AgentConfiguration = new AgentConfiguration();
+        $config = $AgentConfiguration->unmarshal($record->config);
+
+        $this->set('config', $config);
+        $this->set('host', $host);
+        $this->set('config_as_ini', $AgentConfiguration->getAsIni());
+
+
+        $this->viewBuilder()->setOption('serialize', ['config', 'host', 'config_as_ini']);
     }
 
     /****************************

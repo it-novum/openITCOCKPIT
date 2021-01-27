@@ -168,18 +168,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentchecksEditController"
             })
 
-            .state('AgentconfigsConfig', {
-                url: '/agentconfigs/config/:hostId',
-                templateUrl: "/agentconfigs/config.html",
-                controller: "AgentconfigsConfigController"
-            })
-
-            .state('AgentconfigsScan', {
-                url: '/agentconfigs/scan/:hostId',
-                templateUrl: "/agentconfigs/scan.html",
-                controller: "AgentconfigsScanController"
-            })
-
             .state('AgentconnectorsWizard', {
                 url: '/agentconnector/wizard',
                 params: {
@@ -202,18 +190,15 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconnectorsConfigController"
             })
 
-            .state('AgentconnectorsAgent', {
-                url: '/agentconnector/agents?hostuuid&selection',
+            .state('AgentconnectorsInstall', {
+                url: '/agentconnector/install/:hostId',
                 params: {
-                    hostuuid: {
-                        value: null
-                    },
-                    selection: {
+                    mode: {
                         value: null
                     }
                 },
-                templateUrl: "/agentconnector/agents.html",
-                controller: "AgentconnectorsAgentController"
+                templateUrl: "/agentconnector/install.html",
+                controller: "AgentconnectorsInstallController"
             })
 
             .state('BackupsIndex', {
