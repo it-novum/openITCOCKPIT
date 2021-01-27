@@ -32,8 +32,10 @@ angular.module('openITCOCKPIT')
 
         // Validate and save agent config
         $scope.submit = function(){
-            $http.post("/agentconnector/config.json",
-                $scope.config
+            $http.post("/agentconnector/config.json", {
+                config: $scope.config,
+                hostId: $scope.hostId
+                }
             ).then(function(result){
                 console.log('this works fine!!!');
                 //RedirectService.redirectWithFallback('CommandsIndex');

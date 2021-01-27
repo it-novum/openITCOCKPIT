@@ -133,6 +133,15 @@ class AgentConfiguration {
     }
 
     /**
+     * Used to set a config from the Wizard
+     *
+     * @param array $json
+     */
+    public function setConfigForJson($json) {
+        $this->json = $json;
+    }
+
+    /**
      * Convert php array to json for database
      * @return string
      * @throws \RuntimeException
@@ -177,7 +186,7 @@ class AgentConfiguration {
      * @throws \RuntimeException
      */
     public function unmarshal($jsonDataStr) {
-        if(empty($jsonDataStr)){
+        if (empty($jsonDataStr)) {
             $jsonDataStr = '{}'; //empty json object
         }
 

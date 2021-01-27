@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Agentconfig;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -151,11 +152,23 @@ class AgentconfigsTable extends Table {
     }
 
     /**
-     * @param int $host_id
+     * @param int $hostId
      * @return bool
      */
-    public function existsByHostId($host_id) {
-        return $this->exists(['Agentconfigs.host_id' => $host_id]);
+    public function existsByHostId($hostId) {
+        return $this->exists(['Agentconfigs.host_id' => $hostId]);
+    }
+
+    /**
+     * @param $hostId
+     * @return Agentconfig|\Cake\Datasource\EntityInterface
+     */
+    public function getConfigByHostId($hostId){
+        return $this->find()
+            ->where([
+                'Agentconfigs.host_id' => $hostId
+            ])
+            ->firstOrFail();
     }
 
     /**
@@ -164,7 +177,7 @@ class AgentconfigsTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      * @deprecated
      */
-    public function getConfigByHostId($hostId, $defaultIfNoConfig = true) {
+    public function getConfigByHostIdOld($hostId, $defaultIfNoConfig = true) {
         /** @var ProxiesTable $ProxiesTable */
         $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
         $proxySettings = $ProxiesTable->getSettings();

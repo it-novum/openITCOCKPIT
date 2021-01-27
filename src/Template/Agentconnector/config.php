@@ -105,7 +105,7 @@
                                         <legend class="fs-md fieldset-legend-border-bottom margin-top-10">
                                             <h4 class="required">
                                                 <i class="fa fa-cogs"></i>
-                                                <?= __('Which operation system du you want to monitor?'); ?>
+                                                <?= __('Which operation system do you want to monitor?'); ?>
                                             </h4>
                                         </legend>
                                         <div>

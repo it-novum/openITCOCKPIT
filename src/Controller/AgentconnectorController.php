@@ -794,13 +794,13 @@ class AgentconnectorController extends AppController {
             return;
         }
 
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
         if ($this->request->is('get')) {
             $hostId = $this->request->getQuery('hostId', 0);
-
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            /** @var AgentconfigsTable $AgentconfigsTable */
-            $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException();
@@ -808,10 +808,34 @@ class AgentconnectorController extends AppController {
 
             $host = $HostsTable->get($hostId);
 
-            //todo check that config exists
+            $agentConfigAsJsonFromDatabase = '';
+            $isOldAgent1Config = false;
+            if ($AgentconfigsTable->existsByHostId($host->id)) {
+                $record = $AgentconfigsTable->getConfigByHostId($host->id);
+                $agentConfigAsJsonFromDatabase = $record->config;
+
+                if ($agentConfigAsJsonFromDatabase === '') {
+                    // DB record exists but no json config
+                    // Old 1.x agent config
+                    $isOldAgent1Config = true;
+                }
+            }
 
             $AgentConfiguration = new AgentConfiguration();
-            $config = $AgentConfiguration->unmarshal('{}');
+            $config = $AgentConfiguration->unmarshal($agentConfigAsJsonFromDatabase);
+            if ($isOldAgent1Config === true && isset($record)) {
+                // Migrate old config from agent 1.x to 3.x
+                $config['int']['bind_port'] = (int)$record->port;
+                $config['bool']['use_http_basic_auth'] = $record->basic_auth;
+                $config['string']['username'] = $record->username;
+                $config['string']['password'] = $record->password;
+                $config['int']['bind_port'] = (int)$record->port;
+                $config['bool']['use_proxy'] = $record->proxy;
+                $config['bool']['enable_push_mode'] = false;
+                if ($record->push_noticed) {
+                    $config['bool']['enable_push_mode'] = true;
+                }
+            }
 
             $this->set('config', $config);
             $this->set('host', $host);
@@ -821,7 +845,12 @@ class AgentconnectorController extends AppController {
         if ($this->request->is('post')) {
             // Validate and save agent configuration
             $AgentConfigurationForm = new AgentConfigurationForm();
-            $dataWithDatatypes = $this->request->getData(null, []);
+            $dataWithDatatypes = $this->request->getData('config', []);
+
+            $hostId = $this->request->getData('hostId', 0);
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException();
+            }
 
             //Remote data type keys for validation (string, int, bool etc)
             $data = [];
@@ -838,6 +867,42 @@ class AgentconnectorController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
+
+            // json config is valid
+            $entity = $AgentconfigsTable->newEmptyEntity();
+            // Get old configuration from database to run an update - if exists
+            if ($AgentconfigsTable->existsByHostId($host->id)) {
+                $entity = $AgentconfigsTable->getConfigByHostId($host->id);
+            }
+
+            $AgentConfiguration = new AgentConfiguration();
+            $AgentConfiguration->setConfigForJson($config);
+
+            // Legacy configuration for Agent version < 3.x
+            $data = [
+                'host_id'       => $hostId,
+                'port'          => $dataWithDatatypes['int']['bind_port'],
+                'basic_auth'    => $dataWithDatatypes['bool']['use_http_basic_auth'],
+                'username'      => $dataWithDatatypes['bool']['use_http_basic_auth'] ? $dataWithDatatypes['string']['username'] : '',
+                'password'      => $dataWithDatatypes['bool']['use_http_basic_auth'] ? $dataWithDatatypes['string']['password'] : '',
+                'proxy'         => $dataWithDatatypes['bool']['use_proxy'],
+                'insecure'      => false, // Validate TLS certificate in PULL mode
+                'use_https'     => true,
+                'use_autossl'   => $dataWithDatatypes['int']['use_autossl'], // New field with agent 3.x
+                'use_push_mode' => $dataWithDatatypes['int']['enable_push_mode'], // New field with agent 3.x
+                'config'        => $AgentConfiguration->marshal(), // New field with agent 3.x
+            ];
+            $entity = $AgentconfigsTable->patchEntity($entity, $data);
+            $AgentconfigsTable->save($entity);
+            if ($entity->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $host->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+            $this->set('id', $entity->id);
+            $this->viewBuilder()->setOption('id', ['error']);
         }
     }
 
