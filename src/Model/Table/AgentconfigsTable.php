@@ -2,7 +2,6 @@
 
 namespace App\Model\Table;
 
-use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
@@ -32,7 +31,6 @@ use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
  */
 class AgentconfigsTable extends Table {
 
-    use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
     use CustomValidationTrait;
 
@@ -164,6 +162,7 @@ class AgentconfigsTable extends Table {
      * @param int $hostId
      * @param bool $defaultIfNoConfig
      * @return array|\Cake\Datasource\EntityInterface|null
+     * @deprecated
      */
     public function getConfigByHostId($hostId, $defaultIfNoConfig = true) {
         /** @var ProxiesTable $ProxiesTable */
@@ -217,6 +216,7 @@ class AgentconfigsTable extends Table {
     /**
      * @param int $hostId
      * @return \App\Model\Entity\Agentconfig|array|\Cake\Datasource\EntityInterface|null
+     * @deprecated
      */
     public function getConfigOrEmptyEntity($hostId) {
         $record = $this->find()
@@ -235,6 +235,7 @@ class AgentconfigsTable extends Table {
     /**
      * @param $hostId
      * @return bool
+     * @deprecated
      */
     public function pushNoticedForHost($hostId) {
         $query = $this->find()
@@ -249,6 +250,7 @@ class AgentconfigsTable extends Table {
     /**
      * @param $hostUuid
      * @param bool $pushNoticed
+     * @deprecated
      */
     public function updatePushNoticedForHostIfConfigExists($hostUuid, $pushNoticed = true) {
         /** @var HostsTable $HostsTable */
@@ -275,6 +277,7 @@ class AgentconfigsTable extends Table {
      * @param AgentconfigsFilter $AgentconfigsFilter
      * @param PaginateOMat|null $PaginateOMat
      * @return array
+     * @deprecated
      */
     public function getForList(AgentconfigsFilter $AgentconfigsFilter, PaginateOMat $PaginateOMat = null) {
         $query = $this->find('all')

@@ -15,6 +15,7 @@ use Cake\ORM\Entity;
  * @property string $password
  * @property bool $proxy
  * @property bool $push_noticed
+ * @property string config
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
@@ -40,6 +41,7 @@ class Agentconfig extends Entity {
         'password'     => true,
         'proxy'        => true,
         'push_noticed' => true,
+        'config'       => true,
         'created'      => true,
         'modified'     => true,
         'host'         => true

@@ -799,6 +799,8 @@ class AgentconnectorController extends AppController {
 
             /** @var HostsTable $HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var AgentconfigsTable $AgentconfigsTable */
+            $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException();
