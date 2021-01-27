@@ -518,64 +518,7 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
-    public function wizard() {
-        if (!$this->isAngularJsRequest()) {
-            return;
-        }
-    }
 
-    public function config() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
-        if ($this->request->is('get')) {
-            $hostId = $this->request->getQuery('hostId', 0);
-
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-            if (!$HostsTable->existsById($hostId)) {
-                throw new NotFoundException();
-            }
-
-            $host = $HostsTable->get($hostId);
-
-            //todo check that config exists
-
-            $AgentConfiguration = new AgentConfiguration();
-            $config = $AgentConfiguration->unmarshal('{}');
-
-            $this->set('config', $config);
-            $this->set('host', $host);
-            $this->viewBuilder()->setOption('serialize', ['config', 'host']);
-        }
-
-        if ($this->request->is('post')) {
-            // Validate and save agent configuration
-            $AgentConfigurationForm = new AgentConfigurationForm();
-            $dataWithDatatypes = $this->request->getData(null, []);
-
-            //Remote data type keys for validation (string, int, bool etc)
-            $data = [];
-            foreach ($dataWithDatatypes as $datatype => $fields) {
-                foreach ($fields as $fieldName => $fieldValue) {
-                    $data[$fieldName] = $fieldValue;
-                }
-            }
-            $AgentConfigurationForm->execute($data);
-
-            if (!empty($AgentConfigurationForm->getErrors())) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $AgentConfigurationForm->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            }
-
-        }
-
-    }
 
     /**
      * @param null $uuid
@@ -837,6 +780,67 @@ class AgentconnectorController extends AppController {
         }
     }
 
+    /****************************
+     *      Wizard METHODS      *
+     ****************************/
+
+    public function wizard() {
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+    }
+
+    public function config() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        if ($this->request->is('get')) {
+            $hostId = $this->request->getQuery('hostId', 0);
+
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException();
+            }
+
+            $host = $HostsTable->get($hostId);
+
+            //todo check that config exists
+
+            $AgentConfiguration = new AgentConfiguration();
+            $config = $AgentConfiguration->unmarshal('{}');
+
+            $this->set('config', $config);
+            $this->set('host', $host);
+            $this->viewBuilder()->setOption('serialize', ['config', 'host']);
+        }
+
+        if ($this->request->is('post')) {
+            // Validate and save agent configuration
+            $AgentConfigurationForm = new AgentConfigurationForm();
+            $dataWithDatatypes = $this->request->getData(null, []);
+
+            //Remote data type keys for validation (string, int, bool etc)
+            $data = [];
+            foreach ($dataWithDatatypes as $datatype => $fields) {
+                foreach ($fields as $fieldName => $fieldValue) {
+                    $data[$fieldName] = $fieldValue;
+                }
+            }
+            $AgentConfigurationForm->execute($data);
+
+            if (!empty($AgentConfigurationForm->getErrors())) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $AgentConfigurationForm->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+        }
+    }
 
     /****************************
      *       AJAX METHODS       *
