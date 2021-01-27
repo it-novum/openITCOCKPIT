@@ -65,7 +65,12 @@
                     <?= __('Install Agent') ?>
                 </div>
                 <div class="col-xs-12 col-md-4 col-lg-2 bg-light-gray">
-                    <?= __('Exchange TLS Certificate') ?>
+                    <span ng-hide="config.bool.enable_push_mode">
+                        <?= __('Exchange TLS Certificate') ?>
+                    </span>
+                    <span ng-show="config.bool.enable_push_mode">
+                        <?= __('Select Agent') ?>
+                    </span>
                 </div>
                 <div class="col-xs-12 col-md-4 col-lg-2  bg-light-gray">
                     <?= __('Create services') ?>
