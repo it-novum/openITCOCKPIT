@@ -1,10 +1,11 @@
 angular.module('openITCOCKPIT')
-    .controller('AgentconnectorsConfigController', function($scope, $http, $state, $stateParams){
+    .controller('AgentconnectorsConfigController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
 
         $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
         var urlMode = $stateParams.mode || null;
 
+        // Load current agent config if any exists
         $scope.load = function(searchString, selected){
             $http.get("/agentconnector/config.json", {
                 params: {
@@ -28,6 +29,21 @@ angular.module('openITCOCKPIT')
             $scope.config.string.operating_system = os;
         };
 
+
+        // Validate and save agent config
+        $scope.submit = function(){
+            $http.post("/agentconnector/config.json",
+                $scope.config
+            ).then(function(result){
+                console.log('this works fine!!!');
+                //RedirectService.redirectWithFallback('CommandsIndex');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    NotyService.genericError();
+                    $scope.errors = result.data.error;
+                }
+            });
+        };
 
         //Fire on page load
         $scope.load();

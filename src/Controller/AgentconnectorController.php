@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Form\AgentConfigurationForm;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Host;
 use App\Model\Table\AgentchecksTable;
@@ -524,18 +525,18 @@ class AgentconnectorController extends AppController {
     }
 
     public function config() {
-        if(!$this->isApiRequest()){
+        if (!$this->isApiRequest()) {
             //Only ship HTML Template
             return;
         }
 
-        if ($this->request->is('get')){
+        if ($this->request->is('get')) {
             $hostId = $this->request->getQuery('hostId', 0);
 
-            /** @var HostsTable $HostsTable  */
+            /** @var HostsTable $HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-            if(!$HostsTable->existsById($hostId)){
+            if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException();
             }
 
@@ -549,6 +550,29 @@ class AgentconnectorController extends AppController {
             $this->set('config', $config);
             $this->set('host', $host);
             $this->viewBuilder()->setOption('serialize', ['config', 'host']);
+        }
+
+        if ($this->request->is('post')) {
+            // Validate and save agent configuration
+            $AgentConfigurationForm = new AgentConfigurationForm();
+            $dataWithDatatypes = $this->request->getData(null, []);
+
+            //Remote data type keys for validation (string, int, bool etc)
+            $data = [];
+            foreach ($dataWithDatatypes as $datatype => $fields) {
+                foreach ($fields as $fieldName => $fieldValue) {
+                    $data[$fieldName] = $fieldValue;
+                }
+            }
+            $AgentConfigurationForm->execute($data);
+
+            if (!empty($AgentConfigurationForm->getErrors())) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $AgentConfigurationForm->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
         }
 
     }
@@ -834,7 +858,7 @@ class AgentconnectorController extends AppController {
         $HostFilter = new HostFilter($this->request);
 
         $where = $HostFilter->ajaxFilter();
-        $where['Hosts.host_type']   = GENERIC_HOST;
+        $where['Hosts.host_type'] = GENERIC_HOST;
 
 
         $HostCondition = new HostConditions($where);
@@ -859,8 +883,8 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
-    public function loadAgentConfigByHostId(){
-        $agentConfig  = null;
+    public function loadAgentConfigByHostId() {
+        $agentConfig = null;
         $this->set('agentConfig', $agentConfig);
         $this->viewBuilder()->setOption('serialize', ['agentConfig']);
     }

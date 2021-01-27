@@ -80,7 +80,8 @@
                         </a>
 
                         <button type="button" class="btn btn-xs btn-success btn-block waves-effect waves-themed"
-                                style="border-radius: 0;height: 22px;">
+                                style="border-radius: 0;height: 22px;"
+                                ng-click="submit()">
                             <?= __('Next') ?>
                             <i class="fa fa-arrow-right"></i>
                         </button>
@@ -171,7 +172,8 @@
                                             </div>
 
 
-                                            <div class="form-group col-12 padding-left-0 required">
+                                            <div class="form-group col-12 padding-left-0 required"
+                                                 ng-class="{'has-error': errors.bind_address}">
                                                 <label class="col-12 control-label"
                                                        for="bind_address">
                                                     <?php echo __('Agent bind address'); ?>
@@ -189,10 +191,14 @@
                                                         <?= __('IP address that openITCOCKPIT Agent should bind to.'); ?>
                                                         <?= __('Set 0.0.0.0 to bind to all interfaces.'); ?>
                                                     </div>
+                                                    <div ng-repeat="error in errors.bind_address">
+                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group col-12 padding-left-0 required">
+                                            <div class="form-group col-12 padding-left-0 required"
+                                                 ng-class="{'has-error': errors.bind_port}">
                                                 <label class="col-12 control-label"
                                                        for="bind_port">
                                                     <?php echo __('Agent bind port'); ?>
@@ -212,18 +218,22 @@
                                                         <?= __('Port number that openITCOCKPIT Agent should bind to.'); ?>
                                                         <?= __('Default: 3333'); ?>
                                                     </div>
+                                                    <div ng-repeat="error in errors.bind_port">
+                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group col-12 padding-left-0 required">
+                                            <div class="form-group col-12 padding-left-0 required"
+                                                 ng-class="{'has-error': errors.check_interval}">
                                                 <label class="col-12 control-label"
-                                                       for="bind_port">
+                                                       for="check_interval">
                                                     <?php echo __('Check interval'); ?>
                                                 </label>
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="bind_port"
+                                                            id="check_interval"
                                                             class="form-control"
                                                             type="number"
                                                             min="1"
@@ -234,6 +244,9 @@
                                                     <div class="help-block">
                                                         <?= __('Determines in seconds how often the openITCOCKPIT Agent will execute all checks.'); ?>
                                                         <?= __('Default: 30'); ?>
+                                                    </div>
+                                                    <div ng-repeat="error in errors.check_interval">
+                                                        <div class="help-block text-danger">{{ error }}</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -258,7 +271,8 @@
                                             </h4>
                                         </legend>
                                         <div>
-                                            <div class="form-group col-12 padding-left-0 required">
+                                            <div class="form-group col-12 padding-left-0 required"
+                                                 ng-class="{'has-error': errors.push_oitc_server_url}">
                                                 <label class="col-12 control-label"
                                                        for="push_oitc_server_url">
                                                     <?php echo __('openITCOCKPIT Server Address'); ?>
@@ -274,10 +288,14 @@
                                                     <div class="help-block">
                                                         <?= __('External address of your openITCOCKPIT Server.'); ?>
                                                     </div>
+                                                    <div ng-repeat="error in errors.push_oitc_server_url">
+                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group col-12 padding-left-0 required">
+                                            <div class="form-group col-12 padding-left-0 required"
+                                                 ng-class="{'has-error': errors.push_oitc_api_key}">
                                                 <label class="col-12 control-label"
                                                        for="push_oitc_api_key">
                                                     <?php echo __('openITCOCKPIT API Key'); ?>
@@ -297,6 +315,9 @@
                                                            data-target="#ApiKeyOverviewModal">
                                                             <?= __('Click here for help') ?>
                                                         </a>
+                                                    </div>
+                                                    <div ng-repeat="error in errors.push_oitc_api_key">
+                                                        <div class="help-block text-danger">{{ error }}</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -334,7 +355,8 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group col-12 padding-left-0 required">
+                                            <div class="form-group col-12 padding-left-0 required"
+                                                 ng-class="{'has-error': errors.push_timeout}">
                                                 <label class="col-12 control-label"
                                                        for="push_timeout">
                                                     <?php echo __('Push timeout'); ?>
@@ -351,6 +373,9 @@
                                                             ng-model="config.int.push_timeout">
                                                     <div class="help-block">
                                                         <?php echo __('HTTP timeout in seconds'); ?>
+                                                    </div>
+                                                    <div ng-repeat="error in errors.push_timeout">
+                                                        <div class="help-block text-danger">{{ error }}</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -475,7 +500,7 @@
                                             </div>
 
                                             <div class="form-group col-12 padding-left-0"
-                                                 ng-class="{'required': config.bool.use_http_basic_auth}">
+                                                 ng-class="{'required': config.bool.use_http_basic_auth, 'has-error': errors.username}">
                                                 <label class="col-12 control-label"
                                                        for="username">
                                                     <?php echo __('Username'); ?>
@@ -489,11 +514,14 @@
                                                             type="text"
                                                             placeholder="<?= __('Username'); ?>"
                                                             ng-model="config.string.username">
+                                                    <div ng-repeat="error in errors.username">
+                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group col-12 padding-left-0"
-                                                 ng-class="{'required': config.bool.use_http_basic_auth}">
+                                                 ng-class="{'required': config.bool.use_http_basic_auth, 'has-error': errors.password}">
                                                 <label class="col-12 control-label"
                                                        for="password">
                                                     <?php echo __('Password'); ?>
@@ -504,9 +532,12 @@
                                                             id="password"
                                                             class="form-control"
                                                             ng-disabled="!config.bool.use_http_basic_auth"
-                                                            type="text"
+                                                            type="password"
                                                             placeholder="<?= __('Password'); ?>"
                                                             ng-model="config.string.password">
+                                                    <div ng-repeat="error in errors.password">
+                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
