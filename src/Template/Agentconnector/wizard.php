@@ -29,12 +29,12 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="AgentconnectorsWizard">
+        <a ui-sref="AgentconnectorsAgent">
             <i class="fa fa-user-secret"></i> <?php echo __('openITCOCKPIT Agent'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fas fa-tools"></i> <?php echo __('Configuration'); ?>
+        <i class="fas fa-tools"></i> <?php echo __('Wizard'); ?>
     </li>
 </ol>
 
