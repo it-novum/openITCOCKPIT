@@ -177,6 +177,10 @@ class AgentConfiguration {
      * @throws \RuntimeException
      */
     public function unmarshal($jsonDataStr) {
+        if(empty($jsonDataStr)){
+            $jsonDataStr = '{}'; //empty json object
+        }
+
         $json = json_decode($jsonDataStr, true);
         $json = $this->migration($json);
 
