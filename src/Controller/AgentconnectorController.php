@@ -89,6 +89,9 @@ class AgentconnectorController extends AppController {
 
 
     /**
+     * Wird vom agent im PUSH modus genutzt um sein CSR hinzuschicken und sein SSL Cert zu bekommen
+     * Wird es im GO Agent nicht mehr geben!
+     *
      * @return \Cake\Http\Response
      * @deprecated
      */
@@ -366,6 +369,8 @@ class AgentconnectorController extends AppController {
     }
 
     /**
+     * Method to receive check results from PUSH agents
+     *
      * @deprecated
      */
     public function updateCheckdata() {
@@ -783,11 +788,13 @@ class AgentconnectorController extends AppController {
      *      Wizard METHODS      *
      ****************************/
 
+    // Step 1
     public function wizard() {
         //Only ship HTML Template
         return;
     }
 
+    // Step 2
     public function config() {
         if (!$this->isApiRequest()) {
             //Only ship HTML Template
@@ -888,8 +895,8 @@ class AgentconnectorController extends AppController {
                 'username'      => $dataWithDatatypes['bool']['use_http_basic_auth'] ? $dataWithDatatypes['string']['username'] : '',
                 'password'      => $dataWithDatatypes['bool']['use_http_basic_auth'] ? $dataWithDatatypes['string']['password'] : '',
                 'proxy'         => $dataWithDatatypes['bool']['use_proxy'],
-                'insecure'      => false, // Validate TLS certificate in PULL mode
-                'use_https'     => true,
+                'insecure'      => !$dataWithDatatypes['bool']['use_https_verify'], // Validate TLS certificate in PULL mode
+                'use_https'     => $dataWithDatatypes['bool']['use_https'], // Use own TLS certificate for the agent like Let's Encrypt
                 'use_autossl'   => $dataWithDatatypes['bool']['use_autossl'], // New field with agent 3.x
                 'use_push_mode' => $dataWithDatatypes['bool']['enable_push_mode'], // New field with agent 3.x
                 'config'        => $AgentConfiguration->marshal(), // New field with agent 3.x
@@ -908,6 +915,7 @@ class AgentconnectorController extends AppController {
         }
     }
 
+    // Step 3
     public function install() {
         if (!$this->isAngularJsRequest()) {
             return;
@@ -939,6 +947,64 @@ class AgentconnectorController extends AppController {
 
 
         $this->viewBuilder()->setOption('serialize', ['config', 'host', 'config_as_ini']);
+    }
+
+    // Step 4 (In Pull mode)
+    public function autotls() {
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
+        $hostId = $this->request->getQuery('hostId', 0);
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException();
+        }
+
+        $host = $HostsTable->get($hostId);
+
+        if (!$AgentconfigsTable->existsByHostId($host->id)) {
+            throw new NotFoundException();
+        }
+
+        $record = $AgentconfigsTable->getConfigByHostId($host->id);
+
+        $AgentConfiguration = new AgentConfiguration();
+        $config = $AgentConfiguration->unmarshal($record->config);
+
+        if ($config['bool']['enable_push_mode'] === true) {
+            throw new BadRequestException('AutoTLS is only available in Pull mode');
+        }
+
+        if ($config['bool']['use_autossl'] === true && $record->autossl_successful === true) {
+            // Autossl is enabled AND the agent already successfully requested a certificate.
+            // Check if an HTTPS connection is possible. If we can not connect via HTTPS try if the Agent is running with HTTP enabled
+            // If oITC get an HTTP (no S!!) response from the agent someone deleted the certificate file on the Agent locally
+            // Show a warning to the user with a button to generate a new certificate for this agent
+            //
+            // IF the Agent is only reachable via HTTPS than the certificate is fishy/compromised and we show an error that the user
+            // have to manually delete the certificate files from the Agent and start the wizard again.
+            // System may be compromised
+        }
+
+        if ($config['bool']['use_autossl'] === true && $record->autossl_successful === false) {
+            // This Agent had never get a certificate. Try if the agent is running on HTTP and if yes
+            // we POST a new certificate to the agent.
+            // Once an Agent got a certificate - we never ever talk again with this agent using HTTP
+        }
+
+
+        dd($config);
+
+
+        $this->set('config', $config);
+        $this->set('host', $host);
+
+
+        $this->viewBuilder()->setOption('serialize', ['config', 'host']);
     }
 
     /****************************

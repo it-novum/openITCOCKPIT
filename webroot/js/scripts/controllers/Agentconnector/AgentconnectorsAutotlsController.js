@@ -1,12 +1,12 @@
 angular.module('openITCOCKPIT')
-    .controller('AgentconnectorsInstallController', function($scope, $http, $state, $stateParams, RedirectService, NotyService){
+    .controller('AgentconnectorsAutotlsController', function($scope, $http, $state, $stateParams, RedirectService, NotyService){
 
         $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
 
         // Load current agent config if any exists
         $scope.load = function(searchString, selected){
-            $http.get("/agentconnector/install.json", {
+            $http.get("/agentconnector/autotls.json", {
                 params: {
                     hostId: $scope.hostId,
                     'angular': true

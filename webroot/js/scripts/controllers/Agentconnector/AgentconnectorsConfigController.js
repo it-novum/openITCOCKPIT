@@ -3,6 +3,9 @@ angular.module('openITCOCKPIT')
 
         $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
+        $scope.connection_type = 'autotls';
+        $scope.webserver_type = 'https';
+
         var urlMode = $stateParams.mode || null;
 
         // Load current agent config if any exists
@@ -15,6 +18,11 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.config = result.data.config;
                 $scope.host = result.data.host;
+
+                $scope.webserver_type = 'https';
+                if($scope.config.bool.push_webserver_use_https === false){
+                    $scope.webserver_type = 'http';
+                }
 
                 if(urlMode !== null){
                     // The current AngularJS state has an "mode"
@@ -32,9 +40,11 @@ angular.module('openITCOCKPIT')
 
         // Validate and save agent config
         $scope.submit = function(){
+            cleanupConnectionTypes();
+            $scope.config.bool.push_webserver_use_https = $scope.webserver_type === 'https';
             $http.post("/agentconnector/config.json", {
                     config: $scope.config,
-                    hostId: $scope.hostId
+                    hostId: $scope.hostId,
                 }
             ).then(function(result){
                 $state.go('AgentconnectorsInstall', {
@@ -48,6 +58,44 @@ angular.module('openITCOCKPIT')
                     $scope.errors = result.data.error;
                 }
             });
+        };
+
+        var cleanupConnectionTypes = function(){
+            // This function cleanup if the user clicked around and enabled auto-tls and than switched to http plaintext etc
+
+            if($scope.config.bool.enable_push_mode === false){
+                // Agent in PULL Mode
+                $scope.config.bool.push_enable_webserver = false;
+
+                if($scope.connection_type === 'http'){
+                    // Plaintext connection
+                    $scope.config.bool.use_autossl = false;
+                    $scope.config.bool.use_https = false;
+                    $scope.config.bool.use_https_verify = false;
+                    $scope.config.string.ssl_certfile = '';
+                    $scope.config.string.ssl_keyfile = '';
+                }
+
+                if($scope.connection_type === 'https'){
+                    // HTTPS connection
+                    $scope.config.bool.use_https = true;
+                    $scope.config.bool.use_autossl = false;
+                }
+
+                if($scope.connection_type === 'autotls'){
+                    // Auto-TLS connection
+                    $scope.config.bool.use_autossl = true;
+                    $scope.config.bool.use_https = false;
+                    $scope.config.bool.use_https_verify = false;
+                    $scope.config.string.ssl_certfile = '';
+                    $scope.config.string.ssl_keyfile = '';
+                }
+            }else{
+                // Agent in PUSH Mode
+                $scope.config.bool.use_autossl = false; // no autotls in push mode
+                $scope.config.bool.use_https = false; // the agent push the data to oitc this variable is for pull mode
+                $scope.config.bool.use_https_verify = false; // the agent push the data to oitc this variable is for pull mode
+            }
         };
 
         //Fire on page load

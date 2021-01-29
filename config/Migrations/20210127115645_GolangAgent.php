@@ -22,11 +22,17 @@ class GolangAgent extends AbstractMigration {
                 'null'    => false,
                 'after'   => 'insecure'
             ])
+            ->addColumn('autossl_successful', 'boolean', [
+                'default' => '1',
+                'limit'   => null,
+                'null'    => false,
+                'after'   => 'use_autossl'
+            ])
             ->addColumn('use_push_mode', 'boolean', [
                 'default' => '0',
                 'limit'   => null,
                 'null'    => false,
-                'after'   => 'use_autossl'
+                'after'   => 'autossl_successful'
             ])
             ->addColumn('config', 'text', [
                 'default' => '',
@@ -40,6 +46,7 @@ class GolangAgent extends AbstractMigration {
     public function down() {
         $this->table('agentconfigs')
             ->removeColumn('use_autossl')
+            ->removeColumn('autossl_successful')
             ->removeColumn('use_push_mode')
             ->removeColumn('config')
             ->update();

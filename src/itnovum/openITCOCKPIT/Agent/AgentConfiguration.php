@@ -74,10 +74,14 @@ class AgentConfiguration {
         'bool'   => [
             'enable_push_mode'               => false, // If the agent is running in push mode
             'use_proxy'                      => false, // If the oITC Server should use a proxy server to query the agent in Pull mode
-            'use_autossl'                    => true,  // Use autossl Pull mode only
             'enable_remote_config_update'    => false, // Allow to push a new configuration to the Agent (dangerous)
             'use_http_basic_auth'            => false, // Enable basic auth for the Agents web server
-            'push_verify_server_certificate' => false, // If the agent should verify the openITCOCKPIT Servers SSL certificate (Requires valid certificates like Let's encrypt)
+            'push_verify_server_certificate' => false, // If the agent should verify the openITCOCKPIT Servers SSL certificate (Requires valid certificates like Let's Encrypt)
+            'push_enable_webserver'          => false, // Do not enable the webserver if the agent is running in PUSH mode
+            'push_webserver_use_https'       => true,  // Start the webserver on the Agent in Push mode with HTTPS (requires ssl_certfile and ssl_keyfile to be set)
+            'use_autossl'                    => true,  // Use autossl Pull mode only
+            'use_https'                      => false, // This sets use_autossl=false and requires ssl_certfile and ssl_keyfile to start the agent with HTTPS and custom certs (e.g from Let's Encrypt)
+            'use_https_verify'               => false, // Disable certificate validation when use_https=true (Requires valid certificates like Let's Encrypt)
 
             // Checks
             'cpustats'                       => true, // Enable CPU checks
@@ -264,6 +268,8 @@ class AgentConfiguration {
         // Define defaults that only exits in the config.ini
         $templateVars = [
             'http_basic_auth_credentials' => '',
+            'certfile'                    => '',
+            'keyfile'                     => '',
         ];
 
         foreach ($this->json as $dataType => $fields) {
@@ -282,6 +288,31 @@ class AgentConfiguration {
                 }
             }
         }
+
+        if ($this->json['bool']['enable_push_mode'] === false) {
+            // Agent is in PUSH mode
+            if ($this->json['bool']['use_https']) {
+                $templateVars['certfile'] = $this->json['string']['ssl_certfile'];
+                $templateVars['keyfile'] = $this->json['string']['ssl_keyfile'];
+            }
+        }
+
+        if ($this->json['bool']['use_http_basic_auth'] === true) {
+            $templateVars['http_basic_auth_credentials'] = sprintf(
+                '%s:%s',
+                $this->json['string']['username'],
+                $this->json['string']['password']
+            );
+        }
+
+        if ($this->json['bool']['enable_push_mode'] === true) {
+            // Agent is in PULL mode
+            if ($this->json['bool']['push_enable_webserver'] && $this->json['bool']['push_webserver_use_https']) {
+                $templateVars['certfile'] = $this->json['string']['ssl_certfile'];
+                $templateVars['keyfile'] = $this->json['string']['ssl_keyfile'];
+            }
+        }
+
 
         $twig = new Environment($loader, ['debug' => true]);
         return $twig->render('agent.ini', $templateVars);

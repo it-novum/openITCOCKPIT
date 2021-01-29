@@ -112,8 +112,8 @@ class HttpLoader {
 
         //$this->guzzleOptions['verify'] = $AgentCertificateData->getCaCertPath();     //do i need this? CURLOPT_SSL_VERIFYHOST was disabled in curl version
         $this->guzzleOptions['verify'] = false;
-        $this->guzzleOptions['cert'] = $AgentCertificateData->getCaCertPath();
-        $this->guzzleOptions['ssl_key'] = $AgentCertificateData->getCaKeyPath();
+        $this->guzzleOptions['cert'] = $AgentCertificateData->getCaCertFile();
+        $this->guzzleOptions['ssl_key'] = $AgentCertificateData->getCaKeyFile();
     }
 
     private function updateAgentconfigProxy($configupdate) {

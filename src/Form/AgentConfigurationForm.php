@@ -47,7 +47,13 @@ class AgentConfigurationForm extends Form {
             ->addField('enable_push_mode', ['type' => 'boolean'])
             ->addField('bind_port', ['type' => 'integer'])
             ->addField('check_interval', ['type' => 'integer'])
-            ->addField('push_timeout', ['type' => 'integer']);
+            ->addField('push_timeout', ['type' => 'integer'])
+            ->addField('ssl_certfile', ['type' => 'string'])
+            ->addField('ssl_keyfile', ['type' => 'string'])
+            ->addField('use_autossl', ['type' => 'boolean'])
+            ->addField('use_https', ['type' => 'boolean'])
+            ->addField('use_https_verify', ['type' => 'boolean']);
+
     }
 
     public function validationDefault(Validator $validator): Validator {
@@ -61,7 +67,7 @@ class AgentConfigurationForm extends Form {
             ->requirePresence('username', false)
             ->allowEmptyString('username', __('Please enter a username.'), function ($context) {
                 if (array_key_exists('use_http_basic_auth', $context['data'])) {
-                    if($context['data']['use_http_basic_auth']){
+                    if ($context['data']['use_http_basic_auth']) {
                         //Basic auth is enabled
                         return false;
                     }
@@ -77,7 +83,7 @@ class AgentConfigurationForm extends Form {
             ->requirePresence('password', false)
             ->allowEmptyString('password', __('Please enter a password.'), function ($context) {
                 if (array_key_exists('use_http_basic_auth', $context['data'])) {
-                    if($context['data']['use_http_basic_auth']){
+                    if ($context['data']['use_http_basic_auth']) {
                         //Basic auth is enabled
                         return false;
                     }
@@ -92,7 +98,7 @@ class AgentConfigurationForm extends Form {
             ->requirePresence('push_oitc_server_url', false)
             ->allowEmptyString('push_oitc_server_url', __('Please enter a server URL.'), function ($context) {
                 if (array_key_exists('enable_push_mode', $context['data'])) {
-                    if($context['data']['enable_push_mode']){
+                    if ($context['data']['enable_push_mode']) {
                         //Agent is running in push mode
                         return false;
                     }
@@ -107,7 +113,7 @@ class AgentConfigurationForm extends Form {
             ->requirePresence('push_oitc_api_key', false)
             ->allowEmptyString('push_oitc_api_key', __('Please enter a API key.'), function ($context) {
                 if (array_key_exists('enable_push_mode', $context['data'])) {
-                    if($context['data']['enable_push_mode']){
+                    if ($context['data']['enable_push_mode']) {
                         //Agent is running in push mode
                         return false;
                     }
@@ -134,6 +140,64 @@ class AgentConfigurationForm extends Form {
             ->integer('push_timeout')
             ->range('push_timeout', [1, 40], __('The push timeout has to be in range from 1 to 40'))
             ->notEmptyString('push_timeout');
+
+        $validator
+            ->requirePresence('use_autossl')
+            ->boolean('use_autossl');
+
+        $validator
+            ->requirePresence('use_https')
+            ->boolean('use_https');
+
+        $validator
+            ->requirePresence('use_https_verify')
+            ->boolean('use_https_verify');
+
+        $validator
+            ->scalar('ssl_certfile')
+            ->maxLength('ssl_certfile', 255)
+            ->requirePresence('ssl_certfile', false)
+            ->allowEmptyString('ssl_certfile', __('Please enter a certificate file.'), function ($context) {
+                if (array_key_exists('use_https', $context['data'])) { // Pull mode
+                    if ($context['data']['use_https']) {
+                        //HTTPS with own cert is enabled
+                        return false;
+                    }
+                }
+
+                if (array_key_exists('enable_push_mode', $context['data']) && array_key_exists('push_enable_webserver', $context['data']) && array_key_exists('push_webserver_use_https', $context['data'])) { // Push mode + Agent webserver is enabled + HTTPS is enabled
+                    if ($context['data']['enable_push_mode'] && $context['data']['push_enable_webserver'] && $context['data']['push_webserver_use_https']) {
+                        //Webserver on the agent should start with HTTPS with
+                        return false;
+                    }
+                }
+
+                // HTTPS is disabled (or AutoTLS is used)
+                return true;
+            });
+
+        $validator
+            ->scalar('ssl_keyfile')
+            ->maxLength('ssl_keyfile', 255)
+            ->requirePresence('ssl_keyfile', false)
+            ->allowEmptyString('ssl_keyfile', __('Please enter certificate key file.'), function ($context) {
+                if (array_key_exists('use_https', $context['data'])) { // Pull mode
+                    if ($context['data']['use_https']) {
+                        //HTTPS with own cert is enabled
+                        return false;
+                    }
+                }
+
+                if (array_key_exists('enable_push_mode', $context['data']) && array_key_exists('push_enable_webserver', $context['data']) && array_key_exists('push_webserver_use_https', $context['data'])) { // Push mode + Agent webserver is enabled + HTTPS is enabled
+                    if ($context['data']['enable_push_mode'] && $context['data']['push_enable_webserver'] && $context['data']['push_webserver_use_https']) {
+                        //Webserver on the agent should start with HTTPS with
+                        return false;
+                    }
+                }
+
+                // HTTPS is disabled (or AutoTLS is used)
+                return true;
+            });
 
         return $validator;
     }

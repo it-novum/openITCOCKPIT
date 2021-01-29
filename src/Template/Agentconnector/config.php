@@ -447,50 +447,151 @@
                                             </h4>
                                         </legend>
                                         <div>
-                                            <div class="form-group col-12">
+
+                                            <!-- Connection type in PULL mode -->
+                                            <div class="form-group col-12 padding-left-0 "
+                                                 ng-show="config.bool.enable_push_mode === false">
+                                                <label class="col-12 control-label"
+                                                       for="connection_type">
+                                                    <?php echo __('Connection type'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                            id="connection_type"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            chosen="{}"
+                                                            ng-model="connection_type">
+                                                        <option value="autotls"><?= __('Auto-TLS'); ?></option>
+                                                        <option value="https"><?= __('HTTPS'); ?></option>
+                                                        <option value="http"><?= __('HTTP (plaintext)'); ?></option>
+                                                    </select>
+                                                    <div class="help-block" ng-show="connection_type === 'autotls'">
+                                                        <?= __('openITCOCKPIT automatically generate a TLS certificate for authentication and encryption purpose. Auto-TLS is only available in Pull mode.'); ?>
+                                                    </div>
+                                                    <div class="help-block" ng-show="connection_type === 'https'">
+                                                        <?= __('Start the Agents web server with own TLS certificates from Let\'s Encrypt for example.'); ?>
+                                                    </div>
+                                                    <div class="help-block text-danger"
+                                                         ng-show="connection_type === 'https'">
+                                                        <?= __('It\'s recommended to also enable HTTP Basic Authentication to restrict the access to the agent.'); ?>
+                                                    </div>
+                                                    <div class="help-block text-danger"
+                                                         ng-show="connection_type === 'http'">
+                                                        <?= __('Communication will be plaintext. No encryption and authentication. Not recommended!'); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- End connection type -->
+
+                                            <!-- Webserver settings in PUSH mode -->
+
+                                            <div class="form-group col-12" ng-show="config.bool.enable_push_mode">
                                                 <div class="custom-control custom-checkbox margin-bottom-10">
                                                     <input type="checkbox"
-                                                           ng-disabled="config.bool.enable_push_mode"
                                                            class="custom-control-input"
-                                                           id="use_autossl"
-                                                           ng-model="config.bool.use_autossl">
+                                                           id="push_enable_webserver"
+                                                           ng-model="config.bool.push_enable_webserver">
                                                     <label class="custom-control-label"
-                                                           for="use_autossl">
-                                                        <?php echo __('Enable Auto-TLS'); ?>
+                                                           for="push_enable_webserver">
+                                                        <?php echo __('Enable Webserver'); ?>
                                                     </label>
                                                     <div class="help-block">
-                                                        <?php echo __('If enabled, the openITCOCKPIT Agent tries to automatically generate a TLS certificate for authentication and encryption purpose.'); ?>
-                                                        <br>
-                                                        <?php echo __('This is only available in Pull mode'); ?>
-                                                        <br>
-                                                        <?php echo __('Push mode: The openITCOCKPIT Monitoring Server is only available through https by default. This makes sure you always have an encrypted connection. Please use valid TLS certificates to also avoid Man-in-the-middle attacks.'); ?>
+                                                        <?php echo __('By default the web server of the Agent is disabled when running in Push mode.'); ?>
                                                     </div>
                                                     <div class="help-block text-danger">
-                                                        <?= __('For security response we highly recommend to enable Auto-TLS! Otherwise the communication in Pull mode will be plaintext.'); ?>
+                                                        <?= __('It is highly recommended to enable at least HTTP Basic Authentication!'); ?>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-12">
+
+                                            <div class="form-group col-12 padding-left-0 "
+                                                 ng-show="config.bool.enable_push_mode === true">
+                                                <label class="col-12 control-label"
+                                                       for="webserver_type">
+                                                    <?php echo __('Web server type'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                            id="webserver_type"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            ng-disabled="!config.bool.push_enable_webserver"
+                                                            chosen="{}"
+                                                            ng-model="webserver_type">
+                                                        <option value="https"><?= __('HTTPS'); ?></option>
+                                                        <option value="http"><?= __('HTTP (plaintext)'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <!-- End Webserver settings -->
+                                            <div class="form-group col-12" ng-show="connection_type === 'https'">
                                                 <div class="custom-control custom-checkbox margin-bottom-10">
                                                     <input type="checkbox"
                                                            class="custom-control-input"
-                                                           id="enable_remote_config_update"
-                                                           ng-model="config.bool.enable_remote_config_update">
+                                                           id="use_https_verify"
+                                                           ng-model="config.bool.use_https_verify">
                                                     <label class="custom-control-label"
-                                                           for="enable_remote_config_update">
-                                                        <?php echo __('Enable remote configuration update mode'); ?>
+                                                           for="use_https_verify">
+                                                        <?php echo __('Verify certificate'); ?>
                                                     </label>
                                                     <div class="help-block">
-                                                        <?php echo __('Enables the remote agent configuration update mode.'); ?>
-                                                        <br>
-                                                        <?php echo __('Should only be configured after an successful TLS configuration.'); ?>
-                                                        <br>
-                                                        <p class="text-danger">
-                                                            <?php echo __('Warning: This could lead to remote code execution!'); ?>
-                                                        </p>
+                                                        <?php echo __('Enabled TLS certificate validation. This requires valid certificates like from Let\'s Encrypt'); ?>
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            <div class="form-group col-12 padding-left-0 required"
+                                                 ng-show="(connection_type === 'https' && !config.bool.enable_push_mode) || (webserver_type === 'https' && config.bool.enable_push_mode)"
+                                                 ng-class="{'has-error': errors.ssl_certfile}">
+                                                <label class="col-12 control-label"
+                                                       for="ssl_certfile">
+                                                    <?php echo __('TLS certificate file'); ?>
+                                                </label>
+
+                                                <div class="col-12">
+                                                    <input
+                                                            ng-disabled="(config.bool.enable_push_mode === true && config.bool.push_enable_webserver === false )"
+                                                            id="ssl_certfile"
+                                                            class="form-control"
+                                                            type="text"
+                                                            placeholder="<?= __('/etc/ssl/acme.sh/example.org/cert.pem'); ?>"
+                                                            ng-model="config.string.ssl_certfile">
+                                                    <div ng-repeat="error in errors.ssl_certfile">
+                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
+                                                    <div class="help-block">
+                                                        <?php echo __('Full path to certificate file the Agent should use'); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-12 padding-left-0 required"
+                                                 ng-show="(connection_type === 'https' && !config.bool.enable_push_mode) || (webserver_type === 'https' && config.bool.enable_push_mode)"
+                                                 ng-class="{'has-error': errors.ssl_keyfile}">
+                                                <label class="col-12 control-label"
+                                                       for="ssl_keyfile">
+                                                    <?php echo __('TLS key file'); ?>
+                                                </label>
+
+                                                <div class="col-12">
+                                                    <input
+                                                            ng-disabled="(config.bool.enable_push_mode === true && config.bool.push_enable_webserver === false )"
+                                                            id="ssl_keyfile"
+                                                            class="form-control"
+                                                            type="text"
+                                                            placeholder="<?= __('/etc/ssl/acme.sh/example.org/privkey.pem'); ?>"
+                                                            ng-model="config.string.ssl_keyfile">
+                                                    <div ng-repeat="error in errors.ssl_keyfile">
+                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
+                                                    <div class="help-block">
+                                                        <?php echo __('Full path to key file the Agent should use'); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div class="form-group col-12">
                                                 <div class="custom-control custom-checkbox margin-bottom-10">
                                                     <input type="checkbox"
@@ -499,7 +600,7 @@
                                                            ng-model="config.bool.use_http_basic_auth">
                                                     <label class="custom-control-label"
                                                            for="use_http_basic_auth">
-                                                        <?php echo __('Enable HTTP Basic Auth'); ?>
+                                                        <?php echo __('Enable HTTP Basic Authentication'); ?>
                                                     </label>
                                                 </div>
                                             </div>
@@ -542,6 +643,27 @@
                                                             ng-model="config.string.password">
                                                     <div ng-repeat="error in errors.password">
                                                         <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <div class="custom-control custom-checkbox margin-bottom-10">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
+                                                           id="enable_remote_config_update"
+                                                           ng-model="config.bool.enable_remote_config_update">
+                                                    <label class="custom-control-label"
+                                                           for="enable_remote_config_update">
+                                                        <?php echo __('Enable remote configuration update mode'); ?>
+                                                    </label>
+                                                    <div class="help-block">
+                                                        <?php echo __('Enables the remote agent configuration update mode.'); ?>
+                                                        <br>
+                                                        <?php echo __('Should only be configured after an successful TLS configuration.'); ?>
+                                                        <br>
+                                                        <p class="text-danger">
+                                                            <?php echo __('Warning: This could lead to remote code execution!'); ?>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
