@@ -147,6 +147,9 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                                 </span>
                                                                 <br>
                                                                 {{connection_test.error}}
+                                                                <div ng-show="connection_test.guzzle_error">
+                                                                    {{connection_test.guzzle_error}}
+                                                                </div>
                                                             </div>
                                                             <button class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
                                                                     ng-click="submit()"
@@ -172,6 +175,9 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                                 </span>
                                                                 <br>
                                                                 {{connection_test.error}}
+                                                                <div ng-show="connection_test.guzzle_error">
+                                                                    {{connection_test.guzzle_error}}
+                                                                </div>
                                                             </div>
 
                                                             <button class="btn btn-outline-danger btn-sm btn-w-m waves-effect waves-themed"
@@ -200,6 +206,9 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                                 </span>
                                                                 <br>
                                                                 {{connection_test.error}}
+                                                                <div ng-show="connection_test.guzzle_error">
+                                                                    {{connection_test.guzzle_error}}
+                                                                </div>
                                                             </div>
                                                             <button class="btn btn-outline-warning btn-sm btn-w-m waves-effect waves-themed"
                                                                     type="button"
@@ -226,6 +235,9 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                                 </span>
                                                                 <br>
                                                                 {{connection_test.error}}
+                                                                <div ng-show="connection_test.guzzle_error">
+                                                                    {{connection_test.guzzle_error}}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
