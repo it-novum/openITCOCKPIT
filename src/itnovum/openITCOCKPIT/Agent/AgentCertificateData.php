@@ -6,6 +6,8 @@
 
 namespace itnovum\openITCOCKPIT\Agent;
 
+use App\Model\Table\SystemsettingsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\Health\SystemId;
 
 /**
@@ -54,6 +56,10 @@ class AgentCertificateData {
 
     public function getCaCertFile(): string {
         return $this->caCertFile;
+    }
+
+    public function getCaCert(): string {
+        return file_get_contents($this->getCaCertFile());
     }
 
     public function getCaKeyFile(): string {
@@ -117,12 +123,19 @@ class AgentCertificateData {
         openssl_x509_export_to_file($x509, $this->getCaCertFile());
         openssl_pkey_export_to_file($private_key, $this->getCaKeyFile());
         sleep(1); // ?
-        chown($this->getCaCertFile(), 'www-data');
-        chgrp($this->getCaCertFile(), 'nagios');
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $SystemsettingsTable->findAsArray();
+        $user = $systemsettings['WEBSERVER']['WEBSERVER.USER'];
+        $group = $systemsettings['WEBSERVER']['WEBSERVER.GROUP'];
+
+        chown($this->getCaCertFile(), $user);
+        chgrp($this->getCaCertFile(), $group);
         chmod($this->getCaCertFile(), 0640);
 
-        chown($this->getCaKeyFile(), 'www-data');
-        chgrp($this->getCaKeyFile(), 'nagios');
+        chown($this->getCaKeyFile(), $user);
+        chgrp($this->getCaKeyFile(), $group);
         chmod($this->getCaKeyFile(), 0640);
     }
 }

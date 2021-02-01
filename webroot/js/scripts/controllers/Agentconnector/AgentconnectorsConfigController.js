@@ -18,6 +18,12 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.config = result.data.config;
                 $scope.host = result.data.host;
+                if($scope.config.bool.use_autossl === false && $scope.config.bool.use_https === true){
+                    $scope.connection_type = 'https';
+                }
+                if($scope.config.bool.use_autossl === false && $scope.config.bool.use_https === false){
+                    $scope.connection_type = 'http';
+                }
 
                 $scope.webserver_type = 'https';
                 if($scope.config.bool.push_webserver_use_https === false){

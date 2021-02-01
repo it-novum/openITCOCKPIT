@@ -3,31 +3,50 @@ angular.module('openITCOCKPIT')
 
         $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
+        $scope.disableNext = true;
+        $scope.runningCheck = true;
 
         // Load current agent config if any exists
         $scope.load = function(searchString, selected){
+            $scope.runningCheck = true;
             $http.get("/agentconnector/autotls.json", {
                 params: {
                     hostId: $scope.hostId,
                     'angular': true
                 }
             }).then(function(result){
+                $scope.runningCheck = false;
                 $scope.config = result.data.config;
                 $scope.host = result.data.host;
-                $scope.config_as_ini = result.data.config_as_ini;
+                $scope.connection_test = result.data.connection_test;
+                $scope.disableNext = $scope.connection_test.status !== 'success';
+            });
+        };
+
+        $scope.reExchangeAutoTLS = function(){
+            $scope.runningCheck = true;
+            $http.get("/agentconnector/autotls.json", {
+                params: {
+                    hostId: $scope.hostId,
+                    'angular': true,
+                    'reExchangeAutoTLS': 'true'
+                }
+            }).then(function(result){
+                $scope.runningCheck = false;
+                $scope.config = result.data.config;
+                $scope.host = result.data.host;
+                $scope.connection_test = result.data.connection_test;
+
+                $scope.disableNext = $scope.connection_test.status !== 'success';
+
+                if($scope.connection_test.status === 'success'){
+                    $scope.disableNext = false;
+                }
             });
         };
 
         $scope.submit = function(){
-            if($scope.config.bool.enable_push_mode){
-                console.log('Implement redirect to push mode')
-            }else{
-                $state.go('AgentconnectorsAutotls', {
-                    hostId: $scope.hostId
-                }).then(function(){
-                    NotyService.scrollTop();
-                });
-            }
+            console.log('submit');
         };
 
 

@@ -48,6 +48,7 @@ use Cake\ORM\TableRegistry;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
+use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
 use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
@@ -956,6 +957,7 @@ class AgentconnectorController extends AppController {
         }
 
         $hostId = $this->request->getQuery('hostId', 0);
+        $reExchangeAutoTLS = $this->request->getQuery('reExchangeAutoTLS', 'false') === 'true';
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var AgentconfigsTable $AgentconfigsTable */
@@ -972,6 +974,14 @@ class AgentconnectorController extends AppController {
 
         $record = $AgentconfigsTable->getConfigByHostId($host->id);
 
+        if($reExchangeAutoTLS === true){
+            if($record->use_autossl && $record->autossl_successful){
+                // This agent used AutoTLS but someone delete the cert on the agent.
+                $record->set('autossl_successful', false);
+                $AgentconfigsTable->save($record);
+            }
+        }
+
         $AgentConfiguration = new AgentConfiguration();
         $config = $AgentConfiguration->unmarshal($record->config);
 
@@ -979,32 +989,15 @@ class AgentconnectorController extends AppController {
             throw new BadRequestException('AutoTLS is only available in Pull mode');
         }
 
-        if ($config['bool']['use_autossl'] === true && $record->autossl_successful === true) {
-            // Autossl is enabled AND the agent already successfully requested a certificate.
-            // Check if an HTTPS connection is possible. If we can not connect via HTTPS try if the Agent is running with HTTP enabled
-            // If oITC get an HTTP (no S!!) response from the agent someone deleted the certificate file on the Agent locally
-            // Show a warning to the user with a button to generate a new certificate for this agent
-            //
-            // IF the Agent is only reachable via HTTPS than the certificate is fishy/compromised and we show an error that the user
-            // have to manually delete the certificate files from the Agent and start the wizard again.
-            // System may be compromised
-        }
+        $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
 
-        if ($config['bool']['use_autossl'] === true && $record->autossl_successful === false) {
-            // This Agent had never get a certificate. Try if the agent is running on HTTP and if yes
-            // we POST a new certificate to the agent.
-            // Once an Agent got a certificate - we never ever talk again with this agent using HTTP
-        }
-
-
-        dd($config);
-
+        $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
 
         $this->set('config', $config);
         $this->set('host', $host);
+        $this->set('connection_test', $connection_test);
 
-
-        $this->viewBuilder()->setOption('serialize', ['config', 'host']);
+        $this->viewBuilder()->setOption('serialize', ['config', 'host', 'connection_test']);
     }
 
     /****************************

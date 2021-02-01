@@ -21,7 +21,7 @@
 //  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //  License agreement and license key will be shipped with the order
 //  confirmation.
-?>
+use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
         <a ui-sref="DashboardsIndex">
@@ -83,6 +83,7 @@
 
                         <button type="button" class="btn btn-xs btn-success btn-block waves-effect waves-themed"
                                 style="border-radius: 0;height: 22px;"
+                                ng-disabled="disableNext"
                                 ng-click="submit()">
                             <?= __('Next') ?>
                             <i class="fa fa-arrow-right"></i>
@@ -107,7 +108,7 @@
                                         <div>
 
                                             <div class="row">
-                                                <div class="col-12">
+                                                <div class="col-12" ng-show="runningCheck">
                                                     <div class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                         <div class="d-flex align-items-center">
                                                             <div class="alert-icon">
@@ -130,6 +131,107 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <div class="col-12" ng-show="connection_test.status === 'success'">
+                                                    <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="alert-icon">
+                                                                <span class="icon-stack icon-stack-md">
+                                                                    <i class="base-7 icon-stack-3x color-success-600"></i>
+                                                                    <i class="fas fa-check icon-stack-1x text-white"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="flex-1">
+                                                                <span class="h5 color-success-600">
+                                                                    <?= __('Success'); ?>
+                                                                </span>
+                                                                <br>
+                                                                {{connection_test.error}}
+                                                            </div>
+                                                            <button class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
+                                                                    ng-click="submit()"
+                                                                    ng-disabled="disableNext">
+                                                                <?= __('Next'); ?>
+                                                                <i class="fa fa-arrow-right"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12" ng-show="connection_test.status === 'error'">
+                                                    <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="alert-icon">
+                                                                <span class="icon-stack icon-stack-md">
+                                                                    <i class="base-7 icon-stack-3x color-danger-600"></i>
+                                                                    <i class="fas fa-exclamation-triangle icon-stack-1x text-white"></i>
+                                                            </div>
+                                                            <div class="flex-1">
+                                                                <span class="h5 color-danger-600">
+                                                                    <?= __('Error'); ?>
+                                                                </span>
+                                                                <br>
+                                                                {{connection_test.error}}
+                                                            </div>
+
+                                                            <button class="btn btn-outline-danger btn-sm btn-w-m waves-effect waves-themed"
+                                                                    type="button"
+                                                                    ng-show="connection_test.oitc_errno === <?php echo AgentHttpClientErrors::ERRNO_HTTPS_COMPROMISED ?>"
+                                                                    ng-click="reExchangeAutoTLS()">
+                                                                <i class="fas fa-certificate"></i>
+                                                                <?= __('Reset AutoTLS certificate'); ?>
+                                                            </button>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12" ng-show="connection_test.status === 'warning'">
+                                                    <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="alert-icon">
+                                                                <span class="icon-stack icon-stack-md">
+                                                                    <i class="base-7 icon-stack-3x color-warning-600"></i>
+                                                                    <i class="fas fa-exclamation-triangle icon-stack-1x text-white"></i>
+                                                            </div>
+                                                            <div class="flex-1">
+                                                                <span class="h5 color-warning-600">
+                                                                    <?= __('Error!'); ?>
+                                                                </span>
+                                                                <br>
+                                                                {{connection_test.error}}
+                                                            </div>
+                                                            <button class="btn btn-outline-warning btn-sm btn-w-m waves-effect waves-themed"
+                                                                    type="button"
+                                                                    ng-show="connection_test.oitc_errno === <?php echo AgentHttpClientErrors::ERRNO_AGENT_RESPONSES_TO_HTTP ?>"
+                                                                    ng-click="reExchangeAutoTLS()">
+                                                                <i class="fas fa-user-secret"></i>
+                                                                <?= __('Trust this Agent and generate a new certificate.'); ?>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12" ng-show="connection_test.status === 'unknown'">
+                                                    <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="alert-icon">
+                                                                <span class="icon-stack icon-stack-md">
+                                                                    <i class="base-7 icon-stack-3x unknown"></i>
+                                                                    <i class="fas fa-times icon-stack-1x text-white"></i>
+                                                            </div>
+                                                            <div class="flex-1">
+                                                                <span class="h5 unknown">
+                                                                    <?= __('Unknown error'); ?>
+                                                                </span>
+                                                                <br>
+                                                                {{connection_test.error}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
                                             </div>
 
                                         </div>

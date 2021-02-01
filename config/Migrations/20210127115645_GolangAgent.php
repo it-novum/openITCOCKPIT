@@ -23,7 +23,7 @@ class GolangAgent extends AbstractMigration {
                 'after'   => 'insecure'
             ])
             ->addColumn('autossl_successful', 'boolean', [
-                'default' => '1',
+                'default' => '0',
                 'limit'   => null,
                 'null'    => false,
                 'after'   => 'use_autossl'

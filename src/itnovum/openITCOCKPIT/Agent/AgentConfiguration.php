@@ -179,6 +179,11 @@ class AgentConfiguration {
             }
         }
 
+        if ($this->json['bool']['use_http_basic_auth'] === false) {
+            $this->json['string']['username'] = '';
+            $this->json['string']['password'] = '';
+        }
+
         $this->json['string']['config_version'] = $this->config_version;
         return json_encode($this->json);
     }
