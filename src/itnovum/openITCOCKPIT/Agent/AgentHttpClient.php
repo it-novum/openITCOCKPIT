@@ -247,7 +247,7 @@ class AgentHttpClient {
                     if (json_last_error() === JSON_ERROR_NONE && isset($data['csr'])) {
                         return [
                             'status'       => 'success',
-                            'error'        => __('Successfully establish HTTPS connection to the Agent.'),
+                            'error'        => __('Successfully establish HTTPS connection to the Agent (No AutoTLS).'),
                             'guzzle_error' => '',
                             'oitc_errno'   => AgentHttpClientErrors::ERRNO_OK
 
@@ -283,7 +283,7 @@ class AgentHttpClient {
                     if (json_last_error() === JSON_ERROR_NONE && isset($data['csr'])) {
                         return [
                             'status'       => 'success',
-                            'error'        => __('Connection established successfully using insecure HTTP.'),
+                            'error'        => __('Connection established successfully using insecure HTTP (plaintext).'),
                             'guzzle_error' => '',
                             'oitc_errno'   => AgentHttpClientErrors::ERRNO_OK
 

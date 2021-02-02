@@ -102,6 +102,7 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                     <fieldset>
                                         <legend class="fs-md fieldset-legend-border-bottom margin-top-10">
                                             <h4 class="required">
+                                                <i class="fas fa-certificate"></i>
                                                 <?= __('Executing TLS certificate exchange'); ?>
                                             </h4>
                                         </legend>

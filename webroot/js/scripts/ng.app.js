@@ -212,6 +212,17 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconnectorsAutotlsController"
             })
 
+            .state('AgentconnectorsCreateServices', {
+                url: '/agentconnector/create_services/:hostId',
+                params: {
+                    mode: {
+                        value: null
+                    }
+                },
+                templateUrl: "/agentconnector/create_services.html",
+                controller: "AgentconnectorsCreateServicesController"
+            })
+
             .state('BackupsIndex', {
                 url: '/backups/index',
                 templateUrl: "/backups/index.html",

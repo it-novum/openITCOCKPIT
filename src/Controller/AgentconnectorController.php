@@ -974,8 +974,67 @@ class AgentconnectorController extends AppController {
 
         $record = $AgentconfigsTable->getConfigByHostId($host->id);
 
-        if($reExchangeAutoTLS === true){
-            if($record->use_autossl && $record->autossl_successful){
+        if ($reExchangeAutoTLS === true) {
+            if ($record->use_autossl && $record->autossl_successful) {
+                // This agent used AutoTLS but someone delete the cert on the agent.
+                $record->set('autossl_successful', false);
+                $AgentconfigsTable->save($record);
+            }
+        }
+
+        $AgentConfiguration = new AgentConfiguration();
+        $config = $AgentConfiguration->unmarshal($record->config);
+
+        if ($config['bool']['enable_push_mode'] === true) {
+            throw new BadRequestException('AutoTLS is only available in Pull mode');
+        }
+
+        $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+
+        $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
+
+        $this->set('config', $config);
+        $this->set('host', $host);
+        $this->set('connection_test', $connection_test);
+
+        $this->viewBuilder()->setOption('serialize', ['config', 'host', 'connection_test']);
+    }
+
+    // Step 4 (In Push mode)
+    public function map_agent() {
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
+        // To be done
+    }
+
+    // Step 5
+    public function create_services() {
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
+        $hostId = $this->request->getQuery('hostId', 0);
+        $reExchangeAutoTLS = $this->request->getQuery('reExchangeAutoTLS', 'false') === 'true';
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException();
+        }
+
+        $host = $HostsTable->get($hostId);
+
+        if (!$AgentconfigsTable->existsByHostId($host->id)) {
+            throw new NotFoundException();
+        }
+
+        $record = $AgentconfigsTable->getConfigByHostId($host->id);
+
+        if ($reExchangeAutoTLS === true) {
+            if ($record->use_autossl && $record->autossl_successful) {
                 // This agent used AutoTLS but someone delete the cert on the agent.
                 $record->set('autossl_successful', false);
                 $AgentconfigsTable->save($record);
