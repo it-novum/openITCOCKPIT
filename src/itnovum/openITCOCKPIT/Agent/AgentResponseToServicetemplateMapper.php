@@ -254,7 +254,7 @@ class AgentResponseToServicetemplateMapper {
                                 $check['agentcheck']['service']['name'] = $servicename;
                                 /*foreach ($check['agentcheck']['service']['servicecommandargumentvalues'] as $index => $arg) {
                                     if ($arg['commandargument']['name'] === '$ARG3$') {
-                                        $check['agentcheck']['service']['servicecommandargumentvalues'][$index]['value'] = $itemKey;
+                                        a$check['agentcheck']['service']['servicecommandargumentvalues'][$index]['value'] = $itemKey;
                                     }
                                 }*/
 

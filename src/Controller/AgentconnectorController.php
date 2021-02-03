@@ -49,6 +49,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
+use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
 use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
 use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
@@ -1016,7 +1017,6 @@ class AgentconnectorController extends AppController {
         }
 
         $hostId = $this->request->getQuery('hostId', 0);
-        $reExchangeAutoTLS = $this->request->getQuery('reExchangeAutoTLS', 'false') === 'true';
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var AgentconfigsTable $AgentconfigsTable */
@@ -1031,32 +1031,12 @@ class AgentconnectorController extends AppController {
             throw new NotFoundException();
         }
 
-        $record = $AgentconfigsTable->getConfigByHostId($host->id);
+        $AgentResponseToServices = new AgentResponseToServices($host->id, []);
+        dd($AgentResponseToServices->getAllServices());
 
-        if ($reExchangeAutoTLS === true) {
-            if ($record->use_autossl && $record->autossl_successful) {
-                // This agent used AutoTLS but someone delete the cert on the agent.
-                $record->set('autossl_successful', false);
-                $AgentconfigsTable->save($record);
-            }
-        }
 
-        $AgentConfiguration = new AgentConfiguration();
-        $config = $AgentConfiguration->unmarshal($record->config);
-
-        if ($config['bool']['enable_push_mode'] === true) {
-            throw new BadRequestException('AutoTLS is only available in Pull mode');
-        }
-
-        $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
-
-        $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
-
-        $this->set('config', $config);
         $this->set('host', $host);
-        $this->set('connection_test', $connection_test);
-
-        $this->viewBuilder()->setOption('serialize', ['config', 'host', 'connection_test']);
+        $this->viewBuilder()->setOption('serialize', ['host']);
     }
 
     /****************************

@@ -235,6 +235,11 @@ class Agent extends Importer {
                 'plugin_name'        => 'Alfresco',
                 'servicetemplate_id' => 'e453767c-b216-4b17-a012-9bc037d7da49'
             ],
+            [
+                'name'               => 'launchd_services',
+                'plugin_name'        => 'Launchd',
+                'servicetemplate_id' => '7370c78c-fc04-459b-9fc8-39a76bbe0fba'
+            ],
         ];
         return $data;
     }
@@ -834,6 +839,27 @@ class Agent extends Importer {
                 ]
             ],
 
+            [
+                'name'             => 'check_oitc_agent_launchd_service_running',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'e4f4a260-9b6d-453d-9f3d-76ea5635f770',
+                'description'      => "Returns the state of a launchd service.\n" .
+                    "Match: String that must match with the launchctl Label. (e.g. com.apple.trustd)\n" .
+                    "Strict: Decides if the match must be completely or just in a part (1/0).\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Match'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Strict'
+                    ],
+                ]
+            ],
+
         ];
         return $data;
     }
@@ -946,11 +972,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => '90',
+                        'value'              => '85',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '95',
+                        'value'              => '90',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -2359,6 +2385,70 @@ class Agent extends Importer {
                         'commandargument_id' => '$ARG3$',
                         'value'              => 'Alfresco check name',
                     ],
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
+
+            [
+                'uuid'                                      => '7370c78c-fc04-459b-9fc8-39a76bbe0fba',
+                'template_name'                             => 'OITC_AGENT_LAUNCHD_SERVICES',
+                'name'                                      => 'Check launchd service running',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'e4f4a260-9b6d-453d-9f3d-76ea5635f770',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '1',
+                'freshness_threshold'                       => '300',
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '1',
+                    ]
                 ],
                 'customvariables'                           => [],
                 'servicegroups'                             => [],

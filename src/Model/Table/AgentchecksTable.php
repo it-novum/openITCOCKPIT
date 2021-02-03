@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -154,10 +155,41 @@ class AgentchecksTable extends Table {
         return $this->exists(['Agentchecks.name' => $name, 'Agentchecks.servicetemplate_id' => $servicetemplateId]);
     }
 
+
     /**
      * @return array
      */
     public function getAgentchecksForMapping() {
+        $query = $this->find()
+            ->contain([
+                'Servicetemplates' => function (Query $q) {
+                    $q->contain([
+                        'Servicetemplatecommandargumentvalues' => [
+                            'Commandarguments'
+                        ]
+                    ]);
+                    return $q;
+                }
+            ])
+            ->disableHydration()
+            ->all();
+        $agentchecksTmp = $query->toArray();
+        $agentchecks = [];
+        foreach($agentchecksTmp as $agentcheck){
+            $agentchecks[$agentcheck['name']] = $agentcheck;
+        }
+
+        debug($agentchecks);
+
+        return $agentchecks;
+    }
+
+    /**
+     * @return array
+     * @deprecated
+     * @todo delete with oITC 4.3
+     */
+    public function getAgentchecksForMappingOld() {
         $query = $this->find()
             ->disableHydration()
             ->all();
