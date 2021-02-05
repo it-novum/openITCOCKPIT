@@ -130,8 +130,15 @@ class Agent extends Importer {
                 'plugin_name'        => 'Agent',
                 'servicetemplate_id' => 'c475f1c8-fd28-493d-aad0-7861e418170d'
             ],
+            // Agent 1.x legacy - delete this
             [
                 'name'               => 'cpu_percentage',
+                'plugin_name'        => 'CpuTotalPercentage',
+                'servicetemplate_id' => 'be4c9649-8771-4704-b409-c56b5f67abc8'
+            ],
+            // Agent 3.x (can use the sam command and service template as 1.x)
+            [
+                'name'               => 'cpu.cpu_percentage',
                 'plugin_name'        => 'CpuTotalPercentage',
                 'servicetemplate_id' => 'be4c9649-8771-4704-b409-c56b5f67abc8'
             ],
@@ -160,21 +167,37 @@ class Agent extends Importer {
                 'plugin_name'        => 'DiskUsage',
                 'servicetemplate_id' => '24851d0d-32fa-4048-bd67-6a30d710bba1'
             ],
+            // Agent 1.x legacy - delete this
             [
                 'name'               => 'sensors',
                 'plugin_name'        => 'Fan',
                 'servicetemplate_id' => '3e0bd59e-822d-47ed-a5b2-15f1e53fe043'
             ],
+            // Agent 1.x legacy - delete this
             [
                 'name'               => 'sensors',
                 'plugin_name'        => 'Temperature',
                 'servicetemplate_id' => 'f73dc076-bdb0-4302-9776-88ca1ba79364'
             ],
+            // Agent 3.x
+            [
+                'name'               => 'sensors.Temperatures',
+                'plugin_name'        => 'Temperature',
+                'servicetemplate_id' => 'a73aa635-a0d0-463a-b065-9c8fe9a5a20b'
+            ],
+            // Agent 1.x legacy - delete this
             [
                 'name'               => 'sensors',
                 'plugin_name'        => 'Battery',
                 'servicetemplate_id' => '21057a75-57a1-4972-8f2f-073c8a6000b0'
             ],
+            // Agent 3.x
+            [
+                'name'               => 'sensors.Batteries',
+                'plugin_name'        => 'Battery',
+                'servicetemplate_id' => '7d2961c3-b02b-4727-b870-5b391628b96f'
+            ],
+
             [
                 'name'               => 'net_io',
                 'plugin_name'        => 'NetIO',
@@ -205,16 +228,19 @@ class Agent extends Importer {
                 'plugin_name'        => 'WindowsEventlog',
                 'servicetemplate_id' => 'dda2d5dc-7987-49a5-b4c2-0540e8aaf45e'
             ],
+            // Agent 1.x legacy - delete this
             [
                 'name'               => 'dockerstats',
                 'plugin_name'        => 'DockerContainerRunning',
                 'servicetemplate_id' => 'ca73653f-2bba-4542-b11b-0bbd0ecc8b7a'
             ],
+            // Agent 1.x legacy - delete this
             [
                 'name'               => 'dockerstats',
                 'plugin_name'        => 'DockerContainerCPU',
                 'servicetemplate_id' => 'a9f7757e-34b0-4df9-8fca-ab8b594c2c26'
             ],
+            // Agent 1.x legacy - delete this
             [
                 'name'               => 'dockerstats',
                 'plugin_name'        => 'DockerContainerMemory',
@@ -438,6 +464,7 @@ class Agent extends Importer {
                 ]
             ],
 
+            // Agent 1.x legacy - delete this
             [
                 'name'             => 'check_oitc_agent_temperature',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
@@ -469,7 +496,34 @@ class Agent extends Importer {
                     ]
                 ]
             ],
+            // Agent 3.x
+            [
+                'name'             => 'check_oitc_agent3_temperature',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '348a8ece-6bd1-4908-8524-a00893aff602',
+                'description'      => "Return the temperature of a given sensor.\n" .
+                    "Warning: Temperature as integer\n" .
+                    "Critical: Temperature as integer\n" .
+                    "Sensor: Sensor name (e.g. coretemp / acpitz / pch_skylake) \n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Sensor'
+                    ]
+                ]
+            ],
 
+            // Agent 1.x legacy - delete this
             [
                 'name'             => 'check_oitc_agent_battery',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
@@ -477,6 +531,25 @@ class Agent extends Importer {
                 'human_args'       => null,
                 'uuid'             => '02289d0e-0a3c-46e5-94f1-b18e57be4e70',
                 'description'      => "Check battery power left in percentage. \nWarning and Critical thresholds are percentage values from 0-100",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical %'
+                    ]
+                ]
+            ],
+            //Agent 3.x
+            [
+                'name'             => 'check_oitc_agent3_battery',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '0b2ba27e-2e9c-40cc-a3a0-266709728b66',
+                'description'      => "Check current battery capacity as percentage. \nWarning and Critical thresholds are percentage values from 0-100",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -1329,6 +1402,7 @@ class Agent extends Importer {
                 'contacts'                                  => []
             ],
 
+            // Agent 1.x legacy - delete this
             [
                 'uuid'                                      => '3e0bd59e-822d-47ed-a5b2-15f1e53fe043',
                 'template_name'                             => 'OITC_AGENT_FAN_SPEED',
@@ -1401,6 +1475,7 @@ class Agent extends Importer {
                 'contacts'                                  => []
             ],
 
+            // Agent 1.x legacy - delete this
             [
                 'uuid'                                      => 'f73dc076-bdb0-4302-9776-88ca1ba79364',
                 'template_name'                             => 'OITC_AGENT_DEVICE_TEMPERATURE',
@@ -1472,7 +1547,76 @@ class Agent extends Importer {
                 'contactgroups'                             => [],
                 'contacts'                                  => []
             ],
+            // Agent 3.x
+            [
+                'uuid'                                      => 'a73aa635-a0d0-463a-b065-9c8fe9a5a20b',
+                'template_name'                             => 'OITC_AGENT3_SENSOR_TEMPERATURE',
+                'name'                                      => 'Temperature Sensor',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '348a8ece-6bd1-4908-8524-a00893aff602',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '1',
+                'freshness_threshold'                       => '300',
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '90',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '100',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => 'coretemp',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
 
+            // Agent 1.x legacy - delete this
             [
                 'uuid'                                      => '21057a75-57a1-4972-8f2f-073c8a6000b0',
                 'template_name'                             => 'OITC_AGENT_BATTERY_LEVEL',
@@ -1483,6 +1627,70 @@ class Agent extends Importer {
                 'notify_period_id'                          => '1',
                 'description'                               => '',
                 'command_id'                                => '02289d0e-0a3c-46e5-94f1-b18e57be4e70',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '1',
+                'freshness_threshold'                       => '300',
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '@35',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '@20',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
+            //Agent 3.x
+            [
+                'uuid'                                      => '7d2961c3-b02b-4727-b870-5b391628b96f',
+                'template_name'                             => 'OITC_AGENT3_BATTERY_LEVEL',
+                'name'                                      => 'Battery Level',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '0b2ba27e-2e9c-40cc-a3a0-266709728b66',
                 'check_command_args'                        => '',
                 'checkcommand_info'                         => '',
                 'eventhandler_command_id'                   => '0',
