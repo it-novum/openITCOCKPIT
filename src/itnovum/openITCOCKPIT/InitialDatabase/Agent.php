@@ -539,6 +539,10 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG2$',
                         'human_name' => 'Critical %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'ID'
                     ]
                 ]
             ],
@@ -1737,6 +1741,10 @@ class Agent extends Importer {
                     [
                         'commandargument_id' => '$ARG2$',
                         'value'              => '@20',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '0',
                     ]
                 ],
                 'customvariables'                           => [],

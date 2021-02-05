@@ -51,7 +51,6 @@ use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
 use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
-use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
@@ -1086,6 +1085,9 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadAgentConfigByHostId() {
         $agentConfig = null;
         $this->set('agentConfig', $agentConfig);
@@ -1097,5 +1099,8 @@ class AgentconnectorController extends AppController {
      *    AGENT API METHODS FOR PUSH    *
      ************************************/
 
+    public function register_agent(){
+
+    }
 
 }
