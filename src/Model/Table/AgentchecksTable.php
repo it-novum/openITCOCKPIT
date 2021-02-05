@@ -139,11 +139,42 @@ class AgentchecksTable extends Table {
     }
 
     /**
+     * @param $name
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getAgentcheckByName($name) {
+        return $this->query()
+            ->contain([
+                'Servicetemplates' => function (Query $q) {
+                    $q->contain([
+                        'Servicetemplatecommandargumentvalues' => [
+                            'Commandarguments'
+                        ]
+                    ]);
+                    return $q;
+                }
+            ])
+            ->where([
+                'Agentchecks.name' => $name
+            ])
+            ->disableHydration()
+            ->first();
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
     public function existsById($id) {
         return $this->exists(['Agentchecks.id' => $id]);
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function existsByName($name) {
+        return $this->exists(['Agentchecks.name' => $name]);
     }
 
     /**
@@ -175,11 +206,11 @@ class AgentchecksTable extends Table {
             ->all();
         $agentchecksTmp = $query->toArray();
         $agentchecks = [];
-        foreach($agentchecksTmp as $agentcheck){
+        foreach ($agentchecksTmp as $agentcheck) {
             $agentchecks[$agentcheck['name']] = $agentcheck;
         }
 
-        debug($agentchecks);
+        //debug($agentchecks);
 
         return $agentchecks;
     }
