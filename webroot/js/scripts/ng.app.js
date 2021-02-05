@@ -168,22 +168,21 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentchecksEditController"
             })
 
-            .state('AgentconfigsConfig', {
-                url: '/agentconfigs/config/:hostId',
-                templateUrl: "/agentconfigs/config.html",
-                controller: "AgentconfigsConfigController"
-            })
-
-            .state('AgentconfigsScan', {
-                url: '/agentconfigs/scan/:hostId',
-                templateUrl: "/agentconfigs/scan.html",
-                controller: "AgentconfigsScanController"
+            .state('AgentconnectorsWizard', {
+                url: '/agentconnector/wizard',
+                params: {
+                    hostId: {
+                        value: null
+                    }
+                },
+                templateUrl: "/agentconnector/wizard.html",
+                controller: "AgentconnectorsWizardController"
             })
 
             .state('AgentconnectorsConfig', {
-                url: '/agentconnector/config',
+                url: '/agentconnector/config/:hostId',
                 params: {
-                    hostId: {
+                    mode: {
                         value: null
                     }
                 },
@@ -191,18 +190,37 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconnectorsConfigController"
             })
 
-            .state('AgentconnectorsAgent', {
-                url: '/agentconnector/agents?hostuuid&selection',
+            .state('AgentconnectorsInstall', {
+                url: '/agentconnector/install/:hostId',
                 params: {
-                    hostuuid: {
-                        value: null
-                    },
-                    selection: {
+                    mode: {
                         value: null
                     }
                 },
-                templateUrl: "/agentconnector/agents.html",
-                controller: "AgentconnectorsAgentController"
+                templateUrl: "/agentconnector/install.html",
+                controller: "AgentconnectorsInstallController"
+            })
+
+            .state('AgentconnectorsAutotls', {
+                url: '/agentconnector/autotls/:hostId',
+                params: {
+                    mode: {
+                        value: null
+                    }
+                },
+                templateUrl: "/agentconnector/autotls.html",
+                controller: "AgentconnectorsAutotlsController"
+            })
+
+            .state('AgentconnectorsCreateServices', {
+                url: '/agentconnector/create_services/:hostId',
+                params: {
+                    mode: {
+                        value: null
+                    }
+                },
+                templateUrl: "/agentconnector/create_services.html",
+                controller: "AgentconnectorsCreateServicesController"
             })
 
             .state('BackupsIndex', {

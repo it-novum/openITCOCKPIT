@@ -579,10 +579,10 @@ class Menu {
                 'fa fa-user-secret'
             ))
                 ->addLink(new MenuLink(
-                    __('Agent Configuration'),
-                    'AgentconnectorsConfig',
+                    __('Agent Wizard'),
+                    'AgentconnectorsWizard',
                     'agentconnector',
-                    'config',
+                    'wizard',
                     '',
                     'fa fa-user-secret',
                     [],

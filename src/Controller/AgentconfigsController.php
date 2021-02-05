@@ -60,6 +60,7 @@ class AgentconfigsController extends AppController {
 
     /**
      * @param int|null $hostId
+     * @deprecated
      */
     public function config($hostId = null) {
         if (!$this->isAngularJsRequest()) {
@@ -115,6 +116,9 @@ class AgentconfigsController extends AppController {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -146,6 +150,7 @@ class AgentconfigsController extends AppController {
 
     /**
      * @param int|null $id
+     * @deprecated
      */
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
@@ -198,4 +203,6 @@ class AgentconfigsController extends AppController {
         $this->set('agentconfig', $agentconfig);
         $this->viewBuilder()->setOption('serialize', ['agentconfig']);
     }
+
+
 }

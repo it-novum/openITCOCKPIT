@@ -11,10 +11,14 @@ use Cake\ORM\Entity;
  * @property int|null $host_id
  * @property bool $use_https
  * @property bool $insecure
+ * @property bool $use_autossl
+ * @property bool $autossl_successful
+ * @property bool $use_push_mode
  * @property bool $basic_auth
  * @property string $password
  * @property bool $proxy
  * @property bool $push_noticed
+ * @property string config
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
@@ -31,18 +35,22 @@ class Agentconfig extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'port'         => true,
-        'host_id'      => true,
-        'use_https'    => true,
-        'insecure'     => true,
-        'basic_auth'   => true,
-        'username'     => true,
-        'password'     => true,
-        'proxy'        => true,
-        'push_noticed' => true,
-        'created'      => true,
-        'modified'     => true,
-        'host'         => true
+        'port'               => true,
+        'host_id'            => true,
+        'use_https'          => true,
+        'insecure'           => true,
+        'use_autossl'        => true,
+        'autossl_successful' => true,
+        'use_push_mode'      => true,
+        'basic_auth'         => true,
+        'username'           => true,
+        'password'           => true,
+        'proxy'              => true,
+        'push_noticed'       => true,
+        'config'             => true,
+        'created'            => true,
+        'modified'           => true,
+        'host'               => true
     ];
 
 }

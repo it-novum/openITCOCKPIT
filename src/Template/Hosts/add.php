@@ -953,7 +953,7 @@
 
                                     <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
                                         <div class="btn-group" ng-if="!data.createAnother">
-                                            <a onclick="return false;" ng-click="submit('AgentconnectorsConfig')"
+                                            <a onclick="return false;" ng-click="submit('AgentconnectorsWizard')"
                                                class="btn btn-primary waves-effect waves-themed text-white">
                                                 <?php echo __('Create host and setup agent'); ?>
                                             </a>
@@ -981,7 +981,7 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ng-click="submit('AgentconnectorsConfig')"
+                                                   ng-click="submit('AgentconnectorsWizard')"
                                                    ng-if="!data.createAnother">
                                                     <i class="fa fa fa-gear"></i>
                                                     <?php echo __('Save and setup agent'); ?>
