@@ -21,7 +21,7 @@
 //  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //  License agreement and license key will be shipped with the order
 //  confirmation.
-use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
+?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
         <a ui-sref="DashboardsIndex">
@@ -107,9 +107,203 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                             </h4>
                                         </legend>
                                         <div>
+                                            <hr class="hr-text" data-content="&#xf013; <?= __('System'); ?>">
 
-                                            Add some content
-
+                                            <div class="form-group col-12">
+                                                <div class="custom-control custom-checkbox margin-bottom-10">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
+                                                           id="push_verify_server_certificate"
+                                                           ng-model="config.bool.push_verify_server_certificate">
+                                                    <label class="custom-control-label"
+                                                           for="push_verify_server_certificate">
+                                                        <?php echo __('Memory usage'); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <div class="custom-control custom-checkbox margin-bottom-10">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
+                                                           id="push_verify_server_certificate"
+                                                           ng-model="config.bool.push_verify_server_certificate">
+                                                    <label class="custom-control-label"
+                                                           for="push_verify_server_certificate">
+                                                        <?php echo __('Swap usage'); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <div class="custom-control custom-checkbox margin-bottom-10">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
+                                                           id="push_verify_server_certificate"
+                                                           ng-model="config.bool.push_verify_server_certificate">
+                                                    <label class="custom-control-label"
+                                                           for="push_verify_server_certificate">
+                                                        <?php echo __('System load'); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <hr class="hr-text" data-content="&#xf0a0; <?= __('Disk information'); ?>">
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="enable_push_mode">
+                                                    <?php echo __('Disk IO'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
+                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
+                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="enable_push_mode">
+                                                    <?php echo __('Disks'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
+                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
+                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <hr class="hr-text" data-content="&#xf0e8; <?= __('Networking'); ?>">
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="enable_push_mode">
+                                                    <?php echo __('Net IO'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
+                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
+                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="enable_push_mode">
+                                                    <?= __('Net stats'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
+                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
+                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <hr class="hr-text-brands" data-content="&#xf395; <?= __('Docker'); ?>">
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="enable_push_mode">
+                                                    <?php echo __('Docker stats'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
+                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
+                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <hr class="hr-text-brands" data-content="&#xf17a; <?= __('Windows'); ?>">
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="enable_push_mode">
+                                                    <?php echo __('Windows services'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
+                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
+                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <hr class="hr-text-brands" data-content="&#xf179; <?= __('macOS'); ?>">
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="enable_push_mode">
+                                                    <?php echo __('Launchd services'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
+                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
+                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <hr class="hr-text-brands" data-content="&#xf17c; <?= __('Linux'); ?>">
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="enable_push_mode">
+                                                    <?php echo __('Processes'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
+                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
+                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="enable_push_mode">
+                                                    <?php echo __('Systemd services'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
+                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
+                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </fieldset>
                                 </div>

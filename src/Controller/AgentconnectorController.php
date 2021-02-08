@@ -1037,11 +1037,11 @@ class AgentconnectorController extends AppController {
         $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_linux.json'), true);
 
         $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse);
-        dd($AgentResponseToServices->getAllServices());
-
+        $services = $AgentResponseToServices->getAllServices();
 
         $this->set('host', $host);
-        $this->viewBuilder()->setOption('serialize', ['host']);
+        $this->set('services', $services);
+        $this->viewBuilder()->setOption('serialize', ['host', 'services']);
     }
 
     /****************************

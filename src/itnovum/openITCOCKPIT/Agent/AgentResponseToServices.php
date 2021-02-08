@@ -124,8 +124,7 @@ class AgentResponseToServices {
                     break;
             }
         }
-        debug($services);
-
+        return $services;
 
     }
 
@@ -433,11 +432,11 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['systemd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['systemd_services'] as $itemKey => $item) {
-                $servicetemplatecommandargumentvalues[0]['value'] = $itemKey; // apache2.service
+                $servicetemplatecommandargumentvalues[0]['value'] = $item['Name']; // apache2.service
 
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
-                    $itemKey,
+                    $item['Name'],
                     $servicetemplatecommandargumentvalues
                 );
             }
@@ -460,11 +459,11 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['launchd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['launchd_services'] as $itemKey => $item) {
-                $servicetemplatecommandargumentvalues[0]['value'] = $itemKey; // com.apple.trustd
+                $servicetemplatecommandargumentvalues[0]['value'] = $item['Label']; // com.apple.trustd
 
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
-                    $itemKey,
+                    $item['Label'],
                     $servicetemplatecommandargumentvalues
                 );
             }
