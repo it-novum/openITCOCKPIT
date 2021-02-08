@@ -663,10 +663,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-family: FontAwesome;
     color: #72a4f7;
     position: absolute;
-    top:0;
-    right:10px;
+    top: 0;
+    right: 10px;
     font-size: 40px;
-    padding:0;
+    padding: 0;
     text-shadow: 1px 1px #4285F4;
 }
 
@@ -675,10 +675,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-family: FontAwesome;
     color: #72a4f7;
     position: absolute;
-    top:-3px;
-    right:10px;
+    top: -3px;
+    right: 10px;
     font-size: 40px;
-    padding:0;
+    padding: 0;
     text-shadow: 1px 1px #4285F4;
 }
 
@@ -687,10 +687,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-family: FontAwesome;
     color: #72a4f7;
     position: absolute;
-    top:-3px;
-    right:10px;
+    top: -3px;
+    right: 10px;
     font-size: 40px;
-    padding:0;
+    padding: 0;
     text-shadow: 1px 1px #4285F4;
 }
 
@@ -699,9 +699,55 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-family: FontAwesome;
     color: #36D47E;
     position: absolute;
-    top:-3px;
-    right:10px;
+    top: -3px;
+    right: 10px;
     font-size: 40px;
-    padding:0;
+    padding: 0;
     text-shadow: 1px 1px #00C851;
+}
+
+.hr-text,
+.hr-text-brands{
+    line-height: 1em;
+    position: relative;
+    outline: 0;
+    border: 0;
+    color: #818078;
+    text-align: left;
+    height: 1.5em;
+    opacity: .5;
+    padding-left: 10px;
+}
+
+.hr-text:before,
+.hr-text-brands:before{
+    content: '';
+    background: #818078;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+}
+
+.hr-text:after {
+    font-family: "FontAwesome";
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding: 0 .5em;
+    line-height: 1.5em;
+    color: #818078;
+    background-color: #fcfcfa;
+}
+
+.hr-text-brands:after {
+    font-family: "Font Awesome 5 Brands";
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding: 0 .5em;
+    line-height: 1.5em;
+    color: #818078;
+    background-color: #fcfcfa;
 }

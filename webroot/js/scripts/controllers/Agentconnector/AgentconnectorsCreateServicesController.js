@@ -18,8 +18,9 @@ angular.module('openITCOCKPIT')
                 $scope.runningCheck = false;
                 $scope.config = result.data.config;
                 $scope.host = result.data.host;
-                $scope.connection_test = result.data.connection_test;
-                $scope.disableNext = $scope.connection_test.status !== 'success';
+                $scope.services = result.data.services;
+                //$scope.connection_test = result.data.connection_test;
+                //$scope.disableNext = $scope.connection_test.status !== 'success';
             });
         };
 
