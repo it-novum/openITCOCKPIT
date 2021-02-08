@@ -5,6 +5,8 @@ namespace itnovum\openITCOCKPIT\Agent;
 
 
 use App\Model\Table\AgentchecksTable;
+use App\Model\Table\ServicecommandargumentvaluesTable;
+use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
 
 class AgentResponseToServices {
@@ -25,6 +27,13 @@ class AgentResponseToServices {
     private $AgentchecksTable;
 
     /**
+     * @var int
+     */
+    private $maxLengthCommandArg;
+
+    private $maxLengthServiceName;
+
+    /**
      * AgentResponseToServices constructor.
      * @param int $hostId
      * @param array $agentResponse
@@ -34,6 +43,13 @@ class AgentResponseToServices {
         $this->agentResponse = $agentResponse;
         $this->AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
 
+        /** @var ServicecommandargumentvaluesTable $ServicecommandargumentvaluesTable */
+        $ServicecommandargumentvaluesTable = TableRegistry::getTableLocator()->get('Servicecommandargumentvalues');
+        $this->maxLengthCommandArg = $ServicecommandargumentvaluesTable->getSchema()->getColumn('value')['length'];
+
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $this->maxLengthServiceName = $ServicesTable->getSchema()->getColumn('name')['length'];
     }
 
     /**
@@ -138,7 +154,7 @@ class AgentResponseToServices {
         return [
             'host_id'                      => $this->hostId,
             'servicetemplate_id'           => $servicetemplateId,
-            'name'                         => $servicename,
+            'name'                         => $this->shortServiceName($servicename),
             'servicecommandargumentvalues' => $commandargumentvalues
         ];
     }
@@ -227,7 +243,7 @@ class AgentResponseToServices {
                     $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
                     switch ($category) {
                         case 'Temperatures':
-                            $servicetemplatecommandargumentvalues[3]['value'] = $items['label'];
+                            $servicetemplatecommandargumentvalues[3]['value'] = $this->shortCommandargumentValue($items['label']);
                             $services[] = $this->getServiceStruct(
                                 $agentcheck['servicetemplate_id'],
                                 __('Sensor: {0}', $items['label']),
@@ -264,7 +280,7 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['disk_io'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['disk_io'] as $deviceName => $device) {
-                $servicetemplatecommandargumentvalues[2]['value'] = $deviceName; //sda
+                $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($deviceName); //sda
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
                     __('Disk stats of: {0}', $deviceName),
@@ -291,7 +307,7 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['disks'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['disks'] as $device) {
-                $servicetemplatecommandargumentvalues[2]['value'] = $device['disk']['device']; // /dev/sda1
+                $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($device['disk']['device']); // /dev/sda1
 
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
@@ -336,7 +352,7 @@ class AgentResponseToServices {
                 $servicetemplatecommandargumentvalues[3]['value'] = 10; // Total average errors critical
                 $servicetemplatecommandargumentvalues[4]['value'] = 5; // Total average drops warning
                 $servicetemplatecommandargumentvalues[5]['value'] = 10; // Total average drops critical
-                $servicetemplatecommandargumentvalues[6]['value'] = $nicName; // Device
+                $servicetemplatecommandargumentvalues[6]['value'] = $this->shortCommandargumentValue($nicName); // Device
 
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
@@ -364,7 +380,7 @@ class AgentResponseToServices {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['net_stats'] as $nicName => $nic) {
                 $servicetemplatecommandargumentvalues[0]['value'] = 'critical'; // Nagios state if interface is down
-                $servicetemplatecommandargumentvalues[1]['value'] = $nicName; // Device
+                $servicetemplatecommandargumentvalues[1]['value'] = $this->shortCommandargumentValue($nicName); // Device
 
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
@@ -405,7 +421,7 @@ class AgentResponseToServices {
                 }
 
 
-                $servicetemplatecommandargumentvalues[6]['value'] = $processName; // match
+                $servicetemplatecommandargumentvalues[6]['value'] = $this->shortCommandargumentValue($processName); // match
 
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
@@ -432,7 +448,7 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['systemd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['systemd_services'] as $itemKey => $item) {
-                $servicetemplatecommandargumentvalues[0]['value'] = $item['Name']; // apache2.service
+                $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($item['Name']); // apache2.service
 
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
@@ -459,7 +475,7 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['launchd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['launchd_services'] as $itemKey => $item) {
-                $servicetemplatecommandargumentvalues[0]['value'] = $item['Label']; // com.apple.trustd
+                $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($item['Label']); // com.apple.trustd
 
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
@@ -500,7 +516,7 @@ class AgentResponseToServices {
                 if (!empty($item['DisplayName'])) {
                     $serviceName = $item['DisplayName'];
                 }
-                $servicetemplatecommandargumentvalues[2]['value'] = $match; // C:\WINDOWS\System32\DriverStore\FileRepository\sgx_psw.inf_amd64_bff7913eb62bbf90\aesm_service.exe
+                $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($match); // C:\WINDOWS\System32\DriverStore\FileRepository\sgx_psw.inf_amd64_bff7913eb62bbf90\aesm_service.exe
                 $services[] = $this->getServiceStruct(
                     $agentcheck['servicetemplate_id'],
                     $serviceName, // Intel® SGX AESM
@@ -512,5 +528,13 @@ class AgentResponseToServices {
             return false;
         }
         return $services;
+    }
+
+    private function shortCommandargumentValue(string $value) {
+        return substr($value, 0, $this->maxLengthCommandArg);
+    }
+
+    private function shortServiceName(string $name) {
+        return substr($name, 0, $this->maxLengthServiceName);
     }
 }

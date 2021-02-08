@@ -1062,6 +1062,7 @@ class AgentconnectorController extends AppController {
                 $servicename = $servicePost['name'];
 
                 $serviceData = ServiceComparisonForSave::getServiceSkeleton($servicePost['host_id'], $servicePost['servicetemplate_id'], OITC_AGENT_SERVICE);
+                $serviceData['name'] = $servicename;
                 $serviceData['servicecommandargumentvalues'] = $servicePost['servicecommandargumentvalues'];
                 $ServiceComparisonForSave = new ServiceComparisonForSave(
                     ['Service' => $serviceData],
