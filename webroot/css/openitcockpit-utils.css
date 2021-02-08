@@ -716,6 +716,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     text-align: left;
     height: 1.5em;
     padding-left: 10px;
+    opacity: 0.8;
 }
 
 .hr-text:before,
