@@ -712,17 +712,16 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     position: relative;
     outline: 0;
     border: 0;
-    color: #818078;
+    color: #4285F4;
     text-align: left;
     height: 1.5em;
-    opacity: .5;
     padding-left: 10px;
 }
 
 .hr-text:before,
 .hr-text-brands:before{
     content: '';
-    background: #818078;
+    background: #4285F4;
     position: absolute;
     left: 0;
     top: 50%;
@@ -737,7 +736,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     display: inline-block;
     padding: 0 .5em;
     line-height: 1.5em;
-    color: #818078;
+    color: #4285F4;
     background-color: #fcfcfa;
 }
 
@@ -748,6 +747,6 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     display: inline-block;
     padding: 0 .5em;
     line-height: 1.5em;
-    color: #818078;
+    color: #4285F4;
     background-color: #fcfcfa;
 }
