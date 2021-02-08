@@ -108,15 +108,15 @@
                                         </legend>
                                         <div>
                                             <hr class="hr-text" data-content="&#xf013; <?= __('System'); ?>">
-
                                             <div class="form-group col-12">
                                                 <div class="custom-control custom-checkbox margin-bottom-10">
                                                     <input type="checkbox"
+                                                           ng-if="services.memory"
                                                            class="custom-control-input"
-                                                           id="push_verify_server_certificate"
-                                                           ng-model="config.bool.push_verify_server_certificate">
+                                                           id="memory"
+                                                           ng-model="services.memory">
                                                     <label class="custom-control-label"
-                                                           for="push_verify_server_certificate">
+                                                           for="memory">
                                                         <?php echo __('Memory usage'); ?>
                                                     </label>
                                                 </div>
@@ -124,11 +124,12 @@
                                             <div class="form-group col-12">
                                                 <div class="custom-control custom-checkbox margin-bottom-10">
                                                     <input type="checkbox"
+                                                           ng-if="services.swap"
                                                            class="custom-control-input"
-                                                           id="push_verify_server_certificate"
-                                                           ng-model="config.bool.push_verify_server_certificate">
+                                                           id="swap"
+                                                           ng-model="services.swap">
                                                     <label class="custom-control-label"
-                                                           for="push_verify_server_certificate">
+                                                           for="swap">
                                                         <?php echo __('Swap usage'); ?>
                                                     </label>
                                                 </div>
@@ -136,11 +137,12 @@
                                             <div class="form-group col-12">
                                                 <div class="custom-control custom-checkbox margin-bottom-10">
                                                     <input type="checkbox"
+                                                           ng-if="services.system_load"
                                                            class="custom-control-input"
-                                                           id="push_verify_server_certificate"
-                                                           ng-model="config.bool.push_verify_server_certificate">
+                                                           id="system_load"
+                                                           ng-model="services.system_load">
                                                     <label class="custom-control-label"
-                                                           for="push_verify_server_certificate">
+                                                           for="system_load">
                                                         <?php echo __('System load'); ?>
                                                     </label>
                                                 </div>
