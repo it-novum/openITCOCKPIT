@@ -1036,6 +1036,9 @@ class AgentconnectorController extends AppController {
         // Linux test output (custom checks + docker + libvirt)
         $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_linux.json'), true);
 
+        // Windows test output (custom checks + docker)
+        $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_windows.json'), true);
+
         $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse);
         $services = $AgentResponseToServices->getAllServices();
 
