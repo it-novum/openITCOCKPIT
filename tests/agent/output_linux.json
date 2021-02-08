@@ -2073,6 +2073,24 @@
             }
         }
     ],
+    "docker": [
+        {
+            "id": "a652cff1d4",
+            "name": "/festive_booth",
+            "image": "ubuntu",
+            "size_rw": 0,
+            "size_root_fs": 0,
+            "state": "running",
+            "status": "Up 27 seconds",
+            "network_rx": 6574,
+            "network_tx": 0,
+            "cpu_percentage": 0,
+            "memory_percentage": 0.016188612047270748,
+            "disk_read": 4112384,
+            "disk_write": 0,
+            "memory_used": 5451776
+        }
+    ],
     "libvirt": {
         "1e6a8d99-471e-493a-8490-bf9eb5487951": {
             "Name": "oitc-dev",
