@@ -35,6 +35,7 @@ use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\AgentconnectorTable;
 use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\ChangelogsTable;
+use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
@@ -1021,15 +1022,110 @@ class AgentconnectorController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var AgentconfigsTable $AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
         if (!$HostsTable->existsById($hostId)) {
             throw new NotFoundException();
         }
 
-       $host = $HostsTable->get($hostId);
+        $host = $HostsTable->get($hostId);
 
         if (!$AgentconfigsTable->existsByHostId($host->id)) {
             throw new NotFoundException();
         }
+
+        if ($this->request->is('post')) {
+            // Save new services
+            $User = new User($this->getUser());
+            /** @var HosttemplatesTable $HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var ServicetemplatesTable $ServicetemplatesTable */
+            $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            $servicesPost = $this->request->getData('services', []);
+
+            $hostContactsAndContactgroupsById = $HostsTable->getContactsAndContactgroupsById(
+                $host->get('id')
+            );
+            $hosttemplateContactsAndContactgroupsById = $HosttemplatesTable->getContactsAndContactgroupsById(
+                $host->get('hosttemplate_id')
+            );
+
+            $errors = [];
+            $newServiceIds = [];
+            foreach ($servicesPost as $servicePost) {
+                $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicePost['servicetemplate_id']);
+
+                $servicename = $servicePost['name'];
+
+                $serviceData = ServiceComparisonForSave::getServiceSkeleton($servicePost['host_id'], $servicePost['servicetemplate_id'], OITC_AGENT_SERVICE);
+                $serviceData['servicecommandargumentvalues'] = $servicePost['servicecommandargumentvalues'];
+                $ServiceComparisonForSave = new ServiceComparisonForSave(
+                    ['Service' => $serviceData],
+                    $servicetemplate,
+                    $hostContactsAndContactgroupsById,
+                    $hosttemplateContactsAndContactgroupsById
+                );
+                $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
+                $serviceData['uuid'] = UUID::v4();
+
+                //Add required fields for validation
+                $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+                $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+                $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+                $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+                $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
+
+                $service = $ServicesTable->newEntity($serviceData);
+
+                $ServicesTable->save($service);
+                if ($service->hasErrors()) {
+                    $errors[] = $service->getErrors();
+                } else {
+                    //No errors
+
+                    $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        'add',
+                        'services',
+                        $service->get('id'),
+                        OBJECT_SERVICE,
+                        $host->get('container_id'),
+                        $User->getId(),
+                        $host->get('name') . '/' . $servicename,
+                        array_merge(['Service' => $serviceData], $extDataForChangelog)
+                    );
+
+                    if ($changelog_data) {
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
+                    $newServiceIds[] = $service->get('id');
+                }
+            }
+
+            if (!empty($errors)) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('success', false);
+                $this->set('error', $errors);
+                $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+                return;
+            }
+
+            $this->set('success', true);
+            $this->set('services', ['_ids' => $newServiceIds]);
+            $this->viewBuilder()->setOption('serialize', ['services', 'success']);
+            return;
+        }
+
+
+        // GET request
 
         // macOS test output (custom checks + docker)
         $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_darwin.json'), true);

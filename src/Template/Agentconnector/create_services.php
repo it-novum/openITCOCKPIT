@@ -70,7 +70,9 @@
                     <i class="fas fa-check"></i>
                     <?= __('Exchange TLS Certificate') ?>
                 </div>
-                <div class="col-xs-12 col-md-4 col-lg-2 text-white bg-primary">
+                <div class="col-xs-12 col-md-4 col-lg-2 text-white"
+                     ng-class="{'bg-success':successful, 'bg-primary':!successful}">
+                    <i class="fas fa-check" ng-show="successful"></i>
                     <?= __('Create services') ?>
                 </div>
                 <div class="col-xs-12 col-md-4 col-lg-2 padding-left-0 padding-right-0 bg-light-gray">
@@ -84,9 +86,11 @@
 
                         <button type="button" class="btn btn-xs btn-success btn-block waves-effect waves-themed"
                                 style="border-radius: 0;height: 22px;"
+                                ng-disabled="successful"
                                 ng-click="submit()">
+                            <i class="fas fa-check" ng-show="successful"></i>
                             <?= __('Finish') ?>
-                            <i class="fa fa-arrow-right"></i>
+                            <i class="fa fa-arrow-right" ng-hide="successful"></i>
                         </button>
                     </div>
                 </div>
@@ -106,7 +110,63 @@
                                                 <?= __('Select Services to monitor'); ?>
                                             </h4>
                                         </legend>
-                                        <div>
+
+                                        <div class="row">
+                                            <div class="col-12" ng-show="saving">
+                                                <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="alert-icon">
+                                                                <span class="icon-stack icon-stack-md">
+                                                                    <i class="base-7 icon-stack-3x color-info-600"></i>
+                                                                    <i class="fas fa-hourglass-start icon-stack-1x text-white"></i>
+                                                                </span>
+                                                        </div>
+                                                        <div class="flex-1">
+                                                                <span class="h5 color-info-600">
+                                                                            <?= __('Creating new services...'); ?>
+                                                                </span>
+                                                            <div class="progress mt-1 progress-xs">
+                                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info-600"
+                                                                     role="progressbar" style="width: 100%"
+                                                                     aria-valuenow="100"
+                                                                     aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" ng-show="successful">
+                                            <div class="col-12">
+                                                <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="alert-icon">
+                                                                <span class="icon-stack icon-stack-md">
+                                                                    <i class="base-7 icon-stack-3x color-success-600"></i>
+                                                                    <i class="fas fa-check icon-stack-1x text-white"></i>
+                                                                </span>
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <span class="h5 color-success-600">
+                                                                <?= __('Services created successfully!'); ?>
+                                                            </span>
+                                                            <br>
+                                                            <?= __('To apply the changes, please refresh your monitoring configuration.'); ?>
+                                                        </div>
+                                                        <?php if ($this->Acl->hasPermission('index', 'exports')): ?>
+                                                            <a class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
+                                                               ui-sref="ExportsIndex">
+                                                                <i class="fa fa-retweet"></i>
+                                                                <?= __('Go to "Refresh monitoring configuration"'); ?>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ng-hide="hideConfig">
                                             <hr class="hr-text" data-content="&#xf013; <?= __('System'); ?>">
                                             <div class="form-group col-12"
                                                  ng-repeat="(key, value) in servicesToCreateCheckboxValues">
