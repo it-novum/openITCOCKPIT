@@ -1016,6 +1016,7 @@ class AgentconnectorController extends AppController {
         }
 
         $hostId = $this->request->getQuery('hostId', 0);
+
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var AgentconfigsTable $AgentconfigsTable */
@@ -1024,7 +1025,7 @@ class AgentconnectorController extends AppController {
             throw new NotFoundException();
         }
 
-        $host = $HostsTable->get($hostId);
+       $host = $HostsTable->get($hostId);
 
         if (!$AgentconfigsTable->existsByHostId($host->id)) {
             throw new NotFoundException();
@@ -1032,12 +1033,10 @@ class AgentconnectorController extends AppController {
 
         // macOS test output (custom checks + docker)
         $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_darwin.json'), true);
-
         // Linux test output (custom checks + docker + libvirt)
-        $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_linux.json'), true);
-
+        //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_linux.json'), true);
         // Windows test output (custom checks + docker)
-        $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_windows.json'), true);
+        //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_windows.json'), true);
 
         $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse);
         $services = $AgentResponseToServices->getAllServices();

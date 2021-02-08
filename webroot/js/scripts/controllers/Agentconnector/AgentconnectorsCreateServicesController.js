@@ -6,6 +6,9 @@ angular.module('openITCOCKPIT')
         $scope.disableNext = true;
         $scope.runningCheck = true;
 
+        $scope.servicesToCreateCheckboxValues = {};
+        $scope.servicesToCreateArrayIndices = {};
+
         // Load current agent config if any exists
         $scope.load = function(searchString, selected){
             $scope.runningCheck = true;
@@ -19,8 +22,17 @@ angular.module('openITCOCKPIT')
                 $scope.config = result.data.config;
                 $scope.host = result.data.host;
                 $scope.services = result.data.services;
-                //$scope.connection_test = result.data.connection_test;
-                //$scope.disableNext = $scope.connection_test.status !== 'success';
+
+                // Find all services that could be created with an checkbox
+                for(var key in $scope.services){
+                    if(Array.isArray($scope.services[key]) === false){
+                        //Mark all checkboxes as selected
+                        $scope.servicesToCreateCheckboxValues[key] = true;
+                    }else{
+                        $scope.servicesToCreateArrayIndices[key] = [];
+                    }
+                }
+
             });
         };
 
@@ -32,4 +44,9 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         $scope.load();
+
+        $scope.$watch('servicesToCreateArrayIndices', function(){
+            console.log($scope.servicesToCreateArrayIndices);
+        }, true);
+
     });

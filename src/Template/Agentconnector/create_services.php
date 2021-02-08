@@ -108,116 +108,95 @@
                                         </legend>
                                         <div>
                                             <hr class="hr-text" data-content="&#xf013; <?= __('System'); ?>">
-                                            <div class="form-group col-12">
+                                            <div class="form-group col-12"
+                                                 ng-repeat="(key, value) in servicesToCreateCheckboxValues">
                                                 <div class="custom-control custom-checkbox margin-bottom-10">
                                                     <input type="checkbox"
-                                                           ng-if="services.memory"
                                                            class="custom-control-input"
-                                                           id="memory"
-                                                           ng-model="services.memory">
+                                                           id="{{key}}"
+                                                           ng-model="servicesToCreateCheckboxValues[key]">
                                                     <label class="custom-control-label"
-                                                           for="memory">
-                                                        <?php echo __('Memory usage'); ?>
+                                                           for="{{key}}">
+                                                        {{services[key].name}}
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-12">
-                                                <div class="custom-control custom-checkbox margin-bottom-10">
-                                                    <input type="checkbox"
-                                                           ng-if="services.swap"
-                                                           class="custom-control-input"
-                                                           id="swap"
-                                                           ng-model="services.swap">
-                                                    <label class="custom-control-label"
-                                                           for="swap">
-                                                        <?php echo __('Swap usage'); ?>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-12">
-                                                <div class="custom-control custom-checkbox margin-bottom-10">
-                                                    <input type="checkbox"
-                                                           ng-if="services.system_load"
-                                                           class="custom-control-input"
-                                                           id="system_load"
-                                                           ng-model="services.system_load">
-                                                    <label class="custom-control-label"
-                                                           for="system_load">
-                                                        <?php echo __('System load'); ?>
-                                                    </label>
-                                                </div>
-                                            </div>
+
                                             <hr class="hr-text" data-content="&#xf0a0; <?= __('Disk information'); ?>">
                                             <div class="form-group col-12 padding-left-0 ">
                                                 <label class="col-12 control-label"
-                                                       for="enable_push_mode">
+                                                       for="diskusage">
+                                                    <?php echo __('Disk usage'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                            id="diskusage"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.disks"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.disks"
+                                                            ng-model="servicesToCreateArrayIndices.disks">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="diskio">
                                                     <?php echo __('Disk IO'); ?>
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
-                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
-                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                            id="diskio"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.disk_io"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.disk_io"
+                                                            ng-model="servicesToCreateArrayIndices.disk_io">
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-12 padding-left-0 ">
-                                                <label class="col-12 control-label"
-                                                       for="enable_push_mode">
-                                                    <?php echo __('Disks'); ?>
-                                                </label>
-                                                <div class="col-12">
-                                                    <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
-                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
-                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
-                                                    </select>
-                                                </div>
-                                            </div>
+
                                             <hr class="hr-text" data-content="&#xf0e8; <?= __('Networking'); ?>">
                                             <div class="form-group col-12 padding-left-0 ">
                                                 <label class="col-12 control-label"
-                                                       for="enable_push_mode">
-                                                    <?php echo __('Net IO'); ?>
+                                                       for="net_stats">
+                                                    <?= __('Link status'); ?>
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
-                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
-                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                            id="net_stats"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.net_stats"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.net_stats"
+                                                            ng-model="servicesToCreateArrayIndices.net_stats">
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <div class="form-group col-12 padding-left-0 ">
                                                 <label class="col-12 control-label"
-                                                       for="enable_push_mode">
-                                                    <?= __('Net stats'); ?>
+                                                       for="net_io">
+                                                    <?php echo __('Network IO'); ?>
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
-                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
-                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                            id="net_io"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.net_io"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.net_io"
+                                                            ng-model="servicesToCreateArrayIndices.net_io">
                                                     </select>
                                                 </div>
                                             </div>
-                                            <hr class="hr-text-brands" data-content="&#xf395; <?= __('Docker'); ?>">
+
+                                            <hr class="hr-text-brands"
+                                                data-content="&#xf395; <?= __('Docker - fixme'); ?>">
                                             <div class="form-group col-12 padding-left-0 ">
                                                 <label class="col-12 control-label"
                                                        for="enable_push_mode">
@@ -225,87 +204,128 @@
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
+                                                            id="enable_push_mode"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            chosen="{}"
+                                                            ng-model="config.bool.enable_push_mode">
                                                         <option ng-value="false"><?= __('Pull mode'); ?></option>
                                                         <option ng-value="true"><?= __('Push mode'); ?></option>
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <hr class="hr-text-brands" data-content="&#xf17a; <?= __('Windows'); ?>">
                                             <div class="form-group col-12 padding-left-0 ">
                                                 <label class="col-12 control-label"
-                                                       for="enable_push_mode">
+                                                       for="windows_services">
                                                     <?php echo __('Windows services'); ?>
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
-                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
-                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                            id="windows_services"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.windows_services"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.windows_services"
+                                                            ng-model="servicesToCreateArrayIndices.windows_services">
                                                     </select>
                                                 </div>
                                             </div>
                                             <hr class="hr-text-brands" data-content="&#xf179; <?= __('macOS'); ?>">
                                             <div class="form-group col-12 padding-left-0 ">
                                                 <label class="col-12 control-label"
-                                                       for="enable_push_mode">
+                                                       for="launchd_services">
                                                     <?php echo __('Launchd services'); ?>
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
-                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
-                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                            id="launchd_services"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.launchd_services"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.launchd_services"
+                                                            ng-model="servicesToCreateArrayIndices.launchd_services">
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <hr class="hr-text-brands" data-content="&#xf17c; <?= __('Linux'); ?>">
                                             <div class="form-group col-12 padding-left-0 ">
                                                 <label class="col-12 control-label"
-                                                       for="enable_push_mode">
-                                                    <?php echo __('Processes'); ?>
-                                                </label>
-                                                <div class="col-12">
-                                                    <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
-                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
-                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-12 padding-left-0 ">
-                                                <label class="col-12 control-label"
-                                                       for="enable_push_mode">
+                                                       for="systemd_services">
                                                     <?php echo __('Systemd services'); ?>
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                        id="enable_push_mode"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        ng-model="config.bool.enable_push_mode">
-                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
-                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                            id="systemd_services"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.systemd_services"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.systemd_services"
+                                                            ng-model="servicesToCreateArrayIndices.systemd_services">
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="processes">
+                                                    <?php echo __('Processes'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                            id="processes"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.processes"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.processes"
+                                                            ng-model="servicesToCreateArrayIndices.processes">
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <hr class="hr-text" data-content="&#xf2c9; <?= __('Sensors'); ?>">
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="systemd_services">
+                                                    <?php echo __('Sensors'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                            id="sensors"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.sensors"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.sensors"
+                                                            ng-model="servicesToCreateArrayIndices.sensors">
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <hr class="hr-text" data-content="&#xf0c2; <?= __('Libvirt'); ?>">
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="libvirt">
+                                                    <?php echo __('Libvirt (KVM)'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                            id="libvirt"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.libvirt"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.libvirt"
+                                                            ng-model="servicesToCreateArrayIndices.libvirt">
+                                                    </select>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </fieldset>
                                 </div>
