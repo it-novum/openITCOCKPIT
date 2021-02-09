@@ -75,14 +75,11 @@ class AgentResponseToServices {
     /**
      * @param bool $onlyMissingServices
      * @return array
-     * @todo implement: libvirt, docker, alfresco, windows_eventlog, customchecks, cpu_percentage
+     * @todo implement: alfresco, windows_eventlog
      */
     public function getAllServices() {
         $services = [];
         foreach ($this->agentResponse as $mainKey => $items) {
-            /**
-             * @todo check if service already exists
-             */
             switch ($mainKey) {
                 case 'memory':
                     $memoryService = $this->getServiceStructByName('memory', __('Memory usage percentage'));
@@ -94,6 +91,12 @@ class AgentResponseToServices {
                     $swapService = $this->getServiceStructByName('swap', __('Swap usage percentage'));
                     if ($swapService) {
                         $services['swap'] = $swapService;
+                    }
+                    break;
+                case 'cpu':
+                    $cpuService = $this->getServiceStructByName('cpu.cpu_percentage', __('CPU usage percentage'));
+                    if ($cpuService) {
+                        $services['cpu_percentage'] = $cpuService;
                     }
                     break;
                 case 'system_load':
@@ -158,6 +161,31 @@ class AgentResponseToServices {
                     $windowsServices = $this->getServiceStructForwindowsServices();
                     if ($windowsServices) {
                         $services['windows_services'] = $windowsServices;
+                    }
+                    break;
+                case 'customchecks':
+                    $customchecks = $this->getServiceStructForCustomchecks();
+                    if ($customchecks) {
+                        $services['customchecks'] = $customchecks;
+                    }
+                    break;
+                case 'docker':
+                    $dockerCheckTypes = [
+                        'docker.running',
+                        'docker.cpu',
+                        'docker.memory'
+                    ];
+                    foreach ($dockerCheckTypes as $type) {
+                        $dockerServices = $this->getServiceStructForDocker($type);
+                        if ($dockerServices) {
+                            $services[str_replace('.', '_', $type)] = $dockerServices;
+                        }
+                    }
+                    break;
+                case 'libvirt':
+                    $libvirtServices = $this->getServiceStructForLibvirt();
+                    if ($libvirtServices) {
+                        $services['libvirt'] = $libvirtServices;
                     }
                     break;
             }
@@ -473,6 +501,11 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['systemd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['systemd_services'] as $itemKey => $item) {
+                // Only show active systemd services
+                if ($item['ActiveState'] !== 'active') {
+                    continue;
+                }
+
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $this->shortCommandargumentValue($item['Name'])])) {
                     $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($item['Name']); // apache2.service
 
@@ -502,6 +535,10 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['launchd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['launchd_services'] as $itemKey => $item) {
+                if ($item['IsRunning'] !== true) {
+                    continue;
+                }
+
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $this->shortCommandargumentValue($item['Label'])])) {
                     $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($item['Label']); // com.apple.trustd
 
@@ -531,6 +568,10 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['windows_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['windows_services'] as $itemKey => $item) {
+                if ($item['Status'] !== 'Running') {
+                    continue;
+                }
+
                 $match = $item['Name'];
                 if (!empty($item['DisplayName'])) {
                     $match = $item['DisplayName'];
@@ -553,6 +594,121 @@ class AgentResponseToServices {
                         $serviceName, // Intel® SGX AESM
                         $servicetemplatecommandargumentvalues
                     );
+                }
+            }
+        }
+        if (empty($services)) {
+            return false;
+        }
+        return $services;
+    }
+
+    /**
+     * @return array|bool
+     */
+    private function getServiceStructForCustomchecks() {
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName('customchecks');
+        if (empty($agentcheck)) {
+            return false;
+        }
+        $services = [];
+        if (isset($this->agentResponse['customchecks'])) {
+            $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+            foreach ($this->agentResponse['customchecks'] as $checkName => $item) {
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $this->shortCommandargumentValue($checkName)])) {
+                    $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($checkName); // check_whoami
+
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('Custom check: {0}', $checkName),
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
+            }
+        }
+        if (empty($services)) {
+            return false;
+        }
+        return $services;
+    }
+
+    /**
+     * @return array|bool
+     */
+    public function getServiceStructForDocker(string $type) {
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName($type);
+        if (empty($agentcheck)) {
+            return false;
+        }
+        $services = [];
+        if (isset($this->agentResponse['docker'])) {
+            $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+            foreach ($this->agentResponse['docker'] as $itemKey => $item) {
+                switch ($type) {
+                    case 'docker.running':
+                        if (isset($item['name'])) {
+                            $args = [
+                                0 => 'name',
+                                1 => $this->shortCommandargumentValue($item['name'])
+                            ];
+
+                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], $args)) {
+                                $servicetemplatecommandargumentvalues[0]['value'] = 'name'; // identifier
+                                $servicetemplatecommandargumentvalues[1]['value'] = $this->shortCommandargumentValue($item['name']); // grafana
+                                $services[] = $this->getServiceStruct(
+                                    $agentcheck['servicetemplate_id'],
+                                    __('Container {0} is running', $item['name']),
+                                    $servicetemplatecommandargumentvalues
+                                );
+                            }
+                        }
+                        break;
+
+                    case 'docker.cpu':
+                        if (isset($item['name']) && isset($item['cpu_percentage'])) {
+                            $args = [
+                                0 => 'name',
+                                1 => $this->shortCommandargumentValue($item['name'])
+                            ];
+
+                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], $args)) {
+                                $servicetemplatecommandargumentvalues[0]['value'] = 'name'; // identifier
+                                $servicetemplatecommandargumentvalues[1]['value'] = $this->shortCommandargumentValue($item['name']); // grafana
+                                $services[] = $this->getServiceStruct(
+                                    $agentcheck['servicetemplate_id'],
+                                    __('Container {0} CPU percentage', $item['name']),
+                                    $servicetemplatecommandargumentvalues
+                                );
+                            }
+                        }
+                        break;
+
+                    case 'docker.memory':
+                        if (isset($item['name']) && isset($item['memory_used']) && isset($item['memory_used'])) {
+                            $args = [
+                                0 => 'name',
+                                1 => $this->shortCommandargumentValue($item['name'])
+                            ];
+
+                            $currentUsedMb = $item['memory_used'] / 1024 / 1024;
+                            $warning = $currentUsedMb + 265;
+                            $critical = $currentUsedMb + 512;
+
+                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], $args)) {
+                                $servicetemplatecommandargumentvalues[0]['value'] = 'name'; // identifier
+                                $servicetemplatecommandargumentvalues[1]['value'] = $this->shortCommandargumentValue($item['name']); // grafana
+                                $servicetemplatecommandargumentvalues[2]['value'] = $warning; // warning
+                                $servicetemplatecommandargumentvalues[3]['value'] = $critical; // critical
+                                $servicetemplatecommandargumentvalues[4]['value'] = '0'; // 1 == % 0 == MiB
+                                $services[] = $this->getServiceStruct(
+                                    $agentcheck['servicetemplate_id'],
+                                    __('Container {0} Memory used', $item['name']),
+                                    $servicetemplatecommandargumentvalues
+                                );
+                            }
+                        }
+
+                        break;
                 }
             }
         }
@@ -617,5 +773,31 @@ class AgentResponseToServices {
         }
 
         return $servicesAlreadyExists;
+    }
+
+    private function getServiceStructForLibvirt() {
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName('libvirt');
+        if (empty($agentcheck)) {
+            return false;
+        }
+        $services = [];
+        if (isset($this->agentResponse['libvirt'])) {
+            $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+            foreach ($this->agentResponse['libvirt'] as $checkName => $item) {
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $item['Uuid']])) {
+                    $servicetemplatecommandargumentvalues[0]['value'] = $item['Uuid']; // 1e6a8d99-471e-493a-8490-bf9eb5487951
+
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('VM: {0}', $item['Name']),
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
+            }
+        }
+        if (empty($services)) {
+            return false;
+        }
+        return $services;
     }
 }
