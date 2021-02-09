@@ -43,10 +43,9 @@ use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
 use Cake\Http\Middleware\BodyParserMiddleware;
-use Cake\Http\Middleware\CsrfProtectionMiddleware;
+use Cake\Http\Middleware\SessionCsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Http\ServerRequest;
-use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
@@ -105,7 +104,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
      */
     public function routes($routes): void {
         // Register scoped middleware for use in routes.php
-        $routes->registerMiddleware('csrf', new CsrfProtectionMiddleware([
+        $routes->registerMiddleware('csrf', new SessionCsrfProtectionMiddleware([
             'httponly' => true
         ]));
 
@@ -194,7 +193,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 
         //oAuth
         $service->loadAuthenticator('Authentication.oAuth', [
-            'className'    => oAuthAuthenticator::class,
+            'className' => oAuthAuthenticator::class,
         ]);
 
         //Stateless API Key login
