@@ -75,7 +75,7 @@ class AgentResponseToServices {
     /**
      * @param bool $onlyMissingServices
      * @return array
-     * @todo implement: libvirt, docker, alfresco, windows_eventlog, cpu_percentage
+     * @todo implement: libvirt, docker, alfresco, windows_eventlog
      */
     public function getAllServices() {
         $services = [];
@@ -91,6 +91,12 @@ class AgentResponseToServices {
                     $swapService = $this->getServiceStructByName('swap', __('Swap usage percentage'));
                     if ($swapService) {
                         $services['swap'] = $swapService;
+                    }
+                    break;
+                case 'cpu':
+                    $cpuService = $this->getServiceStructByName('cpu.cpu_percentage', __('CPU usage percentage'));
+                    if ($cpuService) {
+                        $services['cpu_percentage'] = $cpuService;
                     }
                     break;
                 case 'system_load':
@@ -511,7 +517,7 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['launchd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['launchd_services'] as $itemKey => $item) {
-                if($item['IsRunning'] !== true){
+                if ($item['IsRunning'] !== true) {
                     continue;
                 }
 
@@ -544,7 +550,7 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['windows_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['windows_services'] as $itemKey => $item) {
-                if($item['Status'] !== 'Running'){
+                if ($item['Status'] !== 'Running') {
                     continue;
                 }
 
