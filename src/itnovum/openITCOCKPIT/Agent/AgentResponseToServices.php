@@ -80,9 +80,6 @@ class AgentResponseToServices {
     public function getAllServices() {
         $services = [];
         foreach ($this->agentResponse as $mainKey => $items) {
-            /**
-             * @todo check if service already exists
-             */
             switch ($mainKey) {
                 case 'memory':
                     $memoryService = $this->getServiceStructByName('memory', __('Memory usage percentage'));
