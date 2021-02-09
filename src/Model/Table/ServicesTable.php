@@ -3769,4 +3769,23 @@ class ServicesTable extends Table {
             'errors'             => $errors
         ];
     }
+
+    /**
+     * @param int $hostId
+     * @return array
+     */
+    public function getAgentServicesByHostId($hostId) {
+        $query = $this->find()
+            ->contain([
+                'Servicecommandargumentvalues'
+            ])
+            ->where([
+                'Services.host_id'      => $hostId,
+                'Services.service_type' => OITC_AGENT_SERVICE
+            ])
+            ->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

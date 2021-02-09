@@ -1062,6 +1062,7 @@ class AgentconnectorController extends AppController {
                 $servicename = $servicePost['name'];
 
                 $serviceData = ServiceComparisonForSave::getServiceSkeleton($servicePost['host_id'], $servicePost['servicetemplate_id'], OITC_AGENT_SERVICE);
+                $serviceData['name'] = $servicename;
                 $serviceData['servicecommandargumentvalues'] = $servicePost['servicecommandargumentvalues'];
                 $ServiceComparisonForSave = new ServiceComparisonForSave(
                     ['Service' => $serviceData],
@@ -1134,7 +1135,7 @@ class AgentconnectorController extends AppController {
         // Windows test output (custom checks + docker)
         //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_windows.json'), true);
 
-        $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse);
+        $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse, true);
         $services = $AgentResponseToServices->getAllServices();
 
         $this->set('host', $host);

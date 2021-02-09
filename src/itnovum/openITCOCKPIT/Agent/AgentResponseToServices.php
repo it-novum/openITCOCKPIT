@@ -5,7 +5,10 @@ namespace itnovum\openITCOCKPIT\Agent;
 
 
 use App\Model\Table\AgentchecksTable;
+use App\Model\Table\ServicecommandargumentvaluesTable;
+use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 
 class AgentResponseToServices {
 
@@ -25,18 +28,53 @@ class AgentResponseToServices {
     private $AgentchecksTable;
 
     /**
+     * @var int
+     */
+    private $maxLengthCommandArg;
+
+    /**
+     * @var int
+     */
+    private $maxLengthServiceName;
+
+    /**
+     * Return all services or filter result
+     * @var bool
+     */
+    private $onlyMissingServices = false;
+
+    /**
+     * @var array
+     */
+    private $existingServicesCache = [];
+
+    /**
      * AgentResponseToServices constructor.
      * @param int $hostId
      * @param array $agentResponse
      */
-    public function __construct($hostId, $agentResponse = []) {
+    public function __construct($hostId, $agentResponse = [], $onlyMissingServices = false) {
         $this->hostId = $hostId;
         $this->agentResponse = $agentResponse;
         $this->AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
 
+        /** @var ServicecommandargumentvaluesTable $ServicecommandargumentvaluesTable */
+        $ServicecommandargumentvaluesTable = TableRegistry::getTableLocator()->get('Servicecommandargumentvalues');
+        $this->maxLengthCommandArg = $ServicecommandargumentvaluesTable->getSchema()->getColumn('value')['length'];
+
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $this->maxLengthServiceName = $ServicesTable->getSchema()->getColumn('name')['length'];
+
+        $this->onlyMissingServices = $onlyMissingServices;
+        if ($onlyMissingServices) {
+            $this->existingServicesCache = $ServicesTable->getAgentServicesByHostId($hostId);
+        }
     }
 
     /**
+     * @param bool $onlyMissingServices
+     * @return array
      * @todo implement: libvirt, docker, alfresco, windows_eventlog, customchecks, cpu_percentage
      */
     public function getAllServices() {
@@ -125,7 +163,6 @@ class AgentResponseToServices {
             }
         }
         return $services;
-
     }
 
     /**
@@ -134,32 +171,13 @@ class AgentResponseToServices {
      * @param array $commandargumentvalues
      * @return array
      */
-    public function getServiceStruct($servicetemplateId, $servicename, $commandargumentvalues = []) {
+    private function getServiceStruct($servicetemplateId, $servicename, $commandargumentvalues = []) {
         return [
             'host_id'                      => $this->hostId,
             'servicetemplate_id'           => $servicetemplateId,
-            'name'                         => $servicename,
+            'name'                         => $this->shortServiceName($servicename),
             'servicecommandargumentvalues' => $commandargumentvalues
         ];
-    }
-
-    /**
-     * @param array $agentchecks
-     * @param string $mainKey
-     * @param string|null $subKey
-     * @return array|false
-     */
-    private function getAgentcheckByJsonKeys($agentchecks, $mainKey, $subKey = null) {
-        $needle = $mainKey;
-        if ($subKey !== null) {
-            $needle = sprintf('%s.%s', $mainKey, $subKey);
-        }
-
-        if (isset($agentchecks[$needle])) {
-            return $agentchecks[$needle];
-        }
-
-        return false;
     }
 
     /**
@@ -172,6 +190,11 @@ class AgentResponseToServices {
         if (empty($agentcheck)) {
             return false;
         }
+
+        if ($this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'])) {
+            return false;
+        }
+
         return $this->getServiceStruct(
             $agentcheck['servicetemplate_id'],
             $servicename,
@@ -188,6 +211,11 @@ class AgentResponseToServices {
         if (empty($agentcheck)) {
             return false;
         }
+
+        if ($this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'])) {
+            return false;
+        }
+
         $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
         $warning = 24;
         $critical = 32;
@@ -227,20 +255,24 @@ class AgentResponseToServices {
                     $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
                     switch ($category) {
                         case 'Temperatures':
-                            $servicetemplatecommandargumentvalues[3]['value'] = $items['label'];
-                            $services[] = $this->getServiceStruct(
-                                $agentcheck['servicetemplate_id'],
-                                __('Sensor: {0}', $items['label']),
-                                $servicetemplatecommandargumentvalues
-                            );
+                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [3 => $this->shortCommandargumentValue($items['label'])])) {
+                                $servicetemplatecommandargumentvalues[3]['value'] = $this->shortCommandargumentValue($items['label']);
+                                $services[] = $this->getServiceStruct(
+                                    $agentcheck['servicetemplate_id'],
+                                    __('Sensor: {0}', $items['label']),
+                                    $servicetemplatecommandargumentvalues
+                                );
+                            }
                             break;
                         case 'Batteries':
-                            $servicetemplatecommandargumentvalues[3]['value'] = $items['id'];
-                            $services[] = $this->getServiceStruct(
-                                $agentcheck['servicetemplate_id'],
-                                __('Battery: {0}', $items['id']),
-                                $servicetemplatecommandargumentvalues
-                            );
+                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [3 => $items['id']])) {
+                                $servicetemplatecommandargumentvalues[3]['value'] = $items['id'];
+                                $services[] = $this->getServiceStruct(
+                                    $agentcheck['servicetemplate_id'],
+                                    __('Battery: {0}', $items['id']),
+                                    $servicetemplatecommandargumentvalues
+                                );
+                            }
                             break;
                     }
                 }
@@ -264,13 +296,14 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['disk_io'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['disk_io'] as $deviceName => $device) {
-                $servicetemplatecommandargumentvalues[2]['value'] = $deviceName; //sda
-                $services[] = $this->getServiceStruct(
-                    $agentcheck['servicetemplate_id'],
-                    __('Disk stats of: {0}', $deviceName),
-                    $servicetemplatecommandargumentvalues
-                );
-
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $this->shortCommandargumentValue($deviceName)])) {
+                    $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($deviceName); //sda
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('Disk stats of: {0}', $deviceName),
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
             }
         }
         if (empty($services)) {
@@ -291,13 +324,15 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['disks'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['disks'] as $device) {
-                $servicetemplatecommandargumentvalues[2]['value'] = $device['disk']['device']; // /dev/sda1
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $this->shortCommandargumentValue($device['disk']['device'])])) {
+                    $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($device['disk']['device']); // /dev/sda1
 
-                $services[] = $this->getServiceStruct(
-                    $agentcheck['servicetemplate_id'],
-                    __('Disk usage of: {0}', $device['disk']['device']),
-                    $servicetemplatecommandargumentvalues
-                );
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('Disk usage of: {0}', $device['disk']['device']),
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
             }
         }
         if (empty($services)) {
@@ -318,31 +353,34 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['net_io'])) {
             $speed = 1000; // default bandwidth speed
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+
             foreach ($this->agentResponse['net_io'] as $nicName => $nic) {
-                if (isset($this->agentResponse['net_stats'][$nicName]['speed'])) {
-                    if ($this->agentResponse['net_stats'][$nicName]['speed'] > 0) {
-                        $speed = $this->agentResponse['net_stats'][$nicName]['speed'];
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [6 => $this->shortCommandargumentValue($nicName)])) {
+                    if (isset($this->agentResponse['net_stats'][$nicName]['speed'])) {
+                        if ($this->agentResponse['net_stats'][$nicName]['speed'] > 0) {
+                            $speed = $this->agentResponse['net_stats'][$nicName]['speed'];
+                        }
                     }
+                    $maxMegabytePerSecond = $speed / 8;
+                    $maxBytePerSecond = $maxMegabytePerSecond * 1024 * 1024;
+
+                    $warning = $maxBytePerSecond / 100 * 85; // 85% of total bandwidth
+                    $critical = $maxBytePerSecond / 100 * 90; // 90% of total bandwidth
+
+                    $servicetemplatecommandargumentvalues[0]['value'] = $warning; // Total average bytes warning per second
+                    $servicetemplatecommandargumentvalues[1]['value'] = $critical; // Total average bytes critical per second
+                    $servicetemplatecommandargumentvalues[2]['value'] = 5; // Total average errors warning
+                    $servicetemplatecommandargumentvalues[3]['value'] = 10; // Total average errors critical
+                    $servicetemplatecommandargumentvalues[4]['value'] = 5; // Total average drops warning
+                    $servicetemplatecommandargumentvalues[5]['value'] = 10; // Total average drops critical
+                    $servicetemplatecommandargumentvalues[6]['value'] = $this->shortCommandargumentValue($nicName); // Device
+
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('Network stats of: {0}', $nicName),
+                        $servicetemplatecommandargumentvalues
+                    );
                 }
-                $maxMegabytePerSecond = $speed / 8;
-                $maxBytePerSecond = $maxMegabytePerSecond * 1024 * 1024;
-
-                $warning = $maxBytePerSecond / 100 * 85; // 85% of total bandwidth
-                $critical = $maxBytePerSecond / 100 * 90; // 90% of total bandwidth
-
-                $servicetemplatecommandargumentvalues[0]['value'] = $warning; // Total average bytes warning per second
-                $servicetemplatecommandargumentvalues[1]['value'] = $critical; // Total average bytes critical per second
-                $servicetemplatecommandargumentvalues[2]['value'] = 5; // Total average errors warning
-                $servicetemplatecommandargumentvalues[3]['value'] = 10; // Total average errors critical
-                $servicetemplatecommandargumentvalues[4]['value'] = 5; // Total average drops warning
-                $servicetemplatecommandargumentvalues[5]['value'] = 10; // Total average drops critical
-                $servicetemplatecommandargumentvalues[6]['value'] = $nicName; // Device
-
-                $services[] = $this->getServiceStruct(
-                    $agentcheck['servicetemplate_id'],
-                    __('Network stats of: {0}', $nicName),
-                    $servicetemplatecommandargumentvalues
-                );
             }
         }
         if (empty($services)) {
@@ -363,14 +401,16 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['net_stats'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['net_stats'] as $nicName => $nic) {
-                $servicetemplatecommandargumentvalues[0]['value'] = 'critical'; // Nagios state if interface is down
-                $servicetemplatecommandargumentvalues[1]['value'] = $nicName; // Device
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [1 => $this->shortCommandargumentValue($nicName)])) {
+                    $servicetemplatecommandargumentvalues[0]['value'] = 'critical'; // Nagios state if interface is down
+                    $servicetemplatecommandargumentvalues[1]['value'] = $this->shortCommandargumentValue($nicName); // Device
 
-                $services[] = $this->getServiceStruct(
-                    $agentcheck['servicetemplate_id'],
-                    __('Network state of: {0}', $nicName),
-                    $servicetemplatecommandargumentvalues
-                );
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('Network state of: {0}', $nicName),
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
             }
         }
         if (empty($services)) {
@@ -404,14 +444,15 @@ class AgentResponseToServices {
                     $processName = $item['cmdline'];
                 }
 
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [6 => $this->shortCommandargumentValue($processName)])) {
+                    $servicetemplatecommandargumentvalues[6]['value'] = $this->shortCommandargumentValue($processName); // match
 
-                $servicetemplatecommandargumentvalues[6]['value'] = $processName; // match
-
-                $services[] = $this->getServiceStruct(
-                    $agentcheck['servicetemplate_id'],
-                    __('Process: {0}', $processName),
-                    $servicetemplatecommandargumentvalues
-                );
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('Process: {0}', $processName),
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
             }
         }
         if (empty($services)) {
@@ -432,13 +473,15 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['systemd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['systemd_services'] as $itemKey => $item) {
-                $servicetemplatecommandargumentvalues[0]['value'] = $item['Name']; // apache2.service
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $this->shortCommandargumentValue($item['Name'])])) {
+                    $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($item['Name']); // apache2.service
 
-                $services[] = $this->getServiceStruct(
-                    $agentcheck['servicetemplate_id'],
-                    $item['Name'],
-                    $servicetemplatecommandargumentvalues
-                );
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        $item['Name'],
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
             }
         }
         if (empty($services)) {
@@ -459,13 +502,15 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['launchd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['launchd_services'] as $itemKey => $item) {
-                $servicetemplatecommandargumentvalues[0]['value'] = $item['Label']; // com.apple.trustd
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $this->shortCommandargumentValue($item['Label'])])) {
+                    $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($item['Label']); // com.apple.trustd
 
-                $services[] = $this->getServiceStruct(
-                    $agentcheck['servicetemplate_id'],
-                    $item['Label'],
-                    $servicetemplatecommandargumentvalues
-                );
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        $item['Label'],
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
             }
         }
         if (empty($services)) {
@@ -500,17 +545,77 @@ class AgentResponseToServices {
                 if (!empty($item['DisplayName'])) {
                     $serviceName = $item['DisplayName'];
                 }
-                $servicetemplatecommandargumentvalues[2]['value'] = $match; // C:\WINDOWS\System32\DriverStore\FileRepository\sgx_psw.inf_amd64_bff7913eb62bbf90\aesm_service.exe
-                $services[] = $this->getServiceStruct(
-                    $agentcheck['servicetemplate_id'],
-                    $serviceName, // Intel® SGX AESM
-                    $servicetemplatecommandargumentvalues
-                );
+
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $this->shortCommandargumentValue($match)])) {
+                    $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($match); // C:\WINDOWS\System32\DriverStore\FileRepository\sgx_psw.inf_amd64_bff7913eb62bbf90\aesm_service.exe
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        $serviceName, // Intel® SGX AESM
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
             }
         }
         if (empty($services)) {
             return false;
         }
         return $services;
+    }
+
+    private function shortCommandargumentValue(string $value) {
+        return substr($value, 0, $this->maxLengthCommandArg);
+    }
+
+    private function shortServiceName(string $name) {
+        return substr($name, 0, $this->maxLengthServiceName);
+    }
+
+    /**
+     * @param int $servicetemplateId
+     * @param null|array $commandarguments
+     * @param string $commandargumentValue
+     * @return bool
+     */
+    private function doesServiceAlreadyExists(int $servicetemplateId, $commandarguments = null) {
+        if ($this->onlyMissingServices === false) {
+            // Show all services that are possible to create
+            return false;
+        }
+
+        if (empty($this->existingServicesCache)) {
+            //No agent services at all on this host
+            return false;
+        }
+
+        $servicesToCheck = Hash::extract($this->existingServicesCache, '{n}[servicetemplate_id=' . $servicetemplateId . ']');
+        if (!is_array($commandarguments)) {
+            // cpu load / memory usage etc...
+
+            // No service with the given servicetemplateId found.
+            return !empty($servicesToCheck);
+        }
+
+        $servicesAlreadyExists = false;
+        foreach ($servicesToCheck as $service) {
+            $commandargumentsToCompare = [];
+            foreach ($commandarguments as $argPos => $argValue) {
+                if (isset($service['servicecommandargumentvalues'][$argPos])) {
+                    $commandargumentsToCompare[$argPos] = $service['servicecommandargumentvalues'][$argPos]['value'];
+                }
+            }
+
+            if (sizeof($commandargumentsToCompare) != sizeof($commandarguments)) {
+                return false;
+            }
+
+            if ($servicesAlreadyExists === false) {
+                $servicesAlreadyExists = empty(Hash::diff($commandargumentsToCompare, $commandarguments));
+            } else {
+                // Service found !
+                return true;
+            }
+        }
+
+        return $servicesAlreadyExists;
     }
 }
