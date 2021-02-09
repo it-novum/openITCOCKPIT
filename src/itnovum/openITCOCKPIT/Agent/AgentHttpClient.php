@@ -7,6 +7,7 @@ namespace itnovum\openITCOCKPIT\Agent;
 use App\Model\Entity\Agentconfig;
 use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\ProxiesTable;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -313,6 +314,29 @@ class AgentHttpClient {
             'guzzle_error' => '',
             'oitc_errno'   => AgentHttpClientErrors::ERRNO_UNKNOWN
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getResults() {
+        $options = $this->getGuzzleOptions();
+        $url = sprintf('%s/', $this->baseUrl);
+        $client = new Client();
+        try {
+            $response = $client->request('GET', $url, $options);
+            if ($response->getStatusCode() === 200) {
+                $data = @json_decode($response->getBody()->getContents(), true);
+                if (json_last_error() === JSON_ERROR_NONE && isset($data['agent'])) {
+                    return $data;
+                }
+            }
+            //Agent did not returned JSON or no 'agent' key in json
+            Log::error('Agent response is not a json or has no agent key');
+        } catch (RequestException | GuzzleException $e) {
+            Log::error('Agent connection error: ' . $e->getMessage());
+        }
+        return [];
     }
 
     /**
