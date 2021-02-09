@@ -256,21 +256,55 @@
                                             </div>
 
                                             <hr class="hr-text-brands"
-                                                data-content="&#xf395; <?= __('Docker - fixme'); ?>">
+                                                data-content="&#xf395; <?= __('Docker'); ?>">
                                             <div class="form-group col-12 padding-left-0 ">
                                                 <label class="col-12 control-label"
-                                                       for="enable_push_mode">
-                                                    <?php echo __('Docker stats'); ?>
+                                                       for="docker_running">
+                                                    <?php echo __('Docker status'); ?>
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                            id="enable_push_mode"
+                                                            id="docker_running"
                                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                                             class="form-control"
-                                                            chosen="{}"
-                                                            ng-model="config.bool.enable_push_mode">
-                                                        <option ng-value="false"><?= __('Pull mode'); ?></option>
-                                                        <option ng-value="true"><?= __('Push mode'); ?></option>
+                                                            multiple="multiple"
+                                                            chosen="services.docker_running"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.docker_running"
+                                                            ng-model="servicesToCreateArrayIndices.docker_running">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="docker_cpu">
+                                                    <?php echo __('Container CPU percentage'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                            id="docker_cpu"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.docker_cpu"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.docker_cpu"
+                                                            ng-model="servicesToCreateArrayIndices.docker_cpu">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="docker_memory">
+                                                    <?php echo __('Container Memory usage'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                            id="docker_memory"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.docker_memory"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.docker_memory"
+                                                            ng-model="servicesToCreateArrayIndices.docker_memory">
                                                     </select>
                                                 </div>
                                             </div>
