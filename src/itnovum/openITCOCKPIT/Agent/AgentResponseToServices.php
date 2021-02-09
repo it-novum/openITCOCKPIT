@@ -473,6 +473,11 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['systemd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['systemd_services'] as $itemKey => $item) {
+                // Only show active systemd services
+                if ($item['ActiveState'] !== 'active') {
+                    continue;
+                }
+
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $this->shortCommandargumentValue($item['Name'])])) {
                     $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($item['Name']); // apache2.service
 
@@ -502,6 +507,10 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['launchd_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['launchd_services'] as $itemKey => $item) {
+                if($item['IsRunning'] !== true){
+                    continue;
+                }
+
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $this->shortCommandargumentValue($item['Label'])])) {
                     $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($item['Label']); // com.apple.trustd
 
@@ -531,6 +540,10 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['windows_services'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['windows_services'] as $itemKey => $item) {
+                if($item['Status'] !== 'Running'){
+                    continue;
+                }
+
                 $match = $item['Name'];
                 if (!empty($item['DisplayName'])) {
                     $match = $item['DisplayName'];

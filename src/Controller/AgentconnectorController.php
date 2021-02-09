@@ -1129,11 +1129,11 @@ class AgentconnectorController extends AppController {
         // GET request
 
         // macOS test output (custom checks + docker)
-        $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_darwin.json'), true);
+        //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_darwin.json'), true);
         // Linux test output (custom checks + docker + libvirt)
         //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_linux.json'), true);
         // Windows test output (custom checks + docker)
-        //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_windows.json'), true);
+        $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_windows.json'), true);
 
         $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse, true);
         $services = $AgentResponseToServices->getAllServices();
