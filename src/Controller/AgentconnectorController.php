@@ -1127,11 +1127,25 @@ class AgentconnectorController extends AppController {
 
 
         // GET request
+        $record = $AgentconfigsTable->getConfigByHostId($host->id);
+        $AgentConfiguration = new AgentConfiguration();
+        $config = $AgentConfiguration->unmarshal($record->config);
 
+        $agentresponse = []; // Empty agent response
+        if ($config['bool']['enable_push_mode'] === true) {
+            // @todo implement me
+        } else {
+            // Pull Mode
+            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+            $agentresponse = $AgentHttpClient->getResults();
+        }
+
+
+        // Test responses
         // macOS test output (custom checks + docker)
         //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_darwin.json'), true);
         // Linux test output (custom checks + docker + libvirt)
-        $agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_linux.json'), true);
+        //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_linux.json'), true);
         // Windows test output (custom checks + docker)
         //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_windows.json'), true);
 
