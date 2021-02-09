@@ -75,7 +75,7 @@ class AgentResponseToServices {
     /**
      * @param bool $onlyMissingServices
      * @return array
-     * @todo implement: libvirt, alfresco, windows_eventlog
+     * @todo implement: alfresco, windows_eventlog
      */
     public function getAllServices() {
         $services = [];
@@ -163,14 +163,12 @@ class AgentResponseToServices {
                         $services['windows_services'] = $windowsServices;
                     }
                     break;
-
                 case 'customchecks':
                     $customchecks = $this->getServiceStructForCustomchecks();
                     if ($customchecks) {
                         $services['customchecks'] = $customchecks;
                     }
                     break;
-
                 case 'docker':
                     $dockerCheckTypes = [
                         'docker.running',
@@ -183,8 +181,12 @@ class AgentResponseToServices {
                             $services[str_replace('.', '_', $type)] = $dockerServices;
                         }
                     }
-
-
+                    break;
+                case 'libvirt':
+                    $libvirtServices = $this->getServiceStructForLibvirt();
+                    if ($libvirtServices) {
+                        $services['libvirt'] = $libvirtServices;
+                    }
                     break;
             }
         }
@@ -771,5 +773,31 @@ class AgentResponseToServices {
         }
 
         return $servicesAlreadyExists;
+    }
+
+    private function getServiceStructForLibvirt() {
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName('libvirt');
+        if (empty($agentcheck)) {
+            return false;
+        }
+        $services = [];
+        if (isset($this->agentResponse['libvirt'])) {
+            $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+            foreach ($this->agentResponse['libvirt'] as $checkName => $item) {
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $item['Uuid']])) {
+                    $servicetemplatecommandargumentvalues[0]['value'] = $item['Uuid']; // 1e6a8d99-471e-493a-8490-bf9eb5487951
+
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('VM: {0}', $item['Name']),
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
+            }
+        }
+        if (empty($services)) {
+            return false;
+        }
+        return $services;
     }
 }
