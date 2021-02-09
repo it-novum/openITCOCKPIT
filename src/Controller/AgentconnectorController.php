@@ -1135,7 +1135,7 @@ class AgentconnectorController extends AppController {
         // Windows test output (custom checks + docker)
         //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_windows.json'), true);
 
-        $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse);
+        $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse, true);
         $services = $AgentResponseToServices->getAllServices();
 
         $this->set('host', $host);
