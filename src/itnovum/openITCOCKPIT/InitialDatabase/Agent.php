@@ -2528,7 +2528,7 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => 'username',
+                        'value'              => 'checkname',
                     ],
                 ],
                 'customvariables'                           => [],

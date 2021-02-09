@@ -75,7 +75,7 @@ class AgentResponseToServices {
     /**
      * @param bool $onlyMissingServices
      * @return array
-     * @todo implement: libvirt, docker, alfresco, windows_eventlog, customchecks, cpu_percentage
+     * @todo implement: libvirt, docker, alfresco, windows_eventlog, cpu_percentage
      */
     public function getAllServices() {
         $services = [];
@@ -155,6 +155,13 @@ class AgentResponseToServices {
                     $windowsServices = $this->getServiceStructForwindowsServices();
                     if ($windowsServices) {
                         $services['windows_services'] = $windowsServices;
+                    }
+                    break;
+
+                case 'customchecks':
+                    $customchecks = $this->getServiceStructForCustomchecks();
+                    if ($customchecks) {
+                        $services['customchecks'] = $customchecks;
                     }
                     break;
             }
@@ -561,6 +568,35 @@ class AgentResponseToServices {
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
                         $serviceName, // Intel® SGX AESM
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
+            }
+        }
+        if (empty($services)) {
+            return false;
+        }
+        return $services;
+    }
+
+    /**
+     * @return array|bool
+     */
+    private function getServiceStructForCustomchecks() {
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName('customchecks');
+        if (empty($agentcheck)) {
+            return false;
+        }
+        $services = [];
+        if (isset($this->agentResponse['customchecks'])) {
+            $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+            foreach ($this->agentResponse['customchecks'] as $checkName => $item) {
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $this->shortCommandargumentValue($checkName)])) {
+                    $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($checkName); // check_whoami
+
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('Custom check: {0}', $checkName),
                         $servicetemplatecommandargumentvalues
                     );
                 }

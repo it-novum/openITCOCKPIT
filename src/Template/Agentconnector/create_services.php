@@ -386,6 +386,25 @@
                                                 </div>
                                             </div>
 
+                                            <hr class="hr-text" data-content="&#xf120; <?= __('Custom checks'); ?>">
+                                            <div class="form-group col-12 padding-left-0 ">
+                                                <label class="col-12 control-label"
+                                                       for="customchecks">
+                                                    <?php echo __('Custom checks'); ?>
+                                                </label>
+                                                <div class="col-12">
+                                                    <select
+                                                            id="customchecks"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.customchecks"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.customchecks"
+                                                            ng-model="servicesToCreateArrayIndices.customchecks">
+                                                    </select>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </fieldset>
                                 </div>
