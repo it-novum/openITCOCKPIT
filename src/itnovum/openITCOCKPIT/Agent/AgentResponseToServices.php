@@ -352,12 +352,12 @@ class AgentResponseToServices {
         if (isset($this->agentResponse['disks'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['disks'] as $device) {
-                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $this->shortCommandargumentValue($device['disk']['device'])])) {
-                    $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($device['disk']['device']); // /dev/sda1
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $this->shortCommandargumentValue($device['disk']['mountpoint'])])) {
+                    $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($device['disk']['mountpoint']); // / or C:
 
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('Disk usage of: {0}', $device['disk']['device']),
+                        __('Disk usage of: {0} ({1})', $device['disk']['mountpoint'], $device['disk']['device']),
                         $servicetemplatecommandargumentvalues
                     );
                 }
