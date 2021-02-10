@@ -753,3 +753,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     background-color: #4285F4;
     border-radius: 4px;
 }
+
+.chosen-container .chosen-drop {
+    left: -99000px;
+}
