@@ -239,13 +239,13 @@ class AgentHttpClient {
             // Try to load CSR (Certificate Signing Request) from Agent via HTTPS
             // THIS IS JUST A CONNECTION TEST - WE DO NOT USE THE CSR BECAUSE THE USER WANT TO USE OWN CERTIFICATS
             $options = $this->getGuzzleOptions();
-            $url = sprintf('%s/autotls', $this->baseUrl);
+            $url = sprintf('%s/', $this->baseUrl);
             $client = new Client();
             try {
                 $response = $client->request('GET', $url, $options);
                 if ($response->getStatusCode() === 200) {
                     $data = @json_decode($response->getBody()->getContents(), true);
-                    if (json_last_error() === JSON_ERROR_NONE && isset($data['csr'])) {
+                    if (json_last_error() === JSON_ERROR_NONE && isset($data['agent'])) {
                         return [
                             'status'       => 'success',
                             'error'        => __('Successfully establish HTTPS connection to the Agent (No AutoTLS).'),
@@ -255,10 +255,10 @@ class AgentHttpClient {
                         ];
                     }
                 }
-                //Agent did not returned JSON or no 'csr' key in json
+                //Agent did not returned JSON or no 'agent' key in json
                 return [
                     'status'       => 'error',
-                    'error'        => __('No JSON response from Agent or key csr is missing in the result'),
+                    'error'        => __('No JSON response from Agent or key agent is missing in the result'),
                     'guzzle_error' => sprintf('[%s] %s', $response->getStatusCode(), $response->getReasonPhrase()),
                     'oitc_errno'   => AgentHttpClientErrors::ERRNO_BAD_AGENT_RESPONSE
                 ];
