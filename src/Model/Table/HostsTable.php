@@ -170,7 +170,7 @@ class HostsTable extends Table {
             'foreignKey' => 'host_id',
         ])->setDependent(true);
 
-        $this->hasOne('Agenthostscache', [
+        /*$this->hasOne('Agenthostscache', [
             'foreignKey' => 'hostuuid',
             'bindingKey' => 'uuid'
         ])->setDependent(true);
@@ -178,7 +178,7 @@ class HostsTable extends Table {
         $this->hasOne('Agentconnector', [
             'foreignKey' => 'hostuuid',
             'bindingKey' => 'uuid'
-        ])->setDependent(true);
+        ])->setDependent(true);*/
 
     }
 
