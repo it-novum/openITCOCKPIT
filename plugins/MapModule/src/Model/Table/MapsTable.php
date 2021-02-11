@@ -491,7 +491,6 @@ class MapsTable extends Table {
 
         $query->order(['Maps.name' => 'ASC'])->group('Maps.id');
         $mapsWithLimit = $query->toArray();
-
         $selectedMaps = [];
         if (!empty($selected)) {
             $query = $this->find('list')
@@ -516,9 +515,11 @@ class MapsTable extends Table {
                     'MapsToContainers.container_id IN' => $MapConditions->getContainerIds()
                 ]);
             }
-            $query->orderAsc('Maps.name')->groupBy('Maps.id');
+            $query->order(['Maps.name' => 'ASC'])->group('Maps.id');
+
             $selectedMaps = $query->toArray();
         }
+
         $maps = $mapsWithLimit + $selectedMaps;
         if (is_array($excluded) && !empty($excluded)) {
             foreach ($excluded as $idToExclude) {
