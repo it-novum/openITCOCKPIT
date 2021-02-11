@@ -275,13 +275,13 @@ class AgentHttpClient {
         if ($this->config['bool']['use_autossl'] === false && $this->config['bool']['use_https'] === false) {
             // User wants insecure HTTP :(
             $options = $this->getGuzzleOptions();
-            $url = sprintf('%s/autotls', $this->baseUrl);
+            $url = sprintf('%s/', $this->baseUrl);
             $client = new Client();
             try {
                 $response = $client->request('GET', $url, $options);
                 if ($response->getStatusCode() === 200) {
                     $data = @json_decode($response->getBody()->getContents(), true);
-                    if (json_last_error() === JSON_ERROR_NONE && isset($data['csr'])) {
+                    if (json_last_error() === JSON_ERROR_NONE && isset($data['agent'])) {
                         return [
                             'status'       => 'success',
                             'error'        => __('Connection established successfully using insecure HTTP (plaintext).'),
@@ -291,10 +291,10 @@ class AgentHttpClient {
                         ];
                     }
                 }
-                //Agent did not returned JSON or no 'csr' key in json
+                //Agent did not returned JSON or no 'agent' key in json
                 return [
                     'status'       => 'success',
-                    'error'        => __('No JSON response from Agent or key csr is missing in the result'),
+                    'error'        => __('No JSON response from Agent or key agent is missing in the result'),
                     'guzzle_error' => sprintf('[%s] %s', $response->getStatusCode(), $response->getReasonPhrase()),
                     'oitc_errno'   => AgentHttpClientErrors::ERRNO_HTTP_ERROR
                 ];
