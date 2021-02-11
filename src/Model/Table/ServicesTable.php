@@ -3777,7 +3777,10 @@ class ServicesTable extends Table {
     public function getAgentServicesByHostId($hostId) {
         $query = $this->find()
             ->contain([
-                'Servicecommandargumentvalues'
+                'Servicecommandargumentvalues',
+                'Servicetemplates' => [
+                    'Servicetemplatecommandargumentvalues'
+                ]
             ])
             ->where([
                 'Services.host_id'      => $hostId,
@@ -3786,6 +3789,16 @@ class ServicesTable extends Table {
             ->disableHydration()
             ->all();
 
-        return $this->emptyArrayIfNull($query->toArray());
+
+        $services = $this->emptyArrayIfNull($query->toArray());
+        foreach ($services as $index => $service) {
+            if (empty($service['servicecommandargumentvalues'])) {
+                if (($service['command_id'] === $service['servicetemplate']['command_id'] || $service['command_id'] === null)) {
+                    $services[$index]['servicecommandargumentvalues'] = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
+                }
+            }
+        }
+
+        return $services;
     }
 }

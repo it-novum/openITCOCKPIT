@@ -283,8 +283,8 @@ class AgentResponseToServices {
                     $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
                     switch ($category) {
                         case 'Temperatures':
-                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [3 => $this->shortCommandargumentValue($items['label'])])) {
-                                $servicetemplatecommandargumentvalues[3]['value'] = $this->shortCommandargumentValue($items['label']);
+                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $this->shortCommandargumentValue($items['label'])])) {
+                                $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($items['label']);
                                 $services[] = $this->getServiceStruct(
                                     $agentcheck['servicetemplate_id'],
                                     __('Sensor: {0}', $items['label']),
@@ -293,8 +293,8 @@ class AgentResponseToServices {
                             }
                             break;
                         case 'Batteries':
-                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [3 => $items['id']])) {
-                                $servicetemplatecommandargumentvalues[3]['value'] = $items['id'];
+                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $items['id']])) {
+                                $servicetemplatecommandargumentvalues[2]['value'] = $items['id'];
                                 $services[] = $this->getServiceStruct(
                                     $agentcheck['servicetemplate_id'],
                                     __('Battery: {0}', $items['id']),
