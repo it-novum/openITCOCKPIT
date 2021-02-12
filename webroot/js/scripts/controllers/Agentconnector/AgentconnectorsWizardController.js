@@ -1,8 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('AgentconnectorsWizardController', function($scope, $http, $stateParams){
+    .controller('AgentconnectorsWizardController', function($scope, $http, $state, $stateParams){
         $scope.hostId = $stateParams.hostId;
 
-        $scope.connectorConfig = {};
+        $scope.isConfigured = false;
 
         $scope.load = function(searchString, selected){
             $http.get("/agentconnector/loadHostsByString/1.json", {
@@ -17,24 +17,25 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadConfigForSelectedHostId = function(){
-            var params = {
-                'angular': true
-            };
+            if($scope.hostId > 0){
+                $http.get("/agentconnector/wizard.json", {
+                    params: {
+                        'angular': true,
+                        'hostId': $scope.hostId
+                    }
+                }).then(function(result){
+                    $scope.init = false;
+                    $scope.isConfigured = result.data.isConfigured;
+                }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
 
-            $http.get("/agentconnector/loadAgentConfigByHostId/" + $scope.hostId + ".json", {
-                params: params
-            }).then(function(result){
-                $scope.connectorConfig = result.data.connectorConfig;
-                $scope.init = false;
-            }, function errorCallback(result){
-                if(result.status === 403){
-                    $state.go('403');
-                }
-
-                if(result.status === 404){
-                    $state.go('404');
-                }
-            });
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
+                });
+            }
         };
 
         //Fire on page load

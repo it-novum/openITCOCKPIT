@@ -169,10 +169,11 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('AgentconnectorsWizard', {
-                url: '/agentconnector/wizard',
+                url: '/agentconnector/wizard/:hostId',
                 params: {
                     hostId: {
-                        value: null
+                        value: null,
+                        squash: true
                     }
                 },
                 templateUrl: "/agentconnector/wizard.html",
@@ -192,33 +193,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('AgentconnectorsInstall', {
                 url: '/agentconnector/install/:hostId',
-                params: {
-                    mode: {
-                        value: null
-                    }
-                },
                 templateUrl: "/agentconnector/install.html",
                 controller: "AgentconnectorsInstallController"
             })
 
             .state('AgentconnectorsAutotls', {
                 url: '/agentconnector/autotls/:hostId',
-                params: {
-                    mode: {
-                        value: null
-                    }
-                },
                 templateUrl: "/agentconnector/autotls.html",
                 controller: "AgentconnectorsAutotlsController"
             })
 
             .state('AgentconnectorsCreateServices', {
                 url: '/agentconnector/create_services/:hostId',
-                params: {
-                    mode: {
-                        value: null
-                    }
-                },
                 templateUrl: "/agentconnector/create_services.html",
                 controller: "AgentconnectorsCreateServicesController"
             })

@@ -792,8 +792,30 @@ class AgentconnectorController extends AppController {
 
     // Step 1
     public function wizard() {
-        //Only ship HTML Template
-        return;
+        if (!$this->isApiRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        $hostId = $this->request->getQuery('hostId', 0);
+
+
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException();
+        }
+
+
+        $isConfigured = $AgentconfigsTable->existsByHostId($hostId);
+
+        $agentConfig = null;
+        $this->set('isConfigured', $isConfigured);
+        $this->viewBuilder()->setOption('serialize', ['isConfigured']);
+
     }
 
     // Step 2
@@ -1200,15 +1222,6 @@ class AgentconnectorController extends AppController {
 
         $this->set('hosts', $hosts);
         $this->viewBuilder()->setOption('serialize', ['hosts']);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadAgentConfigByHostId() {
-        $agentConfig = null;
-        $this->set('agentConfig', $agentConfig);
-        $this->viewBuilder()->setOption('serialize', ['agentConfig']);
     }
 
 

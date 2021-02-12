@@ -259,7 +259,6 @@ class AclDependencies {
 
         $this
             ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'loadHostsByString')
-            ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'loadAgentConfigByHostId')
             ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'install')
             ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'autotls');
 
@@ -273,7 +272,6 @@ class AclDependencies {
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'add')
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'edit')
             ->dependency('Agentconnector', 'config', 'Agentconfigs', 'loadHostsByString')
-            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'loadAgentConfigByHostId')
             ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'changetrust')
             ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'delete')
             ->dependency('Agentconnector', 'pushCache', 'Agentconnector', 'downloadPushedCheckdata');

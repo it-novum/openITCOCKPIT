@@ -1,7 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsInstallController', function($scope, $http, $state, $stateParams, RedirectService, NotyService){
 
-        $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
 
         // Load current agent config if any exists

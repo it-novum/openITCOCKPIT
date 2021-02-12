@@ -1,7 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsConfigController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
 
-        $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
         $scope.connection_type = 'autotls';
         $scope.webserver_type = 'https';

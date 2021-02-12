@@ -1,7 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsAutotlsController', function($scope, $http, $state, $stateParams, RedirectService, NotyService){
 
-        $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
         $scope.disableNext = true;
         $scope.runningCheck = true;

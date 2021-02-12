@@ -29,7 +29,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="AgentconnectorsAgent">
+        <a ui-sref="AgentconnectorsWizard">
             <i class="fa fa-user-secret"></i> <?php echo __('openITCOCKPIT Agent'); ?>
         </a>
     </li>
@@ -116,7 +116,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row padding-top-20" ng-show="hostId">
+                    <div class="row padding-top-20" ng-hide="isConfigured">
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 offset-lg-2 offset-xl-2">
                             <div class="panel panel-default agent-mode-box-pull">
                                 <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
@@ -144,8 +144,8 @@
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
                                         <a class="btn btn-outline-primary pull-right"
+                                           ng-show="hostId"
                                            ui-sref="AgentconnectorsConfig({hostId: hostId, mode: 'pull'})">
-
                                             <?= __('Continue with pull mode'); ?>
                                         </a>
                                     </div>
@@ -180,8 +180,8 @@
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
                                         <a class="btn btn-outline-primary pull-right"
+                                           ng-show="hostId"
                                            ui-sref="AgentconnectorsConfig({hostId: hostId, mode: 'push'})">
-
                                             <?= __('Continue with push mode'); ?>
                                         </a>
                                     </div>
@@ -192,7 +192,7 @@
 
                     <!-- CONFIG ALREADY EXISTS  -->
 
-                    <div class="row padding-top-20" ng-show="hostId">
+                    <div class="row padding-top-20" ng-show="hostId && isConfigured">
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4  offset-lg-2 offset-xl-2">
                             <div class="panel panel-default agent-mode-box-create-services">
                                 <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
@@ -204,7 +204,7 @@
 
                                 <div class="panel-container padding-left-20 padding-right-20"
                                      style="min-height: 180px;">
-                                    <h5><?= __('You agent is already configured'); ?></h5>
+                                    <h5><?= __('Agent is already configured'); ?></h5>
                                     <div class="text">
                                         <ul>
                                             <li><?= __('Add new services to your monitoring'); ?></li>
@@ -214,12 +214,12 @@
 
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
-                                        <button
+                                        <a
                                                 type="button"
-                                                class="btn btn-outline-success pull-right"
-                                                ng-click="continueWithPushMode()">
+                                                class="btn btn-outline-success pull-right waves-effect waves-themed"
+                                                ui-sref="AgentconnectorsCreateServices({hostId: hostId})">
                                             <?= __('Continue with service creation'); ?>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -248,13 +248,12 @@
 
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
-                                        <button
+                                        <a
                                                 type="button"
-                                                class="btn btn-outline-primary pull-right"
-                                                ng-click="continueWithPullMode()">
-
+                                                class="btn btn-outline-primary pull-right waves-effect waves-themed"
+                                                ui-sref="AgentconnectorsConfig({hostId: hostId})">
                                             <?= __('Edit agent configuration'); ?>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

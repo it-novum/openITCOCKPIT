@@ -29,7 +29,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="AgentconnectorsAgent">
+        <a ui-sref="AgentconnectorsWizard">
             <i class="fa fa-user-secret"></i> <?php echo __('openITCOCKPIT Agent '); ?>
         </a>
     </li>
