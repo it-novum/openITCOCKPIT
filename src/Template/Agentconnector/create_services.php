@@ -198,7 +198,7 @@
                                         </div>
 
                                         <div ng-hide="hideConfig">
-                                            <div ng-show="servicesToCreateCheckboxValues">
+                                            <div ng-show="(servicesToCreateCheckboxValues | json) != '{}'">
                                                 <hr class="hr-text" data-content="&#xf013; <?= __('System'); ?>">
                                                 <div class="form-group col-12"
                                                      ng-repeat="(key, value) in servicesToCreateCheckboxValues">
