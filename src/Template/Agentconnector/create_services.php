@@ -222,6 +222,7 @@
                                                     <label class="col-12 control-label"
                                                            for="diskusage">
                                                         <?php echo __('Disk usage'); ?>
+                                                        ({{lengthOf(services.disks)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -239,6 +240,7 @@
                                                     <label class="col-12 control-label"
                                                            for="diskio">
                                                         <?php echo __('Disk IO'); ?>
+                                                        ({{lengthOf(services.disk_io)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -260,6 +262,7 @@
                                                     <label class="col-12 control-label"
                                                            for="net_stats">
                                                         <?= __('Link status'); ?>
+                                                        ({{lengthOf(services.net_stats)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -278,6 +281,7 @@
                                                     <label class="col-12 control-label"
                                                            for="net_io">
                                                         <?php echo __('Network IO'); ?>
+                                                        ({{lengthOf(services.net_io)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -303,6 +307,7 @@
                                                     <label class="col-12 control-label"
                                                            for="docker_running">
                                                         <?php echo __('Docker status'); ?>
+                                                        ({{lengthOf(services.docker_running)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -321,6 +326,7 @@
                                                     <label class="col-12 control-label"
                                                            for="docker_cpu">
                                                         <?php echo __('Container CPU percentage'); ?>
+                                                        ({{lengthOf(services.docker_cpu)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -339,6 +345,7 @@
                                                     <label class="col-12 control-label"
                                                            for="docker_memory">
                                                         <?php echo __('Container Memory usage'); ?>
+                                                        ({{lengthOf(services.docker_memory)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -361,6 +368,7 @@
                                                     <label class="col-12 control-label"
                                                            for="processes">
                                                         <?php echo __('Processes'); ?>
+                                                        ({{lengthOf(services.processes)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -382,6 +390,7 @@
                                                     <label class="col-12 control-label"
                                                            for="windows_services">
                                                         <?php echo __('Windows services'); ?>
+                                                        ({{lengthOf(services.windows_services)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -402,6 +411,7 @@
                                                     <label class="col-12 control-label"
                                                            for="launchd_services">
                                                         <?php echo __('Launchd services'); ?>
+                                                        ({{lengthOf(services.launchd_services)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -422,6 +432,7 @@
                                                     <label class="col-12 control-label"
                                                            for="systemd_services">
                                                         <?php echo __('Systemd services'); ?>
+                                                        ({{lengthOf(services.systemd_services)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -443,6 +454,7 @@
                                                     <label class="col-12 control-label"
                                                            for="systemd_services">
                                                         <?php echo __('Sensors'); ?>
+                                                        ({{lengthOf(services.sensors)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -464,6 +476,7 @@
                                                     <label class="col-12 control-label"
                                                            for="libvirt">
                                                         <?php echo __('Libvirt (KVM)'); ?>
+                                                        ({{lengthOf(services.libvirt)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select
@@ -485,6 +498,7 @@
                                                     <label class="col-12 control-label"
                                                            for="customchecks">
                                                         <?php echo __('Custom checks'); ?>
+                                                        ({{lengthOf(services.customchecks)}})
                                                     </label>
                                                     <div class="col-12">
                                                         <select

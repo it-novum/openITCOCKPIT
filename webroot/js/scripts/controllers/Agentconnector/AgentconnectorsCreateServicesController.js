@@ -85,6 +85,14 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.lengthOf = function(obj){
+            if(typeof obj === "undefined"){
+                return 0;
+            }
+            
+            return Object.keys(obj).length;
+        };
+
 
         //Fire on page load
         $scope.load();
