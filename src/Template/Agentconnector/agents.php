@@ -91,7 +91,7 @@
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
-                    <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
+                    <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
                         <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="AgentconnectorsWizard">
                             <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
