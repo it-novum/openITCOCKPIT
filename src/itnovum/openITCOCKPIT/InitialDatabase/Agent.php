@@ -300,7 +300,7 @@ class Agent extends Importer {
         $data = [
             [
                 'name'             => 'check_oitc_agent_active',
-                'command_line'     => '/opt/openitc/receiver/bin/poller.php poller -H $HOSTNAME$ -c /opt/openitc/receiver/etc/production.json -C /opt/openitc/agent/server_ca.pem -K /opt/openitc/agent/server_ca.key',
+                'command_line'     => '/opt/openitc/receiver/bin/poller.php poller -H $HOSTNAME$ -c /opt/openitc/receiver/etc/production.json',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'be116ff1-f797-4ccb-993c-b80ccb337de8',
