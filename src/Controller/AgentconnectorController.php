@@ -29,40 +29,24 @@ namespace App\Controller;
 
 use App\Form\AgentConfigurationForm;
 use App\Model\Entity\Changelog;
-use App\Model\Entity\Host;
-use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconfigsTable;
-use App\Model\Table\AgentconnectorTable;
-use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\ChangelogsTable;
-use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
-use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
-use GuzzleHttp\Exception\GuzzleException;
-use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
-use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
-use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostConditions;
-use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
-use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
-use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
-use itnovum\openITCOCKPIT\Filter\AgenthostscacheFilter;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 class AgentconnectorController extends AppController {
@@ -555,7 +539,7 @@ class AgentconnectorController extends AppController {
      *
      * @todo Implement me
      */
-    public function updateCheckdata() {
+    public function submit_checkdata() {
 
     }
 }

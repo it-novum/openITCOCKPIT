@@ -34,7 +34,6 @@ use App\Model\Entity\Hostgroup;
 use App\Model\Entity\Service;
 use App\Model\Entity\Servicegroup;
 use App\Model\Table\AgentconfigsTable;
-use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\CalendarsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ConfigurationFilesTable;

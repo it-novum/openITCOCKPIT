@@ -137,8 +137,8 @@ class AclDependencies {
             ->allow('Angular', 'thresholds');
 
         $this
-            ->allow('Agentconnector', 'certificate')
-            ->allow('Agentconnector', 'updateCheckdata');
+            ->allow('Agentconnector', 'register_agent')
+            ->allow('Agentconnector', 'submit_checkdata');
 
         $this
             ->allow('Automaps', 'icon')
