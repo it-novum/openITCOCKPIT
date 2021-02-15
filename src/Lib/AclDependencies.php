@@ -255,23 +255,9 @@ class AclDependencies {
 
 
         $this
-            ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'loadHostsByString')
-            ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'install')
-            ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'autotls');
-
-
-        //old delete
-        $this
-            ->dependency('Agentconnector', 'config', 'Agentconnector', 'createServices')
-            ->dependency('Agentconnector', 'config', 'Agentconnector', 'getServicesToCreateByHostUuid')
-            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'config')
-            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'add')
-            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'edit')
-            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'loadHostsByString')
-            ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'changetrust')
-            ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'delete')
-            ->dependency('Agentconnector', 'pushCache', 'Agentconnector', 'downloadPushedCheckdata');
-
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'loadHostsByString')
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'install')
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'autotls');
 
         $this
             ->dependency('Automaps', 'add', 'Automaps', 'getMatchingHostAndServices')
