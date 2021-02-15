@@ -36,10 +36,12 @@ use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\PushAgentsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenDate;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
@@ -47,6 +49,7 @@ use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -554,7 +557,7 @@ class AgentconnectorController extends AppController {
      * If an Agent sends an password which is not found in the database, openITCOCKPIT will respond with an 403 Forbidden
      */
     public function register_agent() {
-        $agentUuid = $this->request->getData('uuid', null);
+        $agentUuid = $this->request->getData('agentuuid', null);
         $agentPassword = $this->request->getData('password', null);
 
         if (!$this->request->is('post') || !$this->isJsonRequest()) {
@@ -605,7 +608,7 @@ class AgentconnectorController extends AppController {
                 'ipaddress'            => $this->request->getData('ipaddress', null),
                 'remote_address'       => $remoteAddress,
                 'http_x_forwarded_for' => $HTTP_X_FORWARDED_FOR,
-                'last_update'          => new FrozenDate(),
+                'last_update'          => new FrozenTime(),
                 'checkresults'         => null
             ]);
 
@@ -645,6 +648,77 @@ class AgentconnectorController extends AppController {
      * @todo Implement me
      */
     public function submit_checkdata() {
+        if (!$this->isJsonRequest() || $this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
 
+        $agentUuid = $this->request->getQuery('agentuuid', '');
+        $agentPassword = $this->request->getQuery('password', '');
+        $checkdata = $this->request->getData('checkdata', []);
+
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+
+        $receivedChecks = 0;
+        try {
+            $pushAgent = $PushAgentsTable->getConfigWithHostForSubmitCheckdata(
+                $agentUuid,
+                $agentPassword
+            );
+
+            $hostUuid = $pushAgent->get('agentconfig')->get('host')->get('uuid');
+            $GearmanClient = new Gearman();
+
+            // Agent is known and authorized
+            require_once "/opt/openitc/receiver/vendor/autoload.php";
+            $CheckConfig = new \itnovum\openITCOCKPIT\Checks\Receiver\CheckConfig('/opt/openitc/receiver/etc/production.json');
+            $config = $CheckConfig->getConfigByHostName($hostUuid);
+
+            foreach ($config['checks'] as $pluginConfig) {
+                $pluginName = $pluginConfig['plugin'];
+
+                $pluginClassName = sprintf('itnovum\openITCOCKPIT\Checks\Receiver\Plugins\%s', $pluginName);
+                if (!class_exists($pluginClassName)) {
+                    //Unknown Plugin
+                    continue;
+                }
+
+                /** @var  $Plugin \itnovum\openITCOCKPIT\Checks\Receiver\Plugins\PluginInterface */
+                $Plugin = new $pluginClassName($pluginConfig, $checkdata);
+
+                $pluginOutput = $Plugin->getOutput();
+                if (strlen($Plugin->getPerfdataSerialized()) > 0) {
+                    $pluginOutput .= '|' . $Plugin->getPerfdataSerialized();
+                }
+
+                $GearmanClient->sendBackground('cmd_external_command', [
+                    'command'     => 'PROCESS_SERVICE_CHECK_RESULT',
+                    'parameters'  => [
+                        'hostUuid'      => $hostUuid,
+                        'serviceUuid'   => $pluginConfig['uuid'],
+                        'status_code'   => $Plugin->getStatuscode(),
+                        'plugin_output' => $pluginOutput,
+                        'long_output'   => $Plugin->getLongOutput()
+                    ],
+                    'satelliteId' => 0 // Agent check results are always Master system!,
+                ]);
+
+                $receivedChecks++;
+            }
+
+            $pushAgent->set('last_update', new FrozenTime());
+            $PushAgentsTable->save($pushAgent);
+
+            $this->set('success', true);
+            $this->set('received_checks', $receivedChecks);
+            $this->viewBuilder()->setOption('serialize', ['success', 'received_checks']);
+            return;
+        } catch (RecordNotFoundException $e) {
+            //No host for given agent config found
+        }
+
+        $this->response = $this->response->withStatus(400);
+        $this->set('error', 'Invalid credentials or host not found');
+        $this->viewBuilder()->setOption('serialize', ['error']);
     }
 }

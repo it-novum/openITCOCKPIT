@@ -27,10 +27,14 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Model\Entity\PushAgent;
+use Cake\Datasource\EntityInterface;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * PushAgents Model
@@ -171,4 +175,44 @@ class PushAgentsTable extends Table {
             'PushAgents.password' => $password
         ]);
     }
+
+    /**
+     * @param string $uuid
+     * @param string $password
+     * @return PushAgent|EntityInterface
+     * @throws RecordNotFoundException
+     */
+    public function getConfigWithHostForSubmitCheckdata($uuid, $password) {
+        $query = $this->find()
+            ->where([
+                'PushAgents.uuid'     => $uuid,
+                'PushAgents.password' => $password,
+                'PushAgents.agentconfig_id IS NOT NULL'
+            ])
+            ->contain([
+                'Agentconfigs' => function (Query $q) {
+                    $q
+                        ->disableAutoFields()
+                        ->select([
+                            'Agentconfigs.id',
+                            'Agentconfigs.host_id'
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $q) {
+                                $q
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid'
+                                    ]);
+                                return $q;
+                            }
+                        ]);
+                    return $q;
+                }
+            ]);
+        //FileDebugger::dieQuery($query);
+        return $query->firstOrFail();
+    }
+
 }
