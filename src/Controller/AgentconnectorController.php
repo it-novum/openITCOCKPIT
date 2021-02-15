@@ -41,6 +41,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenDate;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
@@ -49,6 +50,9 @@ use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 class AgentconnectorController extends AppController {
@@ -79,12 +83,45 @@ class AgentconnectorController extends AppController {
      *    AGENTS OVERVIEW METHODS    *
      *********************************/
 
+    //Only for ACLs
     public function overview() {
 
     }
 
     public function pull() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Hosts.name'
+            ]
+        ]);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $GenericFilter->getPage());
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $agents = $AgentconfigsTable->getPullAgents($GenericFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($agents as $index => $agent) {
+            $agents[$index]['allow_edit'] = $this->allowedByContainerId(
+                Hash::extract(
+                    $agent['host']['hosts_to_containers_sharing'],
+                    '{n}.id'
+                )
+            );
+        }
+
+        $this->set('agents', $agents);
+        $this->viewBuilder()->setOption('serialize', ['agents']);
     }
 
     public function push() {
@@ -646,5 +683,43 @@ class AgentconnectorController extends AppController {
      */
     public function submit_checkdata() {
 
+    }
+
+    /**
+     * @param null $id
+     */
+    public function delete($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('AgentconfigsTable');
+
+        if (!$AgentconfigsTable->existsById($id)) {
+            throw new NotFoundException(__('Agent config not found'));
+        }
+
+        $agentConfig = $AgentconfigsTable->get($id, [
+            'contain' => [
+                'Host'
+            ]
+        ]);
+        if (!$this->allowedByContainerId($agentConfig->get('host')->get('container_id'))) {
+            $this->render403();
+            return;
+        }
+
+        if ($AgentconfigsTable->delete($agentConfig)) {
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+
+            return;
+        }
+
+        $this->response = $this->response->withStatus(400);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        return;
     }
 }

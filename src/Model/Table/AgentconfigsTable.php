@@ -5,9 +5,12 @@ namespace App\Model\Table;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Agentconfig;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 /**
  * Agentconfigs Model
@@ -46,7 +49,8 @@ class AgentconfigsTable extends Table {
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Hosts', [
-            'foreignKey' => 'host_id'
+            'foreignKey' => 'host_id',
+            'joinType'   => 'INNER'
         ]);
 
         $this->hasOne('PushAgents');
@@ -166,5 +170,54 @@ class AgentconfigsTable extends Table {
                 'Agentconfigs.host_id' => $hostId
             ])
             ->firstOrFail();
+    }
+
+    public function getPullAgents(GenericFilter $GenericFilter, PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Agentconfigs.id',
+                'Agentconfigs.host_id',
+                'Agentconfigs.port',
+                'Agentconfigs.use_https',
+                'Agentconfigs.insecure',
+                'Agentconfigs.use_autossl',
+                'Agentconfigs.autossl_successful',
+                'Agentconfigs.use_push_mode',
+                'Agentconfigs.basic_auth'
+            ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })->contain([
+                'Hosts' => [
+                    'HostsToContainersSharing'
+                ]
+            ])
+            ->where([
+                'Agentconfigs.use_push_mode' => 0
+            ])
+            ->group(['Agentconfigs.id']);
+
+
+        $query->where($GenericFilter->genericFilters());
+        $query->disableHydration();
+        $query->order($GenericFilter->getOrderForPaginator('Hosts.name', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+        return $result;
     }
 }

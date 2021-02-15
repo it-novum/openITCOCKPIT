@@ -590,7 +590,7 @@ class Menu {
                 ))
                 ->addLink(new MenuLink(
                     __('Agents Overview'),
-                    'AgentconnectorsAgent',
+                    'AgentconnectorsPull',
                     'agentconnector',
                     'overview',
                     '',

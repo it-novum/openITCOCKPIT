@@ -257,7 +257,9 @@ class AclDependencies {
         $this
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'loadHostsByString')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'install')
-            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'autotls');
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'autotls')
+            ->dependency('Agentconnector', 'overview', 'Agentconnector', 'pull')
+            ->dependency('Agentconnector', 'overview', 'Agentconnector', 'push');
 
         $this
             ->dependency('Automaps', 'add', 'Automaps', 'getMatchingHostAndServices')
