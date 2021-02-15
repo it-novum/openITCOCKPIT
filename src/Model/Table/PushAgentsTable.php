@@ -121,8 +121,7 @@ class PushAgentsTable extends Table {
         $validator
             ->scalar('checkresults')
             ->maxLength('checkresults', 16777215)
-            ->requirePresence('checkresults', 'create')
-            ->notEmptyString('checkresults');
+            ->allowEmptyString('checkresults');
 
         $validator
             ->dateTime('last_update')
@@ -143,5 +142,33 @@ class PushAgentsTable extends Table {
         $rules->add($rules->existsIn(['agentconfig_id'], 'Agentconfigs'), ['errorField' => 'agentconfig_id']);
 
         return $rules;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['PushAgents.id' => $id]);
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid($uuid) {
+        return $this->exists(['PushAgents.uuid' => $uuid]);
+    }
+
+    /**
+     * @param string $uuid
+     * @param string $password
+     * @return bool
+     */
+    public function existsByUuidAndPassword($uuid, $password) {
+        return $this->exists([
+            'PushAgents.uuid'     => $uuid,
+            'PushAgents.password' => $password
+        ]);
     }
 }

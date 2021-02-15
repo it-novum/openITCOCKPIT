@@ -33,11 +33,13 @@ use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\PushAgentsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\I18n\FrozenDate;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
@@ -528,10 +530,97 @@ class AgentconnectorController extends AppController {
     /**
      * Register new PUSH Agents
      *
-     * @todo implement me
+     * How it works:
+     * Register new Agents:
+     * The Agent send it's UUID and an empty Password to the openITCOCKPIT Server. If no password was generated for the given UUID
+     * openITCOCKPIT will generate a new Password and respond this password to the Agent. Respond with 201
+     *
+     * If an Agent sends an password which is not found in the database, openITCOCKPIT will respond with an 403 Forbidden
      */
     public function register_agent() {
+        $agentUuid = $this->request->getData('uuid', null);
+        $agentPassword = $this->request->getData('password', null);
 
+        if (!$this->request->is('post') || !$this->isJsonRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($agentUuid === null || $agentPassword === null) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', 'Field uuid or password is missing in POST data');
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+
+        if ($agentPassword === '' && $PushAgentsTable->existsByUuid($agentUuid)) {
+            // It this UUID already registered?
+            $this->response = $this->response->withStatus(403);
+            $this->set('error', 'The given UUID is already registed with a password!');
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        if ($agentPassword === '' && !$PushAgentsTable->existsByUuid($agentUuid)) {
+            // New or unknown agent - Create a new password for this Agent and add it to our database
+            $bytes = openssl_random_pseudo_bytes(64, $cstrong);
+            $password = bin2hex($bytes);
+
+            $remoteAddress = null;
+            if (!empty($_SERVER['REMOTE_ADDR'])) {
+                $remoteAddress = $_SERVER['REMOTE_ADDR'];
+            }
+            if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                $remoteAddress = $_SERVER['HTTP_CLIENT_IP'];
+            }
+            $HTTP_X_FORWARDED_FOR = null;
+            if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $HTTP_X_FORWARDED_FOR = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }
+
+
+            $entity = $PushAgentsTable->newEntity([
+                'uuid'                 => $agentUuid,
+                'agentconfig_id'       => null,
+                'password'             => $password,
+                'hostname'             => $this->request->getData('hostname', null),
+                'ipaddress'            => $this->request->getData('ipaddress', null),
+                'remote_address'       => $remoteAddress,
+                'http_x_forwarded_for' => $HTTP_X_FORWARDED_FOR,
+                'last_update'          => new FrozenDate(),
+                'checkresults'         => null
+            ]);
+
+            $PushAgentsTable->save($entity);
+            if ($entity->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $entity->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+            //Send new Password to Agent
+            $this->response = $this->response->withStatus(201);
+            $this->set('uuid', $agentUuid);
+            $this->set('password', $password);
+            $this->viewBuilder()->setOption('serialize', ['uuid', 'password']);
+            return;
+        }
+
+        // Password and Agent UUID given - check if this exists in the database
+        if ($PushAgentsTable->existsByUuidAndPassword($agentUuid, $agentPassword)) {
+            $this->response = $this->response->withStatus(200);
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        $this->response = $this->response->withStatus(403);
+        $this->set('error', 'No Agent found for given UUID and password');
+        $this->viewBuilder()->setOption('serialize', ['error']);
+        return;
     }
 
     /**

@@ -77,7 +77,8 @@ class GolangAgentPush extends AbstractMigration {
                     'null'    => true,
                 ])
                 ->addColumn('checkresults', 'text', [
-                    'default' => '',
+                    'default' => null,
+                    'null'    => true,
                     'limit'   => \Phinx\Db\Adapter\MysqlAdapter::TEXT_MEDIUM
                 ])
                 ->addColumn('last_update', 'datetime', [
