@@ -217,7 +217,7 @@
                                         <a
                                                 type="button"
                                                 class="btn btn-outline-success pull-right waves-effect waves-themed"
-                                                ui-sref="AgentconnectorsCreateServices({hostId: hostId})">
+                                                ui-sref="AgentconnectorsCreateServices({hostId: hostId, testConnection: 'true'})">
                                             <?= __('Continue with service creation'); ?>
                                         </a>
                                     </div>

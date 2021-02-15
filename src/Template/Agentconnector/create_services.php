@@ -111,10 +111,35 @@
                                             </h4>
                                         </legend>
 
+                                        <div class="row"
+                                             ng-show="connection_test && connection_test.status !== 'success'">
+                                            <div class="col-12">
+                                                <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="alert-icon">
+                                                        <span class="icon-stack icon-stack-md">
+                                                            <i class="base-7 icon-stack-3x color-danger-600"></i>
+                                                            <i class="fas fa-exclamation-triangle icon-stack-1x text-white"></i>
+                                                        </div>
+                                                        <div class="flex-1">
+                                                        <span class="h5 color-danger-600">
+                                                            <?= __('Error'); ?>
+                                                        </span>
+                                                            <br>
+                                                            {{connection_test.error}}
+                                                            <div ng-show="connection_test.guzzle_error">
+                                                                {{connection_test.guzzle_error}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="row" ng-show="services.length === 0">
                                             <div class="col-12">
                                                 <div
-                                                    class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                     <div class="d-flex align-items-center">
                                                         <div class="alert-icon">
                                                             <span class="icon-stack icon-stack-md">
@@ -142,7 +167,7 @@
                                         <div class="row">
                                             <div class="col-12" ng-show="saving">
                                                 <div
-                                                    class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                     <div class="d-flex align-items-center">
                                                         <div class="alert-icon">
                                                             <span class="icon-stack icon-stack-md">
@@ -156,10 +181,10 @@
                                                             </span>
                                                             <div class="progress mt-1 progress-xs">
                                                                 <div
-                                                                    class="progress-bar progress-bar-striped progress-bar-animated bg-info-600"
-                                                                    role="progressbar" style="width: 100%"
-                                                                    aria-valuenow="100"
-                                                                    aria-valuemin="0" aria-valuemax="100"></div>
+                                                                        class="progress-bar progress-bar-striped progress-bar-animated bg-info-600"
+                                                                        role="progressbar" style="width: 100%"
+                                                                        aria-valuenow="100"
+                                                                        aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -170,7 +195,7 @@
                                         <div class="row" ng-show="successful">
                                             <div class="col-12">
                                                 <div
-                                                    class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                     <div class="d-flex align-items-center">
                                                         <div class="alert-icon">
                                                             <span class="icon-stack icon-stack-md">
@@ -226,13 +251,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="diskusage"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.disks"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.disks"
-                                                            ng-model="servicesToCreateArrayIndices.disks">
+                                                                id="diskusage"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.disks"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.disks"
+                                                                ng-model="servicesToCreateArrayIndices.disks">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -244,13 +269,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="diskio"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.disk_io"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.disk_io"
-                                                            ng-model="servicesToCreateArrayIndices.disk_io">
+                                                                id="diskio"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.disk_io"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.disk_io"
+                                                                ng-model="servicesToCreateArrayIndices.disk_io">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -266,13 +291,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="net_stats"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.net_stats"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.net_stats"
-                                                            ng-model="servicesToCreateArrayIndices.net_stats">
+                                                                id="net_stats"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.net_stats"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.net_stats"
+                                                                ng-model="servicesToCreateArrayIndices.net_stats">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -285,20 +310,20 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="net_io"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.net_io"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.net_io"
-                                                            ng-model="servicesToCreateArrayIndices.net_io">
+                                                                id="net_io"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.net_io"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.net_io"
+                                                                ng-model="servicesToCreateArrayIndices.net_io">
                                                         </select>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div
-                                                ng-show="services.docker_running || services.docker_cpu || services.docker_memory">
+                                                    ng-show="services.docker_running || services.docker_cpu || services.docker_memory">
                                                 <hr class="hr-text-brands"
                                                     data-content="&#xf395; <?= __('Docker'); ?>">
 
@@ -311,13 +336,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="docker_running"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.docker_running"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.docker_running"
-                                                            ng-model="servicesToCreateArrayIndices.docker_running">
+                                                                id="docker_running"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.docker_running"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.docker_running"
+                                                                ng-model="servicesToCreateArrayIndices.docker_running">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -330,13 +355,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="docker_cpu"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.docker_cpu"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.docker_cpu"
-                                                            ng-model="servicesToCreateArrayIndices.docker_cpu">
+                                                                id="docker_cpu"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.docker_cpu"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.docker_cpu"
+                                                                ng-model="servicesToCreateArrayIndices.docker_cpu">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -349,13 +374,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="docker_memory"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.docker_memory"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.docker_memory"
-                                                            ng-model="servicesToCreateArrayIndices.docker_memory">
+                                                                id="docker_memory"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.docker_memory"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.docker_memory"
+                                                                ng-model="servicesToCreateArrayIndices.docker_memory">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -372,13 +397,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="processes"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.processes"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.processes"
-                                                            ng-model="servicesToCreateArrayIndices.processes">
+                                                                id="processes"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.processes"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.processes"
+                                                                ng-model="servicesToCreateArrayIndices.processes">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -394,13 +419,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="windows_services"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.windows_services"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.windows_services"
-                                                            ng-model="servicesToCreateArrayIndices.windows_services">
+                                                                id="windows_services"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.windows_services"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.windows_services"
+                                                                ng-model="servicesToCreateArrayIndices.windows_services">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -415,13 +440,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="launchd_services"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.launchd_services"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.launchd_services"
-                                                            ng-model="servicesToCreateArrayIndices.launchd_services">
+                                                                id="launchd_services"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.launchd_services"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.launchd_services"
+                                                                ng-model="servicesToCreateArrayIndices.launchd_services">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -436,13 +461,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="systemd_services"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.systemd_services"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.systemd_services"
-                                                            ng-model="servicesToCreateArrayIndices.systemd_services">
+                                                                id="systemd_services"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.systemd_services"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.systemd_services"
+                                                                ng-model="servicesToCreateArrayIndices.systemd_services">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -458,13 +483,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="sensors"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.sensors"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.sensors"
-                                                            ng-model="servicesToCreateArrayIndices.sensors">
+                                                                id="sensors"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.sensors"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.sensors"
+                                                                ng-model="servicesToCreateArrayIndices.sensors">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -480,13 +505,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="libvirt"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.libvirt"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.libvirt"
-                                                            ng-model="servicesToCreateArrayIndices.libvirt">
+                                                                id="libvirt"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.libvirt"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.libvirt"
+                                                                ng-model="servicesToCreateArrayIndices.libvirt">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -502,13 +527,13 @@
                                                     </label>
                                                     <div class="col-12">
                                                         <select
-                                                            id="customchecks"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            multiple="multiple"
-                                                            chosen="services.customchecks"
-                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.customchecks"
-                                                            ng-model="servicesToCreateArrayIndices.customchecks">
+                                                                id="customchecks"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                multiple="multiple"
+                                                                chosen="services.customchecks"
+                                                                ng-options="arrayIndex as service.name for (arrayIndex, service) in services.customchecks"
+                                                                ng-model="servicesToCreateArrayIndices.customchecks">
                                                         </select>
                                                     </div>
                                                 </div>

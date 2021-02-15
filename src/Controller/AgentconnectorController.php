@@ -1039,6 +1039,7 @@ class AgentconnectorController extends AppController {
         }
 
         $hostId = $this->request->getQuery('hostId', 0);
+        $testConnection = $this->request->getQuery('testConnection', 'false') === 'true';
 
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -1174,9 +1175,18 @@ class AgentconnectorController extends AppController {
         $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse, true);
         $services = $AgentResponseToServices->getAllServices();
 
+        $connection_test = null;
+        if ($config['bool']['enable_push_mode'] === false && $testConnection) {
+            // Agent is running in PULL Mode and the user clicked on the First Wizard Page on "Create new services"
+            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+            $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
+        }
+
+
         $this->set('host', $host);
         $this->set('services', $services);
-        $this->viewBuilder()->setOption('serialize', ['host', 'services']);
+        $this->set('connection_test', $connection_test);
+        $this->viewBuilder()->setOption('serialize', ['host', 'services', 'connection_test']);
     }
 
     /****************************

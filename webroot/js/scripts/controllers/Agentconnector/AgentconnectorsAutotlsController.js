@@ -46,7 +46,8 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             $state.go('AgentconnectorsCreateServices', {
-                hostId: $scope.hostId
+                hostId: $scope.hostId,
+                testConnection: 'false'
             }).then(function(){
                 NotyService.scrollTop();
             });

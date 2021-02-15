@@ -2,6 +2,8 @@ angular.module('openITCOCKPIT')
     .controller('AgentconnectorsCreateServicesController', function($scope, $http, $state, $stateParams, RedirectService, NotyService){
 
         $scope.hostId = $stateParams.hostId;
+        $scope.testConnection = ($stateParams.testConnection || 'false') === 'true';
+
         $scope.disableNext = true;
         $scope.runningCheck = true;
 
@@ -18,6 +20,7 @@ angular.module('openITCOCKPIT')
             $http.get("/agentconnector/create_services.json", {
                 params: {
                     hostId: $scope.hostId,
+                    testConnection: $scope.testConnection,
                     'angular': true
                 }
             }).then(function(result){
@@ -25,6 +28,7 @@ angular.module('openITCOCKPIT')
                 $scope.config = result.data.config;
                 $scope.host = result.data.host;
                 $scope.services = result.data.services;
+                $scope.connection_test = result.data.connection_test;
 
                 // Find all services that could be created with an checkbox
                 for(var key in $scope.services){
@@ -89,7 +93,7 @@ angular.module('openITCOCKPIT')
             if(typeof obj === "undefined"){
                 return 0;
             }
-            
+
             return Object.keys(obj).length;
         };
 
