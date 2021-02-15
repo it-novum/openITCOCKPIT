@@ -123,8 +123,8 @@ class ServicetemplatesTable extends Table {
         ]);
 
         $this->hasOne('Agentchecks', [
-            'foreignKey' => 'servicetemplate_id',
-        ]);
+            'foreignKey' => 'servicetemplate_id'
+        ])->setDependent(true);
 
         $this->hasMany('Customvariables', [
             'conditions'   => [
@@ -605,7 +605,7 @@ class ServicetemplatesTable extends Table {
             ->disableHydration()
             ->first();
 
-        if(!$formatAsCake2){
+        if (!$formatAsCake2) {
             return $query;
         }
         return $this->formatFirstResultAsCake2($query, true);
