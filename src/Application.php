@@ -43,7 +43,7 @@ use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
 use Cake\Http\Middleware\BodyParserMiddleware;
-use Cake\Http\Middleware\SessionCsrfProtectionMiddleware;
+use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
@@ -104,7 +104,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
      */
     public function routes($routes): void {
         // Register scoped middleware for use in routes.php
-        $routes->registerMiddleware('csrf', new SessionCsrfProtectionMiddleware([
+        $routes->registerMiddleware('csrf', new CsrfProtectionMiddleware([
             'httponly' => true
         ]));
 
