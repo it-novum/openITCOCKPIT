@@ -34,7 +34,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fas fa-tools"></i> <?php echo __('Wizard'); ?>
+        <i class="fas fa-magic"></i> <?php echo __('Wizard'); ?>
     </li>
 </ol>
 

@@ -75,6 +75,22 @@ class AgentconnectorController extends AppController {
      *
      */
 
+    /*********************************
+     *    AGENTS OVERVIEW METHODS    *
+     *********************************/
+
+    public function overview() {
+
+    }
+
+    public function pull() {
+
+    }
+
+    public function push() {
+
+    }
+
     /****************************
      *      Wizard METHODS      *
      ****************************/
