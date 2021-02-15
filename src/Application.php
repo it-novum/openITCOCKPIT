@@ -182,7 +182,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             'rememberMeField' => 'remember_me',
             'fields'          => $fields,
             'cookie'          => [
-                'expire' => $expireAt
+                'expires' => $expireAt
             ]
         ]);
         $service->loadAuthenticator('Authentication.Session');
