@@ -48,6 +48,8 @@ class AgentconfigsTable extends Table {
         $this->belongsTo('Hosts', [
             'foreignKey' => 'host_id'
         ]);
+
+        $this->hasOne('PushAgents');
     }
 
     /**
