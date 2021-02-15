@@ -48,12 +48,13 @@ class GolangAgentPush extends AbstractMigration {
                     'limit'   => 37,
                     'null'    => false,
                 ])
-                /*->addColumn('agentconfig_id', 'string', [
+                ->addColumn('agentconfig_id', 'string', [
                     'default' => null,
                     'null'    => true,
-                ])*/
+                ])
                 ->addColumn('password', 'string', [
-                    'null' => false,
+                    'limit' => 255,
+                    'null'  => false,
                 ])
                 ->addColumn('hostname', 'string', [
                     'default' => null,
@@ -80,7 +81,7 @@ class GolangAgentPush extends AbstractMigration {
                     'limit'   => \Phinx\Db\Adapter\MysqlAdapter::TEXT_MEDIUM
                 ])
                 ->addColumn('last_update', 'datetime', [
-                    'default' => null,
+                    'default' => 'CURRENT_TIMESTAMP',
                     'limit'   => null,
                     'null'    => false,
                 ])
@@ -94,6 +95,18 @@ class GolangAgentPush extends AbstractMigration {
                     'limit'   => null,
                     'null'    => false,
                 ])
+                ->addIndex(
+                    [
+                        'uuid',
+                    ],
+                    ['unique' => true]
+                )
+                ->addIndex(
+                    [
+                        'uuid',
+                        'agentconfig_id'
+                    ]
+                )
                 ->create();
         }
 
