@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="AgentconnectorsAgent">
+        <a ui-sref="AgentconnectorsWizard">
             <i class="fa fa-user-secret"></i> <?php echo __('openITCOCKPIT Agent'); ?>
         </a>
     </li>
@@ -179,7 +179,7 @@
                                         <?php endif; ?>
                                         <button data-toggle="dropdown" type="button"
                                                 class="btn btn-default dropdown-toggle btn-lower-padding"><i
-                                                class="caret"></i></button>
+                                                    class="caret"></i></button>
                                         <div class="dropdown-menu dropdown-menu-right"
                                              id="menuHack-{{agentcheck.id}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'agentchecks')): ?>
@@ -204,14 +204,13 @@
                             </tr>
                             </tbody>
                         </table>
-                    </div>
-                    <div class="row margin-top-10 margin-bottom-10">
-                        <div class="row margin-top-10 margin-bottom-10" ng-show="agentchecks.length == 0">
-                            <div class="col-xs-12 text-center txt-color-red italic">
+                        <div class="margin-top-10" ng-show="agentchecks.length == 0">
+                            <div class="text-center text-danger italic">
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
                     </div>
+
 
                     <div class="row margin-top-10 margin-bottom-10">
                         <div class="col-xs-12 col-md-2 text-muted text-center">
@@ -228,12 +227,6 @@
                                 <i class="fa fa-lg fa-square"></i>
                                 <?php echo __('Undo selection'); ?>
                             </span>
-                        </div>
-                        <div class="col-xs-12 col-md-2">
-                            <a ui-sref="ServicetemplatesCopy({ids: linkForCopy()})" class="a-clean">
-                                <i class="fas fa-lg fa-files-o"></i>
-                                <?php echo __('Copy'); ?>
-                            </a>
                         </div>
                         <?php if ($this->Acl->hasPermission('delete', 'agentchecks')): ?>
                             <div class="col-xs-12 col-md-2 txt-color-red">

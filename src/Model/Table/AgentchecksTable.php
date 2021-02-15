@@ -92,6 +92,7 @@ class AgentchecksTable extends Table {
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->existsIn(['servicetemplate_id'], 'Servicetemplates'));
+        $rules->add($rules->isUnique(['name']));
 
         return $rules;
     }

@@ -71,9 +71,6 @@ class AclDependencies {
     public function __construct() {
         // Add actions that should always be allowed.
         $this
-            ->allow('Agentchecks', 'getAgentchecksForMapping');
-
-        $this
             ->allow('Angular', 'index')
             ->allow('Angular', 'paginator')
             ->allow('Angular', 'scroll')
@@ -261,7 +258,6 @@ class AclDependencies {
             ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'loadHostsByString')
             ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'install')
             ->dependency('Agentconnector', 'wizard', 'Agentconfigs', 'autotls');
-
 
 
         //old delete
