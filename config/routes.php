@@ -21,7 +21,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-use Cake\Http\Middleware\SessionCsrfProtectionMiddleware;
+use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Routing\Route\InflectedRoute;
 use Cake\Routing\RouteBuilder;
 
@@ -54,7 +54,7 @@ $routes->setExtensions(['json', 'html', 'pdf', 'png', 'zip']);
 
 $routes->scope('/', function (RouteBuilder $builder) {
     // Register scoped middleware for in scopes.
-    $builder->registerMiddleware('csrf', new SessionCsrfProtectionMiddleware([
+    $builder->registerMiddleware('csrf', new CsrfProtectionMiddleware([
         'httponly' => true,
     ]));
 
