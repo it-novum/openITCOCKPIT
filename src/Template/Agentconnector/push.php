@@ -38,7 +38,8 @@
     </li>
 </ol>
 
-<massdelete></massdelete>
+<massdelete
+        help="<?= __('By deleting, the corresponding openITCOCKPIT Agent is not able to send data to the openITCOCKPIT server anymore.'); ?>"></massdelete>
 
 <div class="row">
     <div class="col-xl-12">
@@ -121,6 +122,10 @@
                                 <th class="no-sort sorting_disabled width-15">
                                     <i class="fa fa-check-square"></i>
                                 </th>
+                                <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                    <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
+                                    <?php echo __('Assigned host'); ?>
+                                </th>
                                 <th class="no-sort" ng-click="orderBy('PushAgents.uuid')">
                                     <i class="fa" ng-class="getSortClass('PushAgents.uuid')"></i>
                                     <?php echo __('Agent UUID'); ?>
@@ -136,10 +141,6 @@
                                 <th class="no-sort" ng-click="orderBy('PushAgents.hostname')">
                                     <i class="fa" ng-class="getSortClass('PushAgents.hostname')"></i>
                                     <?php echo __('Remote address'); ?>
-                                </th>
-                                <th class="no-sort" ng-click="orderBy('Hosts.name')">
-                                    <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
-                                    <?php echo __('Assigned host'); ?>
                                 </th>
 
                                 <th class="no-sort" ng-click="orderBy('PushAgents.last_update')">
@@ -163,6 +164,15 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <a ui-sref="HostsBrowser({id:agent.Hosts.id})">
+                                            {{ agent.Hosts.name}}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ agent.Hosts.name}}
+                                    <?php endif; ?>
+                                </td>
+                                <td>
                                     {{ agent.uuid}}
                                 </td>
                                 <td>
@@ -175,22 +185,13 @@
                                     {{agent.http_x_forwarded_for?agent.http_x_forwarded_for:agent.remote_address}}
                                 </td>
                                 <td>
-                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                        <a ui-sref="HostsBrowser({id:agent.Hosts.id})">
-                                            {{ agent.Hosts.name}}
-                                        </a>
-                                    <?php else: ?>
-                                        {{ agent.Hosts.name}}
-                                    <?php endif; ?>
-                                </td>
-                                <td>
                                     {{ agent.last_update}}
                                 </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                                            <a ui-sref="AgentconnectorsConfig({hostId: agent.host.id})"
-                                               ng-if="agent.allow_edit && agent.host.id"
+                                            <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard'}}"
+                                               ng-if="agent.allow_edit"
                                                class="btn btn-default btn-lower-padding">
                                                 <i class="fa fa-cog"></i>
                                             </a>
@@ -211,11 +212,18 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                                                <a ui-sref="AgentconnectorsConfig({hostId: agent.host.id})"
-                                                   ng-if="agent.allow_edit && agent.host.id"
+                                                <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard'}}"
+                                                   ng-if="agent.allow_edit"
                                                    class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('showOutput', 'agentconnector')): ?>
+                                                <a ui-sref="AgentconnectorsShowOutput({mode: 'push',id: agent.Hosts.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fab fa-js"></i>
+                                                    <?php echo __('Show received data'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'agentconnector')): ?>

@@ -38,7 +38,8 @@
     </li>
 </ol>
 
-<massdelete></massdelete>
+<massdelete
+        help="<?= __('Only the configuration for the openITCOCKPIT Agent will be deleted. Not the host itself.'); ?>"></massdelete>
 
 <div class="row">
     <div class="col-xl-12">

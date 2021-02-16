@@ -80,7 +80,11 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(agent){
             var object = {};
-            object[agent.id] = agent.host.name;
+            if(agent.Hosts.name !== null){
+                object[agent.id] = agent.Hosts.name;
+            }else{
+                object[agent.id] = agent.uuid;
+            }
             return object;
         };
 
@@ -91,7 +95,11 @@ angular.module('openITCOCKPIT')
                 for(var id in selectedObjects){
                     if(id == $scope.agents[key].id){
                         if($scope.agents[key].allow_edit === true){
-                            objects[id] = $scope.agents[key].host.name;
+                            if($scope.agents[key].Hosts.name !== null){
+                                objects[id] = $scope.agents[key].Hosts.name;
+                            }else{
+                                objects[id] = $scope.agents[key].uuid;
+                            }
                         }
                     }
                 }
