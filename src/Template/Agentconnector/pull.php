@@ -195,6 +195,13 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('showOutput', 'agentconnector')): ?>
+                                                <a ui-sref="AgentconnectorsShowOutput({mode: 'pull',id: agent.host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fab fa-js"></i>
+                                                    <?php echo __('Query Agent'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'agentconnector')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"

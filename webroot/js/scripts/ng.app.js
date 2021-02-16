@@ -221,6 +221,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconnectorsPushController"
             })
 
+            .state('AgentconnectorsShowOutput', {
+                url: '/agentconnector/showOutput/:mode/:id',
+                templateUrl: "/agentconnector/showOutput.html",
+                controller: "AgentconnectorsShowOutputController"
+            })
+
             .state('BackupsIndex', {
                 url: '/backups/index',
                 templateUrl: "/backups/index.html",

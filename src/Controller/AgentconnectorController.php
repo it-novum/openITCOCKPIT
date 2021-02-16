@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\Form\AgentConfigurationForm;
 use App\Model\Entity\Changelog;
+use App\Model\Entity\Host;
 use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
@@ -129,6 +130,95 @@ class AgentconnectorController extends AppController {
 
     public function push() {
 
+    }
+
+    public function showOutput() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        $isPullMode = $this->request->getQuery('mode', 'pull') === 'pull';
+        $id = $this->request->getQuery('id', 0);
+
+        $host = [];
+        $outputAsJson = [];
+        $config = [];
+        $pushAgentUuid = null;
+
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if ($isPullMode === true) {
+            // The Agent is running in Pull mode so we have an host association and an agent config.
+
+            $hostId = $id;
+
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException();
+            }
+
+            /** @var Host $host */
+            $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+            if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+                $this->render403();
+                return;
+            }
+
+            if (!$AgentconfigsTable->existsByHostId($host->id)) {
+                throw new NotFoundException();
+            }
+
+            $record = $AgentconfigsTable->getConfigByHostId($hostId);
+            $AgentConfiguration = new AgentConfiguration();
+            $config = $AgentConfiguration->unmarshal($record->config);
+
+            // Send HTTP/s request to Agent to query/pull the data
+            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+            $outputAsArray = $AgentHttpClient->getResults();
+            $outputAsJson = json_encode($outputAsArray, JSON_PRETTY_PRINT);
+        } else {
+            // Agent is running in Push mode. Maybe has no config and host yet
+            /** @var PushAgentsTable $PushAgentsTable */
+            $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+
+            $pushAgentId = $id;
+            if (!$PushAgentsTable->existsById($pushAgentId)) {
+                throw new NotFoundException();
+            }
+
+            $record = $PushAgentsTable->get($pushAgentId);
+
+            //Has this agent already a configuration?
+            if ($record->agentconfig_id !== null && $AgentconfigsTable->existsById($record->agentconfig_id)) {
+                $configEntity = $AgentconfigsTable->get($record->agentconfig_id);
+
+                /** @var Host $host */
+                $host = $HostsTable->getHostByIdForPermissionCheck($configEntity->host_id);
+                if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+                    $this->render403();
+                    return;
+                }
+
+                $AgentConfiguration = new AgentConfiguration();
+                $config = $AgentConfiguration->unmarshal($configEntity->config);
+            }
+
+            $checkresults = $record->checkresults;
+            if (empty($checkresults)) {
+                $checkresults = '[]';
+            }
+
+            $outputAsJson = json_encode(json_decode($checkresults, true), JSON_PRETTY_PRINT);
+        }
+
+        $this->set('host', $host);
+        $this->set('config', $config);
+        $this->set('outputAsJson', $outputAsJson);
+        $this->set('pushAgentUuid', $record->uuid);
+        $this->viewBuilder()->setOption('serialize', ['host', 'config', 'outputAsJson', 'pushAgentUuid']);
     }
 
     /****************************
