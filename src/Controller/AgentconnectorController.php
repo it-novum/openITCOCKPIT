@@ -673,7 +673,7 @@ class AgentconnectorController extends AppController {
             return;
         }
 
-        $this->response = $this->response->withStatus(403);
+        $this->response = $this->response->withStatus(404);
         $this->set('error', 'No Agent found for given UUID and password');
         $this->viewBuilder()->setOption('serialize', ['error']);
         return;
