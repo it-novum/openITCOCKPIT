@@ -48,7 +48,24 @@
                     <?php echo __('Agents overview'); ?>
                     <span class="fw-300"><i><?php echo __('Pull mode'); ?></i></span>
                 </h2>
+
                 <div class="panel-toolbar">
+                    <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
+                        <?php if ($this->Acl->hasPermission('overview', 'agentconnector')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" ui-sref="AgentconnectorsPull" role="tab">
+                                    <i class="fas fa-download"></i> <?php echo __('Pull'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if ($this->Acl->hasPermission('overview', 'agentconnector')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" ui-sref="AgentconnectorsPush" role="tab">
+                                    <i class="fas fa-upload"></i>&nbsp; <?php echo __('Push'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>

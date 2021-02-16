@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\PushAgent;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -34,7 +35,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 /**
  * PushAgents Model
@@ -58,6 +60,8 @@ use itnovum\openITCOCKPIT\Core\FileDebugger;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class PushAgentsTable extends Table {
+    use PaginationAndScrollIndexTrait;
+
     /**
      * Initialize method
      *
@@ -75,6 +79,8 @@ class PushAgentsTable extends Table {
 
         $this->belongsTo('Agentconfigs', [
             'foreignKey' => 'agentconfig_id',
+            'joinType'   => 'LEFT'
+
         ]);
     }
 
@@ -215,4 +221,74 @@ class PushAgentsTable extends Table {
         return $query->firstOrFail();
     }
 
+    /**
+     * @param GenericFilter $GenericFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getPushAgents(GenericFilter $GenericFilter, PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
+        $query = $this->find();
+        $query->select([
+            'PushAgents.id',
+            'PushAgents.uuid',
+            'PushAgents.hostname',
+            'Hosts.name',
+            'Hosts.id',
+            'Agentconfigs.host_id',
+            'PushAgents.ipaddress',
+            'PushAgents.remote_address',
+            'PushAgents.http_x_forwarded_for',
+            'PushAgents.checkresults',
+            'PushAgents.last_update'
+        ])
+            ->leftJoin(
+                ['Agentconfigs' => 'agentconfigs'],
+                ['PushAgents.agentconfig_id = Agentconfigs.id']
+            )
+            ->leftJoin(
+                ['Hosts' => 'hosts'],
+                ['Agentconfigs.host_id = Hosts.id']
+            );
+        if (!empty($MY_RIGHTS)) {
+            $placehoders = [];
+            foreach ($MY_RIGHTS as $index => $MY_RIGHT) {
+                $placehoders[] = sprintf(':myright%s', $index);
+            }
+
+            // SQL: IF(Hosts.id IS NOT NULL, `HostsToContainersSharing`.`container_id` in (1, 15, 99999), 1=1)
+            $exp = $query->newExpr();
+            $exp->add("IF(Hosts.id IS NOT NULL, `HostsToContainersSharing`.`container_id` IN (" . implode(', ', $placehoders) . "), 1=1) ");
+
+            foreach ($MY_RIGHTS as $index => $MY_RIGHT) {
+                $query->bind(
+                    sprintf(':myright%s', $index),
+                    $MY_RIGHT,
+                    'integer'
+                );
+            }
+            $query->select(['container_ids' => $query->newExpr('GROUP_CONCAT(DISTINCT HostsToContainersSharing.container_id)')])
+                ->leftJoin(
+                    ['HostsToContainersSharing' => 'hosts_to_containers'],
+                    ['HostsToContainersSharing.host_id = Hosts.id']
+
+                )->where($exp);
+        }
+
+        $query->where($GenericFilter->genericFilters());
+        $query->disableHydration();
+        $query->order($GenericFilter->getOrderForPaginator('Hosts.name', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+        return $result;
+    }
 }

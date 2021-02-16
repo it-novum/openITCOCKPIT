@@ -40,7 +40,6 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\I18n\FrozenDate;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -53,6 +52,7 @@ use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
@@ -128,7 +128,45 @@ class AgentconnectorController extends AppController {
     }
 
     public function push() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+
+
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Hosts.name'
+            ]
+        ]);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $GenericFilter->getPage());
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $agents = $PushAgentsTable->getPushAgents($GenericFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($agents as $index => $agent) {
+            $agents[$index]['last_update'] = $UserTime->format($agent['last_update']);
+            $agents[$index]['allow_edit'] = true;
+            if (!empty($agent['host']) && $this->hasRootPrivileges === false) {
+
+                $containerIds = explode(',', $agent['container_ids']);
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
+
+                $agents[$index]['allow_edit'] = $allowEdit;
+            }
+        }
+
+        $this->set('agents', $agents);
+        $this->viewBuilder()->setOption('serialize', ['agents']);
     }
 
     /****************************
