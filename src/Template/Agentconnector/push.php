@@ -54,14 +54,16 @@
                         <?php if ($this->Acl->hasPermission('overview', 'agentconnector')): ?>
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" ui-sref="AgentconnectorsPull" role="tab">
-                                    <i class="fas fa-download"></i> <?php echo __('Pull'); ?>
+                                    <i class="fas fa-download"></i>&nbsp;
+                                    <?php echo __('Pull'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('overview', 'agentconnector')): ?>
                             <li class="nav-item">
                                 <a class="nav-link  active" data-toggle="tab" ui-sref="AgentconnectorsPush" role="tab">
-                                    <i class="fas fa-upload"></i>&nbsp; <?php echo __('Push'); ?>
+                                    <i class="fas fa-upload"></i>&nbsp;
+                                    <?php echo __('Push'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
