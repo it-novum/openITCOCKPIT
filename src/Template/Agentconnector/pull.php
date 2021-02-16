@@ -106,10 +106,14 @@
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Host name'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Timeperiods.description')">
-                                    <i class="fa" ng-class="getSortClass('Timeperiods.description')"></i>
-                                    <?php echo __('Description'); ?>
+                                <th class="no-sort" ng-click="orderBy('Agentconfigs.port')">
+                                    <i class="fa" ng-class="getSortClass('Agentconfigs.port')"></i>
+                                    <?php echo __('Port'); ?>
                                 </th>
+                                <th class="no-sort">
+                                    <?php echo __('Connection type'); ?>
+                                </th>
+
                                 <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
                                 </th>
@@ -134,7 +138,31 @@
                                         {{ agent.host.name}}
                                     <?php endif; ?>
                                 </td>
-                                <td>****</td>
+                                <td>
+                                    {{ agent.port}}
+                                </td>
+                                <td>
+                                    <span class="badge badge-success"
+                                          ng-show="agent.use_https && !agent.insecure">
+                                        <?php echo __('HTTPS'); ?>
+                                    </span>
+                                    <span class="badge badge-warning"
+                                          ng-show="agent.use_https && agent.insecure">
+                                        <?php echo __('HTTPS (insecure)'); ?>
+                                    </span>
+                                    <span class="badge badge-success"
+                                          ng-show="agent.use_autossl && agent.autossl_successful">
+                                        <?php echo __('Auto-TLS'); ?>
+                                    </span>
+                                    <span class="badge badge-danger"
+                                          ng-show="agent.use_autossl && !agent.autossl_successful">
+                                        <?php echo __('Auto-TLS certificate exchange error'); ?>
+                                    </span>
+                                    <span class="badge badge-danger"
+                                          ng-show="!agent.use_https && !agent.use_autossl">
+                                        <?php echo __('HTTP'); ?>
+                                    </span>
+                                </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
