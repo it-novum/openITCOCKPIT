@@ -766,7 +766,7 @@ class AgentconnectorController extends AppController {
         }
 
         /** @var AgentconfigsTable $AgentconfigsTable */
-        $AgentconfigsTable = TableRegistry::getTableLocator()->get('AgentconfigsTable');
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
         if (!$AgentconfigsTable->existsById($id)) {
             throw new NotFoundException(__('Agent config not found'));
@@ -774,7 +774,7 @@ class AgentconnectorController extends AppController {
 
         $agentConfig = $AgentconfigsTable->get($id, [
             'contain' => [
-                'Host'
+                'Hosts'
             ]
         ]);
         if (!$this->allowedByContainerId($agentConfig->get('host')->get('container_id'))) {
