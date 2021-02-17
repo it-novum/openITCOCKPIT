@@ -170,6 +170,44 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['agents']);
     }
 
+    /**
+     * @param null $id
+     */
+    public function delete($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        if (!$AgentconfigsTable->existsById($id)) {
+            throw new NotFoundException(__('Agent config not found'));
+        }
+
+        $agentConfig = $AgentconfigsTable->get($id, [
+            'contain' => [
+                'Hosts'
+            ]
+        ]);
+        if (!$this->allowedByContainerId($agentConfig->get('host')->get('container_id'))) {
+            $this->render403();
+            return;
+        }
+
+        if ($AgentconfigsTable->delete($agentConfig)) {
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+
+            return;
+        }
+
+        $this->response = $this->response->withStatus(400);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        return;
+    }
+
     public function showOutput() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
@@ -883,43 +921,5 @@ class AgentconnectorController extends AppController {
         $this->response = $this->response->withStatus(400);
         $this->set('error', 'Invalid credentials or host not found');
         $this->viewBuilder()->setOption('serialize', ['error']);
-    }
-
-    /**
-     * @param null $id
-     */
-    public function delete($id = null) {
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-
-        /** @var AgentconfigsTable $AgentconfigsTable */
-        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
-
-        if (!$AgentconfigsTable->existsById($id)) {
-            throw new NotFoundException(__('Agent config not found'));
-        }
-
-        $agentConfig = $AgentconfigsTable->get($id, [
-            'contain' => [
-                'Hosts'
-            ]
-        ]);
-        if (!$this->allowedByContainerId($agentConfig->get('host')->get('container_id'))) {
-            $this->render403();
-            return;
-        }
-
-        if ($AgentconfigsTable->delete($agentConfig)) {
-            $this->set('success', true);
-            $this->viewBuilder()->setOption('serialize', ['success']);
-
-            return;
-        }
-
-        $this->response = $this->response->withStatus(400);
-        $this->set('success', false);
-        $this->viewBuilder()->setOption('serialize', ['success']);
-        return;
     }
 }
