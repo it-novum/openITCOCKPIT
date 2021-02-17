@@ -259,7 +259,8 @@ class AclDependencies {
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'install')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'autotls')
             ->dependency('Agentconnector', 'overview', 'Agentconnector', 'pull')
-            ->dependency('Agentconnector', 'overview', 'Agentconnector', 'push');
+            ->dependency('Agentconnector', 'overview', 'Agentconnector', 'push')
+            ->dependency('Agentconnector', 'delete', 'Agentconnector', 'delete_push_agent');
 
         $this
             ->dependency('Automaps', 'add', 'Automaps', 'getMatchingHostAndServices')

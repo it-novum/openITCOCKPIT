@@ -19,7 +19,7 @@ angular.module('openITCOCKPIT')
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
-        $scope.deleteUrl = '/agentconnector/delete/';
+        $scope.deleteUrl = '/agentconnector/delete_push_agent/';
 
         $scope.init = true;
         $scope.showFilter = false;

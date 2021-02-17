@@ -55,7 +55,6 @@ use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
@@ -196,6 +195,63 @@ class AgentconnectorController extends AppController {
         }
 
         if ($AgentconfigsTable->delete($agentConfig)) {
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+
+            return;
+        }
+
+        $this->response = $this->response->withStatus(400);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        return;
+    }
+
+    /**
+     * @param null $id
+     */
+    public function delete_push_agent($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        if (!$PushAgentsTable->existsById($id)) {
+            throw new NotFoundException(__('Push Agent config not found'));
+        }
+
+        $pushAgent = $PushAgentsTable->get($id, [
+            'contain' => [
+                'Agentconfigs'
+            ]
+        ]);
+
+        if (!empty($pushAgent->get('agentconfig'))) {
+            // PushAgent has an host assignment via the Agentconfig.
+            // Check permissions if the user is allowed to delete it.
+
+            $hostId = $pushAgent->get('agentconfig')->get('host_id');
+            $host = $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+
+            if (!$this->allowedByContainerId($host->getContainerIds(), true)) {
+                $this->render403();
+                return;
+            }
+        }
+
+        // If the PushAgent has no host assignment anyone can delete it
+        $agentConfig = $pushAgent->get('agentconfig');
+
+        if ($PushAgentsTable->delete($pushAgent)) {
+            if (!empty($agentConfig)) {
+                $AgentconfigsTable->delete($agentConfig);
+            }
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
 
