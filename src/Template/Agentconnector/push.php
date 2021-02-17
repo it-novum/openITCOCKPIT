@@ -193,7 +193,7 @@
                                             <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard'}}"
                                                ng-if="agent.allow_edit"
                                                class="btn btn-default btn-lower-padding">
-                                                <i class="fa fa-cog"></i>
+                                                <i ng-class="{'fa fa-cog': agent.Hosts.id, 'fas fa-link': !agent.Hosts.id}"></i>
                                             </a>
                                             <a href="javascript:void(0);"
                                                ng-if="!agent.allow_edit"
@@ -215,8 +215,13 @@
                                                 <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard'}}"
                                                    ng-if="agent.allow_edit"
                                                    class="dropdown-item">
-                                                    <i class="fa fa-cog"></i>
-                                                    <?php echo __('Edit'); ?>
+                                                    <i ng-class="{'fa fa-cog': agent.Hosts.id, 'fas fa-link': !agent.Hosts.id}"></i>
+                                                    <span ng-show="agent.Hosts.id">
+                                                        <?php echo __('Edit'); ?>
+                                                    </span>
+                                                    <span ng-hide="agent.Hosts.id">
+                                                        <?php echo __('Assign to host'); ?>
+                                                    </span>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('showOutput', 'agentconnector')): ?>
