@@ -164,13 +164,18 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                        <a ui-sref="HostsBrowser({id:agent.Hosts.id})">
+                                    <span ng-show="agent.Hosts.name">
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            <a ui-sref="HostsBrowser({id:agent.Hosts.id})">
+                                                {{ agent.Hosts.name}}
+                                            </a>
+                                        <?php else: ?>
                                             {{ agent.Hosts.name}}
-                                        </a>
-                                    <?php else: ?>
-                                        {{ agent.Hosts.name}}
-                                    <?php endif; ?>
+                                        <?php endif; ?>
+                                    </span>
+                                    <span ng-show="agent.Hosts.name === null" class="italic text-secondary">
+                                        <?= __('No host assignment defined'); ?>
+                                    </span>
                                 </td>
                                 <td>
                                     {{ agent.uuid}}
