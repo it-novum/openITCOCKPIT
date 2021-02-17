@@ -13,7 +13,9 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Hosts: {
                     name: ''
-                }
+                },
+                host_assignment: false,
+                no_host_assignment: false
             };
         };
         /*** Filter end ***/
@@ -32,6 +34,10 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
+            var hasHostAssignment = '';
+            if($scope.filter.host_assignment ^ $scope.filter.no_host_assignment){
+                hasHostAssignment = $scope.filter.host_assignment === true;
+            }
 
             var params = {
                 'angular': true,
@@ -39,7 +45,8 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Hosts.name]': $scope.filter.Hosts.name
+                'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[hasHostAssignment]': hasHostAssignment
             };
 
             $http.get("/agentconnector/push.json", {

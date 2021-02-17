@@ -258,6 +258,7 @@ class AclDependencies {
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'loadHostsByString')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'install')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'autotls')
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'select_agent')
             ->dependency('Agentconnector', 'overview', 'Agentconnector', 'pull')
             ->dependency('Agentconnector', 'overview', 'Agentconnector', 'push')
             ->dependency('Agentconnector', 'delete', 'Agentconnector', 'delete_push_agent');

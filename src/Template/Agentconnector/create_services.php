@@ -68,7 +68,12 @@
                 </div>
                 <div class="col-xs-12 col-md-4 col-lg-2 bg-success text-white">
                     <i class="fas fa-check"></i>
-                    <?= __('Exchange TLS Certificate') ?>
+                    <span ng-hide="config.bool.enable_push_mode">
+                        <?= __('Exchange TLS Certificate') ?>
+                    </span>
+                    <span ng-show="config.bool.enable_push_mode">
+                        <?= __('Select Agent') ?>
+                    </span>
                 </div>
                 <div class="col-xs-12 col-md-4 col-lg-2 text-white"
                      ng-class="{'bg-success':successful, 'bg-primary':!successful}">
@@ -79,6 +84,14 @@
                     <div class="btn-group btn-group-xs w-100">
                         <a type="button" class="btn btn-xs btn-primary waves-effect waves-themed"
                            ui-sref="AgentconnectorsAutotls({'hostId': hostId})"
+                           ng-if="config.bool.enable_push_mode === false"
+                           title="<?= __('Back') ?>"
+                           style="border-radius: 0; height: 22px;">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                        <a type="button" class="btn btn-xs btn-primary waves-effect waves-themed"
+                           ui-sref="AgentconnectorsSelectAgent({'hostId': hostId})"
+                           ng-if="config.bool.enable_push_mode"
                            title="<?= __('Back') ?>"
                            style="border-radius: 0; height: 22px;">
                             <i class="fa fa-arrow-left"></i>

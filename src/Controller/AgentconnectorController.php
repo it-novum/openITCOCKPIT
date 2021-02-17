@@ -141,6 +141,9 @@ class AgentconnectorController extends AppController {
         $GenericFilter->setFilters([
             'like' => [
                 'Hosts.name'
+            ],
+            'bool' => [
+                'hasHostAssignment'
             ]
         ]);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $GenericFilter->getPage());
@@ -590,12 +593,153 @@ class AgentconnectorController extends AppController {
     }
 
     // Step 4 (In Push mode)
-    public function map_agent() {
-        if (!$this->isAngularJsRequest()) {
+    public function select_agent() {
+        if (!$this->isJsonRequest()) {
             return;
         }
 
-        // To be done
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+
+        if ($this->request->is('get')) {
+            $hostId = $this->request->getQuery('hostId', 0);
+        } else {
+            $hostId = (int)$this->request->getData('pushagent.host_id', 0);
+        }
+
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException();
+        }
+
+        $host = $HostsTable->get($hostId);
+
+        if (!$AgentconfigsTable->existsByHostId($host->id)) {
+            throw new NotFoundException();
+        }
+
+        $config = $AgentconfigsTable->getConfigByHostId($host->id);
+
+        if ($this->request->is('get')) {
+            $selectedPushAgentId = 0;
+
+            $pushAgents = $PushAgentsTable->getPushAgentsForAssignments($config->id);
+
+            $hostnameMatchingPercentages = [];
+            foreach ($pushAgents as $index => $pushAgent) {
+                if ($pushAgent['agentconfig_id'] == $config->id) {
+                    // The user already assigned this Agent to an Agent Config
+                    $selectedPushAgentId = $pushAgent['id'];
+                    break;
+                }
+
+                // Use the best matching host name to guess the right agent
+                $ip = $pushAgent['ipaddress']; // did the agent send us an IP?
+                if (empty($ip)) {
+                    $ip = $pushAgent['http_x_forwarded_for']; // Agent used a proxy server?
+                    if (empty($ip)) {
+                        $ip = $pushAgent['remote_address']; // This is the IP we recived data from the agent
+                    }
+                }
+
+
+                if ($ip === $host->address) {
+                    $selectedPushAgentId = $pushAgent['id'];
+                    break;
+                }
+
+                if (!empty($pushAgent['hostname'])) {
+                    $sim = similar_text($host->name, $pushAgent['hostname'], $percent);
+                    $hostnameMatchingPercentages[$index] = $percent;
+                }
+            }
+
+            if ($selectedPushAgentId === 0 && !empty($hostnameMatchingPercentages)) {
+                $max = 0;
+                $indexToUse = 0;
+                foreach ($hostnameMatchingPercentages as $index => $percentage) {
+                    if ($percentage > $max) {
+                        $max = $percentage;
+                        $indexToUse = $index;
+                    }
+                }
+
+                if (isset($pushAgents[$indexToUse])) {
+                    $selectedPushAgentId = $pushAgents[$indexToUse]['id'];
+                }
+            }
+
+            $pushAgentsForSelectbox = [];
+            foreach ($pushAgents as $pushAgent) {
+                $ip = $pushAgent['ipaddress']; // did the agent send us an IP?
+                if (empty($ip)) {
+                    $ip = $pushAgent['http_x_forwarded_for']; // Agent used a proxy server?
+                    if (empty($ip)) {
+                        $ip = $pushAgent['remote_address']; // This is the IP we recived data from the agent
+                    }
+                }
+
+                $name = $ip;
+
+                if (!empty($pushAgent['hostname'])) {
+                    $name = sprintf('%s (%s)', $pushAgent['hostname'], $ip);
+                }
+
+
+                $pushAgentsForSelectbox[] = [
+                    'id'   => $pushAgent['id'],
+                    'name' => $name
+                ];
+            }
+
+            $this->set('config', $config);
+            $this->set('host', $host);
+            $this->set('pushAgents', $pushAgentsForSelectbox);
+            $this->set('selectedPushAgentId', $selectedPushAgentId);
+
+            $this->viewBuilder()->setOption('serialize', ['config', 'host', 'pushAgents', 'selectedPushAgentId']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $pushAgentId = (int)$this->request->getData('pushagent.id', 0);
+
+            if (!$PushAgentsTable->existsById($pushAgentId)) {
+                throw new NotFoundException();
+            }
+
+            // Was this Host already assigned to an Agent?
+            $oldPushAgent = $PushAgentsTable->getByAgentconfigId($config->id);
+
+            if (!is_null($oldPushAgent)) {
+                if ($pushAgentId !== $oldPushAgent->id) {
+                    // User assigned a new Agent to this host
+                    $oldPushAgent->set('agentconfig_id', null);
+                    $PushAgentsTable->save($oldPushAgent);
+                }
+            }
+
+            $pushAgent = $PushAgentsTable->get($pushAgentId);
+            $pushAgent->set('agentconfig_id', $config->id);
+            $PushAgentsTable->save($pushAgent);
+
+            if ($pushAgent->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('success', false);
+                $this->set('error', $pushAgent->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+                return;
+            }
+
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
     }
 
     // Step 5
@@ -722,7 +866,9 @@ class AgentconnectorController extends AppController {
 
         $agentresponse = []; // Empty agent response
         if ($config['bool']['enable_push_mode'] === true) {
-            // @todo implement me
+            /** @var PushAgentsTable $PushAgentsTable */
+            $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+            $agentresponse = $PushAgentsTable->getAgentOutputByAgentconfigId($record->id);
         } else {
             // Pull Mode
             $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
@@ -752,7 +898,8 @@ class AgentconnectorController extends AppController {
         $this->set('host', $host);
         $this->set('services', $services);
         $this->set('connection_test', $connection_test);
-        $this->viewBuilder()->setOption('serialize', ['host', 'services', 'connection_test']);
+        $this->set('config', $config);
+        $this->viewBuilder()->setOption('serialize', ['host', 'services', 'connection_test', 'config']);
     }
 
     /****************************

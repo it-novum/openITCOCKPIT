@@ -19,7 +19,11 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             if($scope.config.bool.enable_push_mode){
-                console.log('Implement redirect to push mode')
+                $state.go('AgentconnectorsSelectAgent', {
+                    hostId: $scope.hostId
+                }).then(function(){
+                    NotyService.scrollTop();
+                });
             }else{
                 $state.go('AgentconnectorsAutotls', {
                     hostId: $scope.hostId

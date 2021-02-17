@@ -106,6 +106,38 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <fieldset>
+                                        <h5><?php echo __('Host assignments'); ?></h5>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="FilterAssigned"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.host_assignment"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="FilterAssigned"><?php echo __('Host assigned'); ?></label>
+                                            </div>
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="FilterNotAssigned"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.no_host_assignment"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="FilterNotAssigned"><?php echo __('Agents witout host assignment'); ?></label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"
                                         class="btn btn-xs btn-danger">

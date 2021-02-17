@@ -35,6 +35,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
@@ -183,6 +184,28 @@ class PushAgentsTable extends Table {
     }
 
     /**
+     * @param int $agentConfigId
+     * @return bool
+     */
+    public function existsByAgentconfigId($agentConfigId) {
+        return $this->exists([
+            'PushAgents.agentconfig_id' => $agentConfigId
+        ]);
+    }
+
+    /**
+     * @param int $agentConfigId
+     * @return array|bool|EntityInterface|null
+     */
+    public function getByAgentconfigId($agentConfigId) {
+        return $this->find()
+            ->where([
+                'PushAgents.agentconfig_id' => $agentConfigId
+            ])
+            ->first();
+    }
+
+    /**
      * @param string $uuid
      * @param string $password
      * @return PushAgent|EntityInterface
@@ -228,6 +251,8 @@ class PushAgentsTable extends Table {
      * @return array
      */
     public function getPushAgents(GenericFilter $GenericFilter, PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
+        // Yes - this query is from hell!
+
         $query = $this->find();
         $query->select([
             'PushAgents.id',
@@ -267,7 +292,15 @@ class PushAgentsTable extends Table {
                     'integer'
                 );
             }
-            $query->select(['container_ids' => $query->newExpr('GROUP_CONCAT(DISTINCT HostsToContainersSharing.container_id)')])
+            $query->select([
+                'container_ids' => $query->newExpr('
+            IF(Hosts.id IS NOT NULL,
+                GROUP_CONCAT(
+                    DISTINCT `HostsToContainersSharing`.`container_id`
+                ),
+                NULL)
+                ')
+            ])
                 ->leftJoin(
                     ['HostsToContainersSharing' => 'hosts_to_containers'],
                     ['HostsToContainersSharing.host_id = Hosts.id']
@@ -275,9 +308,25 @@ class PushAgentsTable extends Table {
                 )->where($exp);
         }
 
-        $query->where($GenericFilter->genericFilters());
+        $where = $GenericFilter->genericFilters();
+        if (isset($where['hasHostAssignment'])) {
+            if ($where['hasHostAssignment'] == 1) {
+                $query->whereNotNull([
+                    'Hosts.id'
+                ]);
+            } else {
+                $query->whereNull([
+                    'Hosts.id'
+                ]);
+            }
+            unset($where['hasHostAssignment']);
+        }
+
+        $query->where($where);
         $query->disableHydration();
         $query->order($GenericFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        $query->group('PushAgents.id');
+        //FileDebugger::dieQuery($query);
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -291,4 +340,48 @@ class PushAgentsTable extends Table {
         }
         return $result;
     }
+
+
+    /**
+     * @param int|null $agentConfigId
+     * @return array
+     */
+    public function getPushAgentsForAssignments($agentConfigId = null) {
+        $query = $this->find();
+        if (is_numeric($agentConfigId)) {
+            $query->where([
+                'OR' => [
+                    'PushAgents.agentconfig_id' => $agentConfigId,
+                    'PushAgents.agentconfig_id IS NULL'
+                ]
+            ]);
+        } else {
+            $query->where('PushAgents.agentconfig_id IS NULL');
+        }
+        $query->disableHydration();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param int $agentConfigId
+     * @return array
+     */
+    public function getAgentOutputByAgentconfigId($agentConfigId) {
+        try {
+            $result = $this->find()
+                ->where([
+                    'PushAgents.agentconfig_id' => $agentConfigId
+                ])
+                ->firstOrFail();
+
+            if (!empty($result->get('checkresults'))) {
+                return json_decode($result->get('checkresults'), true);
+            }
+        } catch (RecordNotFoundException $e) {
+            //Not found
+        }
+        return [];
+    }
+
 }

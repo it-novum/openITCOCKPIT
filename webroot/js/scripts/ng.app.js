@@ -203,6 +203,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconnectorsAutotlsController"
             })
 
+            .state('AgentconnectorsSelectAgent', {
+                url: '/agentconnector/select_agent/:hostId',
+                templateUrl: "/agentconnector/select_agent.html",
+                controller: "AgentconnectorsSelectAgentController"
+            })
+
             .state('AgentconnectorsCreateServices', {
                 url: '/agentconnector/create_services/:hostId/:testConnection',
                 templateUrl: "/agentconnector/create_services.html",
