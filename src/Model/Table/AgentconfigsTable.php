@@ -220,4 +220,20 @@ class AgentconfigsTable extends Table {
         }
         return $result;
     }
+
+
+    /**
+     * @param string $usePushMode
+     * @return array
+     */
+    public function getHostIdsByMode($mode = 'push') {
+        $usePushMode = (int)$mode === 'push';
+        $query = $this->find('list', [
+            'valueField' => 'host_id'
+        ])->where([
+            'Agentconfigs.use_push_mode' => $usePushMode
+        ]);
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

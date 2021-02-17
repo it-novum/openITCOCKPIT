@@ -1,6 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsWizardController', function($scope, $http, $state, $stateParams){
         $scope.hostId = $stateParams.hostId;
+        $scope.pushAgentId = $stateParams.pushAgentId;
 
         $scope.isConfigured = false;
 
@@ -9,7 +10,9 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'filter[Hosts.name]': searchString,
-                    'selected[]': selected
+                    'selected[]': selected,
+                    'pushAgentId': $scope.pushAgentId
+
                 }
             }).then(function(result){
                 $scope.hosts = result.data.hosts;

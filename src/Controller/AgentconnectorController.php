@@ -369,7 +369,6 @@ class AgentconnectorController extends AppController {
 
         $hostId = $this->request->getQuery('hostId', 0);
 
-
         /** @var AgentconfigsTable $AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
         /** @var HostsTable $HostsTable */
@@ -448,6 +447,8 @@ class AgentconnectorController extends AppController {
             $dataWithDatatypes = $this->request->getData('config', []);
 
             $hostId = $this->request->getData('hostId', 0);
+            $pushAgentId = $this->request->getData('pushAgentId', 0);
+
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException();
             }
@@ -501,6 +502,29 @@ class AgentconnectorController extends AppController {
                 $this->set('error', $host->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
+            }
+
+            if ($pushAgentId > 0) {
+                /** @var PushAgentsTable $PushAgentsTable */
+                $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+                if ($PushAgentsTable->existsById($pushAgentId)) {
+
+                    // Was this Host already assigned to an Agent?
+                    $oldPushAgent = $PushAgentsTable->getByAgentconfigId($entity->id);
+
+                    if (!is_null($oldPushAgent)) {
+                        if ($pushAgentId !== $oldPushAgent->id) {
+                            // User assigned a new Agent to this host
+                            $oldPushAgent->set('agentconfig_id', null);
+                            $PushAgentsTable->save($oldPushAgent);
+                        }
+                    }
+
+                    $pushAgent = $PushAgentsTable->get($pushAgentId);
+                    $pushAgent->set('agentconfig_id', $entity->id);
+                    $PushAgentsTable->save($pushAgent);
+                }
+
             }
 
             $this->set('id', $entity->id);
@@ -915,6 +939,7 @@ class AgentconnectorController extends AppController {
         }
 
         $selected = $this->request->getQuery('selected');
+        $pushAgentId = (int)$this->request->getQuery('pushAgentId', 0);
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -928,6 +953,20 @@ class AgentconnectorController extends AppController {
         $HostCondition = new HostConditions($where);
         $HostCondition->setIncludeDisabled(false);
         $HostCondition->setContainerIds($this->MY_RIGHTS);
+
+        if ($pushAgentId > 0) {
+            /** @var AgentconfigsTable $AgentconfigsTable */
+            $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+            $hostIdsToExclude = $AgentconfigsTable->getHostIdsByMode('push');
+
+            if (!empty($hostIdsToExclude)) {
+                $HostCondition->setNotConditions([
+                    'Hosts.id IN' => $hostIdsToExclude
+                ]);
+            }
+        }
+
+
         if ($onlyHostsWithWritePermission) {
             $writeContainers = [];
             foreach ($this->MY_RIGHTS_LEVEL as $containerId => $rightLevel) {

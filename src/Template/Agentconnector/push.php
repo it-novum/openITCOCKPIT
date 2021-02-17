@@ -227,7 +227,7 @@
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                                            <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard'}}"
+                                            <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard({pushAgentId: agent.id})'}}"
                                                ng-if="agent.allow_edit"
                                                class="btn btn-default btn-lower-padding">
                                                 <i ng-class="{'fa fa-cog': agent.Hosts.id, 'fas fa-link': !agent.Hosts.id}"></i>
@@ -249,7 +249,7 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                                                <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard'}}"
+                                                <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard({pushAgentId: agent.id})'}}"
                                                    ng-if="agent.allow_edit"
                                                    class="dropdown-item">
                                                     <i ng-class="{'fa fa-cog': agent.Hosts.id, 'fas fa-link': !agent.Hosts.id}"></i>

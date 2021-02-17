@@ -104,12 +104,12 @@
                                 <?php echo __('Host'); ?>
                             </label>
                             <select
-                                    id="HostsSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    chosen="hosts"
-                                    ng-options="host.key as host.value for host in hosts"
-                                    callback="load"
-                                    ng-model="hostId">
+                                id="HostsSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                chosen="hosts"
+                                ng-options="host.key as host.value for host in hosts"
+                                callback="load"
+                                ng-model="hostId">
                             </select>
                             <div ng-show="hostId < 1" class="warning-glow">
                                 <?php echo __('Please select a host.'); ?>
@@ -144,8 +144,8 @@
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
                                         <a class="btn btn-outline-primary pull-right"
-                                           ng-show="hostId"
-                                           ui-sref="AgentconnectorsConfig({hostId: hostId, mode: 'pull'})">
+                                           ng-show="hostId && !pushAgentId"
+                                           ui-sref="AgentconnectorsConfig({hostId: hostId, mode: 'pull' })">
                                             <?= __('Continue with pull mode'); ?>
                                         </a>
                                     </div>
@@ -181,7 +181,7 @@
                                     <div class="col-xs-12 padding-right-0">
                                         <a class="btn btn-outline-primary pull-right"
                                            ng-show="hostId"
-                                           ui-sref="AgentconnectorsConfig({hostId: hostId, mode: 'push'})">
+                                           ui-sref="AgentconnectorsConfig({hostId: hostId, mode: 'push', pushAgentId: pushAgentId})">
                                             <?= __('Continue with push mode'); ?>
                                         </a>
                                     </div>
@@ -215,9 +215,9 @@
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
                                         <a
-                                                type="button"
-                                                class="btn btn-outline-success pull-right waves-effect waves-themed"
-                                                ui-sref="AgentconnectorsCreateServices({hostId: hostId, testConnection: 'true'})">
+                                            type="button"
+                                            class="btn btn-outline-success pull-right waves-effect waves-themed"
+                                            ui-sref="AgentconnectorsCreateServices({hostId: hostId, testConnection: 'true'})">
                                             <?= __('Continue with service creation'); ?>
                                         </a>
                                     </div>
@@ -249,9 +249,9 @@
                                 <div class="panel-footer padding-20">
                                     <div class="col-xs-12 padding-right-0">
                                         <a
-                                                type="button"
-                                                class="btn btn-outline-primary pull-right waves-effect waves-themed"
-                                                ui-sref="AgentconnectorsConfig({hostId: hostId})">
+                                            type="button"
+                                            class="btn btn-outline-primary pull-right waves-effect waves-themed"
+                                            ui-sref="AgentconnectorsConfig({hostId: hostId})">
                                             <?= __('Edit agent configuration'); ?>
                                         </a>
                                     </div>
