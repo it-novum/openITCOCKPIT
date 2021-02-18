@@ -404,6 +404,43 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group" ng-class="{'has-error': errors.freshness_checks_enabled}"
+                                     ng-show="post.Host.active_checks_enabled == 0">
+                                    <div class="custom-control custom-checkbox  margin-bottom-10"
+                                         ng-class="{'has-error': errors.freshness_checks_enabled}">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="freshness_checks_enabled"
+                                               ng-model="post.Host.freshness_checks_enabled">
+                                        <label class="custom-control-label" for="freshness_checks_enabled">
+                                            <?php echo __('Enable freshness check'); ?>
+                                        </label>
+                                        <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                              value="post.Host.freshness_checks_enabled"
+                                                              template-value="hosttemplate.Hosttemplate.freshness_checks_enabled">
+                                        </template-diff-button>
+                                    </div>
+                                    <div class="help-block" ng-hide="post.Host.active_checks_enabled">
+                                        <?php echo __('Due to active checking is disabled, this command will only be used as freshness check command.'); ?>
+                                    </div>
+                                </div>
+
+                                <div class="form-group required" ng-class="{'has-error': errors.freshness_threshold}"
+                                     ng-show="post.Host.active_checks_enabled == 0 && post.Host.freshness_checks_enabled == 1">
+                                    <label class="col-xs-12 col-lg-2 control-label">
+                                        <?php echo __('Freshness threshold'); ?>
+                                    </label>
+                                    <interval-input-directive
+                                        interval="post.Host.freshness_threshold"></interval-input-directive>
+                                    <div class="col-xs-12 col-lg-offset-2">
+                                        <div ng-repeat="error in errors.freshness_threshold">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.command_id}">
                                     <label class="control-label">

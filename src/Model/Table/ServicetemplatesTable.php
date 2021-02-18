@@ -410,7 +410,6 @@ class ServicetemplatesTable extends Table {
 
         $validator
             ->integer('freshness_threshold')
-            ->greaterThan('check_period_id', 0, __('This field cannot be empty'))
             ->allowEmptyString('freshness_threshold');
 
         return $validator;

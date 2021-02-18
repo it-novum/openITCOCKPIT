@@ -66,7 +66,6 @@ use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\UUID;
 
@@ -413,6 +412,13 @@ class NagiosConfigGenerator {
             $content .= $this->addContent('active_checks_enabled', 1, $hosttemplate->get('active_checks_enabled'));
             $content .= $this->addContent('passive_checks_enabled', 1, 1);
 
+            if ($hosttemplate->get('freshness_checks_enabled') > 0) {
+                $content .= $this->addContent('check_freshness', 1, 1);
+
+                if ((int)$hosttemplate->get('freshness_threshold') > 0) {
+                    $content .= $this->addContent('freshness_threshold', 1, (int)$hosttemplate->get('freshness_threshold') + $this->FRESHNESS_THRESHOLD_ADDITION);
+                }
+            }
 
             $content .= PHP_EOL;
             $content .= $this->addContent(';Notification settings:', 1);
@@ -622,7 +628,6 @@ class NagiosConfigGenerator {
                 $checkInterval = 300;
             }
 
-
             if ($host->get('freshness_checks_enabled') !== null && $host->get('freshness_threshold')) {
                 if ($host->isSatelliteHost() === true) {
                     //Host gets checked through a satellite system
@@ -649,7 +654,6 @@ class NagiosConfigGenerator {
                     $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
                 }
             }
-
 
             if ($host->get('passive_checks_enabled') !== null && $host->get('passive_checks_enabled') !== '')
                 $content .= $this->addContent('passive_checks_enabled', 1, $host->get('passive_checks_enabled'));
