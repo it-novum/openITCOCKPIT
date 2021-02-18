@@ -23,23 +23,39 @@
 //  confirmation.
 ?>
 
+<div class="row">
+    <div class="col-12">
+        <div class="pull-left">
+            <img src="<?= h($userImage) ?>" id="userImage"
+                 style="border-left: 3px solid #40AC2B; height: auto; width: 120px">
+        </div>
+        <div class="pull-left col-md-7">
+            <strong>{{hostCount}}</strong ng-if="hostCount"> <?php echo __('hosts are monitored'); ?>
 
-<div class="pull-left">
-    <img src="<?= h($userImage) ?>" id="userImage" style="border-left: 3px solid #40AC2B; height: auto; width: 120px">
-</div>
-<div class="pull-left col-md-7">
-    <strong>{{hostCount}}</strong ng-if="hostCount"> <?php echo __('hosts are monitored'); ?>
-
-    <br/>
-    <strong>{{serviceCount}}</strong> <?php echo __('services are monitored'); ?>
-    <br/>
-    <br/>
-    <?php echo __('Your selected Timezone is '); ?>
-    <strong><?= h($userTimezone); ?></strong>
-    <?php if ($userTimezone !== date_default_timezone_get()): ?>
-        <br/>
-        <?php echo __('Server timezone is:'); ?>
-        <strong><?= date_default_timezone_get(); ?></strong>
-    <?php endif; ?>
+            <br/>
+            <strong>{{serviceCount}}</strong> <?php echo __('services are monitored'); ?>
+            <br/>
+            <br/>
+            <?php echo __('Your selected Timezone is '); ?>
+            <strong><?= h($userTimezone); ?></strong>
+            <?php if ($userTimezone !== date_default_timezone_get()): ?>
+                <br/>
+                <?php echo __('Server timezone is:'); ?>
+                <strong><?= date_default_timezone_get(); ?></strong>
+            <?php endif; ?>
+            <br/>
+            <?= __('{0} version is {1},', $systemname, OPENITCOCKPIT_VERSION); ?>
+            <?php
+            if ($hasSubscription === false):
+                echo __('No active subscription');
+                echo ' 🥺';
+            elseif ($hasSubscription === true && $isCommunityEdition === true):
+                echo '<span class="text-community">' . __('Community Edition') . '</span>';
+            else:
+                echo '<span class="text-enterprise">' . __('Enterprise Edition') . '</span>';
+            endif;
+            ?>
+        </div>
+    </div>
 </div>
 

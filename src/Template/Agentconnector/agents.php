@@ -21,6 +21,10 @@
 //  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //  License agreement and license key will be shipped with the order
 //  confirmation.
+
+/*
+ * @deprecated
+ */
 ?>
 
 <ol class="breadcrumb page-breadcrumb">
@@ -88,7 +92,7 @@
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="AgentconnectorsConfig">
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="AgentconnectorsWizard">
                             <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
                     <?php endif; ?>

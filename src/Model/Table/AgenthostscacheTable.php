@@ -30,6 +30,7 @@ use itnovum\openITCOCKPIT\Filter\AgenthostscacheFilter;
  * @method \App\Model\Entity\Agenthostscache[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @deprecated
  */
 class AgenthostscacheTable extends Table {
 

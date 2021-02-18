@@ -897,3 +897,31 @@ div.packetmanager-selection>span::selection {
 .text-purple {
     color: #bb1bf4 !important;
 }
+
+.bg-light-gray {
+    background: #f6f6f6
+}
+
+.text-community {
+    color: #4085C6;
+}
+
+.bg-community {
+    background-color: #4085C6;
+}
+
+.btn-community:hover {
+    background: #143d5b;
+}
+
+.text-enterprise {
+    color: #DD0B2F;
+}
+
+.bg-enterprise {
+    background-color: #DD0B2F;
+}
+
+.btn-enterprise:hover {
+    background: #a61f1c;
+}
