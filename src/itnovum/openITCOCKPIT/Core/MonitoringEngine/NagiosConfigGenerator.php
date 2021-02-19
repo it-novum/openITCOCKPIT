@@ -628,32 +628,36 @@ class NagiosConfigGenerator {
                 $checkInterval = 300;
             }
 
-            if ($host->get('freshness_checks_enabled') !== null && $host->get('freshness_threshold')) {
-                if ($host->isSatelliteHost() === true) {
-                    //Host gets checked through a satellite system
-                    $content .= $this->addContent('check_freshness', 1, 1);
-                    $content .= $this->addContent('freshness_threshold', 1, (int)$host->get('freshness_threshold') + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+            /* Freshness checks starts */
+            $freshnessChecksEnabled = $host->get('freshness_checks_enabled');
+            if ($freshnessChecksEnabled === null) {
+                $freshnessChecksEnabled = $hosttemplate->get('freshness_checks_enabled');
+            }
+            $freshnessThreshold = $host->get('freshness_threshold');
+            if ($freshnessThreshold === null) {
+                $freshnessThreshold = $hosttemplate->get('freshness_threshold');
+            }
+
+            if ($host->isSatelliteHost() === true) {
+                // Host is checked by a satellite system
+                // Add freshness check on the master instance
+                $content .= $this->addContent('check_freshness', 1, 1);
+                if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                    $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
                 } else {
-                    if ($host->get('freshness_checks_enabled') > 0) {
-                        //Passive host on the master system
-                        $content .= $this->addContent('check_freshness', 1, 1);
-                        $content .= $this->addContent('freshness_threshold', 1, (int)$host->get('freshness_threshold') + $this->FRESHNESS_THRESHOLD_ADDITION);
-                    }
-                }
-            } else {
-                /*
-                 * NOTICE:
-                 * At the moment the host has no freshness_checks_enabled and freshness_threshold field.
-                 * This will be available in one of the next versions...
-                 *
-                 * So this is a little workaround!!!
-                 * We only add the freshness for hosts on SAT-Systems! Normal hosts can't have this option at the moment!
-                 */
-                if ($host->isSatelliteHost()) {
-                    $content .= $this->addContent('check_freshness', 1, 1);
                     $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
                 }
+            } else {
+                // Host is in the master instance
+                // Passive host on the master system
+                if ($freshnessChecksEnabled !== null) {
+                    $content .= $this->addContent('check_freshness', 1, $freshnessChecksEnabled);
+                }
+                if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                    $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold);
+                }
             }
+            /* Freshness checks ends */
 
             if ($host->get('passive_checks_enabled') !== null && $host->get('passive_checks_enabled') !== '')
                 $content .= $this->addContent('passive_checks_enabled', 1, $host->get('passive_checks_enabled'));
@@ -852,6 +856,24 @@ class NagiosConfigGenerator {
 
         if ($host->get('active_checks_enabled') !== null && $host->get('active_checks_enabled') !== '')
             $content .= $this->addContent('active_checks_enabled', 1, $host->get('active_checks_enabled'));
+
+        /* Freshness checks starts */
+        $freshnessChecksEnabled = $host->get('freshness_checks_enabled');
+        if ($freshnessChecksEnabled === null) {
+            $freshnessChecksEnabled = $hosttemplate->get('freshness_checks_enabled');
+        }
+        $freshnessThreshold = $host->get('freshness_threshold');
+        if ($freshnessThreshold === null) {
+            $freshnessThreshold = $hosttemplate->get('freshness_threshold');
+        }
+
+        if ($freshnessChecksEnabled !== null) {
+            $content .= $this->addContent('check_freshness', 1, $freshnessChecksEnabled);
+        }
+        if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+            $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
+        }
+        /* Freshness checks ends */
 
         if ($host->get('passive_checks_enabled') !== null && $host->get('passive_checks_enabled') !== '')
             $content .= $this->addContent('passive_checks_enabled', 1, $host->get('passive_checks_enabled'));
@@ -1245,33 +1267,44 @@ class NagiosConfigGenerator {
                     }
                 }
 
-                if ($service->get('freshness_checks_enabled') > 0 || $host->isSatelliteHost() === true) {
-                    if ($host->isSatelliteHost() === true) {
-                        // Service is checked by a satellite system
-                        // Add freshness check on the master instance
-                        $content .= $this->addContent('check_freshness', 1, 1);
-                        $checkInterval = $service->get('check_interval');
-                        if ($checkInterval === null || $checkInterval === '' || $checkInterval === 0) {
-                            $checkInterval = $servicetemplate->get('check_interval');
-                        }
-
-                        $checkInterval = (int)$checkInterval;
-                        $freshnessThreshold = (int)$service->get('freshness_threshold');
-
-                        $content .= $this->addContent('freshness_threshold', 1, ($freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION));
-                    } else {
-                        // Service is in the master instance
-
-                        //Passive service on the master system
-                        $content .= $this->addContent('check_freshness', 1, 1);
-                        $freshnessThreshold = (int)$service->get('freshness_threshold');
-                        if ($freshnessThreshold === null || $freshnessThreshold === '' || $freshnessThreshold === 0) {
-                            $freshnessThreshold = (int)$servicetemplate->get('freshness_threshold');
-                        }
-                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
-                    }
-
+                /* Freshness checks starts */
+                $freshnessChecksEnabled = $service->get('freshness_checks_enabled');
+                if ($freshnessChecksEnabled === null) {
+                    $freshnessChecksEnabled = $servicetemplate->get('freshness_checks_enabled');
                 }
+                $freshnessThreshold = $service->get('freshness_threshold');
+                if ($freshnessThreshold === null) {
+                    $freshnessThreshold = $servicetemplate->get('freshness_threshold');
+                }
+
+                $checkInterval = $service->get('check_interval');
+                if ($checkInterval === null || $checkInterval === '' || $checkInterval === 0) {
+                    $checkInterval = $servicetemplate->get('check_interval');
+                }
+
+                $checkInterval = (int)$checkInterval;
+
+                if ($host->isSatelliteHost() === true) {
+                    // Service is checked by a satellite system
+                    // Add freshness check on the master instance
+
+                    $content .= $this->addContent('check_freshness', 1, 1);
+                    if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                    } else {
+                        $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                    }
+                } else {
+                    // Service is in the master instance
+                    // Passive service on the master system
+                    if ($freshnessChecksEnabled !== null) {
+                        $content .= $this->addContent('check_freshness', 1, $freshnessChecksEnabled);
+                    }
+                    if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold);
+                    }
+                }
+                /* Freshness checks ends */
 
                 $content .= PHP_EOL;
                 $content .= $this->addContent(';Notification settings:', 1);
@@ -1496,16 +1529,23 @@ class NagiosConfigGenerator {
 
         $content .= $this->addContent('passive_checks_enabled', 1, 1);
 
+        /* Freshness checks starts */
+        $freshnessChecksEnabled = $service->get('freshness_checks_enabled');
+        if ($freshnessChecksEnabled === null) {
+            $freshnessChecksEnabled = $servicetemplate->get('freshness_checks_enabled');
+        }
+        $freshnessThreshold = $service->get('freshness_threshold');
+        if ($freshnessThreshold === null) {
+            $freshnessThreshold = $servicetemplate->get('freshness_threshold');
+        }
 
-        if ($service->get('freshness_checks_enabled') > 0) {
-            $content .= $this->addContent('check_freshness', 1, 1);
-
-            $freshnessThreshold = $service->get('freshness_threshold');
-            if ($freshnessThreshold === null || $freshnessThreshold === '' || $freshnessThreshold === 0) {
-                $freshnessThreshold = (int)$servicetemplate->get('freshness_threshold');
-            }
+        if ($freshnessChecksEnabled !== null) {
+            $content .= $this->addContent('check_freshness', 1, $freshnessChecksEnabled);
+        }
+        if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
             $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
         }
+        /* Freshness checks ends */
 
         $content .= PHP_EOL;
         $content .= $this->addContent(';Notification settings:', 1);
