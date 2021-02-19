@@ -650,8 +650,8 @@ class NagiosConfigGenerator {
             } else {
                 // Host is in the master instance
                 // Passive host on the master system
-                if ($freshnessChecksEnabled !== null) {
-                    $content .= $this->addContent('check_freshness', 1, $freshnessChecksEnabled);
+                if ($host->get('freshness_checks_enabled')) {
+                    $content .= $this->addContent('check_freshness', 1, $host->get('freshness_checks_enabled'));
                 }
                 if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
                     $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold);
@@ -867,11 +867,11 @@ class NagiosConfigGenerator {
             $freshnessThreshold = $hosttemplate->get('freshness_threshold');
         }
 
-        if ($freshnessChecksEnabled !== null) {
-            $content .= $this->addContent('check_freshness', 1, $freshnessChecksEnabled);
-        }
-        if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
-            $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
+        if ($freshnessChecksEnabled > 0) {
+            $content .= $this->addContent('check_freshness', 1, 1);
+            if ($freshnessThreshold > 0) {
+                $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
+            }
         }
         /* Freshness checks ends */
 
@@ -1297,8 +1297,8 @@ class NagiosConfigGenerator {
                 } else {
                     // Service is in the master instance
                     // Passive service on the master system
-                    if ($freshnessChecksEnabled !== null) {
-                        $content .= $this->addContent('check_freshness', 1, $freshnessChecksEnabled);
+                    if ($service->get('freshness_checks_enabled') !== null) {
+                        $content .= $this->addContent('check_freshness', 1, $service->get('freshness_checks_enabled'));
                     }
                     if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
                         $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold);
@@ -1538,13 +1538,13 @@ class NagiosConfigGenerator {
         if ($freshnessThreshold === null) {
             $freshnessThreshold = $servicetemplate->get('freshness_threshold');
         }
+        if ($freshnessChecksEnabled > 0) {
+            $content .= $this->addContent('check_freshness', 1, 1);
+            if ($freshnessThreshold > 0) {
+                $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
+            }
+        }
 
-        if ($freshnessChecksEnabled !== null) {
-            $content .= $this->addContent('check_freshness', 1, $freshnessChecksEnabled);
-        }
-        if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
-            $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
-        }
         /* Freshness checks ends */
 
         $content .= PHP_EOL;
