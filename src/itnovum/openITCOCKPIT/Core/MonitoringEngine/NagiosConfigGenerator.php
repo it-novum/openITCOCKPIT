@@ -412,8 +412,8 @@ class NagiosConfigGenerator {
             $content .= $this->addContent('active_checks_enabled', 1, $hosttemplate->get('active_checks_enabled'));
             $content .= $this->addContent('passive_checks_enabled', 1, 1);
 
-            if ($hosttemplate->get('freshness_checks_enabled') > 0) {
-                $content .= $this->addContent('check_freshness', 1, 1);
+            if ($hosttemplate->get('freshness_checks_enabled') !== null) {
+                $content .= $this->addContent('check_freshness', 1, $hosttemplate->get('freshness_checks_enabled'));
 
                 if ((int)$hosttemplate->get('freshness_threshold') > 0) {
                     $content .= $this->addContent('freshness_threshold', 1, (int)$hosttemplate->get('freshness_threshold') + $this->FRESHNESS_THRESHOLD_ADDITION);
