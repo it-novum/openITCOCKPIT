@@ -113,7 +113,7 @@ use Cake\Core\Plugin;
                                                     chosen="hosts"
                                                     callback="loadHosts"
                                                     ng-options="host.key as host.value disable when host.disabled for host in hosts"
-                                                    ng-model="selectedHostId">
+                                                    ng-model="hostId">
                                             </select>
                                             <div ng-repeat="error in errors.Host">
                                                 <div class="help-block text-danger">{{ error }}</div>

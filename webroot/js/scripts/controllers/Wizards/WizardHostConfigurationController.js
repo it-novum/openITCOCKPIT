@@ -2,11 +2,11 @@ angular.module('openITCOCKPIT')
     .controller('WizardHostConfigurationController', function($scope, $http, $state, $stateParams, QueryStringService, NotyService, LocalStorageService){
         /** public vars **/
         $scope.init = true;
-        $scope.selectedHostId = null;
         $scope.state = QueryStringService.getStateValue($stateParams, 'state', null);
         $scope.selectedOs = QueryStringService.getStateValue($stateParams, 'selectedOs', null);
         $scope.typeId = QueryStringService.getStateValue($stateParams, 'typeId', null);
         $scope.title = QueryStringService.getStateValue($stateParams, 'title', null);
+        $scope.hostId = QueryStringService.getStateValue($stateParams, 'hostId', null);
 
         $scope.data = {
             dnsLookUp: LocalStorageService.getItemWithDefault('HostsDnsLookUpEnabled', 'false') === 'true',
@@ -202,12 +202,12 @@ angular.module('openITCOCKPIT')
             }else{
                 $http.post("/wizards/validateInputFromAngular.json?angular=true", {
                         Host: {
-                            id: $scope.selectedHostId
+                            id: $scope.hostId
                         }
                     }
                 ).then(function(result){
                     $state.go($scope.state, {
-                        hostId: $scope.selectedHostId,
+                        hostId: $scope.hostId,
                         selectedOs: $scope.selectedOs
                     }).then(function(){
                         NotyService.scrollTop();
