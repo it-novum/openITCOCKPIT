@@ -3,6 +3,15 @@ declare(strict_types=1);
 
 use Migrations\AbstractMigration;
 
+/**
+ * Class Agentconnector
+ *
+ * Created:
+ * oitc migrations create Agentconnector
+ *
+ * Usage:
+ * openitcockpit-update
+ */
 class Agentconnector extends AbstractMigration {
 
     public function up() {

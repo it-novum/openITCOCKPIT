@@ -1026,7 +1026,7 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ui-sref="AgentconnectorsConfig({hostId: post.Host.id})"
+                                                   ui-sref="AgentconnectorsWizard({hostId: post.Host.id})"
                                                    ng-if="!data.createAnother">
                                                     <i class="fa fa fa-gear"></i>
                                                     <?php echo __('Update and setup agent'); ?>

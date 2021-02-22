@@ -1383,6 +1383,8 @@ class ServicetemplatesTable extends Table {
     /**
      * @param $id
      * @return array
+     * @deprecated
+     * @todo delete this method with oITC 4.3 !!
      */
     public function getServicetemplateForNewAgentService($id) {
         $query = $this->find()

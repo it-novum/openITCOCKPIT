@@ -22,7 +22,6 @@
  */
 
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
-use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\Route\InflectedRoute;
 use Cake\Routing\RouteBuilder;
 

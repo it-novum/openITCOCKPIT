@@ -665,6 +665,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
 /* Weather icons end */
 
 .wizard-logo-image {
@@ -721,4 +722,52 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 
 .card-body-wizard {
     background-color: transparent !important;
+}
+
+.agent-mode-box-pull:before {
+    content: "\f019";
+    font-family: FontAwesome;
+    color: #72a4f7;
+    position: absolute;
+    top: 0;
+    right: 10px;
+    font-size: 40px;
+    padding: 0;
+    text-shadow: 1px 1px #4285F4;
+}
+
+.agent-mode-box-push:before {
+    content: "\f093";
+    font-family: FontAwesome;
+    color: #72a4f7;
+    position: absolute;
+    top: -3px;
+    right: 10px;
+    font-size: 40px;
+    padding: 0;
+    text-shadow: 1px 1px #4285F4;
+}
+
+.agent-mode-box-config-edit:before {
+    content: "\f21b";
+    font-family: FontAwesome;
+    color: #72a4f7;
+    position: absolute;
+    top: -3px;
+    right: 10px;
+    font-size: 40px;
+    padding: 0;
+    text-shadow: 1px 1px #4285F4;
+}
+
+.agent-mode-box-create-services:before {
+    content: "\f085";
+    font-family: FontAwesome;
+    color: #36D47E;
+    position: absolute;
+    top: -3px;
+    right: 10px;
+    font-size: 40px;
+    padding: 0;
+    text-shadow: 1px 1px #00C851;
 }
