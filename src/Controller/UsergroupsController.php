@@ -228,8 +228,8 @@ class UsergroupsController extends AppController {
                 //An 'Administrator' is required!
                 $usergroup->setAccess('name', false);
             }
-
-            $usergroup = $UsergroupsTable->patchEntity($usergroup, $this->request->getData());
+            $usergroup = $UsergroupsTable->get($id);
+            $usergroup = $UsergroupsTable->patchEntity($usergroup, $this->request->getData('Usergroup'));
             $UsergroupsTable->save($usergroup);
 
             if ($usergroup->hasErrors()) {
