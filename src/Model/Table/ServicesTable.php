@@ -3198,7 +3198,8 @@ class ServicesTable extends Table {
             ->select([
                 'Services.id'
             ])->where([
-                'Services.host_id IN' => $hostIds
+                'Services.host_id IN'   => $hostIds,
+                'Services.service_type' => GENERIC_SERVICE
             ])->disableHydration();
 
         $result = $query->toArray();
