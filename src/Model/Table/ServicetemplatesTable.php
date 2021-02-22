@@ -123,8 +123,8 @@ class ServicetemplatesTable extends Table {
         ]);
 
         $this->hasOne('Agentchecks', [
-            'foreignKey' => 'servicetemplate_id',
-        ]);
+            'foreignKey' => 'servicetemplate_id'
+        ])->setDependent(true);
 
         $this->hasMany('Customvariables', [
             'conditions'   => [

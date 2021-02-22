@@ -39,7 +39,7 @@ use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
 
 /**
  * Class AgentchecksController
- * @property AppPaginatorComponent $Paginator
+ * @package App\Controller
  */
 class AgentchecksController extends AppController {
 
@@ -49,7 +49,7 @@ class AgentchecksController extends AppController {
             return;
         }
 
-        /** @var $AgentchecksTable AgentchecksTable */
+        /** @var AgentchecksTable $AgentchecksTable */
         $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
 
         $AgentchecksFilter = new AgentchecksFilter($this->request);
@@ -119,7 +119,7 @@ class AgentchecksController extends AppController {
             return;
         }
 
-        /** @var $AgentchecksTable AgentchecksTable */
+        /** @var AgentchecksTable $AgentchecksTable */
         $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
 
         if (!$AgentchecksTable->existsById($id)) {
@@ -154,12 +154,15 @@ class AgentchecksController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['agentcheck']);
     }
 
+    /**
+     * @param int $id
+     */
     public function delete($id) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $AgentchecksTable AgentchecksTable */
+        /** @var AgentchecksTable $AgentchecksTable */
         $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
 
         if (!$AgentchecksTable->existsById($id)) {
@@ -185,20 +188,12 @@ class AgentchecksController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
-    public function getAgentchecksForMapping() {
-        if (!$this->isApiRequest()) {
-            return;
-        }
-
-        /** @var $AgentchecksTable AgentchecksTable */
-        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
-
-        $this->set('agentchecks_mapping', $AgentchecksTable->getAgentchecksForMapping());
-        $this->viewBuilder()->setOption('serialize', ['agentchecks_mapping']);
-    }
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
 
     public function loadServicetemplates() {
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         $servicetemplates = $ServicetemplatesTable->getServicetemplatesByContainerId($this->MY_RIGHTS, 'list', OITC_AGENT_SERVICE);

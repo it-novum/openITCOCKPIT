@@ -1,7 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsAutotlsController', function($scope, $http, $state, $stateParams, RedirectService, NotyService){
 
-        $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
         $scope.disableNext = true;
         $scope.runningCheck = true;
@@ -47,7 +46,8 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             $state.go('AgentconnectorsCreateServices', {
-                hostId: $scope.hostId
+                hostId: $scope.hostId,
+                testConnection: 'false'
             }).then(function(){
                 NotyService.scrollTop();
             });

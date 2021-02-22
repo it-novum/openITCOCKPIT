@@ -1,5 +1,26 @@
 <?php
-
+// Copyright (C) <2018>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, version 3 of the License.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//  License agreement and license key will be shipped with the order
+//  confirmation.
 
 namespace itnovum\openITCOCKPIT\Agent;
 
@@ -7,6 +28,7 @@ namespace itnovum\openITCOCKPIT\Agent;
 use App\Model\Entity\Agentconfig;
 use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\ProxiesTable;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -238,13 +260,13 @@ class AgentHttpClient {
             // Try to load CSR (Certificate Signing Request) from Agent via HTTPS
             // THIS IS JUST A CONNECTION TEST - WE DO NOT USE THE CSR BECAUSE THE USER WANT TO USE OWN CERTIFICATS
             $options = $this->getGuzzleOptions();
-            $url = sprintf('%s/autotls', $this->baseUrl);
+            $url = sprintf('%s/', $this->baseUrl);
             $client = new Client();
             try {
                 $response = $client->request('GET', $url, $options);
                 if ($response->getStatusCode() === 200) {
                     $data = @json_decode($response->getBody()->getContents(), true);
-                    if (json_last_error() === JSON_ERROR_NONE && isset($data['csr'])) {
+                    if (json_last_error() === JSON_ERROR_NONE && isset($data['agent'])) {
                         return [
                             'status'       => 'success',
                             'error'        => __('Successfully establish HTTPS connection to the Agent (No AutoTLS).'),
@@ -254,10 +276,10 @@ class AgentHttpClient {
                         ];
                     }
                 }
-                //Agent did not returned JSON or no 'csr' key in json
+                //Agent did not returned JSON or no 'agent' key in json
                 return [
                     'status'       => 'error',
-                    'error'        => __('No JSON response from Agent or key csr is missing in the result'),
+                    'error'        => __('No JSON response from Agent or key agent is missing in the result'),
                     'guzzle_error' => sprintf('[%s] %s', $response->getStatusCode(), $response->getReasonPhrase()),
                     'oitc_errno'   => AgentHttpClientErrors::ERRNO_BAD_AGENT_RESPONSE
                 ];
@@ -274,13 +296,13 @@ class AgentHttpClient {
         if ($this->config['bool']['use_autossl'] === false && $this->config['bool']['use_https'] === false) {
             // User wants insecure HTTP :(
             $options = $this->getGuzzleOptions();
-            $url = sprintf('%s/autotls', $this->baseUrl);
+            $url = sprintf('%s/', $this->baseUrl);
             $client = new Client();
             try {
                 $response = $client->request('GET', $url, $options);
                 if ($response->getStatusCode() === 200) {
                     $data = @json_decode($response->getBody()->getContents(), true);
-                    if (json_last_error() === JSON_ERROR_NONE && isset($data['csr'])) {
+                    if (json_last_error() === JSON_ERROR_NONE && isset($data['agent'])) {
                         return [
                             'status'       => 'success',
                             'error'        => __('Connection established successfully using insecure HTTP (plaintext).'),
@@ -290,10 +312,10 @@ class AgentHttpClient {
                         ];
                     }
                 }
-                //Agent did not returned JSON or no 'csr' key in json
+                //Agent did not returned JSON or no 'agent' key in json
                 return [
                     'status'       => 'success',
-                    'error'        => __('No JSON response from Agent or key csr is missing in the result'),
+                    'error'        => __('No JSON response from Agent or key agent is missing in the result'),
                     'guzzle_error' => sprintf('[%s] %s', $response->getStatusCode(), $response->getReasonPhrase()),
                     'oitc_errno'   => AgentHttpClientErrors::ERRNO_HTTP_ERROR
                 ];
@@ -313,6 +335,29 @@ class AgentHttpClient {
             'guzzle_error' => '',
             'oitc_errno'   => AgentHttpClientErrors::ERRNO_UNKNOWN
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getResults() {
+        $options = $this->getGuzzleOptions();
+        $url = sprintf('%s/', $this->baseUrl);
+        $client = new Client();
+        try {
+            $response = $client->request('GET', $url, $options);
+            if ($response->getStatusCode() === 200) {
+                $data = @json_decode($response->getBody()->getContents(), true);
+                if (json_last_error() === JSON_ERROR_NONE && isset($data['agent'])) {
+                    return $data;
+                }
+            }
+            //Agent did not returned JSON or no 'agent' key in json
+            Log::error('Agent response is not a json or has no agent key');
+        } catch (RequestException | GuzzleException $e) {
+            Log::error('Agent connection error: ' . $e->getMessage());
+        }
+        return [];
     }
 
     /**

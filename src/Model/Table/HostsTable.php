@@ -170,7 +170,7 @@ class HostsTable extends Table {
             'foreignKey' => 'host_id',
         ])->setDependent(true);
 
-        $this->hasOne('Agenthostscache', [
+        /*$this->hasOne('Agenthostscache', [
             'foreignKey' => 'hostuuid',
             'bindingKey' => 'uuid'
         ])->setDependent(true);
@@ -178,7 +178,7 @@ class HostsTable extends Table {
         $this->hasOne('Agentconnector', [
             'foreignKey' => 'hostuuid',
             'bindingKey' => 'uuid'
-        ])->setDependent(true);
+        ])->setDependent(true);*/
 
     }
 
@@ -1865,7 +1865,6 @@ class HostsTable extends Table {
                 'OR' => $where['NOT']
             ];
         }
-
         if (!empty($where)) {
             $query->where($where);
         }
@@ -2387,33 +2386,42 @@ class HostsTable extends Table {
     /**
      * @return array
      */
-    public function getHostsThatUseOitcAgentForExport() {
+    public function getHostsThatUseOitcAgentInPullModeForExport() {
         $query = $this->find()
             ->disableHydration()
             ->select([
                 'Hosts.id',
                 'Hosts.name',
                 'Hosts.uuid',
-                'Hosts.address'
+                'Hosts.address',
+                'Agentconfigs.id',
+                'Agentconfigs.host_id',
+                'Agentconfigs.use_push_mode',
             ])
-            ->innerJoinWith('Services', function (Query $query) {
-                $query->where([
-                    'Services.service_type' => OITC_AGENT_SERVICE
-                ]);
-                return $query;
-            })
             ->contain([
-                'Agentconfigs'    => function (Query $query) {
-                    return $query->enableAutoFields();
-                },
-                'Agenthostscache' => function (Query $query) {
-                    return $query->enableAutoFields();
+                'Services' => function (Query $q) {
+                    $q
+                        ->select([
+                            'Services.id',
+                            'Services.uuid',
+                            'Services.host_id',
+                            'Services.servicetemplate_id',
+                            'Services.service_type'
+                        ])
+                        ->where([
+                            'Services.service_type' => OITC_AGENT_SERVICE
+                        ]);
+                    return $q;
                 }
+            ])
+            ->innerJoinWith('Agentconfigs')
+            ->where([
+                'Agentconfigs.use_push_mode' => 0
             ])
             ->group([
                 'Hosts.id'
-            ])
-            ->all();
+            ]);
+        $query->all();
 
         $rawHosts = $query->toArray();
         if ($rawHosts === null) {
@@ -2428,20 +2436,25 @@ class HostsTable extends Table {
         return $hosts;
     }
 
-    public function hasHostServiceFromServicetemplateId($hostId, $servicetemplateId) {
-        $count = $this->find()
-            ->where([
-                'Hosts.id' => $hostId,
+    /**
+     * @return array
+     */
+    public function getHostsThatUseOitcAgentForExport() {
+        $query = $this->find()
+            ->disableHydration()
+            ->select([
+                'Hosts.id',
+                'Hosts.name',
+                'Hosts.uuid',
+                'Hosts.address',
+                'Agentconfigs.id',
+                'Agentconfigs.host_id',
+                'Agentconfigs.config',
             ])
-            ->innerJoinWith('Services', function (Query $query) use ($servicetemplateId) {
-                $query->where([
-                    'Services.servicetemplate_id' => $servicetemplateId
-                ]);
-                return $query;
-            })
-            ->count();
+            ->innerJoinWith('Agentconfigs');
+        $query->all();
 
-        return $count > 0;
+        return $this->emptyArrayIfNull($query->toArray());
     }
 
     /**

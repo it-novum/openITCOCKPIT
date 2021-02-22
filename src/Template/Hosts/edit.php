@@ -1024,11 +1024,11 @@
                                                     <?php echo __('Update and create service'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
+                                            <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
                                                    ui-sref="AgentconnectorsWizard({hostId: post.Host.id})"
                                                    ng-if="!data.createAnother">
-                                                    <i class="fa fa fa-gear"></i>
+                                                    <i class="fa fa-user-secret"></i>
                                                     <?php echo __('Update and setup agent'); ?>
                                                 </a>
                                             <?php endif; ?>
