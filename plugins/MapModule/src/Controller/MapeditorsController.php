@@ -318,7 +318,7 @@ class MapeditorsController extends AppController {
                 }
                 break;
             case 'map':
-                $map = $MapsTable->getMapById($objectId);
+                $map = $MapsTable->getMapsForMaps($objectId, $mapId, false);
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}.id'), false)) {
@@ -343,26 +343,24 @@ class MapeditorsController extends AppController {
                             []
                         );
                     }
-
                     if (!empty($mapItemToResolve)) {
                         /** @var HostgroupsTable $HostgroupsTable */
                         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
                         /** @var ServicegroupsTable $ServicegroupsTable */
                         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS, false);
-                        $mapItemIdToResolve = $mapItemToResolve['object_id'];
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS, false);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.object_id',
                             '{n}.object_id',
                             '{n}.map_id'
                         );
-
-                        if (isset($mapIdGroupByMapId[$mapItemIdToResolve])) {
-                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapItemIdToResolve);
+                        if (isset($mapIdGroupByMapId[$objectId])) {
+                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $objectId);
                         }
-                        $dependentMapsIds[] = $mapItemIdToResolve;
+                        $dependentMapsIds[] = $objectId;
+
                         // resolve all Elements (host and/or services of dependent map)
                         $allDependentMapElements = $MapsTable->getAllDependentMapsElements(
                             $dependentMapsIds,
@@ -616,32 +614,29 @@ class MapeditorsController extends AppController {
                 /** @var ServicesTable $ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-                $map = $MapsTable->getMapsForMapsummaryitems($objectId, $mapId);
-
-                if (!empty($map) && isset($map[0])) {
+                $map = $MapsTable->getMapsForMapsummaryitems($objectId, $mapId, false);
+                if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($map[0]->toArray(), 'containers.{n}._joinData.id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}.id'), false)) {
                             $allowView = false;
                             break;
                         }
                     }
 
                     //fetch all dependent map items after permissions check
-                    $mapSummaryItemIdToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map[0]->id, $mapId);
-
-                    if (!empty($mapSummaryItemIdToResolve) && isset($mapSummaryItemIdToResolve[0])) {
+                    $mapSummaryItemToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map['id'], $mapId);
+                    if (!empty($mapSummaryItemToResolve)) {
                         $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
-                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve[0]->object_id;
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.object_id',
                             '{n}.object_id',
                             '{n}.map_id'
                         );
-                        if (isset($mapIdGroupByMapId[$mapSummaryItemIdToResolve])) {
-                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapSummaryItemIdToResolve);
+                        if (isset($mapIdGroupByMapId[$objectId])) {
+                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $objectId);
                         }
-                        $dependentMapsIds[] = $mapSummaryItemIdToResolve;
+                        $dependentMapsIds[] = $objectId;
 
                         // resolve all Elements (host and/or services of dependent map)
                         $allDependentMapElementsFromSubMaps['mapsummaryitem'] = $MapsTable->getAllDependentMapsElements(
@@ -653,12 +648,10 @@ class MapeditorsController extends AppController {
                     }
 
                     //fetch all dependent map items after permissions check SIMPLE STATE ITEMS (TYPE MAP)
-                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps(null, $mapId);
+                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($objectId, $mapId);
 
                     if (!empty($mapItemToResolve)) {
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]->id, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
-
-                        $mapItemIdToResolve = $mapItemToResolve['object_id'];
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.object_id',
@@ -666,10 +659,10 @@ class MapeditorsController extends AppController {
                             '{n}.map_id'
                         );
 
-                        if (isset($mapIdGroupByMapId[$mapItemIdToResolve])) {
-                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapItemIdToResolve);
+                        if (isset($mapIdGroupByMapId[$objectId])) {
+                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $objectId);
                         }
-                        $dependentMapsIds[] = $mapItemIdToResolve;
+                        $dependentMapsIds[] = $objectId;
 
                         // resolve all Elements (host and/or services of dependent map)
                         $allDependentMapElementsFromSubMaps['mapitem'] = $MapsTable->getAllDependentMapsElements(
@@ -682,7 +675,7 @@ class MapeditorsController extends AppController {
 
                     //simple item (host/hostgroup/service/servicegroup)
                     $allDependentMapElementsFromSubMaps['item'] = $MapsTable->getAllDependentMapsElements(
-                        $map[0]->id,
+                        $map['id'],
                         $HostgroupsTable,
                         $ServicegroupsTable
                     );
@@ -735,7 +728,7 @@ class MapeditorsController extends AppController {
                     $properties = $MapsTable->getMapInformationForSummaryIcon(
                         $HoststatusTable,
                         $ServicestatusTable,
-                        $map[0]->toArray(),
+                        $map,
                         $hosts,
                         $services
                     );
@@ -872,8 +865,6 @@ class MapeditorsController extends AppController {
                 }
 
                 throw new NotFoundException('Host not found!');
-                return;
-
                 break;
             case 'service':
                 /** @var ServicesTable $ServicesTable */
@@ -924,8 +915,6 @@ class MapeditorsController extends AppController {
                 }
 
                 throw new NotFoundException('Service not found!');
-                return;
-
                 break;
             case 'hostgroup':
                 try {
@@ -980,7 +969,6 @@ class MapeditorsController extends AppController {
                 }
 
                 throw new NotFoundException('Service group not found!');
-                return;
                 break;
             case 'map':
                 /** @var MapsummaryitemsTable $MapsummaryitemsTable */
@@ -990,35 +978,34 @@ class MapeditorsController extends AppController {
 
                 if ($summaryStateItem) {
                     $map = $MapsTable->getMapsummaryitemForMapsummary($objectId);
+                    $mapId = $map['Mapsummaryitems']['map_id'];
                 } else {
                     $map = $MapsTable->getMapitemForMapsummary($objectId);
+                    $mapId = $map['Mapitems']['map_id'];
                 }
 
-                if (!empty($map) && isset($map[0])) {
-                    $map = $map[0]->toArray();
+                if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}._joinData.id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}.id'), false)) {
                             $allowView = false;
                             break;
                         }
                     }
 
                     //fetch all dependent map items after permissions check
-                    $mapSummaryItemIdToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($objectId, $map['id']);
-                    if (!empty($mapSummaryItemIdToResolve) && isset($mapSummaryItemIdToResolve[0])) {
-                        $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($map['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
-
-                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve[0]->toArray()['object_id'];
+                    $mapSummaryItemToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map['id'], $mapId);
+                    if (!empty($mapSummaryItemToResolve)) {
+                        $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.map_id'
                         );
-                        if (isset($mapIdGroupByMapId[$mapSummaryItemIdToResolve])) {
-                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapSummaryItemIdToResolve);
+                        if (isset($mapIdGroupByMapId[$objectId])) {
+                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $objectId);
                         }
-                        $dependentMapsIds[] = $mapSummaryItemIdToResolve;
+                        $dependentMapsIds[] = $objectId;
 
                         // resolve all Elements (host and/or services of dependent map)
                         $allDependentMapElementsFromSubMaps['mapsummaryitem'] = $MapsTable->getAllDependentMapsElements(
@@ -1029,10 +1016,9 @@ class MapeditorsController extends AppController {
                     }
 
                     //fetch all dependent map items after permissions check SIMPLE STATE ITEMS (TYPE MAP)
-                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps(null, $map['id']);
-
+                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($objectId, $mapId);
                     if (!empty($mapItemToResolve)) {
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
 
                         $mapItemIdToResolve = $mapItemToResolve['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
@@ -1044,7 +1030,7 @@ class MapeditorsController extends AppController {
                         if (isset($mapIdGroupByMapId[$mapItemIdToResolve])) {
                             $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapItemIdToResolve);
                         }
-                        $dependentMapsIds[] = $mapItemIdToResolve;
+                        $dependentMapsIds[] = $objectId;
                         // resolve all Elements (host and/or services of dependent map)
                         $allDependentMapElementsFromSubMaps['mapitem'] = $MapsTable->getAllDependentMapsElements(
                             $dependentMapsIds,
@@ -1120,7 +1106,6 @@ class MapeditorsController extends AppController {
                     return;
                 }
                 throw new NotFoundException('Map not found!');
-                return;
                 break;
             default:
                 throw new RuntimeException('Unknown map item type');
