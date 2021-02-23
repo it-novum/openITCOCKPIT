@@ -206,6 +206,21 @@ $objectDetails['maps'] = [
     'ui-sref' => 'MapsEdit({id:id})'
 ];
 
+/** Grafana User Dashboards Objects */
+if (Plugin::isLoaded('GrafanaModule')) {
+    $objectDetails['grafana_userdashboards'] = [
+        'label'   => __('User dashboards'),
+        'icon'    => 'fa fa-area-chart',
+        'rights'  => [
+            'action'     => 'edit',
+            'controller' => 'GrafanaUserdashboards',
+            'plugin'     => 'GrafanaModule'
+        ],
+        'ui-sref' => 'GrafanaUserdashboardsEdit({id: id})'
+    ];
+}
+
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
