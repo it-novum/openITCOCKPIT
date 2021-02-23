@@ -370,6 +370,16 @@ angular.module('openITCOCKPIT')
                             weight: 'bold'
                         }
                     },
+                    grafana_userdashboards: {
+                        shape: 'dot',
+                        color: '#f05a28',
+                        size: 15,
+                        icon: {
+                            code: '\uf1fe',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
                 },
                 physics: {
                     barnesHut: {

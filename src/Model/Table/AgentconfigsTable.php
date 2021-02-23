@@ -2,9 +2,9 @@
 
 namespace App\Model\Table;
 
-use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Agentconfig;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -28,10 +28,10 @@ use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
  * @method \App\Model\Entity\Agentconfig findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @deprecated
  */
 class AgentconfigsTable extends Table {
 
-    use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
     use CustomValidationTrait;
 
@@ -152,19 +152,32 @@ class AgentconfigsTable extends Table {
     }
 
     /**
-     * @param int $host_id
+     * @param int $hostId
      * @return bool
      */
-    public function existsByHostId($host_id) {
-        return $this->exists(['Agentconfigs.host_id' => $host_id]);
+    public function existsByHostId($hostId) {
+        return $this->exists(['Agentconfigs.host_id' => $hostId]);
+    }
+
+    /**
+     * @param $hostId
+     * @return Agentconfig|\Cake\Datasource\EntityInterface
+     */
+    public function getConfigByHostId($hostId){
+        return $this->find()
+            ->where([
+                'Agentconfigs.host_id' => $hostId
+            ])
+            ->firstOrFail();
     }
 
     /**
      * @param int $hostId
      * @param bool $defaultIfNoConfig
      * @return array|\Cake\Datasource\EntityInterface|null
+     * @deprecated
      */
-    public function getConfigByHostId($hostId, $defaultIfNoConfig = true) {
+    public function getConfigByHostIdOld($hostId, $defaultIfNoConfig = true) {
         /** @var ProxiesTable $ProxiesTable */
         $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
         $proxySettings = $ProxiesTable->getSettings();
@@ -216,6 +229,7 @@ class AgentconfigsTable extends Table {
     /**
      * @param int $hostId
      * @return \App\Model\Entity\Agentconfig|array|\Cake\Datasource\EntityInterface|null
+     * @deprecated
      */
     public function getConfigOrEmptyEntity($hostId) {
         $record = $this->find()
@@ -234,6 +248,7 @@ class AgentconfigsTable extends Table {
     /**
      * @param $hostId
      * @return bool
+     * @deprecated
      */
     public function pushNoticedForHost($hostId) {
         $query = $this->find()
@@ -248,6 +263,7 @@ class AgentconfigsTable extends Table {
     /**
      * @param $hostUuid
      * @param bool $pushNoticed
+     * @deprecated
      */
     public function updatePushNoticedForHostIfConfigExists($hostUuid, $pushNoticed = true) {
         /** @var HostsTable $HostsTable */
@@ -274,6 +290,7 @@ class AgentconfigsTable extends Table {
      * @param AgentconfigsFilter $AgentconfigsFilter
      * @param PaginateOMat|null $PaginateOMat
      * @return array
+     * @deprecated
      */
     public function getForList(AgentconfigsFilter $AgentconfigsFilter, PaginateOMat $PaginateOMat = null) {
         $query = $this->find('all')

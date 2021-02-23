@@ -202,18 +202,35 @@ class MapitemsTable extends Table {
      * @param $mapId
      * @return array
      */
+    //$map['id'], $mapId
     public function getMapitemsForMaps($objectId, $mapId) {
         $query = $this->find()
             ->select(['Mapitems.object_id'])
             ->where([
-                'Mapitems.map_id' => $mapId,
-                'Mapitems.type'   => 'map',
+                'Mapitems.map_id'    => $mapId,
+                'Mapitems.type'      => 'map',
+                'Mapitems.object_id' => $objectId
             ]);
-        if ($objectId !== null) {
-            $query->where([
-                'Mapitems.object_id' => $objectId,
-            ]);
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
         }
+        return $result->toArray();
+    }
+
+    /**
+     * @param $objectId
+     * @param $mapId
+     * @return array
+     */
+    public function getMapMapitemsByMap($objectId, $mapId) {
+        $query = $this->find()
+            ->select(['Mapitems.object_id'])
+            ->where([
+                'Mapitems.map_id'    => $mapId,
+                'Mapitems.type'      => 'map',
+                'Mapitems.object_id' => $objectId
+            ]);
 
         $result = $query->first();
         if (empty($result)) {
@@ -221,6 +238,7 @@ class MapitemsTable extends Table {
         }
         return $result->toArray();
     }
+
 
     /**
      * @param int $mapId

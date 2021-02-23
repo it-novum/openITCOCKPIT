@@ -253,7 +253,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_recovery', 'create')
             ->allowEmptyString('notify_on_recovery', null, false)
             ->add('notify_on_recovery', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -262,7 +262,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_warning', 'create')
             ->allowEmptyString('notify_on_warning', null, false)
             ->add('notify_on_warning', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -271,7 +271,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_critical', 'create')
             ->allowEmptyString('notify_on_critical', null, false)
             ->add('notify_on_critical', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -280,7 +280,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_unknown', 'create')
             ->allowEmptyString('notify_on_unknown', null, false)
             ->add('notify_on_unknown', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -289,7 +289,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_flapping', 'create')
             ->allowEmptyString('notify_on_flapping', null, false)
             ->add('notify_on_flapping', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -298,7 +298,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_downtime', 'create')
             ->allowEmptyString('notify_on_downtime', null, false)
             ->add('notify_on_downtime', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -605,7 +605,7 @@ class ServicetemplatesTable extends Table {
             ->disableHydration()
             ->first();
 
-        if(!$formatAsCake2){
+        if (!$formatAsCake2) {
             return $query;
         }
         return $this->formatFirstResultAsCake2($query, true);
@@ -723,14 +723,13 @@ class ServicetemplatesTable extends Table {
 
         $where = $ServicetemplateFilter->ajaxFilter();
         $where['Servicetemplates.container_id IN'] = $containerIds;
-        $query = $this->find('list')
-            ->select([
-                'Servicetemplates.id',
-                'Servicetemplates.name'
-            ])
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'template_name'
+        ])
             ->where($where)
             ->order([
-                'Servicetemplates.name' => 'asc'
+                'Servicetemplates.template_name' => 'asc'
             ])
             ->limit(ITN_AJAX_LIMIT)
             ->disableHydration();
@@ -742,13 +741,16 @@ class ServicetemplatesTable extends Table {
 
         $selectedServicetemplates = [];
         if (!empty($selected)) {
-            $query = $this->find('list')
+            $query = $this->find('list', [
+                'keyField'   => 'id',
+                'valueField' => 'template_name'
+            ])
                 ->where([
                     'Servicetemplates.id IN'           => $selected,
                     'Servicetemplates.container_id IN' => $containerIds
                 ])
                 ->order([
-                    'Servicetemplates.name' => 'asc'
+                    'Servicetemplates.template_name' => 'asc'
                 ]);
 
             $selectedServicetemplates = $query->toArray();
@@ -758,6 +760,7 @@ class ServicetemplatesTable extends Table {
         }
 
         $servicetemplates = $servicetemplatesWithLimit + $selectedServicetemplates;
+  
         asort($servicetemplates, SORT_FLAG_CASE | SORT_NATURAL);
         return $servicetemplates;
     }
@@ -1283,6 +1286,8 @@ class ServicetemplatesTable extends Table {
     /**
      * @param $id
      * @return array
+     * @deprecated
+     * @todo delete this method with oITC 4.3 !!
      */
     public function getServicetemplateForNewAgentService($id) {
         $query = $this->find()
