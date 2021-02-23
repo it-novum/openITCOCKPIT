@@ -705,3 +705,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     padding:0;
     text-shadow: 1px 1px #00C851;
 }
+
+.word-break {
+    word-break: break-all;
+}

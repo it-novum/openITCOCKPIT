@@ -635,8 +635,8 @@
                                 </td>
 
                                 <td>
-                                    <div
-                                        ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
+                                    <div class="word-break"
+                                         ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
                                 <td class="width-50">
