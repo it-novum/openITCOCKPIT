@@ -8,6 +8,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
 
 /**
@@ -25,7 +26,6 @@ use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
  * @method \App\Model\Entity\Agentcheck findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
- * @deprecated
  */
 class AgentchecksTable extends Table {
 
@@ -92,11 +92,18 @@ class AgentchecksTable extends Table {
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->existsIn(['servicetemplate_id'], 'Servicetemplates'));
+        $rules->add($rules->isUnique(['name']));
 
         return $rules;
     }
 
-    public function getAgentchecksIndex(AgentchecksFilter $AgentchecksFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+    /**
+     * @param AgentchecksFilter $AgentchecksFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getAgentchecksIndex(AgentchecksFilter $AgentchecksFilter, PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all');
         $where = $AgentchecksFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {
@@ -139,6 +146,29 @@ class AgentchecksTable extends Table {
     }
 
     /**
+     * @param $name
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getAgentcheckByName($name) {
+        return $this->query()
+            ->contain([
+                'Servicetemplates' => function (Query $q) {
+                    $q->contain([
+                        'Servicetemplatecommandargumentvalues' => [
+                            'Commandarguments'
+                        ]
+                    ]);
+                    return $q;
+                }
+            ])
+            ->where([
+                'Agentchecks.name' => $name
+            ])
+            ->disableHydration()
+            ->first();
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
@@ -153,75 +183,6 @@ class AgentchecksTable extends Table {
      */
     public function existsByNameAndServicetemplateId($name, $servicetemplateId) {
         return $this->exists(['Agentchecks.name' => $name, 'Agentchecks.servicetemplate_id' => $servicetemplateId]);
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getAgentchecksForMapping() {
-        $query = $this->find()
-            ->contain([
-                'Servicetemplates' => function (Query $q) {
-                    $q->contain([
-                        'Servicetemplatecommandargumentvalues' => [
-                            'Commandarguments'
-                        ]
-                    ]);
-                    return $q;
-                }
-            ])
-            ->disableHydration()
-            ->all();
-        $agentchecksTmp = $query->toArray();
-        $agentchecks = [];
-        foreach($agentchecksTmp as $agentcheck){
-            $agentchecks[$agentcheck['name']] = $agentcheck;
-        }
-
-        debug($agentchecks);
-
-        return $agentchecks;
-    }
-
-    /**
-     * @return array
-     * @deprecated
-     * @todo delete with oITC 4.3
-     */
-    public function getAgentchecksForMappingOld() {
-        $query = $this->find()
-            ->disableHydration()
-            ->all();
-        $agentchecks = $query->toArray();
-        if ($agentchecks === null) {
-            return [];
-        }
-
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
-        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-
-        foreach ($agentchecks as $index => $agentcheck) {
-            $servicetemplate = $ServicetemplatesTable->getServicetemplateForNewAgentService(
-                $agentcheck['servicetemplate_id']
-            );
-
-            $service = $servicetemplate;
-
-            $fieldsToRename = [
-                'id'                                   => 'servicetemplate_id',
-                'servicetemplatecommandargumentvalues' => 'servicecommandargumentvalues',
-            ];
-            foreach ($fieldsToRename as $srcField => $dscField) {
-                $service[$dscField] = $servicetemplate[$srcField];
-                unset($service[$srcField]);
-                unset($service['uuid'], $service['template_name']);
-            }
-
-            $agentchecks[$index]['service'] = $service;
-        }
-
-        return $agentchecks;
     }
 
 }

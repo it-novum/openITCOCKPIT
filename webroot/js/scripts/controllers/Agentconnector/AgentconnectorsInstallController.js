@@ -1,7 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsInstallController', function($scope, $http, $state, $stateParams, RedirectService, NotyService){
 
-        $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
 
         // Load current agent config if any exists
@@ -20,7 +19,11 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             if($scope.config.bool.enable_push_mode){
-                console.log('Implement redirect to push mode')
+                $state.go('AgentconnectorsSelectAgent', {
+                    hostId: $scope.hostId
+                }).then(function(){
+                    NotyService.scrollTop();
+                });
             }else{
                 $state.go('AgentconnectorsAutotls', {
                     hostId: $scope.hostId

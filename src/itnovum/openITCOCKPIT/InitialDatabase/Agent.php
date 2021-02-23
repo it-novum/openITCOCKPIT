@@ -234,18 +234,39 @@ class Agent extends Importer {
                 'plugin_name'        => 'DockerContainerRunning',
                 'servicetemplate_id' => 'ca73653f-2bba-4542-b11b-0bbd0ecc8b7a'
             ],
+            // Agent 3.x
+            [
+                'name'               => 'docker.running',
+                'plugin_name'        => 'DockerContainerRunning',
+                'servicetemplate_id' => 'ca73653f-2bba-4542-b11b-0bbd0ecc8b7a'
+            ],
+
             // Agent 1.x legacy - delete this
             [
                 'name'               => 'dockerstats',
                 'plugin_name'        => 'DockerContainerCPU',
                 'servicetemplate_id' => 'a9f7757e-34b0-4df9-8fca-ab8b594c2c26'
             ],
+            // Agent 3.x
+            [
+                'name'               => 'docker.cpu',
+                'plugin_name'        => 'DockerContainerCPU',
+                'servicetemplate_id' => 'a9f7757e-34b0-4df9-8fca-ab8b594c2c26'
+            ],
+
             // Agent 1.x legacy - delete this
             [
                 'name'               => 'dockerstats',
                 'plugin_name'        => 'DockerContainerMemory',
                 'servicetemplate_id' => 'aef4c1a8-ed71-4799-a164-3ad469baadc5'
             ],
+            // Agent 3.x
+            [
+                'name'               => 'docker.memory',
+                'plugin_name'        => 'DockerContainerMemory',
+                'servicetemplate_id' => '7f86be31-0bb9-45f1-82bd-898deeba2cbd'
+            ],
+
             [
                 'name'               => 'qemustats',
                 'plugin_name'        => 'QemuVMRunning',
@@ -266,6 +287,11 @@ class Agent extends Importer {
                 'plugin_name'        => 'Launchd',
                 'servicetemplate_id' => '7370c78c-fc04-459b-9fc8-39a76bbe0fba'
             ],
+            [
+                'name'               => 'libvirt',
+                'plugin_name'        => 'Libvirt',
+                'servicetemplate_id' => '4a0d6a78-8dd5-47c7-9edc-ed6a2aebce3a'
+            ],
         ];
         return $data;
     }
@@ -274,7 +300,7 @@ class Agent extends Importer {
         $data = [
             [
                 'name'             => 'check_oitc_agent_active',
-                'command_line'     => '/opt/openitc/receiver/bin/poller.php poller -H $HOSTNAME$ -c /opt/openitc/receiver/etc/production.json -C /opt/openitc/agent/server_ca.pem -K /opt/openitc/agent/server_ca.key',
+                'command_line'     => '/opt/openitc/receiver/bin/poller.php poller -H $HOSTNAME$ -c /opt/openitc/receiver/etc/production.json',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'be116ff1-f797-4ccb-993c-b80ccb337de8',
@@ -539,6 +565,10 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG2$',
                         'human_name' => 'Critical %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'ID'
                     ]
                 ]
             ],
@@ -558,6 +588,10 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG2$',
                         'human_name' => 'Critical %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Id'
                     ]
                 ]
             ],
@@ -815,6 +849,7 @@ class Agent extends Importer {
                 ]
             ],
 
+            // Agent 1.x legacy - delete this
             [
                 'name'             => 'check_oitc_agent_docker_memory',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
@@ -846,6 +881,41 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG5$',
                         'human_name' => 'Unit'
+                    ],
+                ]
+            ],
+            // Agent 3.x
+            [
+                'name'             => 'check_oitc_agent3_docker_memory',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '984cb470-80aa-4561-b138-208ee144c5ce',
+                'description'      => "Return the memory usage of a docker container.\n" .
+                    "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the container.\n" .
+                    "Identifier:  Name or id of the container.\n" .
+                    "Warning and Critical thresholds are percentage values from 0-100 or float values depending on the chosen unit.\n" .
+                    "AsPercentage: If set to 1 warning and critical thresholds will be a percentage (%) value otherwise warning and critical are MiB (Megabytes)",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Identifier Type'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Identifier'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'AsPercentage'
                     ],
                 ]
             ],
@@ -929,6 +999,40 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG2$',
                         'human_name' => 'Strict'
+                    ],
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_libvirt',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '04f9fe28-736e-4398-9f5c-5330778da9e6',
+                'description'      => "Check the state of a virtual machine running via libvirt.\n" .
+                    "UUID: Unique identifier of the VM\n" .
+                    "Memory warning and critical thresholds are percentage values from 0-100.\n" .
+                    "CPU warning and critical thresholds are percentage values from 0-100.\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'UUID'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Memory used warning (%)'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Memory used critical (%)'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'CPU used warning (%)'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'CPU used critical (%)'
                     ],
                 ]
             ],
@@ -1737,6 +1841,10 @@ class Agent extends Importer {
                     [
                         'commandargument_id' => '$ARG2$',
                         'value'              => '@20',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '0',
                     ]
                 ],
                 'customvariables'                           => [],
@@ -2248,7 +2356,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => 'fancy_name....',
+                        'value'              => 'container_name',
                     ]
                 ],
                 'customvariables'                           => [],
@@ -2312,7 +2420,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => 'fancy_name....',
+                        'value'              => 'container_name',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -2329,6 +2437,7 @@ class Agent extends Importer {
                 'contacts'                                  => []
             ],
 
+            // Agent 1.x legacy - delete this
             [
                 'uuid'                                      => 'aef4c1a8-ed71-4799-a164-3ad469baadc5',
                 'template_name'                             => 'OITC_AGENT_DOCKER_MEMORY',
@@ -2384,7 +2493,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => 'fancy_name....',
+                        'value'              => 'container_name',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -2397,6 +2506,82 @@ class Agent extends Importer {
                     [
                         'commandargument_id' => '$ARG5$',
                         'value'              => 'MiB',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
+            // Agent 3.x
+            [
+                'uuid'                                      => '7f86be31-0bb9-45f1-82bd-898deeba2cbd',
+                'template_name'                             => 'OITC_AGENT3_DOCKER_MEMORY',
+                'name'                                      => 'Docker Container Memory Usage',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '984cb470-80aa-4561-b138-208ee144c5ce',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '1',
+                'freshness_threshold'                       => '300',
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => 'name',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => 'container_name',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '50.0',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '80.5',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG5$',
+                        'value'              => '0',
                     ]
                 ],
                 'customvariables'                           => [],
@@ -2520,7 +2705,7 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => 'username',
+                        'value'              => 'checkname',
                     ],
                 ],
                 'customvariables'                           => [],
@@ -2656,6 +2841,82 @@ class Agent extends Importer {
                     [
                         'commandargument_id' => '$ARG2$',
                         'value'              => '1',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
+
+            [
+                'uuid'                                      => '4a0d6a78-8dd5-47c7-9edc-ed6a2aebce3a',
+                'template_name'                             => 'OITC_AGENT_LIBVIRT_VM',
+                'name'                                      => 'Check VM state via libvirt',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '04f9fe28-736e-4398-9f5c-5330778da9e6',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '1',
+                'freshness_threshold'                       => '300',
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '80',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '90',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '80',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG5$',
+                        'value'              => '90',
                     ]
                 ],
                 'customvariables'                           => [],
