@@ -221,6 +221,7 @@ class ServicesController extends AppController {
         $HoststatusFields
             ->currentState()
             ->isFlapping()
+            ->lastStateChange()
             ->lastHardStateChange();
         $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
