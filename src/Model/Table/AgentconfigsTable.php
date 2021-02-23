@@ -236,4 +236,22 @@ class AgentconfigsTable extends Table {
 
         return $this->emptyArrayIfNull($query->toArray());
     }
+
+    /**
+     * @return array
+     */
+    public function getOldConfigsThatNeedsMigration() {
+        // Get all records that are from Agent 1.x and needs to be "migrated" for Agent 3.x
+        $query = $this->find()
+            ->where([
+                'Agentconfigs.config' => ''
+            ])
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+
+        return $query->toArray();
+    }
 }

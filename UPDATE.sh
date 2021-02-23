@@ -237,6 +237,10 @@ echo "Check for browser push notification commands"
 #oitc docu_generator
 #oitc systemsettings_import
 
+#Migrate openITCOCKPIT Monitoring Agent 1.x database records for 3.x
+echo "Migrate openITCOCKPIT Monitoring Agent configuration for Agent version 3.x. This will take a while..."
+oitc agent --migrate
+
 NORESTART=false
 NOSYSTEMFILES=false
 for i in "$@"; do
