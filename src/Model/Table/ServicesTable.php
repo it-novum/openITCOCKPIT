@@ -3770,4 +3770,28 @@ class ServicesTable extends Table {
             'errors'             => $errors
         ];
     }
+
+    /**
+     * @param $hostId
+     * @return array
+     */
+    public function getServicesByHostIdAndContainerIdsOnlyWithServicegroups($hostId, $containerIds) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Servicegroups.id'
+            ])
+            ->innerJoinWith('Servicegroups', function (Query $q) {
+                return $q->innerJoinWith('Containers');
+            })
+            ->where([
+                'Services.host_id'         => $hostId,
+                'Containers.parent_id IN ' => $containerIds
+            ])->disableHydration()
+            ->all();
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

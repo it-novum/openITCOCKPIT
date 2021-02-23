@@ -65,6 +65,7 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -596,6 +597,8 @@ class HostsController extends AppController {
         $mergedHost = $HostMergerForView->getDataForView();
         $hostForChangelog = $mergedHost;
 
+        $oldSharingContainers = $hostForChangelog['Host']['hosts_to_containers_sharing']['_ids'];
+
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
             return;
@@ -662,6 +665,7 @@ class HostsController extends AppController {
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
             }
+
             $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
 
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
@@ -674,6 +678,36 @@ class HostsController extends AppController {
             );
             $requestData = $this->request->getData();
 
+            $newSharingContainers = array_merge(
+                $requestData['Host']['hosts_to_containers_sharing']['_ids'],
+                [$requestData['Host']['container_id']],
+            );
+            FileDebugger::dump($oldSharingContainers);
+            FileDebugger::dump($newSharingContainers);
+            $removedSharingContainers = array_diff($oldSharingContainers, $newSharingContainers);
+            FileDebugger::dump($removedSharingContainers);
+
+
+            if (!empty($removedSharingContainers)) {
+                //update dependent service groups and remove services if permissions has been gone
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+                $servicegroupsToUpdata = $ServicesTable->getServicesByHostIdAndContainerIdsOnlyWithServicegroups($id, $removedSharingContainers);
+                debug($servicegroupsToUpdata);
+                //$servicesToCheck  =
+
+                /** @var ServicesTable $ServicesTable */
+                /*
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                //debug($ServicesTable->getServicesByHostIdOnlyWithServicegroups($id));
+                foreach ($ServicesTable->getServicesByHostIdOnlyWithServicegroups($id) as $service){
+                    debug($service);
+                }
+                die();
+                */
+            }
+            die();
             if ($HostContainersPermissions->isPrimaryContainerChangeable() === false) {
                 //Overwrite post data. User is not permitted to set a new primary container id!
                 $requestData['Host']['container_id'] = $host['Host']['container_id'];
