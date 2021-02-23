@@ -706,6 +706,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     text-shadow: 1px 1px #00C851;
 }
 
+<<<<<<< HEAD
 .hr-text,
 .hr-text-brands {
     line-height: 1em;
@@ -757,3 +758,8 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 .chosen-container .chosen-drop {
     left: -99000px;
 }
+
+.word-break {
+    word-break: break-all;
+}
+
