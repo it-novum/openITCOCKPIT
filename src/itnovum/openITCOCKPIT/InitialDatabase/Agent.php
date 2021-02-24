@@ -2144,7 +2144,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '1:1',
+                        'value'              => '1:15',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
