@@ -1,28 +1,25 @@
 angular.module('openITCOCKPIT')
-    .controller('AgentchecksIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, $state){
-        $rootScope.lastObjectName = null;
+    .controller('AgentconnectorsPullController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'Agentchecks.name'));
+        SortService.setSort(QueryStringService.getValue('sort', 'Hosts.name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
         $scope.currentPage = 1;
 
         $scope.useScroll = true;
 
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Agentchecks: {
-                    name: '',
-                },
-                Servicetemplates: {
-                    template_name: ''
+                Hosts: {
+                    name: ''
                 }
             };
         };
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
-        $scope.deleteUrl = '/agentchecks/delete/';
+        $scope.deleteUrl = '/agentconnector/delete/';
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -35,20 +32,20 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
+
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Agentchecks.name]': $scope.filter.Agentchecks.name,
-                'filter[Servicetemplates.template_name]': $scope.filter.Servicetemplates.template_name,
+                'filter[Hosts.name]': $scope.filter.Hosts.name
             };
 
-            $http.get("/agentchecks/index.json", {
+            $http.get("/agentconnector/pull.json", {
                 params: params
             }).then(function(result){
-                $scope.agentchecks = result.data.all_agentchecks;
+                $scope.agents = result.data.agents;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
@@ -65,10 +62,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectAll = function(){
-            if($scope.agentchecks){
-                for(var key in $scope.agentchecks){
-                    if($scope.agentchecks[key].allow_edit === true){
-                        var id = $scope.agentchecks[key].id;
+            if($scope.agents){
+                for(var key in $scope.agents){
+                    if($scope.agents[key].allow_edit === true){
+                        var id = $scope.agents[key].id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -81,26 +78,27 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(agentcheck){
+        $scope.getObjectForDelete = function(agent){
             var object = {};
-            object[agentcheck.id] = agentcheck.name;
+            object[agent.id] = agent.host.name;
             return object;
         };
 
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.agentchecks){
+            for(var key in $scope.agents){
                 for(var id in selectedObjects){
-                    if(id == $scope.agentchecks[key].id){
-                        if($scope.agentchecks[key].allow_edit === true){
-                            objects[id] = $scope.agentchecks[key].name;
+                    if(id == $scope.agents[key].id){
+                        if($scope.agents[key].allow_edit === true){
+                            objects[id] = $scope.agents[key].host.name;
                         }
                     }
                 }
             }
             return objects;
         };
+
 
         $scope.changepage = function(page){
             $scope.undoSelection();

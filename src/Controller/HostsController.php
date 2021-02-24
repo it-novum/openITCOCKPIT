@@ -680,7 +680,7 @@ class HostsController extends AppController {
 
             $newSharingContainers = array_merge(
                 $requestData['Host']['hosts_to_containers_sharing']['_ids'],
-                [$requestData['Host']['container_id']],
+                [$requestData['Host']['container_id']]
             );
             FileDebugger::dump($oldSharingContainers);
             FileDebugger::dump($newSharingContainers);

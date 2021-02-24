@@ -1020,7 +1020,7 @@
                                                 <a class="dropdown-item" href="javascript:void(0);"
                                                    ng-click="submit('AgentconnectorsWizard')"
                                                    ng-if="!data.createAnother">
-                                                    <i class="fa fa fa-gear"></i>
+                                                    <i class="fa fa-user-secret"></i>
                                                     <?php echo __('Save and setup agent'); ?>
                                                 </a>
                                             <?php endif; ?>

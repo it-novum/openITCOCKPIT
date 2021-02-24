@@ -19,7 +19,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -2629,6 +2628,9 @@ class ServicesTable extends Table {
             ->contain([
                 'Servicetemplates'             => [
                     'Agentchecks',
+                    'Servicetemplatecommandargumentvalues' => [
+                        'Commandarguments'
+                    ]
                 ],
                 'Servicecommandargumentvalues' => [
                     'Commandarguments'
@@ -2643,28 +2645,17 @@ class ServicesTable extends Table {
 
         $services = $this->emptyArrayIfNull($query->toArray());
 
-        $ServicetemplateArgsCache = new KeyValueStore();
-
         foreach ($services as $index => $service) {
             if (!empty($service['servicecommandargumentvalues'])) {
                 //Arguments from service
                 $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
-                $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
-                $servicecommandargumentvalues = Hash::extract($servicecommandargumentvalues, '{n}.value');
             } else {
                 //Use arguments from service template
-                if (!$ServicetemplateArgsCache->has($service['servicetemplate_id'])) {
-                    $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit($service['servicetemplate_id']);
-
-                    $servicecommandargumentvalues = $servicetemplate['Servicetemplate']['servicetemplatecommandargumentvalues'];
-                    $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
-
-                    $servicecommandargumentvalues = Hash::extract($servicecommandargumentvalues, '{n}.value');
-                    $ServicetemplateArgsCache->set($service['servicetemplate_id'], $servicecommandargumentvalues);
-                }
-
-                $servicecommandargumentvalues = $ServicetemplateArgsCache->get($service['servicetemplate_id']);
+                $servicecommandargumentvalues = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
             }
+
+            $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
+            $servicecommandargumentvalues = Hash::extract($servicecommandargumentvalues, '{n}.value');
 
             $services[$index]['args_for_config'] = $servicecommandargumentvalues;
         }
@@ -3793,5 +3784,38 @@ class ServicesTable extends Table {
             ])->disableHydration()
             ->all();
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     *
+     * @param int $hostId
+     * @return array
+     */
+    public function getAgentServicesByHostId($hostId) {
+        $query = $this->find()
+            ->contain([
+                'Servicecommandargumentvalues',
+                'Servicetemplates' => [
+                    'Servicetemplatecommandargumentvalues'
+                ]
+            ])
+            ->where([
+                'Services.host_id'      => $hostId,
+                'Services.service_type' => OITC_AGENT_SERVICE
+            ])
+            ->disableHydration()
+            ->all();
+
+
+        $services = $this->emptyArrayIfNull($query->toArray());
+        foreach ($services as $index => $service) {
+            if (empty($service['servicecommandargumentvalues'])) {
+                if (($service['command_id'] === $service['servicetemplate']['command_id'] || $service['command_id'] === null)) {
+                    $services[$index]['servicecommandargumentvalues'] = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
+                }
+            }
+        }
+
+        return $services;
     }
 }

@@ -30,13 +30,11 @@ namespace App\Controller;
 use App\Form\AgentConfigurationForm;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Host;
-use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconfigsTable;
-use App\Model\Table\AgentconnectorTable;
-use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\PushAgentsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -45,24 +43,19 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
-use GuzzleHttp\Exception\GuzzleException;
-use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
-use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
-use itnovum\openITCOCKPIT\Agent\HttpLoader;
-use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
-use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
-use itnovum\openITCOCKPIT\Filter\AgenthostscacheFilter;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 class AgentconnectorController extends AppController {
@@ -89,701 +82,278 @@ class AgentconnectorController extends AppController {
      *
      */
 
+    /*********************************
+     *    AGENTS OVERVIEW METHODS    *
+     *********************************/
 
-    /**
-     * Wird vom agent im PUSH modus genutzt um sein CSR hinzuschicken und sein SSL Cert zu bekommen
-     * Wird es im GO Agent nicht mehr geben!
-     *
-     * @return \Cake\Http\Response
-     * @deprecated
-     */
-    public function certificate() {
-        if (!$this->isJsonRequest()) {
-            throw new BadRequestException();
-        }
-        $this->autoRender = false;
+    //Only for ACLs
+    public function overview() {
 
-        /** @var AgentconnectorTable $AgentconnectorTable */
-        $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
-        /** @var AgentCertificateData $AgentCertificateData */
-        $AgentCertificateData = new AgentCertificateData();
-
-        if (!empty($this->request->getData('csr')) && !empty($this->request->getData('hostuuid'))) {   //is certificate request
-            $hostuuid = $this->request->getData('hostuuid');
-
-            if (!empty($this->request->getData('checksum'))) {  //maybe a request from an already known agent? (match checksum of old agent crt)
-                if ($AgentconnectorTable->trustIsValid($this->request->getData('checksum'), $hostuuid)) {
-                    $json = json_encode($AgentCertificateData->getAgentCsr($hostuuid, $this->request->getData('csr'), $AgentconnectorTable));
-                    return $this->response->withType("application/json")->withStringBody($json);
-                } else {    //untrusted threw frontend / maybe an imitator / unknown error?
-                    return $this->response->withType("application/json")->withStringBody(json_encode(['unknown' => true]));
-                }
-            } else {    //not a request from an agent that has received a predecessor certificate
-                if ($AgentconnectorTable->isTrustedFromUser($hostuuid)) {
-                    if ($AgentconnectorTable->certificateNotYetGenerated($hostuuid)) {
-                        $json = json_encode($AgentCertificateData->getAgentCsr($hostuuid, $this->request->getData('csr'), $AgentconnectorTable));
-                        return $this->response->withType("application/json")->withStringBody($json);
-                    }
-                    return $this->response->withType("application/json")->withStringBody(json_encode(['checksum_missing' => true]));
-                } else {    //definitely not a request from a known agent!
-                    $hadErrors = false;
-                    if (!$AgentconnectorTable->getByHostUuid($hostuuid)) {
-                        $hadErrors = $AgentconnectorTable->addAgent($hostuuid, $_SERVER['REMOTE_ADDR'] ?? null, $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null);
-                    }
-
-                    if ($hadErrors) {
-                        return $this->response->withType("application/json")->withStringBody(json_encode(['error' => 'could not save data']));
-                    } else {
-                        //should return ['unknown' => true] if agent is unknown and needs to be confirmed by an user
-                        //echo json_encode(['unknown' => true]);
-                        return $this->response->withType("application/json")->withStringBody(json_encode(['unknown' => true]));
-                    }
-                }
-            }
-        }
     }
 
-    /**
-     * @deprecated
-     */
-    public function agents() {
+    public function pull() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
         }
 
-        /** @var AgentconnectorTable $AgentconnectorTable */
-        $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
-        /** @var HostsTable $HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
-        $AgentconnectorAgentsFilter = new AgentconnectorAgentsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgentconnectorAgentsFilter->getPage());
 
-        $unTrustedAgents = $AgentconnectorTable->getAgentsIndex($AgentconnectorAgentsFilter, $PaginateOMat);
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Hosts.name'
+            ]
+        ]);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $GenericFilter->getPage());
 
-        foreach ($unTrustedAgents as $key => $agentconnector) {
-            if (isset($agentconnector['Agentconnector']) && isset($agentconnector['Agentconnector']['hostuuid'])) {
-                try {
-                    $host = $HostsTable->getHostByUuid($agentconnector['Agentconnector']['hostuuid']);
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $agents = $AgentconfigsTable->getPullAgents($GenericFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($agents as $index => $agent) {
+            $agents[$index]['allow_edit'] = $this->allowedByContainerId(
+                Hash::extract(
+                    $agent['host']['hosts_to_containers_sharing'],
+                    '{n}.id'
+                )
+            );
+        }
 
-                    $unTrustedAgents[$key]['Host'] = [
-                        'id'   => $host->get('id'),
-                        'name' => $host->get('name')
-                    ];
+        $this->set('agents', $agents);
+        $this->viewBuilder()->setOption('serialize', ['agents']);
+    }
 
-                } catch (RecordNotFoundException $e) {
-                    //No host for this agent configuration - delete it
-                    $entity = $AgentconnectorTable->get($agentconnector['Agentconnector']['id']);
-                    $AgentconnectorTable->delete($entity);
+    public function push() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
-                    unset($unTrustedAgents[$key]);
-                }
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
 
+
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Hosts.name'
+            ],
+            'bool' => [
+                'hasHostAssignment'
+            ]
+        ]);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $GenericFilter->getPage());
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $agents = $PushAgentsTable->getPushAgents($GenericFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($agents as $index => $agent) {
+            $agents[$index]['last_update'] = $UserTime->format($agent['last_update']);
+            $agents[$index]['allow_edit'] = true;
+            if (!empty($agent['host']) && $this->hasRootPrivileges === false) {
+
+                $containerIds = explode(',', $agent['container_ids']);
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
+
+                $agents[$index]['allow_edit'] = $allowEdit;
             }
         }
 
-        $this->set('unTrustedAgents', $unTrustedAgents);
-        $toJson = ['unTrustedAgents', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['unTrustedAgents', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->set('agents', $agents);
+        $this->viewBuilder()->setOption('serialize', ['agents']);
     }
 
     /**
-     * @deprecated
+     * @param null $id
      */
-    public function untrustedAgents() {
+    public function delete($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        if (!$AgentconfigsTable->existsById($id)) {
+            throw new NotFoundException(__('Agent config not found'));
+        }
+
+        $agentConfig = $AgentconfigsTable->get($id, [
+            'contain' => [
+                'Hosts'
+            ]
+        ]);
+        if (!$this->allowedByContainerId($agentConfig->get('host')->get('container_id'))) {
+            $this->render403();
+            return;
+        }
+
+        if ($AgentconfigsTable->delete($agentConfig)) {
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+
+            return;
+        }
+
+        $this->response = $this->response->withStatus(400);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 
     /**
-     * @param null $action
      * @param null $id
-     * @deprecated
      */
-    public function pullConfigurations($action = null, $id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML Template
-            return;
+    public function delete_push_agent($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var AgentconfigsTable $AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
-        if ($this->request->is('post') && $action !== null && $id !== null) {
-            if ($AgentconfigsTable->existsById($id)) {
-                if ($action == 'edit') {
-                    $Agentconfig = $AgentconfigsTable->get($id);
-                    $Agentconfig->setAccess('id', false);
-                    $Agentconfig->setAccess('push_noticed', false);
-                    $Agentconfig = $AgentconfigsTable->patchEntity($Agentconfig, $this->request->getData('Agentconfig'));
-                    $AgentconfigsTable->save($Agentconfig);
-                    if (!$Agentconfig->hasErrors()) {
-                        $this->set('success', true);
-                        $this->viewBuilder()->setOption('serialize', ['success']);
-                        return;
-                    } else {
-                        $this->set('errors', $Agentconfig->getErrors());
-                        $this->viewBuilder()->setOption('serialize', ['errors']);
-                        return;
-                    }
-                } else if ($action == 'delete') {
-                    $Agentconfig = $AgentconfigsTable->get($id);
-                    if ($AgentconfigsTable->delete($Agentconfig)) {
-                        $this->set('success', true);
-                        $this->viewBuilder()->setOption('serialize', ['success']);
-                        return;
-                    }
-                }
+        if (!$PushAgentsTable->existsById($id)) {
+            throw new NotFoundException(__('Push Agent config not found'));
+        }
+
+        $pushAgent = $PushAgentsTable->get($id, [
+            'contain' => [
+                'Agentconfigs'
+            ]
+        ]);
+
+        if (!empty($pushAgent->get('agentconfig'))) {
+            // PushAgent has an host assignment via the Agentconfig.
+            // Check permissions if the user is allowed to delete it.
+
+            $hostId = $pushAgent->get('agentconfig')->get('host_id');
+            $host = $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+
+            if (!$this->allowedByContainerId($host->getContainerIds(), true)) {
+                $this->render403();
+                return;
             }
-            $this->set('success', false);
-            $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
         }
 
-        $AgentconfigsFilter = new AgentconfigsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgentconfigsFilter->getPage());
+        // If the PushAgent has no host assignment anyone can delete it
+        $agentConfig = $pushAgent->get('agentconfig');
 
-        $pullConfigurations = $AgentconfigsTable->getForList($AgentconfigsFilter, $PaginateOMat);
-
-        $this->set('pullConfigurations', $pullConfigurations);
-        $toJson = ['pullConfigurations', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['pullConfigurations', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
-    }
-
-    /**
-     * @param null $id
-     * @deprecated
-     */
-    public function pushCache($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
-        /** @var AgenthostscacheTable $AgenthostscacheTable */
-        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
-
-        if ($this->request->is('post') && $id !== null) {
-            if ($AgenthostscacheTable->existsById($id)) {
-                $Agenthostscache = $AgenthostscacheTable->get($id);
-                if ($AgenthostscacheTable->delete($Agenthostscache)) {
-                    $this->set('success', true);
-                    $this->viewBuilder()->setOption('serialize', ['success']);
-                    return;
-                }
+        if ($PushAgentsTable->delete($pushAgent)) {
+            if (!empty($agentConfig)) {
+                $AgentconfigsTable->delete($agentConfig);
             }
-            $this->set('success', false);
+            $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
+
             return;
         }
 
-        $AgenthostscacheFilter = new AgenthostscacheFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgenthostscacheFilter->getPage());
-        $pushCache = $AgenthostscacheTable->getForList($AgenthostscacheFilter, $PaginateOMat);
-
-        $this->set('pushCache', $pushCache);
-        $toJson = ['pushCache', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['pushCache', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->response = $this->response->withStatus(400);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        return;
     }
 
-    /**
-     * @param $agenthostscacheId
-     * @deprecated
-     */
-    public function downloadPushedCheckdata($agenthostscacheId) {
-        /** @var AgenthostscacheTable $AgenthostscacheTable */
-        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
-
-        if (!$AgenthostscacheTable->existsById($agenthostscacheId)) {
-            new NotFoundException();
-        }
-
-        $Agenthostscache = $AgenthostscacheTable->get($agenthostscacheId);
-        $checkdata = $Agenthostscache->get('checkdata');
-        header("Content-type: application/json");
-        header("Content-Disposition: attachment; filename=openITCOCKPIT-Agent-Push-Checkdata_" . $agenthostscacheId . ".json");
-        echo $checkdata;
-        die();
-    }
-
-    /**
-     * @throws MissingParameterExceptions
-     * @deprecated
-     */
-    public function changetrust() {
+    public function showOutput() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
         }
 
-        if (empty($this->request->getData('id'))) {
-            throw new MissingParameterExceptions('Agent id is missing!');
-        }
+        $isPullMode = $this->request->getQuery('mode', 'pull') === 'pull';
+        $id = $this->request->getQuery('id', 0);
 
-        /** @var AgentconnectorTable $AgentconnectorTable */
-        $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
+        $host = [];
+        $outputAsJson = [];
+        $config = [];
+        $pushAgentUuid = null;
 
-        $id = intval($this->request->getData('id'));
-        $trust = boolval($this->request->getData('trust'));
-
-        $agent = $AgentconnectorTable->get($id);
-        $agent = $AgentconnectorTable->patchEntity($agent, ['trusted' => $trust]);
-        $AgentconnectorTable->save($agent);
-        if ($agent->hasErrors()) {
-            $this->response = $this->response->withStatus(400);
-            $this->set('error', $agent->getErrors());
-            $this->viewBuilder()->setOption('serialize', ['error']);
-            return;
-        }
-    }
-
-    /**
-     * @param null $id
-     * @throws MissingParameterExceptions
-     * @deprecated
-     */
-    public function delete($id = null) {
-        if (!$this->isJsonRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
-        if ($id === null) {
-            throw new MissingParameterExceptions('Agent id is missing!');
-        }
-
-        /** @var AgentconnectorTable $AgentconnectorTable */
-        $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
-
-        if (!$AgentconnectorTable->existsById($id)) {
-            throw new NotFoundException(__('Invalid agent'));
-        }
-        $AgentconnectorTable->delete($AgentconnectorTable->get($id));
-    }
-
-    /**
-     * Method to receive check results from PUSH agents
-     *
-     * @deprecated
-     */
-    public function updateCheckdata() {
-        if (!$this->isJsonRequest()) {
-            throw new BadRequestException();
-        }
-
-        /** @var AgentconnectorTable $AgentconnectorTable */
-        $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
         /** @var AgentconfigsTable $AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
-
-        $receivedChecks = 0;
-
-        if (!empty($this->request->getData('checkdata')) && !empty($this->request->getData('hostuuid'))) {
-            $AgentconfigsTable->updatePushNoticedForHostIfConfigExists($this->request->getData('hostuuid'), true);
-
-            if ($AgentconnectorTable->isTrustedFromUserAndSaveAgentconnectorIfMissing($this->request->getData())) {
-                if (!$AgentconnectorTable->certificateNotYetGenerated($this->request->getData('hostuuid')) && !empty($this->request->getData('checksum'))) {  //should have a certificate!
-                    if ($AgentconnectorTable->trustIsValid($this->request->getData('checksum'), $this->request->getData('hostuuid'))) {
-                        $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'));
-                        //if new ca certificate was generated, echo new_ca with old ca checksum
-                    } else {    //trusted, but certificate is not valid! do not process checkdata!
-                        //maybe frontend hint, that the agent certificate has changed (and if it should be trusted)
-                    }
-                } else {    //does not have a certificate or autossl option was disabled after creation
-                    $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'), false);
-                }
-            } else {
-                //Agent is not trusted yet - only sache data to cache
-                /** @var AgenthostscacheTable $AgenthostscacheTable */
-                $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
-                $AgenthostscacheTable->saveCacheData($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'));
-            }
-        }
-
-        $this->set('receivedChecks', $receivedChecks);
-        $this->viewBuilder()->setOption('serialize', ['receivedChecks']);
-    }
-
-    /**
-     * @param $hostuuid
-     * @param $checkdata
-     * @param bool $passDataToNagios
-     * @return int
-     * @deprecated
-     */
-    private function processUpdateCheckdata($hostuuid, $checkdata, $passDataToNagios = true) {
-        /** @var AgenthostscacheTable $AgenthostscacheTable */
-        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
-        $AgenthostscacheTable->saveCacheData($hostuuid, $checkdata);
-
-        require_once "/opt/openitc/receiver/vendor/autoload.php";
-
-
-        $CheckConfig = new \itnovum\openITCOCKPIT\Checks\Receiver\CheckConfig('/opt/openitc/receiver/etc/production.json');
-        $config = $CheckConfig->getConfigByHostName($this->request->getData('hostuuid'));
-
-        $GearmanClient = new Gearman();
-        $receivedChecks = 0;
-
-        if (isset($config['checks']) && is_array($config['checks']) && isset($config['mode']) && $config['mode'] === 'push' && $passDataToNagios === true) {
-            foreach ($config['checks'] as $pluginConfig) {
-                $pluginName = $pluginConfig['plugin'];
-
-                $pluginClassName = sprintf('itnovum\openITCOCKPIT\Checks\Receiver\Plugins\%s', $pluginName);
-                if (!class_exists($pluginClassName)) {
-                    //Unknown Plugin
-                    continue;
-                }
-
-                /** @var  $Plugin \itnovum\openITCOCKPIT\Checks\Receiver\Plugins\PluginInterface */
-                $Plugin = new $pluginClassName($pluginConfig, json_decode($checkdata, true));
-
-                $pluginOutput = $Plugin->getOutput();
-                if (strlen($Plugin->getPerfdataSerialized()) > 0) {
-                    $pluginOutput .= '|' . $Plugin->getPerfdataSerialized();
-                }
-
-                $GearmanClient->sendBackground('cmd_external_command', [
-                    'command'     => 'PROCESS_SERVICE_CHECK_RESULT',
-                    'parameters'  => [
-                        'hostUuid'      => $config['uuid'],
-                        'serviceUuid'   => $pluginConfig['uuid'],
-                        'status_code'   => $Plugin->getStatuscode(),
-                        'plugin_output' => $pluginOutput,
-                        'long_output'   => ''
-                    ],
-                    'satelliteId' => 0 // Agent check results are always Master system!,
-                ]);
-
-                $receivedChecks++;
-            }
-        }
-
-        return $receivedChecks;
-    }
-
-    /**
-     * @param null $uuid
-     * @throws MissingParameterExceptions
-     * @deprecated
-     */
-    public function sendNewAgentConfig($uuid = null) {
-        if (!$this->isJsonRequest()) {
-            return;
-        }
-
-        if (empty($this->request->getData('config'))) {
-            throw new MissingParameterExceptions('config is missing!');
-        }
-
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var AgentconfigsTable $AgentconfigsTable */
-        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
-        $hostId = $HostsTable->getHostIdByUuid($uuid);
-        if (!$HostsTable->existsById($hostId)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
+        if ($isPullMode === true) {
+            // The Agent is running in Pull mode so we have an host association and an agent config.
 
-        $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
-        $this->set('success', 'false');
-        if ($AgentconfigsTable->existsByHostId($hostId)) {
-            $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
+            $hostId = $id;
 
-            $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
-            $response = $HttpLoader->updateAgentConfig($this->request->getData('config'));
-            $this->set('success', $response['success']);
-
-            if ($response['success'] === true) {
-                $agentconfigEntity = $AgentconfigsTable->getConfigOrEmptyEntity($hostId);
-
-                $agentconfig['modified'] = FrozenTime::now();
-                $agentconfig['basic_auth'] = 0;
-                $agentconfig['username'] = '';
-                $agentconfig['password'] = '';
-                if ($this->request->getData('config')['auth'] !== '') {
-                    $agentconfig['basic_auth'] = 1;
-                    $agentconfig['username'] = explode(':', $this->request->getData('config')['auth'])[0];
-                    $agentconfig['password'] = explode(':', $this->request->getData('config')['auth'])[1];
-                }
-                $agentconfig['port'] = $this->request->getData('config')['port'];
-                //$agentconfig['use_https'] = intval($this->request->getData('config')['try-autossl'] === 'true' || $this->request->getData('config')['try-autossl'] === true);
-                $agentconfigEntity = $AgentconfigsTable->patchEntity($agentconfigEntity, $agentconfig);
-                $AgentconfigsTable->save($agentconfigEntity);
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException();
             }
-        }
-        $this->viewBuilder()->setOption('serialize', ['success']);
-    }
 
-
-    /**
-     * @param null $uuid
-     * @throws MissingParameterExceptions
-     * @deprecated
-     */
-    public function getServicesToCreateByHostUuid($uuid = null) {
-        if (!$this->isJsonRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
-        if ($uuid === null) {
-            throw new MissingParameterExceptions('Host uuid is missing!');
-        }
-
-        /** @var HostsTable $HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var ServicesTable $ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        /** @var $AgentchecksTable AgentchecksTable */
-        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
-        /** @var $AgentconfigsTable AgentconfigsTable */
-        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
-        /** @var AgenthostscacheTable $AgenthostscacheTable */
-        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
-
-        $hostId = $HostsTable->getHostIdByUuid($uuid);
-        if (!$HostsTable->existsById($hostId)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
-        $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
-        $services = $ServicesTable->getServicesByHostIdForAgent($hostId, OITC_AGENT_SERVICE, false);
-        $services = $services->toArray();
-
-        $this->set('servicesToCreate', '');
-        $this->set('config', '');
-        $this->set('system', 'windows');
-        $this->set('mode', '');
-        $this->set('error', '');
-
-        if ($AgenthostscacheTable->existsByHostuuid($uuid)) {
-            $Agenthostscache = $AgenthostscacheTable->getByHostUuid($uuid);
-
-            if ($Agenthostscache->checkdata !== null && $Agenthostscache->checkdata !== '') {
-                $agentJsonOutput = json_decode($Agenthostscache->checkdata, true);
-                $this->set('mode', 'push');
+            /** @var Host $host */
+            $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+            if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+                $this->render403();
+                return;
             }
-        }
 
-        if ($AgentconfigsTable->existsByHostId($hostId)) {
-            $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
-
-            $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
-            try {
-                $response = $HttpLoader->queryAgent(true);
-
-                if (isset($response['response']) && !empty($response['response'])) {
-                    $agentJsonOutput = $response['response'];
-                }
-                if (isset($response['config']) && $response['config'] !== '' && !empty($response['config'])) {
-                    $this->set('config', $response['config']);
-                }
-                $this->set('mode', 'pull');
-            } catch (\Exception | GuzzleException $e) {
-                $errorMessage = $e->getMessage();
-                if (strpos($errorMessage, 'SSL routines:ssl3_get_record:wrong version number') !== false) {
-                    $HttpLoader->updateAgentProtocol(!boolval($agentconfig['use_https']));
-                }
-                $this->set('mode', 'could-be-pull');
-                $this->set('error', $errorMessage);
+            if (!$AgentconfigsTable->existsByHostId($host->id)) {
+                throw new NotFoundException();
             }
-        }
 
-        if (isset($agentJsonOutput) && !empty($agentJsonOutput)) {
-            if (isset($agentJsonOutput['agent']) && isset($agentJsonOutput['agent']['system']) && trim($agentJsonOutput['agent']['system']) != '') {
-                $this->set('system', strtolower(trim($agentJsonOutput['agent']['system'])));
-            }
-            $AgentServicesToCreate = new AgentServicesToCreate($agentJsonOutput, $AgentchecksTable->getAgentchecksForMapping(), $hostId, $services);
+            $record = $AgentconfigsTable->getConfigByHostId($hostId);
+            $AgentConfiguration = new AgentConfiguration();
+            $config = $AgentConfiguration->unmarshal($record->config);
 
-            $this->set('servicesToCreate', $AgentServicesToCreate->getServicesForFrontend());
-        }
-        $this->viewBuilder()->setOption('serialize', ['servicesToCreate', 'mode', 'config', 'system', 'error']);
-    }
-
-    /**
-     * @throws MissingParameterExceptions
-     * @deprecated
-     */
-    public function createServices() {
-        if (!$this->isJsonRequest()) {
-            return;
-        }
-
-        if (empty($this->request->getData('hostId'))) {
-            throw new MissingParameterExceptions('hostId parameter is missing!');
-        }
-
-        $serviceConfigs = $this->request->getData('serviceConfigs');
-        $hostId = $this->request->getData('hostId');
-
-        /** @var HostsTable $HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var ServicesTable $ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        /** @var $AgentchecksTable AgentchecksTable */
-        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
-        /** @var $AgentconfigsTable AgentconfigsTable */
-        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
-        /** @var AgenthostscacheTable $AgenthostscacheTable */
-        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
-
-        if (!$HostsTable->existsById($hostId)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
-        $host = $HostsTable->get($hostId);
-        $hostuuid = $HostsTable->getHostUuidById($hostId);
-        $services = $ServicesTable->getServicesByHostIdForAgent($hostId, OITC_AGENT_SERVICE, false);
-        $services = $services->toArray();
-
-        if ($AgenthostscacheTable->existsByHostuuid($hostuuid)) {
-            $Agenthostscache = $AgenthostscacheTable->getByHostUuid($hostuuid);
-
-            if ($Agenthostscache->checkdata !== null && $Agenthostscache->checkdata !== '') {
-                $agentJsonOutput = json_decode($Agenthostscache->checkdata, true);
-            }
-        }
-
-        if ($AgentconfigsTable->existsByHostId($hostId)) {
-            $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
-
-            try {
-                $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
-                $response = $HttpLoader->queryAgent(false);
-
-                if (isset($response['response']) && !empty($response['response'])) {
-                    $agentJsonOutput = $response['response'];
-                    $AgentconfigsTable->updatePushNoticedForHostIfConfigExists($hostuuid, false);
-                }
-            } catch (\Exception | GuzzleException $e) {
-                throw new \Exception('Could not connect to agent to fetch current check data! - ' . $e->getMessage());
-            }
-        }
-
-        if (isset($agentJsonOutput) && !empty($agentJsonOutput)) {
-            $AgentServicesToCreate = new AgentServicesToCreate($agentJsonOutput, $AgentchecksTable->getAgentchecksForMapping(), $hostId, $services);
-            $servicesToCreate = $AgentServicesToCreate->getServicesToCreate();
-        }
-
-        foreach ($serviceConfigs as $serviceConfig) {
-            foreach ($servicesToCreate as $receiverPlugin) {
-                foreach ($receiverPlugin as $service) {
-                    if ($service['name'] === $serviceConfig['name'] && $service['servicetemplate_id'] === $serviceConfig['servicetemplate_id']) {
-                        $this->createRealService($service, $host);
-                        continue 3;
-                    }
-                }
-            }
-        }
-
-        if ($this->request->getData('tryAutosslInPullMode') === true || $this->request->getData('tryAutosslInPullMode') === 'true') {
-            $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
-            $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
-            $response = $HttpLoader->sendCertificateToAgent();
-        }
-
-        if (isset($this->serviceCreationErrors) && is_array($this->serviceCreationErrors) && !empty($this->serviceCreationErrors)) {
-            $this->response = $this->response->withStatus(400);
-            $this->set('error', $this->serviceCreationErrors);
-            $this->viewBuilder()->setOption('serialize', ['error']);
-            return;
-        }
-        $this->set('success', 'true');
-        $this->viewBuilder()->setOption('serialize', ['success']);
-    }
-
-    /**
-     * @param $serviceInput
-     * @param Host $host
-     * @deprecated
-     */
-    private function createRealService($serviceInput, Host $host) {
-        /** @var $HosttemplatesTable HosttemplatesTable */
-        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
-        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-        /** @var $ServicesTable ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-
-        $request = ['Service' => $serviceInput];
-        $request['Host'] = [
-            [
-                'id'   => $host->get('id'),
-                'name' => $host->get('name')
-            ]
-        ];
-
-        $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($request['Service']['servicetemplate_id']);
-
-
-        $servicename = $request['Service']['name'];
-        if ($servicename === null || $servicename === '') {
-            $servicename = $servicetemplate['Servicetemplate']['name'];
-        }
-
-        $ServiceComparisonForSave = new ServiceComparisonForSave(
-            $request,
-            $servicetemplate,
-            $HostsTable->getContactsAndContactgroupsById($host->get('id')),
-            $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'))
-        );
-        $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
-        $serviceData['uuid'] = UUID::v4();
-        $serviceData['service_type'] = OITC_AGENT_SERVICE;
-
-        //Add required fields for validation
-        $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
-        $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
-        $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
-        $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
-        $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
-
-        $service = $ServicesTable->newEntity($serviceData);
-
-        $ServicesTable->save($service);
-        if ($service->hasErrors()) {
-            if (!isset($this->serviceCreationErrors)) {
-                $this->serviceCreationErrors = [];
-            }
-            $this->serviceCreationErrors[] = $service->getErrors();
+            // Send HTTP/s request to Agent to query/pull the data
+            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+            $outputAsArray = $AgentHttpClient->getResults();
+            $outputAsJson = json_encode($outputAsArray, JSON_PRETTY_PRINT);
         } else {
-            //No errors
-            $User = new User($this->getUser());
+            // Agent is running in Push mode. Maybe has no config and host yet
+            /** @var PushAgentsTable $PushAgentsTable */
+            $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
 
-            $extDataForChangelog = $ServicesTable->resolveDataForChangelog($request);
-            /** @var  ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'add',
-                'services',
-                $service->get('id'),
-                OBJECT_SERVICE,
-                $host->get('container_id'),
-                $User->getId(),
-                $host->get('name') . '/' . $servicename,
-                array_merge($request, $extDataForChangelog)
-            );
-
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
+            $pushAgentId = $id;
+            if (!$PushAgentsTable->existsById($pushAgentId)) {
+                throw new NotFoundException();
             }
+
+            $record = $PushAgentsTable->get($pushAgentId);
+
+            //Has this agent already a configuration?
+            if ($record->agentconfig_id !== null && $AgentconfigsTable->existsById($record->agentconfig_id)) {
+                $configEntity = $AgentconfigsTable->get($record->agentconfig_id);
+
+                /** @var Host $host */
+                $host = $HostsTable->getHostByIdForPermissionCheck($configEntity->host_id);
+                if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+                    $this->render403();
+                    return;
+                }
+
+                $AgentConfiguration = new AgentConfiguration();
+                $config = $AgentConfiguration->unmarshal($configEntity->config);
+            }
+
+            $checkresults = $record->checkresults;
+            if (empty($checkresults)) {
+                $checkresults = '[]';
+            }
+
+            $outputAsJson = json_encode(json_decode($checkresults, true), JSON_PRETTY_PRINT);
         }
+
+        $this->set('host', $host);
+        $this->set('config', $config);
+        $this->set('outputAsJson', $outputAsJson);
+        $this->set('pushAgentUuid', $record->uuid);
+        $this->viewBuilder()->setOption('serialize', ['host', 'config', 'outputAsJson', 'pushAgentUuid']);
     }
 
     /****************************
@@ -792,8 +362,28 @@ class AgentconnectorController extends AppController {
 
     // Step 1
     public function wizard() {
-        //Only ship HTML Template
-        return;
+        if (!$this->isApiRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        $hostId = $this->request->getQuery('hostId', 0);
+
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException();
+        }
+
+        $isConfigured = $AgentconfigsTable->existsByHostId($hostId);
+
+        $agentConfig = null;
+        $this->set('isConfigured', $isConfigured);
+        $this->viewBuilder()->setOption('serialize', ['isConfigured']);
+
     }
 
     // Step 2
@@ -857,6 +447,8 @@ class AgentconnectorController extends AppController {
             $dataWithDatatypes = $this->request->getData('config', []);
 
             $hostId = $this->request->getData('hostId', 0);
+            $pushAgentId = $this->request->getData('pushAgentId', 0);
+
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException();
             }
@@ -910,6 +502,29 @@ class AgentconnectorController extends AppController {
                 $this->set('error', $host->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
+            }
+
+            if ($pushAgentId > 0) {
+                /** @var PushAgentsTable $PushAgentsTable */
+                $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+                if ($PushAgentsTable->existsById($pushAgentId)) {
+
+                    // Was this Host already assigned to an Agent?
+                    $oldPushAgent = $PushAgentsTable->getByAgentconfigId($entity->id);
+
+                    if (!is_null($oldPushAgent)) {
+                        if ($pushAgentId !== $oldPushAgent->id) {
+                            // User assigned a new Agent to this host
+                            $oldPushAgent->set('agentconfig_id', null);
+                            $PushAgentsTable->save($oldPushAgent);
+                        }
+                    }
+
+                    $pushAgent = $PushAgentsTable->get($pushAgentId);
+                    $pushAgent->set('agentconfig_id', $entity->id);
+                    $PushAgentsTable->save($pushAgent);
+                }
+
             }
 
             $this->set('id', $entity->id);
@@ -1002,25 +617,24 @@ class AgentconnectorController extends AppController {
     }
 
     // Step 4 (In Push mode)
-    public function map_agent() {
-        if (!$this->isAngularJsRequest()) {
+    public function select_agent() {
+        if (!$this->isJsonRequest()) {
             return;
         }
 
-        // To be done
-    }
-
-    // Step 5
-    public function create_services() {
-        if (!$this->isAngularJsRequest()) {
-            return;
-        }
-
-        $hostId = $this->request->getQuery('hostId', 0);
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var AgentconfigsTable $AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+
+        if ($this->request->is('get')) {
+            $hostId = $this->request->getQuery('hostId', 0);
+        } else {
+            $hostId = (int)$this->request->getData('pushagent.host_id', 0);
+        }
+
         if (!$HostsTable->existsById($hostId)) {
             throw new NotFoundException();
         }
@@ -1031,14 +645,285 @@ class AgentconnectorController extends AppController {
             throw new NotFoundException();
         }
 
-        $agentresponse = json_decode('{"agent":{"last_updated":"2021-02-04 12:54:35.159801 +0100 CET m=+105.224382683","last_updated_timestamp":1612439675,"system":"darwin","system_uptime":7222,"kernel_version":"19.6.0","mac_version":"10.15.7","family":"Standalone Workstation","agent_version":"3.0.0","temperature_unit":"C"},"cpu":{"cpu_total_percentage":46.482412060315745,"cpu_percentage":[72.99999999995634,43.56435643567878,73.26732673268084,41.58415841581729],"cpu_total_percentage_detailed":{"User":13.532787739115658,"Nice":0,"System":22.195373581606738,"Idle":64.27183867927762,"Iowait":0},"cpu_percentage_detailed":[{"User":17.642360491079152,"Nice":0,"System":29.20603148631869,"Idle":53.15160802260215,"Iowait":0},{"User":10.076611485354665,"Nice":0,"System":15.980984182095561,"Idle":73.94240433254977,"Iowait":0},{"User":17.499761195104295,"Nice":0,"System":30.17870912456202,"Idle":52.32152968033369,"Iowait":0},{"User":8.912060270202547,"Nice":0,"System":13.415159196341921,"Idle":77.67278053345552,"Iowait":0}]},"disk_io":{"disk0":{"Timestamp":1612439675,"Device":"disk0","ReadBytes":11606379008,"WriteBytes":9829998592,"ReadCount":545160,"WriteCount":383146,"ReadTime":113830,"WriteTime":67800,"IoTime":181631,"Frequency_PerfTime":0,"Timestamp_Sys100NS":0,"AvgDiskSecPerRead":0,"AvgDiskSecPerRead_Base":0,"AvgDiskSecPerWrite":0,"AvgDiskSecPerWrite_Base":0,"PercentDiskTime":0,"PercentDiskTime_Base":0,"DiskReadsPerSec":0,"DiskWritesPerSec":0,"DiskReadBytesPerSec":0,"DiskWriteBytesPerSec":0,"AvgDiskBytesPerRead":0,"AvgDiskBytesPerRead_Base":0,"AvgDiskBytesPerWrite":0,"AvgDiskBytesPerWrite_Base":0,"ReadIopsPerSecond":103,"WriteIopsPerSecond":161,"TotalIopsPerSecond":265,"ReadBytesPerSecond":11103085,"WriteBytesPerSecond":47468836,"TotalAvgWait":1.1934703748488513,"ReadAvgWait":1.3467353951890035,"WriteAvgWait":1.0950805206265166,"ReadAvgSize":106833.81443298969,"WriteAvgSize":293211.43260533863,"LoadPercent":31.728571428571428}},"disks":[{"disk":{"device":"/dev/disk1s5","mountpoint":"/","fstype":"apfs","opts":["ro","journaled","multilabel"]},"usage":{"total":250790436864,"used":11265400832,"free":23741767680,"percent":32.18026853025365}},{"disk":{"device":"devfs","mountpoint":"/dev","fstype":"devfs","opts":["rw","nobrowse","multilabel"]},"usage":{"total":193536,"used":193536,"free":0,"percent":100}},{"disk":{"device":"/dev/disk1s1","mountpoint":"/System/Volumes/Data","fstype":"apfs","opts":["rw","nobrowse","journaled","multilabel"]},"usage":{"total":250790436864,"used":213957566464,"free":23741767680,"percent":90.01184931144273}},{"disk":{"device":"/dev/disk1s4","mountpoint":"/private/var/vm","fstype":"apfs","opts":["rw","nobrowse","journaled","multilabel"]},"usage":{"total":250790436864,"used":1074810880,"free":23741767680,"percent":4.331019594024165}},{"disk":{"device":"map auto_home","mountpoint":"/System/Volumes/Data/home","fstype":"autofs","opts":["rw","nobrowse","automounted","multilabel"]},"usage":{"total":0,"used":0,"free":0,"percent":0}},{"disk":{"device":"192.168.56.103:/opt/openitc/frontend","mountpoint":"/Users/dziegler/nfs/vbox/openitcockpit","fstype":"nfs","opts":["rw","multilabel"]},"usage":{"total":26284888064,"used":22417629184,"free":2508464128,"percent":89.93639277282026}},{"disk":{"device":"192.168.56.103:/opt/openitc/frontend-modules","mountpoint":"/Users/dziegler/nfs/vbox/openitcockpit-modules","fstype":"nfs","opts":["rw","multilabel"]},"usage":{"total":26284888064,"used":22417629184,"free":2508464128,"percent":89.93639277282026}}],"docker":[{"id":"b2e9bb5eed","name":"/youthful_edison","image":"ubuntu","size_rw":0,"size_root_fs":0,"state":"running","status":"Up Less than a second","network_rx":782,"network_tx":0,"cpu_percentage":0,"memory_percentage":0.18381739234604802,"disk_read":4694016,"disk_write":0,"memory_used":3833856}],"launchd_services":[{"IsRunning":true,"Pid":370,"Status":0,"Label":"com.apple.driverkit.AppleUserHIDEventDriver-(0x1000006d4)"},{"IsRunning":true,"Pid":335,"Status":0,"Label":"com.apple.CoreAuthentication.daemon"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.storedownloadd.daemon"},{"IsRunning":true,"Pid":179,"Status":0,"Label":"com.apple.coreservicesd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.touchbarserver"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.deleted_helper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.avbdeviced"},{"IsRunning":true,"Pid":299,"Status":0,"Label":"com.apple.cvmsServ"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.FontWorker"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.applessdstatistics"},{"IsRunning":true,"Pid":368,"Status":0,"Label":"com.apple.driverkit.AppleUserUSBHostHIDDeviceKB-(0x1000006c2)"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.hdiejectd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.corestorage.corestoraged"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.storagekitd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.EmbeddedOSInstallService"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.storereceiptinstaller"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.mobileactivationd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.seld"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.emond"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.iconservices.iconservicesagent"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.bluetoothReporter"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.logkextloadsd"},{"IsRunning":true,"Pid":109,"Status":0,"Label":"com.apple.syslogd"},{"IsRunning":true,"Pid":211,"Status":0,"Label":"com.apple.WindowServer"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.afpfs_checkafp"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.NetworkSharing"},{"IsRunning":true,"Pid":793,"Status":0,"Label":"com.apple.systemstats.microstackshot_periodic"},{"IsRunning":true,"Pid":366,"Status":0,"Label":"com.apple.driverkit.AppleUserUSBHostHIDDevice1-(0x1000006a6)"},{"IsRunning":true,"Pid":148,"Status":0,"Label":"com.apple.securityd"},{"IsRunning":true,"Pid":149,"Status":0,"Label":"com.apple.auditd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.nesessionmanager"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.cfnetwork.cfnetworkagent"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.recoverylogd"},{"IsRunning":true,"Pid":25763,"Status":0,"Label":"com.apple.ocspd"},{"IsRunning":true,"Pid":224,"Status":0,"Label":"com.apple.symptomsd"},{"IsRunning":true,"Pid":154,"Status":0,"Label":"com.apple.autofsd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.Kerberos.kadmind"},{"IsRunning":true,"Pid":110,"Status":0,"Label":"com.apple.UserEventAgent-System"},{"IsRunning":true,"Pid":543,"Status":0,"Label":"com.fortinet.config"},{"IsRunning":true,"Pid":351,"Status":0,"Label":"com.apple.coresymbolicationd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.PerfPowerServicesExtended"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.RFBEventHelper"},{"IsRunning":true,"Pid":562,"Status":0,"Label":"com.apple.suhelperd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.commerced"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.racoon"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.bosreporter"},{"IsRunning":true,"Pid":170,"Status":0,"Label":"com.apple.AirPlayXPCHelper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.metadata.mds.scan"},{"IsRunning":true,"Pid":116,"Status":0,"Label":"com.apple.mediaremoted"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.mbusertrampoline"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.RemoteDesktop.PrivilegeProxy"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.datastored"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.sysdiagnose"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.installd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.system_installd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.dvdplayback.setregion"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.SafeEjectGPUStartupDaemon"},{"IsRunning":true,"Pid":193,"Status":0,"Label":"com.apple.nehelper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.boswatcher"},{"IsRunning":true,"Pid":126,"Status":0,"Label":"com.apple.logd"},{"IsRunning":true,"Pid":177,"Status":0,"Label":"com.apple.tccd.system"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.accessoryd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.appleseed.fbahelperd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.IFCStart"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.mdmclient.daemon"},{"IsRunning":true,"Pid":341,"Status":0,"Label":"com.apple.ctkd"},{"IsRunning":true,"Pid":198,"Status":0,"Label":"com.apple.icloud.searchpartyd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.xpc.roleaccountd"},{"IsRunning":true,"Pid":303,"Status":0,"Label":"com.apple.nsurlsessiond_privileged"},{"IsRunning":true,"Pid":247,"Status":0,"Label":"com.apple.awdd"},{"IsRunning":true,"Pid":184,"Status":0,"Label":"com.apple.contextstored"},{"IsRunning":true,"Pid":248,"Status":0,"Label":"com.apple.mDNSResponderHelper.reloaded"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.diagnosticextensions.osx.wifi.helper"},{"IsRunning":true,"Pid":796,"Status":0,"Label":"com.apple.periodic-monthly"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.findmymacmessenger"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.CSCSupportd"},{"IsRunning":true,"Pid":297,"Status":0,"Label":"com.apple.secinitd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.kuncd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.corecaptured"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.scsid"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.nfrestore"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.IOAccelMemoryInfoCollector"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.msrpc.lsarpc"},{"IsRunning":true,"Pid":164,"Status":0,"Label":"com.apple.KernelEventAgent"},{"IsRunning":true,"Pid":178,"Status":0,"Label":"com.apple.aslmanager"},{"IsRunning":true,"Pid":25765,"Status":0,"Label":"com.apple.taskgated-helper"},{"IsRunning":true,"Pid":355,"Status":0,"Label":"com.apple.cmio.registerassistantservice"},{"IsRunning":true,"Pid":167,"Status":0,"Label":"com.apple.hidd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.RemotePairTool"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.fpsd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.rpmuxd"},{"IsRunning":true,"Pid":284,"Status":0,"Label":"com.apple.runningboardd"},{"IsRunning":true,"Pid":113,"Status":0,"Label":"com.apple.kextd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.tzlinkd"},{"IsRunning":true,"Pid":305,"Status":0,"Label":"com.apple.coreservices.appleevents"},{"IsRunning":true,"Pid":119,"Status":0,"Label":"com.apple.systemstats.analysis"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.AssetCacheTetheratorService"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.diagnosticd"},{"IsRunning":true,"Pid":122,"Status":0,"Label":"com.apple.powerd"},{"IsRunning":true,"Pid":182,"Status":0,"Label":"com.apple.authd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.driver.ethcheck"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.microsoft.teams.TeamsUpdaterDaemon"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.DumpPanic"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.vsdbutil"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.nfsd"},{"IsRunning":true,"Pid":188,"Status":0,"Label":"com.apple.airportd"},{"IsRunning":true,"Pid":190,"Status":0,"Label":"com.apple.audio.coreaudiod"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.akd"},{"IsRunning":true,"Pid":130,"Status":0,"Label":"com.apple.watchdogd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.pfd"},{"IsRunning":true,"Pid":135,"Status":0,"Label":"com.apple.iconservices.iconservicesd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.InstallerProgress"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.nlcd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.systemkeychain"},{"IsRunning":true,"Pid":519,"Status":0,"Label":"com.fortinet.fctservctl"},{"IsRunning":true,"Pid":329,"Status":0,"Label":"com.apple.netbiosd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.SCHelper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.softwareupdate_firstrun_tasks"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.periodic-weekly"},{"IsRunning":true,"Pid":356,"Status":0,"Label":"com.apple.nsurlstoraged"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.preferences.timezone.admintool"},{"IsRunning":true,"Pid":315,"Status":0,"Label":"com.apple.statd.notify"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"org.cups.cupsd"},{"IsRunning":true,"Pid":73016,"Status":0,"Label":"com.apple.noticeboard.state"},{"IsRunning":true,"Pid":281,"Status":0,"Label":"com.apple.lsd"},{"IsRunning":true,"Pid":326,"Status":0,"Label":"com.apple.metadata.mds.index"},{"IsRunning":true,"Pid":146,"Status":0,"Label":"com.apple.timed"},{"IsRunning":true,"Pid":147,"Status":0,"Label":"com.apple.usbmuxd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.IOBluetoothUSBDFU"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.biokitaggdd"},{"IsRunning":true,"Pid":609,"Status":0,"Label":"com.apple.CrashReporterSupportHelper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.security.authhost.00000000-0000-0000-0000-0000000186A7"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.DumpGPURestart"},{"IsRunning":true,"Pid":155,"Status":0,"Label":"com.apple.displaypolicyd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.wifip2pd"},{"IsRunning":true,"Pid":380,"Status":0,"Label":"com.apple.securityd_service"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.periodic-daily"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.alf"},{"IsRunning":true,"Pid":37260,"Status":0,"Label":"com.apple.PerfPowerServices"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.openssh.sshd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.dspluginhelperd"},{"IsRunning":true,"Pid":162,"Status":0,"Label":"com.apple.logind"},{"IsRunning":true,"Pid":166,"Status":0,"Label":"com.apple.bluetoothd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.msrpc.netlogon"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.diagnosticextensions.osx.spotlight.helper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.TrustEvaluationAgent.system"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.newsyslog"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.MRTd"},{"IsRunning":true,"Pid":173,"Status":0,"Label":"com.apple.taskgated"},{"IsRunning":true,"Pid":340,"Status":0,"Label":"com.apple.audio.systemsoundserverd"},{"IsRunning":true,"Pid":375,"Status":0,"Label":"com.apple.GSSCred"},{"IsRunning":true,"Pid":120,"Status":0,"Label":"com.apple.configd"},{"IsRunning":true,"Pid":328,"Status":0,"Label":"com.apple.captiveagent"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.diagnosticextensions.osx.getmobilityinfo.helper"},{"IsRunning":true,"Pid":334,"Status":0,"Label":"com.apple.AccountPolicyHelper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.fontmover"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.audio.toolbox.reporting.service"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.ManagedClient.mechanism"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.UserNotificationCenter"},{"IsRunning":true,"Pid":511,"Status":0,"Label":"com.apple.icloud.findmydeviced"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.speech.speechsynthesisd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.security.authtrampoline"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.rpcbind"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.AppleQEMUGuestAgent"},{"IsRunning":true,"Pid":139,"Status":0,"Label":"com.apple.coreduetd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.ucupdate.plist"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.sysdiagnose_helper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.ManagedClient.enroll"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.DesktopServicesHelper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.securechanneld"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.AssetCache.builtin"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.timezoneupdates.tzd"},{"IsRunning":true,"Pid":144,"Status":0,"Label":"com.docker.vmnetd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.multiversed"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.siri.acousticsignature"},{"IsRunning":true,"Pid":151,"Status":0,"Label":"com.apple.locationd"},{"IsRunning":true,"Pid":610,"Status":0,"Label":"com.apple.rtcreportingd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.Kerberos.kcm"},{"IsRunning":true,"Pid":347,"Status":0,"Label":"com.apple.coreservices.sharedfilelistd"},{"IsRunning":true,"Pid":180,"Status":0,"Label":"com.apple.loginwindow.77DE51D8-AEB6-415C-8D6E-3A9C0E906787"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.efilogin-helper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.loginwindow"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.cmio.iOSScreenCaptureAssistant"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.ReportMemoryException"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.sysextd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.rapportd"},{"IsRunning":true,"Pid":171,"Status":0,"Label":"com.apple.notifyd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.managedconfiguration.teslad"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.Kerberos.digest-service"},{"IsRunning":true,"Pid":114,"Status":0,"Label":"com.apple.fseventsd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.wifiFirmwareLoader"},{"IsRunning":true,"Pid":369,"Status":0,"Label":"com.apple.driverkit.AppleUserUSBHostHIDDevice0-(0x1000006c7)"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.systempreferences.cacheAssistant"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.automountd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.applefileutil"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.vix.cron"},{"IsRunning":true,"Pid":307,"Status":0,"Label":"com.apple.thermald"},{"IsRunning":true,"Pid":463,"Status":0,"Label":"com.apple.FileCoordination"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.eapolcfg_auth"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.audio.RemoteProcessingBlockRegistrar"},{"IsRunning":true,"Pid":283,"Status":0,"Label":"com.apple.audio.AudioComponentRegistrar"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.AssetCacheLocatorService"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.InstallerDiagnostics.installerdiagd"},{"IsRunning":true,"Pid":560,"Status":0,"Label":"com.apple.softwareupdated"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.systemadministration.writeconfig"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.diskmanagementstartup"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.MobileAccessoryUpdater"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.signpost.signpost_reporter"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.postfix.master"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.emond.aslmanager"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.ckdiscretionaryd"},{"IsRunning":true,"Pid":495,"Status":0,"Label":"com.apple.SubmitDiagInfo"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.microsoft.office.licensingV2.helper"},{"IsRunning":true,"Pid":309,"Status":0,"Label":"com.apple.bootinstalld"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.mbsystemadministration"},{"IsRunning":true,"Pid":352,"Status":0,"Label":"com.apple.cmio.AppleCameraAssistant"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.msrpc.mdssvc"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.dpd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.corestorage.corestoragehelperd"},{"IsRunning":true,"Pid":197,"Status":0,"Label":"com.apple.trustd"},{"IsRunning":true,"Pid":362,"Status":0,"Label":"com.apple.ReportCrash.Root"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.microsoft.OneDriveStandaloneUpdaterDaemon"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.cmio.IIDCVideoAssistant"},{"IsRunning":false,"Pid":0,"Status":78,"Label":"com.apple.metrickitd"},{"IsRunning":true,"Pid":176,"Status":0,"Label":"com.apple.security.syspolicy"},{"IsRunning":true,"Pid":324,"Status":0,"Label":"com.apple.driverkit.AppleUserHIDEventDriver-(0x100000553)"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.biometrickitd"},{"IsRunning":true,"Pid":306,"Status":0,"Label":"com.apple.usbd"},{"IsRunning":true,"Pid":174,"Status":0,"Label":"com.apple.distnoted.xpc.daemon"},{"IsRunning":true,"Pid":245,"Status":0,"Label":"com.apple.mDNSResponder.reloaded"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.bridgeOSUpdateProxy"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.bsd.dirhelper"},{"IsRunning":true,"Pid":163,"Status":0,"Label":"com.apple.revisiond"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.smb.preferences"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.findmymacd"},{"IsRunning":true,"Pid":175,"Status":0,"Label":"com.apple.cfprefsd.xpc.daemon"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.xartstorageremoted"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.unmountassistant.sysagent"},{"IsRunning":true,"Pid":745,"Status":0,"Label":"com.apple.lskdd"},{"IsRunning":true,"Pid":112,"Status":0,"Label":"com.apple.uninstalld"},{"IsRunning":true,"Pid":300,"Status":0,"Label":"com.apple.colorsync.displayservices"},{"IsRunning":true,"Pid":365,"Status":0,"Label":"com.apple.xpc.smd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.gkreport"},{"IsRunning":true,"Pid":121,"Status":0,"Label":"com.apple.endpointsecurity.endpointsecurityd"},{"IsRunning":true,"Pid":301,"Status":0,"Label":"com.apple.colorsyncd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.backupd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.eoshostd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.airport.wps"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.netauth.sys.auth"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.testmanagerd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.nfsconf"},{"IsRunning":true,"Pid":127,"Status":0,"Label":"com.apple.mobile.keybagd"},{"IsRunning":true,"Pid":172,"Status":0,"Label":"com.apple.MobileFileIntegrity"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.configureLocalKDC"},{"IsRunning":true,"Pid":493,"Status":0,"Label":"com.apple.spindump"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.lockd"},{"IsRunning":true,"Pid":133,"Status":0,"Label":"com.apple.metadata.mds"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.wwand"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.driver.eficheck"},{"IsRunning":true,"Pid":308,"Status":0,"Label":"com.apple.cmio.VDCAssistant"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.printtool.daemon"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.pfctl"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.CommCenterRootHelper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.security.authhost"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.security.agent.login"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.ionodecache"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.gssd"},{"IsRunning":true,"Pid":336,"Status":0,"Label":"com.apple.CryptoTokenKit.ahp"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.remotemanagementd"},{"IsRunning":true,"Pid":780,"Status":0,"Label":"com.apple.PerformanceAnalysis.animationperfd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.security.agent.login.00000000-0000-0000-0000-0000000186A7"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.afpfs_afpLoad"},{"IsRunning":true,"Pid":145,"Status":0,"Label":"com.apple.coreservices.launchservicesd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.dynamic_pager"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.microsoft.OneDriveUpdaterDaemon"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.csrutil.report"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.iokit.ioserviceauthorized"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.Kerberos.kdc"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.it-novum.openitcockpit.agent"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.msrpc.srvsvc"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.osanalytics.osanalyticshelper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.bnepd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.dpaudiothru"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.familycontrols"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.diagnosticextensions.osx.timemachine.helper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.kcproxy"},{"IsRunning":true,"Pid":530,"Status":0,"Label":"com.apple.adid"},{"IsRunning":true,"Pid":371,"Status":0,"Label":"com.apple.AmbientDisplayAgent"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.storeagent.daemon"},{"IsRunning":true,"Pid":508,"Status":0,"Label":"com.apple.wifivelocityd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.installandsetup.systemmigrationd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.metadata.mds.spindump"},{"IsRunning":true,"Pid":479,"Status":0,"Label":"com.apple.WirelessRadioManager"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.Kerberos.kpasswdd"},{"IsRunning":true,"Pid":256,"Status":0,"Label":"com.apple.mobileassetd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.InstallerDiagnostics.installerdiagwatcher"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.UpdateSettings"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.msrpc.wkssvc"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.nfcd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.warmd"},{"IsRunning":true,"Pid":367,"Status":0,"Label":"com.apple.driverkit.AppleUserHIDEventDriver-(0x1000006ac)"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.teamviewer.Helper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.powerd.swd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.xpc.uscwoap"},{"IsRunning":true,"Pid":137,"Status":0,"Label":"com.apple.diskarbitrationd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.ManagedClient"},{"IsRunning":true,"Pid":789,"Status":0,"Label":"com.apple.dprivacyd"},{"IsRunning":true,"Pid":295,"Status":0,"Label":"com.apple.backupd-helper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.microsoft.autoupdate.helper"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.netauth.sys.gui"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.postfix.newaliases"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.systemstats.daily"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.bluetoothaudiod"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.startupdiskhelper"},{"IsRunning":true,"Pid":302,"Status":0,"Label":"com.apple.ifdreader"},{"IsRunning":true,"Pid":142,"Status":0,"Label":"com.apple.opendirectoryd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.appstored"},{"IsRunning":true,"Pid":143,"Status":0,"Label":"com.apple.apsd"},{"IsRunning":true,"Pid":604,"Status":0,"Label":"com.apple.DataDetectorsSourceAccess"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.internal.aupbregistrarservice"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.ManagedClient.cloudconfigurationd"},{"IsRunning":true,"Pid":497,"Status":0,"Label":"com.apple.GameController.gamecontrollerd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.fortinet.fctctl"},{"IsRunning":true,"Pid":304,"Status":0,"Label":"com.apple.apfsd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.AssetCacheManagerService"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.sessionlogoutd"},{"IsRunning":true,"Pid":157,"Status":0,"Label":"com.apple.dasd"},{"IsRunning":true,"Pid":563,"Status":0,"Label":"com.apple.xtyped"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.storeaccountd.daemon"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.cmio.AVCAssistant"},{"IsRunning":true,"Pid":183,"Status":0,"Label":"com.apple.analyticsd"},{"IsRunning":true,"Pid":325,"Status":0,"Label":"com.apple.diskmanagementd"},{"IsRunning":true,"Pid":289,"Status":0,"Label":"com.apple.CodeSigningHelper"},{"IsRunning":true,"Pid":168,"Status":0,"Label":"com.apple.sandboxd"},{"IsRunning":true,"Pid":353,"Status":0,"Label":"com.apple.sysmond"},{"IsRunning":true,"Pid":169,"Status":0,"Label":"com.apple.corebrightnessd"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.tailspind"},{"IsRunning":false,"Pid":0,"Status":0,"Label":"com.apple.storeassetd.daemon"}],"memory":{"total":17179869184,"available":6366728192,"percent":62.94076442718506,"used":10813140992,"free":631058432,"active":0,"inactive":5735669760,"wired":4687364096},"net_io":{"awdl0":{"name":"awdl0","timestamp":1612439677,"bytes_sent":260,"bytes_recv":0,"packets_sent":2,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"bridg":{"name":"bridg","timestamp":1612439677,"bytes_sent":0,"bytes_recv":0,"packets_sent":0,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"en0":{"name":"en0","timestamp":1612439677,"bytes_sent":12161670,"bytes_recv":316335314,"packets_sent":117343,"packets_recv":262825,"errin":0,"errout":0,"dropin":0,"dropout":2,"avg_bytes_sent_ps":537,"avg_bytes_recv_ps":747,"avg_packets_sent_ps":5,"avg_packets_recv_ps":6,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"en1":{"name":"en1","timestamp":1612439677,"bytes_sent":0,"bytes_recv":0,"packets_sent":0,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"en2":{"name":"en2","timestamp":1612439677,"bytes_sent":0,"bytes_recv":0,"packets_sent":0,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"gif0":{"name":"gif0","timestamp":1612439677,"bytes_sent":0,"bytes_recv":0,"packets_sent":0,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"llw0":{"name":"llw0","timestamp":1612439677,"bytes_sent":0,"bytes_recv":0,"packets_sent":0,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"lo0":{"name":"lo0","timestamp":1612439677,"bytes_sent":2200184,"bytes_recv":2200184,"packets_sent":3060,"packets_recv":3060,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":7453,"avg_bytes_recv_ps":7453,"avg_packets_sent_ps":1,"avg_packets_recv_ps":1,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"p2p0":{"name":"p2p0","timestamp":1612439677,"bytes_sent":0,"bytes_recv":0,"packets_sent":0,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"stf0":{"name":"stf0","timestamp":1612439677,"bytes_sent":0,"bytes_recv":0,"packets_sent":0,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"utun0":{"name":"utun0","timestamp":1612439677,"bytes_sent":200,"bytes_recv":0,"packets_sent":2,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"utun1":{"name":"utun1","timestamp":1612439677,"bytes_sent":200,"bytes_recv":0,"packets_sent":2,"packets_recv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":0,"avg_bytes_recv_ps":0,"avg_packets_sent_ps":0,"avg_packets_recv_ps":0,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0},"vboxn":{"name":"vboxn","timestamp":1612439677,"bytes_sent":148014074,"bytes_recv":395859365,"packets_sent":2242899,"packets_recv":1283251,"errin":0,"errout":0,"dropin":0,"dropout":0,"avg_bytes_sent_ps":143,"avg_bytes_recv_ps":153,"avg_packets_sent_ps":2,"avg_packets_recv_ps":1,"avg_errin":0,"avg_errout":0,"avg_dropin":0,"avg_dropout":0}},"net_stats":{"awdl0":{"isup":true,"duplex":0,"speed":0,"mtu":1484},"bridge0":{"isup":true,"duplex":0,"speed":0,"mtu":1500},"en0":{"isup":true,"duplex":0,"speed":0,"mtu":1500},"en1":{"isup":true,"duplex":0,"speed":0,"mtu":1500},"en2":{"isup":true,"duplex":0,"speed":0,"mtu":1500},"gif0":{"isup":false,"duplex":0,"speed":0,"mtu":1280},"llw0":{"isup":true,"duplex":0,"speed":0,"mtu":1500},"lo0":{"isup":true,"duplex":0,"speed":0,"mtu":16384},"p2p0":{"isup":true,"duplex":0,"speed":0,"mtu":2304},"stf0":{"isup":false,"duplex":0,"speed":0,"mtu":1280},"utun0":{"isup":true,"duplex":0,"speed":0,"mtu":1380},"utun1":{"isup":true,"duplex":0,"speed":0,"mtu":2000},"vboxnet0":{"isup":true,"duplex":0,"speed":0,"mtu":1500}},"processes":[{"pid":1,"ppid":0,"username":"root","name":"launchd","cpu_percent":0.20507837651190677,"memory_percent":0.10788441,"cmdline":"/sbin/launchd","status":["sleep"],"exec":"/sbin/launchd","nice_level":0,"num_fds":0,"Memory":{"rss":18534400,"vms":4416438272,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":109,"ppid":1,"username":"root","name":"syslogd","cpu_percent":0.006808330992487877,"memory_percent":0.0063180923,"cmdline":"/usr/sbin/syslogd","status":["sleep"],"exec":"/usr/sbin/syslogd","nice_level":0,"num_fds":0,"Memory":{"rss":1085440,"vms":4409393152,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":110,"ppid":1,"username":"root","name":"UserEventAgent","cpu_percent":0.03154040168775435,"memory_percent":0.0685215,"cmdline":"/usr/libexec/UserEventAgent (System)","status":["sleep"],"exec":"/usr/libexec/UserEventAgent","nice_level":0,"num_fds":0,"Memory":{"rss":11771904,"vms":4440363008,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":112,"ppid":1,"username":"root","name":"uninstalld","cpu_percent":0.002500987054834871,"memory_percent":0.013327599,"cmdline":"/System/Library/PrivateFrameworks/Uninstall.framework/Resources/uninstalld","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/Uninstall.framework/Versions/A/Resources/uninstalld","nice_level":0,"num_fds":0,"Memory":{"rss":2289664,"vms":4391100416,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":113,"ppid":1,"username":"root","name":"kextd","cpu_percent":0.04473962443859419,"memory_percent":0.10151863,"cmdline":"/usr/libexec/kextd","status":["sleep"],"exec":"/usr/libexec/kextd","nice_level":0,"num_fds":0,"Memory":{"rss":17440768,"vms":4970733568,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":114,"ppid":1,"username":"root","name":"fseventsd","cpu_percent":0.147695429324931,"memory_percent":0.049495697,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Support/fseventsd","status":["sleep"],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Support/fseventsd","nice_level":0,"num_fds":0,"Memory":{"rss":8503296,"vms":4425486336,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":116,"ppid":1,"username":"root","name":"mediaremoted","cpu_percent":0.0027788245196779205,"memory_percent":0.073981285,"cmdline":"/System/Library/PrivateFrameworks/MediaRemote.framework/Support/mediaremoted","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/MediaRemote.framework/Support/mediaremoted","nice_level":0,"num_fds":0,"Memory":{"rss":12709888,"vms":4440526848,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":119,"ppid":1,"username":"root","name":"systemstats","cpu_percent":0.021396834347750627,"memory_percent":0.061631203,"cmdline":"/usr/sbin/systemstats --daemon","status":["sleep"],"exec":"/usr/sbin/systemstats","nice_level":0,"num_fds":0,"Memory":{"rss":10588160,"vms":4449447936,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":120,"ppid":1,"username":"root","name":"configd","cpu_percent":0.0170895875930899,"memory_percent":0.05452633,"cmdline":"/usr/libexec/configd","status":["sleep"],"exec":"/usr/libexec/configd","nice_level":0,"num_fds":0,"Memory":{"rss":9367552,"vms":4443787264,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":121,"ppid":1,"username":"root","name":"endpointsecurityd","cpu_percent":0.0004168168112026824,"memory_percent":0.006508827,"cmdline":"endpointsecurityd","status":["sleep"],"exec":"/usr/libexec/endpointsecurityd","nice_level":0,"num_fds":0,"Memory":{"rss":1118208,"vms":4400840704,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":122,"ppid":1,"username":"root","name":"powerd","cpu_percent":0.05321331142355958,"memory_percent":0.040388107,"cmdline":"/System/Library/CoreServices/powerd.bundle/powerd","status":["sleep"],"exec":"/System/Library/CoreServices/powerd.bundle/powerd","nice_level":0,"num_fds":0,"Memory":{"rss":6938624,"vms":4438953984,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":126,"ppid":1,"username":"root","name":"logd","cpu_percent":0.06502269544033813,"memory_percent":0.16601086,"cmdline":"/usr/libexec/logd","status":["sleep"],"exec":"/usr/libexec/logd","nice_level":0,"num_fds":0,"Memory":{"rss":28520448,"vms":4497940480,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":127,"ppid":1,"username":"root","name":"keybagd","cpu_percent":0.0006946830299541508,"memory_percent":0.016975403,"cmdline":"/usr/libexec/keybagd -t 15","status":["sleep"],"exec":"/usr/libexec/keybagd","nice_level":0,"num_fds":0,"Memory":{"rss":2916352,"vms":4408565760,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":130,"ppid":1,"username":"root","name":"watchdogd","cpu_percent":0.0029176518936849145,"memory_percent":0.017166138,"cmdline":"/usr/libexec/watchdogd","status":["sleep"],"exec":"/usr/libexec/watchdogd","nice_level":0,"num_fds":0,"Memory":{"rss":2949120,"vms":4408725504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":133,"ppid":1,"username":"root","name":"mds","cpu_percent":0.19978857639269154,"memory_percent":0.45719147,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Support/mds","status":["running"],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mds","nice_level":0,"num_fds":0,"Memory":{"rss":78544896,"vms":4574531584,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":135,"ppid":1,"username":"_iconservices","name":"iconservicesd","cpu_percent":0.0006946618815247887,"memory_percent":0.010442734,"cmdline":"/System/Library/CoreServices/iconservicesd","status":["sleep"],"exec":"/System/Library/CoreServices/iconservicesd","nice_level":0,"num_fds":0,"Memory":{"rss":1794048,"vms":4410290176,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":137,"ppid":1,"username":"root","name":"diskarbitrationd","cpu_percent":0.008474772530811713,"memory_percent":0.029563904,"cmdline":"/usr/libexec/diskarbitrationd","status":["sleep"],"exec":"/usr/libexec/diskarbitrationd","nice_level":0,"num_fds":0,"Memory":{"rss":5079040,"vms":4436983808,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":139,"ppid":1,"username":"root","name":"coreduetd","cpu_percent":0.006251779963376033,"memory_percent":0.07908344,"cmdline":"/usr/libexec/coreduetd","status":["sleep"],"exec":"/usr/libexec/coreduetd","nice_level":0,"num_fds":0,"Memory":{"rss":13586432,"vms":4447473664,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":142,"ppid":1,"username":"root","name":"opendirectoryd","cpu_percent":0.08377301044472502,"memory_percent":0.09458065,"cmdline":"/usr/libexec/opendirectoryd","status":["sleep"],"exec":"/usr/libexec/opendirectoryd","nice_level":0,"num_fds":0,"Memory":{"rss":16248832,"vms":4458065920,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":143,"ppid":1,"username":"root","name":"apsd","cpu_percent":0.012086553835891422,"memory_percent":0.0947237,"cmdline":"/System/Library/PrivateFrameworks/ApplePushService.framework/apsd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/ApplePushService.framework/apsd","nice_level":0,"num_fds":0,"Memory":{"rss":16273408,"vms":4451614720,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":144,"ppid":1,"username":"root","name":"com.docker.vmnetd","cpu_percent":0.0005556979380248417,"memory_percent":0.023388863,"cmdline":"/Library/PrivilegedHelperTools/com.docker.vmnetd","status":["sleep"],"exec":"/Library/PrivilegedHelperTools/com.docker.vmnetd","nice_level":0,"num_fds":0,"Memory":{"rss":4018176,"vms":5115166720,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":145,"ppid":1,"username":"root","name":"launchservicesd","cpu_percent":0.09724637577729947,"memory_percent":0.07650852,"cmdline":"/System/Library/CoreServices/launchservicesd","status":["sleep"],"exec":"/System/Library/CoreServices/launchservicesd","nice_level":0,"num_fds":0,"Memory":{"rss":13144064,"vms":4443656192,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":146,"ppid":1,"username":"_timed","name":"timed","cpu_percent":0.0016670710511015219,"memory_percent":0.023531914,"cmdline":"/usr/libexec/timed","status":["sleep"],"exec":"/usr/libexec/timed","nice_level":0,"num_fds":0,"Memory":{"rss":4042752,"vms":4437422080,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":147,"ppid":1,"username":"_usbmuxd","name":"usbmuxd","cpu_percent":0.0005556873893787122,"memory_percent":0.0197649,"cmdline":"/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/Resources/usbmuxd -launchd","status":["sleep"],"exec":"/Library/Apple/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/Resources/usbmuxd","nice_level":0,"num_fds":0,"Memory":{"rss":3395584,"vms":4437843968,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":148,"ppid":1,"username":"root","name":"securityd","cpu_percent":0.007501742389070271,"memory_percent":0.051236153,"cmdline":"/usr/sbin/securityd -i","status":["sleep"],"exec":"/usr/sbin/securityd","nice_level":0,"num_fds":0,"Memory":{"rss":8802304,"vms":4442415104,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":149,"ppid":1,"username":"root","name":"auditd","cpu_percent":0.0001389204348640598,"memory_percent":0.008964539,"cmdline":"auditd -l","status":["sleep"],"exec":"/usr/sbin/auditd","nice_level":0,"num_fds":0,"Memory":{"rss":1540096,"vms":4399742976,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":151,"ppid":1,"username":"_locationd","name":"locationd","cpu_percent":0.01986550792190668,"memory_percent":0.075006485,"cmdline":"/usr/libexec/locationd","status":["sleep"],"exec":"/usr/libexec/locationd","nice_level":0,"num_fds":0,"Memory":{"rss":12886016,"vms":4452687872,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":154,"ppid":1,"username":"root","name":"autofsd","cpu_percent":0.000138918880143806,"memory_percent":0.012302399,"cmdline":"autofsd","status":["sleep"],"exec":"/usr/libexec/autofsd","nice_level":0,"num_fds":0,"Memory":{"rss":2113536,"vms":4399075328,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":155,"ppid":1,"username":"_displaypolicyd","name":"displaypolicyd","cpu_percent":0.010557773447552685,"memory_percent":0.027799606,"cmdline":"/usr/libexec/displaypolicyd -k 1","status":["sleep"],"exec":"/usr/libexec/displaypolicyd","nice_level":0,"num_fds":0,"Memory":{"rss":4775936,"vms":4411641856,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":157,"ppid":1,"username":"root","name":"dasd","cpu_percent":0.032506660845062665,"memory_percent":0.052404404,"cmdline":"/usr/libexec/dasd","status":["sleep"],"exec":"/usr/libexec/dasd","nice_level":0,"num_fds":0,"Memory":{"rss":9003008,"vms":4444164096,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":162,"ppid":1,"username":"root","name":"logind","cpu_percent":0.0006945829463098056,"memory_percent":0.021386147,"cmdline":"/System/Library/CoreServices/logind","status":["sleep"],"exec":"/System/Library/CoreServices/logind","nice_level":0,"num_fds":0,"Memory":{"rss":3674112,"vms":4408254464,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":163,"ppid":1,"username":"root","name":"revisiond","cpu_percent":0.001528074533035582,"memory_percent":0.018453598,"cmdline":"/System/Library/PrivateFrameworks/GenerationalStorage.framework/Versions/A/Support/revisiond","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/GenerationalStorage.framework/Versions/A/Support/revisiond","nice_level":0,"num_fds":0,"Memory":{"rss":3170304,"vms":4440055808,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":164,"ppid":1,"username":"root","name":"KernelEventAgent","cpu_percent":0.0001389150217564255,"memory_percent":0.008893013,"cmdline":"/usr/sbin/KernelEventAgent","status":["sleep"],"exec":"/usr/sbin/KernelEventAgent","nice_level":0,"num_fds":0,"Memory":{"rss":1527808,"vms":4400021504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":166,"ppid":1,"username":"root","name":"bluetoothd","cpu_percent":0.0075013697313595215,"memory_percent":0.051426888,"cmdline":"/usr/sbin/bluetoothd","status":["sleep"],"exec":"/usr/sbin/bluetoothd","nice_level":0,"num_fds":0,"Memory":{"rss":8835072,"vms":4443623424,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":167,"ppid":1,"username":"_hidd","name":"hidd","cpu_percent":0.5960768389231256,"memory_percent":0.048732758,"cmdline":"/usr/libexec/hidd","status":["sleep"],"exec":"/usr/libexec/hidd","nice_level":0,"num_fds":0,"Memory":{"rss":8372224,"vms":4440375296,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":168,"ppid":1,"username":"root","name":"sandboxd","cpu_percent":0.016947282309235333,"memory_percent":0.0644207,"cmdline":"/usr/libexec/sandboxd","status":["sleep"],"exec":"/usr/libexec/sandboxd","nice_level":0,"num_fds":0,"Memory":{"rss":11067392,"vms":4445605888,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":169,"ppid":1,"username":"root","name":"corebrightnessd","cpu_percent":0.005000786192350248,"memory_percent":0.08108616,"cmdline":"/usr/libexec/corebrightnessd --launchd","status":["sleep"],"exec":"/usr/libexec/corebrightnessd","nice_level":0,"num_fds":0,"Memory":{"rss":13930496,"vms":4444758016,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":170,"ppid":1,"username":"root","name":"AirPlayXPCHelper","cpu_percent":0.013613150274049258,"memory_percent":0.047826767,"cmdline":"/usr/libexec/AirPlayXPCHelper","status":["sleep"],"exec":"/usr/libexec/AirPlayXPCHelper","nice_level":0,"num_fds":0,"Memory":{"rss":8216576,"vms":4441354240,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":171,"ppid":1,"username":"root","name":"notifyd","cpu_percent":0.03875553352045876,"memory_percent":0.010800362,"cmdline":"/usr/sbin/notifyd","status":["sleep"],"exec":"/usr/sbin/notifyd","nice_level":0,"num_fds":0,"Memory":{"rss":1855488,"vms":4408647680,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":172,"ppid":1,"username":"root","name":"amfid","cpu_percent":0.049034479885402306,"memory_percent":0.16527176,"cmdline":"/usr/libexec/amfid","status":["sleep"],"exec":"/usr/libexec/amfid","nice_level":0,"num_fds":0,"Memory":{"rss":28393472,"vms":4459356160,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":173,"ppid":1,"username":"root","name":"taskgated","cpu_percent":0.00041672080761277064,"memory_percent":0.012636185,"cmdline":"/usr/libexec/taskgated","status":["sleep"],"exec":"/usr/libexec/taskgated","nice_level":0,"num_fds":0,"Memory":{"rss":2170880,"vms":4400074752,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":174,"ppid":1,"username":"_distnote","name":"distnoted","cpu_percent":0.0016668718159893797,"memory_percent":0.01654625,"cmdline":"/usr/sbin/distnoted daemon","status":["sleep"],"exec":"/usr/sbin/distnoted","nice_level":0,"num_fds":0,"Memory":{"rss":2842624,"vms":4409892864,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":175,"ppid":1,"username":"root","name":"cfprefsd","cpu_percent":0.020974638695780642,"memory_percent":0.017094612,"cmdline":"/usr/sbin/cfprefsd daemon","status":["sleep"],"exec":"/usr/sbin/cfprefsd","nice_level":0,"num_fds":0,"Memory":{"rss":2936832,"vms":4408705024,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":176,"ppid":1,"username":"root","name":"syspolicyd","cpu_percent":0.07500806634661934,"memory_percent":0.14383793,"cmdline":"/usr/libexec/syspolicyd","status":["sleep"],"exec":"/usr/libexec/syspolicyd","nice_level":0,"num_fds":0,"Memory":{"rss":24711168,"vms":4464435200,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":177,"ppid":1,"username":"root","name":"tccd","cpu_percent":0.03778158302337616,"memory_percent":0.08785725,"cmdline":"/System/Library/PrivateFrameworks/TCC.framework/Resources/tccd system","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/TCC.framework/Versions/A/Resources/tccd","nice_level":0,"num_fds":0,"Memory":{"rss":15093760,"vms":4449185792,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":178,"ppid":1,"username":"root","name":"aslmanager","cpu_percent":0.0004167057009944494,"memory_percent":0.004887581,"cmdline":"aslmanager","status":["sleep"],"exec":"/usr/sbin/aslmanager","nice_level":0,"num_fds":0,"Memory":{"rss":839680,"vms":4408512512,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":179,"ppid":1,"username":"root","name":"coreservicesd","cpu_percent":0.007917353544370837,"memory_percent":0.042557716,"cmdline":"/System/Library/CoreServices/coreservicesd","status":["sleep"],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/Support/coreservicesd","nice_level":0,"num_fds":0,"Memory":{"rss":7311360,"vms":4426543104,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":180,"ppid":1,"username":"root","name":"loginwindow","cpu_percent":0.027918909163859848,"memory_percent":0.27484894,"cmdline":"/System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow console","status":["sleep"],"exec":"/System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow","nice_level":0,"num_fds":0,"Memory":{"rss":47218688,"vms":4501061632,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":182,"ppid":1,"username":"root","name":"authd","cpu_percent":0.007917252106774082,"memory_percent":0.039696693,"cmdline":"/System/Library/Frameworks/Security.framework/Versions/A/XPCServices/authd.xpc/Contents/MacOS/authd","status":["sleep"],"exec":"/System/Library/Frameworks/Security.framework/Versions/A/XPCServices/authd.xpc/Contents/MacOS/authd","nice_level":0,"num_fds":0,"Memory":{"rss":6819840,"vms":4441378816,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":183,"ppid":1,"username":"_analyticsd","name":"analyticsd","cpu_percent":0.009583987152936907,"memory_percent":0.048184395,"cmdline":"/System/Library/PrivateFrameworks/CoreAnalytics.framework/Support/analyticsd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreAnalytics.framework/Support/analyticsd","nice_level":0,"num_fds":0,"Memory":{"rss":8278016,"vms":4444368896,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":184,"ppid":1,"username":"root","name":"contextstored","cpu_percent":0.05944810307886826,"memory_percent":0.07419586,"cmdline":"/System/Library/PrivateFrameworks/CoreDuetContext.framework/Resources/contextstored","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreDuetContext.framework/Versions/A/Resources/contextstored","nice_level":0,"num_fds":0,"Memory":{"rss":12746752,"vms":4446105600,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":188,"ppid":1,"username":"root","name":"airportd","cpu_percent":0.06694814389659429,"memory_percent":0.082063675,"cmdline":"/usr/libexec/airportd","status":["sleep"],"exec":"/usr/libexec/airportd","nice_level":0,"num_fds":0,"Memory":{"rss":14098432,"vms":4450189312,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":190,"ppid":1,"username":"_coreaudiod","name":"coreaudiod","cpu_percent":0.017225458536587225,"memory_percent":0.05915165,"cmdline":"/usr/sbin/coreaudiod","status":["sleep"],"exec":"/usr/sbin/coreaudiod","nice_level":0,"num_fds":0,"Memory":{"rss":10162176,"vms":4446879744,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":193,"ppid":1,"username":"root","name":"nehelper","cpu_percent":0.0013891400029554788,"memory_percent":0.033903122,"cmdline":"/usr/libexec/nehelper","status":["sleep"],"exec":"/usr/libexec/nehelper","nice_level":0,"num_fds":0,"Memory":{"rss":5824512,"vms":4439224320,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":197,"ppid":1,"username":"root","name":"trustd","cpu_percent":0.10057307215800608,"memory_percent":0.08561611,"cmdline":"/usr/libexec/trustd","status":["sleep"],"exec":"/usr/libexec/trustd","nice_level":0,"num_fds":0,"Memory":{"rss":14708736,"vms":4443123712,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":198,"ppid":1,"username":"root","name":"searchpartyd","cpu_percent":0.0025004188712111465,"memory_percent":0.060009956,"cmdline":"/usr/libexec/searchpartyd","status":["sleep"],"exec":"/usr/libexec/searchpartyd","nice_level":0,"num_fds":0,"Memory":{"rss":10309632,"vms":4442112000,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":211,"ppid":1,"username":"root","name":"WindowServer","cpu_percent":9.076177988227164,"memory_percent":0.7446766,"cmdline":"/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer -daemon","status":["running"],"exec":"/System/Library/PrivateFrameworks/SkyLight.framework/Versions/A/Resources/WindowServer","nice_level":0,"num_fds":0,"Memory":{"rss":127934464,"vms":7492956160,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":224,"ppid":1,"username":"_networkd","name":"symptomsd","cpu_percent":0.05848106673630801,"memory_percent":0.0651598,"cmdline":"/usr/libexec/symptomsd","status":["sleep"],"exec":"/usr/libexec/symptomsd","nice_level":0,"num_fds":0,"Memory":{"rss":11194368,"vms":4452614144,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":245,"ppid":1,"username":"_mdnsresponder","name":"mDNSResponder","cpu_percent":0.03958896713477539,"memory_percent":0.03762245,"cmdline":"/usr/sbin/mDNSResponder","status":["sleep"],"exec":"/usr/sbin/mDNSResponder","nice_level":0,"num_fds":0,"Memory":{"rss":6463488,"vms":4440436736,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":246,"ppid":1,"username":"_coreaudiod","name":"com.apple.audio.DriverHelper","cpu_percent":0.0006945361642150472,"memory_percent":0.02233982,"cmdline":"/System/Library/Frameworks/CoreAudio.framework/Versions/A/XPCServices/com.apple.audio.DriverHelper.xpc/Contents/MacOS/com.apple.audio.DriverHelper","status":["sleep"],"exec":"/System/Library/Frameworks/CoreAudio.framework/Versions/A/XPCServices/com.apple.audio.DriverHelper.xpc/Contents/MacOS/com.apple.audio.DriverHelper","nice_level":0,"num_fds":0,"Memory":{"rss":3837952,"vms":4437708800,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":247,"ppid":1,"username":"root","name":"awdd","cpu_percent":0.001250156159610389,"memory_percent":0.022912025,"cmdline":"/System/Library/PrivateFrameworks/WirelessDiagnostics.framework/Support/awdd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/WirelessDiagnostics.framework/Support/awdd","nice_level":0,"num_fds":0,"Memory":{"rss":3936256,"vms":4438667264,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":248,"ppid":1,"username":"root","name":"mDNSResponderHelper","cpu_percent":0.004167155272567635,"memory_percent":0.019192696,"cmdline":"/usr/sbin/mDNSResponderHelper","status":["sleep"],"exec":"/usr/sbin/mDNSResponderHelper","nice_level":0,"num_fds":0,"Memory":{"rss":3297280,"vms":4438085632,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":250,"ppid":1,"username":"_locationd","name":"com.apple.geod","cpu_percent":0.008750920133728544,"memory_percent":0.04348755,"cmdline":"/System/Library/PrivateFrameworks/GeoServices.framework/Versions/A/XPCServices/com.apple.geod.xpc/Contents/MacOS/com.apple.geod","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/GeoServices.framework/Versions/A/XPCServices/com.apple.geod.xpc/Contents/MacOS/com.apple.geod","nice_level":0,"num_fds":0,"Memory":{"rss":7471104,"vms":4448182272,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":251,"ppid":1,"username":"_locationd","name":"secinitd","cpu_percent":0.0011112207974009792,"memory_percent":0.039076805,"cmdline":"/usr/libexec/secinitd","status":["sleep"],"exec":"/usr/libexec/secinitd","nice_level":0,"num_fds":0,"Memory":{"rss":6713344,"vms":4440567808,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":252,"ppid":1,"username":"_locationd","name":"cfprefsd","cpu_percent":0.0002778422150600621,"memory_percent":0.0074863434,"cmdline":"/usr/sbin/cfprefsd agent","status":["sleep"],"exec":"/usr/sbin/cfprefsd","nice_level":0,"num_fds":0,"Memory":{"rss":1286144,"vms":4408680448,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":254,"ppid":1,"username":"_locationd","name":"trustd","cpu_percent":0.0030562489946816236,"memory_percent":0.03671646,"cmdline":"/usr/libexec/trustd --agent","status":["sleep"],"exec":"/usr/libexec/trustd","nice_level":0,"num_fds":0,"Memory":{"rss":6307840,"vms":4441608192,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":256,"ppid":1,"username":"root","name":"mobileassetd","cpu_percent":0.023060638780133196,"memory_percent":0.08983612,"cmdline":"/usr/libexec/mobileassetd","status":["sleep"],"exec":"/usr/libexec/mobileassetd","nice_level":0,"num_fds":0,"Memory":{"rss":15433728,"vms":4452102144,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":281,"ppid":1,"username":"root","name":"lsd","cpu_percent":0.006945934429380162,"memory_percent":0.055599213,"cmdline":"/usr/libexec/lsd runAsRoot","status":["sleep"],"exec":"/usr/libexec/lsd","nice_level":0,"num_fds":0,"Memory":{"rss":9551872,"vms":4443983872,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":282,"ppid":1,"username":"root","name":"XprotectService","cpu_percent":0.04432090257295654,"memory_percent":0.09665489,"cmdline":"/System/Library/PrivateFrameworks/XprotectFramework.framework/Versions/A/XPCServices/XprotectService.xpc/Contents/MacOS/XprotectService","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/XprotectFramework.framework/Versions/A/XPCServices/XprotectService.xpc/Contents/MacOS/XprotectService","nice_level":0,"num_fds":0,"Memory":{"rss":16605184,"vms":4423749632,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":283,"ppid":1,"username":"root","name":"AudioComponentRegistrar","cpu_percent":0.000833616833451017,"memory_percent":0.033831596,"cmdline":"/System/Library/Frameworks/AudioToolbox.framework/AudioComponentRegistrar -daemon","status":["sleep"],"exec":"/System/Library/Frameworks/AudioToolbox.framework/AudioComponentRegistrar","nice_level":0,"num_fds":0,"Memory":{"rss":5812224,"vms":4410589184,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":284,"ppid":1,"username":"root","name":"runningboardd","cpu_percent":0.019312024080470152,"memory_percent":0.055241585,"cmdline":"/usr/libexec/runningboardd","status":["sleep"],"exec":"/usr/libexec/runningboardd","nice_level":0,"num_fds":0,"Memory":{"rss":9490432,"vms":4444565504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":289,"ppid":1,"username":"root","name":"com.apple.CodeSigningHelper","cpu_percent":0.0029176275739356827,"memory_percent":0.036764145,"cmdline":"/System/Library/Frameworks/Security.framework/Versions/A/XPCServices/com.apple.CodeSigningHelper.xpc/Contents/MacOS/com.apple.CodeSigningHelper","status":["sleep"],"exec":"/System/Library/Frameworks/Security.framework/Versions/A/XPCServices/com.apple.CodeSigningHelper.xpc/Contents/MacOS/com.apple.CodeSigningHelper","nice_level":0,"num_fds":0,"Memory":{"rss":6316032,"vms":4411912192,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":293,"ppid":1,"username":"_coreaudiod","name":"com.apple.audio.SandboxHelper","cpu_percent":0.00027786748378298085,"memory_percent":0.019264221,"cmdline":"/System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper","status":["sleep"],"exec":"/System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper","nice_level":0,"num_fds":0,"Memory":{"rss":3309568,"vms":4400001024,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":295,"ppid":1,"username":"root","name":"backupd-helper","cpu_percent":0.0018061298265747805,"memory_percent":0.047826767,"cmdline":"/System/Library/CoreServices/backupd.bundle/Contents/Resources/backupd-helper -launchd","status":["sleep"],"exec":"/System/Library/CoreServices/backupd.bundle/Contents/Resources/backupd-helper","nice_level":0,"num_fds":0,"Memory":{"rss":8216576,"vms":4437618688,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":297,"ppid":1,"username":"root","name":"secinitd","cpu_percent":0.0012505637718646767,"memory_percent":0.039172173,"cmdline":"/usr/libexec/secinitd","status":["sleep"],"exec":"/usr/libexec/secinitd","nice_level":0,"num_fds":0,"Memory":{"rss":6729728,"vms":4440395776,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":299,"ppid":1,"username":"root","name":"CVMServer","cpu_percent":0.0006948507528247499,"memory_percent":0.009059906,"cmdline":"/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/CVMServer","status":["sleep"],"exec":"/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/CVMServer","nice_level":0,"num_fds":0,"Memory":{"rss":1556480,"vms":4426874880,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":300,"ppid":1,"username":"root","name":"colorsync.displayservices","cpu_percent":0.0022235093487848025,"memory_percent":0.022506714,"cmdline":"/usr/libexec/colorsync.displayservices","status":["sleep"],"exec":"/usr/libexec/colorsync.displayservices","nice_level":0,"num_fds":0,"Memory":{"rss":3866624,"vms":4408274944,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":301,"ppid":1,"username":"root","name":"colorsyncd","cpu_percent":0.0008338118570316262,"memory_percent":0.021004677,"cmdline":"/usr/libexec/colorsyncd","status":["sleep"],"exec":"/usr/libexec/colorsyncd","nice_level":0,"num_fds":0,"Memory":{"rss":3608576,"vms":4409462784,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":302,"ppid":1,"username":"root","name":"com.apple.ifdreader","cpu_percent":0.0002779356418253434,"memory_percent":0.01745224,"cmdline":"/System/Library/CryptoTokenKit/com.apple.ifdreader.slotd/Contents/MacOS/com.apple.ifdreader","status":["sleep"],"exec":"/System/Library/CryptoTokenKit/com.apple.ifdreader.slotd/Contents/MacOS/com.apple.ifdreader","nice_level":0,"num_fds":0,"Memory":{"rss":2998272,"vms":4399853568,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":303,"ppid":1,"username":"_nsurlsessiond","name":"nsurlsessiond","cpu_percent":0.012923929697963103,"memory_percent":0.06172657,"cmdline":"/usr/libexec/nsurlsessiond --privileged","status":["sleep"],"exec":"/usr/libexec/nsurlsessiond","nice_level":0,"num_fds":0,"Memory":{"rss":10604544,"vms":4450152448,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":304,"ppid":1,"username":"root","name":"apfsd","cpu_percent":0.0012506958958818568,"memory_percent":0.014829636,"cmdline":"/usr/libexec/apfsd","status":["sleep"],"exec":"/usr/libexec/apfsd","nice_level":0,"num_fds":0,"Memory":{"rss":2547712,"vms":4408229888,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":305,"ppid":1,"username":"_appleevents","name":"appleeventsd","cpu_percent":0.002918275421521077,"memory_percent":0.04606247,"cmdline":"/System/Library/CoreServices/appleeventsd --server","status":["sleep"],"exec":"/System/Library/CoreServices/appleeventsd","nice_level":0,"num_fds":0,"Memory":{"rss":7913472,"vms":4441673728,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":306,"ppid":1,"username":"root","name":"usbd","cpu_percent":0.0013896480049563164,"memory_percent":0.017857552,"cmdline":"/usr/libexec/usbd","status":["sleep"],"exec":"/usr/libexec/usbd","nice_level":0,"num_fds":0,"Memory":{"rss":3067904,"vms":4438503424,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":307,"ppid":1,"username":"root","name":"thermald","cpu_percent":0.003752030328354853,"memory_percent":0.016665459,"cmdline":"/usr/libexec/thermald","status":["sleep"],"exec":"/usr/libexec/thermald","nice_level":0,"num_fds":0,"Memory":{"rss":2863104,"vms":4391403520,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":308,"ppid":1,"username":"_cmiodalassistants","name":"VDCAssistant","cpu_percent":0.0008337800047994767,"memory_percent":0.02989769,"cmdline":"/System/Library/Frameworks/CoreMediaIO.framework/Resources/VDC.plugin/Contents/Resources/VDCAssistant","status":["sleep"],"exec":"/System/Library/Frameworks/CoreMediaIO.framework/Versions/A/Resources/VDC.plugin/Contents/Resources/VDCAssistant","nice_level":0,"num_fds":0,"Memory":{"rss":5136384,"vms":4440551424,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":309,"ppid":1,"username":"root","name":"bootinstalld","cpu_percent":0.0004168874818331118,"memory_percent":0.028157234,"cmdline":"/usr/libexec/bootinstalld","status":["sleep"],"exec":"/usr/libexec/bootinstalld","nice_level":0,"num_fds":0,"Memory":{"rss":4837376,"vms":4409483264,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":310,"ppid":1,"username":"root","name":"ViewBridgeAuxiliary","cpu_percent":0.02084420682093754,"memory_percent":0.042629242,"cmdline":"/System/Library/PrivateFrameworks/ViewBridge.framework/Versions/A/XPCServices/ViewBridgeAuxiliary.xpc/Contents/MacOS/ViewBridgeAuxiliary","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/ViewBridge.framework/Versions/A/XPCServices/ViewBridgeAuxiliary.xpc/Contents/MacOS/ViewBridgeAuxiliary","nice_level":0,"num_fds":0,"Memory":{"rss":7323648,"vms":4444205056,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":313,"ppid":1,"username":"root","name":"distnoted","cpu_percent":0.0004168817511319394,"memory_percent":0.014352798,"cmdline":"/usr/sbin/distnoted agent","status":["sleep"],"exec":"/usr/sbin/distnoted","nice_level":0,"num_fds":0,"Memory":{"rss":2465792,"vms":4409892864,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":315,"ppid":1,"username":"root","name":"rpc.statd","cpu_percent":0.0006947994361973824,"memory_percent":0.012874603,"cmdline":"/usr/sbin/rpc.statd -n","status":["sleep"],"exec":"/usr/sbin/rpc.statd","nice_level":0,"num_fds":0,"Memory":{"rss":2211840,"vms":4432789504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":324,"ppid":1,"username":"_driverkit","name":"AppleUserHIDDrivers","cpu_percent":0.00013897832752295174,"memory_percent":0.01180172,"cmdline":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers com.apple.driverkit.AppleUserHIDEventDriver 0x100000553","status":["sleep"],"exec":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers","nice_level":0,"num_fds":0,"Memory":{"rss":2027520,"vms":4914454528,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":325,"ppid":1,"username":"root","name":"diskmanagementd","cpu_percent":0.002084660823920325,"memory_percent":0.028347969,"cmdline":"/usr/libexec/diskmanagementd","status":["sleep"],"exec":"/usr/libexec/diskmanagementd","nice_level":0,"num_fds":0,"Memory":{"rss":4870144,"vms":4411486208,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":326,"ppid":1,"username":"root","name":"mds_stores","cpu_percent":0.5898163528180381,"memory_percent":1.0448217,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Versions/A/Support/mds_stores","status":["sleep"],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mds_stores","nice_level":0,"num_fds":0,"Memory":{"rss":179499008,"vms":5453266944,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":328,"ppid":1,"username":"_captiveagent","name":"captiveagent","cpu_percent":0.0009729640834171275,"memory_percent":0.024580956,"cmdline":"/usr/libexec/captiveagent","status":["sleep"],"exec":"/usr/libexec/captiveagent","nice_level":0,"num_fds":0,"Memory":{"rss":4222976,"vms":4410994688,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":329,"ppid":1,"username":"_netbios","name":"netbiosd","cpu_percent":0.0015291438951822915,"memory_percent":0.020337105,"cmdline":"/usr/sbin/netbiosd","status":["sleep"],"exec":"/usr/sbin/netbiosd","nice_level":20,"num_fds":0,"Memory":{"rss":3493888,"vms":4410773504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":334,"ppid":1,"username":"root","name":"com.apple.AccountPolicyHelper","cpu_percent":0.0002780629400895462,"memory_percent":0.013661385,"cmdline":"/System/Library/PrivateFrameworks/AccountPolicy.framework/XPCServices/com.apple.AccountPolicyHelper.xpc/Contents/MacOS/com.apple.AccountPolicyHelper","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/AccountPolicy.framework/XPCServices/com.apple.AccountPolicyHelper.xpc/Contents/MacOS/com.apple.AccountPolicyHelper","nice_level":0,"num_fds":0,"Memory":{"rss":2347008,"vms":4408758272,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":335,"ppid":1,"username":"root","name":"coreauthd","cpu_percent":0.0006951528770586311,"memory_percent":0.026082993,"cmdline":"/System/Library/Frameworks/LocalAuthentication.framework/Support/coreauthd","status":["sleep"],"exec":"/System/Library/Frameworks/LocalAuthentication.framework/Support/coreauthd","nice_level":0,"num_fds":0,"Memory":{"rss":4481024,"vms":4408639488,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":336,"ppid":1,"username":"root","name":"ctkahp","cpu_percent":0.0005561177734002599,"memory_percent":0.026273727,"cmdline":"/System/Library/Frameworks/CryptoTokenKit.framework/ctkahp.bundle/Contents/MacOS/ctkahp -d","status":["sleep"],"exec":"/System/Library/Frameworks/CryptoTokenKit.framework/ctkahp.bundle/Contents/MacOS/ctkahp","nice_level":0,"num_fds":0,"Memory":{"rss":4513792,"vms":4409896960,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":340,"ppid":1,"username":"root","name":"systemsoundserverd","cpu_percent":0.0018073686216557676,"memory_percent":0.038456917,"cmdline":"/usr/sbin/systemsoundserverd","status":["sleep"],"exec":"/usr/sbin/systemsoundserverd","nice_level":0,"num_fds":0,"Memory":{"rss":6606848,"vms":4443897856,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":341,"ppid":1,"username":"_ctkd","name":"ctkd","cpu_percent":0.00041708273391998586,"memory_percent":0.009727478,"cmdline":"/System/Library/Frameworks/CryptoTokenKit.framework/ctkd -s","status":["sleep"],"exec":"/System/Library/Frameworks/CryptoTokenKit.framework/ctkd","nice_level":0,"num_fds":0,"Memory":{"rss":1671168,"vms":4410404864,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":347,"ppid":1,"username":"root","name":"sharedfilelistd","cpu_percent":0.0008342700453673757,"memory_percent":0.02784729,"cmdline":"/System/Library/CoreServices/sharedfilelistd","status":["sleep"],"exec":"/System/Library/CoreServices/sharedfilelistd","nice_level":0,"num_fds":0,"Memory":{"rss":4784128,"vms":4438499328,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":351,"ppid":1,"username":"root","name":"coresymbolicationd","cpu_percent":0.0009734429890883522,"memory_percent":0.013589859,"cmdline":"/System/Library/PrivateFrameworks/CoreSymbolication.framework/coresymbolicationd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreSymbolication.framework/coresymbolicationd","nice_level":0,"num_fds":0,"Memory":{"rss":2334720,"vms":4411387904,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":352,"ppid":1,"username":"_cmiodalassistants","name":"AppleCameraAssistant","cpu_percent":0.0005562480251682807,"memory_percent":0.012874603,"cmdline":"/System/Library/Frameworks/CoreMediaIO.framework/Versions/A/Resources/AppleCamera.plugin/Contents/Resources/AppleCameraAssistant","status":["sleep"],"exec":"/System/Library/Frameworks/CoreMediaIO.framework/Versions/A/Resources/AppleCamera.plugin/Contents/Resources/AppleCameraAssistant","nice_level":0,"num_fds":0,"Memory":{"rss":2211840,"vms":4409774080,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":353,"ppid":1,"username":"root","name":"sysmond","cpu_percent":0.005701501580177212,"memory_percent":0.007224083,"cmdline":"/usr/libexec/sysmond","status":["sleep"],"exec":"/usr/libexec/sysmond","nice_level":0,"num_fds":0,"Memory":{"rss":1241088,"vms":4408672256,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":354,"ppid":119,"username":"root","name":"systemstats","cpu_percent":0.0009735556260478752,"memory_percent":0.016736984,"cmdline":"/usr/sbin/systemstats --logger-helper /private/var/db/systemstats","status":["sleep"],"exec":"/usr/sbin/systemstats","nice_level":0,"num_fds":0,"Memory":{"rss":2875392,"vms":4440305664,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":355,"ppid":1,"username":"root","name":"com.apple.cmio.registerassistantservice","cpu_percent":0.00013907838914356142,"memory_percent":0.004506111,"cmdline":"/System/Library/Frameworks/CoreMediaIO.framework/Versions/A/XPCServices/com.apple.cmio.registerassistantservice.xpc/Contents/MacOS/com.apple.cmio.registerassistantservice","status":["sleep"],"exec":"/System/Library/Frameworks/CoreMediaIO.framework/Versions/A/XPCServices/com.apple.cmio.registerassistantservice.xpc/Contents/MacOS/com.apple.cmio.registerassistantservice","nice_level":0,"num_fds":0,"Memory":{"rss":774144,"vms":4408791040,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":356,"ppid":1,"username":"_nsurlstoraged","name":"nsurlstoraged","cpu_percent":0.0005563097756244684,"memory_percent":0.016474724,"cmdline":"/usr/libexec/nsurlstoraged --privileged","status":["sleep"],"exec":"/usr/libexec/nsurlstoraged","nice_level":0,"num_fds":0,"Memory":{"rss":2830336,"vms":4409307136,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":360,"ppid":1,"username":"_locationd","name":"distnoted","cpu_percent":0.0004172294619247975,"memory_percent":0.014734268,"cmdline":"/usr/sbin/distnoted agent","status":["sleep"],"exec":"/usr/sbin/distnoted","nice_level":0,"num_fds":0,"Memory":{"rss":2531328,"vms":4409892864,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":362,"ppid":1,"username":"root","name":"ReportCrash","cpu_percent":0.00013909505025972568,"memory_percent":0.013327599,"cmdline":"/System/Library/CoreServices/ReportCrash daemon","status":["sleep"],"exec":"/System/Library/CoreServices/ReportCrash","nice_level":0,"num_fds":0,"Memory":{"rss":2289664,"vms":4408823808,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":365,"ppid":1,"username":"root","name":"smd","cpu_percent":0.00013911375572555945,"memory_percent":0.0054836273,"cmdline":"/usr/libexec/smd","status":["sleep"],"exec":"/usr/libexec/smd","nice_level":0,"num_fds":0,"Memory":{"rss":942080,"vms":4408406016,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":366,"ppid":1,"username":"_driverkit","name":"AppleUserHIDDrivers","cpu_percent":0.39146320905437876,"memory_percent":0.011563301,"cmdline":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers com.apple.driverkit.AppleUserUSBHostHIDDevice1 0x1000006a6","status":["sleep"],"exec":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers","nice_level":0,"num_fds":0,"Memory":{"rss":1986560,"vms":4914970624,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":367,"ppid":1,"username":"_driverkit","name":"AppleUserHIDDrivers","cpu_percent":0.23551649002404768,"memory_percent":0.009727478,"cmdline":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers com.apple.driverkit.AppleUserHIDEventDriver 0x1000006ac","status":["sleep"],"exec":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers","nice_level":0,"num_fds":0,"Memory":{"rss":1671168,"vms":4916555776,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":368,"ppid":1,"username":"_driverkit","name":"AppleUserHIDDrivers","cpu_percent":0.03255196916451787,"memory_percent":0.010061264,"cmdline":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers com.apple.driverkit.AppleUserUSBHostHIDDeviceKB 0x1000006c2","status":["sleep"],"exec":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers","nice_level":0,"num_fds":0,"Memory":{"rss":1728512,"vms":4917067776,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":369,"ppid":1,"username":"_driverkit","name":"AppleUserHIDDrivers","cpu_percent":0.0001391102086324579,"memory_percent":0.008869171,"cmdline":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers com.apple.driverkit.AppleUserUSBHostHIDDevice0 0x1000006c7","status":["sleep"],"exec":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers","nice_level":0,"num_fds":0,"Memory":{"rss":1523712,"vms":4913385472,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":370,"ppid":1,"username":"_driverkit","name":"AppleUserHIDDrivers","cpu_percent":0,"memory_percent":0.008511543,"cmdline":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers com.apple.driverkit.AppleUserHIDEventDriver 0x1000006d4","status":["sleep"],"exec":"/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers","nice_level":0,"num_fds":0,"Memory":{"rss":1462272,"vms":4913405952,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":371,"ppid":1,"username":"root","name":"com.apple.AmbientDisplayAgent","cpu_percent":0.0015304087581009193,"memory_percent":0.031018257,"cmdline":"/System/Library/PrivateFrameworks/AmbientDisplay.framework/Versions/A/XPCServices/com.apple.AmbientDisplayAgent.xpc/Contents/MacOS/com.apple.AmbientDisplayAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/AmbientDisplay.framework/Versions/A/XPCServices/com.apple.AmbientDisplayAgent.xpc/Contents/MacOS/com.apple.AmbientDisplayAgent","nice_level":0,"num_fds":0,"Memory":{"rss":5328896,"vms":4438188032,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":375,"ppid":1,"username":"root","name":"GSSCred","cpu_percent":0.00013939892385929394,"memory_percent":0.009536743,"cmdline":"/System/Library/Frameworks/GSS.framework/Helpers/GSSCred","status":["sleep"],"exec":"/System/Library/Frameworks/GSS.framework/Helpers/GSSCred","nice_level":0,"num_fds":0,"Memory":{"rss":1638400,"vms":4392284160,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":378,"ppid":1,"username":"dziegler","name":"coreauthd","cpu_percent":0.0011151858796584664,"memory_percent":0.03194809,"cmdline":"/System/Library/Frameworks/LocalAuthentication.framework/Support/coreauthd","status":["sleep"],"exec":"/System/Library/Frameworks/LocalAuthentication.framework/Support/coreauthd","nice_level":0,"num_fds":0,"Memory":{"rss":5488640,"vms":4438540288,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":379,"ppid":1,"username":"dziegler","name":"cfprefsd","cpu_percent":0.02118843169178524,"memory_percent":0.01912117,"cmdline":"/usr/sbin/cfprefsd agent","status":["sleep"],"exec":"/usr/sbin/cfprefsd","nice_level":0,"num_fds":0,"Memory":{"rss":3284992,"vms":4408938496,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":380,"ppid":1,"username":"root","name":"securityd_service","cpu_percent":0.0006970813723797661,"memory_percent":0.020241737,"cmdline":"/usr/libexec/securityd_service","status":["sleep"],"exec":"/usr/libexec/securityd_service","nice_level":0,"num_fds":0,"Memory":{"rss":3477504,"vms":4410322944,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":381,"ppid":1,"username":"dziegler","name":"UserEventAgent","cpu_percent":0.031786746957357316,"memory_percent":0.10280609,"cmdline":"/usr/libexec/UserEventAgent (Aqua)","status":["sleep"],"exec":"/usr/libexec/UserEventAgent","nice_level":0,"num_fds":0,"Memory":{"rss":17661952,"vms":4439900160,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":383,"ppid":1,"username":"dziegler","name":"distnoted","cpu_percent":0.010037864229173434,"memory_percent":0.032424927,"cmdline":"/usr/sbin/distnoted agent","status":["sleep"],"exec":"/usr/sbin/distnoted","nice_level":0,"num_fds":0,"Memory":{"rss":5570560,"vms":4409892864,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":384,"ppid":1,"username":"dziegler","name":"universalaccessd","cpu_percent":0.01143194811375687,"memory_percent":0.05300045,"cmdline":"/usr/sbin/universalaccessd launchd -s","status":["sleep"],"exec":"/usr/sbin/universalaccessd","nice_level":0,"num_fds":0,"Memory":{"rss":9105408,"vms":4443762688,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":385,"ppid":1,"username":"dziegler","name":"talagent","cpu_percent":0.00195178524156781,"memory_percent":0.066542625,"cmdline":"/System/Library/CoreServices/talagent","status":["sleep"],"exec":"/System/Library/CoreServices/talagent","nice_level":0,"num_fds":0,"Memory":{"rss":11431936,"vms":4447707136,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":386,"ppid":1,"username":"dziegler","name":"Dock","cpu_percent":0.07249451547866556,"memory_percent":0.15771389,"cmdline":"/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock","status":["sleep"],"exec":"/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock","nice_level":0,"num_fds":0,"Memory":{"rss":27095040,"vms":5001961472,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":387,"ppid":1,"username":"dziegler","name":"lsd","cpu_percent":0.015335296763517978,"memory_percent":0.13315678,"cmdline":"/usr/libexec/lsd","status":["sleep"],"exec":"/usr/libexec/lsd","nice_level":0,"num_fds":0,"Memory":{"rss":22876160,"vms":4457172992,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":388,"ppid":1,"username":"dziegler","name":"trustd","cpu_percent":0.07528199067422928,"memory_percent":0.08909702,"cmdline":"/usr/libexec/trustd --agent","status":["sleep"],"exec":"/usr/libexec/trustd","nice_level":0,"num_fds":0,"Memory":{"rss":15306752,"vms":4447350784,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":389,"ppid":1,"username":"dziegler","name":"SystemUIServer","cpu_percent":0.038616681935639975,"memory_percent":0.23066998,"cmdline":"/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer","status":["sleep"],"exec":"/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer","nice_level":0,"num_fds":0,"Memory":{"rss":39628800,"vms":5007155200,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":390,"ppid":1,"username":"dziegler","name":"Finder","cpu_percent":0.0868522574134014,"memory_percent":0.38003922,"cmdline":"/System/Library/CoreServices/Finder.app/Contents/MacOS/Finder","status":["sleep"],"exec":"/System/Library/CoreServices/Finder.app/Contents/MacOS/Finder","nice_level":0,"num_fds":0,"Memory":{"rss":65290240,"vms":5093752832,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":391,"ppid":1,"username":"dziegler","name":"QuickLookUIService","cpu_percent":0.0032064013359114837,"memory_percent":0.072431564,"cmdline":"/System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework/Versions/A/XPCServices/QuickLookUIService.xpc/Contents/MacOS/QuickLookUIService","status":["sleep"],"exec":"/System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework/Versions/A/XPCServices/QuickLookUIService.xpc/Contents/MacOS/QuickLookUIService","nice_level":0,"num_fds":0,"Memory":{"rss":12443648,"vms":4976533504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":392,"ppid":1,"username":"dziegler","name":"secd","cpu_percent":0.0061339551878737296,"memory_percent":0.06816387,"cmdline":"/usr/libexec/secd","status":["sleep"],"exec":"/usr/libexec/secd","nice_level":0,"num_fds":0,"Memory":{"rss":11710464,"vms":4442574848,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":394,"ppid":1,"username":"dziegler","name":"pkd","cpu_percent":0.01394073933319489,"memory_percent":0.041794777,"cmdline":"/usr/libexec/pkd","status":["sleep"],"exec":"/usr/libexec/pkd","nice_level":0,"num_fds":0,"Memory":{"rss":7180288,"vms":4439048192,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":395,"ppid":1,"username":"dziegler","name":"secinitd","cpu_percent":0.009200845679392151,"memory_percent":0.061273575,"cmdline":"/usr/libexec/secinitd","status":["sleep"],"exec":"/usr/libexec/secinitd","nice_level":0,"num_fds":0,"Memory":{"rss":10526720,"vms":4442628096,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":396,"ppid":1,"username":"dziegler","name":"pboard","cpu_percent":0.00961902155322519,"memory_percent":0.03604889,"cmdline":"/usr/libexec/pboard","status":["sleep"],"exec":"/usr/libexec/pboard","nice_level":0,"num_fds":0,"Memory":{"rss":6193152,"vms":4410273792,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":398,"ppid":1,"username":"dziegler","name":"dmd","cpu_percent":0.0037639383094821483,"memory_percent":0.052404404,"cmdline":"/usr/libexec/dmd","status":["sleep"],"exec":"/usr/libexec/dmd","nice_level":0,"num_fds":0,"Memory":{"rss":9003008,"vms":4443389952,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":399,"ppid":1,"username":"dziegler","name":"AXVisualSupportAgent","cpu_percent":0.14386534782919425,"memory_percent":0.092840195,"cmdline":"/System/Library/PrivateFrameworks/UniversalAccess.framework/Versions/A/Resources/AXVisualSupportAgent.app/Contents/MacOS/AXVisualSupportAgent launchd -s","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/UniversalAccess.framework/Versions/A/Resources/AXVisualSupportAgent.app/Contents/MacOS/AXVisualSupportAgent","nice_level":0,"num_fds":0,"Memory":{"rss":15949824,"vms":4473143296,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":400,"ppid":1,"username":"dziegler","name":"backgroundtaskmanagementagent","cpu_percent":0.00097582394258479,"memory_percent":0.034594536,"cmdline":"/System/Library/CoreServices/backgroundtaskmanagementagent","status":["sleep"],"exec":"/System/Library/CoreServices/backgroundtaskmanagementagent","nice_level":0,"num_fds":0,"Memory":{"rss":5943296,"vms":4439482368,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":401,"ppid":1,"username":"dziegler","name":"ViewBridgeAuxiliary","cpu_percent":0.02439546212408798,"memory_percent":0.050520897,"cmdline":"/System/Library/PrivateFrameworks/ViewBridge.framework/Versions/A/XPCServices/ViewBridgeAuxiliary.xpc/Contents/MacOS/ViewBridgeAuxiliary","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/ViewBridge.framework/Versions/A/XPCServices/ViewBridgeAuxiliary.xpc/Contents/MacOS/ViewBridgeAuxiliary","nice_level":0,"num_fds":0,"Memory":{"rss":8679424,"vms":4438138880,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":402,"ppid":1,"username":"dziegler","name":"bird","cpu_percent":0.0022307420336159806,"memory_percent":0.049710274,"cmdline":"/System/Library/PrivateFrameworks/CloudDocsDaemon.framework/Versions/A/Support/bird","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CloudDocsDaemon.framework/Versions/A/Support/bird","nice_level":0,"num_fds":0,"Memory":{"rss":8540160,"vms":4439060480,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":403,"ppid":1,"username":"dziegler","name":"cloudd","cpu_percent":0.010038290126356738,"memory_percent":0.089883804,"cmdline":"/System/Library/PrivateFrameworks/CloudKitDaemon.framework/Support/cloudd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CloudKitDaemon.framework/Support/cloudd","nice_level":0,"num_fds":0,"Memory":{"rss":15441920,"vms":4447412224,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":404,"ppid":1,"username":"dziegler","name":"accountsd","cpu_percent":0.02411966813233878,"memory_percent":0.32670498,"cmdline":"/System/Library/Frameworks/Accounts.framework/Versions/A/Support/accountsd","status":["sleep"],"exec":"/System/Library/Frameworks/Accounts.framework/Versions/A/Support/accountsd","nice_level":0,"num_fds":0,"Memory":{"rss":56127488,"vms":4590047232,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":405,"ppid":1,"username":"dziegler","name":"tccd","cpu_percent":0.009759354384711438,"memory_percent":0.057315826,"cmdline":"/System/Library/PrivateFrameworks/TCC.framework/Resources/tccd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/TCC.framework/Versions/A/Resources/tccd","nice_level":0,"num_fds":0,"Memory":{"rss":9846784,"vms":4441198592,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":406,"ppid":1,"username":"dziegler","name":"nsurlsessiond","cpu_percent":0.009062216158885786,"memory_percent":0.057935715,"cmdline":"/usr/libexec/nsurlsessiond","status":["sleep"],"exec":"/usr/libexec/nsurlsessiond","nice_level":0,"num_fds":0,"Memory":{"rss":9953280,"vms":4443357184,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":408,"ppid":1,"username":"dziegler","name":"sharedfilelistd","cpu_percent":0.00543730142494204,"memory_percent":0.04963875,"cmdline":"/System/Library/CoreServices/sharedfilelistd","status":["sleep"],"exec":"/System/Library/CoreServices/sharedfilelistd","nice_level":0,"num_fds":0,"Memory":{"rss":8527872,"vms":4441690112,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":409,"ppid":1,"username":"dziegler","name":"AMPDeviceDiscoveryAgent","cpu_percent":0.0011153382273470396,"memory_percent":0.037693977,"cmdline":"/System/Library/PrivateFrameworks/AMPDevices.framework/Versions/A/Support/AMPDeviceDiscoveryAgent --launchd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/AMPDevices.framework/Versions/A/Support/AMPDeviceDiscoveryAgent","nice_level":0,"num_fds":0,"Memory":{"rss":6475776,"vms":4438528000,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":414,"ppid":1,"username":"dziegler","name":"knowledge-agent","cpu_percent":0.004600744958060853,"memory_percent":0.06937981,"cmdline":"/usr/libexec/knowledge-agent","status":["sleep"],"exec":"/usr/libexec/knowledge-agent","nice_level":0,"num_fds":0,"Memory":{"rss":11919360,"vms":4444008448,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":415,"ppid":1,"username":"dziegler","name":"com.apple.sbd","cpu_percent":0.0004182468765595119,"memory_percent":0.016903877,"cmdline":"/System/Library/PrivateFrameworks/CloudServices.framework/Helpers/com.apple.sbd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CloudServices.framework/Helpers/com.apple.sbd","nice_level":0,"num_fds":0,"Memory":{"rss":2904064,"vms":4408721408,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":416,"ppid":1,"username":"dziegler","name":"CloudKeychainProxy","cpu_percent":0.0008364889051246366,"memory_percent":0.020718575,"cmdline":"/System/Library/Frameworks/Security.framework/Versions/A/Resources/CloudKeychainProxy.bundle/Contents/MacOS/CloudKeychainProxy","status":["sleep"],"exec":"/System/Library/Frameworks/Security.framework/Versions/A/Resources/CloudKeychainProxy.bundle/Contents/MacOS/CloudKeychainProxy","nice_level":0,"num_fds":0,"Memory":{"rss":3559424,"vms":4408561664,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":417,"ppid":1,"username":"dziegler","name":"fontd","cpu_percent":0.1837476130974195,"memory_percent":0.060772896,"cmdline":"/System/Library/Frameworks/ApplicationServices.framework/Frameworks/ATS.framework/Support/fontd","status":["sleep"],"exec":"/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Support/fontd","nice_level":0,"num_fds":0,"Memory":{"rss":10440704,"vms":4440899584,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":420,"ppid":1,"username":"dziegler","name":"rapportd","cpu_percent":0.003206503032178079,"memory_percent":0.069880486,"cmdline":"/usr/libexec/rapportd","status":["sleep"],"exec":"/usr/libexec/rapportd","nice_level":0,"num_fds":0,"Memory":{"rss":12005376,"vms":4439261184,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":421,"ppid":1,"username":"dziegler","name":"identityservicesd","cpu_percent":0.011154544555861826,"memory_percent":0.12071133,"cmdline":"/System/Library/PrivateFrameworks/IDS.framework/identityservicesd.app/Contents/MacOS/identityservicesd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/IDS.framework/identityservicesd.app/Contents/MacOS/identityservicesd","nice_level":0,"num_fds":0,"Memory":{"rss":20738048,"vms":4453744640,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":422,"ppid":1,"username":"dziegler","name":"ctkd","cpu_percent":0.0008365865613361948,"memory_percent":0.030446053,"cmdline":"/System/Library/Frameworks/CryptoTokenKit.framework/ctkd -tw","status":["sleep"],"exec":"/System/Library/Frameworks/CryptoTokenKit.framework/ctkd","nice_level":0,"num_fds":0,"Memory":{"rss":5230592,"vms":4439425024,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":424,"ppid":1,"username":"dziegler","name":"routined","cpu_percent":0.024818606743049025,"memory_percent":0.12643337,"cmdline":"/usr/libexec/routined LAUNCHED_BY_LAUNCHD","status":["sleep"],"exec":"/usr/libexec/routined","nice_level":0,"num_fds":0,"Memory":{"rss":21721088,"vms":4448567296,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":425,"ppid":1,"username":"dziegler","name":"usernoted","cpu_percent":0.03151110306969449,"memory_percent":0.11103153,"cmdline":"/usr/sbin/usernoted","status":["sleep"],"exec":"/usr/sbin/usernoted","nice_level":0,"num_fds":0,"Memory":{"rss":19075072,"vms":4446736384,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":426,"ppid":1,"username":"dziegler","name":"corespeechd","cpu_percent":0.001394290057956572,"memory_percent":0.047254562,"cmdline":"/System/Library/PrivateFrameworks/CoreSpeech.framework/corespeechd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreSpeech.framework/corespeechd","nice_level":0,"num_fds":0,"Memory":{"rss":8118272,"vms":4411584512,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":428,"ppid":1,"username":"dziegler","name":"Application","cpu_percent":0.0008365686711110619,"memory_percent":0.017046928,"cmdline":"/Library/Application Support/Fortinet/FortiClient/bin/CredentialStore","status":["sleep"],"exec":"/Library/Application Support/Fortinet/FortiClient/bin/CredentialStore","nice_level":0,"num_fds":0,"Memory":{"rss":2928640,"vms":4408647680,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":429,"ppid":1,"username":"dziegler","name":"ContextStoreAgent","cpu_percent":0.003346246739781256,"memory_percent":0.06272793,"cmdline":"/System/Library/PrivateFrameworks/CoreDuetContext.framework/Resources/ContextStoreAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreDuetContext.framework/Versions/A/Resources/ContextStoreAgent","nice_level":0,"num_fds":0,"Memory":{"rss":10776576,"vms":4443627520,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":431,"ppid":1,"username":"dziegler","name":"SocialPushAgent","cpu_percent":0.0006971310344697584,"memory_percent":0.024271011,"cmdline":"/System/Library/CoreServices/SocialPushAgent.app/Contents/MacOS/SocialPushAgent","status":["sleep"],"exec":"/System/Library/CoreServices/SocialPushAgent.app/Contents/MacOS/SocialPushAgent","nice_level":0,"num_fds":0,"Memory":{"rss":4169728,"vms":4437000192,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":434,"ppid":1,"username":"dziegler","name":"NotificationCenter","cpu_percent":0.033880368458013864,"memory_percent":0.4181862,"cmdline":"/System/Library/CoreServices/NotificationCenter.app/Contents/MacOS/NotificationCenter","status":["sleep"],"exec":"/System/Library/CoreServices/NotificationCenter.app/Contents/MacOS/NotificationCenter","nice_level":0,"num_fds":0,"Memory":{"rss":71843840,"vms":5258555392,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":435,"ppid":1,"username":"dziegler","name":"imklaunchagent","cpu_percent":0.001951946034942823,"memory_percent":0.04339218,"cmdline":"/System/Library/Frameworks/InputMethodKit.framework/Resources/imklaunchagent","status":["sleep"],"exec":"/System/Library/Frameworks/InputMethodKit.framework/Versions/A/Resources/imklaunchagent","nice_level":0,"num_fds":0,"Memory":{"rss":7454720,"vms":4441034752,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":436,"ppid":1,"username":"dziegler","name":"icdd","cpu_percent":0.005855807246500958,"memory_percent":0.045251846,"cmdline":"/System/Library/Image Capture/Support/icdd","status":["sleep"],"exec":"/System/Library/Image Capture/Support/icdd","nice_level":0,"num_fds":0,"Memory":{"rss":7774208,"vms":4438798336,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":439,"ppid":1,"username":"dziegler","name":"CalendarAgent","cpu_percent":0.012826940655011885,"memory_percent":0.14317036,"cmdline":"/System/Library/PrivateFrameworks/CalendarAgent.framework/Executables/CalendarAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CalendarAgent.framework/Executables/CalendarAgent","nice_level":0,"num_fds":0,"Memory":{"rss":24596480,"vms":4450897920,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":440,"ppid":1,"username":"dziegler","name":"askpermissiond","cpu_percent":0.003764408995897854,"memory_percent":0.04673004,"cmdline":"/System/Library/PrivateFrameworks/AskPermission.framework/Versions/A/Resources/askpermissiond","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/AskPermission.framework/Versions/A/Resources/askpermissiond","nice_level":0,"num_fds":0,"Memory":{"rss":8028160,"vms":4440567808,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":442,"ppid":1,"username":"dziegler","name":"sharingd","cpu_percent":0.008504734858535238,"memory_percent":0.1537323,"cmdline":"/usr/libexec/sharingd","status":["sleep"],"exec":"/usr/libexec/sharingd","nice_level":0,"num_fds":0,"Memory":{"rss":26411008,"vms":4455104512,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":443,"ppid":1,"username":"dziegler","name":"AirPlayUIAgent","cpu_percent":0.0013942114061479402,"memory_percent":0.060629845,"cmdline":"/System/Library/CoreServices/AirPlayUIAgent.app/Contents/MacOS/AirPlayUIAgent --launchd","status":["sleep"],"exec":"/System/Library/CoreServices/AirPlayUIAgent.app/Contents/MacOS/AirPlayUIAgent","nice_level":0,"num_fds":0,"Memory":{"rss":10416128,"vms":4973481984,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":444,"ppid":1,"username":"dziegler","name":"cloudpaird","cpu_percent":0.001812465427953919,"memory_percent":0.048589706,"cmdline":"/System/Library/CoreServices/cloudpaird","status":["sleep"],"exec":"/System/Library/CoreServices/cloudpaird","nice_level":0,"num_fds":0,"Memory":{"rss":8347648,"vms":4438982656,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":445,"ppid":1,"username":"dziegler","name":"imagent","cpu_percent":0.0032066529520731702,"memory_percent":0.085520744,"cmdline":"/System/Library/PrivateFrameworks/IMCore.framework/imagent.app/Contents/MacOS/imagent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/IMCore.framework/imagent.app/Contents/MacOS/imagent","nice_level":0,"num_fds":0,"Memory":{"rss":14692352,"vms":4440518656,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":447,"ppid":1,"username":"dziegler","name":"diagnostics_agent","cpu_percent":0.0034854724096953383,"memory_percent":0.041413307,"cmdline":"/System/Library/CoreServices/diagnostics_agent","status":["sleep"],"exec":"/System/Library/CoreServices/diagnostics_agent","nice_level":0,"num_fds":0,"Memory":{"rss":7114752,"vms":4439310336,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":448,"ppid":1,"username":"dziegler","name":"TextInputMenuAgent","cpu_percent":0.007249737406355187,"memory_percent":0.102353096,"cmdline":"/System/Library/CoreServices/TextInputMenuAgent.app/Contents/MacOS/TextInputMenuAgent","status":["sleep"],"exec":"/System/Library/CoreServices/TextInputMenuAgent.app/Contents/MacOS/TextInputMenuAgent","nice_level":0,"num_fds":0,"Memory":{"rss":17584128,"vms":5003825152,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":450,"ppid":1,"username":"dziegler","name":"remindd","cpu_percent":0.00599492883031082,"memory_percent":0.10383129,"cmdline":"/usr/libexec/remindd","status":["sleep"],"exec":"/usr/libexec/remindd","nice_level":0,"num_fds":0,"Memory":{"rss":17838080,"vms":4451074048,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":451,"ppid":1,"username":"dziegler","name":"JetBrains","cpu_percent":0.30155628514393307,"memory_percent":1.4934301,"cmdline":"/Applications/JetBrains Toolbox.app/Contents/MacOS/jetbrains-toolbox --minimize","status":["sleep"],"exec":"/Applications/JetBrains Toolbox.app/Contents/MacOS/jetbrains-toolbox","nice_level":0,"num_fds":0,"Memory":{"rss":256569344,"vms":6487224320,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":452,"ppid":1,"username":"dziegler","name":"amsaccountsd","cpu_percent":0.004879512600264312,"memory_percent":0.056695938,"cmdline":"/System/Library/PrivateFrameworks/AppleMediaServices.framework/Resources/amsaccountsd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/AppleMediaServices.framework/Versions/A/Resources/amsaccountsd","nice_level":0,"num_fds":0,"Memory":{"rss":9740288,"vms":4440678400,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":454,"ppid":1,"username":"dziegler","name":"CommCenter","cpu_percent":0.01031661395170171,"memory_percent":0.1077652,"cmdline":"/System/Library/Frameworks/CoreTelephony.framework/Support/CommCenter -L","status":["sleep"],"exec":"/System/Library/Frameworks/CoreTelephony.framework/Support/CommCenter","nice_level":0,"num_fds":0,"Memory":{"rss":18513920,"vms":4421488640,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":455,"ppid":1,"username":"dziegler","name":"ctkahp","cpu_percent":0.0005576505146254282,"memory_percent":0.02720356,"cmdline":"/System/Library/Frameworks/CryptoTokenKit.framework/ctkahp.bundle/Contents/MacOS/ctkahp","status":["sleep"],"exec":"/System/Library/Frameworks/CryptoTokenKit.framework/ctkahp.bundle/Contents/MacOS/ctkahp","nice_level":0,"num_fds":0,"Memory":{"rss":4673536,"vms":4409933824,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":456,"ppid":1,"username":"dziegler","name":"nextcloud","cpu_percent":0.45810673282804143,"memory_percent":0.5770922,"cmdline":"/Applications/nextcloud.app/Contents/MacOS/nextcloud","status":["sleep"],"exec":"/Applications/nextcloud.app/Contents/MacOS/nextcloud","nice_level":0,"num_fds":0,"Memory":{"rss":99143680,"vms":5181231104,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":457,"ppid":1,"username":"dziegler","name":"HyperDock","cpu_percent":0.4237287654085945,"memory_percent":0.1445055,"cmdline":"/Applications/HyperDock.app/Contents/Library/LoginItems/HyperDock Helper.app/Contents/MacOS/HyperDock Helper","status":["sleep"],"exec":"/Applications/HyperDock.app/Contents/Library/LoginItems/HyperDock Helper.app/Contents/MacOS/HyperDock Helper","nice_level":0,"num_fds":0,"Memory":{"rss":24825856,"vms":5002276864,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":459,"ppid":1,"username":"dziegler","name":"useractivityd","cpu_percent":0.010875515037987704,"memory_percent":0.043964386,"cmdline":"/System/Library/PrivateFrameworks/UserActivity.framework/Agents/useractivityd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/UserActivity.framework/Agents/useractivityd","nice_level":0,"num_fds":0,"Memory":{"rss":7553024,"vms":4440780800,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":460,"ppid":1,"username":"dziegler","name":"Spotlight","cpu_percent":0.05897848426174686,"memory_percent":0.4856348,"cmdline":"/System/Library/CoreServices/Spotlight.app/Contents/MacOS/Spotlight","status":["sleep"],"exec":"/System/Library/CoreServices/Spotlight.app/Contents/MacOS/Spotlight","nice_level":0,"num_fds":0,"Memory":{"rss":83431424,"vms":5280411648,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":461,"ppid":1,"username":"dziegler","name":"com.apple.dock.extra","cpu_percent":0.004043421106875798,"memory_percent":0.18956661,"cmdline":"/System/Library/CoreServices/Dock.app/Contents/XPCServices/com.apple.dock.extra.xpc/Contents/MacOS/com.apple.dock.extra","status":["sleep"],"exec":"/System/Library/CoreServices/Dock.app/Contents/XPCServices/com.apple.dock.extra.xpc/Contents/MacOS/com.apple.dock.extra","nice_level":0,"num_fds":0,"Memory":{"rss":32567296,"vms":4977319936,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":462,"ppid":1,"username":"dziegler","name":"iconservicesagent","cpu_percent":0.019240986819512577,"memory_percent":0.14455318,"cmdline":"/System/Library/CoreServices/iconservicesagent","status":["sleep"],"exec":"/System/Library/CoreServices/iconservicesagent","nice_level":0,"num_fds":0,"Memory":{"rss":24834048,"vms":4502024192,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":463,"ppid":1,"username":"root","name":"filecoordinationd","cpu_percent":0.0005577065853938112,"memory_percent":0.026774406,"cmdline":"/usr/sbin/filecoordinationd","status":["sleep"],"exec":"/usr/sbin/filecoordinationd","nice_level":0,"num_fds":0,"Memory":{"rss":4599808,"vms":4415127552,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":464,"ppid":1,"username":"dziegler","name":"IMDPersistenceAgent","cpu_percent":0.002788517288523527,"memory_percent":0.082325935,"cmdline":"/System/Library/PrivateFrameworks/IMDPersistence.framework/XPCServices/IMDPersistenceAgent.xpc/Contents/MacOS/IMDPersistenceAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/IMDPersistence.framework/XPCServices/IMDPersistenceAgent.xpc/Contents/MacOS/IMDPersistenceAgent","nice_level":0,"num_fds":0,"Memory":{"rss":14143488,"vms":4444446720,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":465,"ppid":1,"username":"dziegler","name":"mapspushd","cpu_percent":0.004043331067900017,"memory_percent":0.057697296,"cmdline":"/System/Library/CoreServices/mapspushd","status":["sleep"],"exec":"/System/Library/CoreServices/mapspushd","nice_level":0,"num_fds":0,"Memory":{"rss":9912320,"vms":4440776704,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":466,"ppid":1,"username":"dziegler","name":"parsecd","cpu_percent":0.0086443228022187,"memory_percent":0.096178055,"cmdline":"/System/Library/PrivateFrameworks/CoreParsec.framework/parsecd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreParsec.framework/parsecd","nice_level":0,"num_fds":0,"Memory":{"rss":16523264,"vms":4454961152,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":467,"ppid":1,"username":"dziegler","name":"com.apple.quicklook.ThumbnailsAgent","cpu_percent":0.008226006640232215,"memory_percent":0.07209778,"cmdline":"/System/Library/Frameworks/QuickLookThumbnailing.framework/Support/com.apple.quicklook.ThumbnailsAgent","status":["sleep"],"exec":"/System/Library/Frameworks/QuickLookThumbnailing.framework/Support/com.apple.quicklook.ThumbnailsAgent","nice_level":0,"num_fds":0,"Memory":{"rss":12386304,"vms":4964007936,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":468,"ppid":1,"username":"dziegler","name":"storeaccountd","cpu_percent":0.001115383536470903,"memory_percent":0.054717064,"cmdline":"/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/storeaccountd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/storeaccountd","nice_level":0,"num_fds":0,"Memory":{"rss":9400320,"vms":4410368000,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":470,"ppid":1,"username":"dziegler","name":"WiFiAgent","cpu_percent":0.010876453968654363,"memory_percent":0.07469654,"cmdline":"/System/Library/CoreServices/WiFiAgent.app/Contents/MacOS/WiFiAgent","status":["sleep"],"exec":"/System/Library/CoreServices/WiFiAgent.app/Contents/MacOS/WiFiAgent","nice_level":0,"num_fds":0,"Memory":{"rss":12832768,"vms":4450168832,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":471,"ppid":1,"username":"dziegler","name":"CallHistoryPluginHelper","cpu_percent":0.0008366447227147537,"memory_percent":0.039076805,"cmdline":"/System/Library/PrivateFrameworks/CallHistory.framework/Support/CallHistoryPluginHelper","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CallHistory.framework/Support/CallHistoryPluginHelper","nice_level":0,"num_fds":0,"Memory":{"rss":6713344,"vms":4437745664,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":474,"ppid":1,"username":"dziegler","name":"IMRemoteURLConnectionAgent","cpu_percent":0.0012549601669633141,"memory_percent":0.048947334,"cmdline":"/System/Library/PrivateFrameworks/IMFoundation.framework/XPCServices/IMRemoteURLConnectionAgent.xpc/Contents/MacOS/IMRemoteURLConnectionAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/IMFoundation.framework/XPCServices/IMRemoteURLConnectionAgent.xpc/Contents/MacOS/IMRemoteURLConnectionAgent","nice_level":0,"num_fds":0,"Memory":{"rss":8409088,"vms":4438446080,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":475,"ppid":1,"username":"dziegler","name":"commerce","cpu_percent":0.004880376024695585,"memory_percent":0.103616714,"cmdline":"/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/commerce","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/commerce","nice_level":0,"num_fds":0,"Memory":{"rss":17801216,"vms":4451606528,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":476,"ppid":1,"username":"dziegler","name":"com.apple.geod","cpu_percent":0.01450162365769963,"memory_percent":0.06213188,"cmdline":"/System/Library/PrivateFrameworks/GeoServices.framework/Versions/A/XPCServices/com.apple.geod.xpc/Contents/MacOS/com.apple.geod","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/GeoServices.framework/Versions/A/XPCServices/com.apple.geod.xpc/Contents/MacOS/com.apple.geod","nice_level":0,"num_fds":0,"Memory":{"rss":10674176,"vms":4445515776,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":477,"ppid":1,"username":"dziegler","name":"nsurlstoraged","cpu_percent":0.007250776473835212,"memory_percent":0.044727325,"cmdline":"/usr/libexec/nsurlstoraged","status":["sleep"],"exec":"/usr/libexec/nsurlstoraged","nice_level":0,"num_fds":0,"Memory":{"rss":7684096,"vms":4443328512,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":478,"ppid":1,"username":"dziegler","name":"AppSSOAgent","cpu_percent":0.002091559372436367,"memory_percent":0.07209778,"cmdline":"/System/Library/PrivateFrameworks/AppSSO.framework/Support/AppSSOAgent.app/Contents/MacOS/AppSSOAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/AppSSO.framework/Support/AppSSOAgent.app/Contents/MacOS/AppSSOAgent","nice_level":0,"num_fds":0,"Memory":{"rss":12386304,"vms":4976312320,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":479,"ppid":1,"username":"root","name":"WirelessRadioManagerd","cpu_percent":0.0013943653869566502,"memory_percent":0.026369095,"cmdline":"/usr/sbin/WirelessRadioManagerd","status":["sleep"],"exec":"/usr/sbin/WirelessRadioManagerd","nice_level":0,"num_fds":0,"Memory":{"rss":4530176,"vms":4438110208,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":480,"ppid":1,"username":"dziegler","name":"com.apple.notificationcenterui.WeatherSummary","cpu_percent":0.0006971789235885903,"memory_percent":0.03414154,"cmdline":"/System/Library/CoreServices/NotificationCenter.app/Contents/XPCServices/com.apple.notificationcenterui.WeatherSummary.xpc/Contents/MacOS/com.apple.notificationcenterui.WeatherSummary","status":["sleep"],"exec":"/System/Library/CoreServices/NotificationCenter.app/Contents/XPCServices/com.apple.notificationcenterui.WeatherSummary.xpc/Contents/MacOS/com.apple.notificationcenterui.WeatherSummary","nice_level":0,"num_fds":0,"Memory":{"rss":5865472,"vms":4408242176,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":481,"ppid":1,"username":"dziegler","name":"callservicesd","cpu_percent":0.005857091117691743,"memory_percent":0.1282692,"cmdline":"/System/Library/PrivateFrameworks/TelephonyUtilities.framework/callservicesd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/TelephonyUtilities.framework/callservicesd","nice_level":0,"num_fds":0,"Memory":{"rss":22036480,"vms":4449198080,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":482,"ppid":1,"username":"dziegler","name":"pbs","cpu_percent":0.0009761766438471208,"memory_percent":0.024342537,"cmdline":"/System/Library/CoreServices/pbs","status":["sleep"],"exec":"/System/Library/CoreServices/pbs","nice_level":0,"num_fds":0,"Memory":{"rss":4182016,"vms":4437983232,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":483,"ppid":1,"username":"dziegler","name":"CalNCService","cpu_percent":0.005438665199478235,"memory_percent":0.1090765,"cmdline":"/System/Library/PrivateFrameworks/CalendarNotification.framework/Versions/A/XPCServices/CalNCService.xpc/Contents/MacOS/CalNCService","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CalendarNotification.framework/Versions/A/XPCServices/CalNCService.xpc/Contents/MacOS/CalNCService","nice_level":0,"num_fds":0,"Memory":{"rss":18739200,"vms":4444139520,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":484,"ppid":1,"username":"dziegler","name":"com.apple.WeatherKitService","cpu_percent":0.00251013963304624,"memory_percent":0.055909157,"cmdline":"/System/Library/PrivateFrameworks/WeatherKit.framework/Versions/A/XPCServices/com.apple.WeatherKitService.xpc/Contents/MacOS/com.apple.WeatherKitService","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/WeatherKit.framework/Versions/A/XPCServices/com.apple.WeatherKitService.xpc/Contents/MacOS/com.apple.WeatherKitService","nice_level":0,"num_fds":0,"Memory":{"rss":9605120,"vms":4441497600,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":485,"ppid":1,"username":"dziegler","name":"ContactsAccountsService","cpu_percent":0.01045885395756476,"memory_percent":0.064730644,"cmdline":"/System/Library/Frameworks/AddressBook.framework/Executables/ContactsAccountsService","status":["sleep"],"exec":"/System/Library/Frameworks/AddressBook.framework/Executables/ContactsAccountsService","nice_level":0,"num_fds":0,"Memory":{"rss":11120640,"vms":4437889024,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":487,"ppid":1,"username":"dziegler","name":"IMRemoteURLConnectionAgent","cpu_percent":0.002510111434478293,"memory_percent":0.054836273,"cmdline":"/System/Library/PrivateFrameworks/IMFoundation.framework/XPCServices/IMRemoteURLConnectionAgent.xpc/Contents/MacOS/IMRemoteURLConnectionAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/IMFoundation.framework/XPCServices/IMRemoteURLConnectionAgent.xpc/Contents/MacOS/IMRemoteURLConnectionAgent","nice_level":0,"num_fds":0,"Memory":{"rss":9420800,"vms":4442030080,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":488,"ppid":1,"username":"dziegler","name":"fmfd","cpu_percent":0.002370648855067399,"memory_percent":0.069475174,"cmdline":"/usr/libexec/fmfd","status":["sleep"],"exec":"/usr/libexec/fmfd","nice_level":0,"num_fds":0,"Memory":{"rss":11935744,"vms":4439646208,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":489,"ppid":1,"username":"dziegler","name":"IMRemoteURLConnectionAgent","cpu_percent":0.0012550425302725703,"memory_percent":0.04746914,"cmdline":"/System/Library/PrivateFrameworks/IMFoundation.framework/XPCServices/IMRemoteURLConnectionAgent.xpc/Contents/MacOS/IMRemoteURLConnectionAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/IMFoundation.framework/XPCServices/IMRemoteURLConnectionAgent.xpc/Contents/MacOS/IMRemoteURLConnectionAgent","nice_level":0,"num_fds":0,"Memory":{"rss":8155136,"vms":4438446080,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":490,"ppid":1,"username":"dziegler","name":"ScreenTimeAgent","cpu_percent":0.0023709542204195565,"memory_percent":0.05722046,"cmdline":"/System/Library/PrivateFrameworks/ScreenTimeCore.framework/Versions/A/ScreenTimeAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/ScreenTimeCore.framework/Versions/A/ScreenTimeAgent","nice_level":0,"num_fds":0,"Memory":{"rss":9830400,"vms":4443295744,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":492,"ppid":1,"username":"dziegler","name":"IMRemoteURLConnectionAgent","cpu_percent":0.0002789341799630591,"memory_percent":0.013113022,"cmdline":"/System/Library/PrivateFrameworks/IMFoundation.framework/XPCServices/IMRemoteURLConnectionAgent.xpc/Contents/MacOS/IMRemoteURLConnectionAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/IMFoundation.framework/XPCServices/IMRemoteURLConnectionAgent.xpc/Contents/MacOS/IMRemoteURLConnectionAgent","nice_level":0,"num_fds":0,"Memory":{"rss":2252800,"vms":4408180736,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":493,"ppid":1,"username":"root","name":"spindump","cpu_percent":0.008927087906720862,"memory_percent":0.29268265,"cmdline":"/usr/sbin/spindump","status":["sleep"],"exec":"/usr/sbin/spindump","nice_level":0,"num_fds":0,"Memory":{"rss":50282496,"vms":4485111808,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":494,"ppid":1,"username":"dziegler","name":"spindump_agent","cpu_percent":0.00027897008207630535,"memory_percent":0.018930435,"cmdline":"/usr/libexec/spindump_agent","status":["sleep"],"exec":"/usr/libexec/spindump_agent","nice_level":0,"num_fds":0,"Memory":{"rss":3252224,"vms":4409352192,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":495,"ppid":1,"username":"root","name":"SubmitDiagInfo","cpu_percent":0.0008369062399695218,"memory_percent":0.02412796,"cmdline":"/System/Library/CoreServices/SubmitDiagInfo server-init","status":["sleep"],"exec":"/System/Library/CoreServices/SubmitDiagInfo","nice_level":0,"num_fds":0,"Memory":{"rss":4145152,"vms":4409040896,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":496,"ppid":1,"username":"dziegler","name":"networkserviceproxy","cpu_percent":0.0012553515791249958,"memory_percent":0.030517578,"cmdline":"/usr/libexec/networkserviceproxy","status":["sleep"],"exec":"/usr/libexec/networkserviceproxy","nice_level":0,"num_fds":0,"Memory":{"rss":5242880,"vms":4439433216,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":497,"ppid":1,"username":"_gamecontrollerd","name":"gamecontrollerd","cpu_percent":0.00446344839552712,"memory_percent":0.026416779,"cmdline":"/usr/libexec/gamecontrollerd","status":["sleep"],"exec":"/usr/libexec/gamecontrollerd","nice_level":0,"num_fds":0,"Memory":{"rss":4538368,"vms":4408877056,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":498,"ppid":1,"username":"dziegler","name":"APFSUserAgent","cpu_percent":0.00013948211029471045,"memory_percent":0.013852119,"cmdline":"/System/Library/CoreServices/APFSUserAgent","status":["sleep"],"exec":"/System/Library/CoreServices/APFSUserAgent","nice_level":0,"num_fds":0,"Memory":{"rss":2379776,"vms":4399292416,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":499,"ppid":1,"username":"dziegler","name":"neagent","cpu_percent":0.0006974060543221362,"memory_percent":0.032281876,"cmdline":"/usr/libexec/neagent","status":["sleep"],"exec":"/usr/libexec/neagent","nice_level":0,"num_fds":0,"Memory":{"rss":5545984,"vms":4439154688,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":500,"ppid":1,"username":"dziegler","name":"mediaremoteagent","cpu_percent":0.000418441364540721,"memory_percent":0.011253357,"cmdline":"/System/Library/PrivateFrameworks/MediaRemote.framework/Support/mediaremoteagent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/MediaRemote.framework/Support/mediaremoteagent","nice_level":0,"num_fds":0,"Memory":{"rss":1933312,"vms":4408238080,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":501,"ppid":1,"username":"dziegler","name":"LocationMenu","cpu_percent":0.00418438683472831,"memory_percent":0.08416176,"cmdline":"/System/Library/CoreServices/LocationMenu.app/Contents/MacOS/LocationMenu","status":["sleep"],"exec":"/System/Library/CoreServices/LocationMenu.app/Contents/MacOS/LocationMenu","nice_level":0,"num_fds":0,"Memory":{"rss":14458880,"vms":4997365760,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":502,"ppid":1,"username":"dziegler","name":"PAH_Extension","cpu_percent":0.013810332738371598,"memory_percent":0.110054016,"cmdline":"/System/Library/Input Methods/PressAndHold.app/Contents/PlugIns/PAH_Extension.appex/Contents/MacOS/PAH_Extension","status":["sleep"],"exec":"/System/Library/Input Methods/PressAndHold.app/Contents/PlugIns/PAH_Extension.appex/Contents/MacOS/PAH_Extension","nice_level":0,"num_fds":0,"Memory":{"rss":18907136,"vms":5001322496,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":503,"ppid":1,"username":"dziegler","name":"familycircled","cpu_percent":0.003208445871397367,"memory_percent":0.07777214,"cmdline":"/System/Library/PrivateFrameworks/FamilyCircle.framework/Versions/A/Resources/familycircled","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/FamilyCircle.framework/Versions/A/Resources/familycircled","nice_level":0,"num_fds":0,"Memory":{"rss":13361152,"vms":4447170560,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":504,"ppid":1,"username":"dziegler","name":"CoreLocationAgent","cpu_percent":0.0018134596843122183,"memory_percent":0.06682873,"cmdline":"/System/Library/CoreServices/CoreLocationAgent.app/Contents/MacOS/CoreLocationAgent","status":["sleep"],"exec":"/System/Library/CoreServices/CoreLocationAgent.app/Contents/MacOS/CoreLocationAgent","nice_level":0,"num_fds":0,"Memory":{"rss":11481088,"vms":4449669120,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":507,"ppid":1,"username":"dziegler","name":"WiFiVelocityAgent","cpu_percent":0.00041848863149623476,"memory_percent":0.023198128,"cmdline":"/usr/libexec/WiFiVelocityAgent","status":["sleep"],"exec":"/usr/libexec/WiFiVelocityAgent","nice_level":0,"num_fds":0,"Memory":{"rss":3985408,"vms":4437172224,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":508,"ppid":1,"username":"root","name":"wifivelocityd","cpu_percent":0.0015344509234804197,"memory_percent":0.036406517,"cmdline":"/usr/libexec/wifivelocityd","status":["sleep"],"exec":"/usr/libexec/wifivelocityd","nice_level":0,"num_fds":0,"Memory":{"rss":6254592,"vms":4439953408,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":511,"ppid":1,"username":"root","name":"findmydeviced","cpu_percent":0.001115959038979029,"memory_percent":0.04823208,"cmdline":"/usr/libexec/findmydeviced","status":["sleep"],"exec":"/usr/libexec/findmydeviced","nice_level":0,"num_fds":0,"Memory":{"rss":8286208,"vms":4438405120,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":514,"ppid":1,"username":"dziegler","name":"CoreServicesUIAgent","cpu_percent":0.0032083657971884645,"memory_percent":0.0682354,"cmdline":"/System/Library/CoreServices/CoreServicesUIAgent.app/Contents/MacOS/CoreServicesUIAgent","status":["sleep"],"exec":"/System/Library/CoreServices/CoreServicesUIAgent.app/Contents/MacOS/CoreServicesUIAgent","nice_level":0,"num_fds":0,"Memory":{"rss":11722752,"vms":4448972800,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":515,"ppid":1,"username":"dziegler","name":"FortiClientAgent","cpu_percent":0.01199810876713372,"memory_percent":0.16994476,"cmdline":"/Applications/FortiClient.app/Contents/Resources/runtime.helper/FortiClientAgent.app/Contents/MacOS/FortiClientAgent","status":["sleep"],"exec":"/Applications/FortiClient.app/Contents/Resources/runtime.helper/FortiClientAgent.app/Contents/MacOS/FortiClientAgent","nice_level":0,"num_fds":0,"Memory":{"rss":29196288,"vms":5012860928,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":516,"ppid":1,"username":"dziegler","name":"Enpass","cpu_percent":0.03962145409404463,"memory_percent":0.55339336,"cmdline":"/Applications/Enpass.app/Contents/MacOS/Enpass -psn_0_151589","status":["sleep"],"exec":"/Applications/Enpass.app/Contents/MacOS/Enpass","nice_level":0,"num_fds":0,"Memory":{"rss":95072256,"vms":5125951488,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":519,"ppid":1,"username":"root","name":"fctservctl","cpu_percent":0.004603861263324433,"memory_percent":0.035452843,"cmdline":"/Library/Application Support/Fortinet/FortiClient/bin/fctservctl","status":["sleep"],"exec":"/Library/Application Support/Fortinet/FortiClient/bin/fctservctl","nice_level":0,"num_fds":0,"Memory":{"rss":6090752,"vms":4439740416,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":524,"ppid":1,"username":"dziegler","name":"corespotlightd","cpu_percent":0.006278823920529308,"memory_percent":0.1475811,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Versions/A/Support/corespotlightd","status":["sleep"],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/corespotlightd","nice_level":0,"num_fds":0,"Memory":{"rss":25354240,"vms":4593131520,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":526,"ppid":1,"username":"dziegler","name":"assistantd","cpu_percent":0.003069628228223832,"memory_percent":0.085520744,"cmdline":"/System/Library/PrivateFrameworks/AssistantServices.framework/Versions/A/Support/assistantd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/AssistantServices.framework/Versions/A/Support/assistantd","nice_level":0,"num_fds":0,"Memory":{"rss":14692352,"vms":4443828224,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":527,"ppid":1,"username":"dziegler","name":"suggestd","cpu_percent":0.009069297423201454,"memory_percent":0.1429081,"cmdline":"/System/Library/PrivateFrameworks/CoreSuggestions.framework/Versions/A/Support/suggestd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreSuggestions.framework/Versions/A/Support/suggestd","nice_level":0,"num_fds":0,"Memory":{"rss":24551424,"vms":4518260736,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":528,"ppid":1,"username":"dziegler","name":"akd","cpu_percent":0.003209113957756609,"memory_percent":0.06401539,"cmdline":"/System/Library/PrivateFrameworks/AuthKit.framework/Versions/A/Support/akd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/AuthKit.framework/Versions/A/Support/akd","nice_level":0,"num_fds":0,"Memory":{"rss":10997760,"vms":4449157120,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":529,"ppid":1,"username":"dziegler","name":"SafeEjectGPUAgent","cpu_percent":0.0001395254994629709,"memory_percent":0.018429756,"cmdline":"SafeEjectGPUAgent","status":["sleep"],"exec":"/System/Library/CoreServices/Menu Extras/SafeEjectGPUExtra.menu/Contents/MacOS/SafeEjectGPUAgent","nice_level":0,"num_fds":0,"Memory":{"rss":3166208,"vms":4928790528,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":530,"ppid":1,"username":"_fpsd","name":"adid","cpu_percent":0.0009766707131529558,"memory_percent":0.0320673,"cmdline":"/System/Library/PrivateFrameworks/CoreADI.framework/adid","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreADI.framework/Versions/A/adid","nice_level":0,"num_fds":0,"Memory":{"rss":5509120,"vms":4412506112,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":531,"ppid":1,"username":"dziegler","name":"Menu","cpu_percent":0.0006976175489518499,"memory_percent":0.027680397,"cmdline":"/System/Library/CoreServices/Menu Extras/SafeEjectGPUExtra.menu/Contents/XPCServices/SafeEjectGPUService.xpc/Contents/MacOS/SafeEjectGPUService","status":["sleep"],"exec":"/System/Library/CoreServices/Menu Extras/SafeEjectGPUExtra.menu/Contents/XPCServices/SafeEjectGPUService.xpc/Contents/MacOS/SafeEjectGPUService","nice_level":0,"num_fds":0,"Memory":{"rss":4755456,"vms":4438126592,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":542,"ppid":1,"username":"dziegler","name":"FinderSyncExt","cpu_percent":0.0030699309853657298,"memory_percent":0.09982586,"cmdline":"/Applications/nextcloud.app/Contents/PlugIns/FinderSyncExt.appex/Contents/MacOS/FinderSyncExt","status":["sleep"],"exec":"/Applications/nextcloud.app/Contents/PlugIns/FinderSyncExt.appex/Contents/MacOS/FinderSyncExt","nice_level":0,"num_fds":0,"Memory":{"rss":17149952,"vms":4452192256,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":543,"ppid":1,"username":"root","name":"fcconfig","cpu_percent":0.0464673788124858,"memory_percent":0.056529045,"cmdline":"/Library/Application Support/Fortinet/FortiClient/bin/fcconfig","status":["sleep"],"exec":"/Library/Application Support/Fortinet/FortiClient/bin/fcconfig","nice_level":0,"num_fds":0,"Memory":{"rss":9711616,"vms":4443471872,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":547,"ppid":1,"username":"dziegler","name":"USBAgent","cpu_percent":0.000558241994905078,"memory_percent":0.013113022,"cmdline":"/usr/libexec/USBAgent","status":["sleep"],"exec":"/usr/libexec/USBAgent","nice_level":0,"num_fds":0,"Memory":{"rss":2252800,"vms":4401876992,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":548,"ppid":1,"username":"dziegler","name":"FctMiscAgent","cpu_percent":0.04577560797556529,"memory_percent":0.090408325,"cmdline":"/Applications/FortiClient.app/Contents/Resources/runtime.helper/FortiClientAgent.app/Contents/Resources/runtime.helper/FctMiscAgent.app/Contents/MacOS/FctMiscAgent","status":["sleep"],"exec":"/Applications/FortiClient.app/Contents/Resources/runtime.helper/FortiClientAgent.app/Contents/Resources/runtime.helper/FctMiscAgent.app/Contents/MacOS/FctMiscAgent","nice_level":0,"num_fds":0,"Memory":{"rss":15532032,"vms":4989259776,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":550,"ppid":451,"username":"dziegler","name":"JetBrains","cpu_percent":0.005303978171724609,"memory_percent":0.22335052,"cmdline":"/Applications/JetBrains Toolbox.app/Contents/Frameworks/jetbrains-toolbox-helper (GPU).app/Contents/MacOS/jetbrains-toolbox-helper (GPU) --type=gpu-process --field-trial-handle=1718379636,2258917268953261059,4145971447712368541,131072 --enable-features=CastMediaRouteProvider --no-sandbox --framework-dir-path=/Applications/JetBrains Toolbox.app/Contents/Frameworks/Chromium Embedded Framework.framework --log-file=/Users/dziegler/Library/Logs/JetBrains/Toolbox/toolbox-ui.log --lang=en-US --gpu-preferences=MAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAABgAAAAAAAQAAAAAAAAAAAAAAAAAAAA6AAAABwAAADgAAAAAAAAAOgAAAAAAAAA8AAAAAAAAAD4AAAAAAAAAAABAAAAAAAACAEAAAAAAAAQAQAAAAAAABgBAAAAAAAAIAEAAAAAAAAoAQAAAAAAADABAAAAAAAAOAEAAAAAAABAAQAAAAAAAEgBAAAAAAAAUAEAAAAAAABYAQAAAAAAAGABAAAAAAAAaAEAAAAAAABwAQAAAAAAAHgBAAAAAAAAgAEAAAAAAACIAQAAAAAAAJABAAAAAAAAmAEAAAAAAACgAQAAAAAAAKgBAAAAAAAAsAEAAAAAAAC4AQAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAGAAAAEAAAAAAAAAAAAAAABwAAABAAAAAAAAAAAAAAAAgAAAAQAAAAAAAAAAAAAAAKAAAAEAAAAAAAAAAAAAAACwAAABAAAAAAAAAAAAAAAA0AAAAQAAAAAAAAAAEAAAAAAAAAEAAAAAAAAAABAAAABgAAABAAAAAAAAAAAQAAAAcAAAAQAAAAAAAAAAEAAAAIAAAAEAAAAAAAAAABAAAACgAAABAAAAAAAAAAAQAAAAsAAAAQAAAAAAAAAAEAAAANAAAAEAAAAAAAAAAEAAAAAAAAABAAAAAAAAAABAAAAAYAAAAQAAAAAAAAAAQAAAAHAAAAEAAAAAAAAAAEAAAACAAAABAAAAAAAAAABAAAAAoAAAAQAAAAAAAAAAQAAAALAAAAEAAAAAAAAAAEAAAADQAAABAAAAAAAAAABgAAAAAAAAAQAAAAAAAAAAYAAAAGAAAAEAAAAAAAAAAGAAAABwAAABAAAAAAAAAABgAAAAgAAAAQAAAAAAAAAAYAAAAKAAAAEAAAAAAAAAAGAAAACwAAABAAAAAAAAAABgAAAA0AAAA= --use-gl=swiftshader-webgl --log-file=/Users/dziegler/Library/Logs/JetBrains/Toolbox/toolbox-ui.log --shared-files","status":["sleep"],"exec":"/Applications/JetBrains Toolbox.app/Contents/Frameworks/jetbrains-toolbox-helper (GPU).app/Contents/MacOS/jetbrains-toolbox-helper (GPU)","nice_level":0,"num_fds":0,"Memory":{"rss":38371328,"vms":4693286912,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":556,"ppid":1,"username":"dziegler","name":"followupd","cpu_percent":0.000279194337449353,"memory_percent":0.025224686,"cmdline":"/System/Library/PrivateFrameworks/CoreFollowUp.framework/Versions/A/Support/followupd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreFollowUp.framework/Versions/A/Support/followupd","nice_level":0,"num_fds":0,"Memory":{"rss":4333568,"vms":4408479744,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":557,"ppid":1,"username":"dziegler","name":"SoftwareUpdateNotificationManager","cpu_percent":0.00628271398087834,"memory_percent":0.1739502,"cmdline":"/System/Library/PrivateFrameworks/SoftwareUpdate.framework/Resources/SoftwareUpdateNotificationManager.app/Contents/MacOS/SoftwareUpdateNotificationManager","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app/Contents/MacOS/SoftwareUpdateNotificationManager","nice_level":0,"num_fds":0,"Memory":{"rss":29884416,"vms":4487892992,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":560,"ppid":1,"username":"_softwareupdate","name":"Software","cpu_percent":0.11797461757897,"memory_percent":0.5024433,"cmdline":"/System/Library/CoreServices/Software Update.app/Contents/Resources/softwareupdated","status":["sleep"],"exec":"/System/Library/CoreServices/Software Update.app/Contents/Resources/softwareupdated","nice_level":0,"num_fds":0,"Memory":{"rss":86319104,"vms":4581920768,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":562,"ppid":1,"username":"root","name":"suhelperd","cpu_percent":0.0008378024053664241,"memory_percent":0.026392937,"cmdline":"/System/Library/CoreServices/Software Update.app/Contents/Resources/suhelperd","status":["sleep"],"exec":"/System/Library/CoreServices/Software Update.app/Contents/Resources/suhelperd","nice_level":0,"num_fds":0,"Memory":{"rss":4534272,"vms":4409073664,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":563,"ppid":1,"username":"_atsserver","name":"fontd","cpu_percent":0.003490826072636886,"memory_percent":0.044369698,"cmdline":"/System/Library/Frameworks/ApplicationServices.framework/Frameworks/ATS.framework/Support/fontd","status":["sleep"],"exec":"/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Support/fontd","nice_level":0,"num_fds":0,"Memory":{"rss":7622656,"vms":4440309760,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":567,"ppid":1,"username":"dziegler","name":"ReportCrash","cpu_percent":0.00027934275025930143,"memory_percent":0.013613701,"cmdline":"/System/Library/CoreServices/ReportCrash agent","status":["sleep"],"exec":"/System/Library/CoreServices/ReportCrash","nice_level":0,"num_fds":0,"Memory":{"rss":2338816,"vms":4408823808,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":578,"ppid":1,"username":"dziegler","name":"fontworker","cpu_percent":0.00041907048869004455,"memory_percent":0.0248909,"cmdline":"/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Support/fontworker","status":["sleep"],"exec":"/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Support/fontworker","nice_level":0,"num_fds":0,"Memory":{"rss":4276224,"vms":4410392576,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":582,"ppid":451,"username":"dziegler","name":"JetBrains","cpu_percent":0.0019559252196598535,"memory_percent":0.12049675,"cmdline":"/Applications/JetBrains Toolbox.app/Contents/Frameworks/jetbrains-toolbox-helper.app/Contents/MacOS/jetbrains-toolbox-helper --type=utility --utility-sub-type=network.mojom.NetworkService --field-trial-handle=1718379636,2258917268953261059,4145971447712368541,131072 --enable-features=CastMediaRouteProvider --lang=en-US --service-sandbox-type=network --no-sandbox --use-mock-keychain --framework-dir-path=/Applications/JetBrains Toolbox.app/Contents/Frameworks/Chromium Embedded Framework.framework --log-file=/Users/dziegler/Library/Logs/JetBrains/Toolbox/toolbox-ui.log --lang=en-US --log-file=/Users/dziegler/Library/Logs/JetBrains/Toolbox/toolbox-ui.log --shared-files","status":["sleep"],"exec":"/Applications/JetBrains Toolbox.app/Contents/Frameworks/jetbrains-toolbox-helper.app/Contents/MacOS/jetbrains-toolbox-helper","nice_level":0,"num_fds":0,"Memory":{"rss":20701184,"vms":4661534720,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":583,"ppid":451,"username":"dziegler","name":"JetBrains","cpu_percent":0.0018162065827725539,"memory_percent":0.11808872,"cmdline":"/Applications/JetBrains Toolbox.app/Contents/Frameworks/jetbrains-toolbox-helper (Renderer).app/Contents/MacOS/jetbrains-toolbox-helper (Renderer) --type=renderer --no-sandbox --log-file=/Users/dziegler/Library/Logs/JetBrains/Toolbox/toolbox-ui.log --field-trial-handle=1718379636,2258917268953261059,4145971447712368541,131072 --enable-features=CastMediaRouteProvider --disable-gpu-compositing --lang=en-US --framework-dir-path=/Applications/JetBrains Toolbox.app/Contents/Frameworks/Chromium Embedded Framework.framework --log-file=/Users/dziegler/Library/Logs/JetBrains/Toolbox/toolbox-ui.log --disable-extensions --disable-plugins --uncaught-exception-stack-size=16 --num-raster-threads=2 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=5 --no-v8-untrusted-code-mitigations --shared-files","status":["sleep"],"exec":"/Applications/JetBrains Toolbox.app/Contents/Frameworks/jetbrains-toolbox-helper (Renderer).app/Contents/MacOS/jetbrains-toolbox-helper (Renderer)","nice_level":0,"num_fds":0,"Memory":{"rss":20287488,"vms":9007366144,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":584,"ppid":451,"username":"dziegler","name":"JetBrains","cpu_percent":0.035066570467486784,"memory_percent":0.5922556,"cmdline":"/Applications/JetBrains Toolbox.app/Contents/Frameworks/jetbrains-toolbox-helper (Renderer).app/Contents/MacOS/jetbrains-toolbox-helper (Renderer) --type=renderer --no-sandbox --log-file=/Users/dziegler/Library/Logs/JetBrains/Toolbox/toolbox-ui.log --field-trial-handle=1718379636,2258917268953261059,4145971447712368541,131072 --enable-features=CastMediaRouteProvider --disable-gpu-compositing --lang=en-US --framework-dir-path=/Applications/JetBrains Toolbox.app/Contents/Frameworks/Chromium Embedded Framework.framework --log-file=/Users/dziegler/Library/Logs/JetBrains/Toolbox/toolbox-ui.log --disable-extensions --disable-plugins --uncaught-exception-stack-size=16 --num-raster-threads=2 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=4 --no-v8-untrusted-code-mitigations --shared-files","status":["sleep"],"exec":"/Applications/JetBrains Toolbox.app/Contents/Frameworks/jetbrains-toolbox-helper (Renderer).app/Contents/MacOS/jetbrains-toolbox-helper (Renderer)","nice_level":0,"num_fds":0,"Memory":{"rss":101748736,"vms":9062305792,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":604,"ppid":1,"username":"_datadetectors","name":"DataDetectorsSourceAccess","cpu_percent":0.0005596086370729014,"memory_percent":0.021672249,"cmdline":"/usr/libexec/DataDetectorsSourceAccess","status":["sleep"],"exec":"/usr/libexec/DataDetectorsSourceAccess","nice_level":0,"num_fds":0,"Memory":{"rss":3723264,"vms":4409716736,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":605,"ppid":1,"username":"_spotlight","name":"trustd","cpu_percent":0.004197042738420312,"memory_percent":0.051236153,"cmdline":"/usr/libexec/trustd --agent","status":["sleep"],"exec":"/usr/libexec/trustd","nice_level":0,"num_fds":0,"Memory":{"rss":8802304,"vms":4442624000,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":609,"ppid":1,"username":"root","name":"CrashReporterSupportHelper","cpu_percent":0.00013993973331375475,"memory_percent":0.014448166,"cmdline":"/System/Library/CoreServices/CrashReporterSupportHelper server-init","status":["sleep"],"exec":"/System/Library/CoreServices/CrashReporterSupportHelper","nice_level":0,"num_fds":0,"Memory":{"rss":2482176,"vms":4408250368,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":610,"ppid":1,"username":"root","name":"rtcreportingd","cpu_percent":0.0026588410280529236,"memory_percent":0.10023117,"cmdline":"/usr/libexec/rtcreportingd","status":["sleep"],"exec":"/usr/libexec/rtcreportingd","nice_level":0,"num_fds":0,"Memory":{"rss":17219584,"vms":4442370048,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":617,"ppid":1,"username":"dziegler","name":"ContextService","cpu_percent":0.0021011327605507126,"memory_percent":0.05209446,"cmdline":"/System/Library/PrivateFrameworks/ContextKit.framework/Versions/A/XPCServices/ContextService.xpc/Contents/MacOS/ContextService","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/ContextKit.framework/Versions/A/XPCServices/ContextService.xpc/Contents/MacOS/ContextService","nice_level":0,"num_fds":0,"Memory":{"rss":8949760,"vms":4512202752,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":618,"ppid":1,"username":"dziegler","name":"adprivacyd","cpu_percent":0.004343535405006177,"memory_percent":0.06685257,"cmdline":"/usr/libexec/adprivacyd","status":["sleep"],"exec":"/usr/libexec/adprivacyd","nice_level":0,"num_fds":0,"Memory":{"rss":11485184,"vms":4442501120,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":671,"ppid":1,"username":"dziegler","name":"SafariBookmarksSyncAgent","cpu_percent":0.0172338745595523,"memory_percent":0.28920174,"cmdline":"/Library/Apple/System/Library/CoreServices/SafariSupport.bundle/Contents/MacOS/SafariBookmarksSyncAgent","status":["sleep"],"exec":"/Library/Apple/System/Library/CoreServices/SafariSupport.bundle/Contents/MacOS/SafariBookmarksSyncAgent","nice_level":0,"num_fds":0,"Memory":{"rss":49684480,"vms":4578201600,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":678,"ppid":1,"username":"dziegler","name":"AirPort","cpu_percent":0.00028364294027234254,"memory_percent":0.01733303,"cmdline":"/System/Library/CoreServices/AirPort Base Station Agent.app/Contents/MacOS/AirPort Base Station Agent --launchd","status":["sleep"],"exec":"/System/Library/CoreServices/AirPort Base Station Agent.app/Contents/MacOS/AirPort Base Station Agent","nice_level":0,"num_fds":0,"Memory":{"rss":2977792,"vms":4437417984,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":683,"ppid":1,"username":"dziegler","name":"MTLCompilerService","cpu_percent":0.0012884463240496029,"memory_percent":0.07045269,"cmdline":"/System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService","status":["sleep"],"exec":"/System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService","nice_level":0,"num_fds":0,"Memory":{"rss":12103680,"vms":4955475968,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":689,"ppid":1,"username":"dziegler","name":"Google Chrome","cpu_percent":0.3613868441613679,"memory_percent":0.92942715,"cmdline":"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome","nice_level":0,"num_fds":0,"Memory":{"rss":159674368,"vms":4987305984,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":693,"ppid":1,"username":"dziegler","name":"Google","cpu_percent":0.0002898031027873529,"memory_percent":0.022029877,"cmdline":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/chrome_crashpad_handler --monitor-self-annotation=ptype=crashpad-handler --database=/Users/dziegler/Library/Application Support/Google/Chrome/Crashpad --metrics-dir=/Users/dziegler/Library/Application Support/Google/Chrome --url=https://clients2.google.com/cr/report --annotation=channel= --annotation=plat=OS X --annotation=prod=Chrome_Mac --annotation=ver=88.0.4324.96 --handshake-fd=6","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/chrome_crashpad_handler","nice_level":0,"num_fds":0,"Memory":{"rss":3784704,"vms":4411576320,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":703,"ppid":689,"username":"dziegler","name":"Google","cpu_percent":0.8321395092605672,"memory_percent":0.5423546,"cmdline":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper (GPU).app/Contents/MacOS/Google Chrome Helper (GPU) --type=gpu-process --field-trial-handle=1718379636,9347112687090972346,4302398202363910610,131072 --gpu-preferences=OAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAABgAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQAAIAAAAAABAAAAAAAACAEAAAAAAAAQAQAAAAAAABgBAAAAAAAAIAEAAAAAAAAoAQAAAAAAADABAAAAAAAAOAEAAAAAAABAAQAAAAAAAEgBAAAAAAAAUAEAAAAAAABYAQAAAAAAAGABAAAAAAAAaAEAAAAAAABwAQAAAAAAAHgBAAAAAAAAgAEAAAAAAACIAQAAAAAAAJABAAAAAAAAmAEAAAAAAACgAQAAAAAAAKgBAAAAAAAAsAEAAAAAAAC4AQAAAAAAAMABAAAAAAAAyAEAAAAAAADQAQAAAAAAANgBAAAAAAAA4AEAAAAAAADoAQAAAAAAAPABAAAAAAAA+AEAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAABgAAABAAAAAAAAAAAAAAAAcAAAAQAAAAAAAAAAAAAAAIAAAAEAAAAAAAAAAAAAAACgAAABAAAAAAAAAAAAAAAAsAAAAQAAAAAAAAAAAAAAANAAAAEAAAAAAAAAAAAAAADgAAABAAAAAAAAAAAQAAAAAAAAAQAAAAAAAAAAEAAAAGAAAAEAAAAAAAAAABAAAABwAAABAAAAAAAAAAAQAAAAgAAAAQAAAAAAAAAAEAAAAKAAAAEAAAAAAAAAABAAAACwAAABAAAAAAAAAAAQAAAA0AAAAQAAAAAAAAAAEAAAAOAAAAEAAAAAAAAAAEAAAAAAAAABAAAAAAAAAABAAAAAYAAAAQAAAAAAAAAAQAAAAHAAAAEAAAAAAAAAAEAAAACAAAABAAAAAAAAAABAAAAAoAAAAQAAAAAAAAAAQAAAALAAAAEAAAAAAAAAAEAAAADQAAABAAAAAAAAAABAAAAA4AAAAQAAAAAAAAAAcAAAAAAAAAEAAAAAAAAAAHAAAABgAAABAAAAAAAAAABwAAAAcAAAAQAAAAAAAAAAcAAAAIAAAAEAAAAAAAAAAHAAAACgAAABAAAAAAAAAABwAAAAsAAAAQAAAAAAAAAAcAAAANAAAAEAAAAAAAAAAHAAAADgAAAA== --shared-files","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper (GPU).app/Contents/MacOS/Google Chrome Helper (GPU)","nice_level":0,"num_fds":0,"Memory":{"rss":93175808,"vms":4918726656,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":705,"ppid":689,"username":"dziegler","name":"Google","cpu_percent":0.039418437457014385,"memory_percent":0.24893284,"cmdline":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper --type=utility --utility-sub-type=network.mojom.NetworkService --field-trial-handle=1718379636,9347112687090972346,4302398202363910610,131072 --lang=de --service-sandbox-type=network --shared-files --seatbelt-client=38","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper","nice_level":0,"num_fds":0,"Memory":{"rss":42766336,"vms":4686315520,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":707,"ppid":689,"username":"dziegler","name":"Google","cpu_percent":0.0028983984423634613,"memory_percent":0.152421,"cmdline":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper --type=utility --utility-sub-type=storage.mojom.StorageService --field-trial-handle=1718379636,9347112687090972346,4302398202363910610,131072 --lang=de --service-sandbox-type=utility --shared-files --seatbelt-client=50","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper","nice_level":0,"num_fds":0,"Memory":{"rss":26185728,"vms":4669702144,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":708,"ppid":1,"username":"dziegler","name":"Google","cpu_percent":0.000289837807791684,"memory_percent":0.022244453,"cmdline":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/XPCServices/AlertNotificationService.xpc/Contents/MacOS/AlertNotificationService","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/XPCServices/AlertNotificationService.xpc/Contents/MacOS/AlertNotificationService","nice_level":0,"num_fds":0,"Memory":{"rss":3821568,"vms":4408922112,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":711,"ppid":1,"username":"dziegler","name":"VTDecoderXPCService","cpu_percent":0.001159344625312112,"memory_percent":0.037407875,"cmdline":"/System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService","status":["sleep"],"exec":"/System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService","nice_level":0,"num_fds":0,"Memory":{"rss":6426624,"vms":4439158784,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":716,"ppid":689,"username":"dziegler","name":"Google","cpu_percent":0.7991892186243742,"memory_percent":1.8166065,"cmdline":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer) --type=renderer --field-trial-handle=1718379636,9347112687090972346,4302398202363910610,131072 --lang=de --origin-trial-disabled-features=SecurePaymentConfirmation --num-raster-threads=2 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=8 --no-v8-untrusted-code-mitigations --shared-files --seatbelt-client=63","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)","nice_level":0,"num_fds":0,"Memory":{"rss":312090624,"vms":18131656704,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":732,"ppid":1,"username":"dziegler","name":"swcd","cpu_percent":0.021901428991020995,"memory_percent":0.05698204,"cmdline":"/usr/libexec/swcd","status":["sleep"],"exec":"/usr/libexec/swcd","nice_level":0,"num_fds":0,"Memory":{"rss":9789440,"vms":4447125504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":736,"ppid":689,"username":"dziegler","name":"Google","cpu_percent":0.012477207627303442,"memory_percent":0.17755032,"cmdline":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper --type=utility --utility-sub-type=audio.mojom.AudioService --field-trial-handle=1718379636,9347112687090972346,4302398202363910610,131072 --lang=de --service-sandbox-type=audio --message-loop-type-ui --shared-files --seatbelt-client=133","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper","nice_level":0,"num_fds":0,"Memory":{"rss":30502912,"vms":4672462848,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":737,"ppid":1,"username":"dziegler","name":"AudioComponentRegistrar","cpu_percent":0.001886079103221918,"memory_percent":0.041675568,"cmdline":"/System/Library/Frameworks/AudioToolbox.framework/AudioComponentRegistrar","status":["sleep"],"exec":"/System/Library/Frameworks/AudioToolbox.framework/AudioComponentRegistrar","nice_level":0,"num_fds":0,"Memory":{"rss":7159808,"vms":4439588864,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":738,"ppid":1,"username":"dziegler","name":"com.apple.audio.SandboxHelper","cpu_percent":0.00014508222757078298,"memory_percent":0.019478798,"cmdline":"/System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper","status":["sleep"],"exec":"/System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper","nice_level":0,"num_fds":0,"Memory":{"rss":3346432,"vms":4390563840,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":739,"ppid":1,"username":"dziegler","name":"appstoreagent","cpu_percent":0.009439885160479989,"memory_percent":0.11763573,"cmdline":"/System/Library/PrivateFrameworks/AppStoreDaemon.framework/Support/appstoreagent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/AppStoreDaemon.framework/Support/appstoreagent","nice_level":0,"num_fds":0,"Memory":{"rss":20209664,"vms":4452515840,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":745,"ppid":1,"username":"_fpsd","name":"lskdd","cpu_percent":0.0013099077580422222,"memory_percent":0.021219254,"cmdline":"/System/Library/PrivateFrameworks/CoreLSKD.framework/Versions/A/lskdd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CoreLSKD.framework/Versions/A/lskdd","nice_level":0,"num_fds":0,"Memory":{"rss":3645440,"vms":4394254336,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":761,"ppid":1,"username":"dziegler","name":"photoanalysisd","cpu_percent":0.013306532393955742,"memory_percent":0.1601696,"cmdline":"/System/Library/PrivateFrameworks/PhotoAnalysis.framework/Versions/A/Support/photoanalysisd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/PhotoAnalysis.framework/Versions/A/Support/photoanalysisd","nice_level":0,"num_fds":0,"Memory":{"rss":27516928,"vms":4449271808,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":762,"ppid":1,"username":"dziegler","name":"photolibraryd","cpu_percent":0.003948072764160202,"memory_percent":0.083732605,"cmdline":"/System/Library/PrivateFrameworks/PhotoLibraryServices.framework/Versions/A/Support/photolibraryd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/PhotoLibraryServices.framework/Versions/A/Support/photolibraryd","nice_level":0,"num_fds":0,"Memory":{"rss":14385152,"vms":4472004608,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":763,"ppid":1,"username":"dziegler","name":"ScopedBookmarkAgent","cpu_percent":0.0014622410764067529,"memory_percent":0.036358833,"cmdline":"/System/Library/CoreServices/ScopedBookmarkAgent","status":["sleep"],"exec":"/System/Library/CoreServices/ScopedBookmarkAgent","nice_level":0,"num_fds":0,"Memory":{"rss":6246400,"vms":4441329664,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":764,"ppid":1,"username":"dziegler","name":"firefox","cpu_percent":7.738869065816192,"memory_percent":3.980279,"cmdline":"/Applications/Firefox.app/Contents/MacOS/firefox","status":["sleep"],"exec":"/Applications/Firefox.app/Contents/MacOS/firefox","nice_level":0,"num_fds":0,"Memory":{"rss":683806720,"vms":8814993408,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":766,"ppid":764,"username":"dziegler","name":"plugin-container","cpu_percent":0.26528620286829474,"memory_percent":0.7426739,"cmdline":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -childID 1 -isForBrowser -prefsLen 1 -prefMapSize 259803 -sbStartup -sbAppPath /Applications/Firefox.app -sbLevel 3 -sbAllowAudio -sbAllowWindowServer -parentBuildID 20210118153634 -appdir /Applications/Firefox.app/Contents/Resources/browser -profile /Users/dziegler/Library/Application Support/Firefox/Profiles/oes9oo39.default-release 764 gecko-crash-server-pipe.764 org.mozilla.machname.1927830299 tab","status":["sleep"],"exec":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container","nice_level":0,"num_fds":0,"Memory":{"rss":127590400,"vms":7718969344,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":768,"ppid":764,"username":"dziegler","name":"plugin-container","cpu_percent":0.12681111543651263,"memory_percent":0.70858,"cmdline":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -childID 2 -isForBrowser -prefsLen 6951 -prefMapSize 259803 -sbStartup -sbAppPath /Applications/Firefox.app -sbLevel 3 -sbAllowAudio -sbAllowWindowServer -parentBuildID 20210118153634 -appdir /Applications/Firefox.app/Contents/Resources/browser -profile /Users/dziegler/Library/Application Support/Firefox/Profiles/oes9oo39.default-release 764 gecko-crash-server-pipe.764 org.mozilla.machname.1372983102 tab","status":["sleep"],"exec":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container","nice_level":0,"num_fds":0,"Memory":{"rss":121733120,"vms":7722090496,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":779,"ppid":1,"username":"dziegler","name":"AppleSpell","cpu_percent":0.02458664295225634,"memory_percent":0.2200365,"cmdline":"/System/Library/Services/AppleSpell.service/Contents/MacOS/AppleSpell","status":["sleep"],"exec":"/System/Library/Services/AppleSpell.service/Contents/MacOS/AppleSpell","nice_level":0,"num_fds":0,"Memory":{"rss":37801984,"vms":4717064192,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":780,"ppid":1,"username":"root","name":"com.apple.PerformanceAnalysis.animationperfd","cpu_percent":0.008488197814530129,"memory_percent":0.026607513,"cmdline":"/System/Library/PrivateFrameworks/PerformanceAnalysis.framework/Versions/A/XPCServices/com.apple.PerformanceAnalysis.animationperfd.xpc/Contents/MacOS/com.apple.PerformanceAnalysis.animationperfd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/PerformanceAnalysis.framework/Versions/A/XPCServices/com.apple.PerformanceAnalysis.animationperfd.xpc/Contents/MacOS/com.apple.PerformanceAnalysis.animationperfd","nice_level":0,"num_fds":0,"Memory":{"rss":4571136,"vms":4438298624,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":781,"ppid":1,"username":"dziegler","name":"keyboardservicesd","cpu_percent":0.001756168120212677,"memory_percent":0.04632473,"cmdline":"/usr/libexec/keyboardservicesd","status":["sleep"],"exec":"/usr/libexec/keyboardservicesd","nice_level":0,"num_fds":0,"Memory":{"rss":7958528,"vms":4442288128,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":788,"ppid":1,"username":"dziegler","name":"com.apple.speech.speechsynthesisd","cpu_percent":0.0024966606990586776,"memory_percent":0.033164024,"cmdline":"/System/Library/Frameworks/ApplicationServices.framework/Frameworks/SpeechSynthesis.framework/Resources/com.apple.speech.speechsynthesisd","status":["sleep"],"exec":"/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Resources/com.apple.speech.speechsynthesisd","nice_level":0,"num_fds":0,"Memory":{"rss":5697536,"vms":4442152960,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":789,"ppid":1,"username":"root","name":"dprivacyd","cpu_percent":0.0017631168564327586,"memory_percent":0.030827522,"cmdline":"/usr/libexec/dprivacyd","status":["sleep"],"exec":"/usr/libexec/dprivacyd","nice_level":0,"num_fds":0,"Memory":{"rss":5296128,"vms":4443373568,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":790,"ppid":1,"username":"dziegler","name":"transparencyd","cpu_percent":0.0023508106105404897,"memory_percent":0.039052963,"cmdline":"/usr/libexec/transparencyd","status":["sleep"],"exec":"/usr/libexec/transparencyd","nice_level":0,"num_fds":0,"Memory":{"rss":6709248,"vms":4439912448,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":793,"ppid":1,"username":"root","name":"microstackshot","cpu_percent":0.0005891711577579758,"memory_percent":0.014710426,"cmdline":"/usr/libexec/microstackshot","status":["sleep"],"exec":"/usr/libexec/microstackshot","nice_level":0,"num_fds":0,"Memory":{"rss":2527232,"vms":4437413888,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":794,"ppid":1,"username":"dziegler","name":"UsageTrackingAgent","cpu_percent":0.0013256271766129903,"memory_percent":0.034236908,"cmdline":"/System/Library/PrivateFrameworks/UsageTracking.framework/Versions/A/UsageTrackingAgent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/UsageTracking.framework/Versions/A/UsageTrackingAgent","nice_level":0,"num_fds":0,"Memory":{"rss":5881856,"vms":4438515712,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":796,"ppid":1,"username":"root","name":"periodic-wrapper","cpu_percent":0.00014763883788042909,"memory_percent":0.0040769577,"cmdline":"/usr/libexec/periodic-wrapper monthly","status":["sleep"],"exec":"/usr/libexec/periodic-wrapper","nice_level":1,"num_fds":0,"Memory":{"rss":700416,"vms":4391886848,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":807,"ppid":1,"username":"_spotlight","name":"mdworker","cpu_percent":0.00044291442517167985,"memory_percent":0.038528442,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Versions/A/Support/mdworker -s mdworker-sizing -c MDSSizingWorker -m com.apple.mdworker.sizing","status":["sleep"],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdworker","nice_level":0,"num_fds":0,"Memory":{"rss":6619136,"vms":4410355712,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":830,"ppid":1,"username":"dziegler","name":"MTLCompilerService","cpu_percent":0.0005951181473157596,"memory_percent":0.059890747,"cmdline":"/System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService","status":["sleep"],"exec":"/System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService","nice_level":0,"num_fds":0,"Memory":{"rss":10289152,"vms":4954427392,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":845,"ppid":764,"username":"dziegler","name":"plugin-container","cpu_percent":0.46607002997962177,"memory_percent":1.3071537,"cmdline":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -childID 9 -isForBrowser -prefsLen 11002 -prefMapSize 259803 -sbStartup -sbAppPath /Applications/Firefox.app -sbLevel 3 -sbAllowAudio -sbAllowWindowServer -parentBuildID 20210118153634 -appdir /Applications/Firefox.app/Contents/Resources/browser -profile /Users/dziegler/Library/Application Support/Firefox/Profiles/oes9oo39.default-release 764 gecko-crash-server-pipe.764 org.mozilla.machname.1400060827 tab","status":["sleep"],"exec":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container","nice_level":0,"num_fds":0,"Memory":{"rss":224567296,"vms":7906213888,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":846,"ppid":1,"username":"dziegler","name":"VirtualBox","cpu_percent":0.1714086652792904,"memory_percent":0.8270979,"cmdline":"/Applications/VirtualBox.app/Contents/MacOS/VirtualBox","status":["sleep"],"exec":"/Applications/VirtualBox.app/Contents/MacOS/VirtualBox","nice_level":0,"num_fds":0,"Memory":{"rss":142094336,"vms":5153808384,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":848,"ppid":1,"username":"dziegler","name":"VBoxXPCOMIPCD","cpu_percent":0.2990486106844174,"memory_percent":0.034832954,"cmdline":"/Applications/VirtualBox.app/Contents/MacOS/VBoxXPCOMIPCD","status":["sleep"],"exec":"/Applications/VirtualBox.app/Contents/MacOS/VBoxXPCOMIPCD","nice_level":0,"num_fds":0,"Memory":{"rss":5984256,"vms":4391780352,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":850,"ppid":1,"username":"dziegler","name":"VBoxSVC","cpu_percent":0.3943579298810346,"memory_percent":0.076937675,"cmdline":"/Applications/VirtualBox.app/Contents/MacOS/VBoxSVC --auto-shutdown","status":["sleep"],"exec":"/Applications/VirtualBox.app/Contents/MacOS/VBoxSVC","nice_level":0,"num_fds":0,"Memory":{"rss":13217792,"vms":4460998656,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":853,"ppid":1,"username":"dziegler","name":"Microsoft","cpu_percent":0.20666413989887206,"memory_percent":1.584506,"cmdline":"/Applications/Microsoft Excel.app/Contents/MacOS/Microsoft Excel","status":["sleep"],"exec":"/Applications/Microsoft Excel.app/Contents/MacOS/Microsoft Excel","nice_level":0,"num_fds":0,"Memory":{"rss":272216064,"vms":6748844032,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":858,"ppid":1,"username":"dziegler","name":"storeuid","cpu_percent":0.004119890940639608,"memory_percent":0.10328293,"cmdline":"/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/storeuid.app/Contents/MacOS/storeuid","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/storeuid.app/Contents/MacOS/storeuid","nice_level":0,"num_fds":0,"Memory":{"rss":17743872,"vms":4453687296,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":860,"ppid":1,"username":"dziegler","name":"storedownloadd","cpu_percent":0.0013732898287485368,"memory_percent":0.044703484,"cmdline":"/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/storedownloadd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/storedownloadd","nice_level":0,"num_fds":0,"Memory":{"rss":7680000,"vms":4440780800,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":863,"ppid":1,"username":"dziegler","name":"com.apple.hiservices-xpcservice","cpu_percent":0.0006103474024035465,"memory_percent":0.014948845,"cmdline":"/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/XPCServices/com.apple.hiservices-xpcservice.xpc/Contents/MacOS/com.apple.hiservices-xpcservice","status":["sleep"],"exec":"/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/XPCServices/com.apple.hiservices-xpcservice.xpc/Contents/MacOS/com.apple.hiservices-xpcservice","nice_level":0,"num_fds":0,"Memory":{"rss":2568192,"vms":4408737792,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":878,"ppid":850,"username":"dziegler","name":"VirtualBoxVM","cpu_percent":39.6267952578228,"memory_percent":13.558388,"cmdline":"/Applications/VirtualBox.app/Contents/Resources/VirtualBoxVM.app/Contents/MacOS/VirtualBoxVM --comment openITCOCKPIT-dev --startvm 49f4f7be-f58e-40cb-90fc-c52aec84b3ae --no-startvm-errormsgbox","status":["sleep"],"exec":"/Applications/VirtualBox.app/Contents/Resources/VirtualBoxVM.app/Contents/MacOS/VirtualBoxVM","nice_level":0,"num_fds":0,"Memory":{"rss":2329313280,"vms":6908751872,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":879,"ppid":1,"username":"dziegler","name":"Microsoft","cpu_percent":0.521601157512714,"memory_percent":1.4681101,"cmdline":"/Applications/Microsoft Outlook.app/Contents/MacOS/Microsoft Outlook","status":["sleep"],"exec":"/Applications/Microsoft Outlook.app/Contents/MacOS/Microsoft Outlook","nice_level":0,"num_fds":0,"Memory":{"rss":252219392,"vms":6466416640,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":882,"ppid":850,"username":"dziegler","name":"VBoxNetDHCP","cpu_percent":0.007219925825219499,"memory_percent":0.04851818,"cmdline":"/Applications/VirtualBox.app/Contents/MacOS/VBoxNetDHCP --comment HostInterfaceNetworking-vboxnet0 --config /Users/dziegler/Library/VirtualBox/HostInterfaceNetworking-vboxnet0-Dhcpd.config --log /Users/dziegler/Library/VirtualBox/HostInterfaceNetworking-vboxnet0-Dhcpd.log","status":["sleep"],"exec":"/Applications/VirtualBox.app/Contents/MacOS/VBoxNetDHCP","nice_level":0,"num_fds":0,"Memory":{"rss":8335360,"vms":4410347520,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":914,"ppid":764,"username":"dziegler","name":"plugin-container","cpu_percent":0.26792404474240866,"memory_percent":0.75047016,"cmdline":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -childID 10 -isForBrowser -prefsLen 11080 -prefMapSize 259803 -sbStartup -sbAppPath /Applications/Firefox.app -sbLevel 3 -sbAllowAudio -sbAllowWindowServer -parentBuildID 20210118153634 -appdir /Applications/Firefox.app/Contents/Resources/browser -profile /Users/dziegler/Library/Application Support/Firefox/Profiles/oes9oo39.default-release 764 gecko-crash-server-pipe.764 org.mozilla.machname.2012464714 tab","status":["sleep"],"exec":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container","nice_level":0,"num_fds":0,"Memory":{"rss":128929792,"vms":7734149120,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":916,"ppid":764,"username":"dziegler","name":"plugin-container","cpu_percent":0.5208332200810692,"memory_percent":0.96411705,"cmdline":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -childID 11 -isForBrowser -prefsLen 11102 -prefMapSize 259803 -sbStartup -sbAppPath /Applications/Firefox.app -sbLevel 3 -sbAllowAudio -sbAllowWindowServer -parentBuildID 20210118153634 -appdir /Applications/Firefox.app/Contents/Resources/browser -profile /Users/dziegler/Library/Application Support/Firefox/Profiles/oes9oo39.default-release 764 gecko-crash-server-pipe.764 org.mozilla.machname.1842753864 tab","status":["sleep"],"exec":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container","nice_level":0,"num_fds":0,"Memory":{"rss":165634048,"vms":7935139840,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":917,"ppid":1,"username":"dziegler","name":"iTerm2","cpu_percent":0.7232011965146632,"memory_percent":0.7350445,"cmdline":"/Applications/iTerm.app/Contents/MacOS/iTerm2","status":["sleep"],"exec":"/Applications/iTerm.app/Contents/MacOS/iTerm2","nice_level":0,"num_fds":0,"Memory":{"rss":126279680,"vms":5544140800,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":921,"ppid":1,"username":"dziegler","name":"Application","cpu_percent":0,"memory_percent":0.0034093857,"cmdline":"/Users/dziegler/Library/Application Support/iTerm2/iTermServer-3.4.3 /Users/dziegler/Library/Application Support/iTerm2/iterm2-daemon-1.socket","status":["sleep"],"exec":"/Users/dziegler/Library/Application Support/iTerm2/iTermServer-3.4.3","nice_level":0,"num_fds":0,"Memory":{"rss":585728,"vms":4399308800,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":922,"ppid":921,"username":"root","name":"login","cpu_percent":0.0006263734227747311,"memory_percent":0.026392937,"cmdline":"login -fp dziegler","status":["sleep"],"exec":"/usr/bin/login","nice_level":0,"num_fds":0,"Memory":{"rss":4534272,"vms":4408209408,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":923,"ppid":922,"username":"dziegler","name":"zsh","cpu_percent":0.0009395548603572003,"memory_percent":0.012564659,"cmdline":"-zsh","status":["sleep"],"exec":"/bin/zsh","nice_level":0,"num_fds":0,"Memory":{"rss":2158592,"vms":4400553984,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":926,"ppid":1,"username":"dziegler","name":"pidinfo","cpu_percent":0.00845727306875563,"memory_percent":0.011920929,"cmdline":"/Applications/iTerm.app/Contents/XPCServices/pidinfo.xpc/Contents/MacOS/pidinfo","status":["sleep"],"exec":"/Applications/iTerm.app/Contents/XPCServices/pidinfo.xpc/Contents/MacOS/pidinfo","nice_level":0,"num_fds":0,"Memory":{"rss":2048000,"vms":4409237504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":938,"ppid":1,"username":"dziegler","name":"git-credential-cache--daemon","cpu_percent":0.0001571072640590174,"memory_percent":0.0047922134,"cmdline":"/Library/Developer/CommandLineTools/usr/libexec/git-core/git-credential-cache--daemon /Users/dziegler/.cache/git/credential/socket","status":["sleep"],"exec":"/Library/Developer/CommandLineTools/usr/libexec/git-core/git-credential-cache--daemon","nice_level":0,"num_fds":0,"Memory":{"rss":823296,"vms":4391088128,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":946,"ppid":1,"username":"dziegler","name":"Electron","cpu_percent":0.4225188941766288,"memory_percent":0.63683987,"cmdline":"/Applications/Visual Studio Code.app/Contents/MacOS/Electron","status":["sleep"],"exec":"/Applications/Visual Studio Code.app/Contents/MacOS/Electron","nice_level":0,"num_fds":0,"Memory":{"rss":109408256,"vms":9667493888,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":948,"ppid":1,"username":"dziegler","name":"Visual","cpu_percent":0.00031460629519265454,"memory_percent":0.022292137,"cmdline":"/Applications/Visual Studio Code.app/Contents/Frameworks/Electron Framework.framework/Helpers/chrome_crashpad_handler --no-rate-limit --no-upload-gzip --monitor-self-annotation=ptype=crashpad-handler --database=/Users/dziegler/Library/Application Support/Code/Crashpad --metrics-dir=/Users/dziegler/Library/Application Support/Code --url=appcenter://code?aid=860d6632-f65b-490b-85a8-3e72944f7774\u0026uid=f5ae1a27-f4ef-4bda-ba2b-bc96a964bf2e\u0026iid=f5ae1a27-f4ef-4bda-ba2b-bc96a964bf2e\u0026sid=f5ae1a27-f4ef-4bda-ba2b-bc96a964bf2e --annotation=_companyName=Microsoft --annotation=_productName=VSCode --annotation=_version=1.52.1 --annotation=prod=Electron --annotation=ver=9.3.5 --handshake-fd=27","status":["sleep"],"exec":"/Applications/Visual Studio Code.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/chrome_crashpad_handler","nice_level":0,"num_fds":0,"Memory":{"rss":3829760,"vms":4411576320,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":949,"ppid":946,"username":"dziegler","name":"Visual","cpu_percent":0.6188269509553694,"memory_percent":0.36008358,"cmdline":"/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (GPU).app/Contents/MacOS/Code Helper (GPU) --type=gpu-process --field-trial-handle=1718379636,3453255287422445139,10239069803416262848,131072 --enable-features=WebComponentsV0Enabled --disable-features=SpareRendererForSitePerProcess --disable-color-correct-rendering --gpu-preferences=MAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAABgAAAAAAAQAAAAAAAAAAAAAAAAAAAACAEAACAAAAAAAQAAAAAAAAgBAAAAAAAAEAEAAAAAAAAYAQAAAAAAACABAAAAAAAAKAEAAAAAAAAwAQAAAAAAADgBAAAAAAAAQAEAAAAAAABIAQAAAAAAAFABAAAAAAAAWAEAAAAAAABgAQAAAAAAAGgBAAAAAAAAcAEAAAAAAAB4AQAAAAAAAIABAAAAAAAAiAEAAAAAAACQAQAAAAAAAJgBAAAAAAAAoAEAAAAAAACoAQAAAAAAALABAAAAAAAAuAEAAAAAAADAAQAAAAAAAMgBAAAAAAAA0AEAAAAAAADYAQAAAAAAAOABAAAAAAAA6AEAAAAAAADwAQAAAAAAAPgBAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAIAAAAQAAAAAAAAAAAAAAAGAAAAEAAAAAAAAAAAAAAABwAAABAAAAAAAAAAAAAAAAgAAAAQAAAAAAAAAAAAAAAKAAAAEAAAAAAAAAAAAAAACwAAABAAAAAAAAAAAAAAAA0AAAAQAAAAAAAAAAEAAAAAAAAAEAAAAAAAAAABAAAAAgAAABAAAAAAAAAAAQAAAAYAAAAQAAAAAAAAAAEAAAAHAAAAEAAAAAAAAAABAAAACAAAABAAAAAAAAAAAQAAAAoAAAAQAAAAAAAAAAEAAAALAAAAEAAAAAAAAAABAAAADQAAABAAAAAAAAAABAAAAAAAAAAQAAAAAAAAAAQAAAACAAAAEAAAAAAAAAAEAAAABgAAABAAAAAAAAAABAAAAAcAAAAQAAAAAAAAAAQAAAAIAAAAEAAAAAAAAAAEAAAACgAAABAAAAAAAAAABAAAAAsAAAAQAAAAAAAAAAQAAAANAAAAEAAAAAAAAAAGAAAAAAAAABAAAAAAAAAABgAAAAIAAAAQAAAAAAAAAAYAAAAGAAAAEAAAAAAAAAAGAAAABwAAABAAAAAAAAAABgAAAAgAAAAQAAAAAAAAAAYAAAAKAAAAEAAAAAAAAAAGAAAACwAAABAAAAAAAAAABgAAAA0AAAA= --shared-files","status":["sleep"],"exec":"/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (GPU).app/Contents/MacOS/Code Helper (GPU)","nice_level":0,"num_fds":0,"Memory":{"rss":61861888,"vms":4688441344,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":950,"ppid":1,"username":"dziegler","name":"VTDecoderXPCService","cpu_percent":0.001258409986976224,"memory_percent":0.036883354,"cmdline":"/System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService","status":["sleep"],"exec":"/System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService","nice_level":0,"num_fds":0,"Memory":{"rss":6336512,"vms":4439158784,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":951,"ppid":946,"username":"dziegler","name":"Code Helper","cpu_percent":0.004090453648286551,"memory_percent":0.1456976,"cmdline":"/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper.app/Contents/MacOS/Code Helper --type=utility --field-trial-handle=1718379636,3453255287422445139,10239069803416262848,131072 --enable-features=WebComponentsV0Enabled --disable-features=SpareRendererForSitePerProcess --lang=en-US --service-sandbox-type=network --standard-schemes=vscode-webview,vscode-webview-resource,vscode-file --secure-schemes=vscode-webview,vscode-webview-resource,vscode-file --bypasscsp-schemes --cors-schemes=vscode-webview,vscode-webview-resource,vscode-file --fetch-schemes=vscode-webview,vscode-webview-resource,vscode-file --service-worker-schemes --shared-files --seatbelt-client=48","status":["sleep"],"exec":"/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper.app/Contents/MacOS/Code Helper","nice_level":0,"num_fds":0,"Memory":{"rss":25030656,"vms":4624920576,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":962,"ppid":946,"username":"dziegler","name":"Visual","cpu_percent":0.04895092958245763,"memory_percent":0.5259037,"cmdline":"/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Renderer).app/Contents/MacOS/Code Helper (Renderer) --type=renderer --disable-color-correct-rendering --field-trial-handle=1718379636,3453255287422445139,10239069803416262848,131072 --enable-features=WebComponentsV0Enabled --disable-features=SpareRendererForSitePerProcess --lang=en-US --standard-schemes=vscode-webview,vscode-webview-resource,vscode-file --secure-schemes=vscode-webview,vscode-webview-resource,vscode-file --bypasscsp-schemes --cors-schemes=vscode-webview,vscode-webview-resource,vscode-file --fetch-schemes=vscode-webview,vscode-webview-resource,vscode-file --service-worker-schemes --app-path=/Applications/Visual Studio Code.app/Contents/Resources/app --node-integration --no-sandbox --no-zygote --native-window-open --preload=/Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/base/parts/sandbox/electron-browser/preload.js --background-color=#ffffff --disable-blink-features=Auxclick --num-raster-threads=2 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=7 --no-v8-untrusted-code-mitigations --shared-files","status":["sleep"],"exec":"/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Renderer).app/Contents/MacOS/Code Helper (Renderer)","nice_level":0,"num_fds":0,"Memory":{"rss":90349568,"vms":9050509312,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":1030,"ppid":921,"username":"root","name":"login","cpu_percent":0.0006302849865884723,"memory_percent":0.022363663,"cmdline":"login -fp dziegler","status":["sleep"],"exec":"/usr/bin/login","nice_level":0,"num_fds":0,"Memory":{"rss":3842048,"vms":4408209408,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":1031,"ppid":1030,"username":"dziegler","name":"zsh","cpu_percent":0.0009454222666297846,"memory_percent":0.012230873,"cmdline":"-zsh","status":["sleep"],"exec":"/bin/zsh","nice_level":0,"num_fds":0,"Memory":{"rss":2101248,"vms":4400553984,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":7112,"ppid":1,"username":"dziegler","name":"com.apple.appkit.xpc.openAndSavePanelService","cpu_percent":0.044361877317775675,"memory_percent":0.2542019,"cmdline":"/System/Library/Frameworks/AppKit.framework/Versions/C/XPCServices/com.apple.appkit.xpc.openAndSavePanelService.xpc/Contents/MacOS/com.apple.appkit.xpc.openAndSavePanelService","status":["sleep"],"exec":"/System/Library/Frameworks/AppKit.framework/Versions/C/XPCServices/com.apple.appkit.xpc.openAndSavePanelService.xpc/Contents/MacOS/com.apple.appkit.xpc.openAndSavePanelService","nice_level":0,"num_fds":0,"Memory":{"rss":43671552,"vms":5057724416,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":7113,"ppid":1,"username":"dziegler","name":"QuickLookUIService","cpu_percent":0.004570561097060961,"memory_percent":0.07119179,"cmdline":"/System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework/Versions/A/XPCServices/QuickLookUIService.xpc/Contents/MacOS/QuickLookUIService","status":["sleep"],"exec":"/System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework/Versions/A/XPCServices/QuickLookUIService.xpc/Contents/MacOS/QuickLookUIService","nice_level":0,"num_fds":0,"Memory":{"rss":12230656,"vms":4976533504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":14252,"ppid":1,"username":"dziegler","name":"TextMate","cpu_percent":1.0413974826792687,"memory_percent":0.5939722,"cmdline":"/Applications/TextMate.app/Contents/MacOS/TextMate","status":["sleep"],"exec":"/Applications/TextMate.app/Contents/MacOS/TextMate","nice_level":0,"num_fds":0,"Memory":{"rss":102043648,"vms":5146238976,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":14471,"ppid":1,"username":"dziegler","name":"CoreSpotlightService","cpu_percent":0.004810366462872872,"memory_percent":0.049877167,"cmdline":"/System/Library/Frameworks/CoreSpotlight.framework/CoreSpotlightService","status":["sleep"],"exec":"/System/Library/Frameworks/CoreSpotlight.framework/CoreSpotlightService","nice_level":0,"num_fds":0,"Memory":{"rss":8568832,"vms":4700831744,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":21417,"ppid":1,"username":"dziegler","name":"MTLCompilerService","cpu_percent":0.0006476083536931415,"memory_percent":0.067305565,"cmdline":"/System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService","status":["sleep"],"exec":"/System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService","nice_level":0,"num_fds":0,"Memory":{"rss":11563008,"vms":4964913152,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25759,"ppid":1,"username":"dziegler","name":"helpd","cpu_percent":0.014326005972855714,"memory_percent":0.018286705,"cmdline":"/System/Library/PrivateFrameworks/HelpData.framework/Versions/A/Resources/helpd","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/HelpData.framework/Versions/A/Resources/helpd","nice_level":0,"num_fds":0,"Memory":{"rss":3141632,"vms":4437016576,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25762,"ppid":1,"username":"dziegler","name":"OSDUIHelper","cpu_percent":0.0904308090860931,"memory_percent":0.08234978,"cmdline":"/System/Library/CoreServices/OSDUIHelper.app/Contents/MacOS/OSDUIHelper","status":["sleep"],"exec":"/System/Library/CoreServices/OSDUIHelper.app/Contents/MacOS/OSDUIHelper","nice_level":0,"num_fds":0,"Memory":{"rss":14147584,"vms":4994408448,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25763,"ppid":1,"username":"root","name":"ocspd","cpu_percent":0.03314685465352836,"memory_percent":0.0218153,"cmdline":"/usr/sbin/ocspd","status":["sleep"],"exec":"/usr/sbin/ocspd","nice_level":0,"num_fds":0,"Memory":{"rss":3747840,"vms":4437295104,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25764,"ppid":1,"username":"dziegler","name":"Docker","cpu_percent":59.31715058552068,"memory_percent":0.46012402,"cmdline":"/Applications/Docker.app/Contents/MacOS/Docker","status":["running"],"exec":"/Applications/Docker.app/Contents/MacOS/Docker","nice_level":0,"num_fds":0,"Memory":{"rss":79048704,"vms":5115027456,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25765,"ppid":1,"username":"root","name":"taskgated-helper","cpu_percent":0.04175351711377711,"memory_percent":0.03530979,"cmdline":"/usr/libexec/taskgated-helper","status":["sleep"],"exec":"/usr/libexec/taskgated-helper","nice_level":0,"num_fds":0,"Memory":{"rss":6066176,"vms":4438495232,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25775,"ppid":25764,"username":"dziegler","name":"com.docker.backend","cpu_percent":1.776278034150166,"memory_percent":0.15954971,"cmdline":"/Applications/Docker.app/Contents/MacOS/com.docker.backend -watchdog","status":["sleep"],"exec":"/Applications/Docker.app/Contents/MacOS/com.docker.backend","nice_level":0,"num_fds":0,"Memory":{"rss":27410432,"vms":5203791872,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25776,"ppid":1,"username":"dziegler","name":"loginitemregisterd","cpu_percent":0.016973916191475518,"memory_percent":0.01680851,"cmdline":"/usr/libexec/loginitemregisterd","status":["sleep"],"exec":"/usr/libexec/loginitemregisterd","nice_level":0,"num_fds":0,"Memory":{"rss":2887680,"vms":4409372672,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25777,"ppid":25764,"username":"dziegler","name":"com.docker.supervisor","cpu_percent":0.09331862563925167,"memory_percent":0.07815361,"cmdline":"/Applications/Docker.app/Contents/MacOS/com.docker.supervisor -watchdog","status":["sleep"],"exec":"/Applications/Docker.app/Contents/MacOS/com.docker.supervisor","nice_level":0,"num_fds":0,"Memory":{"rss":13426688,"vms":5179744256,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25783,"ppid":25777,"username":"dziegler","name":"com.docker.osxfs","cpu_percent":0.050884296995697825,"memory_percent":0.04312992,"cmdline":"com.docker.osxfs serve --address fd:3 --connect vms/0/connect --control fd:4","status":["sleep"],"exec":"/Applications/Docker.app/Contents/MacOS/com.docker.osxfs","nice_level":0,"num_fds":0,"Memory":{"rss":7409664,"vms":4416208896,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25784,"ppid":25777,"username":"dziegler","name":"com.docker.vpnkit","cpu_percent":0.11115385689433423,"memory_percent":0.10044575,"cmdline":"com.docker.vpnkit --ethernet fd:3 --diagnostics fd:4 --pcap fd:5 --vsock-path vms/0/connect --gateway-forwards /Users/dziegler/Library/Group Containers/group.com.docker/gateway_forwards.json --host-names host.docker.internal,docker.for.mac.host.internal,docker.for.mac.localhost --listen-backlog 32 --mtu 1500 --allowed-bind-addresses 0.0.0.0 --http /Users/dziegler/Library/Group Containers/group.com.docker/http_proxy.json --dhcp /Users/dziegler/Library/Group Containers/group.com.docker/dhcp.json --port-max-idle-time 300 --max-connections 2000 --gateway-ip 192.168.65.1 --host-ip 192.168.65.2 --lowest-ip 192.168.65.3 --highest-ip 192.168.65.254 --log-destination asl --gc-compact-interval 1800","status":["sleep"],"exec":"/Applications/Docker.app/Contents/Resources/bin/com.docker.vpnkit","nice_level":0,"num_fds":0,"Memory":{"rss":17256448,"vms":4464590848,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25785,"ppid":25777,"username":"dziegler","name":"vpnkit-bridge","cpu_percent":0.39317002469338524,"memory_percent":0.06213188,"cmdline":"vpnkit-bridge --addr listen://1999 host","status":["sleep"],"exec":"/Applications/Docker.app/Contents/MacOS/vpnkit-bridge","nice_level":0,"num_fds":0,"Memory":{"rss":10674176,"vms":5128650752,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25787,"ppid":25777,"username":"dziegler","name":"com.docker.driver.amd64-linux","cpu_percent":1.2474709235888515,"memory_percent":0.13904572,"cmdline":"com.docker.driver.amd64-linux -addr fd:3 -debug","status":["sleep"],"exec":"/Applications/Docker.app/Contents/MacOS/com.docker.driver.amd64-linux","nice_level":0,"num_fds":0,"Memory":{"rss":23887872,"vms":5204107264,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25791,"ppid":25777,"username":"dziegler","name":"docker","cpu_percent":0.13666813374213732,"memory_percent":0.10728836,"cmdline":"docker serve --address unix:///Users/dziegler/.docker/run/docker-cli-api.sock","status":["sleep"],"exec":"/Applications/Docker.app/Contents/Resources/bin/docker","nice_level":0,"num_fds":0,"Memory":{"rss":18432000,"vms":5180203008,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25792,"ppid":0,"username":"dziegler","name":"uname","cpu_percent":0,"memory_percent":0,"cmdline":"(uname)","status":["zombie"],"exec":"","nice_level":0,"num_fds":0,"Memory":{"rss":0,"vms":0,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25793,"ppid":1,"username":"dziegler","name":"mdworker_shared","cpu_percent":0.1963483894843486,"memory_percent":0.08611679,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Versions/A/Support/mdworker_shared -s mdworker -c MDSImporterWorker -m com.apple.mdworker.shared","status":["sleep"],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdworker_shared","nice_level":0,"num_fds":0,"Memory":{"rss":14794752,"vms":4417736704,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25807,"ppid":25787,"username":"dziegler","name":"com.docker.hyperkit","cpu_percent":16.604238374302348,"memory_percent":1.7516375,"cmdline":"com.docker.hyperkit -A -u -F vms/0/hyperkit.pid -c 2 -m 2048M -s 0:0,hostbridge -s 31,lpc -s 1:0,virtio-vpnkit,path=vpnkit.eth.sock,uuid=947abb22-7ec8-4cbf-a168-c8306710124f -U 34abeb9a-125a-4324-ac16-8669a77b6c54 -s 2:0,virtio-blk,/Users/dziegler/Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw -s 3,virtio-sock,guest_cid=3,path=vms/0,guest_forwards=2376;1525 -s 4,virtio-rnd -l com1,null,asl,log=vms/0/console-ring -f kexec,/Applications/Docker.app/Contents/Resources/linuxkit/kernel,/Applications/Docker.app/Contents/Resources/linuxkit/initrd.img,earlyprintk=serial console=ttyS0 console=ttyS1 page_poison=1 vsyscall=emulate panic=1 nospec_store_bypass_disable noibrs noibpb no_stf_barrier mitigations=off","status":["sleep"],"exec":"/Applications/Docker.app/Contents/Resources/bin/com.docker.hyperkit","nice_level":0,"num_fds":0,"Memory":{"rss":300929024,"vms":6701105152,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25808,"ppid":1031,"username":"root","name":"sudo","cpu_percent":0.0554468842829347,"memory_percent":0.038599968,"cmdline":"sudo ./agent -c /Users/dziegler/git/openitcockpit-agent-go/config.ini --debug","status":["sleep"],"exec":"/usr/bin/sudo","nice_level":0,"num_fds":0,"Memory":{"rss":6631424,"vms":4437487616,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":25809,"ppid":25808,"username":"root","name":"agent","cpu_percent":26.76513499974945,"memory_percent":0.108766556,"cmdline":"./agent -c /Users/dziegler/git/openitcockpit-agent-go/config.ini --debug","status":["sleep"],"exec":"/Users/dziegler/git/openitcockpit-agent-go/agent","nice_level":0,"num_fds":0,"Memory":{"rss":18685952,"vms":5143568384,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":28005,"ppid":1,"username":"_spotlight","name":"mdworker","cpu_percent":1.0727880632627673,"memory_percent":0.08659363,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Versions/A/Support/mdworker -s mdworker-bundle -c MDSImporterBundleFinder -m com.apple.mdworker.bundles","status":[""],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdworker","nice_level":17,"num_fds":0,"Memory":{"rss":14872576,"vms":4449107968,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":28006,"ppid":1,"username":"dziegler","name":"mdworker","cpu_percent":1.1048824865402025,"memory_percent":0.0893116,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Versions/A/Support/mdworker -s mdworker-bundle -c MDSImporterBundleFinder -m com.apple.mdworker.bundles","status":[""],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdworker","nice_level":17,"num_fds":0,"Memory":{"rss":15343616,"vms":4449959936,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":30694,"ppid":1,"username":"dziegler","name":"phpstorm","cpu_percent":37.566137977202615,"memory_percent":5.2429914,"cmdline":"/Users/dziegler/Library/Application Support/JetBrains/Toolbox/apps/PhpStorm/ch-1/192.7142.51/PhpStorm.app/Contents/MacOS/phpstorm","status":["sleep"],"exec":"/Users/dziegler/Library/Application Support/JetBrains/Toolbox/apps/PhpStorm/ch-1/192.7142.51/PhpStorm.app/Contents/MacOS/phpstorm","nice_level":0,"num_fds":0,"Memory":{"rss":900739072,"vms":8608104448,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":30894,"ppid":921,"username":"root","name":"login","cpu_percent":0.0015230026085981065,"memory_percent":0.028085709,"cmdline":"login -fp dziegler","status":["sleep"],"exec":"/usr/bin/login","nice_level":0,"num_fds":0,"Memory":{"rss":4825088,"vms":4408209408,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":30902,"ppid":30894,"username":"dziegler","name":"zsh","cpu_percent":0.0015229831206779376,"memory_percent":0.013327599,"cmdline":"-zsh","status":["sleep"],"exec":"/bin/zsh","nice_level":0,"num_fds":0,"Memory":{"rss":2289664,"vms":4400553984,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":32271,"ppid":30694,"username":"dziegler","name":"fsnotifier","cpu_percent":0.016797361355340025,"memory_percent":0.009083748,"cmdline":"/Users/dziegler/Library/Application Support/JetBrains/Toolbox/apps/PhpStorm/ch-1/192.7142.51/PhpStorm.app/Contents/bin/fsnotifier","status":["sleep"],"exec":"/Users/dziegler/Library/Application Support/JetBrains/Toolbox/apps/PhpStorm/ch-1/192.7142.51/PhpStorm.app/Contents/bin/fsnotifier","nice_level":0,"num_fds":0,"Memory":{"rss":1560576,"vms":4399984640,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":32486,"ppid":764,"username":"dziegler","name":"plugin-container","cpu_percent":1.179498208299486,"memory_percent":0.3062725,"cmdline":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -childID 33 -isForBrowser -prefsLen 11867 -prefMapSize 259803 -sbStartup -sbAppPath /Applications/Firefox.app -sbLevel 3 -sbAllowAudio -sbAllowWindowServer -parentBuildID 20210118153634 -appdir /Applications/Firefox.app/Contents/Resources/browser -profile /Users/dziegler/Library/Application Support/Firefox/Profiles/oes9oo39.default-release 764 gecko-crash-server-pipe.764 org.mozilla.machname.1446588552 tab","status":["sleep"],"exec":"/Applications/Firefox.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container","nice_level":0,"num_fds":0,"Memory":{"rss":52617216,"vms":7654211584,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":33396,"ppid":923,"username":"dziegler","name":"ssh","cpu_percent":0.0034449290145391275,"memory_percent":0.014734268,"cmdline":"ssh vbox","status":["sleep"],"exec":"/usr/bin/ssh","nice_level":0,"num_fds":0,"Memory":{"rss":2531328,"vms":4401426432,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":33419,"ppid":1,"username":"dziegler","name":"ssh-agent","cpu_percent":0.0015310577788058318,"memory_percent":0.011563301,"cmdline":"/usr/bin/ssh-agent -l","status":["sleep"],"exec":"/usr/bin/ssh-agent","nice_level":0,"num_fds":0,"Memory":{"rss":1986560,"vms":4392566784,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":36992,"ppid":921,"username":"root","name":"login","cpu_percent":0.15620701866252115,"memory_percent":0.027918816,"cmdline":"login -fp dziegler","status":["sleep"],"exec":"/usr/bin/login","nice_level":0,"num_fds":0,"Memory":{"rss":4796416,"vms":4408209408,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":36993,"ppid":36992,"username":"dziegler","name":"zsh","cpu_percent":0.07800004453802543,"memory_percent":0.012135506,"cmdline":"-zsh","status":["sleep"],"exec":"/bin/zsh","nice_level":0,"num_fds":0,"Memory":{"rss":2084864,"vms":4400361472,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":37260,"ppid":1,"username":"root","name":"PerfPowerServices","cpu_percent":0.06014849973736673,"memory_percent":0.11765957,"cmdline":"/usr/libexec/PerfPowerServices","status":["sleep"],"exec":"/usr/libexec/PerfPowerServices","nice_level":0,"num_fds":0,"Memory":{"rss":20213760,"vms":4442951680,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":44006,"ppid":689,"username":"dziegler","name":"Google","cpu_percent":0.3599776172333047,"memory_percent":0.6438732,"cmdline":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer) --type=renderer --field-trial-handle=1718379636,9347112687090972346,4302398202363910610,131072 --lang=de --origin-trial-disabled-features=SecurePaymentConfirmation --num-raster-threads=2 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=30 --no-v8-untrusted-code-mitigations --shared-files --seatbelt-client=122","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)","nice_level":0,"num_fds":0,"Memory":{"rss":110616576,"vms":9060601856,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":44007,"ppid":689,"username":"dziegler","name":"Google","cpu_percent":0.016631864391428414,"memory_percent":0.18632412,"cmdline":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer) --type=renderer --field-trial-handle=1718379636,9347112687090972346,4302398202363910610,131072 --lang=de --origin-trial-disabled-features=SecurePaymentConfirmation --num-raster-threads=2 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=31 --no-v8-untrusted-code-mitigations --shared-files --seatbelt-client=122","status":["sleep"],"exec":"/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/88.0.4324.96/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)","nice_level":0,"num_fds":0,"Memory":{"rss":32010240,"vms":9017286656,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":55152,"ppid":1,"username":"dziegler","name":"com.apple.appkit.xpc.openAndSavePanelService","cpu_percent":0.04817193646644631,"memory_percent":0.24425983,"cmdline":"/System/Library/Frameworks/AppKit.framework/Versions/C/XPCServices/com.apple.appkit.xpc.openAndSavePanelService.xpc/Contents/MacOS/com.apple.appkit.xpc.openAndSavePanelService","status":["sleep"],"exec":"/System/Library/Frameworks/AppKit.framework/Versions/C/XPCServices/com.apple.appkit.xpc.openAndSavePanelService.xpc/Contents/MacOS/com.apple.appkit.xpc.openAndSavePanelService","nice_level":0,"num_fds":0,"Memory":{"rss":41963520,"vms":5042225152,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":55182,"ppid":1,"username":"dziegler","name":"QuickLookUIService","cpu_percent":0.0040945779211868745,"memory_percent":0.0715971,"cmdline":"/System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework/Versions/A/XPCServices/QuickLookUIService.xpc/Contents/MacOS/QuickLookUIService","status":["sleep"],"exec":"/System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework/Versions/A/XPCServices/QuickLookUIService.xpc/Contents/MacOS/QuickLookUIService","nice_level":0,"num_fds":0,"Memory":{"rss":12300288,"vms":4976533504,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":65697,"ppid":1,"username":"dziegler","name":"fileproviderd","cpu_percent":0.005271539484207342,"memory_percent":0.061297417,"cmdline":"/System/Library/PrivateFrameworks/FileProvider.framework/Support/fileproviderd","status":["sleep"],"exec":"/System/Library/Frameworks/FileProvider.framework/Support/fileproviderd","nice_level":0,"num_fds":0,"Memory":{"rss":10530816,"vms":4444700672,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":65701,"ppid":1,"username":"dziegler","name":"Telegram","cpu_percent":1.1467940001358814,"memory_percent":0.6996155,"cmdline":"/Applications/Telegram.app/Contents/MacOS/Telegram","status":["sleep"],"exec":"/Applications/Telegram.app/Contents/MacOS/Telegram","nice_level":0,"num_fds":0,"Memory":{"rss":120193024,"vms":5468827648,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":65702,"ppid":1,"username":"dziegler","name":"com.apple.audio.SandboxHelper","cpu_percent":0.0003103721742109144,"memory_percent":0.020003319,"cmdline":"/System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper","status":["sleep"],"exec":"/System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper","nice_level":0,"num_fds":0,"Memory":{"rss":3436544,"vms":4408389632,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":65707,"ppid":1,"username":"dziegler","name":"com.apple.DictionaryServiceHelper","cpu_percent":0.0003110440140511695,"memory_percent":0.014090538,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/DictionaryServices.framework/Versions/A/XPCServices/com.apple.DictionaryServiceHelper.xpc/Contents/MacOS/com.apple.DictionaryServiceHelper","status":["sleep"],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/DictionaryServices.framework/Versions/A/XPCServices/com.apple.DictionaryServiceHelper.xpc/Contents/MacOS/com.apple.DictionaryServiceHelper","nice_level":0,"num_fds":0,"Memory":{"rss":2420736,"vms":4400418816,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":72869,"ppid":1,"username":"dziegler","name":"nbagent","cpu_percent":0.0053661234485922775,"memory_percent":0.08985996,"cmdline":"/System/Library/PrivateFrameworks/Noticeboard.framework/Versions/A/Resources/nbagent.app/Contents/MacOS/nbagent","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/Noticeboard.framework/Versions/A/Resources/nbagent.app/Contents/MacOS/nbagent","nice_level":0,"num_fds":0,"Memory":{"rss":15437824,"vms":4452556800,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":73016,"ppid":1,"username":"root","name":"nbstated","cpu_percent":0.0012629989294372708,"memory_percent":0.034594536,"cmdline":"/System/Library/PrivateFrameworks/Noticeboard.framework/Versions/A/Resources/nbstated","status":["sleep"],"exec":"/System/Library/PrivateFrameworks/Noticeboard.framework/Versions/A/Resources/nbstated","nice_level":0,"num_fds":0,"Memory":{"rss":5943296,"vms":4438880256,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}},{"pid":79446,"ppid":1,"username":"dziegler","name":"mdworker_shared","cpu_percent":0.12798785989518438,"memory_percent":0.10020733,"cmdline":"/System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Versions/A/Support/mdworker_shared -s mdworker -c MDSImporterWorker -m com.apple.mdworker.shared","status":["sleep"],"exec":"/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdworker_shared","nice_level":0,"num_fds":0,"Memory":{"rss":17215488,"vms":4427042816,"hwm":0,"data":0,"stack":0,"locked":0,"swap":0}}],"sensors":{"Temperatures":[{"label":"Ambient 1 (TA0P)","current":43,"high":0,"critical":0},{"label":"Ambient 2 (TA1P)","current":0,"high":0,"critical":0},{"label":"CPU 0 Diode (TC0D)","current":0,"high":0,"critical":0},{"label":"CPU 0 Heatsink (TC0H)","current":0,"high":0,"critical":0},{"label":"CPU 0 Proximity (TC0P)","current":72,"high":0,"critical":0},{"label":"Battery (TB0T)","current":34,"high":0,"critical":0},{"label":"Battery 1 (TB1T)","current":34,"high":0,"critical":0},{"label":"Battery 2 (TB2T)","current":30,"high":0,"critical":0},{"label":"Battery (TB3T)","current":0,"high":0,"critical":0},{"label":"GPU 0 Diode (TG0D)","current":0,"high":0,"critical":0},{"label":"GPU 0 Heatsink (TG0H)","current":0,"high":0,"critical":0},{"label":"GPU 0 Proximity (TG0P)","current":0,"high":0,"critical":0},{"label":"TH0P Bay 1 (TH0P)","current":0,"high":0,"critical":0},{"label":"Memory Module 0 (TM0S)","current":0,"high":0,"critical":0},{"label":"Mainboard Proximity (TM0P)","current":58,"high":0,"critical":0},{"label":"Northbridge Heatsink (TN0H)","current":0,"high":0,"critical":0},{"label":"Northbridge Diode (TN0D)","current":0,"high":0,"critical":0},{"label":"Northbridge Proximity (TN0P)","current":0,"high":0,"critical":0},{"label":"Thunderbolt 0 (TI0P)","current":0,"high":0,"critical":0},{"label":"Thunderbolt 1 (TI1P)","current":0,"high":0,"critical":0},{"label":"Airport Proximity (TW0P)","current":129,"high":0,"critical":0}],"Batteries":[{"id":0,"percent":96.27356422621656,"secsleft":0,"power_plugged":true}]},"swap":{"total":0,"percent":0,"used":0,"free":0,"sin":0,"sout":0},"system_load":{"0":6.01318359375,"1":5.123046875,"2":4.45556640625},"users":[{"name":"dziegler","terminal":"console","host":"","started":59037},{"name":"dziegler","terminal":"ttys000","host":"","started":927439},{"name":"dziegler","terminal":"ttys002","host":"","started":439507},{"name":"dziegler","terminal":"ttys001","host":"","started":664445},{"name":"dziegler","terminal":"ttys003","host":"","started":433871}]}', true);
+        $config = $AgentconfigsTable->getConfigByHostId($host->id);
 
-        $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse);
-        dd($AgentResponseToServices->getAllServices());
+        if ($this->request->is('get')) {
+            $selectedPushAgentId = 0;
+
+            $pushAgents = $PushAgentsTable->getPushAgentsForAssignments($config->id);
+
+            $hostnameMatchingPercentages = [];
+            foreach ($pushAgents as $index => $pushAgent) {
+                if ($pushAgent['agentconfig_id'] == $config->id) {
+                    // The user already assigned this Agent to an Agent Config
+                    $selectedPushAgentId = $pushAgent['id'];
+                    break;
+                }
+
+                // Use the best matching host name to guess the right agent
+                $ip = $pushAgent['ipaddress']; // did the agent send us an IP?
+                if (empty($ip)) {
+                    $ip = $pushAgent['http_x_forwarded_for']; // Agent used a proxy server?
+                    if (empty($ip)) {
+                        $ip = $pushAgent['remote_address']; // This is the IP we recived data from the agent
+                    }
+                }
+
+
+                if ($ip === $host->address) {
+                    $selectedPushAgentId = $pushAgent['id'];
+                    break;
+                }
+
+                if (!empty($pushAgent['hostname'])) {
+                    $sim = similar_text($host->name, $pushAgent['hostname'], $percent);
+                    $hostnameMatchingPercentages[$index] = $percent;
+                }
+            }
+
+            if ($selectedPushAgentId === 0 && !empty($hostnameMatchingPercentages)) {
+                $max = 0;
+                $indexToUse = 0;
+                foreach ($hostnameMatchingPercentages as $index => $percentage) {
+                    if ($percentage > $max) {
+                        $max = $percentage;
+                        $indexToUse = $index;
+                    }
+                }
+
+                if (isset($pushAgents[$indexToUse])) {
+                    $selectedPushAgentId = $pushAgents[$indexToUse]['id'];
+                }
+            }
+
+            $pushAgentsForSelectbox = [];
+            foreach ($pushAgents as $pushAgent) {
+                $ip = $pushAgent['ipaddress']; // did the agent send us an IP?
+                if (empty($ip)) {
+                    $ip = $pushAgent['http_x_forwarded_for']; // Agent used a proxy server?
+                    if (empty($ip)) {
+                        $ip = $pushAgent['remote_address']; // This is the IP we recived data from the agent
+                    }
+                }
+
+                $name = $ip;
+
+                if (!empty($pushAgent['hostname'])) {
+                    $name = sprintf('%s (%s)', $pushAgent['hostname'], $ip);
+                }
+
+
+                $pushAgentsForSelectbox[] = [
+                    'id'   => $pushAgent['id'],
+                    'name' => $name
+                ];
+            }
+
+            $this->set('config', $config);
+            $this->set('host', $host);
+            $this->set('pushAgents', $pushAgentsForSelectbox);
+            $this->set('selectedPushAgentId', $selectedPushAgentId);
+
+            $this->viewBuilder()->setOption('serialize', ['config', 'host', 'pushAgents', 'selectedPushAgentId']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $pushAgentId = (int)$this->request->getData('pushagent.id', 0);
+
+            if (!$PushAgentsTable->existsById($pushAgentId)) {
+                throw new NotFoundException();
+            }
+
+            // Was this Host already assigned to an Agent?
+            $oldPushAgent = $PushAgentsTable->getByAgentconfigId($config->id);
+
+            if (!is_null($oldPushAgent)) {
+                if ($pushAgentId !== $oldPushAgent->id) {
+                    // User assigned a new Agent to this host
+                    $oldPushAgent->set('agentconfig_id', null);
+                    $PushAgentsTable->save($oldPushAgent);
+                }
+            }
+
+            $pushAgent = $PushAgentsTable->get($pushAgentId);
+            $pushAgent->set('agentconfig_id', $config->id);
+            $PushAgentsTable->save($pushAgent);
+
+            if ($pushAgent->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('success', false);
+                $this->set('error', $pushAgent->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+                return;
+            }
+
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
+    // Step 5
+    public function create_services() {
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
+        $hostId = $this->request->getQuery('hostId', 0);
+        $testConnection = $this->request->getQuery('testConnection', 'false') === 'true';
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException();
+        }
+
+        $host = $HostsTable->get($hostId);
+
+        if (!$AgentconfigsTable->existsByHostId($host->id)) {
+            throw new NotFoundException();
+        }
+
+        if ($this->request->is('post')) {
+            // Save new services
+            $User = new User($this->getUser());
+            /** @var HosttemplatesTable $HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var ServicetemplatesTable $ServicetemplatesTable */
+            $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            $servicesPost = $this->request->getData('services', []);
+
+            $hostContactsAndContactgroupsById = $HostsTable->getContactsAndContactgroupsById(
+                $host->get('id')
+            );
+            $hosttemplateContactsAndContactgroupsById = $HosttemplatesTable->getContactsAndContactgroupsById(
+                $host->get('hosttemplate_id')
+            );
+
+            $errors = [];
+            $newServiceIds = [];
+            foreach ($servicesPost as $servicePost) {
+                $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicePost['servicetemplate_id']);
+
+                $servicename = $servicePost['name'];
+
+                $serviceData = ServiceComparisonForSave::getServiceSkeleton($servicePost['host_id'], $servicePost['servicetemplate_id'], OITC_AGENT_SERVICE);
+                $serviceData['name'] = $servicename;
+                $serviceData['servicecommandargumentvalues'] = $servicePost['servicecommandargumentvalues'];
+                $ServiceComparisonForSave = new ServiceComparisonForSave(
+                    ['Service' => $serviceData],
+                    $servicetemplate,
+                    $hostContactsAndContactgroupsById,
+                    $hosttemplateContactsAndContactgroupsById
+                );
+                $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
+                $serviceData['uuid'] = UUID::v4();
+
+                //Add required fields for validation
+                $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+                $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+                $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+                $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+                $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
+
+                $service = $ServicesTable->newEntity($serviceData);
+
+                $ServicesTable->save($service);
+                if ($service->hasErrors()) {
+                    $errors[] = $service->getErrors();
+                } else {
+                    //No errors
+
+                    $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        'add',
+                        'services',
+                        $service->get('id'),
+                        OBJECT_SERVICE,
+                        $host->get('container_id'),
+                        $User->getId(),
+                        $host->get('name') . '/' . $servicename,
+                        array_merge(['Service' => $serviceData], $extDataForChangelog)
+                    );
+
+                    if ($changelog_data) {
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
+                    $newServiceIds[] = $service->get('id');
+                }
+            }
+
+            if (!empty($errors)) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('success', false);
+                $this->set('error', $errors);
+                $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+                return;
+            }
+
+            $this->set('success', true);
+            $this->set('services', ['_ids' => $newServiceIds]);
+            $this->viewBuilder()->setOption('serialize', ['services', 'success']);
+            return;
+        }
+
+
+        // GET request
+        $record = $AgentconfigsTable->getConfigByHostId($host->id);
+        $AgentConfiguration = new AgentConfiguration();
+        $config = $AgentConfiguration->unmarshal($record->config);
+
+        $agentresponse = []; // Empty agent response
+        if ($config['bool']['enable_push_mode'] === true) {
+            /** @var PushAgentsTable $PushAgentsTable */
+            $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+            $agentresponse = $PushAgentsTable->getAgentOutputByAgentconfigId($record->id);
+        } else {
+            // Pull Mode
+            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+            $agentresponse = $AgentHttpClient->getResults();
+        }
+
+
+        // Test responses
+        // macOS test output (custom checks + docker)
+        //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_darwin.json'), true);
+        // Linux test output (custom checks + docker + libvirt)
+        //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_linux.json'), true);
+        // Windows test output (custom checks + docker)
+        //$agentresponse = json_decode(file_get_contents(TESTS . 'agent' . DS . 'output_windows.json'), true);
+
+        $AgentResponseToServices = new AgentResponseToServices($host->id, $agentresponse, true);
+        $services = $AgentResponseToServices->getAllServices();
+
+        $connection_test = null;
+        if ($config['bool']['enable_push_mode'] === false && $testConnection) {
+            // Agent is running in PULL Mode and the user clicked on the First Wizard Page on "Create new services"
+            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+            $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
+        }
 
 
         $this->set('host', $host);
-        $this->viewBuilder()->setOption('serialize', ['host']);
+        $this->set('services', $services);
+        $this->set('connection_test', $connection_test);
+        $this->set('config', $config);
+        $this->viewBuilder()->setOption('serialize', ['host', 'services', 'connection_test', 'config']);
     }
 
     /****************************
@@ -1054,6 +939,7 @@ class AgentconnectorController extends AppController {
         }
 
         $selected = $this->request->getQuery('selected');
+        $pushAgentId = (int)$this->request->getQuery('pushAgentId', 0);
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -1067,6 +953,20 @@ class AgentconnectorController extends AppController {
         $HostCondition = new HostConditions($where);
         $HostCondition->setIncludeDisabled(false);
         $HostCondition->setContainerIds($this->MY_RIGHTS);
+
+        if ($pushAgentId > 0) {
+            /** @var AgentconfigsTable $AgentconfigsTable */
+            $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+            $hostIdsToExclude = $AgentconfigsTable->getHostIdsByMode('push');
+
+            if (!empty($hostIdsToExclude)) {
+                $HostCondition->setNotConditions([
+                    'Hosts.id IN' => $hostIdsToExclude
+                ]);
+            }
+        }
+
+
         if ($onlyHostsWithWritePermission) {
             $writeContainers = [];
             foreach ($this->MY_RIGHTS_LEVEL as $containerId => $rightLevel) {
@@ -1086,16 +986,182 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
-    public function loadAgentConfigByHostId() {
-        $agentConfig = null;
-        $this->set('agentConfig', $agentConfig);
-        $this->viewBuilder()->setOption('serialize', ['agentConfig']);
-    }
-
 
     /************************************
      *    AGENT API METHODS FOR PUSH    *
      ************************************/
 
+    /**
+     * Register new PUSH Agents
+     *
+     * How it works:
+     * Register new Agents:
+     * The Agent send it's UUID and an empty Password to the openITCOCKPIT Server. If no password was generated for the given UUID
+     * openITCOCKPIT will generate a new Password and respond this password to the Agent. Respond with 201
+     *
+     * If an Agent sends an password which is not found in the database, openITCOCKPIT will respond with an 403 Forbidden
+     */
+    public function register_agent() {
+        $agentUuid = $this->request->getData('agentuuid', null);
+        $agentPassword = $this->request->getData('password', null);
 
+        if (!$this->request->is('post') || !$this->isJsonRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($agentUuid === null || $agentPassword === null) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', 'Field uuid or password is missing in POST data');
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+
+        if ($agentPassword === '' && $PushAgentsTable->existsByUuid($agentUuid)) {
+            // It this UUID already registered?
+            $this->response = $this->response->withStatus(403);
+            $this->set('error', 'The given UUID is already registed with a password!');
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        if ($agentPassword === '' && !$PushAgentsTable->existsByUuid($agentUuid)) {
+            // New or unknown agent - Create a new password for this Agent and add it to our database
+            $bytes = openssl_random_pseudo_bytes(64, $cstrong);
+            $password = bin2hex($bytes);
+
+            $remoteAddress = null;
+            if (!empty($_SERVER['REMOTE_ADDR'])) {
+                $remoteAddress = $_SERVER['REMOTE_ADDR'];
+            }
+            if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                $remoteAddress = $_SERVER['HTTP_CLIENT_IP'];
+            }
+            $HTTP_X_FORWARDED_FOR = null;
+            if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $HTTP_X_FORWARDED_FOR = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }
+
+
+            $entity = $PushAgentsTable->newEntity([
+                'uuid'                 => $agentUuid,
+                'agentconfig_id'       => null,
+                'password'             => $password,
+                'hostname'             => $this->request->getData('hostname', null),
+                'ipaddress'            => $this->request->getData('ipaddress', null),
+                'remote_address'       => $remoteAddress,
+                'http_x_forwarded_for' => $HTTP_X_FORWARDED_FOR,
+                'last_update'          => new FrozenTime(),
+                'checkresults'         => null
+            ]);
+
+            $PushAgentsTable->save($entity);
+            if ($entity->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $entity->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+            //Send new Password to Agent
+            $this->response = $this->response->withStatus(201);
+            $this->set('uuid', $agentUuid);
+            $this->set('password', $password);
+            $this->viewBuilder()->setOption('serialize', ['uuid', 'password']);
+            return;
+        }
+
+        // Password and Agent UUID given - check if this exists in the database
+        if ($PushAgentsTable->existsByUuidAndPassword($agentUuid, $agentPassword)) {
+            $this->response = $this->response->withStatus(200);
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        $this->response = $this->response->withStatus(404);
+        $this->set('error', 'No Agent found for given UUID and password');
+        $this->viewBuilder()->setOption('serialize', ['error']);
+        return;
+    }
+
+    /**
+     * Receiver function called by Agents running in PUSH mode
+     */
+    public function submit_checkdata() {
+        if (!$this->isJsonRequest() || $this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $agentUuid = $this->request->getQuery('agentuuid', '');
+        $agentPassword = $this->request->getQuery('password', '');
+        $checkdata = $this->request->getData('checkdata', []);
+
+        /** @var PushAgentsTable $PushAgentsTable */
+        $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+
+        $receivedChecks = 0;
+        try {
+            $pushAgent = $PushAgentsTable->getConfigWithHostForSubmitCheckdata(
+                $agentUuid,
+                $agentPassword
+            );
+
+            $hostUuid = $pushAgent->get('agentconfig')->get('host')->get('uuid');
+            $GearmanClient = new Gearman();
+
+            // Agent is known and authorized
+            require_once "/opt/openitc/receiver/vendor/autoload.php";
+            $CheckConfig = new \itnovum\openITCOCKPIT\Checks\Receiver\CheckConfig('/opt/openitc/receiver/etc/production.json');
+            $config = $CheckConfig->getConfigByHostName($hostUuid);
+
+            foreach ($config['checks'] as $pluginConfig) {
+                $pluginName = $pluginConfig['plugin'];
+
+                $pluginClassName = sprintf('itnovum\openITCOCKPIT\Checks\Receiver\Plugins\%s', $pluginName);
+                if (!class_exists($pluginClassName)) {
+                    //Unknown Plugin
+                    continue;
+                }
+
+                /** @var  $Plugin \itnovum\openITCOCKPIT\Checks\Receiver\Plugins\PluginInterface */
+                $Plugin = new $pluginClassName($pluginConfig, $checkdata);
+
+                $pluginOutput = $Plugin->getOutput();
+                if (strlen($Plugin->getPerfdataSerialized()) > 0) {
+                    $pluginOutput .= '|' . $Plugin->getPerfdataSerialized();
+                }
+
+                $GearmanClient->sendBackground('cmd_external_command', [
+                    'command'     => 'PROCESS_SERVICE_CHECK_RESULT',
+                    'parameters'  => [
+                        'hostUuid'      => $hostUuid,
+                        'serviceUuid'   => $pluginConfig['uuid'],
+                        'status_code'   => $Plugin->getStatuscode(),
+                        'plugin_output' => $pluginOutput,
+                        'long_output'   => $Plugin->getLongOutput()
+                    ],
+                    'satelliteId' => 0 // Agent check results are always Master system!,
+                ]);
+
+                $receivedChecks++;
+            }
+
+            $pushAgent->set('last_update', new FrozenTime());
+            $PushAgentsTable->save($pushAgent);
+
+            $this->set('success', true);
+            $this->set('received_checks', $receivedChecks);
+            $this->viewBuilder()->setOption('serialize', ['success', 'received_checks']);
+            return;
+        } catch (RecordNotFoundException $e) {
+            //No host for given agent config found
+        }
+
+        $this->response = $this->response->withStatus(400);
+        $this->set('error', 'Invalid credentials or host not found');
+        $this->viewBuilder()->setOption('serialize', ['error']);
+    }
 }
