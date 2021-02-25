@@ -1091,7 +1091,7 @@ class AgentconnectorController extends AppController {
      * Receiver function called by Agents running in PUSH mode
      */
     public function submit_checkdata() {
-        if (!$this->isJsonRequest() || $this->request->is('post')) {
+        if (!$this->isJsonRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
