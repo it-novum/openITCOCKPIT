@@ -1115,38 +1115,43 @@ class AgentconnectorController extends AppController {
             // Agent is known and authorized
             require_once "/opt/openitc/receiver/vendor/autoload.php";
             $CheckConfig = new \itnovum\openITCOCKPIT\Checks\Receiver\CheckConfig('/opt/openitc/receiver/etc/production.json');
-            $config = $CheckConfig->getConfigByHostName($hostUuid);
+            try {
+                $config = $CheckConfig->getConfigByHostName($hostUuid);
 
-            foreach ($config['checks'] as $pluginConfig) {
-                $pluginName = $pluginConfig['plugin'];
+                foreach ($config['checks'] as $pluginConfig) {
+                    $pluginName = $pluginConfig['plugin'];
 
-                $pluginClassName = sprintf('itnovum\openITCOCKPIT\Checks\Receiver\Plugins\%s', $pluginName);
-                if (!class_exists($pluginClassName)) {
-                    //Unknown Plugin
-                    continue;
+                    $pluginClassName = sprintf('itnovum\openITCOCKPIT\Checks\Receiver\Plugins\%s', $pluginName);
+                    if (!class_exists($pluginClassName)) {
+                        //Unknown Plugin
+                        continue;
+                    }
+
+                    /** @var  $Plugin \itnovum\openITCOCKPIT\Checks\Receiver\Plugins\PluginInterface */
+                    $Plugin = new $pluginClassName($pluginConfig, $checkdata);
+
+                    $pluginOutput = $Plugin->getOutput();
+                    if (strlen($Plugin->getPerfdataSerialized()) > 0) {
+                        $pluginOutput .= '|' . $Plugin->getPerfdataSerialized();
+                    }
+
+                    $GearmanClient->sendBackground('cmd_external_command', [
+                        'command'     => 'PROCESS_SERVICE_CHECK_RESULT',
+                        'parameters'  => [
+                            'hostUuid'      => $hostUuid,
+                            'serviceUuid'   => $pluginConfig['uuid'],
+                            'status_code'   => $Plugin->getStatuscode(),
+                            'plugin_output' => $pluginOutput,
+                            'long_output'   => $Plugin->getLongOutput()
+                        ],
+                        'satelliteId' => 0 // Agent check results are always Master system!,
+                    ]);
+
+                    $receivedChecks++;
                 }
-
-                /** @var  $Plugin \itnovum\openITCOCKPIT\Checks\Receiver\Plugins\PluginInterface */
-                $Plugin = new $pluginClassName($pluginConfig, $checkdata);
-
-                $pluginOutput = $Plugin->getOutput();
-                if (strlen($Plugin->getPerfdataSerialized()) > 0) {
-                    $pluginOutput .= '|' . $Plugin->getPerfdataSerialized();
-                }
-
-                $GearmanClient->sendBackground('cmd_external_command', [
-                    'command'     => 'PROCESS_SERVICE_CHECK_RESULT',
-                    'parameters'  => [
-                        'hostUuid'      => $hostUuid,
-                        'serviceUuid'   => $pluginConfig['uuid'],
-                        'status_code'   => $Plugin->getStatuscode(),
-                        'plugin_output' => $pluginOutput,
-                        'long_output'   => $Plugin->getLongOutput()
-                    ],
-                    'satelliteId' => 0 // Agent check results are always Master system!,
-                ]);
-
-                $receivedChecks++;
+            }catch (\RuntimeException $e){
+                // Host was not exported yet to Monitoring Engine and check receiver - just save the check result to the database
+                // and ignore the error
             }
 
             $pushAgent->set('last_update', new FrozenTime());
