@@ -1149,12 +1149,13 @@ class AgentconnectorController extends AppController {
 
                     $receivedChecks++;
                 }
-            }catch (\RuntimeException $e){
+            } catch (\RuntimeException $e) {
                 // Host was not exported yet to Monitoring Engine and check receiver - just save the check result to the database
                 // and ignore the error
             }
 
             $pushAgent->set('last_update', new FrozenTime());
+            $pushAgent->set('checkresults', json_encode($checkdata));
             $PushAgentsTable->save($pushAgent);
 
             $this->set('success', true);
