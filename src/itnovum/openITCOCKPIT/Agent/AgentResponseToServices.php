@@ -593,26 +593,20 @@ class AgentResponseToServices {
                     continue;
                 }
 
-                $match = $item['Name'];
-                if (!empty($item['DisplayName'])) {
-                    $match = $item['DisplayName'];
-                }
-                if (!empty($item['BinPath'])) {
-                    $match = $item['BinPath'];
-                }
-                $serviceName = $item['Name'];
-                if (!empty($item['BinPath'])) {
-                    $serviceName = $item['BinPath'];
-                }
-                if (!empty($item['DisplayName'])) {
+                $match = $item['Name']; // Name is unique and never empty
+                $serviceName = $item['Name']; // wisvc
+                if (!empty($item['DisplayName'])) { // Windows Insider Service
                     $serviceName = $item['DisplayName'];
                 }
 
+                // Agent 1.x was using BinPath which is not unique and makes no sense ?!
+                // $item['BinPath']; // C:\Windows\system32\svchost.exe -k netsvc
+
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $this->shortCommandargumentValue($match)])) {
-                    $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($match); // C:\WINDOWS\System32\DriverStore\FileRepository\sgx_psw.inf_amd64_bff7913eb62bbf90\aesm_service.exe
+                    $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($match); // wisvc
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        $serviceName, // Intel® SGX AESM
+                        $serviceName, // Windows Insider Service
                         $servicetemplatecommandargumentvalues
                     );
                 }
