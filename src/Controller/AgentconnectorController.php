@@ -1067,9 +1067,9 @@ class AgentconnectorController extends AppController {
 
             //Send new Password to Agent
             $this->response = $this->response->withStatus(201);
-            $this->set('uuid', $agentUuid);
+            $this->set('agentuuid', $agentUuid);
             $this->set('password', $password);
-            $this->viewBuilder()->setOption('serialize', ['uuid', 'password']);
+            $this->viewBuilder()->setOption('serialize', ['agentuuid', 'password']);
             return;
         }
 
