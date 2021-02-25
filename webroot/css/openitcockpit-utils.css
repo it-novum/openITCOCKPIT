@@ -667,10 +667,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-family: FontAwesome;
     color: #72a4f7;
     position: absolute;
-    top:0;
-    right:10px;
+    top: 0;
+    right: 10px;
     font-size: 40px;
-    padding:0;
+    padding: 0;
     text-shadow: 1px 1px #4285F4;
 }
 
@@ -679,10 +679,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-family: FontAwesome;
     color: #72a4f7;
     position: absolute;
-    top:-3px;
-    right:10px;
+    top: -3px;
+    right: 10px;
     font-size: 40px;
-    padding:0;
+    padding: 0;
     text-shadow: 1px 1px #4285F4;
 }
 
@@ -691,10 +691,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-family: FontAwesome;
     color: #72a4f7;
     position: absolute;
-    top:-3px;
-    right:10px;
+    top: -3px;
+    right: 10px;
     font-size: 40px;
-    padding:0;
+    padding: 0;
     text-shadow: 1px 1px #4285F4;
 }
 
@@ -703,9 +703,66 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-family: FontAwesome;
     color: #36D47E;
     position: absolute;
-    top:-3px;
-    right:10px;
+    top: -3px;
+    right: 10px;
     font-size: 40px;
-    padding:0;
+    padding: 0;
     text-shadow: 1px 1px #00C851;
 }
+
+.hr-text,
+.hr-text-brands {
+    line-height: 1em;
+    position: relative;
+    outline: 0;
+    border: 0;
+    color: #4285F4;
+    text-align: left;
+    height: 1.5em;
+    padding-left: 10px;
+    opacity: 0.8;
+}
+
+.hr-text:before,
+.hr-text-brands:before {
+    content: '';
+    background: #4285F4;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+}
+
+.hr-text:after {
+    font-family: "FontAwesome";
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding: 0 .5em;
+    line-height: 1.5em;
+    color: #FFFFFF;
+    background-color: #4285F4;
+    border-radius: 4px;
+}
+
+.hr-text-brands:after {
+    font-family: "Font Awesome 5 Brands";
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding: 0 .5em;
+    line-height: 1.5em;
+    color: #FFFFFF;
+    background-color: #4285F4;
+    border-radius: 4px;
+}
+
+.chosen-container .chosen-drop {
+    left: -99000px;
+}
+
+.word-break {
+    word-break: break-all;
+}
+

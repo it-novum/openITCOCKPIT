@@ -123,8 +123,8 @@ class ServicetemplatesTable extends Table {
         ]);
 
         $this->hasOne('Agentchecks', [
-            'foreignKey' => 'servicetemplate_id',
-        ]);
+            'foreignKey' => 'servicetemplate_id'
+        ])->setDependent(true);
 
         $this->hasMany('Customvariables', [
             'conditions'   => [
@@ -410,7 +410,6 @@ class ServicetemplatesTable extends Table {
 
         $validator
             ->integer('freshness_threshold')
-            ->greaterThan('check_period_id', 0, __('This field cannot be empty'))
             ->allowEmptyString('freshness_threshold');
 
         return $validator;
@@ -605,7 +604,7 @@ class ServicetemplatesTable extends Table {
             ->disableHydration()
             ->first();
 
-        if(!$formatAsCake2){
+        if (!$formatAsCake2) {
             return $query;
         }
         return $this->formatFirstResultAsCake2($query, true);
@@ -723,14 +722,13 @@ class ServicetemplatesTable extends Table {
 
         $where = $ServicetemplateFilter->ajaxFilter();
         $where['Servicetemplates.container_id IN'] = $containerIds;
-        $query = $this->find('list')
-            ->select([
-                'Servicetemplates.id',
-                'Servicetemplates.name'
-            ])
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'template_name'
+        ])
             ->where($where)
             ->order([
-                'Servicetemplates.name' => 'asc'
+                'Servicetemplates.template_name' => 'asc'
             ])
             ->limit(ITN_AJAX_LIMIT)
             ->disableHydration();
@@ -742,13 +740,16 @@ class ServicetemplatesTable extends Table {
 
         $selectedServicetemplates = [];
         if (!empty($selected)) {
-            $query = $this->find('list')
+            $query = $this->find('list', [
+                'keyField'   => 'id',
+                'valueField' => 'template_name'
+            ])
                 ->where([
                     'Servicetemplates.id IN'           => $selected,
                     'Servicetemplates.container_id IN' => $containerIds
                 ])
                 ->order([
-                    'Servicetemplates.name' => 'asc'
+                    'Servicetemplates.template_name' => 'asc'
                 ]);
 
             $selectedServicetemplates = $query->toArray();
@@ -758,6 +759,7 @@ class ServicetemplatesTable extends Table {
         }
 
         $servicetemplates = $servicetemplatesWithLimit + $selectedServicetemplates;
+  
         asort($servicetemplates, SORT_FLAG_CASE | SORT_NATURAL);
         return $servicetemplates;
     }

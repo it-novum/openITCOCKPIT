@@ -3,21 +3,20 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\AgenthostscacheTable;
-use Cake\ORM\TableRegistry;
+use App\Model\Table\PushAgentsTable;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\AgenthostscacheTable Test Case
+ * App\Model\Table\PushAgentsTable Test Case
  */
-class AgenthostscacheTableTest extends TestCase
+class PushAgentsTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\AgenthostscacheTable
+     * @var \App\Model\Table\PushAgentsTable
      */
-    protected $Agenthostscache;
+    protected $PushAgents;
 
     /**
      * Fixtures
@@ -25,7 +24,8 @@ class AgenthostscacheTableTest extends TestCase
      * @var array
      */
     protected $fixtures = [
-        'app.Agenthostscache',
+        'app.PushAgents',
+        'app.Agentconfigs',
     ];
 
     /**
@@ -36,8 +36,8 @@ class AgenthostscacheTableTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('Agenthostscache') ? [] : ['className' => AgenthostscacheTable::class];
-        $this->Agenthostscache = TableRegistry::getTableLocator()->get('Agenthostscache', $config);
+        $config = $this->getTableLocator()->exists('PushAgents') ? [] : ['className' => PushAgentsTable::class];
+        $this->PushAgents = $this->getTableLocator()->get('PushAgents', $config);
     }
 
     /**
@@ -47,19 +47,9 @@ class AgenthostscacheTableTest extends TestCase
      */
     public function tearDown(): void
     {
-        unset($this->Agenthostscache);
+        unset($this->PushAgents);
 
         parent::tearDown();
-    }
-
-    /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
     }
 
     /**
@@ -68,6 +58,16 @@ class AgenthostscacheTableTest extends TestCase
      * @return void
      */
     public function testValidationDefault(): void
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test buildRules method
+     *
+     * @return void
+     */
+    public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

@@ -21,11 +21,11 @@ angular.module('openITCOCKPIT')
                     $scope.sourceContactgroups.push({
                         Source: {
                             id: result.data.contactgroups[key].Contactgroup.id,
-                            name: result.data.contactgroups[key].Contactgroup.container.name,
+                            name: result.data.contactgroups[key].Container.name,
                         },
                         Contactgroup: {
                             container: {
-                                name: result.data.contactgroups[key].Contactgroup.container.name
+                                name: result.data.contactgroups[key].Container.name
                             },
                             description: result.data.contactgroups[key].Contactgroup.description
                         }

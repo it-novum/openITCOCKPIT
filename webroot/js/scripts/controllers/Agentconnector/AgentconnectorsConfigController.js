@@ -1,8 +1,8 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsConfigController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
 
-        $scope.connectorConfig = {};
         $scope.hostId = $stateParams.hostId;
+        $scope.pushAgentId = $stateParams.pushAgentId;
         $scope.connection_type = 'autotls';
         $scope.webserver_type = 'https';
 
@@ -51,6 +51,7 @@ angular.module('openITCOCKPIT')
             $http.post("/agentconnector/config.json", {
                     config: $scope.config,
                     hostId: $scope.hostId,
+                pushAgentId: $scope.pushAgentId
                 }
             ).then(function(result){
                 $state.go('AgentconnectorsInstall', {

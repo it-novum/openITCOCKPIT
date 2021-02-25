@@ -86,12 +86,11 @@ class HostgroupsController extends AppController {
         }
 
         $hostgroups = $HostgroupsTable->getHostgroupsIndex($HostgroupFilter, $PaginateOMat, $MY_RIGHTS);
-
         $all_hostgroups = [];
         foreach ($hostgroups as $hostgroup) {
             $hostgroup['allowEdit'] = $this->hasPermission('edit', 'hostgroups');
             if ($this->hasRootPrivileges === false && $hostgroup['allowEdit'] === true) {
-                $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup['parent_id']);
+                $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup->get('container')->get('parent_id'));
             }
 
             $all_hostgroups[] = $hostgroup;
@@ -469,7 +468,7 @@ class HostgroupsController extends AppController {
 
         $hostgroup['allowEdit'] = $this->hasPermission('edit', 'hostgroups');
         if ($this->hasRootPrivileges === false && $hostgroup['allowEdit'] === true) {
-            $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup['parent_id']);
+            $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup['container']['parent_id']);
         }
 
         $data = [

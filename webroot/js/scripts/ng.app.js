@@ -169,10 +169,15 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('AgentconnectorsWizard', {
-                url: '/agentconnector/wizard',
+                url: '/agentconnector/wizard/:hostId/:pushAgentId',
                 params: {
                     hostId: {
-                        value: null
+                        value: null,
+                        squash: false
+                    },
+                    pushAgentId: {
+                        value: null,
+                        squash: true
                     }
                 },
                 templateUrl: "/agentconnector/wizard.html",
@@ -180,47 +185,61 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('AgentconnectorsConfig', {
-                url: '/agentconnector/config/:hostId',
+                url: '/agentconnector/config/:hostId/:pushAgentId',
                 params: {
                     mode: {
                         value: null
+                    },
+                    pushAgentId: {
+                        value: null,
+                        squash: true
                     }
                 },
                 templateUrl: "/agentconnector/config.html",
                 controller: "AgentconnectorsConfigController"
             })
 
+
             .state('AgentconnectorsInstall', {
                 url: '/agentconnector/install/:hostId',
-                params: {
-                    mode: {
-                        value: null
-                    }
-                },
                 templateUrl: "/agentconnector/install.html",
                 controller: "AgentconnectorsInstallController"
             })
 
             .state('AgentconnectorsAutotls', {
                 url: '/agentconnector/autotls/:hostId',
-                params: {
-                    mode: {
-                        value: null
-                    }
-                },
                 templateUrl: "/agentconnector/autotls.html",
                 controller: "AgentconnectorsAutotlsController"
             })
 
+            .state('AgentconnectorsSelectAgent', {
+                url: '/agentconnector/select_agent/:hostId',
+                templateUrl: "/agentconnector/select_agent.html",
+                controller: "AgentconnectorsSelectAgentController"
+            })
+
             .state('AgentconnectorsCreateServices', {
-                url: '/agentconnector/create_services/:hostId',
-                params: {
-                    mode: {
-                        value: null
-                    }
-                },
+                url: '/agentconnector/create_services/:hostId/:testConnection',
                 templateUrl: "/agentconnector/create_services.html",
                 controller: "AgentconnectorsCreateServicesController"
+            })
+
+            .state('AgentconnectorsPull', {
+                url: '/agentconnector/pull',
+                templateUrl: "/agentconnector/pull.html",
+                controller: "AgentconnectorsPullController"
+            })
+
+            .state('AgentconnectorsPush', {
+                url: '/agentconnector/push',
+                templateUrl: "/agentconnector/push.html",
+                controller: "AgentconnectorsPushController"
+            })
+
+            .state('AgentconnectorsShowOutput', {
+                url: '/agentconnector/showOutput/:mode/:id',
+                templateUrl: "/agentconnector/showOutput.html",
+                controller: "AgentconnectorsShowOutputController"
             })
 
             .state('BackupsIndex', {
