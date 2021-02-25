@@ -1095,8 +1095,8 @@ class AgentconnectorController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $agentUuid = $this->request->getQuery('agentuuid', '');
-        $agentPassword = $this->request->getQuery('password', '');
+        $agentUuid = $this->request->getData('agentuuid', '');
+        $agentPassword = $this->request->getData('password', '');
         $checkdata = $this->request->getData('checkdata', []);
 
         /** @var PushAgentsTable $PushAgentsTable */
