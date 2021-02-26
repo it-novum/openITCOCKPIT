@@ -67,6 +67,11 @@ class ServicestatusConditions {
         return $this;
     }
 
+    public function perfdataIsNotEmpty() {
+        $this->addCondition('Servicestatus.perfdata <> ""');
+        return $this;
+    }
+
     /**
      * @param $currentStateId
      * @return $this
