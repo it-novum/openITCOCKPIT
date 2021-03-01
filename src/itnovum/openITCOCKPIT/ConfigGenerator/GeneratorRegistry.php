@@ -43,6 +43,7 @@ class GeneratorRegistry {
             //new phpNSTAMaster(),
             new DbBackend(),
             new PerfdataBackend(),
+            new Gearman(),
             new GraphingDocker(),
             new StatusengineCfg(),
             new Statusengine3Cfg(),
@@ -73,7 +74,8 @@ class GeneratorRegistry {
                 //new NagiosModuleConfig(),
                 new DbBackend(),
                 new PerfdataBackend(),
-                new GraphiteWeb()
+                new GraphiteWeb(),
+                new Gearman()
             ],
             __('Monitoring engine')                           => [
                 new NagiosCfg()
