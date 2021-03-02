@@ -4,11 +4,11 @@
 
 return [
     'gearman' => [
-        'address'    => {{address}},
+        'address'    => '{{address}}',
         'port'       => {{port}},
         'encryption' => {{encryption}},
-        'password'   => {{password}}',
-        'pidfile'    => {{pidfile}},
-        'worker'     => {{worker}},
+        'password'   => '{{password}}',
+        'pidfile'    => '{{pidfile}}',
+        'worker'     => {{worker}}
     ]
 ];
