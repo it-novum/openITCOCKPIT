@@ -48,7 +48,8 @@ class GeneratorRegistry {
             new StatusengineCfg(),
             new Statusengine3Cfg(),
             new GraphiteWeb(),
-            new NSTAMaster()
+            new NSTAMaster(),
+            new PhpFpmOitc()
         ];
 
         if (class_exists('SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapd')) {
@@ -92,6 +93,9 @@ class GeneratorRegistry {
             ],
             __('Carbon and Whisper (Graphing)')               => [
                 new GraphingDocker()
+            ],
+            __('PHP-FPM')               => [
+                new PhpFpmOitc()
             ]
         ];
 

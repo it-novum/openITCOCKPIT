@@ -179,6 +179,13 @@ class ConfigurationFilesController extends AppController {
     }
 
     /**
+     * @throws \Exception
+     */
+    public function PhpFpmOitc() {
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\PhpFpmOitc', 'PhpFpmOitc');
+    }
+
+    /**
      * @param $configFile
      * @throws \Exception
      */
