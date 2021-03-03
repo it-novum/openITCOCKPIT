@@ -95,24 +95,6 @@ class Gearman extends ConfigGenerator implements ConfigInterface {
         if (!file_exists($this->linkedOutfile)) {
             return false;
         }
-        $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
-        /*
-                Configure::load('gearman');
-                $configFromFile = Configure::read('gearman');
-
-                foreach ($config['string'] as $field => $value) {
-                    if (isset($configFromFile['SSH'][$field])) {
-                        if ($config['string'][$field] != $configFromFile['SSH'][$field]) {
-                            $config['string'][$field] = $configFromFile['SSH'][$field];
-                        }
-                    }
-                }
-                if (isset($configFromFile['SSH']['port'])) {
-                    if ($config['int']['remote_port'] != $configFromFile['SSH']['port']) {
-                        $config['int']['remote_port'] = $configFromFile['SSH']['port'];
-                    }
-                }
-        */
-        return $config;
+        return $this->mergeDbResultWithDefaultConfiguration($dbRecords);
     }
 }

@@ -12,17 +12,42 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
     /** @var string */
     protected $template = 'oitc.conf.tpl';
     /** @var string */
-    protected $realOutfile = '/etc/php/7.4/fpm/pool.d/oitc.conf';
+    protected $realOutfile = '';
     /** @var string */
-    protected $linkedOutfile = '/etc/php/7.4/fpm/pool.d/oitc.conf';
+    protected $linkedOutfile = '';
     /** @var string */
     protected $commentChar = ';';
     /** @var array */
     protected $defaults = [
-        'int'    => [
-            'max_children'   => 5,
+        'int' => [
+            'max_children' => 5,
         ],
     ];
+
+    /**
+     * PhpFpmOitc constructor.
+     * determines the current php version as the file gets written in the latest php-fpm pool.d directory
+     * this changes with every php update (7.4 to 7.5 to 7.6 and so on)
+     */
+    public function __construct() {
+        try {
+            $version = phpversion();
+            preg_match('/[^.]*.[^.]*/', $version, $match);
+            if (is_array($match)) {
+                $version = $match[0];
+                if (file_exists('/etc/php/' . $version)) {
+                    $this->realOutfile = '/etc/php/' . $version . '/fpm/pool.d/oitc.conf';
+                    $this->linkedOutfile = '/etc/php/' . $version . '/fpm/pool.d/oitc.conf';
+                }else{
+                    throw new \Exception('/etc/php/' . $version. ' directory does not exists');
+                }
+            }else{
+                throw new \Exception('PHP version could not be determined');
+            }
+        }catch (\Exception $e){
+            echo $e->getMessage();
+        }
+    }
 
     /**
      * @return string
@@ -47,7 +72,7 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
      */
     public function getHelpText($key) {
         $help = [
-            'max_children'    => __('Number of child processes.')
+            'max_children' => __('Number of child processes.')
         ];
 
         if (isset($help[$key])) {
@@ -81,24 +106,6 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
         if (!file_exists($this->linkedOutfile)) {
             return false;
         }
-        $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
-        /*
-                Configure::load('gearman');
-                $configFromFile = Configure::read('gearman');
-
-                foreach ($config['string'] as $field => $value) {
-                    if (isset($configFromFile['SSH'][$field])) {
-                        if ($config['string'][$field] != $configFromFile['SSH'][$field]) {
-                            $config['string'][$field] = $configFromFile['SSH'][$field];
-                        }
-                    }
-                }
-                if (isset($configFromFile['SSH']['port'])) {
-                    if ($config['int']['remote_port'] != $configFromFile['SSH']['port']) {
-                        $config['int']['remote_port'] = $configFromFile['SSH']['port'];
-                    }
-                }
-        */
-        return $config;
+        return $this->mergeDbResultWithDefaultConfiguration($dbRecords);
     }
 }
