@@ -138,22 +138,22 @@
                                 <td class="text-center" class="width-15">
                                     <?php if ($this->Acl->hasPermission('delete', 'servicetemplategroups')): ?>
                                         <input type="checkbox"
-                                               ng-model="massChange[servicetemplategroup.Servicetemplategroup.id]"
-                                               ng-show="servicetemplategroup.Servicetemplategroup.allow_edit">
+                                               ng-model="massChange[servicetemplategroup.id]"
+                                               ng-show="servicetemplategroup.allow_edit">
                                     <?php endif; ?>
                                 </td>
-                                <td>{{servicetemplategroup.Container.name}}</td>
-                                <td>{{servicetemplategroup.Servicetemplategroup.description}}</td>
+                                <td>{{servicetemplategroup.container.name}}</td>
+                                <td>{{servicetemplategroup.description}}</td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
-                                            <a ui-sref="ServicetemplategroupsEdit({id: servicetemplategroup.Servicetemplategroup.id })"
-                                               ng-if="servicetemplategroup.Servicetemplategroup.allow_edit"
+                                            <a ui-sref="ServicetemplategroupsEdit({id: servicetemplategroup.id })"
+                                               ng-if="servicetemplategroup.allow_edit"
                                                class="btn btn-default btn-lower-padding">
                                                 <i class="fa fa-cog"></i>
                                             </a>
                                             <a href="javascript:void(0);"
-                                               ng-if="!servicetemplategroup.Servicetemplategroup.allow_edit"
+                                               ng-if="!servicetemplategroup.allow_edit"
                                                class="btn btn-default btn-lower-padding disabled">
                                                 <i class="fa fa-cog"></i>
                                             </a>
@@ -169,8 +169,8 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
-                                                <a ui-sref="ServicetemplategroupsEdit({id: servicetemplategroup.Servicetemplategroup.id })"
-                                                   ng-if="servicetemplategroup.Servicetemplategroup.allow_edit"
+                                                <a ui-sref="ServicetemplategroupsEdit({id: servicetemplategroup.id })"
+                                                   ng-if="servicetemplategroup.allow_edit"
                                                    class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
@@ -179,7 +179,7 @@
                                             <?php if ($this->Acl->hasPermission('allocateToHostgroup', 'servicetemplategroups')): ?>
                                                 <a class="dropdown-item"
                                                    href="javascript:void(0);"
-                                                   ui-sref="ServicetemplategroupsAllocateToHostgroup({id: servicetemplategroup.Servicetemplategroup.id})">
+                                                   ui-sref="ServicetemplategroupsAllocateToHostgroup({id: servicetemplategroup.id})">
                                                     <i class="fa fa-external-link-alt"></i>
                                                     <?php echo __('Allocate to host group'); ?>
                                                 </a>
@@ -187,7 +187,7 @@
                                             <?php if ($this->Acl->hasPermission('allocateToMatchingHostgroup', 'servicetemplategroups')): ?>
                                                 <a class="dropdown-item"
                                                    href="javascript:void(0);"
-                                                   ng-click="allocateToMatchingHostgroup(servicetemplategroup.Servicetemplategroup.id)">
+                                                   ng-click="allocateToMatchingHostgroup(servicetemplategroup.id)">
                                                     <i class="fa fa-external-link-alt"></i>
                                                     <?php echo __('Allocate to matching host group'); ?>
                                                 </a>
@@ -195,7 +195,7 @@
                                             <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
                                                 <a class="dropdown-item"
                                                    href="javascript:void(0);"
-                                                   ui-sref="ServicetemplategroupsAllocateToHost({id: servicetemplategroup.Servicetemplategroup.id})">
+                                                   ui-sref="ServicetemplategroupsAllocateToHost({id: servicetemplategroup.id})">
                                                     <i class="fa fa-external-link-alt"></i>
                                                     <?php echo __('Allocate to host'); ?>
                                                 </a>
@@ -203,7 +203,7 @@
                                             <?php if ($this->Acl->hasPermission('delete', 'servicetemplategroups')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(servicetemplategroup))"
-                                                   ng-if="servicetemplategroup.Servicetemplategroup.allow_edit"
+                                                   ng-if="servicetemplategroup.allow_edit"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
                                                     <?php echo __('Delete'); ?>

@@ -161,12 +161,15 @@ class ServicetemplategroupsTable extends Table {
         $query->where($where);
         $query->order($ServicetemplategroupsFilter->getOrderForPaginator('Containers.name', 'asc'));
 
+
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->formatResultAsCake2($query->toArray(), false);
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                //$result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                //debug($result);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }
