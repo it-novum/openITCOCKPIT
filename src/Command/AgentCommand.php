@@ -29,6 +29,7 @@ namespace App\Command;
 
 use App\Model\Entity\Agentconfig;
 use App\Model\Table\AgentconfigsTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\ProxiesTable;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
@@ -47,6 +48,15 @@ use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
  */
 class AgentCommand extends Command {
 
+    const RC_UP = 0;
+    const RC_DOWN = 1;
+    const RC_UNREACHABLE = 2;
+
+    const RC_OK = 0;
+    const RC_WARNING = 1;
+    const RC_CRITICAL = 2;
+    const RC_UNKNOWN = 3;
+
     /**
      * @param ConsoleOptionParser $parser
      * @return ConsoleOptionParser
@@ -54,7 +64,36 @@ class AgentCommand extends Command {
     public function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser {
         $parser = parent::buildOptionParser($parser);
 
-        $parser->addOption('migrate', ['help' => 'Migrate Agent 1.x database records for Agent 3.x', 'boolean' => true]);
+        // Options to migrate 1.x config for Agent version 3.x
+        $parser->addOption('migrate', [
+            'help'    => 'Migrate Agent 1.x database records for Agent 3.x',
+            'boolean' => true
+        ]);
+
+        // Freshness check options
+        $parser->addOption('check', [
+            'help'    => 'Determines the host state of an host running in Push Mode by evaluating the timestamp of the last received check  results.',
+            'boolean' => true
+        ]);
+        $parser->addOption('host-check', [
+            'short'   => 'H',
+            'help'    => 'Determines if this check runs as host or service check. If set, only the critical value will be evaluated.',
+            'boolean' => true
+        ]);
+        $parser->addOption('hostuuid', [
+            'help' => 'The UUID of the host to evaluate'
+        ]);
+        $parser->addOption('warning', [
+            'short'   => 'w',
+            'help'    => 'Warning threshold in seconds.',
+            'default' => 60
+        ]);
+        $parser->addOption('critical', [
+            'short'   => 'c',
+            'help'    => 'Critical threshold in seconds.',
+            'default' => 120
+        ]);
+
 
         return $parser;
     }
@@ -66,53 +105,172 @@ class AgentCommand extends Command {
      */
     public function execute(Arguments $args, ConsoleIo $io) {
         if ($args->getOption('migrate')) {
-
-            /** @var AgentconfigsTable $AgentconfigsTable */
-            $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
-
-            foreach ($AgentconfigsTable->getOldConfigsThatNeedsMigration() as $record) {
-                /** @var Agentconfig $record */
-                $AgentConfiguration = new AgentConfiguration();
-                $config = $AgentConfiguration->unmarshal('');
-
-                // Migrate old config from agent 1.x to 3.x
-                $config['int']['bind_port'] = (int)$record->port;
-                $config['bool']['use_http_basic_auth'] = $record->basic_auth;
-                $config['string']['username'] = $record->username;
-                $config['string']['password'] = $record->password;
-                $config['bool']['use_proxy'] = $record->proxy;
-                $config['bool']['enable_push_mode'] = false;
-                $autosslSuccessful = false;
-                if ($record->push_noticed) {
-                    $config['bool']['enable_push_mode'] = true;
-                }
-
-                if ($config['bool']['enable_push_mode'] === false) {
-                    $config['bool']['use_autossl'] = true;
-                    $autosslSuccessful = true;
-                }
-
-                $data = [
-                    'port'               => $config['int']['bind_port'],
-                    'basic_auth'         => $config['bool']['use_http_basic_auth'],
-                    'username'           => $config['bool']['use_http_basic_auth'] ? $config['string']['username'] : '',
-                    'password'           => $config['bool']['use_http_basic_auth'] ? $config['string']['password'] : '',
-                    'proxy'              => $config['bool']['use_proxy'],
-                    'insecure'           => true, // Validate TLS certificate in PULL mode
-                    'use_https'          => false, // Use own TLS certificate for the agent like Let's Encrypt
-                    'use_autossl'        => $config['bool']['use_autossl'], // New field with agent 3.x
-                    'use_push_mode'      => $config['bool']['enable_push_mode'], // New field with agent 3.x
-                    'autossl_successful' => $autosslSuccessful, // New field with agent 3.x
-                    'config'             => $AgentConfiguration->marshal(), // New field with agent 3.x
-                ];
-
-                $record = $AgentconfigsTable->patchEntity($record, $data);
-                $AgentconfigsTable->save($record);
-            }
-
-            exit(0);
+            $this->migrateAgentConfig();
         }
 
+        if ($args->getOption('check')) {
+            $this->checkPushAgentFreshness($args, $io);
+        }
+    }
+
+    private function migrateAgentConfig() {
+        // Migrate Agent configuration from Agent 1.x for 3.x
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        foreach ($AgentconfigsTable->getOldConfigsThatNeedsMigration() as $record) {
+            /** @var Agentconfig $record */
+            $AgentConfiguration = new AgentConfiguration();
+            $config = $AgentConfiguration->unmarshal('');
+
+            // Migrate old config from agent 1.x to 3.x
+            $config['int']['bind_port'] = (int)$record->port;
+            $config['bool']['use_http_basic_auth'] = $record->basic_auth;
+            $config['string']['username'] = $record->username;
+            $config['string']['password'] = $record->password;
+            $config['bool']['use_proxy'] = $record->proxy;
+            $config['bool']['enable_push_mode'] = false;
+            $autosslSuccessful = false;
+            if ($record->push_noticed) {
+                $config['bool']['enable_push_mode'] = true;
+            }
+
+            if ($config['bool']['enable_push_mode'] === false) {
+                $config['bool']['use_autossl'] = true;
+                $autosslSuccessful = true;
+            }
+
+            $data = [
+                'port'               => $config['int']['bind_port'],
+                'basic_auth'         => $config['bool']['use_http_basic_auth'],
+                'username'           => $config['bool']['use_http_basic_auth'] ? $config['string']['username'] : '',
+                'password'           => $config['bool']['use_http_basic_auth'] ? $config['string']['password'] : '',
+                'proxy'              => $config['bool']['use_proxy'],
+                'insecure'           => true, // Validate TLS certificate in PULL mode
+                'use_https'          => false, // Use own TLS certificate for the agent like Let's Encrypt
+                'use_autossl'        => $config['bool']['use_autossl'], // New field with agent 3.x
+                'use_push_mode'      => $config['bool']['enable_push_mode'], // New field with agent 3.x
+                'autossl_successful' => $autosslSuccessful, // New field with agent 3.x
+                'config'             => $AgentConfiguration->marshal(), // New field with agent 3.x
+            ];
+
+            $record = $AgentconfigsTable->patchEntity($record, $data);
+            $AgentconfigsTable->save($record);
+        }
+
+        exit(0);
+    }
+
+    /**
+     * @param Arguments $args
+     * @param ConsoleIo $io
+     */
+    private function checkPushAgentFreshness(Arguments $args, ConsoleIo $io) {
+        $uuid = $args->getOption('hostuuid');
+        $warning = (int)$args->getOption('warning');
+        $critical = (int)$args->getOption('critical');
+        $isHostcheck = $args->getOption('host-check') === true;
+
+        if (empty($uuid)) {
+            $rc = self::RC_UNREACHABLE;
+            if ($isHostcheck) {
+                $rc = self::RC_UNKNOWN;
+            }
+
+            $this->nagOutput('No host uuid given', $rc);
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $record = $HostsTable->getPushAgentRecordByHostUuidForFreshnessCheck($uuid, false);
+        if (empty($record)) {
+            $rc = self::RC_UNREACHABLE;
+            if ($isHostcheck) {
+                $rc = self::RC_UNKNOWN;
+            }
+
+            $this->nagOutput('No push agent configured for given host.', $rc);
+        }
+
+        $lastUpdate = null;
+        if (isset($record['_matchingData']['PushAgents']['last_update'])) {
+            $lastUpdate = $record['_matchingData']['PushAgents']['last_update']->getTimestamp();
+        }
+
+        if ($lastUpdate === null) {
+            if (empty($record)) {
+                $this->nagOutput('No last update timestamp found in database', self::RC_UNREACHABLE);
+            }
+        }
+
+        $now = time();
+        $diff = $now - $lastUpdate;
+
+        $rc = self::RC_UP;
+        $output = sprintf('Up: Last check update received from Agent at: %s | age=%ss',
+            date('c', $lastUpdate),
+            $diff
+        );
+        if ($isHostcheck === true) {
+            if ($diff >= $critical) {
+                $output = sprintf('Down: Last received check update from Agent is older than %s seconds: %s | age=%ss',
+                    $diff,
+                    date('c', $lastUpdate),
+                    $diff
+                );
+                $rc = self::RC_DOWN;
+            }
+
+            $this->nagOutput($output, $rc);
+        }
+
+        // Running as service check
+        $rc = self::RC_OK;
+        $output = sprintf('Ok: Last check update received from Agent at: %s | age=%ss;%s;%s',
+            date('c', $lastUpdate),
+            $diff,
+            $warning,
+            $critical
+        );
+        if ($diff >= $critical) {
+            $output = sprintf('Critical: Last received check update from Agent is older than %s seconds: %s | age=%ss;%s;%s',
+                $diff,
+                date('c', $lastUpdate),
+                $diff,
+                $warning,
+                $critical
+            );
+            $rc = self::RC_CRITICAL;
+            $this->nagOutput($output, $rc);
+        }
+
+        $this->nagOutput($output, $rc);
+
+        if ($diff >= $warning) {
+            $output = sprintf('Warning: Last received check update from Agent is older than %s seconds: %s | age=%ss;%s;%s',
+                $diff,
+                date('c', $lastUpdate),
+                $diff,
+                $warning,
+                $critical
+            );
+            $rc = self::RC_WARNING;
+            $this->nagOutput($output, $rc);
+        }
+
+        // Ok
+        $this->nagOutput($output, $rc);
+    }
+
+    /**
+     * @param string $output
+     * @param int $rc
+     */
+    private function nagOutput($output, $rc) {
+        echo $output;
+        echo "\n";
+        exit($rc);
 
     }
 }
