@@ -1899,10 +1899,16 @@ class HostsController extends AppController {
         $host = $HostsTable->getHostForBrowser($id);
 
         //Check permissions
-        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n},id');
+        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
         $containerIdsToCheck[] = $host['container_id'];
 
         //Check if user is permitted to see this object
+        /*debug($host['hosts_to_containers_sharing']);
+        debug($host);
+        debug($containerIdsToCheck);
+        debug($this->hasRootPrivileges);
+        debug($this->allowedByContainerId($containerIdsToCheck, false));
+        */
         if (!$this->hasRootPrivileges) {
             if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
                 $this->render403();
