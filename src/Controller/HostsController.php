@@ -1917,21 +1917,35 @@ class HostsController extends AppController {
         }
         $hostObj = new Host($host, $allowEdit);
 
+
         //Load containers information
-        $mainContainer = $ContainersTable->getTreePathForBrowser($host['container_id'], $this->MY_RIGHTS_LEVEL);
-        //Add shared containers
-        $sharedContainers = [];
-        foreach ($host['hosts_to_containers_sharing'] as $container) {
-            if (isset($container['id']) && $container['id'] != $host['container_id']) {
-                $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
-                //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+        if (array_key_exists($host['container_id'], $this->MY_RIGHTS_LEVEL)) {
+            $mainContainer = $ContainersTable->getTreePathForBrowser($host['container_id'], $this->MY_RIGHTS_LEVEL);
+            //Add shared containers
+            $sharedContainers = [];
+            foreach ($host['hosts_to_containers_sharing'] as $container) {
+                if (isset($container['id']) && $container['id'] != $host['container_id']) {
+                    $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
+                    //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+                }
             }
+        } else {
+            //The user only see this host via host sharing
+            //We need to "fake" a primary container because the user has no permissions to the real
+            //primary container
+            $mainContainer = $ContainersTable->getFakePrimaryContainerForHostBrowserDisplay(
+                Hash::extract($host, 'hosts_to_containers_sharing.{n}.id'),
+                $this->MY_RIGHTS,
+                $this->MY_RIGHTS_LEVEL
+            );
+            $sharedContainers = [];
         }
 
-        //Load required data to merge and display inheritance data
+
+//Load required data to merge and display inheritance data
         $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
 
-        //Merge host and inheritance data
+//Merge host and inheritance data
         $HostMergerForBrowser = new HostMergerForBrowser(
             $host,
             $hosttemplate
@@ -1951,7 +1965,7 @@ class HostsController extends AppController {
             // Rocket not found in system settings - do not replace passwords in $_HOSTFOOBAR$ custom variables
         }
 
-        //Replace macros in host url
+//Replace macros in host url
         $HostMacroReplacer = new HostMacroReplacer($mergedHost);
         $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacros);
         $mergedHost['host_url_replaced'] =
@@ -1965,17 +1979,17 @@ class HostsController extends AppController {
         $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['check_period_id']);
         $notifyPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['notify_period_id']);
 
-        // Replace $ARGn$
+// Replace $ARGn$
         $ArgnReplacer = new CommandArgReplacer($mergedHost['hostcommandargumentvalues']);
         $hostCommandLine = $ArgnReplacer->replace($checkCommand['Command']['command_line']);
 
-        // Replace $_HOSTFOOBAR$
+// Replace $_HOSTFOOBAR$
         $hostCommandLine = $HostCustomMacroReplacer->replaceAllMacros($hostCommandLine);
 
-        // Replace $HOSTNAME$
+// Replace $HOSTNAME$
         $hostCommandLine = $HostMacroReplacer->replaceBasicMacros($hostCommandLine);
 
-        // Replace $USERn$ Macros (if enabled)
+// Replace $USERn$ Macros (if enabled)
         try {
             $systemsettingsEntity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.REPLACE_USER_MACROS');
             if ($systemsettingsEntity->get('value') === '1') {
@@ -1992,12 +2006,12 @@ class HostsController extends AppController {
 
         $mergedHost['hostCommandLine'] = $hostCommandLine;
 
-        // Convert interval values for humans
+// Convert interval values for humans
         $mergedHost['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['check_interval']);
         $mergedHost['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['retry_interval']);
         $mergedHost['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['notification_interval']);
 
-        //Check permissions for Contacts
+//Check permissions for Contacts
         $contactsWithContainers = [];
         $writeContainers = $this->getWriteContainers();
 
@@ -2015,12 +2029,12 @@ class HostsController extends AppController {
             }
         }
 
-        //Check permissions for Contact groups
+//Check permissions for Contact groups
         foreach ($mergedHost['contactgroups'] as $key => $contactgroup) {
             $mergedHost['contactgroups'][$key]['allowEdit'] = $this->isWritableContainer($contactgroup['container']['parent_id']);
         }
 
-        //Load host status
+//Load host status
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
 
@@ -2034,7 +2048,7 @@ class HostsController extends AppController {
         $Hoststatus = new Hoststatus($hoststatus['Hoststatus'], $UserTime);
         $hoststatus = $Hoststatus->toArrayForBrowser();
 
-        //Parse BBCode in long output
+//Parse BBCode in long output
         $BBCodeParser = new BBCodeParser();
         $hoststatus['longOutputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Hoststatus->getLongOutput(), true));
 
@@ -2043,7 +2057,7 @@ class HostsController extends AppController {
         $systemsettingsEntity = $SystemsettingsTable->getSystemsettingByKey('TICKET_SYSTEM.URL');
         $ticketSystem = $systemsettingsEntity->get('value');
 
-        //Check for host acknowledgements and downtimes
+//Check for host acknowledgements and downtimes
         $acknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
             $acknowledgement = $AcknowledgementHostsTable->byHostUuid($hostObj->getUuid());
@@ -2080,7 +2094,7 @@ class HostsController extends AppController {
             }
         }
 
-        //Load parent hosts and parent host status
+//Load parent hosts and parent host status
         $parenthosts = $host['parenthosts'];
         $ParentHoststatusFields = new HoststatusFields($this->DbBackend);
         $ParentHoststatusFields->currentState()->lastStateChange();
@@ -2096,7 +2110,7 @@ class HostsController extends AppController {
 
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
 
-        // Set data to fronend
+// Set data to fronend
         $this->set('mergedHost', $mergedHost);
         $this->set('docuExists', $DocumentationsTable->existsByUuid($hostObj->getUuid()));
         $this->set('areContactsFromHost', $HostMergerForBrowser->areContactsFromHost());
@@ -2132,7 +2146,8 @@ class HostsController extends AppController {
         ]);
     }
 
-    public function listToPdf() {
+    public
+    function listToPdf() {
         $User = new User($this->getUser());
 
         /** @var SystemsettingsTable $SystemsettingsTable */
@@ -2241,20 +2256,23 @@ class HostsController extends AppController {
         );
     }
 
-    //Only for ACLs
-    public function checkcommand() {
+//Only for ACLs
+    public
+    function checkcommand() {
         return null;
     }
 
-    //Only for ACLs
-    public function externalcommands() {
+//Only for ACLs
+    public
+    function externalcommands() {
         return null;
     }
 
     /**
      * @param null $id
      */
-    public function loadHostById($id = null) {
+    public
+    function loadHostById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2303,7 +2321,8 @@ class HostsController extends AppController {
      * @param string | null $uuid
      * @throws MissingDbBackendException
      */
-    public function hoststatus($uuid = null) {
+    public
+    function hoststatus($uuid = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2333,7 +2352,8 @@ class HostsController extends AppController {
      * @param int|null $id
      * @throws MissingDbBackendException
      */
-    public function timeline($id = null) {
+    public
+    function timeline($id = null) {
         $session = $this->request->getSession();
         $session->close();
 
@@ -2542,7 +2562,8 @@ class HostsController extends AppController {
         ]);
     }
 
-    public function getGrafanaIframeUrlForDatepicker() {
+    public
+    function getGrafanaIframeUrlForDatepicker() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2594,7 +2615,8 @@ class HostsController extends AppController {
      *       AJAX METHODS       *
      ****************************/
 
-    public function loadContainers() {
+    public
+    function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2612,7 +2634,8 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
-    public function loadCommands() {
+    public
+    function loadCommands() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2630,7 +2653,8 @@ class HostsController extends AppController {
      * @param int $hostId
      * @throws \Exception
      */
-    public function loadElementsByContainerId($containerId, $hostId = 0) {
+    public
+    function loadElementsByContainerId($containerId, $hostId = 0) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2740,7 +2764,8 @@ class HostsController extends AppController {
     /**
      * @param int $hosttemplateId
      */
-    public function loadHosttemplate($hosttemplateId) {
+    public
+    function loadHosttemplate($hosttemplateId) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2759,7 +2784,8 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosttemplate']);
     }
 
-    public function runDnsLookup() {
+    public
+    function runDnsLookup() {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -2801,7 +2827,8 @@ class HostsController extends AppController {
      * @param int|null $commandId
      * @param int|null $hostId
      */
-    public function loadCommandArguments($commandId = null, $hostId = null) {
+    public
+    function loadCommandArguments($commandId = null, $hostId = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2890,7 +2917,8 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostcommandargumentvalues']);
     }
 
-    public function loadParentHostsByString() {
+    public
+    function loadParentHostsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2932,7 +2960,8 @@ class HostsController extends AppController {
     /**
      * @param bool $onlyHostsWithWritePermission
      */
-    public function loadHostsByString($onlyHostsWithWritePermission = false) {
+    public
+    function loadHostsByString($onlyHostsWithWritePermission = false) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2967,7 +2996,8 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
-    public function loadHostsByContainerId() {
+    public
+    function loadHostsByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }

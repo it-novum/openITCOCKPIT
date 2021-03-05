@@ -686,6 +686,38 @@ class ContainersTable extends Table {
     }
 
     /**
+     * !!! ONLY USE THIS FOR DISPLAY PURPOSE !!!
+     * @param $hostSharingContainerIdsParam
+     * @param $MY_RIGHTS
+     * @param $MY_RIGHTS_LEVEL
+     * @return array|null
+     */
+    public function getFakePrimaryContainerForHostBrowserDisplay($hostSharingContainerIdsParam, $MY_RIGHTS, $MY_RIGHTS_LEVEL) {
+        $hostSharingContainerIds = [];
+        foreach ($hostSharingContainerIdsParam as $hostSharingContainerId) {
+            $hostSharingContainerId = (int)$hostSharingContainerId;
+            $hostSharingContainerIds[$hostSharingContainerId] = $hostSharingContainerId;
+        }
+
+
+        $containerIdUserHasPermissionsOn = null;
+        foreach ($MY_RIGHTS as $MY_RIGHT_CONTAINER_ID) {
+            if (isset($hostSharingContainerIds[$MY_RIGHT_CONTAINER_ID])) {
+                //Get the first container id that the user has permissions for
+                $containerIdUserHasPermissionsOn = $hostSharingContainerIds[$MY_RIGHT_CONTAINER_ID];
+                break;
+            }
+        }
+
+        //get the name of the container
+        if ($containerIdUserHasPermissionsOn !== null) {
+            return $this->getTreePathForBrowser($containerIdUserHasPermissionsOn, $MY_RIGHTS_LEVEL);
+        }
+
+        return null;
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
