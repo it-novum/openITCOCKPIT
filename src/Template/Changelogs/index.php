@@ -76,7 +76,7 @@
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span
-                                                        class="input-group-text filter-text"><?php echo __('From'); ?></span>
+                                                    class="input-group-text filter-text"><?php echo __('From'); ?></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
@@ -104,7 +104,7 @@
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span
-                                                        class="input-group-text filter-text"><?php echo __('To'); ?></span>
+                                                    class="input-group-text filter-text"><?php echo __('To'); ?></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
@@ -134,7 +134,8 @@
                                             'Servicetemplate' => __('Service templates'),
                                             'Timeperiod'      => __('Time periods'),
                                             'Location'        => __('Locations'),
-                                            'Tenant'        => __('Tenants')
+                                            'Tenant'          => __('Tenants'),
+                                            'Container'       => __('Nodes')
                                         ];
                                         ?>
 
@@ -285,9 +286,9 @@
                                                 <?= __('by') ?>
                                                 <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
                                                     <a ui-sref="UsersEdit({id: change.user.id})">
-                                                    {{change.user.firstname}}
-                                                    {{change.user.lastname}}
-                                                </a>
+                                                        {{change.user.firstname}}
+                                                        {{change.user.lastname}}
+                                                    </a>
                                                 <?php else: ?>
                                                     {{change.user.firstname}}
                                                     {{change.user.lastname}}
@@ -300,9 +301,9 @@
 
                                         <!-- Add and copy changes -->
                                         <blockquote
-                                                ng-class="{'changelog-blockquote-success': change.action ==='add', 'changelog-blockquote-primary': change.action ==='copy'}"
-                                                ng-if="(change.action === 'add' || change.action === 'copy') && data_unserialized_notEmpty(change.data_unserialized)"
-                                                class="blockquote">
+                                            ng-class="{'changelog-blockquote-success': change.action ==='add', 'changelog-blockquote-primary': change.action ==='copy'}"
+                                            ng-if="(change.action === 'add' || change.action === 'copy') && data_unserialized_notEmpty(change.data_unserialized)"
+                                            class="blockquote">
                                             <div class="margin-left-10"
                                                  ng-repeat="(tableName, tableChanges) in change.data_unserialized">
                                                 {{tableName}}
@@ -348,8 +349,8 @@
                                                 <span ng-repeat="(fieldIndex, fieldValueChanges) in tableChanges.data"
                                                       ng-if="tableChanges.isArray" class="padding-top-5">
                                                     <small
-                                                            ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
-                                                            ng-if="fieldValueChanges.old === null">
+                                                        ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                                                        ng-if="fieldValueChanges.old === null">
                                                         <footer class="blockquote-footer">
                                                             {{newFieldName}}:
                                                             <span class="up">{{newFieldValue}}</span>
@@ -358,29 +359,29 @@
                                                     </small>
 
                                                     <small
-                                                            ng-repeat="(oldFieldName, oldFieldValue) in fieldValueChanges.old"
-                                                            ng-if="fieldValueChanges.new === null">
-                                                         <footer class="blockquote-footer">
+                                                        ng-repeat="(oldFieldName, oldFieldValue) in fieldValueChanges.old"
+                                                        ng-if="fieldValueChanges.new === null">
+                                                        <footer class="blockquote-footer">
                                                             {{oldFieldName}}:
                                                             <span class="down changelog_delete">{{oldFieldValue}}</span>
-                                                         </footer>
+                                                        </footer>
                                                     </small>
 
                                                     <small
-                                                            ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
-                                                            ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
-                                                         <footer class="blockquote-footer">
+                                                        ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                                                        ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
+                                                        <footer class="blockquote-footer">
                                                             {{newFieldName}}:
                                                             <span
-                                                                    ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                                                                ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
                                                                 {{fieldValueChanges.old[newFieldName]}}
                                                             </span>
                                                             <i class="fa fa-caret-right"></i>
                                                             <span
-                                                                    ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'up': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                                                                ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'up': fieldValueChanges.old[newFieldName] !== newFieldValue}">
                                                                 {{newFieldValue}}
                                                             </span>
-                                                         </footer>
+                                                        </footer>
                                                     </small>
 
                                                     <div class="padding-top-5"></div>

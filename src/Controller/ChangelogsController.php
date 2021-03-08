@@ -68,15 +68,23 @@ class ChangelogsController extends AppController {
             $controllerName = ucfirst(Inflector::pluralize($change['model']));
             $ngState = '';
             if ($this->hasPermission('edit', $controllerName) && $change['action'] !== 'delete') {
-                $ngState = sprintf(
-                    '%sEdit',
-                    $controllerName
-                );
+                if ($controllerName === 'Containers') {
+                    $ngState = sprintf(
+                        '%sIndex',
+                        $controllerName
+                    );
+                } else {
+                    $ngState = sprintf(
+                        '%sEdit',
+                        $controllerName
+                    );
+                }
+
             }
             if ($this->hasRootPrivileges === false) {
                 if ($controllerName === 'Tenants') {
-                    $containerToCheck = Hash::extract($change['containers'], '{n}[id>'.CT_GLOBAL.'].id');
-                    if(empty(array_intersect($MY_RIGHTS, $containerToCheck))){
+                    $containerToCheck = Hash::extract($change['containers'], '{n}[id>' . CT_GLOBAL . '].id');
+                    if (empty(array_intersect($MY_RIGHTS, $containerToCheck))) {
                         unset($all_changes[$index]);
                         continue;
                     }
