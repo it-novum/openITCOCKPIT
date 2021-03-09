@@ -437,6 +437,16 @@ else
   fi
 fi
 
+echo "Cleanup old Docker images"
+if systemctl is-active --quiet docker.service; then
+    docker image prune --force
+    echo "Docker cleanup complete"
+else
+    echo "Docker is NOT Running";
+    echo "Please start Docker and run the following command manually"
+    echo "docker image prune -a --force"
+fi
+
 for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
     if [ "$Module" != "system" ]; then
         if type "${Module}" &> /dev/null; then
@@ -451,18 +461,6 @@ for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
         fi
     fi
 done
-
-if command -v docker &> /dev/null; then
-    echo "Cleanup old Docker images" ;
-    if [ "$(systemctl is-active docker)" = "active" ]; then
-            docker image prune -a --force --filter "until=24h"
-            echo "Docker cleanup complete";
-    else
-            echo "Docker is NOT Running";
-            echo "Please start Docker and run the following command manually"
-            echo "docker image prune -a --force --filter \"until=24h\""
-    fi
-fi
 
 # Set filesystem permissions after all is done - again
 chown www-data:www-data /opt/openitc/logs/frontend
