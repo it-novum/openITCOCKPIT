@@ -84,7 +84,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(servicetemplategroup){
             var object = {};
-            object[servicetemplategroup.Servicetemplategroup.id] = servicetemplategroup.container.name;
+            object[servicetemplategroup.id] = servicetemplategroup.container.name;
             return object;
         };
 
