@@ -27,8 +27,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
 use App\Model\Entity\Container;
-use App\Model\Entity\User;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
@@ -36,7 +37,6 @@ use App\Model\Table\LocationsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\TenantsTable;
-use App\Model\Table\UsersTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\ForbiddenException;
@@ -46,6 +46,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 
 /**
@@ -111,6 +112,29 @@ class ContainersController extends AppController {
             $this->response = $this->response->withStatus(400);
             $this->serializeCake4ErrorMessage($container);
             return;
+        } else {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'add',
+                'containers',
+                $container->get('id'),
+                OBJECT_NODE,
+                [$container->get('parent_id'), $container->get('id')],
+                $User->getId(),
+                $container->get('name'),
+                [
+                    'container' => $container->toArray()
+                ]
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
         }
 
         Cache::clear('permissions');
@@ -131,6 +155,7 @@ class ContainersController extends AppController {
                 throw new NotFoundException(__('Invalid container'));
             }
             $container = $ContainersTable->get($containerId);
+            $containerForChangelog = $container->toArray();
 
             if (!$this->isWritableContainer($container->get('id'))) {
                 $this->render403();
@@ -146,6 +171,30 @@ class ContainersController extends AppController {
                 $this->response = $this->response->withStatus(400);
                 $this->serializeCake4ErrorMessage($container);
                 return;
+            } else {
+                $User = new User($this->getUser());
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'edit',
+                    'containers',
+                    $container->get('id'),
+                    OBJECT_NODE,
+                    [$container->get('parent_id'), $container->get('id')],
+                    $User->getId(),
+                    $container->get('name'),
+                    [
+                        'container' => $container->toArray()
+                    ],
+                    [
+                        'container' => $containerForChangelog
+                    ]
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
             }
 
             Cache::clear('permissions');
@@ -187,10 +236,10 @@ class ContainersController extends AppController {
 
         $parent = [$ContainersTable->get($id)->toArray()];
         $parent[0]['linkedId'] = $parent[0]['id'];
-        if($parent[0]['containertype_id'] == CT_TENANT){
+        if ($parent[0]['containertype_id'] == CT_TENANT) {
             $parent[0]['linkedId'] = $TenantsTable->getTenantIdByContainerId($parent[0]['id']);
 
-        }elseif($parent[0]['containertype_id'] == CT_LOCATION){
+        } else if ($parent[0]['containertype_id'] == CT_LOCATION) {
             $parent[0]['linkedId'] = $LocationsTable->getLocationIdByContainerId($parent[0]['id']);
 
         }
@@ -374,9 +423,10 @@ class ContainersController extends AppController {
             ])
             ->first();
 
-        if(empty($container)){
+        if (empty($container)) {
             return $this->render403();
         }
+        $containerForChangelog = $container->toArray();
 
         //check if the current container contains subcontainers
         $deletionAllowed = $ContainersTable->allowDelete($id);
@@ -384,6 +434,28 @@ class ContainersController extends AppController {
             Cache::clear('permissions');
             if ($ContainersTable->delete($container)) {
                 Cache::clear('permissions');
+
+                $User = new User($this->getUser());
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'delete',
+                    'containers',
+                    $id,
+                    OBJECT_NODE,
+                    [$containerForChangelog['parent_id'], $id],
+                    $User->getId(),
+                    $containerForChangelog['name'],
+                    []
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
+
+
                 $this->set('success', true);
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
