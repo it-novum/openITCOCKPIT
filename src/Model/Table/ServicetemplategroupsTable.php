@@ -164,15 +164,11 @@ class ServicetemplategroupsTable extends Table {
 
         if ($PaginateOMat === null) {
             //Just execute query
-            //$result = $this->formatResultAsCake2($query->toArray(), false);
             $result = $this->emptyArrayIfNull($query->toArray());
         } else {
             if ($PaginateOMat->useScroll()) {
-                //$result = $this->scroll($query, $PaginateOMat->getHandler(), false);
-                //debug($result);
                 $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
                 $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
