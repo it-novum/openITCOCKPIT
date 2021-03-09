@@ -290,7 +290,6 @@ if [[ "$NOSYSTEMFILES" == "false" ]]; then
   echo "Copy required system files"
   cp -r ${APPDIR}/system/etc/. /etc/
   cp -r ${APPDIR}/system/lib/. /lib/
-  cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
   cp -r ${APPDIR}/system/usr/. /usr/
   cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
   # only ensure that the files exist
