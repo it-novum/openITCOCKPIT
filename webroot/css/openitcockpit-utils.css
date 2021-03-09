@@ -658,6 +658,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     -webkit-text-fill-color: transparent;
 }
 
+.statusicon::before {
+    border-width: 0px !important;
+}
+
 .agent-mode-box-pull:before {
     content: "\f019";
     font-family: FontAwesome;

@@ -59,6 +59,11 @@ class User {
     private $dateformat;
 
     /**
+     * @var string
+     */
+    private $email;
+
+    /**
      * User constructor.
      * @param IdentityInterface $Identity
      */
@@ -70,7 +75,7 @@ class User {
         $this->id = (int)$Identity->get('id');
         $this->timezone = $Identity->get('timezone');
         $this->dateformat = $Identity->get('dateformat');
-
+        $this->email = $Identity->get('email');
     }
 
     /**getUserTime
@@ -113,6 +118,13 @@ class User {
      */
     public function getUserTime() {
         return new UserTime($this->timezone, $this->dateformat);
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail(){
+        return $this->email;
     }
 
 
