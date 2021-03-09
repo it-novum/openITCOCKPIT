@@ -3836,14 +3836,16 @@ class ServicesTable extends Table {
                     'Services'
                 ]
             ]);
-            $servicegroupForChangelog = $servicegroupEntity->toArray();
             $servicegroupServiceIds = Hash::extract($servicegroupEntity->get('services'), '{n}.id');
             $newServiceIds = array_diff(
                 $servicegroupServiceIds,
                 $serviceIdsToDelete
             );
-            $servicegroupEntity->set('services', [
-                '_ids' => $newServiceIds
+
+            $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, [
+                'services' => [
+                    '_ids' => $newServiceIds
+                ]
             ]);
 
             $ServicegroupsTable->save($servicegroupEntity);
