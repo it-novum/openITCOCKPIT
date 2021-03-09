@@ -170,10 +170,9 @@ class ConfigGeneratorCommand extends Command implements CronjobInterface {
                 $this->restartService($command, 'Restart NSTA service', $io);
                 break;
 
-            case 'PhpFpmOitc':
-                $version = substr(PHP_VERSION, 0, 3);
-                $command = sprintf("systemctl restart php%s-fpm", $version);
-                $this->restartService($command, sprintf('Restart php%s-fpm service', $version), $io);
+            case 'Gearman':
+                $command = 'systemctl restart gearman_worker';
+                $this->restartService($command, 'Restart gearman_worker service', $io);
                 break;
 
             default:

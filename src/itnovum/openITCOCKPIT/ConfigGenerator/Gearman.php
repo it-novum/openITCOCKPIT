@@ -52,10 +52,10 @@ class Gearman extends ConfigGenerator implements ConfigInterface {
      */
     public function getHelpText($key) {
         $help = [
-            'address'    => __('The Host where gearman is running.'),
-            'pidfile'    => __('Process id file of gearman.'),
-            'port'       => __('Portnumber of gearman.'),
-            'worker'     => __('Number of gearman workers.')
+            'address'    => __('The host address where the gearman-job-server is running.'),
+            'pidfile'    => __('Process id file used by the gearman_worker.'),
+            'port'       => __('Port number of gearman-job-server.'),
+            'worker'     => __('Number of gearman_worker processes.')
         ];
 
         if (isset($help[$key])) {
@@ -67,7 +67,10 @@ class Gearman extends ConfigGenerator implements ConfigInterface {
 
     /**
      * @param array $dbRecords
-     * @return mixed
+     * @return bool|int
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function writeToFile($dbRecords) {
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
@@ -77,13 +80,13 @@ class Gearman extends ConfigGenerator implements ConfigInterface {
                 $configToExport[$key] = $value;
             }
         }
-        return $this->saveConfigFile($configToExport, $this->realOutfile);
+        return $this->saveConfigFile($configToExport);
     }
 
 
     /**
      * @param array $dbRecords
-     * @return bool
+     * @return array|bool
      */
     public function migrate($dbRecords) {
         if (!file_exists($this->linkedOutfile)) {

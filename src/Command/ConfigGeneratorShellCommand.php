@@ -230,6 +230,11 @@ class ConfigGeneratorShellCommand extends Command {
                 $this->restartService($command, sprintf('Restart php%s-fpm service', $version), $io);
                 break;
 
+            case 'Gearman':
+                $command = 'systemctl restart gearman_worker';
+                $this->restartService($command, 'Restart gearman_worker service', $io);
+                break;
+
             default:
                 break;
         }
