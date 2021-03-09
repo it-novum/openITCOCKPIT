@@ -53,10 +53,8 @@ class Gearman extends ConfigGenerator implements ConfigInterface {
     public function getHelpText($key) {
         $help = [
             'address'    => __('The Host where gearman is running.'),
-            'password'   => __('Password for Gearman.'),
             'pidfile'    => __('Process id file of gearman.'),
             'port'       => __('Portnumber of gearman.'),
-            'encryption' => __('Use encryption.'),
             'worker'     => __('Number of gearman workers.')
         ];
 
