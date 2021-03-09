@@ -101,7 +101,7 @@
                         </div>
 
                         <div class="col-lg-2">
-                            <div class="btn-group btn-group-sm" style="padding-top:23px;">
+                            <div class="btn-group btn-group-sm" style="padding-top:23px;" ng-show="hostgroup.Hostgroup.allowEdit">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
                                     <?php echo __('Action'); ?>

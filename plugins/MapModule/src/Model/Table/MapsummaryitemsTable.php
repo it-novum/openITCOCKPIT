@@ -225,7 +225,7 @@ class MapsummaryitemsTable extends Table {
         if (empty($result)) {
             return [];
         }
-        return $query->toArray();
+        return $result->toArray();
     }
 
     /**

@@ -398,16 +398,16 @@ class ServicegroupsTable extends Table {
             ->disableHydration()
             ->first();
 
-        $hostgroup = $query;
-        $hostgroup['services'] = [
+        $servicegroup = $query;
+        $servicegroup['services'] = [
             '_ids' => Hash::extract($query, 'services.{n}.id')
         ];
-        $hostgroup['servicetemplates'] = [
+        $servicegroup['servicetemplates'] = [
             '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
         ];
 
         return [
-            'Servicegroup' => $hostgroup
+            'Servicegroup' => $servicegroup
         ];
     }
 

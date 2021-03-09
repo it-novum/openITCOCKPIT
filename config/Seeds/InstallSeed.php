@@ -117,6 +117,7 @@ class InstallSeed extends AbstractSeed {
         //Check for openITCOCKPIT Agent commands and service templates
         $AgentImporter = new \itnovum\openITCOCKPIT\InitialDatabase\Agent(
             TableRegistry::getTableLocator()->get('Commands'),
+            TableRegistry::getTableLocator()->get('Hosttemplates'),
             TableRegistry::getTableLocator()->get('Servicetemplates'),
             TableRegistry::getTableLocator()->get('Agentchecks')
         );

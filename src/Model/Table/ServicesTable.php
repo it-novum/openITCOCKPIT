@@ -19,7 +19,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -2652,7 +2651,7 @@ class ServicesTable extends Table {
                 $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
             } else {
                 //Use arguments from service template
-                    $servicecommandargumentvalues = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
+                $servicecommandargumentvalues = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
             }
 
             $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
@@ -3198,7 +3197,8 @@ class ServicesTable extends Table {
             ->select([
                 'Services.id'
             ])->where([
-                'Services.host_id IN' => $hostIds
+                'Services.host_id IN'   => $hostIds,
+                'Services.service_type' => GENERIC_SERVICE
             ])->disableHydration();
 
         $result = $query->toArray();
@@ -3796,6 +3796,132 @@ class ServicesTable extends Table {
     }
 
     /**
+     * @param $hostId
+     * @param $containerIds
+     * @return array
+     */
+    public function cleanupServicesByHostIdAndRemovedContainerIdsTest($hostId, $containerIds) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Servicegroups.id'
+            ])
+            ->innerJoinWith('Servicegroups', function (Query $q) {
+                return $q->innerJoinWith('Containers');
+            })
+            ->where([
+                'Services.host_id'         => $hostId,
+                'Containers.parent_id IN ' => $containerIds
+            ])->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * Check if the service was part of a service groups outside of new permissions
+     * If yes, records must be deleted for valid configuration
+     *
+     * @param $hostId
+     * @param $removedContainerIds
+     * @param $userId
+     */
+    public function _cleanupServicesByHostIdAndRemovedContainerIds($hostId, $removedContainerIds, $userId) {
+        if (!is_array($removedContainerIds)) {
+            $removedContainerIds = [$removedContainerIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Servicegroups.id'
+            ])
+            ->innerJoinWith('Servicegroups', function (Query $q) {
+                return $q->innerJoinWith('Containers');
+            })
+            ->where([
+                'Services.host_id'         => $hostId,
+                'Containers.parent_id IN ' => $removedContainerIds
+            ])
+            ->disableHydration()
+            ->all();
+
+        $recordsToDelete = $this->emptyArrayIfNull($query->toArray());
+        if (empty($recordsToDelete)) {
+            return;
+        }
+        $recordsToDelete = Hash::combine(
+            $recordsToDelete,
+            null,
+            '{n}.id',
+            '{n}._matchingData.Servicegroups.id'
+
+        );
+        /** @var ServicegroupsTable $ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        foreach ($recordsToDelete as $servicegroupId => $serviceIdsToDelete) {
+            $servicegroupEntity = $ServicegroupsTable->get($servicegroupId, [
+                'contain' => [
+                    'Containers',
+                    'Services'
+                ]
+            ]);
+            $servicegroupServiceIds = Hash::extract($servicegroupEntity->get('services'), '{n}.id');
+            $newServiceIds = array_diff(
+                $servicegroupServiceIds,
+                $serviceIdsToDelete
+            );
+
+            $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, [
+                'services' => [
+                    '_ids' => $newServiceIds
+                ]
+            ]);
+
+            $ServicegroupsTable->save($servicegroupEntity);
+            if (!$servicegroupEntity->hasErrors()) {
+                //No errors
+                /** @var ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'edit',
+                    'servicegroups',
+                    $servicegroupEntity->id,
+                    OBJECT_SERVICEGROUP,
+                    $servicegroupEntity->get('container')->get('parent_id'),
+                    $userId,
+                    $servicegroupEntity->get('container')->get('name'),
+                    /** Create changelog for only service changes */
+                    $ServicegroupsTable->resolveDataForChangelog([
+                        'Servicegroup' => [
+                            'services' => [
+                                '_ids' => $newServiceIds
+                            ]
+                        ]
+                    ]),
+                    $ServicegroupsTable->resolveDataForChangelog([
+                        'Servicegroup' => [
+                            'services' => [
+                                '_ids' => $servicegroupServiceIds
+                            ]
+                        ]
+                    ])
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
+            }
+        }
+    }
+
+    /**
+     *
      * @param int $hostId
      * @return array
      */

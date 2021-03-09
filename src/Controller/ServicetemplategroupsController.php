@@ -77,15 +77,28 @@ class ServicetemplategroupsController extends AppController {
         }
         $servicetemplategroups = $ServicetemplategroupsTable->getServicetemplategroupsIndex($ServicetemplategroupsFilter, $PaginateOMat, $MY_RIGHTS);
 
-        foreach ($servicetemplategroups as $index => $servicetemplategroup) {
-            $servicetemplategroups[$index]['Servicetemplategroup']['allow_edit'] = true;
+        $all_servicetemplategroups = [];
+        foreach ($servicetemplategroups as $servicetemplategroup) {
+           // debug($servicetemplategroup);
+            $servicetemplategroup['allow_edit'] = $this->hasPermission('edit', 'servicetemplategroups');
             if ($this->hasRootPrivileges === false) {
-                $servicetemplategroups[$index]['Servicetemplategroup']['allow_edit'] = $this->isWritableContainer($servicetemplategroup['Servicetemplategroup']['container_id']);
+                $servicetemplategroup['allow_edit'] = $this->isWritableContainer($servicetemplategroup['Servicetemplategroup']['container_id']);
             }
+            $all_servicetemplategroups[] = $servicetemplategroup;
         }
 
+       // debug($all_servicetemplategroups);
 
-        $this->set('all_servicetemplategroups', $servicetemplategroups);
+        /* foreach ($hostgroups as $hostgroup) {
+             $hostgroup['allowEdit'] = $this->hasPermission('edit', 'hostgroups');
+             if ($this->hasRootPrivileges === false && $hostgroup['allowEdit'] === true) {
+                 $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup->get('container')->get('parent_id'));
+             }
+
+             $all_hostgroups[] = $hostgroup;
+         }
+ */
+        $this->set('all_servicetemplategroups', $all_servicetemplategroups);
         $this->viewBuilder()->setOption('serialize', ['all_servicetemplategroups']);
     }
 
