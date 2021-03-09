@@ -437,6 +437,16 @@ else
   fi
 fi
 
+echo "Cleanup old Docker images"
+if systemctl is-active --quiet docker.service; then
+    docker image prune --force
+    echo "Docker cleanup complete"
+else
+    echo "Docker is NOT Running";
+    echo "Please start Docker and run the following command manually"
+    echo "docker image prune -a --force"
+fi
+
 for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
     if [ "$Module" != "system" ]; then
         if type "${Module}" &> /dev/null; then
