@@ -3899,8 +3899,8 @@ class ServicesTable extends Table {
                 ]
             ])
             ->where([
-                'Services . host_id'      => $hostId,
-                'Services . service_type' => OITC_AGENT_SERVICE
+                'Services.host_id'      => $hostId,
+                'Services.service_type' => OITC_AGENT_SERVICE
             ])
             ->disableHydration()
             ->all();
