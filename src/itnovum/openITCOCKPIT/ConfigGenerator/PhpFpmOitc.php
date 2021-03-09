@@ -20,7 +20,10 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
     /** @var array */
     protected $defaults = [
         'int' => [
-            'max_children' => 5,
+            'max_children'      => 5,
+            'start_servers'     => 2,
+            'min_spare_servers' => 1,
+            'max_spare_servers' => 3
         ],
     ];
 
@@ -70,7 +73,10 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
      */
     public function getHelpText($key) {
         $help = [
-            'max_children' => __('Number of child processes.')
+            'max_children'      => __('Maximum number of children that can be alive at the same time'),
+            'start_servers'     => __('Number of children created on startup.'),
+            'min_spare_servers' => __('Minimum number of children in idle state (waiting to process).'),
+            'max_spare_servers' => __('Maximum number of children in idle state (waiting to process).'),
         ];
 
         if (isset($help[$key])) {
@@ -95,7 +101,7 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
                 $configToExport[$key] = $value;
             }
         }
-        return $this->saveConfigFile($configToExport, $this->realOutfile);
+        return $this->saveConfigFile($configToExport);
     }
 
 

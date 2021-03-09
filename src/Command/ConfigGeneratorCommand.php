@@ -113,6 +113,10 @@ class ConfigGeneratorCommand extends Command implements CronjobInterface {
      * @param $configFile
      * @param $systemsettings
      * @param ConsoleIo $io
+     *
+     * !!!
+     * If you change this method, also change it in src/Command/ConfigGeneratorShellCommand.php
+     * !!!
      */
     public function restartByConfigFile($configFile, $systemsettings, ConsoleIo $io) {
         switch ($configFile) {
@@ -141,14 +145,35 @@ class ConfigGeneratorCommand extends Command implements CronjobInterface {
                 $this->restartService($command, 'Restart Statusengine service', $io);
                 break;
 
-            case 'NSTAMaster':
-                $command = $systemsettings['INIT']['INIT.NSTA_RESTART'];
-                $this->restartService($command, 'Restart NSTA service', $io);
+            case 'SnmpTrapCfgs_snmptrapd':
+            case 'SnmpTrapCfgs_snmptrapdConf':
+                if (isset($systemsettings['INIT']['INIT.SNMPTRAPD_RESTART'])) {
+                    $command = $systemsettings['INIT']['INIT.SNMPTRAPD_RESTART'];
+                    $this->restartService($command, 'Restart snmptrapd service', $io);
+                }
+                break;
+
+            case 'SnmpTrapCfgs_snmpttIni':
+                if (isset($systemsettings['INIT']['INIT.SNMPTT_RESTART'])) {
+                    $command = $systemsettings['INIT']['INIT.SNMPTT_RESTART'];
+                    $this->restartService($command, 'Restart snmptt service', $io);
+                }
                 break;
 
             case 'PrometheusCfgs_prometheus':
                 $this->restartService('prometheus.service', 'Restart Prometheus service', $io);
                 $this->restartService('prometheus_bridge.service', 'Restart Prometheus Bridge service', $io);
+                break;
+
+            case 'NSTAMaster':
+                $command = $systemsettings['INIT']['INIT.NSTA_RESTART'];
+                $this->restartService($command, 'Restart NSTA service', $io);
+                break;
+
+            case 'PhpFpmOitc':
+                $version = substr(PHP_VERSION, 0, 3);
+                $command = sprintf("systemctl restart php%s-fpm", $version);
+                $this->restartService($command, sprintf('Restart php%s-fpm service', $version), $io);
                 break;
 
             default:
