@@ -36,13 +36,13 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
                 if (is_dir('/etc/php/' . $version)) {
                     $this->realOutfile = '/etc/php/' . $version . '/fpm/pool.d/oitc.conf';
                     $this->linkedOutfile = '/etc/php/' . $version . '/fpm/pool.d/oitc.conf';
-                }else{
-                    throw new \Exception('/etc/php/' . $version. ' directory does not exists');
+                } else {
+                    throw new \Exception('/etc/php/' . $version . ' directory does not exists');
                 }
-            }else{
+            } else {
                 throw new \Exception('PHP version could not be determined');
             }
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             echo $e->getMessage();
         }
     }
@@ -82,7 +82,10 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
 
     /**
      * @param array $dbRecords
-     * @return mixed
+     * @return bool|int
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function writeToFile($dbRecords) {
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
@@ -98,7 +101,7 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
 
     /**
      * @param array $dbRecords
-     * @return bool
+     * @return array|bool
      */
     public function migrate($dbRecords) {
         if (!file_exists($this->linkedOutfile)) {
