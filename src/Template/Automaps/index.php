@@ -151,7 +151,7 @@
                                            ng-show="automap.allow_edit">
                                 </td>
 
-                                <td>
+                                <td class="word-break">
                                     <?php if ($this->Acl->hasPermission('view', 'automaps')): ?>
                                         <a ui-sref="AutomapsView({id:automap.id})">
                                             {{automap.name}}
@@ -160,9 +160,9 @@
                                         {{automap.name}}
                                     <?php endif; ?>
                                 </td>
-                                <td>{{automap.description}}</td>
-                                <td>{{automap.host_regex}}</td>
-                                <td>{{automap.service_regex}}</td>
+                                <td class="word-break">{{automap.description}}</td>
+                                <td class="word-break">{{automap.host_regex}}</td>
+                                <td class="word-break">{{automap.service_regex}}</td>
 
                                 <td>
                                     <span class="badge badge-success margin-right-5"
