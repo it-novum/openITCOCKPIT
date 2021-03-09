@@ -21,16 +21,12 @@ class Gearman extends ConfigGenerator implements ConfigInterface {
     protected $defaults = [
         'string' => [
             'address'  => '127.0.0.1',
-            'password' => '3c3b0be215c95321c30de1ab908364dfbf0ed440',
             'pidfile'  => '/var/run/oitc_gearmanworker.pid',
         ],
         'int'    => [
             'port'   => 4730,
             'worker' => 5
         ],
-        'bool'   => [
-            'encryption' => true
-        ]
     ];
 
     /**

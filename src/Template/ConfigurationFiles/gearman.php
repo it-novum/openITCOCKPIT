@@ -68,28 +68,6 @@ use itnovum\openITCOCKPIT\ConfigGenerator\Gearman;
         </div>
     <?php endforeach; ?>
 
-    <?php foreach ($Gearman->getDefaults()['bool'] as $key => $defaultValue): ?>
-        <div class="form-group" ng-class="{'has-error': errors.Configfile.<?php echo $key; ?>}">
-            <div class="custom-control custom-checkbox  margin-bottom-10"
-                 ng-class="{'has-error': errors.Configfile.<?php echo $key; ?>}">
-
-                <input type="checkbox"
-                       class="custom-control-input"
-                       ng-true-value="1"
-                       ng-false-value="0"
-                       id="<?php echo $key; ?>"
-                       ng-model="post.bool.<?php echo $key; ?>">
-                <label class="custom-control-label" for="<?php echo $key; ?>">
-                    <?php echo h($key); ?>
-                </label>
-            </div>
-
-            <div class="col col-xs-12 col-md-offset-2 help-block">
-                <?php echo h($Gearman->getHelpText($key)); ?>
-            </div>
-        </div>
-    <?php endforeach; ?>
-
     <div class="card margin-top-10">
         <div class="card-body">
             <div class="float-right">

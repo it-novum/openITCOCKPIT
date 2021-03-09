@@ -31,11 +31,9 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
      */
     public function __construct() {
         try {
-            $version = phpversion();
-            preg_match('/[^.]*.[^.]*/', $version, $match);
-            if (is_array($match)) {
-                $version = $match[0];
-                if (file_exists('/etc/php/' . $version)) {
+            $version = substr(PHP_VERSION, 0, 3);
+            if (is_string($version)) {
+                if (is_dir('/etc/php/' . $version)) {
                     $this->realOutfile = '/etc/php/' . $version . '/fpm/pool.d/oitc.conf';
                     $this->linkedOutfile = '/etc/php/' . $version . '/fpm/pool.d/oitc.conf';
                 }else{

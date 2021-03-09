@@ -6,8 +6,6 @@ return [
     'gearman' => [
         'address'    => '{{address}}',
         'port'       => {{port}},
-        'encryption' => {{encryption}},
-        'password'   => '{{password}}',
         'pidfile'    => '{{pidfile}}',
         'worker'     => {{worker}}
     ]
