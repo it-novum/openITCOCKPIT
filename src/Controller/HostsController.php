@@ -690,7 +690,7 @@ class HostsController extends AppController {
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
                 $ServicesTable->_cleanupServicesByHostIdAndRemovedContainerIds($id, $removedSharingContainers, $User->getId());
             }
-            
+
             if ($HostContainersPermissions->isPrimaryContainerChangeable() === false) {
                 //Overwrite post data. User is not permitted to set a new primary container id!
                 $requestData['Host']['container_id'] = $host['Host']['container_id'];
@@ -1959,10 +1959,10 @@ class HostsController extends AppController {
         }
 
 
-//Load required data to merge and display inheritance data
+        //Load required data to merge and display inheritance data
         $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
 
-//Merge host and inheritance data
+        //Merge host and inheritance data
         $HostMergerForBrowser = new HostMergerForBrowser(
             $host,
             $hosttemplate
@@ -1982,7 +1982,7 @@ class HostsController extends AppController {
             // Rocket not found in system settings - do not replace passwords in $_HOSTFOOBAR$ custom variables
         }
 
-//Replace macros in host url
+        //Replace macros in host url
         $HostMacroReplacer = new HostMacroReplacer($mergedHost);
         $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacros);
         $mergedHost['host_url_replaced'] =
