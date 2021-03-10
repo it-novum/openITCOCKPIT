@@ -596,6 +596,8 @@ class HostsController extends AppController {
         $mergedHost = $HostMergerForView->getDataForView();
         $hostForChangelog = $mergedHost;
 
+        $oldSharingContainers = $hostForChangelog['Host']['hosts_to_containers_sharing']['_ids'];
+
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
             return;
@@ -662,6 +664,7 @@ class HostsController extends AppController {
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
             }
+            $User = new User($this->getUser());
             $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
 
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
@@ -674,6 +677,20 @@ class HostsController extends AppController {
             );
             $requestData = $this->request->getData();
 
+            $newSharingContainers = array_merge(
+                $requestData['Host']['hosts_to_containers_sharing']['_ids'],
+                [$requestData['Host']['container_id']]
+            );
+
+            $removedSharingContainers = array_diff($oldSharingContainers, $newSharingContainers);
+
+            if (!empty($removedSharingContainers)) {
+                //update dependent service groups and remove services if permissions has been gone
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $ServicesTable->_cleanupServicesByHostIdAndRemovedContainerIds($id, $removedSharingContainers, $User->getId());
+            }
+            
             if ($HostContainersPermissions->isPrimaryContainerChangeable() === false) {
                 //Overwrite post data. User is not permitted to set a new primary container id!
                 $requestData['Host']['container_id'] = $host['Host']['container_id'];
@@ -694,7 +711,7 @@ class HostsController extends AppController {
             $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
             //Update contact data
-            $User = new User($this->getUser());
+
             $hostEntity = $HostsTable->get($id);
             $hostEntity = $HostsTable->patchEntity($hostEntity, $dataForSave);
             $HostsTable->save($hostEntity);

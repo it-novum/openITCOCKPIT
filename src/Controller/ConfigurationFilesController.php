@@ -82,9 +82,9 @@ class ConfigurationFilesController extends AppController {
 
         $GeneratorRegistry = new GeneratorRegistry();
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
+
             /** @var ConfigInterface $ConfigFileObject */
             if ($ConfigFileObject->getDbKey() === $configFile) {
-
                 $this->set('ConfigFile', $ConfigFileObject->toArray());
                 $this->viewBuilder()->setOption('serialize', ['ConfigFile']);
                 return;
@@ -169,6 +169,20 @@ class ConfigurationFilesController extends AppController {
      */
     public function NSTAMaster() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NSTAMaster', 'NSTAMaster');
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function Gearman() {
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\Gearman', 'Gearman');
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function PhpFpmOitc() {
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\PhpFpmOitc', 'PhpFpmOitc');
     }
 
     /**
