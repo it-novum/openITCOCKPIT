@@ -234,34 +234,35 @@ class WizardAssignmentsTable extends Table {
     public function getPossibleWizardsOfModules($availableWizards = []) {
         // placeholder wizards if a module is not installed
         $possibleWizards = [
-            'checkmk'            => [
+            'checkmk'    => [
                 'type_id'     => 'checkmk',
                 'title'       => __('Checkmk'),
                 'description' => __('Monitoring for your server with checkmk'),
                 'image'       => 'checkmk_logo_main_vertical.svg',
                 'category'    => ['checkmk', 'linux', 'windows', 'macos']
             ],
-            'prometheus'         => [
+            'prometheus' => [
                 'type_id'     => 'prometheus',
                 'title'       => __('Prometheus'),
                 'description' => __('Metrics based monitoring using Prometheus'),
                 'image'       => 'prometheus.svg',
                 'category'    => ['network', 'linux', 'windows', 'macos']
             ],
-            'network'      => [
+            'network'    => [
                 'type_id'     => 'network',
                 'title'       => __('Network'),
                 'description' => __('Used to check any kind of network devices and interfaces like: Switch, Router, Firewall, Access Point, ...'),
                 'image'       => 'network.png',
                 'category'    => ['linux', 'network']
-            ],
+            ]
+            /*,
             'vmware'             => [
                 'type_id'     => 'vmware',
                 'title'       => __('VMware'),
                 'description' => __('Check everything regarding VMWare. ESX Hosts, vCenter, virtual machines...'),
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['linux', 'mail']
-            ]
+            ]*/
         ];
 
         $possibleWizardsResult = [];
