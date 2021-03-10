@@ -1916,7 +1916,7 @@ class HostsController extends AppController {
         $host = $HostsTable->getHostForBrowser($id);
 
         //Check permissions
-        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n},id');
+        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
         $containerIdsToCheck[] = $host['container_id'];
 
         //Check if user is permitted to see this object
@@ -1934,21 +1934,35 @@ class HostsController extends AppController {
         }
         $hostObj = new Host($host, $allowEdit);
 
+
         //Load containers information
-        $mainContainer = $ContainersTable->getTreePathForBrowser($host['container_id'], $this->MY_RIGHTS_LEVEL);
-        //Add shared containers
-        $sharedContainers = [];
-        foreach ($host['hosts_to_containers_sharing'] as $container) {
-            if (isset($container['id']) && $container['id'] != $host['container_id']) {
-                $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
-                //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+        if (array_key_exists($host['container_id'], $this->MY_RIGHTS_LEVEL)) {
+            $mainContainer = $ContainersTable->getTreePathForBrowser($host['container_id'], $this->MY_RIGHTS_LEVEL);
+            //Add shared containers
+            $sharedContainers = [];
+            foreach ($host['hosts_to_containers_sharing'] as $container) {
+                if (isset($container['id']) && $container['id'] != $host['container_id']) {
+                    $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
+                    //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+                }
             }
+        } else {
+            //The user only see this host via host sharing
+            //We need to "fake" a primary container because the user has no permissions to the real
+            //primary container
+            $mainContainer = $ContainersTable->getFakePrimaryContainerForHostBrowserDisplay(
+                Hash::extract($host, 'hosts_to_containers_sharing.{n}.id'),
+                $this->MY_RIGHTS,
+                $this->MY_RIGHTS_LEVEL
+            );
+            $sharedContainers = [];
         }
 
-        //Load required data to merge and display inheritance data
+
+//Load required data to merge and display inheritance data
         $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
 
-        //Merge host and inheritance data
+//Merge host and inheritance data
         $HostMergerForBrowser = new HostMergerForBrowser(
             $host,
             $hosttemplate
@@ -1968,7 +1982,7 @@ class HostsController extends AppController {
             // Rocket not found in system settings - do not replace passwords in $_HOSTFOOBAR$ custom variables
         }
 
-        //Replace macros in host url
+//Replace macros in host url
         $HostMacroReplacer = new HostMacroReplacer($mergedHost);
         $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacros);
         $mergedHost['host_url_replaced'] =
