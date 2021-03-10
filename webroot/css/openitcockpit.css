@@ -1318,6 +1318,28 @@ label.menu-open-button:hover {
     color: #fff;
 }
 
-.discord-svg{
-    max-width:100px !important;
+.discord-svg {
+    max-width: 100px !important;
+}
+
+.supportCard {
+    border-radius: 5px !important;
+    width: 350px;
+}
+
+.supportCard .card-header {
+    height: 74px;
+}
+
+.supportCard .card-body {
+    height: 384px;
+}
+
+.supportCard .card-footer {
+    height: 42px;
+    padding: 6px 6px 6px 20px !important;
+}
+
+.supportCard .card-footer .btn {
+    height: 30px !important;
 }
