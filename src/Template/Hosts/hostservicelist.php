@@ -12,7 +12,7 @@
                     </div>
                     <input type="text" class="form-control form-control-sm"
                            placeholder="<?php echo __('Filter by service name'); ?>"
-                           ng-model="filter.servicename"
+                           ng-model="filter.Service.name"
                            ng-model-options="{debounce: 500}">
                 </div>
             </div>
@@ -23,7 +23,7 @@
                      ng-repeat="(state, stateCount) in host.ServicestatusSummary.state track by $index">
                     <div class="custom-control custom-checkbox txt-color-white float-right">
                         <input type="checkbox"
-                               id="statusFilter{{state}}"
+                               id="statusFilter{{state}}-{{host.Host.id}}"
                                class="custom-control-input"
                                name="checkbox"
                                checked="checked"
@@ -32,7 +32,7 @@
                                ng-value="$index">
                         <label
                             class="custom-control-label custom-control-label-{{state}} no-margin"
-                            for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
+                            for="statusFilter{{state}}-{{host.Host.id}}">{{stateCount}} {{state}}</label>
                     </div>
                 </div>
             </div>
@@ -132,7 +132,8 @@
         </td>
         <td>
             <span
-                ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
+                service.Servicestatus.lastCheck }}</span>
             <span
                 ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                 <?php echo __('n/a'); ?>
@@ -140,7 +141,8 @@
         </td>
         <td>
             <span
-                ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
+                service.Servicestatus.nextCheck }}</span>
             <span
                 ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                 <?php echo __('n/a'); ?>
@@ -148,7 +150,7 @@
         </td>
         <td>
             <div class="word-break"
-                ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
+                 ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
         </td>
         <td class="width-50">
             <div class="btn-group btn-group-xs" role="group">
