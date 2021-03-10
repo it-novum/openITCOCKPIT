@@ -216,7 +216,7 @@
                 {{ host.Hoststatus.last_state_change }}
             </td>
             <td>
-                <div
+                <div class="word-break"
                     ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
             </td>
         </tr>

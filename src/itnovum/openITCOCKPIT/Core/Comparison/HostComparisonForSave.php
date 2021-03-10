@@ -142,6 +142,8 @@ class HostComparisonForSave {
             'notify_period_id',
             'tags',
             'active_checks_enabled',
+            'freshness_checks_enabled',
+            'freshness_threshold',
             'host_url'
         ];
 

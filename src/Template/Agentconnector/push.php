@@ -262,7 +262,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('showOutput', 'agentconnector')): ?>
-                                                <a ui-sref="AgentconnectorsShowOutput({mode: 'push',id: agent.Hosts.id})"
+                                                <a ui-sref="AgentconnectorsShowOutput({mode: 'push',id: agent.id})"
                                                    class="dropdown-item">
                                                     <i class="fab fa-js"></i>
                                                     <?php echo __('Show received data'); ?>

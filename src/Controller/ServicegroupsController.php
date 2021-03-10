@@ -235,11 +235,16 @@ class ServicegroupsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update contact data
             $User = new User($this->getUser());
-            $servicegroupEntity = $ServicegroupsTable->get($id);
+            $servicegroupEntity = $ServicegroupsTable->get($id, [
+                'contain' => [
+                    'Containers'
+                ]
+            ]);
 
             $servicegroupEntity->setAccess('uuid', false);
             $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, $this->request->getData('Servicegroup'));
             $servicegroupEntity->id = $id;
+
             $ServicegroupsTable->save($servicegroupEntity);
             if ($servicegroupEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -660,8 +665,9 @@ class ServicegroupsController extends AppController {
     }
 
     /**
-     * @param int|null $id
+     * @param null $id
      * @throws MissingDbBackendException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function loadServicegroupWithServicesById($id = null) {
         if (!$this->isAngularJsRequest()) {

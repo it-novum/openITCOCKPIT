@@ -68,8 +68,8 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.servicetemplategroups){
                 for(var key in $scope.servicetemplategroups){
-                    if($scope.servicetemplategroups[key].Servicetemplategroup.allow_edit === true){
-                        var id = $scope.servicetemplategroups[key].Servicetemplategroup.id;
+                    if($scope.servicetemplategroups[key].allow_edit === true){
+                        var id = $scope.servicetemplategroups[key].id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -84,7 +84,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(servicetemplategroup){
             var object = {};
-            object[servicetemplategroup.Servicetemplategroup.id] = servicetemplategroup.Container.name;
+            object[servicetemplategroup.id] = servicetemplategroup.container.name;
             return object;
         };
 
@@ -93,9 +93,9 @@ angular.module('openITCOCKPIT')
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.servicetemplategroups){
                 for(var id in selectedObjects){
-                    if(id == $scope.servicetemplategroups[key].Servicetemplategroup.id){
-                        if($scope.servicetemplategroups[key].Servicetemplategroup.allow_edit === true){
-                            objects[id] = $scope.servicetemplategroups[key].Container.name;
+                    if(id == $scope.servicetemplategroups[key].id){
+                        if($scope.servicetemplategroups[key].allow_edit === true){
+                            objects[id] = $scope.servicetemplategroups[key].container.name;
                         }
                     }
                 }
