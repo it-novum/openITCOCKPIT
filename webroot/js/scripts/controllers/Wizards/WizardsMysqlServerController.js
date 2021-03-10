@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('WizardsMysqlServerController', function($scope, $http, $stateParams, QueryStringService, NotyService, RedirectService){
+    .controller('WizardsMysqlServerController', function($scope, $state, $http, $stateParams, QueryStringService, NotyService, RedirectService){
         $scope.hostId = QueryStringService.getStateValue($stateParams, 'hostId', false);
         /** public vars **/
         $scope.init = true;
@@ -54,9 +54,9 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 $scope.disableSubmit = false;
                 NotyService.genericSuccess();
-                RedirectService.redirectWithFallback('ServicesNotMonitored');
                 $scope.errors = {};
                 NotyService.scrollTop();
+                $state.go('WizardsIndex');
                 console.log('Data saved successfully');
             }, function errorCallback(result){
                 $scope.disableSubmit = false;
