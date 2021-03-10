@@ -658,6 +658,72 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     -webkit-text-fill-color: transparent;
 }
 
+/* <i class="fas fa-cloud cloud-gradient font-lg"></i> */
+.cloud-gradient {
+    background: linear-gradient(180deg, transparent 0%, transparent 7%, rgba(7, 19, 42, 0.5) 0%, rgb(156, 184, 239) 92%,
+    transparent 98%, transparent 100%) aliceblue;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+/* Weather icons end */
+
+
+.wizard-logo-image {
+    border-radius: 50%;
+    background: rgba(243, 243, 243, 0.6);
+    height: 80px;
+    width: 80px;
+    position: relative;
+    border: 5px solid #4285F4;
+    flex: 0 0 80px;
+}
+
+.wizard-logo-image-small {
+    border-radius: 50%;
+    background: rgba(243, 243, 243, 0.6);
+    height: 30px;
+    width: 30px;
+    position: relative;
+    border: 2px solid #4285F4;
+    flex: 0 0 30px;
+}
+
+
+.wizard-logo-image img,
+.wizard-logo-image-small img {
+    max-height: 60%;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.wizard-logo-image-placeholder {
+    border: 5px solid #d6d6d64d;
+}
+
+.wizard-logo-card-height-150 {
+    min-height: 150px;
+    height: 150px;
+}
+
+.wizard-fieldset-legend-auto-width legend {
+    width: auto;
+}
+
+.wizard-assignments-border-left {
+    border-left: 5px solid #4285F4;
+}
+
+.card-body-wizard {
+    background-color: transparent !important;
+}
+
 .statusicon::before {
     border-width: 0px !important;
 }

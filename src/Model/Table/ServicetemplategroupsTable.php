@@ -447,7 +447,7 @@ class ServicetemplategroupsTable extends Table {
                 }
             ])
             ->where([
-                'Servicegroups.id' => $id
+                'Servicetemplategroups.id' => $id
             ])
             ->disableHydration()
             ->first();
