@@ -3209,6 +3209,39 @@ class ServicesTable extends Table {
     }
 
     /**
+     * @param array $hostIds
+     * @return array
+     */
+    public function getServiceNamesByHostIdForWizard($hostIds = [], $enableHydration = false) {
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+        if (empty($hostIds)) {
+            return [];
+        }
+        $hostIds = array_unique($hostIds);
+
+        $query = $this->find();
+        $query->select([
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)')
+        ])->where([
+            'Services.host_id IN' => $hostIds
+        ])->contain([
+            'Servicetemplates'
+        ])->enableHydration($enableHydration);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        $serviceNames = [];
+        foreach ($result as $value) {
+            $serviceNames[] = $value['servicename'];
+        }
+        return array_unique($serviceNames);
+    }
+
+    /**
      * @param $ids
      * @param bool $enableHydration
      * @return array

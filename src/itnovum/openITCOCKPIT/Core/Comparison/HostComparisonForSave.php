@@ -149,7 +149,7 @@ class HostComparisonForSave {
 
         $data = [];
         foreach ($fields as $field) {
-            if ($this->host[$field] != $this->hosttemplate[$field]) {
+            if (isset($this->host[$field]) && $this->host[$field] != $this->hosttemplate[$field]) {
                 $data[$field] = $this->host[$field];
             } else {
                 $data[$field] = null;
@@ -190,6 +190,18 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForContactsAndContactgroups() {
+        // for easy host add in wizard - use from template
+        if (!isset($this->host['contacts']['_ids']) && !isset($this->host['contactgroups']['_ids'])) {
+            return [
+                'contacts'      => [
+                    '_ids' => []
+                ],
+                'contactgroups' => [
+                    '_ids' => []
+                ]
+            ];
+        }
+
         //Where contacts changed or edited?
         $contactsDiff = array_diff($this->host['contacts']['_ids'], $this->hosttemplate['contacts']['_ids']);
         if (empty($contactsDiff)) {
@@ -268,6 +280,13 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForHostgroups() {
+        // for easy host add in wizard - use from template
+        if (!isset($this->host['hostgroups']['_ids'])) {
+            return [
+                '_ids' => []
+            ];
+        }
+
         //Where hostgroups changed or edited?
         $hostgroupsDiff = array_diff($this->host['hostgroups']['_ids'], $this->hosttemplate['hostgroups']['_ids']);
         if (empty($hostgroupsDiff)) {
@@ -291,6 +310,11 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForCustomvariables() {
+        // for easy host add in wizard - use from template
+        if (!isset($this->host['customvariables'])) {
+            $this->host['customvariables'] =  $this->hosttemplate['customvariables'];
+        }
+
         $customVariableDiffer = new CustomVariableDiffer(
             $this->host['customvariables'],
             $this->hosttemplate['customvariables']
@@ -318,6 +342,11 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForCommandarguments() {
+        // for easy host add in wizard - use from template
+        if (!isset($this->host['command_id'])) {
+            return [];
+        }
+
         if ($this->host['command_id'] != $this->hosttemplate['command_id']) {
             //Different check command than the host template uses.
             //Definitely the command arguments has changed
@@ -351,6 +380,13 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForPrometheusExporters() {
+        // for easy host add in wizard - use from template
+        if (!isset($this->host['prometheus_exporters']['_ids'])) {
+            return [
+                '_ids' => []
+            ];
+        }
+
         //Where prometheus_exporters changed or edited?
         $prometheusExportersDiff = array_diff($this->host['prometheus_exporters']['_ids'], $this->hosttemplate['prometheus_exporters']['_ids']);
         if (empty($prometheusExportersDiff)) {

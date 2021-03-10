@@ -50,7 +50,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 }
 
 .text-primary {
-    color: #1468f5 !important;
+    color: #4285F4 !important;
 }
 
 .custom-control-input:checked ~ .custom-control-label-primary::before {
@@ -884,18 +884,98 @@ div.packetmanager-selection::selection {
     color: #1468f5;
     background: #ffffff;
 }
-div.packetmanager-selection>span::-moz-selection { /* Code for Firefox */
+
+div.packetmanager-selection > span::-moz-selection { /* Code for Firefox */
     color: #1468f5;
     background: #ffffff;
 }
 
-div.packetmanager-selection>span::selection {
+div.packetmanager-selection > span::selection {
     color: #1468f5;
     background: #ffffff;
+}
+
+/* Ubuntu fieldset*/
+.ubuntu-text {
+    color: #dd4814;
+}
+
+.ubuntu-fieldset {
+    border: 2px solid #dd4814;
+}
+
+/* Debian fieldset*/
+.debian-text {
+    color: #d80150;
+}
+
+.debian-fieldset {
+    border: 2px solid #d80150;
+}
+
+/* CentOS fieldset*/
+.centos-text {
+    color: #000000;
+}
+
+.centos-fieldset {
+    border: 2px solid #000000;
+}
+
+/* RedHat fieldset*/
+.redhat-text {
+    color: #ee0000;
+}
+
+.redhat-fieldset {
+    border: 2px solid #ee0000;
+}
+
+/* Fedora fieldset*/
+.fedora-text {
+    color: #0b57a4;
+}
+
+.fedora-fieldset {
+    border: 2px solid #0b57a4;
+}
+
+/* openSuse fieldset*/
+.opensuse-text {
+    color: #73ba25;
+}
+
+.opensuse-fieldset {
+    border: 2px solid #73ba25;
+}
+
+.wizard-info-tags {
+    color: #00adef;
+}
+
+.fieldset-legend-border-bottom {
+    border-bottom: 5px solid;
+    border-image-source: linear-gradient(45deg, #4285F4, transparent);
+    border-image-slice: 1;
+}
+
+.bg-placeholder-wizard {
+    background-image: linear-gradient(135deg, #d6d6d64D 25%, transparent 25%, transparent 50%, #d6d6d64D 50%, #d6d6d64D 75%, transparent 75%, transparent 100%);
+    background-size: 56.57px 56.57px;
 }
 
 .text-purple {
     color: #bb1bf4 !important;
+}
+
+.accordion.accordion-hover .card-title:not(.collapsed) {
+    color: #fff;
+    background-color: #2198f3;
+}
+
+.accordion.accordion-hover .card-header:hover .card-title.collapsed {
+    color: #fff;
+    background-color: #51aef6;
 }
 
 .bg-light-gray {
@@ -925,4 +1005,3 @@ div.packetmanager-selection>span::selection {
 .btn-enterprise:hover {
     background: #a61f1c;
 }
-

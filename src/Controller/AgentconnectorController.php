@@ -409,7 +409,9 @@ class AgentconnectorController extends AppController {
 
             $agentConfigAsJsonFromDatabase = '';
             $isOldAgent1Config = false;
+            $isNewConfig = true;
             if ($AgentconfigsTable->existsByHostId($host->id)) {
+                $isNewConfig = false;
                 $record = $AgentconfigsTable->getConfigByHostId($host->id);
                 $agentConfigAsJsonFromDatabase = $record->config;
 
@@ -437,8 +439,9 @@ class AgentconnectorController extends AppController {
             }
 
             $this->set('config', $config);
+            $this->set('isNewConfig', $isNewConfig);
             $this->set('host', $host);
-            $this->viewBuilder()->setOption('serialize', ['config', 'host']);
+            $this->viewBuilder()->setOption('serialize', ['config', 'host', 'isNewConfig']);
         }
 
         if ($this->request->is('post')) {

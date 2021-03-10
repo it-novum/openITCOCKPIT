@@ -388,6 +388,7 @@ class AclDependencies {
 
         $this
             ->dependency('Hosttemplates', 'index', 'Hosttemplates', 'view')
+            ->dependency('Hosttemplates', 'index', 'Hosttemplates', 'loadHosttemplates')
             ->dependency('Hosttemplates', 'add', 'Hosttemplates', 'loadElementsByContainerId')
             ->dependency('Hosttemplates', 'add', 'Hosttemplates', 'loadContainers')
             ->dependency('Hosttemplates', 'add', 'Hosttemplates', 'loadCommands')
@@ -583,6 +584,10 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NSTAMaster')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'Gearman')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'PhpFpmOitc');
+
+        $this
+            ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular')
+            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadElementsByContainerId');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {
