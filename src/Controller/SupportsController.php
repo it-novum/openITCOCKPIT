@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\RegistersTable;
+use Cake\Core\Plugin;
 use Cake\ORM\TableRegistry;
 
 class SupportsController extends AppController {
@@ -46,6 +47,12 @@ class SupportsController extends AppController {
             $hasLicense = true;
         }
 
+        $supportModuleInstalled = false;
+        if (Plugin::isLoaded('SupportModule')){
+            $supportModuleInstalled = true;
+        }
+
+        $this->set('supportModuleInstalled', $supportModuleInstalled);
         $this->set('hasLicense', $hasLicense);
     }
 

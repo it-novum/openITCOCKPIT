@@ -26,8 +26,9 @@
 /**
  * @var \App\View\AppView $this
  * @var bool $hasLicense
- *
+ * @var bool $supportModuleInstalled
  */
+
 
 ?>
 <ol class="breadcrumb page-breadcrumb">
@@ -95,20 +96,28 @@
                                         <div class="col-lg-12 padding-right-0">
 
                                             <div class="float-right">
-                                                <?php if ($hasLicense): ?>
-                                                    <a href="mailto:support@itsm.it-novum.com" class="btn btn-primary"
-                                                       role="button">
-                                                        <i class="far fa-envelope"></i>
-                                                        <?= __('Create a Ticket'); ?>
-                                                    </a>
+                                                <?php if ($supportModuleInstalled): ?>
+                                                    <button class="btn btn-success" ui-sref="SupportsIndex">
+                                                        <i class="fas fa-headset"></i>
+                                                        <?= __('Enterprise Support'); ?>
+                                                    </button>
                                                 <?php else: ?>
-                                                    <a
-                                                        href="https://it-novum.com/en/contact/contact-form-itsm/"
-                                                        target="_blank"
-                                                        class="btn btn-primary float-right">
-                                                        <i class="fas fa-shopping-cart"></i>
-                                                        <?= __('Request a quote'); ?>
-                                                    </a>
+                                                    <?php if ($hasLicense): ?>
+                                                        <a href="mailto:support@itsm.it-novum.com"
+                                                           class="btn btn-primary"
+                                                           role="button">
+                                                            <i class="far fa-envelope"></i>
+                                                            <?= __('Create a Ticket'); ?>
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <a
+                                                                href="https://it-novum.com/en/contact/contact-form-itsm/"
+                                                                target="_blank"
+                                                                class="btn btn-primary float-right">
+                                                            <i class="fas fa-shopping-cart"></i>
+                                                            <?= __('Request a quote'); ?>
+                                                        </a>
+                                                    <?php endif; ?>
                                                 <?php endif; ?>
                                             </div>
 
@@ -181,14 +190,14 @@
 
                                         <ul class="list-unstyled">
                                             <li><i class="fab fa-reddit text-muted"></i> <a
-                                                    href="https://www.reddit.com/r/openitcockpit/" target="_blank">
+                                                        href="https://www.reddit.com/r/openitcockpit/" target="_blank">
                                                     <?= __('Feel free to start a discussion on our reddit channel'); ?>
                                                 </a>
                                             </li>
                                             <li>
                                                 <i class="fas fa-hashtag text-muted"></i> <a
-                                                    href="http://webchat.freenode.net/?channels=openitcockpit"
-                                                    target="_blank">
+                                                        href="http://webchat.freenode.net/?channels=openitcockpit"
+                                                        target="_blank">
                                                     <?= __('or just join our IRC channel'); ?>
                                                 </a>
                                             </li>
