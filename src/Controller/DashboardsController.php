@@ -62,6 +62,7 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
+use LasseRafn\InitialAvatarGenerator\InitialAvatar;
 use ParsedownExtra;
 use RuntimeException;
 use Statusengine\PerfdataParser;
@@ -847,12 +848,35 @@ class DashboardsController extends AppController {
 
             $user = $this->getUser();
 
-            $userImage = '/img/fallback_user.png';
+
+            $userImage = null;
+
             if ($user->get('image') != null && $user->get('image') != '') {
                 if (file_exists(WWW_ROOT . 'img' . DS . 'userimages' . DS . $user->get('image'))) {
                     $userImage = '/img/userimages' . DS . $user->get('image');
                 }
             }
+
+            if ($userImage === null) {
+                $userImage = '/img/fallback_user.png';
+
+
+                $User = new User($this->getUser());
+                $fullname = $User->getFullName();
+                $diskPath = WWW_ROOT . 'img' . DS . 'userimages' . DS . 'initial_avatar_' . md5($fullname) . '.png';
+
+                $Avatar = new InitialAvatar();
+                $image = $Avatar->name($fullname)
+                    ->background('#46c3db')
+                    ->color('#c5e3f6')
+                    ->size(200)
+                    ->generate()
+                    ->save($diskPath, 100, 'png');
+                if (file_exists($diskPath)) {
+                    $userImage = '/img/userimages' . DS . 'initial_avatar_' . md5($fullname) . '.png';
+                }
+            }
+
 
             $userFullName = sprintf('%s %s', $user->get('firstname'), $user->get('lastname'));
 
@@ -863,10 +887,9 @@ class DashboardsController extends AppController {
             $license = $RegistersTable->getLicense();
             $isCommunityEdition = false;
             $hasSubscription = $license !== null;
-            if(isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()){
+            if (isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()) {
                 $isCommunityEdition = true;
             }
-
 
 
             $this->set('userImage', $userImage);
