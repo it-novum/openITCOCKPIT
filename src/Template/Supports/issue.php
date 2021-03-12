@@ -105,7 +105,7 @@
                                                 </button>
                                             <?php else: ?>
                                                 <a
-                                                        href="https://it-novum.com/en/contact/contact-form-itsm/"
+                                                        href="https://it-services.it-novum.com/monitoring-zukunft/openitcockpit-enterprise-subscription/"
                                                         target="_blank"
                                                         class="btn btn-primary btn-sm float-right">
                                                     <i class="fas fa-shopping-cart"></i>
@@ -122,7 +122,7 @@
                                                 </a>
                                             <?php else: ?>
                                                 <a
-                                                        href="https://it-novum.com/en/contact/contact-form-itsm/"
+                                                        href="https://it-services.it-novum.com/monitoring-zukunft/openitcockpit-enterprise-subscription/"
                                                         target="_blank"
                                                         class="btn btn-primary btn-sm float-right">
                                                     <i class="fas fa-shopping-cart"></i>
