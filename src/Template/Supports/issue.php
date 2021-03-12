@@ -61,7 +61,7 @@
                 <div class="panel-content">
 
                     <div class="row">
-                        <div class="col-4 padding-bottom-10">
+                        <div class="col-md-4 col-sm-12 padding-bottom-10">
                             <div class="card supportCard">
                                 <div class="card-header enterprise-bg-header text-white">
                                     <h4 class="pm-h4">
@@ -137,7 +137,7 @@
                         </div>
 
 
-                        <div class="col-4 padding-bottom-10">
+                        <div class="col-md-4 col-sm-12 padding-bottom-10">
                             <div class="card supportCard">
                                 <div class="card-header community-bg-header text-white">
                                     <h4 class="pm-h4">
@@ -208,7 +208,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-md-4 col-sm-12">
                             <iframe src="https://discord.com/widget?id=771364054924001290&theme=dark"
                                     height="500" allowtransparency="true" frameborder="0"
                                     sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
