@@ -1080,6 +1080,17 @@ class Agent extends Importer {
                 ]
             ],
 
+            // Agent 3.x
+            [
+                'name'             => 'check-host-alive-oitc-agent-pull',
+                'command_line'     => '/opt/openitc/receiver/bin/poller.php poller -H "$HOSTNAME$" -c /opt/openitc/receiver/etc/production.json --host-check',
+                'command_type'     => HOSTCHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'be93c366-7373-447c-b394-a95edeb7d435',
+                'description'      => "Actively executed by the monitoring engine.\nSend HTTP-Request to the target device and query the openITCOCKPIT Agent API interface.",
+                'commandarguments' => []
+            ],
+
         ];
         return $data;
     }
@@ -1135,6 +1146,60 @@ class Agent extends Importer {
                         'value'              => '120',
                     ],
                 ],
+                'customvariables'                   => [],
+                'hostgroups'                        => [],
+                'contactgroups'                     => [],
+                'contacts'                          => [
+                    '_ids' => [
+                        (int)0 => '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                              => 'd086e12a-e0c5-42b9-a2f4-1875c65ad09b',
+                'name'                              => 'openITCOCKPIT Agent - Pull',
+                'description'                       => 'Actively monitor a Host via openITCOCKPIT Monitoring Agent operating in Pull Mode',
+                'hosttemplatetype_id'               => GENERIC_HOSTTEMPLATE,
+                'command_id'                        => 'be93c366-7373-447c-b394-a95edeb7d435',
+                'check_command_args'                => '',
+                'eventhandler_command_id'           => '0',
+                'timeperiod_id'                     => '0',
+                'check_interval'                    => '60',
+                'retry_interval'                    => '60',
+                'max_check_attempts'                => '3',
+                'first_notification_delay'          => '0',
+                'notification_interval'             => '7200',
+                'notify_on_down'                    => '1',
+                'notify_on_unreachable'             => '1',
+                'notify_on_recovery'                => '1',
+                'notify_on_flapping'                => '0',
+                'notify_on_downtime'                => '0',
+                'flap_detection_enabled'            => '0',
+                'flap_detection_on_up'              => '0',
+                'flap_detection_on_down'            => '0',
+                'flap_detection_on_unreachable'     => '0',
+                'low_flap_threshold'                => '0',
+                'high_flap_threshold'               => '0',
+                'process_performance_data'          => '0',
+                'freshness_checks_enabled'          => '0',
+                'freshness_threshold'               => '0',
+                'passive_checks_enabled'            => '0',
+                'event_handler_enabled'             => '0',
+                'active_checks_enabled'             => '1',
+                'retain_status_information'         => '0',
+                'retain_nonstatus_information'      => '0',
+                'notifications_enabled'             => '0',
+                'notes'                             => '',
+                'priority'                          => '1',
+                'check_period_id'                   => '1',
+                'notify_period_id'                  => '1',
+                'tags'                              => '',
+                'container_id'                      => '1',
+                'host_url'                          => '',
+                'created'                           => '2021-03-05 11:35:07',
+                'modified'                          => '2021-03-05 11:35:07',
+                'hosttemplatecommandargumentvalues' => [],
                 'customvariables'                   => [],
                 'hostgroups'                        => [],
                 'contactgroups'                     => [],
