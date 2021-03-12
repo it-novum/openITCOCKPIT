@@ -150,6 +150,9 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
         <a href="https://www.reddit.com/r/openitcockpit" target="_blank" class="btn btn-sm btn-light btn-icon">
             <i class="fab fa-lg fa-reddit"></i>
         </a>
+        <a href="https://discord.gg/G8KhxKuQ9G" target="_blank" class="btn btn-sm btn-light btn-icon">
+            <i class="fab fa-lg fa-discord"></i>
+        </a>
     </div>
 
 </div>
