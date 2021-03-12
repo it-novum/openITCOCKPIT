@@ -1339,6 +1339,6 @@ label.menu-open-button:hover {
     padding: 6px 6px 6px 20px !important;
 }
 
-.supportCard .card-footer .btn {
+.supportCard .card-footer .btn, .supportCard .card-footer a.btn {
     height: 30px !important;
 }
