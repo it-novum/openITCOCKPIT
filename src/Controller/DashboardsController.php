@@ -860,21 +860,9 @@ class DashboardsController extends AppController {
             if ($userImage === null) {
                 $userImage = '/img/fallback_user.png';
 
-
                 $User = new User($this->getUser());
-                $fullname = $User->getFullName();
-                $diskPath = WWW_ROOT . 'img' . DS . 'userimages' . DS . 'initial_avatar_' . md5($fullname) . '.png';
+                $userImage = $User->getUserAvatar();
 
-                $Avatar = new InitialAvatar();
-                $image = $Avatar->name($fullname)
-                    ->background('#46c3db')
-                    ->color('#c5e3f6')
-                    ->size(200)
-                    ->generate()
-                    ->save($diskPath, 100, 'png');
-                if (file_exists($diskPath)) {
-                    $userImage = '/img/userimages' . DS . 'initial_avatar_' . md5($fullname) . '.png';
-                }
             }
 
 
