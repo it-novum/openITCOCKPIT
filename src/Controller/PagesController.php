@@ -39,7 +39,6 @@ use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 use Cake\View\Exception\MissingTemplateException;
 use itnovum\openITCOCKPIT\Core\Locales;
-use LasseRafn\InitialAvatarGenerator\InitialAvatar;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 
@@ -92,8 +91,6 @@ class PagesController extends AppController {
                 $userImage = $User->getUserAvatar();
 
             }
-
-
 
 
             $language = Locales::getLanguageByLocalCode($user->get('i18n'));
