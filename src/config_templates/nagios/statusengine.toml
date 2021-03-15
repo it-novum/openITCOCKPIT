@@ -42,7 +42,7 @@ SystemCommandData = "statusngin_systemcommands"
 #ProgramStatusData = "statusngin_programmstatus"
 #ContactStatusData = "statusngin_contactstatus"
 #ContactNotificationData = "statusngin_contactnotificationdata"
-EventHandlerData = "statusngin_eventhandler"
+#EventHandlerData = "statusngin_eventhandler"
 #ProcessData = "statusngin_processdata"
 {% if statusengine_use_log_data == 1 %}
 LogData = "statusngin_logentries"
