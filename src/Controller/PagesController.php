@@ -39,6 +39,8 @@ use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 use Cake\View\Exception\MissingTemplateException;
 use itnovum\openITCOCKPIT\Core\Locales;
+use LasseRafn\InitialAvatarGenerator\InitialAvatar;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 
 /**
@@ -60,7 +62,7 @@ class PagesController extends AppController {
             $license = $RegistersTable->getLicense();
             $isCommunityEdition = false;
             $hasSubscription = $license !== null;
-            if(isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()){
+            if (isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()) {
                 $isCommunityEdition = true;
             }
 
@@ -75,18 +77,30 @@ class PagesController extends AppController {
                 }
             }
 
-            $userImage = '/img/fallback_user.png';
+            $userImage = null;
+
             if ($user->get('image') != null && $user->get('image') != '') {
                 if (file_exists(WWW_ROOT . 'img' . DS . 'userimages' . DS . $user->get('image'))) {
                     $userImage = '/img/userimages' . DS . $user->get('image');
                 }
             }
 
+            if ($userImage === null) {
+                $userImage = '/img/fallback_user.png';
+
+                $User = new User($this->getUser());
+                $userImage = $User->getUserAvatar();
+
+            }
+
+
+
+
             $language = Locales::getLanguageByLocalCode($user->get('i18n'));
             $localesPath = Configure::read('App.paths.locales')[0];
             $localeOptions = [];
             $localeDirs = array_filter(glob($localesPath . '*'), 'is_dir');
-            array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath){
+            array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath) {
                 $i18n = substr($value, strlen($localesPath));
                 $language = Locales::getLanguageByLocalCode($i18n);
                 $localeOptions[] = $language;
