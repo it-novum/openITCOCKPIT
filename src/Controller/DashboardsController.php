@@ -847,12 +847,23 @@ class DashboardsController extends AppController {
 
             $user = $this->getUser();
 
-            $userImage = '/img/fallback_user.png';
+
+            $userImage = null;
+
             if ($user->get('image') != null && $user->get('image') != '') {
                 if (file_exists(WWW_ROOT . 'img' . DS . 'userimages' . DS . $user->get('image'))) {
                     $userImage = '/img/userimages' . DS . $user->get('image');
                 }
             }
+
+            if ($userImage === null) {
+                $userImage = '/img/fallback_user.png';
+
+                $User = new User($this->getUser());
+                $userImage = $User->getUserAvatar();
+
+            }
+
 
             $userFullName = sprintf('%s %s', $user->get('firstname'), $user->get('lastname'));
 
@@ -863,10 +874,9 @@ class DashboardsController extends AppController {
             $license = $RegistersTable->getLicense();
             $isCommunityEdition = false;
             $hasSubscription = $license !== null;
-            if(isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()){
+            if (isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()) {
                 $isCommunityEdition = true;
             }
-
 
 
             $this->set('userImage', $userImage);
