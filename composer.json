@@ -83,7 +83,8 @@
         "symfony/finder": "^3.2",
         "symfony/process": "^3.4",
         "symfony/yaml": "^5.0",
-        "twig/twig": "^3.0"
+        "twig/twig": "^3.0",
+        "malios/php-to-ascii-table":"^2.0"
     },
     "require-dev": {
         "cakephp/bake": "^2.0",
