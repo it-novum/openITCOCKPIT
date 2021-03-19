@@ -124,6 +124,10 @@ class User {
         return new UserTime($this->timezone, $this->dateformat);
     }
 
+    /**
+     * @return UserImage
+     */
+
     public function getUserAvatar() {
 
         $diskPath = WWW_ROOT . 'img' . DS . 'userimages' . DS . 'initial_avatar_' . md5($this->fullName) . '.png';
