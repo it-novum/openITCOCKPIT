@@ -1,10 +1,12 @@
 angular.module('openITCOCKPIT')
-    .controller('AgentconnectorsConfigController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
+    .controller('AgentconnectorsConfigController', function($scope, $http, $state, $stateParams, NotyService, RedirectService, QueryStringService){
 
         $scope.hostId = $stateParams.hostId;
         $scope.pushAgentId = $stateParams.pushAgentId;
         $scope.connection_type = 'autotls';
         $scope.webserver_type = 'https';
+        $scope.preselectedOs = QueryStringService.getStateValue($stateParams, 'selectedOs', null);
+
 
         var urlMode = $stateParams.mode || null;
 
@@ -18,6 +20,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.config = result.data.config;
                 $scope.host = result.data.host;
+                $scope.isNewConfig = result.data.isNewConfig;
                 if($scope.config.bool.use_autossl === false && $scope.config.bool.use_https === true){
                     $scope.connection_type = 'https';
                 }
@@ -36,6 +39,10 @@ angular.module('openITCOCKPIT')
 
                     $scope.config.bool.enable_push_mode = urlMode === 'push';
                 }
+
+                if($scope.preselectedOs !== null && $scope.isNewConfig === true){
+                    $scope.config.string.operating_system = $scope.preselectedOs;
+                }
             });
         };
 
@@ -51,7 +58,7 @@ angular.module('openITCOCKPIT')
             $http.post("/agentconnector/config.json", {
                     config: $scope.config,
                     hostId: $scope.hostId,
-                pushAgentId: $scope.pushAgentId
+                    pushAgentId: $scope.pushAgentId
                 }
             ).then(function(result){
                 $state.go('AgentconnectorsInstall', {

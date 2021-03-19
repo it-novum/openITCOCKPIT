@@ -1257,13 +1257,14 @@ label.menu-open-button:hover {
     word-spacing: 100vw;
 }
 
-.font-size-90{
+.font-size-90 {
     font-size: 90px;
 }
 
 .system-health-item {
-    white-space:normal;
+    white-space: normal;
 }
+
 .container-table {
     border-spacing: 1px;
     border-collapse: separate;

@@ -304,7 +304,7 @@
                                     <div class="btn-group btn-group-justified btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                             <a class="btn btn-success state-button"
-                                               ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][0]=1">
+                                               ui-sref="ServicesIndex({servicestate: [0], host_id: host.Host.id, sort: 'Servicestatus.last_state_change', direction: 'desc'})">
                                                 {{host.ServicestatusSummary.state['ok']}}
                                             </a>
                                         <?php else: ?>
@@ -314,7 +314,7 @@
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                             <a class="btn btn-warning state-button"
-                                               ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][1]=1">
+                                               ui-sref="ServicesIndex({servicestate: [1], host_id: host.Host.id, sort: 'Servicestatus.last_state_change', direction: 'desc'})">
                                                 {{host.ServicestatusSummary.state['warning']}}
                                             </a>
                                         <?php else: ?>
@@ -324,7 +324,7 @@
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                             <a class="btn btn-danger state-button"
-                                               ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][2]=1">
+                                               ui-sref="ServicesIndex({servicestate: [2], host_id: host.Host.id, sort: 'Servicestatus.last_state_change', direction: 'desc'})">
                                                 {{host.ServicestatusSummary.state['critical']}}
                                             </a>
                                         <?php else: ?>
@@ -335,7 +335,7 @@
 
                                         <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                             <a class="btn btn-default state-button"
-                                               ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][3]=1">
+                                               ui-sref="ServicesIndex({servicestate: [3], host_id: host.Host.id, sort: 'Servicestatus.last_state_change', direction: 'desc'})">
                                                 {{host.ServicestatusSummary.state['unknown']}}
                                             </a>
                                         <?php else: ?>

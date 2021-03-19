@@ -62,7 +62,6 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
-use LasseRafn\InitialAvatarGenerator\InitialAvatar;
 use ParsedownExtra;
 use RuntimeException;
 use Statusengine\PerfdataParser;

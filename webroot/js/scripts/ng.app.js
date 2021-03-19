@@ -190,6 +190,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     mode: {
                         value: null
                     },
+                    selectedOs: {
+                        value: null
+                    },
                     pushAgentId: {
                         value: null,
                         squash: true
@@ -1419,6 +1422,72 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ChangelogsIndexController"
             })
 
+            .state('WizardsIndex', {
+                url: '/wizards/index',
+                templateUrl: "/wizards/index.html",
+                controller: "WizardsIndexController"
+            })
+
+            .state('WizardHostConfiguration', {
+                url: '/wizards/hostConfiguration/:typeId/:title/:hostId',
+                params: {
+                    state: {
+                        value: null
+                    },
+                    selectedOs: {
+                        value: null
+                    },
+                    hostId: {
+                        value: null,
+                        squash: false
+                    }
+                },
+                templateUrl: "/wizards/hostConfiguration.html",
+                controller: "WizardHostConfigurationController"
+            })
+
+            .state('WizardsAgent', {
+                url: '/wizards/agent',
+                params: {
+                    selectedOs: {
+                        value: null
+                    }
+                },
+                templateUrl: "/wizards/agent.html",
+                controller: "WizardsAgentController"
+            })
+
+            .state('WizardsLinuxServerSsh', {
+                url: '/wizards/linuxserverssh',
+                templateUrl: "/wizards/linuxserverssh.html",
+                controller: "WizardsLinuxServerSshController"
+            })
+
+            .state('WizardsMysqlServer', {
+                url: '/wizards/mysqlserver/:hostId',
+                templateUrl: "/wizards/mysqlserver.html",
+                controller: "WizardsMysqlServerController"
+            })
+
+            .state('WizardsAssignments', {
+                url: '/wizards/assignments',
+                templateUrl: "/wizards/assignments.html",
+                controller: "WizardsAssignmentsController"
+            })
+
+            .state('WizardsEdit', {
+                url: '/wizards/edit/:uuid/:typeId',
+                params: {
+                    uuid: {
+                        value: null
+                    },
+                    typeId: {
+                        value: null
+                    }
+                },
+                templateUrl: "/wizards/edit.html",
+                controller: "WizardsEditController"
+            })
     })
 
     /*

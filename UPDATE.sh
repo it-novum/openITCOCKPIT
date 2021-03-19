@@ -290,7 +290,6 @@ if [[ "$NOSYSTEMFILES" == "false" ]]; then
   echo "Copy required system files"
   cp -r ${APPDIR}/system/etc/. /etc/
   cp -r ${APPDIR}/system/lib/. /lib/
-  cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
   cp -r ${APPDIR}/system/usr/. /usr/
   cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
   # only ensure that the files exist
@@ -435,6 +434,16 @@ else
   else
     echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
   fi
+fi
+
+echo "Cleanup old Docker images"
+if systemctl is-active --quiet docker.service; then
+    docker image prune --force
+    echo "Docker cleanup complete"
+else
+    echo "Docker is NOT Running";
+    echo "Please start Docker and run the following command manually"
+    echo "docker image prune -a --force"
 fi
 
 for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do

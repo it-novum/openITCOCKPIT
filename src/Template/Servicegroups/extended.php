@@ -158,7 +158,7 @@
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
-                            <tr ng-if="servicegroup.Services.length > 0">
+                            <tr>
                                 <td colspan="8" class="no-padding">
                                     <div class="form-group">
                                         <div class="input-group">
@@ -307,24 +307,26 @@
                                     {{ service.Servicestatus.last_state_change }}
                                 </td>
                                 <td>
-                                <span
-                                    ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                    <span
+                                        ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
+                                        service.Servicestatus.lastCheck }}</span>
                                     <span
                                         ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
-                                            <?php echo __('n/a'); ?>
-                                        </span>
+                                        <?php echo __('n/a'); ?>
+                                    </span>
                                 </td>
                                 <td>
-                                <span
-                                    ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                    <span
+                                        ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
+                                        service.Servicestatus.nextCheck }}</span>
                                     <span
                                         ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
-                                            <?php echo __('n/a'); ?>
-                                        </span>
+                                        <?php echo __('n/a'); ?>
+                                    </span>
                                 </td>
                                 <td>
                                     <div class="word-break"
-                                        ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
+                                         ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                 </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
@@ -387,12 +389,6 @@
                             </tr>
                             </tbody>
                         </table>
-                        <div class="margin-top-10" ng-show="servicegroup.Services.length == 0">
-                            <div class="text-center text-danger italic">
-                                <?php echo __('No entries match the selection'); ?>
-                            </div>
-                        </div>
-
                         <popover-graph-directive></popover-graph-directive>
                     </div>
                 </div>

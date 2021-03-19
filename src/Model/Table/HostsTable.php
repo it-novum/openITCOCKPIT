@@ -19,6 +19,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -4009,5 +4010,36 @@ class HostsTable extends Table {
             ->first();
 
         return $query;
+    }
+
+    /**
+     * @param string $uuid
+     * @param bool $enableHydration
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getPushAgentRecordByHostUuidForFreshnessCheck($uuid, $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Agentconfigs.id',
+                'Agentconfigs.host_id',
+                'PushAgents.id',
+                'PushAgents.agentconfig_id',
+                'PushAgents.last_update'
+            ])
+            ->innerJoinWith('Agentconfigs', function (Query $q) {
+                $q->innerJoinWith('PushAgents');
+                return $q;
+            })
+            ->where([
+                'Hosts.uuid' => $uuid
+            ])
+            ->enableHydration($enableHydration);
+
+        $result = $query->first();
+
+        return $result;
+
     }
 }

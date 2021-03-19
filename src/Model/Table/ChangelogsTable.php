@@ -157,9 +157,8 @@ class ChangelogsTable extends Table {
 
         $where['Changelogs.created >='] = date('Y-m-d H:i:s', $ChangelogsFilter->getFrom());
         $where['Changelogs.created <='] = date('Y-m-d H:i:s', $ChangelogsFilter->getTo());
-
+        $query->group(['Changelogs.id']);
         $query->where($where);
-
         $query->order($ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'));
 
         if ($PaginateOMat === null) {
@@ -280,6 +279,9 @@ class ChangelogsTable extends Table {
             'location'             => [
                 'location'           => '{(description|latitude|longitude|timezone)}',
                 'location.container' => '{(name)}'
+            ],
+            'container'            => [
+                'container' => '{(name)}'
             ],
         ];
 
