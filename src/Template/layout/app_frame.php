@@ -150,6 +150,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $customCss, $fileVersion, PHP_EOL);
         }
     }
+    
     ?>
 </head>
 <body class="mod-bg-1">
