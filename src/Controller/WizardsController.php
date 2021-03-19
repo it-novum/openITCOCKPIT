@@ -173,18 +173,28 @@ class WizardsController extends AppController {
     /**
      * Depencencies:
      * apt-get install libdbi-perl libdbd-mysql-perl
+     * @param null $hostId
      */
-    public function mysqlserver() {
+    public function mysqlserver($hostId = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             $this->set('systemname', $this->getSystemname());
             return;
         }
+
         /** @var WizardAssignmentsTable $WizardAssignmentsTable */
         $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
         $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
 
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException();
+            }
             //Return mysql wizard data
             $servicetemplates = [];
             $wizardAssignments = [];
@@ -203,10 +213,16 @@ class WizardsController extends AppController {
                     $this->MY_RIGHTS
                 );
             }
+            $servicesNamesForExistCheck = $ServicesTable->getServiceNamesByHostIdForWizard($hostId);
+
 
             $this->set('servicetemplates', $servicetemplates);
+            $this->set('servicesNamesForExistCheck', $servicesNamesForExistCheck);
 
-            $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
+            $this->viewBuilder()->setOption('serialize', [
+                'servicetemplates',
+                'servicesNamesForExistCheck'
+            ]);
             return;
         }
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
