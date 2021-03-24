@@ -46,7 +46,7 @@
     <ul ng-if="item.items.length > 0">
         <li ng-repeat="subItem in item.items" class="menufilterSelectable">
             <a ui-sref="{{subItem.state}}" class="waves-effect waves-themed"
-               title="{{subItem.name}}" data-filter-tags="{{subItem.tags}}">
+               title="{{subItem.name}}" data-filter-tags="{{subItem.tags}}" ng-click="scrollTop();">
                 <i class="{{subItem.icon}}"></i>
                 <span class="nav-link-text">
                     {{subItem.name}}
