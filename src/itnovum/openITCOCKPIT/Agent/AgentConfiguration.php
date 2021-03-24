@@ -85,6 +85,8 @@ class AgentConfiguration {
 
             // Checks
             'cpustats'                       => true, // Enable CPU checks
+            'memory'                         => true, // Enable memory check
+            'swap'                           => true, // Enable Swap check
             'processstats'                   => true, // Enable process checks
             'netstats'                       => true, // Enable network checks
             'netio'                          => true, // Enable network traffic checks
@@ -96,7 +98,8 @@ class AgentConfiguration {
             'wineventlog'                    => true, // Enable Windows Event Log checks
             'sensorstats'                    => true, //Enable monitoring of temperature and battery sensors
             'dockerstats'                    => true, // Enable docker checks
-            'libvirt'                        => true, // Enable libvirt checks (requires libvirt build)
+            'libvirt'                        => true, // Enable libvirt checks (requires libvirt build),
+            'userstats'                      => true, // Enable logged in users check
         ],
         'int'    => [
             'bind_port'      => 3333, // Bind port of the Agents web server
