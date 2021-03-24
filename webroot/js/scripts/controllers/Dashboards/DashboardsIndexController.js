@@ -82,7 +82,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-            window.scroll(0, 0);
             $http.get("/dashboards/index.json", {
                 params: {
                     'angular': true
