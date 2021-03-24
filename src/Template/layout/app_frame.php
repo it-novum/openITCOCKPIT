@@ -145,15 +145,9 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     if (\Cake\Core\Plugin::isLoaded('DesignModule')) {
         //load custom design css file
         $customCss = PLUGIN . 'DesignModule' . DS . 'webroot' . DS . 'css' . DS . 'customStyle.css';
-        $customCssStyle = PLUGIN . 'DesignModule' . DS . 'webroot' . DS . 'css' . DS . 'customCssStyle.css';
         if (file_exists($customCss)) {
             $customCss = 'design_module/css/customStyle.css';
             printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $customCss, $fileVersion, PHP_EOL);
-        }
-        if (file_exists($customCssStyle)) {
-            $customCssStyle = 'design_module/css/customCssStyle.css';
-            printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $customCssStyle, $fileVersion, PHP_EOL);
-
         }
     }
 
@@ -232,4 +226,3 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 <?php printf('<script src="/%s"></script>', 'smartadmin4/dist/js/app.bundle.js'); ?>
 </body>
 </html>
-
