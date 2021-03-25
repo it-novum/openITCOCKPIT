@@ -565,6 +565,7 @@ class ServicesTable extends Table {
             }
         }
 
+
         $where = $ServiceConditions->getConditions();
 
         if (!empty($selected)) {
@@ -611,11 +612,13 @@ class ServicesTable extends Table {
         $servicesWithLimit = [];
         $selectedServices = [];
         $results = $this->emptyArrayIfNull($query->toArray());
+
         foreach ($results as $result) {
             $servicesWithLimit[$result['id']] = $result;
         }
 
         if (!empty($selected)) {
+            $ajaxLimit = ITN_AJAX_LIMIT + count($selected);
             $query = $this->find();
             $query
                 ->innerJoinWith('Hosts')
@@ -636,7 +639,7 @@ class ServicesTable extends Table {
                 ->order([
                     'servicename' => 'asc'
                 ])
-                ->limit(ITN_AJAX_LIMIT)
+                ->limit($ajaxLimit)
                 ->disableHydration()
                 ->all();
             $results = $this->emptyArrayIfNull($query->toArray());
