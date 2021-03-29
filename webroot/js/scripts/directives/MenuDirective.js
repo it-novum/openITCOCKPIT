@@ -12,6 +12,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
             $scope.menuLoaded = false;
 
             $scope.load = function(){
+
                 $http.get("/angular/menu.json", {
                     params: {
                         'angular': true
@@ -20,6 +21,9 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                     $scope.menuLoaded = true;
                     $scope.menu = result.data.menu;
                 });
+            };
+            $scope.scrollTop = function(){
+                window.scroll(0, 0);
             };
 
             $scope.load();
@@ -50,6 +54,8 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                                 closedSign: ' <em class="fas fa-angle-down"></em>',
                                 openedSign: ' <em class="fas fa-angle-up"></em>',
                                 initClass: 'js-nav-built'
+
+
                             });
 
                         }

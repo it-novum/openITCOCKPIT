@@ -89,6 +89,8 @@ plugins/MasterSelfMonitoringModule
 plugins/MkModule
 plugins/NWCModule
 plugins/ImportModule
+plugins/HelloworldModule
+plugins/IntialavatarModule
 plugins/CheckmkModule
 plugins/OpenstreetmapModule
 plugins/SAPModule

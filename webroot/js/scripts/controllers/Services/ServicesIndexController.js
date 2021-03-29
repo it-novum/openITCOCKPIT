@@ -65,6 +65,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
+
             var hasBeenAcknowledged = '';
             var inDowntime = '';
             if($scope.filter.Servicestatus.acknowledged ^ $scope.filter.Servicestatus.not_acknowledged){
