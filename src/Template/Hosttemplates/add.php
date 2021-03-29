@@ -240,6 +240,40 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group" ng-class="{'has-error': errors.freshness_checks_enabled}"
+                                     ng-show="post.Hosttemplate.active_checks_enabled == 0">
+                                    <div class="custom-control custom-checkbox  margin-bottom-10"
+                                         ng-class="{'has-error': errors.freshness_checks_enabled}">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="freshness_checks_enabled"
+                                               ng-model="post.Hosttemplate.freshness_checks_enabled">
+                                        <label class="custom-control-label" for="freshness_checks_enabled">
+                                            <?php echo __('Enable freshness check'); ?>
+                                        </label>
+                                    </div>
+
+                                    <div class="help-block">
+                                        <?php echo __('If enabled the system will check that passive checks for this service will be received as frequently as defined.'); ?>
+                                    </div>
+                                </div>
+
+                                <div class="form-group required" ng-class="{'has-error': errors.freshness_threshold}"
+                                     ng-show="post.Hosttemplate.active_checks_enabled == 0 && post.Hosttemplate.freshness_checks_enabled == 1">
+                                    <label class="col-xs-12 col-lg-2 control-label">
+                                        <?php echo __('Freshness threshold'); ?>
+                                    </label>
+                                    <interval-input-directive
+                                        interval="post.Hosttemplate.freshness_threshold"></interval-input-directive>
+                                    <div class="col-xs-12 col-lg-offset-2">
+                                        <div ng-repeat="error in errors.freshness_threshold">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="form-group required" ng-class="{'has-error': errors.command_id}">
                                     <label class="control-label" for="HostCheckCommandSelect">
                                         <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>

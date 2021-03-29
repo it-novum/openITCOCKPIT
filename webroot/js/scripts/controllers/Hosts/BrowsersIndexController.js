@@ -42,6 +42,7 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
 
         $scope.load = function(){
+
             $http.get("/browsers/index/" + $scope.containerId + ".json", {
                 params: {
                     angular: true

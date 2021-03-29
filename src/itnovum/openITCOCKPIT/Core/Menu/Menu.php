@@ -200,6 +200,16 @@ class Menu {
                 ['hosts'],
                 2
             ))
+            ->addLink(new MenuLink(
+                __('Wizard'),
+                'WizardsIndex',
+                'wizards',
+                'index',
+                '',
+                'fas fa-magic',
+                [],
+                3
+            ))
             ->addCategory((new MenuCategory(
                 'objects_category',
                 __('Objects'),
@@ -579,20 +589,20 @@ class Menu {
                 'fa fa-user-secret'
             ))
                 ->addLink(new MenuLink(
-                    __('Agent Configuration'),
-                    'AgentconnectorsConfig',
+                    __('Agent Wizard'),
+                    'AgentconnectorsWizard',
                     'agentconnector',
-                    'config',
+                    'wizard',
                     '',
-                    'fa fa-user-secret',
+                    'fa fa-magic',
                     [],
                     1
                 ))
                 ->addLink(new MenuLink(
-                    __('Agent Overview'),
-                    'AgentconnectorsAgent',
+                    __('Agents Overview'),
+                    'AgentconnectorsPull',
                     'agentconnector',
-                    'agents',
+                    'overview',
                     '',
                     'fa fa-user-secret',
                     [],
@@ -670,6 +680,16 @@ class Menu {
                     'issue',
                     '',
                     'fa fa-bug',
+                    [],
+                    4
+                ))
+                ->addLink(new MenuLink(
+                    __('Wizard assignments'),
+                    'WizardsAssignments',
+                    'wizards',
+                    'assignments',
+                    '',
+                    'fas fa-magic',
                     [],
                     4
                 ))

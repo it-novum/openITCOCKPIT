@@ -32,6 +32,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ParenthostsTable;
+use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
@@ -846,19 +847,44 @@ class DashboardsController extends AppController {
 
             $user = $this->getUser();
 
-            $userImage = '/img/fallback_user.png';
+
+            $userImage = null;
+
             if ($user->get('image') != null && $user->get('image') != '') {
                 if (file_exists(WWW_ROOT . 'img' . DS . 'userimages' . DS . $user->get('image'))) {
                     $userImage = '/img/userimages' . DS . $user->get('image');
                 }
             }
 
+            if ($userImage === null) {
+                $userImage = '/img/fallback_user.png';
+
+                $User = new User($this->getUser());
+                $userImage = $User->getUserAvatar();
+
+            }
+
+
             $userFullName = sprintf('%s %s', $user->get('firstname'), $user->get('lastname'));
+
+            /** @var RegistersTable $RegistersTable */
+            $RegistersTable = TableRegistry::getTableLocator()->get('Registers');
+
+
+            $license = $RegistersTable->getLicense();
+            $isCommunityEdition = false;
+            $hasSubscription = $license !== null;
+            if (isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()) {
+                $isCommunityEdition = true;
+            }
 
 
             $this->set('userImage', $userImage);
             $this->set('userFullName', $userFullName);
             $this->set('userTimezone', $user->get('timezone'));
+            $this->set('systemname', $this->getSystemname());
+            $this->set('isCommunityEdition', $isCommunityEdition);
+            $this->set('hasSubscription', $hasSubscription);
 
             return;
         }

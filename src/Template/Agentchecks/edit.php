@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="AgentconnectorsAgent">
+        <a ui-sref="AgentconnectorsWizard">
             <i class="fa fa-user-secret"></i> <?php echo __('openITCOCKPIT Agent'); ?>
         </a>
     </li>
@@ -40,7 +40,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <?php echo __('Add'); ?>
+        <?php echo __('Edit'); ?>
     </li>
 </ol>
 
@@ -50,7 +50,7 @@
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Edit openITCOCKPIT Agent check:'); ?>
-                    {{post.Agentcheck.name}}
+                    <span class="fw-300"><i>{{post.Agentcheck.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <button class="btn btn-xs btn-default shadow-0" ui-sref="AgentchecksIndex">

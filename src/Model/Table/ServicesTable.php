@@ -19,7 +19,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -2629,6 +2628,9 @@ class ServicesTable extends Table {
             ->contain([
                 'Servicetemplates'             => [
                     'Agentchecks',
+                    'Servicetemplatecommandargumentvalues' => [
+                        'Commandarguments'
+                    ]
                 ],
                 'Servicecommandargumentvalues' => [
                     'Commandarguments'
@@ -2643,28 +2645,17 @@ class ServicesTable extends Table {
 
         $services = $this->emptyArrayIfNull($query->toArray());
 
-        $ServicetemplateArgsCache = new KeyValueStore();
-
         foreach ($services as $index => $service) {
             if (!empty($service['servicecommandargumentvalues'])) {
                 //Arguments from service
                 $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
-                $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
-                $servicecommandargumentvalues = Hash::extract($servicecommandargumentvalues, '{n}.value');
             } else {
                 //Use arguments from service template
-                if (!$ServicetemplateArgsCache->has($service['servicetemplate_id'])) {
-                    $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit($service['servicetemplate_id']);
-
-                    $servicecommandargumentvalues = $servicetemplate['Servicetemplate']['servicetemplatecommandargumentvalues'];
-                    $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
-
-                    $servicecommandargumentvalues = Hash::extract($servicecommandargumentvalues, '{n}.value');
-                    $ServicetemplateArgsCache->set($service['servicetemplate_id'], $servicecommandargumentvalues);
-                }
-
-                $servicecommandargumentvalues = $ServicetemplateArgsCache->get($service['servicetemplate_id']);
+                $servicecommandargumentvalues = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
             }
+
+            $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
+            $servicecommandargumentvalues = Hash::extract($servicecommandargumentvalues, '{n}.value');
 
             $services[$index]['args_for_config'] = $servicecommandargumentvalues;
         }
@@ -3206,7 +3197,8 @@ class ServicesTable extends Table {
             ->select([
                 'Services.id'
             ])->where([
-                'Services.host_id IN' => $hostIds
+                'Services.host_id IN'   => $hostIds,
+                'Services.service_type' => GENERIC_SERVICE
             ])->disableHydration();
 
         $result = $query->toArray();
@@ -3214,6 +3206,39 @@ class ServicesTable extends Table {
             return [];
         }
         return $result;
+    }
+
+    /**
+     * @param array $hostIds
+     * @return array
+     */
+    public function getServiceNamesByHostIdForWizard($hostIds = [], $enableHydration = false) {
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+        if (empty($hostIds)) {
+            return [];
+        }
+        $hostIds = array_unique($hostIds);
+
+        $query = $this->find();
+        $query->select([
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)')
+        ])->where([
+            'Services.host_id IN' => $hostIds
+        ])->contain([
+            'Servicetemplates'
+        ])->enableHydration($enableHydration);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        $serviceNames = [];
+        foreach ($result as $value) {
+            $serviceNames[] = $value['servicename'];
+        }
+        return array_unique($serviceNames);
     }
 
     /**
@@ -3768,5 +3793,163 @@ class ServicesTable extends Table {
             'disabledServiceIds' => $disabledServiceIds,
             'errors'             => $errors
         ];
+    }
+
+    /**
+     * @param $hostId
+     * @param $containerIds
+     * @return array
+     */
+    public function cleanupServicesByHostIdAndRemovedContainerIdsTest($hostId, $containerIds) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Servicegroups.id'
+            ])
+            ->innerJoinWith('Servicegroups', function (Query $q) {
+                return $q->innerJoinWith('Containers');
+            })
+            ->where([
+                'Services.host_id'         => $hostId,
+                'Containers.parent_id IN ' => $containerIds
+            ])->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * Check if the service was part of a service groups outside of new permissions
+     * If yes, records must be deleted for valid configuration
+     *
+     * @param $hostId
+     * @param $removedContainerIds
+     * @param $userId
+     */
+    public function _cleanupServicesByHostIdAndRemovedContainerIds($hostId, $removedContainerIds, $userId) {
+        if (!is_array($removedContainerIds)) {
+            $removedContainerIds = [$removedContainerIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Servicegroups.id'
+            ])
+            ->innerJoinWith('Servicegroups', function (Query $q) {
+                return $q->innerJoinWith('Containers');
+            })
+            ->where([
+                'Services.host_id'         => $hostId,
+                'Containers.parent_id IN ' => $removedContainerIds
+            ])
+            ->disableHydration()
+            ->all();
+
+        $recordsToDelete = $this->emptyArrayIfNull($query->toArray());
+        if (empty($recordsToDelete)) {
+            return;
+        }
+        $recordsToDelete = Hash::combine(
+            $recordsToDelete,
+            null,
+            '{n}.id',
+            '{n}._matchingData.Servicegroups.id'
+
+        );
+        /** @var ServicegroupsTable $ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        foreach ($recordsToDelete as $servicegroupId => $serviceIdsToDelete) {
+            $servicegroupEntity = $ServicegroupsTable->get($servicegroupId, [
+                'contain' => [
+                    'Containers',
+                    'Services'
+                ]
+            ]);
+            $servicegroupServiceIds = Hash::extract($servicegroupEntity->get('services'), '{n}.id');
+            $newServiceIds = array_diff(
+                $servicegroupServiceIds,
+                $serviceIdsToDelete
+            );
+
+            $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, [
+                'services' => [
+                    '_ids' => $newServiceIds
+                ]
+            ]);
+
+            $ServicegroupsTable->save($servicegroupEntity);
+            if (!$servicegroupEntity->hasErrors()) {
+                //No errors
+                /** @var ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'edit',
+                    'servicegroups',
+                    $servicegroupEntity->id,
+                    OBJECT_SERVICEGROUP,
+                    $servicegroupEntity->get('container')->get('parent_id'),
+                    $userId,
+                    $servicegroupEntity->get('container')->get('name'),
+                    /** Create changelog for only service changes */
+                    $ServicegroupsTable->resolveDataForChangelog([
+                        'Servicegroup' => [
+                            'services' => [
+                                '_ids' => $newServiceIds
+                            ]
+                        ]
+                    ]),
+                    $ServicegroupsTable->resolveDataForChangelog([
+                        'Servicegroup' => [
+                            'services' => [
+                                '_ids' => $servicegroupServiceIds
+                            ]
+                        ]
+                    ])
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * @param int $hostId
+     * @return array
+     */
+    public function getAgentServicesByHostId($hostId) {
+        $query = $this->find()
+            ->contain([
+                'Servicecommandargumentvalues',
+                'Servicetemplates' => [
+                    'Servicetemplatecommandargumentvalues'
+                ]
+            ])
+            ->where([
+                'Services.host_id'      => $hostId,
+                'Services.service_type' => OITC_AGENT_SERVICE
+            ])
+            ->disableHydration()
+            ->all();
+
+
+        $services = $this->emptyArrayIfNull($query->toArray());
+        foreach ($services as $index => $service) {
+            if (empty($service['servicecommandargumentvalues'])) {
+                if (($service['command_id'] === $service['servicetemplate']['command_id'] || $service['command_id'] === null)) {
+                    $services[$index]['servicecommandargumentvalues'] = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
+                }
+            }
+        }
+
+        return $services;
     }
 }

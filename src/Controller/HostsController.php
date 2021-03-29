@@ -596,6 +596,8 @@ class HostsController extends AppController {
         $mergedHost = $HostMergerForView->getDataForView();
         $hostForChangelog = $mergedHost;
 
+        $oldSharingContainers = $hostForChangelog['Host']['hosts_to_containers_sharing']['_ids'];
+
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
             return;
@@ -662,6 +664,7 @@ class HostsController extends AppController {
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
             }
+            $User = new User($this->getUser());
             $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
 
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
@@ -673,6 +676,20 @@ class HostsController extends AppController {
                 $this->hasRootPrivileges
             );
             $requestData = $this->request->getData();
+
+            $newSharingContainers = array_merge(
+                $requestData['Host']['hosts_to_containers_sharing']['_ids'],
+                [$requestData['Host']['container_id']]
+            );
+
+            $removedSharingContainers = array_diff($oldSharingContainers, $newSharingContainers);
+
+            if (!empty($removedSharingContainers)) {
+                //update dependent service groups and remove services if permissions has been gone
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $ServicesTable->_cleanupServicesByHostIdAndRemovedContainerIds($id, $removedSharingContainers, $User->getId());
+            }
 
             if ($HostContainersPermissions->isPrimaryContainerChangeable() === false) {
                 //Overwrite post data. User is not permitted to set a new primary container id!
@@ -694,7 +711,7 @@ class HostsController extends AppController {
             $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
             //Update contact data
-            $User = new User($this->getUser());
+
             $hostEntity = $HostsTable->get($id);
             $hostEntity = $HostsTable->patchEntity($hostEntity, $dataForSave);
             $HostsTable->save($hostEntity);
@@ -1899,7 +1916,7 @@ class HostsController extends AppController {
         $host = $HostsTable->getHostForBrowser($id);
 
         //Check permissions
-        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n},id');
+        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
         $containerIdsToCheck[] = $host['container_id'];
 
         //Check if user is permitted to see this object
@@ -1917,16 +1934,30 @@ class HostsController extends AppController {
         }
         $hostObj = new Host($host, $allowEdit);
 
+
         //Load containers information
-        $mainContainer = $ContainersTable->getTreePathForBrowser($host['container_id'], $this->MY_RIGHTS_LEVEL);
-        //Add shared containers
-        $sharedContainers = [];
-        foreach ($host['hosts_to_containers_sharing'] as $container) {
-            if (isset($container['id']) && $container['id'] != $host['container_id']) {
-                $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
-                //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+        if (array_key_exists($host['container_id'], $this->MY_RIGHTS_LEVEL)) {
+            $mainContainer = $ContainersTable->getTreePathForBrowser($host['container_id'], $this->MY_RIGHTS_LEVEL);
+            //Add shared containers
+            $sharedContainers = [];
+            foreach ($host['hosts_to_containers_sharing'] as $container) {
+                if (isset($container['id']) && $container['id'] != $host['container_id']) {
+                    $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
+                    //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+                }
             }
+        } else {
+            //The user only see this host via host sharing
+            //We need to "fake" a primary container because the user has no permissions to the real
+            //primary container
+            $mainContainer = $ContainersTable->getFakePrimaryContainerForHostBrowserDisplay(
+                Hash::extract($host, 'hosts_to_containers_sharing.{n}.id'),
+                $this->MY_RIGHTS,
+                $this->MY_RIGHTS_LEVEL
+            );
+            $sharedContainers = [];
         }
+
 
         //Load required data to merge and display inheritance data
         $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);

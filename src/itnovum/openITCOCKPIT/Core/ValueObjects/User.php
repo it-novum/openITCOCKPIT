@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
 use Authentication\IdentityInterface;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use LasseRafn\InitialAvatarGenerator\InitialAvatar;
 
 class User {
     /**
@@ -59,6 +60,12 @@ class User {
     private $dateformat;
 
     /**
+     * @var string
+     */
+
+
+
+    /**
      * User constructor.
      * @param IdentityInterface $Identity
      */
@@ -70,6 +77,8 @@ class User {
         $this->id = (int)$Identity->get('id');
         $this->timezone = $Identity->get('timezone');
         $this->dateformat = $Identity->get('dateformat');
+
+
 
     }
 
@@ -113,6 +122,31 @@ class User {
      */
     public function getUserTime() {
         return new UserTime($this->timezone, $this->dateformat);
+    }
+
+    /**
+     * @return UserImage
+     */
+
+    public function getUserAvatar() {
+
+        $diskPath = WWW_ROOT . 'img' . DS . 'userimages' . DS . 'initial_avatar_' . md5($this->fullName) . '.png';
+
+        $Avatar = new InitialAvatar();
+        $image = $Avatar->name($this->fullName)
+                        ->background('#46c3db')
+                        ->color('#c5e3f6')
+                        ->size(200)->generate()
+                        ->save($diskPath, 100, 'png');
+        $userImage = NULL;
+
+        if(file_exists($diskPath)) {
+            $userImage = '/img/userimages' . DS . 'initial_avatar_' . md5($this->fullName) . '.png';
+        }
+
+        return $userImage;
+
+
     }
 
 

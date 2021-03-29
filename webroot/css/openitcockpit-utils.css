@@ -657,3 +657,184 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+/* <i class="fas fa-cloud cloud-gradient font-lg"></i> */
+.cloud-gradient {
+    background: linear-gradient(180deg, transparent 0%, transparent 7%, rgba(7, 19, 42, 0.5) 0%, rgb(156, 184, 239) 92%,
+    transparent 98%, transparent 100%) aliceblue;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Weather icons end */
+
+.wizard-logo-image {
+    border-radius: 50%;
+    background: rgba(243, 243, 243, 0.6);
+    height: 80px;
+    width: 80px;
+    position: relative;
+    border: 5px solid #4285F4;
+    flex: 0 0 80px;
+}
+
+.wizard-logo-image-small {
+    border-radius: 50%;
+    background: rgba(243, 243, 243, 0.6);
+    height: 30px;
+    width: 30px;
+    position: relative;
+    border: 2px solid #4285F4;
+    flex: 0 0 30px;
+}
+
+
+.wizard-logo-image img,
+.wizard-logo-image-small img {
+    max-height: 60%;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.wizard-logo-image-placeholder {
+    border: 5px solid #d6d6d64d;
+}
+
+.wizard-fieldset-legend-auto-width legend {
+    width: auto;
+}
+
+.wizard-assignments-border-left {
+    border-left: 5px solid #4285F4;
+}
+
+.card-body-wizard {
+    background-color: transparent !important;
+}
+
+.agent-mode-box-pull:before {
+    content: "\f019";
+    font-family: FontAwesome;
+    color: #72a4f7;
+    position: absolute;
+    top: 0;
+    right: 10px;
+    font-size: 40px;
+    padding: 0;
+    text-shadow: 1px 1px #4285F4;
+}
+
+.agent-mode-box-push:before {
+    content: "\f093";
+    font-family: FontAwesome;
+    color: #72a4f7;
+    position: absolute;
+    top: -3px;
+    right: 10px;
+    font-size: 40px;
+    padding: 0;
+    text-shadow: 1px 1px #4285F4;
+}
+
+.agent-mode-box-config-edit:before {
+    content: "\f21b";
+    font-family: FontAwesome;
+    color: #72a4f7;
+    position: absolute;
+    top: -3px;
+    right: 10px;
+    font-size: 40px;
+    padding: 0;
+    text-shadow: 1px 1px #4285F4;
+}
+
+.agent-mode-box-create-services:before {
+    content: "\f085";
+    font-family: FontAwesome;
+    color: #36D47E;
+    position: absolute;
+    top: -3px;
+    right: 10px;
+    font-size: 40px;
+    padding: 0;
+    text-shadow: 1px 1px #00C851;
+}
+
+.hr-text,
+.hr-text-brands {
+    line-height: 1em;
+    position: relative;
+    outline: 0;
+    border: 0;
+    color: #4285F4;
+    text-align: left;
+    height: 1.5em;
+    padding-left: 10px;
+    opacity: 0.8;
+}
+
+.hr-text:before,
+.hr-text-brands:before {
+    content: '';
+    background: #4285F4;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+}
+
+.hr-text:after {
+    font-family: "FontAwesome";
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding: 0 .5em;
+    line-height: 1.5em;
+    color: #FFFFFF;
+    background-color: #4285F4;
+    border-radius: 4px;
+}
+
+.hr-text-brands:after {
+    font-family: "Font Awesome 5 Brands";
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding: 0 .5em;
+    line-height: 1.5em;
+    color: #FFFFFF;
+    background-color: #4285F4;
+    border-radius: 4px;
+}
+
+.chosen-container .chosen-drop {
+    left: -99000px;
+}
+
+.word-break {
+    word-break: break-all;
+}
+
+/* Wizard cards */
+.wizard-card-group {
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: wrap;
+}
+.wizard-card {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.wizard-card-block {
+    flex: 1;
+}

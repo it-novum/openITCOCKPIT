@@ -71,9 +71,6 @@ class AclDependencies {
     public function __construct() {
         // Add actions that should always be allowed.
         $this
-            ->allow('Agentchecks', 'getAgentchecksForMapping');
-
-        $this
             ->allow('Angular', 'index')
             ->allow('Angular', 'paginator')
             ->allow('Angular', 'scroll')
@@ -140,8 +137,8 @@ class AclDependencies {
             ->allow('Angular', 'thresholds');
 
         $this
-            ->allow('Agentconnector', 'certificate')
-            ->allow('Agentconnector', 'updateCheckdata');
+            ->allow('Agentconnector', 'register_agent')
+            ->allow('Agentconnector', 'submit_checkdata');
 
         $this
             ->allow('Automaps', 'icon')
@@ -258,15 +255,13 @@ class AclDependencies {
 
 
         $this
-            ->dependency('Agentconnector', 'config', 'Agentconnector', 'createServices')
-            ->dependency('Agentconnector', 'config', 'Agentconnector', 'getServicesToCreateByHostUuid')
-            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'config')
-            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'add')
-            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'edit')
-            ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'changetrust')
-            ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'delete')
-            ->dependency('Agentconnector', 'pushCache', 'Agentconnector', 'downloadPushedCheckdata');
-
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'loadHostsByString')
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'install')
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'autotls')
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'select_agent')
+            ->dependency('Agentconnector', 'overview', 'Agentconnector', 'pull')
+            ->dependency('Agentconnector', 'overview', 'Agentconnector', 'push')
+            ->dependency('Agentconnector', 'delete', 'Agentconnector', 'delete_push_agent');
 
         $this
             ->dependency('Automaps', 'add', 'Automaps', 'getMatchingHostAndServices')
@@ -393,6 +388,7 @@ class AclDependencies {
 
         $this
             ->dependency('Hosttemplates', 'index', 'Hosttemplates', 'view')
+            ->dependency('Hosttemplates', 'index', 'Hosttemplates', 'loadHosttemplates')
             ->dependency('Hosttemplates', 'add', 'Hosttemplates', 'loadElementsByContainerId')
             ->dependency('Hosttemplates', 'add', 'Hosttemplates', 'loadContainers')
             ->dependency('Hosttemplates', 'add', 'Hosttemplates', 'loadCommands')
@@ -585,7 +581,13 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'GraphiteWeb')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'restorDefault')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'dynamicDirective')
-            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NSTAMaster');
+            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NSTAMaster')
+            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'Gearman')
+            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'PhpFpmOitc');
+
+        $this
+            ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular')
+            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadElementsByContainerId');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {

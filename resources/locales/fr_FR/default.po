@@ -17392,8 +17392,8 @@ msgid "Debugging"
 msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:582
-msgid "Agent Configuration"
-msgstr ""
+msgid "Agent Wizard"
+msgstr "Agent Assistant"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:592
 msgid "Agent Overview"

@@ -735,5 +735,33 @@ class HosttemplatesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosttemplatecommandargumentvalues']);
     }
 
+    /**
+     * @param int|null $containerId
+     */
+    public function loadHosttemplates($containerId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->getQuery('containerId');
+        $HosttemplateFilter = new HosttemplateFilter($this->request);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $hosttemplates = Api::makeItJavaScriptAble(
+            $HosttemplatesTable->getHosttemplatesForAngular($containerIds, $HosttemplateFilter)
+        );
+
+        $this->set('hosttemplates', $hosttemplates);
+        $this->viewBuilder()->setOption('serialize', ['hosttemplates']);
+    }
 
 }

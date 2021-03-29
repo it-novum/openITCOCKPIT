@@ -2,16 +2,15 @@
 
 namespace App\Model\Table;
 
-use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Agentconfig;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 /**
  * Agentconfigs Model
@@ -31,7 +30,6 @@ use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
  */
 class AgentconfigsTable extends Table {
 
-    use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
     use CustomValidationTrait;
 
@@ -51,8 +49,11 @@ class AgentconfigsTable extends Table {
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Hosts', [
-            'foreignKey' => 'host_id'
+            'foreignKey' => 'host_id',
+            'joinType'   => 'INNER'
         ]);
+
+        $this->hasOne('PushAgents');
     }
 
     /**
@@ -152,152 +153,105 @@ class AgentconfigsTable extends Table {
     }
 
     /**
-     * @param int $host_id
+     * @param int $hostId
      * @return bool
      */
-    public function existsByHostId($host_id) {
-        return $this->exists(['Agentconfigs.host_id' => $host_id]);
-    }
-
-    /**
-     * @param int $hostId
-     * @param bool $defaultIfNoConfig
-     * @return array|\Cake\Datasource\EntityInterface|null
-     */
-    public function getConfigByHostId($hostId, $defaultIfNoConfig = true) {
-        /** @var ProxiesTable $ProxiesTable */
-        $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
-        $proxySettings = $ProxiesTable->getSettings();
-
-        $isSystemsettingsProxyEnabled = false;
-        if ($proxySettings['enabled']) {
-            $isSystemsettingsProxyEnabled = true;
-        }
-
-        $default = [
-            'port'         => 3333,
-            'use_https'    => 0,
-            'insecure'     => 1,
-            'basic_auth'   => 0,
-            'proxy'        => $isSystemsettingsProxyEnabled,
-            'username'     => '',
-            'password'     => '',
-            'push_noticed' => 0
-        ];
-
-        $record = $this->find()
-            ->where([
-                'Agentconfigs.host_id' => $hostId
-            ])
-            ->first();
-
-        if ($record !== null) {
-            return [
-                'id'           => (int)$record->get('id'),
-                'host_id'      => (int)$record->get('host_id'),
-                'port'         => (int)$record->get('port'),
-                'use_https'    => (int)$record->get('use_https'),
-                'insecure'     => (int)$record->get('insecure'),
-                'basic_auth'   => (int)$record->get('basic_auth'),
-                'proxy'        => $record->get('proxy'),
-                'username'     => $record->get('username'),
-                'password'     => $record->get('password'),
-                'push_noticed' => (int)$record->get('push_noticed'),
-            ];
-        } else {
-            if ($defaultIfNoConfig) {
-                return $default;
-            }
-        }
-
-        return $record;
-    }
-
-    /**
-     * @param int $hostId
-     * @return \App\Model\Entity\Agentconfig|array|\Cake\Datasource\EntityInterface|null
-     */
-    public function getConfigOrEmptyEntity($hostId) {
-        $record = $this->find()
-            ->where([
-                'Agentconfigs.host_id' => $hostId
-            ])
-            ->first();
-
-        if ($record === null) {
-            return $this->newEmptyEntity();
-        }
-
-        return $record;
+    public function existsByHostId($hostId) {
+        return $this->exists(['Agentconfigs.host_id' => $hostId]);
     }
 
     /**
      * @param $hostId
-     * @return bool
+     * @return Agentconfig|\Cake\Datasource\EntityInterface
      */
-    public function pushNoticedForHost($hostId) {
-        $query = $this->find()
+    public function getConfigByHostId($hostId) {
+        return $this->find()
             ->where([
-                'host_id'      => $hostId,
-                'push_noticed' => 1
+                'Agentconfigs.host_id' => $hostId
             ])
-            ->first();
-        return !empty($query);
+            ->firstOrFail();
     }
 
-    /**
-     * @param $hostUuid
-     * @param bool $pushNoticed
-     */
-    public function updatePushNoticedForHostIfConfigExists($hostUuid, $pushNoticed = true) {
-        /** @var HostsTable $HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-        try {
-            $hostId = $HostsTable->getHostIdByUuid($hostUuid);
-
-            $query = $this->find()
-                ->where([
-                    'host_id' => $hostId,
-                ])
-                ->firstOrFail();
-
-            $query->set('push_noticed', (int)$pushNoticed);
-            $this->save($query);
-
-        } catch (\Exception $e) {
-            //do nothing
-        }
-    }
-
-    /**
-     * @param AgentconfigsFilter $AgentconfigsFilter
-     * @param PaginateOMat|null $PaginateOMat
-     * @return array
-     */
-    public function getForList(AgentconfigsFilter $AgentconfigsFilter, PaginateOMat $PaginateOMat = null) {
-        $query = $this->find('all')
-            ->contain([
-                'Hosts'
+    public function getPullAgents(GenericFilter $GenericFilter, PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Agentconfigs.id',
+                'Agentconfigs.host_id',
+                'Agentconfigs.port',
+                'Agentconfigs.use_https',
+                'Agentconfigs.insecure',
+                'Agentconfigs.use_autossl',
+                'Agentconfigs.autossl_successful',
+                'Agentconfigs.use_push_mode',
+                'Agentconfigs.basic_auth'
             ])
-            ->where($AgentconfigsFilter->indexFilter())
-            ->order($AgentconfigsFilter->getOrderForPaginator('Agentconfigs.id', 'desc'))
-            ->disableHydration();
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })->contain([
+                'Hosts' => [
+                    'HostsToContainersSharing'
+                ]
+            ])
+            ->where([
+                'Agentconfigs.use_push_mode' => 0
+            ])
+            ->group(['Agentconfigs.id']);
+
+
+        $query->where($GenericFilter->genericFilters());
+        $query->disableHydration();
+        $query->order($GenericFilter->getOrderForPaginator('Hosts.name', 'asc'));
 
         if ($PaginateOMat === null) {
             //Just execute query
-            if (empty($query)) {
-                return [];
-            }
-            $result = $query->toArray();
+            $result = $this->emptyArrayIfNull($query->toArray());
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
-
         return $result;
+    }
+
+
+    /**
+     * @param string $usePushMode
+     * @return array
+     */
+    public function getHostIdsByMode($mode = 'push') {
+        $usePushMode = (int)$mode === 'push';
+        $query = $this->find('list', [
+            'valueField' => 'host_id'
+        ])->where([
+            'Agentconfigs.use_push_mode' => $usePushMode
+        ]);
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @return array
+     */
+    public function getOldConfigsThatNeedsMigration() {
+        // Get all records that are from Agent 1.x and needs to be "migrated" for Agent 3.x
+        $query = $this->find()
+            ->where([
+                'Agentconfigs.config' => ''
+            ])
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+
+        return $query->toArray();
     }
 }

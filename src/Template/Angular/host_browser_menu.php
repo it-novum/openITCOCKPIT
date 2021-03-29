@@ -144,8 +144,8 @@
                             <?php echo __('Allocate service template group'); ?>
                         </a>
                     <?php endif; ?>
-                    <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                        <a ui-sref="AgentconnectorsConfig({hostId: config.hostId})"
+                    <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
+                        <a ui-sref="AgentconnectorsWizard({hostId: config.hostId})"
                            class="dropdown-item">
                             <i class="fa fa-user-secret"></i>
                             <?php echo __('openITCOCKPIT Agent discovery'); ?>

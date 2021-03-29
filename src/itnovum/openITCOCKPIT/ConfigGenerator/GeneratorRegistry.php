@@ -43,11 +43,13 @@ class GeneratorRegistry {
             //new phpNSTAMaster(),
             new DbBackend(),
             new PerfdataBackend(),
+            new Gearman(),
             new GraphingDocker(),
             new StatusengineCfg(),
             new Statusengine3Cfg(),
             new GraphiteWeb(),
-            new NSTAMaster()
+            new NSTAMaster(),
+            new PhpFpmOitc()
         ];
 
         if (class_exists('SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapd')) {
@@ -73,7 +75,8 @@ class GeneratorRegistry {
                 //new NagiosModuleConfig(),
                 new DbBackend(),
                 new PerfdataBackend(),
-                new GraphiteWeb()
+                new GraphiteWeb(),
+                new Gearman()
             ],
             __('Monitoring engine')                           => [
                 new NagiosCfg()
@@ -90,6 +93,9 @@ class GeneratorRegistry {
             ],
             __('Carbon and Whisper (Graphing)')               => [
                 new GraphingDocker()
+            ],
+            __('PHP-FPM')               => [
+                new PhpFpmOitc()
             ]
         ];
 

@@ -1162,8 +1162,8 @@ class UsersTable extends Table {
                     break;
             }
 
-            $newWidth = 120;
-            $newHeight = 120;
+            $newWidth = 240;
+            $newHeight = 240;
             //Thanks to http://php.net/manual/de/function.imagecopyresized.php#50019 :)
             if ($width > $height && $newWidth < $newHeight) {
                 $newHeight = $height / ($width / $newWidth);
