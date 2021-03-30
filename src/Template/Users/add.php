@@ -55,7 +55,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'users')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -201,22 +202,22 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <?php if($isOAuth2): ?>
-                        <div class="form-group" ng-class="{'has-error': errors.is_oauth}">
-                            <div class="custom-control custom-checkbox  margin-bottom-10"
-                                 ng-class="{'has-error': errors.is_oauth}">
+                        <?php if ($isOAuth2): ?>
+                            <div class="form-group" ng-class="{'has-error': errors.is_oauth}">
+                                <div class="custom-control custom-checkbox  margin-bottom-10"
+                                     ng-class="{'has-error': errors.is_oauth}">
 
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="userIsOAuth"
-                                       ng-model="post.User.is_oauth">
-                                <label class="custom-control-label" for="userIsOAuth">
-                                    <?php echo __('Enable login through oAuth2'); ?>
-                                </label>
+                                    <input type="checkbox"
+                                           class="custom-control-input"
+                                           ng-true-value="1"
+                                           ng-false-value="0"
+                                           id="userIsOAuth"
+                                           ng-model="post.User.is_oauth">
+                                    <label class="custom-control-label" for="userIsOAuth">
+                                        <?php echo __('Enable login through oAuth2'); ?>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
                         <?php endif; ?>
 
                         <div class="form-group required" ng-class="{'has-error': errors.firstname}">
@@ -373,7 +374,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <?php foreach ($timezones as $continent => $continentTimezones): ?>
                                     <optgroup label="<?php echo h($continent); ?>">
                                         <?php foreach ($continentTimezones as $timezoneKey => $timezoneName): ?>
-                                            <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                            <option
+                                                value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
                                         <?php endforeach; ?>
                                     </optgroup>
                                 <?php endforeach;; ?>
@@ -420,7 +422,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <!-- Prevent FireFox and Chrome from filling the users email into the timezone select box  :facepalm: -->
                         <input type="text" name="name" style="display:none">
 
-                        <div class="form-group required" ng-class="{'has-error': errors.password}" ng-show="post.User.is_oauth === 0">
+                        <div class="form-group required" ng-class="{'has-error': errors.password}"
+                             ng-show="post.User.is_oauth === 0">
                             <label class="control-label">
                                 <?php echo __('New password'); ?>
                             </label>
@@ -437,7 +440,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}" ng-show="post.User.is_oauth === 0">
+                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}"
+                             ng-show="post.User.is_oauth === 0">
+
                             <label class="control-label">
                                 <?php echo __('Confirm new password'); ?>
                             </label>
@@ -450,6 +455,53 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
+
+                        <!-- api key start-->
+
+                        <fieldset>
+                            <legend class="margin-0 padding-top-10">
+                                <h4><?php echo __('Api keys'); ?> </h4>
+                            </legend>
+                            <div ng-repeat="(index,apikey) in post.User.apikeys">
+                                <table class="table-default col-lg-12">
+                                    <tr class="col-lg-12">
+                                        <td class=""><?php echo __('Description'); ?></td>
+                                        <td class="col-8"><?php echo __('Api key'); ?></td>
+                                    </tr>
+                                </table>
+                                <!--label></label-->
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control col-lg-4 mr-2"
+                                           ng-model="post.User.apikeys[index].description" maxlength="255"
+                                           id="description_{{ index }}">
+                                    <input ng-model="post.User.apikeys[index].apikey"
+                                           class="form-control col-lg-6"
+                                           readonly
+                                           maxlength="255"
+                                           type="text"
+                                           id="ApiKey_{{ index }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-success"
+                                                ng-click="createApiKey(index)"
+                                                type="button"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            <i class="fa fa-key"></i>
+                                            <?= __('Generate new API key'); ?>
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-danger btn-sm waves-effect waves-themed ml-2" type="button"
+                                            ng-click="removeApikey(index)"><i
+                                            class="fa fa-trash fa-lg"></i></button>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="col-lg-12 text-right mt-2">
+                            <a href="javascript:void(0);" class="btn btn-success btn-sm" ng-click="addApikey()">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('Add ApiKey'); ?>
+                            </a>
+                        </div>
+                        <!-- api key end-->
 
                         <div class="card margin-top-10">
                             <div class="card-body">
