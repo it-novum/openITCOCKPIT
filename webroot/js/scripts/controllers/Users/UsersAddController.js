@@ -4,6 +4,7 @@ angular.module('openITCOCKPIT')
             createAnother: false
         };
         $scope.localeOptions = [];
+        $scope.apikeys = [];
 
         var clearForm = function(){
             $scope.selectedUserContainers = [];
@@ -32,7 +33,9 @@ angular.module('openITCOCKPIT')
                         _ids: []
                     },
                     ContainersUsersMemberships: {},
+                    apikeys: []
                 }
+
             };
         };
         clearForm();
@@ -49,6 +52,32 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.intervalText = 'disabled';
+
+        $scope.createApiKey = function(index){
+            $http.get("/profile/create_apikey.json?angular=true")
+                .then(function(result){
+                    $scope.post.User.apikeys[index].apikey = result.data.apikey;
+                });
+        };
+
+        $scope.addApikey = function(){
+            $scope.post.User.apikeys.push({
+                apikey: '',
+                description: '',
+                index: Object.keys($scope.post.User.apikeys).length
+            });
+        };
+
+        $scope.removeApikey = function(index){
+            var apikeys = [];
+            for(var i in $scope.post.User.apikeys){
+                if($scope.post.User.apikeys[i]['index'] !== index){
+                    apikeys.push($scope.post.User.apikeys[i]);
+                }
+            }
+            $scope.post.User.apikeys = apikeys;
+
+        };
 
         $scope.loadUserContaineRoles = function(){
             $http.get("/users/loadContainerRoles.json", {
@@ -145,6 +174,15 @@ angular.module('openITCOCKPIT')
                 //oAuth 2 users don't have a password
                 $scope.post.User.password = '';
                 $scope.post.User.confirm_password = '';
+            }
+            var apikeys = [];
+            if($scope.post.User.apikeys.length > 0){
+                for(var i in $scope.post.User.apikeys){
+                    if($scope.post.User.apikeys[i].apikey != ''){
+                        apikeys.push($scope.post.User.apikeys[i]);
+                    }
+                }
+                $scope.post.User.apikeys = apikeys;
             }
 
             $http.post("/users/add.json?angular=true",
