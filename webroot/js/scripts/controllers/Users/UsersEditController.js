@@ -86,13 +86,12 @@ angular.module('openITCOCKPIT')
             $scope.post.User.apikeys.push({
                 apikey: '',
                 description: '',
-                index: Object.keys($scope.post.User.apikeys).length
+                index: $scope.post.User.apikeys.length + 1
             });
         };
 
         $scope.removeApikey = function(index){
             var apikeys = [];
-            console.log($scope.post.User.apikeys);
             for(var i in $scope.post.User.apikeys){
                 if($scope.post.User.apikeys[i]['index'] !== index){
                     apikeys.push($scope.post.User.apikeys[i]);
@@ -194,6 +193,7 @@ angular.module('openITCOCKPIT')
             }
             $scope.post.User.ContainersUsersMemberships = ContainersUsersMemberships;
             var apikeys = [];
+            var apikeysTmp = $scope.post.User.apikeys;
             if($scope.post.User.apikeys.length > 0){
                 for(var i in $scope.post.User.apikeys){
                     if($scope.post.User.apikeys[i].apikey != ''){
@@ -218,6 +218,7 @@ angular.module('openITCOCKPIT')
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
+                    $scope.post.User.apikeys = apikeysTmp;
                 }
             });
         };

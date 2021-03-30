@@ -39,7 +39,7 @@ class ApikeysTable extends Table {
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
             'joinType'   => 'INNER'
-        ]);
+        ])->setDependent(true);
     }
 
     /**

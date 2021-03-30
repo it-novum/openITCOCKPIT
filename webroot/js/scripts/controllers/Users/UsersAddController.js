@@ -64,7 +64,7 @@ angular.module('openITCOCKPIT')
             $scope.post.User.apikeys.push({
                 apikey: '',
                 description: '',
-                index: Object.keys($scope.post.User.apikeys).length
+                index: $scope.post.User.apikeys.length + 1
             });
         };
 
@@ -176,6 +176,7 @@ angular.module('openITCOCKPIT')
                 $scope.post.User.confirm_password = '';
             }
             var apikeys = [];
+            var apikeysTmp = $scope.post.User.apikeys;
             if($scope.post.User.apikeys.length > 0){
                 for(var i in $scope.post.User.apikeys){
                     if($scope.post.User.apikeys[i].apikey != ''){
@@ -209,6 +210,7 @@ angular.module('openITCOCKPIT')
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
+                    $scope.post.User.apikeys = apikeysTmp;
                 }
             });
         };

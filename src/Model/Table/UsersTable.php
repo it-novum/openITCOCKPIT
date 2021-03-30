@@ -8,7 +8,6 @@ use App\Model\Entity\User;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -66,13 +65,14 @@ class UsersTable extends Table {
             'joinType'   => 'INNER'
         ]);
         $this->hasMany('Apikeys', [
-            'foreignKey' => 'user_id',
-            'saveStrategy'     => 'replace'
+            'foreignKey'   => 'user_id',
+            'saveStrategy' => 'replace'
+        ])->setDependent(true);
 
-        ]);
         $this->hasMany('Contacts', [
             'foreignKey' => 'user_id'
         ]);
+
         $this->belongsToMany('Containers', [
             'through'          => 'ContainersUsersMemberships',
             'className'        => 'Containers',
@@ -933,7 +933,7 @@ class UsersTable extends Table {
                 'Users.firstname'  => $firstname,
                 'Users.lastname'   => $lastname,
                 'Users.is_active'  => 1,
-                'Users.is_oauth'  => 0,
+                'Users.is_oauth'   => 0,
                 'Users.email LIKE' => sprintf('%%%s%%', $likeEmail)
             ])
             ->first();

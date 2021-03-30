@@ -490,8 +490,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                         </button>
                                     </div>
                                     <button class="btn btn-danger btn-sm waves-effect waves-themed ml-2" type="button"
-                                            ng-click="removeApikey(index)"><i
-                                            class="fa fa-trash fa-lg"></i></button>
+                                            ng-click="removeApikey(apikey.index)">
+                                        <i class="fa fa-trash fa-lg"></i>
+                                    </button>
                                 </div>
                             </div>
                         </fieldset>

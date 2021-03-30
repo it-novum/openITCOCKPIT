@@ -49,9 +49,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <span ng-if="!isLdapUser"><?php echo __('Edit local user:'); ?></span>
                     <span ng-if="isLdapUser"><?php echo __('Edit LDAP user:'); ?></span>
                     <span class="fw-300"><i>
-                        {{post.User.firstname}},
-                        {{post.User.lastname}}
-                    </i></span>
+                            {{post.User.firstname}},
+                            {{post.User.lastname}}
+                        </i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'users')): ?>
@@ -522,8 +522,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                         </button>
                                     </div>
                                     <button class="btn btn-danger btn-sm waves-effect waves-themed ml-2" type="button"
-                                            ng-click="removeApikey(index)"><i
-                                            class="fa fa-trash fa-lg"></i></button>
+                                            ng-click="removeApikey(apikey.index)">
+                                        <i class="fa fa-trash fa-lg"></i>
+                                    </button>
                                 </div>
                             </div>
                         </fieldset>
