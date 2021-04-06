@@ -30,6 +30,7 @@ namespace App\Controller;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Entity\Automap;
+use App\Model\Table\WidgetsTable;
 use App\Model\Table\AutomapsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
@@ -39,6 +40,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Exception;
+use http\Exception\RuntimeException;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
@@ -485,6 +487,108 @@ class AutomapsController extends AppController {
         $this->set('hostCount', $hostCount);
         $this->set('serviceCount', $serviceCount);
         $this->viewBuilder()->setOption('serialize', ['hostCount', 'serviceCount']);
+    }
+
+    public function loadAutomapsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+
+        $AutomapFilter = new AutomapsFilter($this->request);
+
+        /** @var AutomapsTable $AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
+        $automaps = $AutomapsTable->find()->order(['Automaps.id' => 'asc'])->all();
+
+        $this->set('automaps', $automaps);
+
+        $this->viewBuilder()->setOption('serialize', ['automaps']);
+    }
+
+    public function viewDirective() {
+        //Ship template of Mapeditors view directive.
+        //It is a directive be able to also use the maps as an widget
+        return;
+    }
+
+    public function automapWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        /** @var AutomapsTable $AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widgetEntity = $WidgetsTable->get($widgetId);
+            $widget = $widgetEntity->toArray();
+            $config = [
+                'automap_id' => null
+            ];
+            if ($widget['json_data'] !== null && $widget['json_data'] !== '') {
+                $config = json_decode($widget['json_data'], true);
+                if (!isset($config['automap_id'])) {
+                    $config['automap_id'] = null;
+                }
+            }
+
+            //Check automap permissions
+            print_r($config);
+            if ($config['automap_id'] !== null) {
+                //die( $config['automap_id'] );
+                $automap = $AutomapsTable->get($config['automap_id']);
+                if (!empty($automap) && isset($automap[0])) {
+                    if (!$this->allowedByContainerId($automap['container_id'], false)) {
+                        $config['automap_id'] = null;
+                    }
+                }
+            }
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $automapId = (int)$this->request->getData('automap_id');
+            if ($automapId === 0) {
+                $automapId = null;
+            }
+
+            $config = [
+                'automap_id' => $automapId
+            ];
+            $widgetId = (int)$this->request->getData('Widget.id');
+
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widgetEntity = $WidgetsTable->get($widgetId);
+            $widget['json_data'] = json_encode($config);
+
+            $widgetEntity = $WidgetsTable->patchEntity($widgetEntity, $widget);
+            $WidgetsTable->save($widgetEntity);
+            if (!$widgetEntity->hasErrors()) {
+                $this->set('config', $config);
+                $this->viewBuilder()->setOption('serialize', ['config']);
+                return;
+            }
+
+            $this->serializeCake4Id($widgetEntity);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
     }
 
 }

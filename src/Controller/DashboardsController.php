@@ -1667,4 +1667,6 @@ class DashboardsController extends AppController {
         }
         throw new MethodNotAllowedException();
     }
+
+
 }

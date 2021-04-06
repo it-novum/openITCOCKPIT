@@ -245,6 +245,8 @@ class AclDependencies {
             ->allow('Users', 'login')
             ->allow('Users', 'logout')
             ->allow('Users', 'getLocaleOptions');
+        $this
+            ->allow('Automaps', 'viewDirective');
 
         ///////////////////////////////
         //    Add dependencies       //

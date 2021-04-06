@@ -149,7 +149,7 @@ class WidgetsTable extends Table {
      * @return array
      */
     public function getAvailableWidgets($ACL_PERMISSIONS = []) {
-        /** @var SystemsettingsTable $SystemsettingsTable  */
+        /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
         //Default Widgets static dashboards - no permissions required
@@ -324,14 +324,26 @@ class WidgetsTable extends Table {
             ];
         }
 
-        if($SystemsettingsTable->isWebsiteWidgetEnabled()){
+        if (isset($ACL_PERMISSIONS['automaps']['view'])) {
             $widgets[] = [
-                    'type_id'   => 18,
-                    'title'     => __('Website'),
-                    'icon'      => 'fas fa-globe-europe',
-                    'directive' => 'website-widget',
-                    'width'     => 12,
-                    'height'    => 30
+                'type_id'   => 19,
+                'title'     => __('autoMap'),
+                'icon'      => 'fa fa-magic',
+                'directive' => 'automap-widget',
+                'width'     => 12,
+                'height'    => 10
+            ];
+
+        }
+
+        if ($SystemsettingsTable->isWebsiteWidgetEnabled()) {
+            $widgets[] = [
+                'type_id'   => 18,
+                'title'     => __('Website'),
+                'icon'      => 'fas fa-globe-europe',
+                'directive' => 'website-widget',
+                'width'     => 12,
+                'height'    => 30
             ];
         }
 
@@ -409,7 +421,7 @@ class WidgetsTable extends Table {
         return $widgets;
     }
 
-    public function getWidgetByIdAsCake2($id){
+    public function getWidgetByIdAsCake2($id) {
         $result = $this->find()
             ->where([
                 'Widgets.id' => $id
