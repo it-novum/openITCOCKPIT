@@ -29,7 +29,7 @@
 </li>
 <li ng-repeat-end="" ng-repeat="item in headline.items" ng-class="{'menufilterSelectable': !item.items}">
     <a ng-if="!item.items" ui-sref="{{item.state}}" class="waves-effect waves-themed"
-       title="{{item.name}}" data-filter-tags="{{item.tags}}">
+       title="{{item.name}}" data-filter-tags="{{item.tags}}" ng-click="scrollTop();">
         <i class="{{item.icon}}"></i>
         <span class="menu-item-parent nav-link-text">
             {{item.name}}
