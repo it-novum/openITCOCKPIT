@@ -3,7 +3,6 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
         restrict: 'E',
         templateUrl: '/services/details.html',
         controller: function($scope){
-            console.log($scope);
             var graphStart = 0;
             var graphEnd = 0;
             $scope.currentServiceDetailsId = null;
