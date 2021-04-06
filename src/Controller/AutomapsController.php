@@ -30,24 +30,20 @@ namespace App\Controller;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Entity\Automap;
-use App\Model\Table\WidgetsTable;
 use App\Model\Table\AutomapsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Exception;
-use http\Exception\RuntimeException;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -518,17 +514,15 @@ class AutomapsController extends AppController {
             return;
         }
 
-        /** @var AutomapsTable $AutomapsTable */
+        /** @var $AutomapsTable AutomapsTable */
         $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
-
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId');
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+                throw new NotFoundException('Invalid widget id');
             }
-
             $widgetEntity = $WidgetsTable->get($widgetId);
             $widget = $widgetEntity->toArray();
             $config = [
@@ -540,12 +534,15 @@ class AutomapsController extends AppController {
                     $config['automap_id'] = null;
                 }
             }
-
-            //Check automap permissions
-            print_r($config);
             if ($config['automap_id'] !== null) {
-                //die( $config['automap_id'] );
-                $automap = $AutomapsTable->get($config['automap_id']);
+                $id = $config['automap_id'];
+                if (!$AutomapsTable->existsById($id)) {
+                    throw new NotFoundException(__('Auto map not found'));
+                }
+
+                $automap = $AutomapsTable->get($id);
+                $automap = $automap->toArray();
+                //Check automap permissions
                 if (!empty($automap) && isset($automap[0])) {
                     if (!$this->allowedByContainerId($automap['container_id'], false)) {
                         $config['automap_id'] = null;
@@ -570,7 +567,7 @@ class AutomapsController extends AppController {
             $widgetId = (int)$this->request->getData('Widget.id');
 
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+                throw new NotFoundException('Invalid widget id');
             }
 
             $widgetEntity = $WidgetsTable->get($widgetId);

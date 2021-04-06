@@ -1,9 +1,9 @@
-angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http, $interval, $timeout){
+angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http, $interval, $timeout, $q){
     return {
         restrict: 'E',
         templateUrl: '/services/details.html',
         controller: function($scope){
-
+            console.log($scope);
             var graphStart = 0;
             var graphEnd = 0;
             $scope.currentServiceDetailsId = null;
@@ -33,32 +33,38 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
             $scope.loadServicestatusDetails = function(serviceId){
                 $scope.isLoading = true;
                 $scope.currentServiceDetailsId = serviceId;
-
-                $http.get("/services/browser/" + serviceId + ".json", {
-                    params: {
-                        'angular': true
-                    }
-                }).then(function(result){
-                    $scope.mergedService = result.data.mergedService;
-                    $scope.host = result.data.host;
+                $q.all([
+                    $http.get("/services/browser/" + serviceId + ".json", {
+                        params: {
+                            'angular': true
+                        }
+                    }),
+                    $http.get("/angular/user_timezone.json", {
+                        params: {
+                            'angular': true
+                        }
+                    })
+                ]).then(function(results){
+                    $scope.mergedService = results[0].data.mergedService;
+                    $scope.host = results[0].data.host;
                     $scope.mergedService.disabled = parseInt($scope.mergedService.disabled, 10);
                     $scope.tags = $scope.mergedService.tags.split(',');
-                    $scope.hoststatus = result.data.hoststatus;
-                    $scope.servicestatus = result.data.servicestatus;
+                    $scope.hoststatus = results[0].data.hoststatus;
+                    $scope.servicestatus = results[0].data.servicestatus;
                     $scope.servicestatusForIcon = {
                         Servicestatus: $scope.servicestatus
                     };
 
 
-                    $scope.acknowledgement = result.data.acknowledgement;
-                    $scope.downtime = result.data.downtime;
+                    $scope.acknowledgement = results[0].data.acknowledgement;
+                    $scope.downtime = results[0].data.downtime;
 
-                    $scope.hostAcknowledgement = result.data.hostAcknowledgement;
-                    $scope.hostDowntime = result.data.hostDowntime;
+                    $scope.hostAcknowledgement = results[0].data.hostAcknowledgement;
+                    $scope.hostDowntime = results[0].data.hostDowntime;
 
-                    $scope.canSubmitExternalCommands = result.data.canSubmitExternalCommands;
+                    $scope.canSubmitExternalCommands = results[0].data.canSubmitExternalCommands;
+                    $scope.timezone = results[1].data.timezone;
 
-                    $scope.loadTimezone();
 
                     if($scope.mergedService.has_graph){
                         loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid);
@@ -68,16 +74,6 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                         $scope.isLoading = false;
                     }, 500);
 
-                });
-            };
-
-            $scope.loadTimezone = function(){
-                $http.get("/angular/user_timezone.json", {
-                    params: {
-                        'angular': true
-                    }
-                }).then(function(result){
-                    $scope.timezone = result.data.timezone;
                 });
             };
 

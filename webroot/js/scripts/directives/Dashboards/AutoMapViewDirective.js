@@ -16,9 +16,11 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state)
                     }
                 }).then(function(result){
                     $scope.automap = result.data.automap;
+                    $scope.servicesByHost = result.data.servicesByHost;
 
-                    if($scope.init){
-                        $scope.load();
+                    if($scope.automap.use_paginator){
+                        $scope.paging = result.data.paging;
+                        $scope.scroll = result.data.scroll;
                     }
                     $scope.init = false;
 

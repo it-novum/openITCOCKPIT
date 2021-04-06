@@ -20,7 +20,6 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
                     }
                 }).then(function(result){
                     $scope.automap.automap_id = result.data.config.automap_id;
-                    console.log($scope.automap.automap_id = result.data.config.automap_id);
 
                     //Do not trigger watch on page load
                     setTimeout(function(){
@@ -41,8 +40,7 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
                         'selected[]': $scope.automap.automap_id
                     }
                 }).then(function(result){
-                    console.log($scope.Automaps = result.data.automaps);
-                    $scope.Automaps = result.data.automaps;
+                    $scope.automaps = result.data.automaps;
                 });
             };
 
@@ -69,8 +67,19 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
                 });
             };
 
+            $scope.loadTimezone = function(){
+                $http.get("/angular/user_timezone.json", {
+                    params: {
+                        'angular': true
+                    }
+                }).then(function(result){
+                    $scope.timezone = result.data.timezone;
+                });
+            };
+
 
             $scope.load();
+            $scope.loadTimezone();
 
         },
 

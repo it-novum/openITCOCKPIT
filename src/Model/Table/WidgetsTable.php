@@ -327,7 +327,7 @@ class WidgetsTable extends Table {
         if (isset($ACL_PERMISSIONS['automaps']['view'])) {
             $widgets[] = [
                 'type_id'   => 19,
-                'title'     => __('autoMap'),
+                'title'     => __('Auto Map'),
                 'icon'      => 'fa fa-magic',
                 'directive' => 'automap-widget',
                 'width'     => 12,

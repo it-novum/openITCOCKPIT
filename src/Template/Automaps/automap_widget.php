@@ -62,9 +62,9 @@
 
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
-                                    chosen="Automaps"
+                                    chosen="automaps"
                                     callback="loadAutoMaps"
-                                    ng-options="Automap.id as Automap.name for Automap in Automaps"
+                                    ng-options="automap.id as automap.name for automap in automaps"
                                     ng-model="automap.automap_id">
                             </select>
 
