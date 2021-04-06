@@ -8,12 +8,17 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state)
 
         controller: function($scope){
             $scope.init = true;
+            $scope.currentPage = 1;
+            $scope.useScroll = true;
 
             $scope.load = function(){
+                var params = {
+                    'angular': true,
+                    'scroll': $scope.useScroll,
+                    'page': $scope.currentPage
+                };
                 $http.get("/automaps/view/" + $scope.id + ".json", {
-                    params: {
-                        angular: true
-                    }
+                    params: params
                 }).then(function(result){
                     $scope.automap = result.data.automap;
                     $scope.servicesByHost = result.data.servicesByHost;
@@ -35,6 +40,19 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state)
                 });
 
             };//load function
+
+            $scope.changepage = function(page){
+                if(page !== $scope.currentPage){
+                    $scope.currentPage = page;
+                    $scope.load();
+                }
+            };
+
+            $scope.changeMode = function(val){
+                $scope.useScroll = val;
+                $scope.load();
+            };
+
 
             $scope.$watch('automapId', function(){
                 $scope.id = parseInt($scope.automapId, 10);
