@@ -280,6 +280,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
         link: function($scope, element, attr){
             $scope.showServiceStatusDetails = function(serviceId){
                 $scope.loadServicestatusDetails(serviceId);
+                $( ".page-inner" ).append( $('#angularServiceStatusDetailsModal'));
                 $('#angularServiceStatusDetailsModal').modal('show');
             };
         }

@@ -35,17 +35,15 @@
                 <i class="fa fa-cog fa-sm"></i>
             </a>
             <span ng-show="automap.automap_id === null" class="text-info padding-left-20">
-            <?php echo __('No element selected'); ?>
-        </span>
+                <?php echo __('No element selected'); ?>
+            </span>
 
-            <div
-                style="position: absolute;"
-                class="no-padding"
-                automap-view=""
-                automap-id="automap.automap_id"
-                ng-if="automap.automap_id"></div>
+
+            <div class="no-padding"
+                 automap-view=""
+                 automap-id="automap.automap_id"
+                 ng-if="automap.automap_id"></div>
             <!--end-->
-
 
         </flippy-front>
         <flippy-back class="fixFlippy">
