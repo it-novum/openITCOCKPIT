@@ -703,6 +703,30 @@
                                                 <div class="custom-control custom-checkbox margin-bottom-10">
                                                     <input type="checkbox"
                                                            class="custom-control-input"
+                                                           id="memory"
+                                                           ng-model="config.bool.memory">
+                                                    <label class="custom-control-label"
+                                                           for="memory">
+                                                        <?php echo __('Enable Memory stats'); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <div class="custom-control custom-checkbox margin-bottom-10">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
+                                                           id="swap"
+                                                           ng-model="config.bool.swap">
+                                                    <label class="custom-control-label"
+                                                           for="swap">
+                                                        <?php echo __('Enable Swap stats'); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <div class="custom-control custom-checkbox margin-bottom-10">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
                                                            id="processstats"
                                                            ng-model="config.bool.processstats">
                                                     <label class="custom-control-label"
@@ -840,6 +864,18 @@
                                                     <label class="custom-control-label"
                                                            for="libvirt">
                                                         <?php echo __('Enable KVM checks through libvirt'); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <div class="custom-control custom-checkbox margin-bottom-10">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
+                                                           id="userstats"
+                                                           ng-model="config.bool.userstats">
+                                                    <label class="custom-control-label"
+                                                           for="userstats">
+                                                        <?php echo __('Collect information about logged in users'); ?>
                                                     </label>
                                                 </div>
                                             </div>

@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT').directive('menustats', function($http, $interval
             $interval($scope.load, 30000);
 
             $scope.load();
-
+ 
         },
 
         link: function(scope, element, attr){

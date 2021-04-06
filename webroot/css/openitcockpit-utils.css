@@ -707,11 +707,6 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     border: 5px solid #d6d6d64d;
 }
 
-.wizard-logo-card-height-150 {
-    min-height: 150px;
-    height: 150px;
-}
-
 .wizard-fieldset-legend-auto-width legend {
     width: auto;
 }
@@ -832,3 +827,18 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     word-break: break-all;
 }
 
+/* Wizard cards */
+.wizard-card-group {
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: wrap;
+}
+.wizard-card {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.wizard-card-block {
+    flex: 1;
+}

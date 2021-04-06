@@ -150,6 +150,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $customCss, $fileVersion, PHP_EOL);
         }
     }
+
     ?>
 </head>
 <body class="mod-bg-1">
@@ -178,7 +179,8 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             <main id="js-page-content" role="main" class="page-content" ng-controller="LayoutController">
                 <div id="content" style="opacity: 1;">
 
-                    <div class="alert alert-danger" role="alert" style="display:none;" id="globalSudoServerCouldNotConnect">
+                    <div class="alert alert-danger" role="alert" style="display:none;"
+                         id="globalSudoServerCouldNotConnect">
                         <div class="d-flex align-items-center">
                             <div class="alert-icon width-3">
                                 <div class="icon-stack  icon-stack-sm">
@@ -193,7 +195,8 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                         </div>
                     </div>
 
-                    <div class="alert alert-danger" role="alert" style="display:none;" id="globalSudoServerLostConnection">
+                    <div class="alert alert-danger" role="alert" style="display:none;"
+                         id="globalSudoServerLostConnection">
                         <div class="d-flex align-items-center">
                             <div class="alert-icon width-3">
                                 <div class="icon-stack  icon-stack-sm">
@@ -223,4 +226,3 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 <?php printf('<script src="/%s"></script>', 'smartadmin4/dist/js/app.bundle.js'); ?>
 </body>
 </html>
-
