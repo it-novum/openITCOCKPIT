@@ -89,6 +89,7 @@ plugins/MasterSelfMonitoringModule
 plugins/MkModule
 plugins/NWCModule
 plugins/ImportModule
+plugins/HANAModule
 plugins/HelloworldModule
 plugins/IntialavatarModule
 plugins/CheckmkModule
