@@ -58,14 +58,16 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHosts = function(searchString){
-            $http.get("/hostgroups/loadHosts.json", {
-                params: {
-                    'angular': true,
-                    'containerId': $scope.post.Hostgroup.container.parent_id,
-                    'filter[Hosts.name]': searchString,
-                    'selected[]': $scope.post.Hostgroup.hosts._ids
-                }
-            }).then(function(result){
+            $scope.params = {
+                'angular': true,
+                'containerId': $scope.post.Hostgroup.container.parent_id,
+                'filter[Hosts.name]': searchString,
+                'selected': $scope.post.Hostgroup.hosts._ids
+            }
+
+            $http.post("/hostgroups/loadHosts.json?angular=true",
+                $scope.params
+            ).then(function(result){
                 $scope.hosts = result.data.hosts;
             });
         };

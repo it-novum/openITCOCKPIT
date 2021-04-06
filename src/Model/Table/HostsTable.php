@@ -1817,6 +1817,7 @@ class HostsTable extends Table {
         if (!is_array($selected)) {
             $selected = [$selected];
         }
+        $ajaxLimit = ITN_AJAX_LIMIT + count($selected);
 
         $query = $this->find('list');
         $MY_RIGHTS = $HostConditions->getContainerIds();
@@ -1840,7 +1841,6 @@ class HostsTable extends Table {
             'HostsToContainersSharing'
         ]);
         $where = $HostConditions->getWhereForFind();
-
         if (is_array($selected)) {
             $selected = array_filter($selected);
         }
@@ -1873,7 +1873,7 @@ class HostsTable extends Table {
         $query->order([
             'Hosts.name' => 'asc'
         ]);
-        $query->limit(ITN_AJAX_LIMIT);
+        $query->limit($ajaxLimit);
 
         $hostsWithLimit = $query->toArray();
 
@@ -1912,7 +1912,6 @@ class HostsTable extends Table {
                     'OR' => $where['NOT']
                 ];
             }
-
 
             if (!empty($where)) {
                 $query->where($where);
