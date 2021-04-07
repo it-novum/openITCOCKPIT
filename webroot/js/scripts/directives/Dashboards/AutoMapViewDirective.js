@@ -10,6 +10,15 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state)
             $scope.init = true;
             $scope.currentPage = 1;
             $scope.useScroll = true;
+            $scope.interval = null;
+            $scope.scroll_interval = 30000;
+
+            $scope.$on('$destroy', function(){
+                $scope.pauseScroll();
+            });
+
+
+
 
             $scope.load = function(){
                 var params = {
@@ -41,6 +50,30 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state)
 
             };//load function
 
+            $scope.startScroll = function(){
+                $scope.pauseScroll();
+                $scope.useScroll = true;
+
+                $scope.interval = $interval(function(){
+                    var page = $scope.currentPage;
+                    if($scope.scroll.hasNextPage){
+                        page++;
+                    }else{
+                        page = 1;
+                    }
+                    $scope.changepage(page)
+                }, $scope.scroll_interval);
+
+            };
+
+            $scope.pauseScroll = function(){
+                if($scope.interval !== null){
+                    $interval.cancel($scope.interval);
+                    $scope.interval = null;
+                }
+                $scope.useScroll = false;
+            };
+
             $scope.changepage = function(page){
                 if(page !== $scope.currentPage){
                     $scope.currentPage = page;
@@ -52,6 +85,7 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state)
                 $scope.useScroll = val;
                 $scope.load();
             };
+
 
 
             $scope.$watch('automapId', function(){

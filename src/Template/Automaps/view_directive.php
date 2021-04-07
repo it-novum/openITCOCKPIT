@@ -24,6 +24,40 @@
 //	confirmation.
 ?>
 
+<div class="padding-10 m-2" style="border: 1px solid #c3c3c3;">
+    <div class="row">
+        <div class="col-lg-8">
+            <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
+               title="<?php echo __('Pause scrolling'); ?>"
+               class="btn btn-xs btn-primary">
+                <i class="fa fa-pause"></i>
+            </a>
+            <a href="javascript:void(0);" ng-show="!useScroll"
+               ng-click="startScroll()" title="<?php echo __('Start scrolling'); ?>"
+               class="btn btn-xs btn-primary">
+                <i class="fa fa-play"></i>
+            </a>
+        </div>
+
+        <div class="col-lg-4 float-end">
+            <div class="form-group form-group-slider">
+                <label class="display-inline">
+                    <?php echo __('Scroll interval:'); ?>
+                    <span class="note" id="PagingInterval_human">
+                        {{pagingTimeString}}
+                    </span>
+                </label>
+
+                <div class="slidecontainer">
+                    <input type="range" step="5000" min="5000" max="300000" class="slider" style="width: 100%"
+                           ng-model="scroll_interval" ng-model-options="{debounce: 500}">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
 <query-handler-directive></query-handler-directive>
 
