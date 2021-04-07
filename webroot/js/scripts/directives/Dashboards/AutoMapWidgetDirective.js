@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
 
         controller: function($scope){
             $scope.init = true;
+            $scope.scroll_interval = 30000;
             $scope.automap = {
                 automap_id: null
             };
@@ -27,9 +28,6 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
                     }, 250);
                 });
             };
-
-
-
 
 
             $scope.loadAutoMaps = function(searchString){
@@ -59,7 +57,8 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
                         Widget: {
                             id: $scope.widget.id
                         },
-                        automap_id: $scope.automap.automap_id
+                        automap_id: $scope.automap.automap_id,
+                        scroll_interval: $scope.scroll_interval
                     }
                 ).then(function(result){
                     //Update status

@@ -41,6 +41,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Exception;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\Dashboards\AutomapJson;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
@@ -518,8 +519,11 @@ class AutomapsController extends AppController {
         $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+        $AutomapJson = new AutomapJson();
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId');
+
+
             if (!$WidgetsTable->existsById($widgetId)) {
                 throw new NotFoundException('Invalid widget id');
             }
@@ -534,6 +538,7 @@ class AutomapsController extends AppController {
                     $config['automap_id'] = null;
                 }
             }
+            //$config = $AutomapJson->standardizedData($config);
             if ($config['automap_id'] !== null) {
                 $id = $config['automap_id'];
                 if (!$AutomapsTable->existsById($id)) {
@@ -556,13 +561,17 @@ class AutomapsController extends AppController {
         }
 
         if ($this->request->is('post')) {
+            //$config = $AutomapJson->standardizedData($this->request->getData());
             $automapId = (int)$this->request->getData('automap_id');
+            $scrollIntervel = (int)$this->request->getData('scroll_interval');
+
             if ($automapId === 0) {
                 $automapId = null;
             }
 
             $config = [
-                'automap_id' => $automapId
+                'automap_id'      => $automapId,
+                'scroll_interval' => $scrollIntervel
             ];
             $widgetId = (int)$this->request->getData('Widget.id');
 
