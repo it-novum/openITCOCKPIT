@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('automapView', function($http, $state){
+angular.module('openITCOCKPIT').directive('automapView', function($http, $state, $interval){
     return {
         restrict: 'A',
         templateUrl: '/automaps/viewDirective.html',
@@ -74,6 +74,10 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state)
                 $scope.useScroll = false;
             };
 
+            var getTimeString = function(){
+                return (new Date($scope.scroll_interval * 60)).toUTCString().match(/(\d\d:\d\d)/)[0] + " minutes";
+            };
+
             $scope.changepage = function(page){
                 if(page !== $scope.currentPage){
                     $scope.currentPage = page;
@@ -91,6 +95,18 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state)
             $scope.$watch('automapId', function(){
                 $scope.id = parseInt($scope.automapId, 10);
                 $scope.load();
+            });
+
+            $scope.$watch('scroll_interval', function(){
+                $scope.pagingTimeString = getTimeString();
+                if($scope.init === true){
+                    return true;
+                }
+                $scope.pauseScroll();
+                $scope.startScroll();
+                $scope.load({
+                    save: true
+                });
             });
         },
 
