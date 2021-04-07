@@ -254,6 +254,20 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('Used to check any kind of network devices and interfaces like: Switch, Router, Firewall, Access Point, ...'),
                 'image'       => 'network.png',
                 'category'    => ['linux', 'network']
+            ],
+            'sap'        => [
+                'type_id'     => 'sap',
+                'title'       => __('SAP'),
+                'description' => __('Monitoring SAP systems through SAP CCMS values'),
+                'image'       => 'SAP-Logo.svg',
+                'category'    => ['sap', 'linux']
+            ],
+            'sap-hana'   => [
+                'type_id'     => 'sap-hana',
+                'title'       => __('SAP HANA'),
+                'description' => __('Monitoring for your SAP Hana Database'),
+                'image'       => 'SAP-Logo.svg',
+                'category'    => ['sap', 'linux']
             ]
             /*,
             'vmware'             => [
