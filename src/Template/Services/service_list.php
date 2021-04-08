@@ -88,6 +88,13 @@
                             <?php echo __('Allocate Service Template Group'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
+                        <a ui-sref="AgentconnectorsWizard({hostId: data.hostId})"
+                           class="dropdown-item">
+                            <i class="fa fa-user-secret"></i>
+                            <?php echo __('openITCOCKPIT Agent discovery'); ?>
+                        </a>
+                    <?php endif; ?>
                     <?php
                     $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                     echo $AdditionalLinks->getLinksAsHtmlList('services', 'serviceList', 'actions');
