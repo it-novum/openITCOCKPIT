@@ -1551,7 +1551,7 @@ use Cake\Core\Plugin;
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th class="no-sort width-90">
+                                <th class="no-sort width-90" colspan="2">
                                     <?php echo __('Servicestatus'); ?>
                                 </th>
 
@@ -1567,6 +1567,11 @@ use Cake\Core\Plugin;
                             </thead>
                             <tbody>
                             <tr ng-repeat="service in services">
+                                <td class="width-5">
+                                    <input type="checkbox"
+                                           ng-model="massChange[service.Service.id]"
+                                           ng-show="service.Service.allow_edit">
+                                </td>
                                 <td class="text-center width-90">
                                     <servicestatusicon service="fakeServicestatus"></servicestatusicon>
                                 </td>
@@ -1637,6 +1642,45 @@ use Cake\Core\Plugin;
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
+
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fas fa-lg fa-check-square"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fas fa-lg fa-square"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+
+                            <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ng-click="confirmActivate(getServiceObjectsForDelete())" class="a-clean"
+                                       href="javascript:void(0);">
+                                        <i class="fa fa-lg fa-plug"></i>
+                                        <?php echo __('Enable'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getServiceObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete selected'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+
+                        </div>
+
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>

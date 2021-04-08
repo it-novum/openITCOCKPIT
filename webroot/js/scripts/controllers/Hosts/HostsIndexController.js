@@ -50,6 +50,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
+
             lastHostUuid = null;
             var hasBeenAcknowledged = '';
             var inDowntime = '';
