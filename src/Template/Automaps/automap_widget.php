@@ -42,6 +42,8 @@
             <div class="no-padding"
                  automap-view=""
                  automap-id="automap.automap_id"
+                 scroll-interval="automap.scroll_interval"
+                 use-scroll="automap.useScroll"
                  ng-if="automap.automap_id"></div>
             <!--end-->
 

@@ -24,9 +24,9 @@
 //	confirmation.
 ?>
 
-<div class="padding-10 m-2" style="border: 1px solid #c3c3c3;">
+
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-1 mt-2">
             <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
                title="<?php echo __('Pause scrolling'); ?>"
                class="btn btn-xs btn-primary">
@@ -39,7 +39,7 @@
             </a>
         </div>
 
-        <div class="col-lg-4 float-end">
+        <div class="col-lg-3">
             <div class="form-group form-group-slider">
                 <label class="display-inline">
                     <?php echo __('Scroll interval:'); ?>
@@ -57,7 +57,7 @@
 
     </div>
 
-</div>
+
 
 <query-handler-directive></query-handler-directive>
 

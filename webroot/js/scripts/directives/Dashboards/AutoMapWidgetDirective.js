@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('automapWidget', function($http){
+angular.module('openITCOCKPIT').directive('automapWidget', function($http, $interval){
     return {
         restrict: 'E',
         templateUrl: '/automaps/automapWidget.html',
@@ -9,8 +9,28 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
         controller: function($scope){
             $scope.init = true;
             $scope.scroll_interval = 30000;
+            $scope.useScroll = true;
+
             $scope.automap = {
-                automap_id: null
+                automap_id: null,
+
+            };
+
+            var loadWidgetConfig = function(){
+                $http.get("/automaps/automapWidget.json?angular=true&widgetId=" + $scope.widget.id).then(function(result){
+
+                    $scope.useScroll = result.data.config.useScroll;
+                    var scrollInterval = parseInt(result.data.config.scroll_interval);
+                    if(scrollInterval < 5000){
+                        scrollInterval = 5000;
+                    }
+                    $scope.scroll_interval = scrollInterval;
+                    if($scope.useScroll){
+                        $scope.startScroll();
+                    }
+
+                    $scope.load();
+                });
             };
 
             $scope.load = function(){
@@ -21,6 +41,8 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
                     }
                 }).then(function(result){
                     $scope.automap.automap_id = result.data.config.automap_id;
+                    $scope.automap.useScroll = result.data.config.useScroll;
+                    $scope.automap.scroll_interval = result.data.config.scroll_interval;
 
                     //Do not trigger watch on page load
                     setTimeout(function(){
@@ -58,7 +80,8 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
                             id: $scope.widget.id
                         },
                         automap_id: $scope.automap.automap_id,
-                        scroll_interval: $scope.scroll_interval
+                        scroll_interval: $scope.scroll_interval,
+                        useScroll: $scope.useScroll
                     }
                 ).then(function(result){
                     //Update status
@@ -76,9 +99,11 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http){
                 });
             };
 
+            loadWidgetConfig();
 
             $scope.load();
             $scope.loadTimezone();
+
 
         },
 

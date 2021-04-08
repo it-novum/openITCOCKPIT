@@ -3,7 +3,9 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
         restrict: 'A',
         templateUrl: '/automaps/viewDirective.html',
         scope: {
-            'automapId': '='
+            'automapId': '=',
+            'useScroll': '=',
+            'scrollInterval': '='
         },
 
         controller: function($scope){
@@ -101,6 +103,13 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
                 $scope.load();
             });
 
+
+            $scope.$watch('scrollInterval', function(){
+                $scope.scroll_interval = parseInt($scope.scroll_interval, 10);
+                $scope.load();
+
+            })
+
             $scope.$watch('scroll_interval', function(){
                 $scope.pagingTimeString = getTimeString();
                 if($scope.init === true){
@@ -109,8 +118,7 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
                 $scope.pauseScroll();
                 $scope.startScroll();
                 $scope.load({
-                    //save: true
-                    saveSettings
+                    save: true
                 });
             });
         },
