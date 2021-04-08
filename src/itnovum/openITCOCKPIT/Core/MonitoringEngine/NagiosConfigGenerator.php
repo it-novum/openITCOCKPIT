@@ -533,7 +533,13 @@ class NagiosConfigGenerator {
             }
 
             if (!$HosttemplatesCache->has($host->get('hosttemplate_id'))) {
-                $hosttemplate = $HosttemplatesTable->get($host->get('hosttemplate_id'));
+                $hosttemplate = $HosttemplatesTable->get($host->get('hosttemplate_id'), [
+                    'contain' => [
+                        'Hosttemplatecommandargumentvalues' => [
+                            'Commandarguments'
+                        ]
+                    ]
+                ]);
                 $HosttemplatesCache->set($host->get('hosttemplate_id'), $hosttemplate);
             }
 
@@ -570,7 +576,7 @@ class NagiosConfigGenerator {
 
                     $commandUuid = $this->CommandUuidsCache->get($commandId);
 
-                    $commandarguments = $host->getCommandargumentValuesForCfg();
+                    $commandarguments = $host->getCommandargumentValuesForCfg($hosttemplate);
                     $content .= $this->addContent('check_command', 1, sprintf(
                         '%s!%s; %s',
                         $commandUuid,
@@ -822,7 +828,7 @@ class NagiosConfigGenerator {
             }
 
             $commandUuid = $this->CommandUuidsCache->get($commandId);
-            $commandarguments = $host->getCommandargumentValuesForCfg();
+            $commandarguments = $host->getCommandargumentValuesForCfg($hosttemplate);
             $content .= $this->addContent('check_command', 1, sprintf(
                 '%s!%s; %s',
                 $commandUuid,
@@ -1190,7 +1196,7 @@ class NagiosConfigGenerator {
                             $commandId = $service->get('command_id');
                         }
                         $commandUuid = $this->CommandUuidsCache->get($commandId);
-                        $commandarguments = $service->getCommandargumentValuesForCfg();
+                        $commandarguments = $service->getCommandargumentValuesForCfg($servicetemplate);
                         $content .= $this->addContent('check_command', 1, sprintf(
                             '%s!%s; %s',
                             $commandUuid,
@@ -1462,7 +1468,7 @@ class NagiosConfigGenerator {
                 $commandId = $service->get('command_id');
             }
             $commandUuid = $this->CommandUuidsCache->get($commandId);
-            $commandarguments = $service->getCommandargumentValuesForCfg();
+            $commandarguments = $service->getCommandargumentValuesForCfg($servicetemplate);
             $content .= $this->addContent('check_command', 1, sprintf(
                 '%s!%s; %s',
                 $commandUuid,
