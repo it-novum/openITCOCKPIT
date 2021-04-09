@@ -4038,4 +4038,44 @@ class HostsTable extends Table {
         return $result;
 
     }
+
+    /**
+     * @param $hosttemplateId
+     * @param $commandId
+     */
+    public function updateHostCommandIdIfHostHasOwnCommandArguments($hosttemplateId, $commandId) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id'
+            ])
+            ->contain([
+                'Hostcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where([
+                'Hosts.command_id IS NULL',
+                'Hosts.hosttemplate_id' => $hosttemplateId
+            ])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if (!empty($query)) {
+            $hostIds = [];
+            foreach ($query as $row) {
+                if (!empty($row['hostcommandargumentvalues'])) {
+                    $hostIds[] = (int)$row['id'];
+                }
+            }
+            if (!empty($hostIds)) {
+                $this->updateAll([
+                    'command_id' => $commandId
+                ], [
+                    'id IN' => $hostIds
+                ]);
+            }
+        }
+    }
 }
