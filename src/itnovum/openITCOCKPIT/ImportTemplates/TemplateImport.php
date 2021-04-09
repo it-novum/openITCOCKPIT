@@ -106,7 +106,7 @@ class TemplateImport {
      */
     private function checkCommandNames($command): void {
         $commandName = $command['name'];
-        $newCommandName = $commandName . '_legacy';
+        $newCommandName = $commandName . '_' . $this->getShortRand() . '_legacy';
         $command = $this->CommandsTable->getCommandByName($commandName);
         if (empty($command)) {
             return;
@@ -116,6 +116,14 @@ class TemplateImport {
         $command = $this->CommandsTable->get($command['id']);
         $command->name = $newCommandName;
         $this->CommandsTable->save($command);
+    }
+
+    /**
+     * @param int $length
+     * @return false|string
+     */
+    private function getShortRand($length = 6) {
+        return substr(md5(uniqid(mt_rand(), true)), 0, $length);
     }
 
 
