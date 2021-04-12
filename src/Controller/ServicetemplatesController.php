@@ -284,7 +284,7 @@ class ServicetemplatesController extends AppController {
                  * command arguments values are not empty
                  */
                 if ($requestData['Servicetemplate']['command_id'] != $servicetemplateForChangeLog['Servicetemplate']['command_id'] &&
-                    !empty($servicetemplateForChangeLog['Servicetemplate']['hosttemplatecommandargumentvalues'])) {
+                    !empty($servicetemplateForChangeLog['Servicetemplate']['servicetemplatecommandargumentvalues'])) {
                     $oldCommandId = $servicetemplateForChangeLog['Servicetemplate']['command_id'];
                     /** @var $ServicesTable ServicesTable */
                     $ServicesTable = TableRegistry::getTableLocator()->get('Services');
