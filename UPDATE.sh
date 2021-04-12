@@ -241,6 +241,9 @@ echo "Check for browser push notification commands"
 echo "Migrate openITCOCKPIT Monitoring Agent configuration for Agent version 3.x. This will take a while..."
 oitc agent --migrate
 
+echo "Checking that a server certificate for the openITCOCKPIT Monitoring Agent exists"
+oitc agent --generate-server-ca
+
 NORESTART=false
 NOSYSTEMFILES=false
 for i in "$@"; do
