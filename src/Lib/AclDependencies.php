@@ -588,10 +588,14 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'PhpFpmOitc');
 
         $this
+            ->dependency('Wizards', 'index', 'Wizards', 'mysqlserver')
+            ->dependency('Wizards', 'index', 'Wizards', 'linuxserverssh')
+            ->dependency('Wizards', 'index', 'Wizards', 'agent')
+            ->dependency('Wizards', 'agent', 'Wizards', 'wizardHostConfiguration')
             ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular')
-            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadElementsByContainerId')
-            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadHostsByString')
-            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadServicetemplatesByWizardType ');
+            ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadElementsByContainerId')
+            ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadHostsByString')
+            ->dependency('Wizards', 'linuxserverssh', 'Wizards', 'loadServicetemplatesByWizardType');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {

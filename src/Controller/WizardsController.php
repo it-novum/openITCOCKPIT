@@ -155,11 +155,6 @@ class WizardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['wizardAssignments', 'servicetemplates']);
     }
 
-    public function hostConfiguration() {
-        //Only ship HTML template
-        return;
-    }
-
     public function agent() {
         //Only ship HTML template
         return;
