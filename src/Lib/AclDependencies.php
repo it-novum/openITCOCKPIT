@@ -420,7 +420,9 @@ class AclDependencies {
 
         $this
             ->dependency('Servicedependencies', 'index', 'Servicedependencies', 'view')
+            ->dependency('Servicedependencies', 'add', 'Servicedependencies', 'loadContainers')
             ->dependency('Servicedependencies', 'add', 'Servicedependencies', 'loadElementsByContainerId')
+            ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadContainers')
             ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadElementsByContianerId');
 
 
@@ -587,7 +589,9 @@ class AclDependencies {
 
         $this
             ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular')
-            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadElementsByContainerId');
+            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadElementsByContainerId')
+            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadHostsByString')
+            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadServicetemplatesByWizardType ');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {
