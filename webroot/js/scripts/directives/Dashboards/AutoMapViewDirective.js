@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
         restrict: 'A',
         templateUrl: '/automaps/viewDirective.html',
         scope: {
+            'widget': '=',
             'automapId': '=',
             'useScroll': '=',
             'scrollInterval': '='
@@ -73,12 +74,19 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
                 $scope.useScroll = false;
             };
 
-            var saveSettings = function(){
-                settings['scroll_interval'] = $scope.scroll_interval;
-                settings['useScroll'] = $scope.useScroll;
-                $http.post("/automaps/automapWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
-                    return true;
+            $scope.saveSettings = function(){
+                $http.post("/automaps/automapWidget.json?angular=true", {
+                    Widget: {
+                        id: $scope.widget.id
+                    },
+                    automap_id: $scope.automap.id,
+                    scroll_interval: $scope.scroll_interval,
+                    useScroll: $scope.useScroll
+                }).then(function(result){
+                    //return true;
+                    console.log(result);
                 });
+
             };
 
             var getTimeString = function(){

@@ -50,11 +50,10 @@
 
                 <div class="slidecontainer">
                     <input type="range" step="5000" min="5000" max="300000" class="slider" style="width: 100%"
-                           ng-model="scroll_interval" ng-model-options="{debounce: 500}">
+                           ng-model="scroll_interval" ng-model-options="{debounce: 500}" ng-change="saveSettings()">
                 </div>
             </div>
         </div>
-
     </div>
 
 

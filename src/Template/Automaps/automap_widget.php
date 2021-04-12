@@ -41,6 +41,7 @@
 
             <div class="no-padding"
                  automap-view=""
+                 widget="widget"
                  automap-id="automap.automap_id"
                  scroll-interval="automap.scroll_interval"
                  use-scroll="automap.useScroll"

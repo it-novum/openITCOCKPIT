@@ -8,7 +8,7 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $inte
 
         controller: function($scope){
             $scope.init = true;
-            $scope.scroll_interval = 30000;
+            $scope.scroll_interval = 0;
             $scope.useScroll = true;
 
             $scope.automap = {
@@ -16,22 +16,6 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $inte
 
             };
 
-            var loadWidgetConfig = function(){
-                $http.get("/automaps/automapWidget.json?angular=true&widgetId=" + $scope.widget.id).then(function(result){
-
-                    $scope.useScroll = result.data.config.useScroll;
-                    var scrollInterval = parseInt(result.data.config.scroll_interval);
-                    if(scrollInterval < 5000){
-                        scrollInterval = 5000;
-                    }
-                    $scope.scroll_interval = scrollInterval;
-                    if($scope.useScroll){
-                        $scope.startScroll();
-                    }
-
-                    $scope.load();
-                });
-            };
 
             $scope.load = function(){
                 $http.get("/automaps/automapWidget.json", {
@@ -98,8 +82,6 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $inte
                     $scope.timezone = result.data.timezone;
                 });
             };
-
-            loadWidgetConfig();
 
             $scope.load();
             $scope.loadTimezone();
