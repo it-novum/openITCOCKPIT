@@ -59,9 +59,7 @@ class AgentCertificateData {
     private $caKeyFile = '/opt/openitc/agent/server_ca.key';
 
     public function __construct() {
-        if (!is_file($this->getCaCertFile())) {
-            $this->generateServerCA();
-        }
+
     }
 
     public function isEccCa(): bool {
@@ -146,7 +144,7 @@ class AgentCertificateData {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $SystemsettingsTable->findAsArray();
         $user = $systemsettings['WEBSERVER']['WEBSERVER.USER'];
-        $group = $systemsettings['WEBSERVER']['WEBSERVER.GROUP'];
+        $group = $systemsettings['MONITORING']['MONITORING.GROUP'];
 
         chown($this->getCaCertFile(), $user);
         chgrp($this->getCaCertFile(), $group);
