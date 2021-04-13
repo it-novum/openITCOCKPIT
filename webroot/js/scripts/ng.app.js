@@ -1106,6 +1106,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     hostname: {
                         value: null
                     },
+                    address: {
+                        value: null
+                    },
                     hoststate: {
                         value: null,
                         array: true,

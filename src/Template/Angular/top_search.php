@@ -51,6 +51,12 @@
                     <?= __('UUID') ?>
                 </a>
             </li>
+            <li ng-class="{active: type === 'address'}" class="dropdown-item" ng-click="setSearchType('address', '<?= __('IP address') ?>')">
+                <a href="javascript:void(0)">
+                    <i class="fa fa-check" ng-show="type === 'address'"></i>
+                    <?= __('IP address') ?>
+                </a>
+            </li>
         </ul>
     </div>
 

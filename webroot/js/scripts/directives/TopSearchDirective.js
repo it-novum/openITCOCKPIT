@@ -32,6 +32,13 @@ angular.module('openITCOCKPIT').directive('topSearch', function($state, $http, N
                             $scope.isSearching = false;
                         });
                         break;
+                    case 'address':
+                        $state.go('HostsIndex', {
+                            address: $scope.searchStr
+                        }).then(function(d){
+                            $scope.isSearching = false;
+                        });
+                        break;
 
                     case 'service':
                         $state.go('ServicesIndex', {
