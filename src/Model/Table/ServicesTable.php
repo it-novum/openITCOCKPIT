@@ -3952,4 +3952,44 @@ class ServicesTable extends Table {
 
         return $services;
     }
+
+    /**
+     * @param $servicetemplateId
+     * @param $commandId
+     */
+    public function updateServiceCommandIdIfServiceHasOwnCommandArguments($servicetemplateId, $commandId) {
+        $query = $this->find()
+            ->select([
+                'Services.id'
+            ])
+            ->contain([
+                'Servicecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where([
+                'Services.command_id IS NULL',
+                'Services.servicetemplate_id' => $servicetemplateId
+            ])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if (!empty($query)) {
+            $serviceIds = [];
+            foreach ($query as $row) {
+                if (!empty($row['servicecommandargumentvalues'])) {
+                    $serviceIds[] = (int)$row['id'];
+                }
+            }
+            if (!empty($serviceIds)) {
+                $this->updateAll([
+                    'command_id' => $commandId
+                ], [
+                    'id IN' => $serviceIds
+                ]);
+            }
+        }
+    }
 }
