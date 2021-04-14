@@ -6,6 +6,9 @@ contact_links:
     - name: 💬 Discord
       url: https://discord.gg/G8KhxKuQ9G
       about: Join the openITCOCKPIT Community Discord
+    - name: Reddit
+      url: https://www.reddit.com/r/openitcockpit/
+      about: Join the openITCOCKPIT subreddit
     - name: Report a security vulnerability
       url: https://openitcockpit.io/security/
       about: Please review our security policy for more details
