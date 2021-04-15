@@ -108,7 +108,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     $scope.scroll = result.data.scroll;
 
                     if(options.save === true){
-                        saveSettings(params);
+                        $scope.saveSettings(params);
                     }
 
                     $scope.init = false;
@@ -180,12 +180,10 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             };
 
             var getLimit = function(height){
-                height = height - 34 - 128 - 61 - 10 - 37; //Unit: px
-                //                ^ widget Header
-                //                     ^ Widget filter
-                //                           ^ Paginator
-                //                                ^ Margin between header and table
-                //                                     ^ Table header
+                height = height - 61 - 10 - 37; //Unit: px
+                //                 ^ Paginator
+                //                       ^ Margin between header and table
+                //                            ^ Table header
 
                 var limit = Math.floor(height / 36); // 36px = table row height;
                 if(limit <= 0){
@@ -194,11 +192,17 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                 return limit;
             };
 
-            var saveSettings = function(){
+            $scope.saveSettings = function(){
                 var settings = $scope.filter;
                 settings['scroll_interval'] = $scope.scroll_interval;
                 settings['useScroll'] = $scope.useScroll;
                 $http.post("/dashboards/hostsStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
+                    $scope.currentPage = 1;
+                    loadWidgetConfig();
+                    $scope.hideConfig();
+                    if($scope.init === true){
+                        return true;
+                    }
                     return true;
                 });
             };
@@ -214,20 +218,17 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                 }
             };
 
+            $scope.hideConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_IN');
+            };
+            $scope.showConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_OUT');
+                $scope.load();
+            };
+
             $scope.limit = getLimit($widget.height());
 
             loadWidgetConfig();
-
-            $scope.$watch('filter', function(){
-                $scope.currentPage = 1;
-                if($scope.init === true){
-                    return true;
-                }
-
-                $scope.load({
-                    save: true
-                });
-            }, true);
 
             $scope.$watch('scroll_interval', function(){
                 $scope.pagingTimeString = getTimeString();
