@@ -29,7 +29,6 @@
             flip-back="['custom:FLIP_EVENT_IN']"
             duration="800"
             timing-function="ease-in-out">
-
         <flippy-front class="fixFlippy">
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
                 <i class="fa fa-cog fa-sm"></i>
@@ -37,8 +36,6 @@
             <span ng-show="automap.automap_id === null" class="text-info padding-left-20">
                 <?php echo __('No element selected'); ?>
             </span>
-
-
             <div class="no-padding"
                  automap-view=""
                  widget="widget"
@@ -47,7 +44,6 @@
                  use-scroll="automap.useScroll"
                  ng-if="automap.automap_id"></div>
             <!--end-->
-
         </flippy-front>
         <flippy-back class="fixFlippy">
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
@@ -60,7 +56,6 @@
                             <?php echo __('Automap'); ?>
                         </label>
                         <div class="col-xs-12 col-lg-12">
-
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="automaps"
@@ -68,7 +63,6 @@
                                     ng-options="automap.id as automap.name for automap in automaps"
                                     ng-model="automap.automap_id">
                             </select>
-
                             <div ng-repeat="error in errors.Service">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -83,7 +77,6 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </flippy-back>

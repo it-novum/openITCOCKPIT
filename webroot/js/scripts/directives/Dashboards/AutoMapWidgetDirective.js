@@ -4,7 +4,6 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $inte
         templateUrl: '/automaps/automapWidget.html',
         scope: {
             'widget': '='
-
         },
 
         controller: function($scope){
@@ -23,7 +22,6 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $inte
                     $scope.automap.automap_id = result.data.config.automap_id;
                     $scope.automap.useScroll = result.data.config.useScroll;
                     $scope.automap.scroll_interval = result.data.config.scroll_interval;
-
                     //Do not trigger watch on page load
                     setTimeout(function(){
                         $scope.init = false;
@@ -80,13 +78,10 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $inte
 
             $scope.load();
             $scope.loadTimezone();
-
         },
 
         link: function($scope, element, attr){
 
         }
-
     }
-
 });

@@ -333,7 +333,6 @@ class WidgetsTable extends Table {
                 'width'     => 12,
                 'height'    => 13
             ];
-
         }
 
         if ($SystemsettingsTable->isWebsiteWidgetEnabled()) {

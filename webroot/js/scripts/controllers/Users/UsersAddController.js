@@ -32,10 +32,8 @@ angular.module('openITCOCKPIT')
                     usercontainerroles: {
                         _ids: []
                     },
-                    ContainersUsersMemberships: {},
-                    apikeys: []
+                    ContainersUsersMemberships: {}
                 }
-
             };
         };
         clearForm();
@@ -52,32 +50,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.intervalText = 'disabled';
-
-        $scope.createApiKey = function(index){
-            $http.get("/profile/create_apikey.json?angular=true")
-                .then(function(result){
-                    $scope.post.User.apikeys[index].apikey = result.data.apikey;
-                });
-        };
-
-        $scope.addApikey = function(){
-            $scope.post.User.apikeys.push({
-                apikey: '',
-                description: '',
-                index: Object.keys($scope.post.User.apikeys).length
-            });
-        };
-
-        $scope.removeApikey = function(index){
-            var apikeys = [];
-            for(var i in $scope.post.User.apikeys){
-                if($scope.post.User.apikeys[i]['index'] !== index){
-                    apikeys.push($scope.post.User.apikeys[i]);
-                }
-            }
-            $scope.post.User.apikeys = apikeys;
-
-        };
 
         $scope.loadUserContaineRoles = function(){
             $http.get("/users/loadContainerRoles.json", {
@@ -175,15 +147,6 @@ angular.module('openITCOCKPIT')
                 $scope.post.User.password = '';
                 $scope.post.User.confirm_password = '';
             }
-            var apikeys = [];
-            if($scope.post.User.apikeys.length > 0){
-                for(var i in $scope.post.User.apikeys){
-                    if($scope.post.User.apikeys[i].apikey != ''){
-                        apikeys.push($scope.post.User.apikeys[i]);
-                    }
-                }
-                $scope.post.User.apikeys = apikeys;
-            }
 
             $http.post("/users/add.json?angular=true",
                 $scope.post
@@ -194,7 +157,6 @@ angular.module('openITCOCKPIT')
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-
 
                 if($scope.data.createAnother === false){
                     RedirectService.redirectWithFallback('UsersIndex');

@@ -48,7 +48,6 @@
                 <h2>
                     <?php echo __('View auto map: '); ?>
                     <span class="fw-300"><i>{{ automap.name }}</i></span>
-
                 </h2>
                 <div class="panel-toolbar">
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
@@ -156,7 +155,6 @@
                                 servicestatus="service.servicestatus"></servicestatusicon-automap>
                             {{host.host.hostname}}/{{service.service.servicename}}
                         </div>
-
                     </div>
 
                     <div ng-if="automap.show_label === true && automap.group_by_host === true">
@@ -202,6 +200,5 @@
         </div>
     </div>
 </div>
-
 <service-status-details></service-status-details>
 

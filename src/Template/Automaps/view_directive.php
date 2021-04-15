@@ -23,45 +23,34 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-
-
 <div class="row">
-        <div class="col-lg-1 mt-2">
-            <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
-               title="<?php echo __('Pause scrolling'); ?>"
-               class="btn btn-xs btn-primary">
-                <i class="fa fa-pause"></i>
-            </a>
-            <a href="javascript:void(0);" ng-show="!useScroll"
-               ng-click="startScroll()" title="<?php echo __('Start scrolling'); ?>"
-               class="btn btn-xs btn-primary">
-                <i class="fa fa-play"></i>
-            </a>
-        </div>
-
-        <div class="col-lg-3">
-            <div class="form-group form-group-slider">
-                <label class="display-inline">
-                    <?php echo __('Scroll interval:'); ?>
-                    <span class="note" id="PagingInterval_human">
+    <div class="col-lg-1 mt-2">
+        <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
+           title="<?php echo __('Pause scrolling'); ?>"
+           class="btn btn-xs btn-primary">
+            <i class="fa fa-pause"></i>
+        </a>
+        <a href="javascript:void(0);" ng-show="!useScroll"
+           ng-click="startScroll()" title="<?php echo __('Start scrolling'); ?>"
+           class="btn btn-xs btn-primary">
+            <i class="fa fa-play"></i>
+        </a>
+    </div>
+    <div class="col-lg-3">
+        <div class="form-group form-group-slider">
+            <label class="display-inline">
+                <?php echo __('Scroll interval:'); ?>
+                <span class="note" id="PagingInterval_human">
                         {{pagingTimeString}}
                     </span>
-                </label>
-
-                <div class="slidecontainer">
-                    <input type="range" step="5000" min="5000" max="300000" class="slider" style="width: 100%"
-                           ng-model="scroll_interval" ng-model-options="{debounce: 500}" ng-change="saveSettings()">
-                </div>
+            </label>
+            <div class="slidecontainer">
+                <input type="range" step="5000" min="5000" max="300000" class="slider" style="width: 100%"
+                       ng-model="scroll_interval" ng-model-options="{debounce: 500}" ng-change="saveSettings()">
             </div>
         </div>
     </div>
-<!--?php endif ?-->
-<!--scrollplay-view
-             scroll-interval="scroll_interval"
-             use-scroll="scroll.useScroll"
-             >
-             </--scrollplay-view-->
-
+</div>
 
 <query-handler-directive></query-handler-directive>
 
@@ -151,7 +140,6 @@
             servicestatus="service.servicestatus"></servicestatusicon-automap>
         {{host.host.hostname}}/{{service.service.servicename}}
     </div>
-
 </div>
 
 <div ng-if="automap.show_label === true && automap.group_by_host === true">
@@ -171,7 +159,6 @@
                 </strong>
             </h3>
         </div>
-
         <div class="col-xs-12 col-md-6 col-lg-3 ellipsis" ng-repeat="service in host.services">
             <span style="cursor:pointer;font-size:{{automap.font_size_html}};"
                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>

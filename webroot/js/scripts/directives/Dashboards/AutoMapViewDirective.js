@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
             $scope.currentPage = 1;
             $scope.useScroll = true;
             $scope.interval = null;
-            
+
             if($scope.scrollInterval === 0){
                 $scope.scroll_interval = 30000;
             }else{
@@ -52,8 +52,7 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
                         $state.go('404');
                     }
                 });
-
-            };//load function
+            };
 
             $scope.startScroll = function(){
                 $scope.pauseScroll();
@@ -68,7 +67,6 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
                     }
                     $scope.changepage(page)
                 }, $scope.scroll_interval);
-
             };
 
             $scope.pauseScroll = function(){
@@ -90,7 +88,6 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
                 }).then(function(result){
                     return true;
                 });
-
             };
 
             var getTimeString = function(){
@@ -119,7 +116,6 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
             $scope.$watch('scrollInterval', function(){
                 $scope.scroll_interval = parseInt($scope.scroll_interval, 10);
                 $scope.load();
-
             });
 
             $scope.$watch('scroll_interval', function(){

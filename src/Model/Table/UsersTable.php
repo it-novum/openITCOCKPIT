@@ -66,9 +66,7 @@ class UsersTable extends Table {
             'joinType'   => 'INNER'
         ]);
         $this->hasMany('Apikeys', [
-            'foreignKey' => 'user_id',
-            'saveStrategy'     => 'replace'
-
+            'foreignKey' => 'user_id'
         ]);
         $this->hasMany('Contacts', [
             'foreignKey' => 'user_id'
@@ -460,8 +458,7 @@ class UsersTable extends Table {
                 'Containers',
                 'Usercontainerroles' => [
                     'Containers'
-                ],
-                'Apikeys'
+                ]
             ])
             ->disableHydration()
             ->first();
