@@ -331,7 +331,7 @@ class WidgetsTable extends Table {
                 'icon'      => 'fa fa-magic',
                 'directive' => 'automap-widget',
                 'width'     => 12,
-                'height'    => 10
+                'height'    => 13
             ];
 
         }

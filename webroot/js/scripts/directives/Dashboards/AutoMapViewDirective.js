@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT').directive('automapView', function($http, $state,
             $scope.currentPage = 1;
             $scope.useScroll = true;
             $scope.interval = null;
-            //$scope.scroll_interval = $scope.scrollInterval;
+            
             if($scope.scrollInterval === 0){
                 $scope.scroll_interval = 30000;
             }else{
