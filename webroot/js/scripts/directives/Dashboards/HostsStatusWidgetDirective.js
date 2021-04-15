@@ -180,10 +180,11 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             };
 
             var getLimit = function(height){
-                height = height - 61 - 10 - 37; //Unit: px
-                //                 ^ Paginator
-                //                       ^ Margin between header and table
-                //                            ^ Table header
+                height = height - 42 - 61 - 10 - 37; //Unit: px
+                //                ^ Widget play/pause div
+                //                     ^ Paginator
+                //                          ^ Margin between header and table
+                //                                ^ Table header
 
                 var limit = Math.floor(height / 36); // 36px = table row height;
                 if(limit <= 0){

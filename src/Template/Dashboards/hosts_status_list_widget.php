@@ -7,9 +7,46 @@
             timing-function="ease-in-out">
 
         <flippy-front class="fixFlippy">
-            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
-                <i class="fa fa-cog fa-sm"></i>
-            </a>
+            <div class="row">
+                <div class="col-lg-1">
+                    <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark"
+                       ng-click="showConfig()">
+                        <i class="fa fa-cog fa-sm"></i>
+                    </a>
+                </div>
+                <div class="col-lg-11">
+                    <div class="row d-flex justify-content-end">
+                        <div class="col-lg-1 offset-lg-8 text-right">
+                            <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
+                               title="<?php echo __('Pause scrolling'); ?>"
+                               class="btn btn-xs btn-primary">
+                                <i class="fa fa-pause"></i>
+                            </a>
+                            <a href="javascript:void(0);" ng-show="!useScroll"
+                               ng-click="startScroll()" title="<?php echo __('Start scrolling'); ?>"
+                               class="btn btn-xs btn-primary">
+                                <i class="fa fa-play"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group form-group-slider">
+                                <label class="display-inline">
+                                    <?php echo __('Scroll interval:'); ?>
+                                    <span class="note" id="PagingInterval_human">
+                                        {{pagingTimeString}}
+                                    </span>
+                                </label>
+
+                                <div class="slidecontainer">
+                                    <input type="range" step="5000" min="5000" max="300000" class="slider"
+                                           style="width: 100%"
+                                           ng-model="scroll_interval" ng-model-options="{debounce: 500}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="margin-top-10">
                 <table class="table table-striped m-0 table-bordered table-hover table-sm">
                     <thead>
@@ -94,159 +131,150 @@
                 <i class="fa fa-eye fa-sm"></i>
             </a>
             <div class="padding-10" style="border: 1px solid #c3c3c3;">
-                <div class="row">
-                    <div class="col-lg-1">
-                        <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
-                           title="<?php echo __('Pause scrolling'); ?>"
-                           class="btn btn-xs btn-primary">
-                            <i class="fa fa-pause"></i>
-                        </a>
-                        <a href="javascript:void(0);" ng-show="!useScroll"
-                           ng-click="startScroll()" title="<?php echo __('Start scrolling'); ?>"
-                           class="btn btn-xs btn-primary">
-                            <i class="fa fa-play"></i>
-                        </a>
-                    </div>
-
-                    <div class="col-lg-3">
-                        <div class="form-group form-group-slider">
-                            <label class="display-inline">
-                                <?php echo __('Scroll interval:'); ?>
-                                <span class="note" id="PagingInterval_human">
-                                    {{pagingTimeString}}
-                                </span>
-                            </label>
-
-                            <div class="slidecontainer">
-                                <input type="range" step="5000" min="5000" max="300000" class="slider"
-                                       style="width: 100%"
-                                       ng-model="scroll_interval" ng-model-options="{debounce: 500}">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-prepend fa fa-desktop"></i></span>
+                                </div>
+                                <input type="text" class="form-control"
+                                       placeholder="<?php echo __('Filter by host name'); ?>"
+                                       ng-model="filter.Host.name"
+                                       ng-model-options="{debounce: 500}">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-prepend fa fa-filter"></i></span>
+                                </div>
+                                <input type="text" class="form-control"
+                                       placeholder="<?php echo __('Filter by host output'); ?>"
+                                       ng-model="filter.Hoststatus.output"
+                                       ng-model-options="{debounce: 500}">
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-8">
-                        <div class="row">
-                            <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="up_{{widget.id}}"
-                                       ng-model="filter.Hoststatus.current_state.up"
-                                       ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label custom-control-label-up" for="up_{{widget.id}}">
-                                    <?php echo __('Up'); ?>
-                                </label>
-                            </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-3">
+                            <fieldset>
+                                <h5><?php echo __('Host status'); ?></h5>
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="up_{{widget.id}}"
+                                               ng-model="filter.Hoststatus.current_state.up"
+                                               ng-model-options="{debounce: 500}">
+                                        <label class="custom-control-label custom-control-label-up"
+                                               for="up_{{widget.id}}">
+                                            <?php echo __('Up'); ?>
+                                        </label>
+                                    </div>
 
-                            <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="isDown_{{widget.id}}"
-                                       ng-model="filter.Hoststatus.current_state.down"
-                                       ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label custom-control-label-down"
-                                       for="isDown_{{widget.id}}">
-                                    <?php echo __('Down'); ?>
-                                </label>
-                            </div>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="isDown_{{widget.id}}"
+                                               ng-model="filter.Hoststatus.current_state.down"
+                                               ng-model-options="{debounce: 500}">
+                                        <label class="custom-control-label custom-control-label-down"
+                                               for="isDown_{{widget.id}}">
+                                            <?php echo __('Down'); ?>
+                                        </label>
+                                    </div>
 
-                            <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="unreachable_{{widget.id}}"
-                                       ng-model="filter.Hoststatus.current_state.unreachable"
-                                       ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label custom-control-label-unreachable"
-                                       for="unreachable_{{widget.id}}">
-                                    <?php echo __('Unreachable'); ?>
-                                </label>
-                            </div>
-
-                            <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="isAck_{{widget.id}}"
-                                       ng-model="filter.Hoststatus.acknowledged"
-                                       ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label" for="isAck_{{widget.id}}">
-                                    <?php echo __('Acknowledged'); ?>
-                                </label>
-                            </div>
-
-                            <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="isNotAck_{{widget.id}}"
-                                       ng-model="filter.Hoststatus.not_acknowledged"
-                                       ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label" for="isNotAck_{{widget.id}}">
-                                    <?php echo __('Not Acknowledged'); ?>
-                                </label>
-                            </div>
-
-                            <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="inDowntime_{{widget.id}}"
-                                       ng-model="filter.Hoststatus.in_downtime"
-                                       ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label" for="inDowntime_{{widget.id}}">
-                                    <?php echo __('In Downtime'); ?>
-                                </label>
-                            </div>
-
-                            <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="notInDowntime_{{widget.id}}"
-                                       ng-model="filter.Hoststatus.not_in_downtime"
-                                       ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label" for="notInDowntime_{{widget.id}}">
-                                    <?php echo __('Not in Downtime'); ?>
-                                </label>
-                            </div>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="unreachable_{{widget.id}}"
+                                               ng-model="filter.Hoststatus.current_state.unreachable"
+                                               ng-model-options="{debounce: 500}">
+                                        <label class="custom-control-label custom-control-label-unreachable"
+                                               for="unreachable_{{widget.id}}">
+                                            <?php echo __('Unreachable'); ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </fieldset>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 col-lg-6 margin-bottom-5">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="icon-prepend fa fa-desktop"></i></span>
-                            </div>
-                            <input type="text" class="form-control"
-                                   placeholder="<?php echo __('Filter by host name'); ?>"
-                                   ng-model="filter.Host.name"
-                                   ng-model-options="{debounce: 500}">
-                        </div>
-                    </div>
 
-                    <div class="col-xs-12 col-lg-6 margin-bottom-5">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="icon-prepend fa fa-filter"></i></span>
-                            </div>
-                            <input type="text" class="form-control"
-                                   placeholder="<?php echo __('Filter by host output'); ?>"
-                                   ng-model="filter.Hoststatus.output"
-                                   ng-model-options="{debounce: 500}">
+                        <div class="col-xs-12 col-lg-3">
+                            <fieldset>
+                                <h5><?php echo __('Acknowledgements'); ?></h5>
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="isAck_{{widget.id}}"
+                                               ng-model="filter.Hoststatus.acknowledged"
+                                               ng-model-options="{debounce: 500}">
+                                        <label class="custom-control-label" for="isAck_{{widget.id}}">
+                                            <?php echo __('Acknowledged'); ?>
+                                        </label>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="isNotAck_{{widget.id}}"
+                                               ng-model="filter.Hoststatus.not_acknowledged"
+                                               ng-model-options="{debounce: 500}">
+                                        <label class="custom-control-label" for="isNotAck_{{widget.id}}">
+                                            <?php echo __('Not Acknowledged'); ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-xs-12 col-lg-3">
+                            <fieldset>
+                                <h5><?php echo __('Downtimes'); ?></h5>
+                                <div class="form-group smart-form">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="inDowntime_{{widget.id}}"
+                                               ng-model="filter.Hoststatus.in_downtime"
+                                               ng-model-options="{debounce: 500}">
+                                        <label class="custom-control-label" for="inDowntime_{{widget.id}}">
+                                            <?php echo __('In Downtime'); ?>
+                                        </label>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="notInDowntime_{{widget.id}}"
+                                               ng-model="filter.Hoststatus.not_in_downtime"
+                                               ng-model-options="{debounce: 500}">
+                                        <label class="custom-control-label" for="notInDowntime_{{widget.id}}">
+                                            <?php echo __('Not in Downtime'); ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-lg-12">
                         <button class="btn btn-primary float-right"
