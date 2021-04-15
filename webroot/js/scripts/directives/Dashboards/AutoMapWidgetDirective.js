@@ -4,18 +4,14 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $inte
         templateUrl: '/automaps/automapWidget.html',
         scope: {
             'widget': '='
+
         },
 
         controller: function($scope){
             $scope.init = true;
-            $scope.scroll_interval = 0;
-            $scope.useScroll = true;
-
             $scope.automap = {
                 automap_id: null,
-
             };
-
 
             $scope.load = function(){
                 $http.get("/automaps/automapWidget.json", {
@@ -34,7 +30,6 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $inte
                     }, 250);
                 });
             };
-
 
             $scope.loadAutoMaps = function(searchString){
                 $http.get("/automaps/loadAutomapsByString.json", {
@@ -86,13 +81,11 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $inte
             $scope.load();
             $scope.loadTimezone();
 
-
         },
 
         link: function($scope, element, attr){
 
         }
-
 
     }
 

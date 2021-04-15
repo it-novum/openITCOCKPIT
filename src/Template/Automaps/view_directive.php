@@ -25,7 +25,7 @@
 ?>
 
 
-    <div class="row">
+<div class="row" ng-if="widget">
         <div class="col-lg-1 mt-2">
             <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
                title="<?php echo __('Pause scrolling'); ?>"
@@ -55,7 +55,12 @@
             </div>
         </div>
     </div>
-
+<!--?php endif ?-->
+<!--scrollplay-view
+             scroll-interval="scroll_interval"
+             use-scroll="scroll.useScroll"
+             >
+             </--scrollplay-view-->
 
 
 <query-handler-directive></query-handler-directive>

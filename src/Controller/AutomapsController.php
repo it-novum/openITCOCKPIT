@@ -493,7 +493,6 @@ class AutomapsController extends AppController {
         }
 
 
-        $AutomapFilter = new AutomapsFilter($this->request);
 
         /** @var AutomapsTable $AutomapsTable */
         $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
@@ -503,6 +502,7 @@ class AutomapsController extends AppController {
 
         $this->viewBuilder()->setOption('serialize', ['automaps']);
     }
+
 
     public function viewDirective() {
         //Ship template of Mapeditors view directive.
@@ -540,7 +540,7 @@ class AutomapsController extends AppController {
                     $config['automap_id'] = null;
                 }
             }
-            // $config = $AutomapJson->standardizedData($config);
+
             if ($config['automap_id'] !== null) {
                 $id = $config['automap_id'];
                 if (!$AutomapsTable->existsById($id)) {
