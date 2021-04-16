@@ -204,6 +204,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                 var settings = $scope.filter;
                 settings['scroll_interval'] = $scope.scroll_interval;
                 settings['useScroll'] = $scope.useScroll;
+                settings['sort'] = $scope.sort;
+                settings['direction'] = $scope.direction;
                 $http.post("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
                     $scope.currentPage = 1;
                     loadWidgetConfig();
