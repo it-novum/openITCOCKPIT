@@ -23,6 +23,11 @@ angular.module('openITCOCKPIT')
             hostsWithoutOutages: null,
             downtimes: null
         };
+        $(function(){
+            $('#DateFrom, #DateTo').datepicker({
+                'format': 'dd.mm.yyyy'
+            });
+        });
 
         $scope.loadTimeperiods = function(searchString){
             $http.get("/timeperiods/index.json", {

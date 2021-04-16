@@ -166,6 +166,7 @@
                                         <?php echo __('From'); ?>
                                     </label>
                                     <input
+                                        id="DateFrom"
                                         class="form-control"
                                         type="text"
                                         ng-model="post.from_date"
@@ -180,6 +181,7 @@
                                         <?php echo __('To'); ?>
                                     </label>
                                     <input
+                                        id="DateTo"
                                         class="form-control"
                                         type="text"
                                         ng-model="post.to_date"
