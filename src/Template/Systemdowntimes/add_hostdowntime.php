@@ -231,6 +231,7 @@
                                         <span class="input-group-text"><i class="icon-prepend far fa-clock"></i></span>
                                     </div>
                                     <input
+                                        id="HostdowntimeFromTime"
                                         class="form-control col"
                                         type="text"
                                         ng-model="post.Systemdowntime.from_time"
@@ -243,7 +244,7 @@
 
                             <div class="form-group required" ng-class="{'has-error': errors.to_time}">
                                 <label class="control-label">
-                                    <?php echo __('From'); ?>
+                                    <?php echo __('To'); ?>
                                 </label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -264,6 +265,7 @@
                                         <span class="input-group-text"><i class="icon-prepend far fa-clock"></i></span>
                                     </div>
                                     <input
+                                        id="HostdowntimeToTime"
                                         class="form-control col"
                                         type="text"
                                         ng-model="post.Systemdowntime.to_time"
