@@ -48,8 +48,7 @@
                 </div>
             </div>
             <div class="margin-top-10">
-
-                <table id="hostdowntimes_list" class="table table-striped m-0 table-bordered table-hover table-sm">
+                <table class="table table-striped m-0 table-bordered table-hover table-sm">
                     <thead>
                     <tr>
                         <th class="no-sort"><?php echo __('Running'); ?></th>
@@ -127,9 +126,13 @@
                             {{downtime.DowntimeHost.durationHuman}}
                         </td>
 
-                        <td>
-                            <span ng-if="downtime.DowntimeHost.wasCancelled"><?php echo __('Yes'); ?></span>
-                            <span ng-if="!downtime.DowntimeHost.wasCancelled"><?php echo __('No'); ?></span>
+                        <td class="text-center">
+                            <span class="badge badge-danger" ng-if="downtime.DowntimeHost.wasCancelled">
+                                <?php echo __('Yes'); ?>
+                            </span>
+                            <span class="badge badge-success" ng-if="!downtime.DowntimeHost.wasCancelled">
+                                <?php echo __('No'); ?>
+                            </span>
                         </td>
                     </tr>
 
@@ -246,5 +249,3 @@
         </flippy-back>
     </flippy>
 </div>
-
-

@@ -174,7 +174,7 @@ angular.module('openITCOCKPIT').directive('hostsDowntimeWidget', function($http,
                 //                ^ Widget play/pause div
                 //                     ^ Paginator
                 //                          ^ Margin between header and table
-                //                                ^ Table heade
+                //                                ^ Table header
 
                 var limit = Math.floor(height / 36); // 36px = table row height;
                 if(limit <= 0){
