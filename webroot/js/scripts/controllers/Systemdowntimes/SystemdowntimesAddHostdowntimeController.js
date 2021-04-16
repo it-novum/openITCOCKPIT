@@ -33,6 +33,12 @@ angular.module('openITCOCKPIT')
                 $scope.post.Systemdowntime.object_id.push(parseInt($stateParams.id, 10));
             }
 
+            $(function(){
+                $('#HostdowntimeFromDate, #HostdowntimeToDate').datepicker({
+                    'format': 'dd.mm.yyyy'
+                });
+            });
+
             $scope.loadDefaults = function(){
                 $http.get("/angular/getDowntimeData.json", {
                     params: {
