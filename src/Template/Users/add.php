@@ -45,6 +45,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </li>
 </ol>
 
+
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
@@ -54,8 +55,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'users')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex'
-                           class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -201,7 +201,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <?php if ($isOAuth2): ?>
+                        <?php if($isOAuth2): ?>
                             <div class="form-group" ng-class="{'has-error': errors.is_oauth}">
                                 <div class="custom-control custom-checkbox  margin-bottom-10"
                                      ng-class="{'has-error': errors.is_oauth}">
@@ -373,8 +373,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <?php foreach ($timezones as $continent => $continentTimezones): ?>
                                     <optgroup label="<?php echo h($continent); ?>">
                                         <?php foreach ($continentTimezones as $timezoneKey => $timezoneName): ?>
-                                            <option
-                                                value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                            <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
                                         <?php endforeach; ?>
                                     </optgroup>
                                 <?php endforeach;; ?>
@@ -421,8 +420,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <!-- Prevent FireFox and Chrome from filling the users email into the timezone select box  :facepalm: -->
                         <input type="text" name="name" style="display:none">
 
-                        <div class="form-group required" ng-class="{'has-error': errors.password}"
-                             ng-show="post.User.is_oauth === 0">
+                        <div class="form-group required" ng-class="{'has-error': errors.password}" ng-show="post.User.is_oauth === 0">
                             <label class="control-label">
                                 <?php echo __('New password'); ?>
                             </label>
@@ -439,9 +437,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}"
-                             ng-show="post.User.is_oauth === 0">
-
+                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}" ng-show="post.User.is_oauth === 0">
                             <label class="control-label">
                                 <?php echo __('Confirm new password'); ?>
                             </label>
@@ -454,6 +450,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
+
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
@@ -468,6 +465,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 </div>
                             </div>
                         </div>
+
                     </form>
                 </div>
             </div>

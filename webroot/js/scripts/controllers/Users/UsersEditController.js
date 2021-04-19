@@ -5,7 +5,6 @@ angular.module('openITCOCKPIT')
         $scope.isLdapUser = false;
         $scope.localeOptions = [];
 
-
         var getContainerName = function(containerId){
             containerId = parseInt(containerId, 10);
             for(var index in $scope.containers){
@@ -48,6 +47,7 @@ angular.module('openITCOCKPIT')
                     };
                 }
                 data.ContainersUsersMemberships = {};
+
                 $scope.post = {
                     User: data
                 };
@@ -146,6 +146,7 @@ angular.module('openITCOCKPIT')
                 $scope.intervalText = sec + ' seconds';
             }
         }, true);
+
 
         $scope.submit = function(){
             //Define $scope.post.User.ContainersUsersMemberships

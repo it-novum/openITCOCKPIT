@@ -49,14 +49,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <span ng-if="!isLdapUser"><?php echo __('Edit local user:'); ?></span>
                     <span ng-if="isLdapUser"><?php echo __('Edit LDAP user:'); ?></span>
                     <span class="fw-300"><i>
-                        {{post.User.firstname}},
-                        {{post.User.lastname}}
-                    </i></span>
+                            {{post.User.firstname}},
+                            {{post.User.lastname}}
+                        </i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'users')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex'
-                           class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -187,8 +186,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <div ng-show="isLdapUser" class="form-group required"
-                             ng-class="{'has-error': errors.samaccountname}">
+                        <div ng-show="isLdapUser" class="form-group required" ng-class="{'has-error': errors.samaccountname}">
                             <label class="control-label">
                                 <?php echo __('SAM-Account-Name'); ?>
                             </label>
@@ -226,8 +224,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         An oAuth user will be an oAuth user forever
                         This can be changed later the user would only need to get an password and is_oauth=0 in the database
                         -->
-                        <div class="form-group" ng-class="{'has-error': errors.is_oauth}"
-                             ng-show="post.User.is_oauth === true">
+                        <div class="form-group" ng-class="{'has-error': errors.is_oauth}" ng-show="post.User.is_oauth === true">
                             <div class="custom-control custom-checkbox  margin-bottom-10"
                                  ng-class="{'has-error': errors.is_oauth}">
 
@@ -453,8 +450,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <!-- Prevent FireFox and Chrome from filling the users email into the timezone select box  :facepalm: -->
                         <input type="text" name="name" style="display:none">
 
-                        <div class="form-group required" ng-class="{'has-error': errors.password}"
-                             ng-if="isLdapUser === false && post.User.is_oauth === false">
+                        <div class="form-group required" ng-class="{'has-error': errors.password}" ng-if="isLdapUser === false && post.User.is_oauth === false">
                             <label class="control-label">
                                 <?php echo __('New password'); ?>
                             </label>
@@ -471,8 +467,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}"
-                             ng-if="isLdapUser === false && post.User.is_oauth === false">
+                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}" ng-if="isLdapUser === false && post.User.is_oauth === false">
                             <label class="control-label">
                                 <?php echo __('Confirm new password'); ?>
                             </label>
@@ -499,11 +494,10 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 </div>
                             </div>
                         </div>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-

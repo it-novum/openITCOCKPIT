@@ -4,7 +4,6 @@ angular.module('openITCOCKPIT')
             createAnother: false
         };
         $scope.localeOptions = [];
-        $scope.apikeys = [];
 
         var clearForm = function(){
             $scope.selectedUserContainers = [];
@@ -32,7 +31,7 @@ angular.module('openITCOCKPIT')
                     usercontainerroles: {
                         _ids: []
                     },
-                    ContainersUsersMemberships: {}
+                    ContainersUsersMemberships: {},
                 }
             };
         };
@@ -158,6 +157,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
+
                 if($scope.data.createAnother === false){
                     RedirectService.redirectWithFallback('UsersIndex');
                 }else{
@@ -222,4 +222,3 @@ angular.module('openITCOCKPIT')
         $scope.loadDateformats();
         $scope.loadLocaleOptions();
     });
-
