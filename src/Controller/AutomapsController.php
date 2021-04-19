@@ -41,8 +41,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Exception;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\Dashboards\DashboardJsonStandardizer;
-use itnovum\openITCOCKPIT\Core\Dashboards\DashboardJsonStanderdizer;
+use itnovum\openITCOCKPIT\Core\Dashboards\AutomapJson;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
@@ -487,33 +486,31 @@ class AutomapsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostCount', 'serviceCount']);
     }
 
-    public function loadAutomapsByString() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        /** @var AutomapsTable $AutomapsTable */
-        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
-        $automaps = $AutomapsTable->find()->order(['Automaps.id' => 'asc'])->all();
-        $this->set('automaps', $automaps);
-        $this->viewBuilder()->setOption('serialize', ['automaps']);
-    }
-
-    public function viewDirective() {
-        //Ship template of Mapeditors view directive.
-        //It is a directive be able to also use the maps as an widget
+    public function automap() {
+        //Ship template of automap directive.
+        //It is a directive be able to also use the automap as a widget
         return;
     }
 
     public function automapWidget() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
             return;
         }
-        /** @var $AutomapsTable AutomapsTable */
-        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
-        $DashboardJsonStandardizer = new DashboardJsonStandardizer();
+
+        $widgetId = (int)$this->request->getQuery('widgetId');
+        if (!$WidgetsTable->existsById($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        $AutomapJson = new AutomapJson();
+        /** @var AutomapsTable $AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
+
+        $widget = $WidgetsTable->get($widgetId);
+
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId');
             if (!$WidgetsTable->existsById($widgetId)) {
@@ -521,15 +518,14 @@ class AutomapsController extends AppController {
             }
             $widgetEntity = $WidgetsTable->get($widgetId);
             $widget = $widgetEntity->toArray();
-            $config = [
-                'automap_id' => null
-            ];
+
             if ($widget['json_data'] !== null && $widget['json_data'] !== '') {
                 $config = json_decode($widget['json_data'], true);
                 if (!isset($config['automap_id'])) {
                     $config['automap_id'] = null;
                 }
             }
+            //Check automap permissions
             if ($config['automap_id'] !== null) {
                 $id = $config['automap_id'];
                 if (!$AutomapsTable->existsById($id)) {
@@ -551,35 +547,40 @@ class AutomapsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $config = $DashboardJsonStandardizer->standardizedData($this->request->getData());
-            $automapId = (int)$this->request->getData('automap_id');
-            $scrollInterval = (int)$this->request->getData('scroll_interval');
-            $useScroll = (bool)$this->request->getData('useScroll');
-            if ($automapId === 0) {
-                $automapId = null;
-            }
-            $config = [
-                'automap_id'      => $automapId,
-                'scroll_interval' => $scrollInterval,
-                'useScroll'       => $useScroll
-            ];
-            $widgetId = (int)$this->request->getData('Widget.id');
-            if (!$WidgetsTable->existsById($widgetId)) {
-                throw new NotFoundException('Invalid widget id');
-            }
 
-            $widgetEntity = $WidgetsTable->get($widgetId);
-            $widget['json_data'] = json_encode($config);
-            $widgetEntity = $WidgetsTable->patchEntity($widgetEntity, $widget);
-            $WidgetsTable->save($widgetEntity);
-            if (!$widgetEntity->hasErrors()) {
-                $this->set('config', $config);
-                $this->viewBuilder()->setOption('serialize', ['config']);
-                return;
-            }
-            $this->serializeCake4Id($widgetEntity);
+            $config = $AutomapJson->standardizedData($this->request->getData());
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+            $WidgetsTable->save($widget);
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
         throw new MethodNotAllowedException();
     }
+
+    public function loadAutomapsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var AutomapsTable $AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
+        $selected = $this->request->getQuery('selected');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        $automaps = Api::makeItJavaScriptAble(
+            $AutomapsTable->getAutomapsForAngular($selected, null, $MY_RIGHTS)
+        );
+
+        $this->set('automaps', $automaps);
+        $this->viewBuilder()->setOption('serialize', ['automaps']);
+    }
+
 }

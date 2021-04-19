@@ -33,16 +33,17 @@
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
                 <i class="fa fa-cog fa-sm"></i>
             </a>
-            <span ng-show="automap.automap_id === null" class="text-info padding-left-20">
+            <span ng-show="automap_id === null" class="text-info padding-left-20">
                 <?php echo __('No element selected'); ?>
             </span>
-            <div class="no-padding"
-                 automap-view=""
-                 widget="widget"
-                 automap-id="automap.automap_id"
-                 scroll-interval="automap.scroll_interval"
-                 use-scroll="automap.useScroll"
-                 ng-if="automap.automap_id"></div>
+            <automap
+                automap="automap"
+                services-by-host="servicesByHost"
+                scroll="scroll"
+                paging="paging"
+                changepage="changepage"
+                change-mode="changeMode">
+            </automap>
             <!--end-->
         </flippy-front>
         <flippy-back class="fixFlippy">
@@ -59,20 +60,16 @@
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="automaps"
-                                    callback="loadAutoMaps"
-                                    ng-options="automap.id as automap.name for automap in automaps"
-                                    ng-model="automap.automap_id">
+                                    ng-options="available_automap.key as available_automap.value for available_automap in automaps"
+                                    ng-model="automap_id">
                             </select>
-                            <div ng-repeat="error in errors.Service">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
                         </div>
                     </div>
                     <br/>
 
                     <div class="row">
                         <div class="col-lg-12">
-                            <button class="btn btn-primary pull-right" ng-click="saveAutomap()">
+                            <button class="btn btn-primary pull-right" ng-click="saveSettings()">
                                 <?php echo __('Save'); ?>
                             </button>
                         </div>

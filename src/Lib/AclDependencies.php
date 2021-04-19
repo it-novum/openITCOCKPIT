@@ -142,7 +142,9 @@ class AclDependencies {
 
         $this
             ->allow('Automaps', 'icon')
-            ->allow('Automaps', 'loadContainers');
+            ->allow('Automaps', 'loadContainers')
+            ->allow('Automaps', 'automapWidget')
+            ->allow('Automaps', 'loadAutomapsByString');
 
         $this
             ->allow('Calendars', 'loadCalendarsByContainerId');
@@ -245,8 +247,6 @@ class AclDependencies {
             ->allow('Users', 'login')
             ->allow('Users', 'logout')
             ->allow('Users', 'getLocaleOptions');
-        $this
-            ->allow('Automaps', 'viewDirective');
 
         ///////////////////////////////
         //    Add dependencies       //
@@ -267,8 +267,8 @@ class AclDependencies {
 
         $this
             ->dependency('Automaps', 'add', 'Automaps', 'getMatchingHostAndServices')
-            ->dependency('Automaps', 'edit', 'Automaps', 'getMatchingHostAndServices');
-
+            ->dependency('Automaps', 'edit', 'Automaps', 'getMatchingHostAndServices')
+            ->dependency('Automaps', 'view', 'Automaps', 'automap');
 
         $this
             ->dependency('Browsers', 'index', 'Browsers', 'tenantBrowser')
