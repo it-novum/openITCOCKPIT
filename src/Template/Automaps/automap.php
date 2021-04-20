@@ -149,9 +149,14 @@
         </div>
         <div class="row margin-top-10 margin-bottom-10" ng-if="automap.use_paginator">
             <div class="col-lg-12">
-                <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
-                <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
-                <?php echo $this->element('paginator_or_scroll'); ?>
+                <div>
+                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"
+                            only-buttons="(mode==='view')?false:true"></scroll>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <div ng-if="mode==='view'">
+                        <?php echo $this->element('paginator_or_scroll'); ?>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

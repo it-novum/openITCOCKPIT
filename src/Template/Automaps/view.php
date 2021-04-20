@@ -66,6 +66,17 @@
                 </div>
             </div>
 
+            <automap
+                automap="automap"
+                services-by-host="servicesByHost"
+                scroll="scroll"
+                paging="paging"
+                changepage="changepage"
+                change-mode="changeMode"
+                use-scroll="useScroll"
+                mode="mode">
+            </automap>
+
         </div>
     </div>
 </div>

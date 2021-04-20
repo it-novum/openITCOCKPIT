@@ -30,19 +30,69 @@
             duration="800"
             timing-function="ease-in-out">
         <flippy-front class="fixFlippy">
-            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
-                <i class="fa fa-cog fa-sm"></i>
-            </a>
-            <span ng-show="automap_id === null" class="text-info padding-left-20">
-                <?php echo __('No element selected'); ?>
-            </span>
+            <div class="row">
+                <div class="col-lg-4">
+                    <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark"
+                       ng-click="showConfig()">
+                        <i class="fa fa-cog fa-sm"></i>
+                    </a>
+                    <span ng-show="automap_id === null" class="text-info padding-left-20">
+                        <?php echo __('No element selected'); ?>
+                    </span>
+                    <span ng-show="automap" class="text-info padding-left-20">
+                        <?php if ($this->Acl->hasPermission('edit', 'automaps')): ?>
+                            <a ui-sref="AutomapsEdit({id:automap.id})"
+                               ng-if="automap.allow_edit">
+                                {{automap.name}}
+                            </a>
+                            <span ng-if="!automap.allow_edit">
+                                {{automap.name}}
+                            </span>
+                        <?php else: ?>
+                            {{automap.name}}
+                        <?php endif; ?>
+                    </span>
+                </div>
+                <div class="col-lg-8" ng-hide="automap_id === null">
+                    <div class="row d-flex justify-content-end">
+                        <div class="col-lg-1 offset-lg-6 text-right">
+                            <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
+                               title="<?php echo __('Pause scrolling'); ?>"
+                               class="btn btn-xs btn-primary">
+                                <i class="fa fa-pause"></i>
+                            </a>
+                            <a href="javascript:void(0);" ng-show="!useScroll"
+                               ng-click="startScroll()" title="<?php echo __('Start scrolling'); ?>"
+                               class="btn btn-xs btn-primary">
+                                <i class="fa fa-play"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group form-group-slider">
+                                <label class="display-inline">
+                                    <span ng-show="automap.use_paginator"><?= __('Scroll interval:'); ?></span>
+                                    <span ng-hide="automap.use_paginator"><?= __('Refresh interval:'); ?></span>
+                                    <span class="note" id="PagingInterval_human">
+                                        {{pagingTimeString}}
+                                    </span>
+                                </label>
+
+                                <div class="slidecontainer">
+                                    <input type="range" step="5000" min="5000" max="300000" class="slider"
+                                           style="width: 100%"
+                                           ng-model="scroll_interval" ng-model-options="{debounce: 500}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <automap
                 automap="automap"
                 services-by-host="servicesByHost"
                 scroll="scroll"
-                paging="paging"
                 changepage="changepage"
-                change-mode="changeMode">
+                mode="mode">
             </automap>
             <!--end-->
         </flippy-front>
@@ -66,6 +116,26 @@
                         </div>
                     </div>
                     <br/>
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-12 margin-bottom-5">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="icon-prepend fas fa-th"></i>
+                                    </span>
+                                </div>
+                                <input type="number"
+                                       class="form-control"
+                                       min="1"
+                                       placeholder="<?php echo __('Limit per page'); ?>"
+                                       ng-model="limit"
+                                       ng-model-options="{debounce: 500}">
+                            </div>
+                            <div class="info-block-helptext font-xs">
+                                <?= __('This option has only an effect if "Use pagination" is enabled.'); ?>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-lg-12">

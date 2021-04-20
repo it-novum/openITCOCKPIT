@@ -35,6 +35,7 @@ class AutomapJson extends DashboardJsonStandardizer {
     protected $fields = [
         'automap_id'      => null,
         'useScroll'       => true,
+        'limit'           => ITN_AJAX_LIMIT,
         'scroll_interval' => 30000
     ];
 

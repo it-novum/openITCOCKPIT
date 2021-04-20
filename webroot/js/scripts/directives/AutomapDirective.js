@@ -5,16 +5,16 @@ angular.module('openITCOCKPIT').directive('automap', function($http, $state, $in
         scope: {
             'automap': '=',
             'servicesByHost': '=',
-            'scroll': '=',
-            'paging': '=',
+            'scroll': '=?',
+            'paging': '=?',
             'changepage': '=',
-            'changeMode': '='
+            'changeMode': '=',
+            'useScroll': '=',
+            'mode': '=?'
         },
         controller: function($scope){
         },
-
         link: function($scope, element, attr){
-
         }
     };
 });

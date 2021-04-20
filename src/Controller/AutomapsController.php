@@ -232,8 +232,6 @@ class AutomapsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        /** @var $ServicestatusTable ServicestatusTableInterface */
-        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         $containerIds = [
             $automap['container_id']
