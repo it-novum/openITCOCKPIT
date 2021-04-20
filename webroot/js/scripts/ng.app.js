@@ -1106,6 +1106,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     hostname: {
                         value: null
                     },
+                    address: {
+                        value: null
+                    },
                     hoststate: {
                         value: null,
                         array: true,
@@ -1429,7 +1432,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('WizardHostConfiguration', {
-                url: '/wizards/hostConfiguration/:typeId/:title/:hostId',
+                url: '/wizards/wizardHostConfiguration/:typeId/:title/:hostId',
                 params: {
                     state: {
                         value: null
@@ -1442,7 +1445,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         squash: false
                     }
                 },
-                templateUrl: "/wizards/hostConfiguration.html",
+                templateUrl: "/wizards/wizardHostConfiguration.html",
                 controller: "WizardHostConfigurationController"
             })
 

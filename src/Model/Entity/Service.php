@@ -138,21 +138,42 @@ class Service extends Entity {
     ];
 
     /**
+     * @param Servicetemplate $servicetemplate
      * @return array
      */
-    public function getCommandargumentValuesForCfg() {
+    public function getCommandargumentValuesForCfg(Servicetemplate $servicetemplate) {
         $servicecommandargumentvaluesForCfg = [];
         $servicecommandargumentvalues = $this->get('servicecommandargumentvalues');
+        if (!empty($servicecommandargumentvalues)) {
+            $service = $this->toArray();
+            $servicetemplate = $servicetemplate->toArray();
+            if ($service['command_id'] === null || $service['command_id'] == $servicetemplate['command_id']) {
+                $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
 
-        foreach ($servicecommandargumentvalues as $servicecommandargumentvalue) {
-            /** @var $servicecommandargumentvalue Servicecommandargumentvalue */
-            $servicecommandargumentvaluesForCfg[] = [
-                'name'       => $servicecommandargumentvalue->get('commandargument')->get('name'),
-                'human_name' => $servicecommandargumentvalue->get('commandargument')->get('human_name'),
-                'value'      => $servicecommandargumentvalue->get('value')
-            ];
+                $commandArgumentValuesDiff = array_diff(
+                    Hash::extract($servicetemplate['servicetemplatecommandargumentvalues'], '{n}.commandargument_id'),
+                    Hash::extract($servicecommandargumentvalues, '{n}.commandargument_id')
+                );
+                if (!empty($commandArgumentValuesDiff)) {
+                    //add missing (new) command argument values from service template to service command argument values
+                    foreach ($commandArgumentValuesDiff as $commandArgumentValueId) {
+                        $key = array_search(
+                            $commandArgumentValueId,
+                            array_column($servicetemplate['servicetemplatecommandargumentvalues'], 'commandargument_id'), true
+                        );
+                        $servicecommandargumentvalues[] = $servicetemplate['servicetemplatecommandargumentvalues'][$key];
+                    }
+                }
+            }
+
+            foreach ($servicecommandargumentvalues as $servicecommandargumentvalue) {
+                $servicecommandargumentvaluesForCfg[] = [
+                    'name'       => $servicecommandargumentvalue['commandargument']['name'],
+                    'human_name' => $servicecommandargumentvalue['commandargument']['human_name'],
+                    'value'      => $servicecommandargumentvalue['value']
+                ];
+            }
         }
-
         return Hash::sort($servicecommandargumentvaluesForCfg, '{n}.name', 'asc', 'natural');
     }
 

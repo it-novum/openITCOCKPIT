@@ -367,6 +367,12 @@ angular.module('openITCOCKPIT')
                 var options = {
                     //orientation: "bottom",
                     orientation: "both",
+                    xss: {
+                        disabled: false,
+                        filterOptions: {
+                            whiteList: {i: ['class', 'not-xss-filtered-html']},
+                        },
+                    },
                     //showCurrentTime: true,
                     start: new Date(result.data.start * 1000),
                     end: new Date(result.data.end * 1000),

@@ -87,7 +87,7 @@ class NotificationSerializer {
                 'start'     => $this->UserTime->customFormat('Y-m-d H:i:s', $notificationTime),
                 'type'      => 'box',
                 'className' => 'orange',
-                'content'   => '<i class="fa fa-envelope"></i>',
+                'content'   => '<i class="not-xss-filtered-html fa fa-envelope"></i>',
                 'title'     => $title,
                 'group'     => $this->groupId
             ];

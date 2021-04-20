@@ -648,6 +648,12 @@ angular.module('openITCOCKPIT')
                 $scope.visTimelineEnd = result.data.end;
                 var options = {
                     orientation: "both",
+                    xss: {
+                        disabled: false,
+                        filterOptions: {
+                            whiteList: {i: ['class', 'not-xss-filtered-html']},
+                        },
+                    },
                     start: new Date(result.data.start * 1000),
                     end: new Date(result.data.end * 1000),
                     min: new Date(new Date(result.data.start * 1000).setFullYear(new Date(result.data.start * 1000).getFullYear() - 1)), //May 1 year of zoom

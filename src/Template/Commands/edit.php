@@ -195,7 +195,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                                 <div class="col-md-1 col-lg-1">
                                     <a class="btn btn-danger btn-sm waves-effect waves-themed deleteCommandArg margin-top-25"
                                        href="javascript:void(0);"
-                                       ng-click="removeArg(arg)">
+                                       ng-click="removeArg(arg.count)">
                                         <i class="fa fa-trash fa-lg"></i>
                                     </a>
                                 </div>

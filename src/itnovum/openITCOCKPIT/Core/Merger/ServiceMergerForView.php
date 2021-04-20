@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core\Merger;
 
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\CustomVariableMerger;
 
 /**
@@ -341,7 +342,23 @@ class ServiceMergerForView {
                 return $this->servicetemplate['servicetemplatecommandargumentvalues'];
             }
         }
-
+        $commandArgumentValuesDiff = array_diff(
+            Hash::extract($this->servicetemplate['servicetemplatecommandargumentvalues'], '{n}.commandargument_id'),
+            Hash::extract($this->service['servicecommandargumentvalues'], '{n}.commandargument_id')
+        );
+        if (!empty($commandArgumentValuesDiff) &&
+            ($this->service['command_id'] === $this->servicetemplate['command_id'] || $this->service['command_id'] === null)) {
+            //add missing (new) command argument values from host template to host command argument values
+            foreach ($commandArgumentValuesDiff as $commandArgumentValueId) {
+                $key = array_search($commandArgumentValueId, array_column($this->servicetemplate['servicetemplatecommandargumentvalues'], 'commandargument_id'), true);
+                $this->service['servicecommandargumentvalues'][] = [
+                    'commandargument_id' => $this->servicetemplate['servicetemplatecommandargumentvalues'][$key]['commandargument_id'],
+                    'host_id'            => $this->service['id'],
+                    'value'              => $this->servicetemplate['servicetemplatecommandargumentvalues'][$key]['value'],
+                    'commandargument'    => $this->servicetemplate['servicetemplatecommandargumentvalues'][$key]['commandargument']
+                ];
+            }
+        }
         return $this->service['servicecommandargumentvalues'];
     }
 
