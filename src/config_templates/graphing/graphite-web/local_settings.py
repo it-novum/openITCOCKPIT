@@ -238,7 +238,7 @@ from graphite.app_settings import *
 MIDDLEWARE = ('whitenoise.middleware.WhiteNoiseMiddleware',) + MIDDLEWARE
 #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATIC_ROOT = '/opt/graphite/webapp/content/'
+#STATIC_ROOT = '/opt/graphite/webapp/content/'
 
 
 

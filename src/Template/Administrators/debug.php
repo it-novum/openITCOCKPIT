@@ -421,9 +421,6 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                             <dt><?php echo __('Kernel'); ?>:</dt>
                             <dd>{{serverInformation.kernel}}</dd>
 
-                            <dt><?php echo __('Architecture'); ?>:</dt>
-                            <dd>{{serverInformation.architecture}}</dd>
-
                             <dt><?php echo __('PHP version'); ?>:</dt>
                             <dd>{{serverInformation.php_version}}</dd>
 
@@ -438,6 +435,9 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
                             <dt><?php echo __('CPU model'); ?>:</dt>
                             <dd>{{serverInformation.cpu_processor}}</dd>
+
+                            <dt><?php echo __('CPU Architecture'); ?>:</dt>
+                            <dd>{{serverInformation.architecture}}</dd>
 
                             <dt><?php echo __('Number of CPU cores'); ?>:</dt>
                             <dd>{{serverInformation.cpu_cores}}</dd>
