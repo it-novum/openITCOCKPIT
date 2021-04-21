@@ -53,13 +53,35 @@
                 <div class="panel-toolbar">
                     <label class="checkbox small-checkbox-label margin-right-10 margin-top-5">
                         <input type="checkbox" name="checkbox" checked="checked"
+                               ng-model="helplines.enabled">
+                        <i class="checkbox-primary"></i>
+                        <?php echo __('Show help lines'); ?>
+                    </label>
+                    <button class="btn dropdown-toggle btn-default btn-xs mr-1 shadow-0" data-toggle="dropdown">
+                        <span class="fa-stack helpline-stack-icon">
+                            <i class="fas fa-grip-lines fa-stack-1x"></i>
+                            <i style="" class="fas fa-grip-lines-vertical"></i>
+                        </span>
+                        <?php echo __('Help lines distance'); ?> - {{helplines.size}}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <?php
+                        $gridSizes = [5, 10, 15, 20, 25, 30, 50, 80];
+                        foreach ($gridSizes as $size): ?>
+                            <button class="dropdown-item" ng-click="changeHelplinesSize(<?php echo $size; ?>)">
+                                <?php printf('%sx%spx', $size, $size); ?>
+                            </button>
+                        <?php endforeach; ?>
+                    </ul>
+                    <label class="checkbox small-checkbox-label margin-right-10 margin-top-5">
+                        <input type="checkbox" name="checkbox" checked="checked"
                                ng-model="grid.enabled">
                         <i class="checkbox-primary"></i>
                         <?php echo __('Enable grid'); ?>
                     </label>
                     <button class="btn dropdown-toggle btn-default btn-xs mr-1 shadow-0" data-toggle="dropdown">
                         <i class="fas fa-th"></i>
-                        <?php echo __('Grid size'); ?>
+                        <?php echo __('Grid size'); ?> - {{grid.size}}
                     </button>
                     <ul class="dropdown-menu">
                         <?php
@@ -71,7 +93,8 @@
                         <?php endforeach; ?>
                     </ul>
                     <?php if ($this->Acl->hasPermission('index', 'maps', 'mapmodule')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='MapsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='MapsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -90,6 +113,7 @@
                         <div style="overflow: auto; min-height: 600px;position: relative;"
                              ng-click="addNewObjectFunc($event)"
                              id="mainMapContainer">
+                            <div id="mapContent" ng-class="getHelplinesClass()"></div>
                             <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
                                  ng-if="map.Map.background"/>
                             <div ng-repeat="item in map.Mapitems" class="draggable" ng-dblclick="editItem(item)"
@@ -343,8 +367,9 @@
                             </label>
                             <div class="input-group" ng-class="{'has-error': errors.x}">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                    <span class="input-group-text">
+                                        <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                    </span>
                                 </div>
                                 <input type="number"
                                        class="form-control"
@@ -363,8 +388,9 @@
                             </label>
                             <div class="input-group" ng-class="{'has-error': errors.y}">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                    <span class="input-group-text">
+                                        <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                    </span>
                                 </div>
                                 <input type="number"
                                        class="form-control"
@@ -394,8 +420,8 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <span class="help-block">
-                            <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
-                        </span>
+                                <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
+                            </span>
                         </div>
                         <div class="col-lg-2">
                             <button class="btn btn-block btn-default margin-top-30" ng-click="addNewLayer()">
@@ -582,8 +608,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.startX}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -602,8 +629,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.startY}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -624,8 +652,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.endX}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -644,8 +673,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.endY}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -825,8 +855,8 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.font_size}">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><i
-                                        class="icon-prepend fas fa-font"></i>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-font"></i>
                                 </span>
                             </div>
                             <input type="number"
@@ -850,8 +880,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.x}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -870,8 +901,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.y}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -892,8 +924,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.size_x}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-arrows-alt-h"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-arrows-alt-h"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -915,8 +948,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.size_y}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-arrows-alt-v"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-arrows-alt-v"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -1250,8 +1284,8 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.x}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i></span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -1270,8 +1304,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.y}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -1376,8 +1411,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.x}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -1396,8 +1432,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.y}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -1544,8 +1581,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.x}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -1564,8 +1602,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.y}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-map-marked-alt"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"
@@ -1586,8 +1625,9 @@
                         </label>
                         <div class="input-group" ng-class="{'has-error': errors.size_x}">
                             <div class="input-group-prepend">
-                                    <span class="input-group-text"><i
-                                            class="icon-prepend fas fa-ruler"></i></span>
+                                <span class="input-group-text">
+                                    <i class="icon-prepend fas fa-ruler"></i>
+                                </span>
                             </div>
                             <input type="number"
                                    class="form-control"

@@ -18,6 +18,11 @@ angular.module('openITCOCKPIT')
             size: 15
         };
 
+        $scope.helplines = {
+            enabled: true,
+            size: 15
+        };
+
         $scope.addLink = false;
 
         $scope.uploadIconSet = false;
@@ -1334,6 +1339,16 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.changeHelplinesSize = function(size){
+            $scope.helplines.size = parseInt(size, 10);
+        };
+
+        $scope.getHelplinesClass = function(){
+            if($scope.helplines.enabled){
+                return 'helplines' + $scope.helplines.size;
+            }
+        };
+
         $scope.setDefaultLayer = function(layerNo){
             $scope.defaultLayer = layerNo.toString();
         };
@@ -1390,6 +1405,8 @@ angular.module('openITCOCKPIT')
         var makeDraggable = function(){
             var options = {
                 grid: false,
+                distance: 5,
+                dynamic: false,
                 stop: function(event){
                     var $this = $(this);
                     var x = $this.css('left');
