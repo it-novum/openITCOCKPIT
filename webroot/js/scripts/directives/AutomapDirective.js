@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT').directive('automap', function($http, $state, $in
             'changepage': '=',
             'changeMode': '=',
             'useScroll': '=',
-            'mode': '=?'
+            'onlyButtons': '='
         },
         controller: function($scope){
         },

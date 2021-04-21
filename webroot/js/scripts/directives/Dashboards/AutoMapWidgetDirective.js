@@ -13,7 +13,7 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $root
             $scope.useScroll = true;
             $scope.scroll_interval = 30000;
             $scope.limit = 25;
-            $scope.mode = 'widget';
+            $scope.onlyButtons = true;
 
             $scope.automap_id = null;
 
@@ -164,13 +164,6 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $root
                 $scope.load({
                     save: true
                 });
-            });
-
-            $scope.$watch('automap_id', function(){
-                if($scope.init === true){
-                    return true;
-                }
-                $scope.$apply();
             });
         },
 

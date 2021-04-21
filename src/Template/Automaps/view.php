@@ -74,7 +74,7 @@
                 changepage="changepage"
                 change-mode="changeMode"
                 use-scroll="useScroll"
-                mode="mode">
+                only-buttons="onlyButtons">
             </automap>
 
         </div>

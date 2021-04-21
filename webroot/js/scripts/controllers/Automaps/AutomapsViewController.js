@@ -6,7 +6,8 @@ angular.module('openITCOCKPIT')
 
         $scope.currentPage = 1;
         $scope.useScroll = true;
-        $scope.mode = 'view';
+        $scope.onlyButtons = false;
+
         $scope.load = function(){
             var params = {
                 'angular': true,

@@ -70,8 +70,7 @@
                         <div class="col-lg-3">
                             <div class="form-group form-group-slider">
                                 <label class="display-inline">
-                                    <span ng-show="automap.use_paginator"><?= __('Scroll interval:'); ?></span>
-                                    <span ng-hide="automap.use_paginator"><?= __('Refresh interval:'); ?></span>
+                                    <span><?= __('Refresh interval:'); ?></span>
                                     <span class="note" id="PagingInterval_human">
                                         {{pagingTimeString}}
                                     </span>
@@ -92,7 +91,7 @@
                 services-by-host="servicesByHost"
                 scroll="scroll"
                 changepage="changepage"
-                mode="mode">
+                only-buttons="onlyButtons">
             </automap>
             <!--end-->
         </flippy-front>

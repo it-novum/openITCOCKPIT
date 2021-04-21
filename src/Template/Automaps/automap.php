@@ -151,9 +151,9 @@
             <div class="col-lg-12">
                 <div>
                     <scroll scroll="scroll" click-action="changepage" ng-if="scroll"
-                            only-buttons="(mode==='view')?false:true"></scroll>
+                            only-buttons="onlyButtons"></scroll>
                     <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
-                    <div ng-if="mode==='view'">
+                    <div ng-if="!onlyButtons">
                         <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
