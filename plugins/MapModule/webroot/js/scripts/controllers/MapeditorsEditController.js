@@ -1407,6 +1407,7 @@ angular.module('openITCOCKPIT')
                 grid: false,
                 distance: 5,
                 dynamic: false,
+                containment: 'parent',
                 stop: function(event){
                     var $this = $(this);
                     var x = $this.css('left');

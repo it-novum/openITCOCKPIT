@@ -51,47 +51,52 @@
                     <span class="fw-300"><i>{{map.Map.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <label class="checkbox small-checkbox-label margin-right-10 margin-top-5">
-                        <input type="checkbox" name="checkbox" checked="checked"
-                               ng-model="helplines.enabled">
-                        <i class="checkbox-primary"></i>
-                        <?php echo __('Show help lines'); ?>
-                    </label>
-                    <button class="btn dropdown-toggle btn-default btn-xs mr-1 shadow-0" data-toggle="dropdown">
-                        <span class="fa-stack helpline-stack-icon">
-                            <i class="fas fa-grip-lines fa-stack-1x"></i>
-                            <i style="" class="fas fa-grip-lines-vertical"></i>
-                        </span>
-                        <?php echo __('Help lines distance'); ?> - {{helplines.size}}
-                    </button>
-                    <ul class="dropdown-menu">
-                        <?php
-                        $gridSizes = [5, 10, 15, 20, 25, 30, 50, 80];
-                        foreach ($gridSizes as $size): ?>
-                            <button class="dropdown-item" ng-click="changeHelplinesSize(<?php echo $size; ?>)">
-                                <?php printf('%sx%spx', $size, $size); ?>
-                            </button>
-                        <?php endforeach; ?>
-                    </ul>
-                    <label class="checkbox small-checkbox-label margin-right-10 margin-top-5">
-                        <input type="checkbox" name="checkbox" checked="checked"
-                               ng-model="grid.enabled">
-                        <i class="checkbox-primary"></i>
-                        <?php echo __('Enable grid'); ?>
-                    </label>
-                    <button class="btn dropdown-toggle btn-default btn-xs mr-1 shadow-0" data-toggle="dropdown">
-                        <i class="fas fa-th"></i>
-                        <?php echo __('Grid size'); ?> - {{grid.size}}
-                    </button>
-                    <ul class="dropdown-menu">
-                        <?php
-                        $gridSizes = [5, 10, 15, 20, 25, 30, 50, 80];
-                        foreach ($gridSizes as $size): ?>
-                            <button class="dropdown-item" ng-click="changeGridSize(<?php echo $size; ?>)">
-                                <?php printf('%sx%spx', $size, $size); ?>
-                            </button>
-                        <?php endforeach; ?>
-                    </ul>
+                    <div role="group">
+                        <label class="checkbox small-checkbox-label margin-right-10 margin-top-5">
+                            <input type="checkbox" name="checkbox" checked="checked"
+                                   ng-model="helplines.enabled">
+                            <i class="checkbox-primary"></i>
+                            <?php echo __('Show help lines'); ?>
+                        </label>
+                        <button class="btn dropdown-toggle btn-default btn-xs mr-1 shadow-0" data-toggle="dropdown">
+                            <span class="fa-stack helpline-stack-icon">
+                                <i class="fas fa-grip-lines fa-stack-1x"></i>
+                                <i class="fas fa-grip-lines-vertical"></i>
+                            </span>
+                            <?php echo __('Help lines distance'); ?> - {{helplines.size}}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <?php
+                            $helplineSizes = [5, 10, 15, 20, 25, 30, 50, 80];
+                            foreach ($helplineSizes as $helplinesize): ?>
+                                <button class="dropdown-item"
+                                        ng-click="changeHelplinesSize(<?php echo $helplinesize; ?>)">
+                                    <?php printf('%sx%spx', $helplinesize, $helplinesize); ?>
+                                </button>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <div role="group">
+                        <label class="checkbox small-checkbox-label margin-right-10 margin-top-5">
+                            <input type="checkbox" name="checkbox" checked="checked"
+                                   ng-model="grid.enabled">
+                            <i class="checkbox-primary"></i>
+                            <?php echo __('Enable grid'); ?>
+                        </label>
+                        <button class="btn dropdown-toggle btn-default btn-xs mr-1 shadow-0" data-toggle="dropdown">
+                            <i class="fas fa-th"></i>
+                            <?php echo __('Grid size'); ?> - {{grid.size}}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <?php
+                            $gridSizes = [5, 10, 15, 20, 25, 30, 50, 80];
+                            foreach ($gridSizes as $size): ?>
+                                <button class="dropdown-item" ng-click="changeGridSize(<?php echo $size; ?>)">
+                                    <?php printf('%sx%spx', $size, $size); ?>
+                                </button>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
                     <?php if ($this->Acl->hasPermission('index', 'maps', 'mapmodule')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='MapsIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
@@ -113,7 +118,7 @@
                         <div style="overflow: auto; min-height: 600px;position: relative;"
                              ng-click="addNewObjectFunc($event)"
                              id="mainMapContainer">
-                            <div id="mapContent" ng-class="getHelplinesClass()"></div>
+                            <div id="mapContent" ng-if="helplines.enabled" ng-class="getHelplinesClass()"></div>
                             <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
                                  ng-if="map.Map.background"/>
                             <div ng-repeat="item in map.Mapitems" class="draggable" ng-dblclick="editItem(item)"
