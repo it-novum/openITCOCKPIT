@@ -19,7 +19,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.helplines = {
-            enabled: true,
+            enabled: false,
             size: 15
         };
 
