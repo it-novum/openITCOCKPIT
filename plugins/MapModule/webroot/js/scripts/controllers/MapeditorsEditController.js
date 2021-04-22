@@ -1405,9 +1405,12 @@ angular.module('openITCOCKPIT')
         var makeDraggable = function(){
             var options = {
                 grid: false,
-                distance: 5,
                 dynamic: false,
                 containment: 'parent',
+                drag: function(){
+                    $(this).css('opacity', '0.5'); // Semi-transparent while being dragged
+                    $(this).css('border', '2px dashed #4285F4');
+                },
                 stop: function(event){
                     var $this = $(this);
                     var x = $this.css('left');
