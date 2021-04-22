@@ -19,7 +19,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.helplines = {
-            enabled: false,
+            enabled: true,
             size: 15
         };
 
@@ -30,6 +30,8 @@ angular.module('openITCOCKPIT')
         $scope.defaultLayer = '0';
 
         $scope.visableLayers = {};
+
+        $scope.gridSizeAndHelplineSizeAreEqual = true;
 
 
         $scope.load = function(){
@@ -1334,6 +1336,11 @@ angular.module('openITCOCKPIT')
 
         $scope.changeGridSize = function(size){
             $scope.grid.size = parseInt(size, 10);
+            if($scope.gridSizeAndHelplineSizeAreEqual){
+                if($scope.grid.size != $scope.helplines.size){
+                    $scope.changeHelplinesSize($scope.grid.size);
+                }
+            }
             if($scope.grid.enabled){
                 makeDraggable();
             }
@@ -1341,6 +1348,11 @@ angular.module('openITCOCKPIT')
 
         $scope.changeHelplinesSize = function(size){
             $scope.helplines.size = parseInt(size, 10);
+            if($scope.gridSizeAndHelplineSizeAreEqual){
+                if($scope.grid.size != $scope.helplines.size){
+                    $scope.changeGridSize($scope.helplines.size);
+                }
+            }
         };
 
         $scope.getHelplinesClass = function(){
@@ -1412,6 +1424,18 @@ angular.module('openITCOCKPIT')
                     $(this).css('border', '2px dashed #4285F4');
                 },
                 stop: function(event){
+                    if($scope.grid.enabled){
+                        var startPosition = $(this).position();
+                        var currentLeftOffset = (Math.round(startPosition.left)) % $scope.grid.size;
+                        var currentTopOffset = (Math.round(startPosition.top)) % $scope.grid.size;
+                        if(currentLeftOffset > 0 || currentTopOffset > 0){
+                            $(this).css({
+                                'left': Math.round(startPosition.left - currentLeftOffset) + 'px',
+                                'top': Math.round(startPosition.top - currentTopOffset) + 'px'
+                            });
+                        }
+                    }
+
                     var $this = $(this);
                     var x = $this.css('left');
                     var y = $this.css('top');
@@ -1419,6 +1443,8 @@ angular.module('openITCOCKPIT')
                     var type = $this.data('type');
                     x = parseInt(x.replace('px', ''), 10);
                     y = parseInt(y.replace('px', ''), 10);
+                    $(this).css('opacity', '1.0'); // Semi-transparent while being dragged
+                    $(this).css('border', 'none');
 
                     switch(type){
                         case 'item':
@@ -1741,6 +1767,15 @@ angular.module('openITCOCKPIT')
                 return;
             }
             makeDraggable();
+        }, true);
+
+        $scope.$watch('gridSizeAndHelplineSizeAreEqual', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.gridSizeAndHelplineSizeAreEqual && ($scope.helplines.size != $scope.grid.size)){
+                $scope.changeGridSize($scope.helplines.size);
+            }
         }, true);
 
     });

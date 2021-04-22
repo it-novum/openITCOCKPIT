@@ -52,7 +52,7 @@
                 </h2>
                 <div class="panel-toolbar">
                     <div role="group">
-                        <label class="checkbox small-checkbox-label margin-right-10 margin-top-5">
+                        <label class="checkbox small-checkbox-label margin-right-10 margin-top-2">
                             <input type="checkbox" name="checkbox" checked="checked"
                                    ng-model="helplines.enabled">
                             <i class="checkbox-primary"></i>
@@ -76,8 +76,24 @@
                             <?php endforeach; ?>
                         </ul>
                     </div>
+                    <button class="btn btn-success btn-xs mr-1 shadow-0"
+                            ng-hide="gridSizeAndHelplineSizeAreEqual"
+                            ng-click="gridSizeAndHelplineSizeAreEqual = true">
+                        <i class="fas fa-chevron-left padding-right-10"></i>
+                        <i class="fas fa-link"></i>
+                        <?= __('Change size automatically'); ?>
+                        <i class="fas fa-chevron-right padding-left-10"></i>
+                    </button>
+                    <button class="btn btn-danger btn-xs mr-1 shadow-0"
+                            ng-show="gridSizeAndHelplineSizeAreEqual"
+                            ng-click="gridSizeAndHelplineSizeAreEqual = false">
+                        <i class="fas fa-chevron-left padding-right-10"></i>
+                        <i class="fas fa-unlink"></i>
+                        <?= __('Change size automatically'); ?>
+                        <i class="fas fa-chevron-right padding-left-10"></i>
+                    </button>
                     <div role="group">
-                        <label class="checkbox small-checkbox-label margin-right-10 margin-top-5">
+                        <label class="checkbox small-checkbox-label margin-right-10 margin-top-2">
                             <input type="checkbox" name="checkbox" checked="checked"
                                    ng-model="grid.enabled">
                             <i class="checkbox-primary"></i>
