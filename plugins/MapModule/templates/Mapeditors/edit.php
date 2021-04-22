@@ -76,19 +76,19 @@
                             <?php endforeach; ?>
                         </ul>
                     </div>
-                    <button class="btn btn-success btn-xs mr-1 shadow-0"
+                    <button class="btn btn-danger btn-xs mr-1 shadow-0"
                             ng-hide="gridSizeAndHelplineSizeAreEqual"
                             ng-click="gridSizeAndHelplineSizeAreEqual = true">
                         <i class="fas fa-chevron-left padding-right-10"></i>
-                        <i class="fas fa-link"></i>
+                        <i class="fas fa-unlink"></i>
                         <?= __('Change size automatically'); ?>
                         <i class="fas fa-chevron-right padding-left-10"></i>
                     </button>
-                    <button class="btn btn-danger btn-xs mr-1 shadow-0"
+                    <button class="btn btn-success btn-xs mr-1 shadow-0"
                             ng-show="gridSizeAndHelplineSizeAreEqual"
                             ng-click="gridSizeAndHelplineSizeAreEqual = false">
                         <i class="fas fa-chevron-left padding-right-10"></i>
-                        <i class="fas fa-unlink"></i>
+                        <i class="fas fa-link"></i>
                         <?= __('Change size automatically'); ?>
                         <i class="fas fa-chevron-right padding-left-10"></i>
                     </button>
