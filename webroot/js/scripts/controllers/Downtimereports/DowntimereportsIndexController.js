@@ -13,8 +13,8 @@ angular.module('openITCOCKPIT')
             report_format: 2,
             reflection_state: 1,
             timeperiod_id: null,
-            from_date: date('d.m.Y', now.getTime() / 1000 - (3600 * 24 * 30)),
-            to_date: date('d.m.Y', now.getTime() / 1000)
+            from_date: new Date(now.getFullYear(), now.getMonth()-1,now.getDate()+1, now.getHours(),now.getMinutes() ),
+            to_date: new Date(now.getFullYear(), now.getMonth(),now.getDate(), now.getHours(),now.getMinutes() )
         };
 
         $scope.timeperiods = {};
@@ -23,11 +23,6 @@ angular.module('openITCOCKPIT')
             hostsWithoutOutages: null,
             downtimes: null
         };
-        $(function(){
-            $('#DateFrom, #DateTo').datepicker({
-                'format': 'dd.mm.yyyy'
-            });
-        });
 
         $scope.loadTimeperiods = function(searchString){
             $http.get("/timeperiods/index.json", {
@@ -45,8 +40,8 @@ angular.module('openITCOCKPIT')
                 //PDF Report
                 var GETParams = {
                     'angular': true,
-                    'data[from_date]': $scope.post.from_date,
-                    'data[to_date]': $scope.post.to_date,
+                    'data[from_date]': $scope.post.from_date.toLocaleDateString(),
+                    'data[to_date]': $scope.post.to_date.toLocaleDateString(),
                     'data[evaluation_type]': $scope.post.evaluation_type,
                     'data[reflection_state]': $scope.post.reflection_state,
                     'data[timeperiod_id]': $scope.post.timeperiod_id
@@ -65,7 +60,10 @@ angular.module('openITCOCKPIT')
 
             }else{
                 //HTML Report
-                $http.post("/downtimereports/index.json", $scope.post
+                var post = JSON.parse(JSON.stringify($scope.post)); // Remove JS binding
+                post.from_date = date('d.m.Y', $scope.post.from_date);
+                post.to_date = date('d.m.Y', $scope.post.to_date);
+                $http.post("/downtimereports/index.json", post
                 ).then(function(result){
                     NotyService.genericSuccess({
                         message: $scope.reportMessage.successMessage
