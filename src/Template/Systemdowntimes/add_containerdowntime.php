@@ -238,7 +238,7 @@
                                     <input
                                         id="HostdowntimeFromDate"
                                         class="form-control col-lg-2"
-                                        type="text"
+                                        type="date"
                                         ng-model="post.Systemdowntime.from_date"
                                         placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.from_date">
@@ -249,8 +249,9 @@
                                     </div>
                                     <input
                                         class="form-control col"
-                                        type="text"
+                                        type="time"
                                         ng-model="post.Systemdowntime.from_time"
+                                        ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}"
                                         placeholder="<?php echo __('hh:mm'); ?>">
                                     <div ng-repeat="error in errors.from_time">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -260,7 +261,7 @@
 
                             <div class="form-group required" ng-class="{'has-error': errors.to_time}">
                                 <label class="control-label">
-                                    <?php echo __('From'); ?>
+                                    <?php echo __('To'); ?>
                                 </label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -271,7 +272,7 @@
                                     <input
                                         id="HostdowntimeToDate"
                                         class="form-control col-lg-2"
-                                        type="text"
+                                        type="date"
                                         ng-model="post.Systemdowntime.to_date"
                                         placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.to_date">
@@ -282,8 +283,9 @@
                                     </div>
                                     <input
                                         class="form-control col"
-                                        type="text"
+                                        type="time"
                                         ng-model="post.Systemdowntime.to_time"
+                                        ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}"
                                         placeholder="<?php echo __('hh:mm'); ?>">
                                     <div ng-repeat="error in errors.to_time">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -291,6 +293,7 @@
                                 </div>
                             </div>
                         </div>
+                        <?php echo __('<small class="text-muted"> Selected Timezone is:' . ' {{ userTimezone }} ' . '</small>'); ?>
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">

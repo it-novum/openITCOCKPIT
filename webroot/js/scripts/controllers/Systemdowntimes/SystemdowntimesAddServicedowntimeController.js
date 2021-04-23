@@ -28,6 +28,7 @@ angular.module('openITCOCKPIT')
                 };
             };
             clearForm();
+            $scope.userTimezone = ''
 
             if($stateParams.id !== null){
                 $scope.post.Systemdowntime.object_id.push(parseInt($stateParams.id, 10));
@@ -39,13 +40,17 @@ angular.module('openITCOCKPIT')
                         'angular': true
                     }
                 }).then(function(result){
-                    $scope.post.Systemdowntime.from_date = result.data.defaultValues.from_date;
-                    $scope.post.Systemdowntime.from_time = result.data.defaultValues.from_time;
-                    $scope.post.Systemdowntime.to_date = result.data.defaultValues.to_date;
-                    $scope.post.Systemdowntime.to_time = result.data.defaultValues.to_time;
+                    var now = new Date(result.data.defaultValues.from_date_js);
+                    var toDate = new Date(result.data.defaultValues.to_date_js);
+
+                    $scope.post.Systemdowntime.from_date = now;
+                    $scope.post.Systemdowntime.from_time = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), 0, 0);
+                    $scope.post.Systemdowntime.to_date = toDate;
+                    $scope.post.Systemdowntime.to_time = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), toDate.getHours(), toDate.getMinutes(), 0, 0);
                     $scope.post.Systemdowntime.comment = result.data.defaultValues.comment;
                     $scope.post.Systemdowntime.duration = result.data.defaultValues.duration;
                     $scope.post.Systemdowntime.downtimetype_id = result.data.defaultValues.downtimetype_id;
+                    $scope.userTimezone = result.data.defaultValues.user_timezone;
                 });
             };
 
@@ -62,8 +67,14 @@ angular.module('openITCOCKPIT')
             };
 
             $scope.submit = function(){
+                var post = JSON.parse(JSON.stringify($scope.post)); // Remove JS binding
+
+                post.Systemdowntime.from_date = date('d.m.Y', $scope.post.Systemdowntime.from_date);
+                post.Systemdowntime.to_date = date('d.m.Y', $scope.post.Systemdowntime.to_date);
+                post.Systemdowntime.from_time = date('H:i', $scope.post.Systemdowntime.from_time);
+                post.Systemdowntime.to_time = date('H:i', $scope.post.Systemdowntime.to_time);
                 $http.post("/systemdowntimes/addServicedowntime.json?angular=true",
-                    $scope.post
+                    post
                 ).then(function(result){
                     NotyService.genericSuccess({
                         message: $scope.successMessage.objectName + ' ' + $scope.successMessage.message
