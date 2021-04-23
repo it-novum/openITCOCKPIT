@@ -64,14 +64,12 @@
                             <div class="col col-xs-5">
                                 <input class="form-control"
                                        ng-model="downtimeModal.from_date"
-                                       ng-init="downtimeModal.from_date"
                                        type="date">
                             </div>
                             <div class="col col-xs-5">
                                 <input class="form-control"
                                        ng-model="downtimeModal.from_time"
                                        ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}"
-                                       ng-init="downtimeModal.from_time"
                                        type="time">
                             </div>
                             <div ng-repeat="error in errors.Downtime.from_date"
@@ -95,13 +93,11 @@
                             <div class="col col-xs-5">
                                 <input class="form-control"
                                        ng-model="downtimeModal.to_date"
-                                       ng-init="downtimeModal.to_date"
                                        type="date">
                             </div>
                             <div class="col col-xs-5">
                                 <input class="form-control"
                                        ng-model="downtimeModal.to_time"
-                                       ng-init="downtimeModal.to_time"
                                        ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}"
                                        type="time">
                             </div>

@@ -40,8 +40,8 @@ angular.module('openITCOCKPIT')
                 //PDF Report
                 var GETParams = {
                     'angular': true,
-                    'data[from_date]': $scope.post.from_date.toLocaleDateString(),
-                    'data[to_date]': $scope.post.to_date.toLocaleDateString(),
+                    'data[from_date]': date('d.m.Y',$scope.post.from_date ),
+                    'data[to_date]': date('d.m.Y',$scope.post.to_date ),
                     'data[evaluation_type]': $scope.post.evaluation_type,
                     'data[reflection_state]': $scope.post.reflection_state,
                     'data[timeperiod_id]': $scope.post.timeperiod_id
