@@ -54,7 +54,7 @@
                     <div role="group">
                         <label class="checkbox small-checkbox-label margin-right-10 margin-top-2">
                             <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="helplines.enabled">
+                                   ng-model="Mapeditor.helplines.enabled">
                             <i class="checkbox-primary"></i>
                             <?php echo __('Show help lines'); ?>
                         </label>
@@ -63,7 +63,7 @@
                                 <i class="fas fa-grip-lines fa-stack-1x"></i>
                                 <i class="fas fa-grip-lines-vertical"></i>
                             </span>
-                            <?php echo __('Help lines distance'); ?> - {{helplines.size}}
+                            <?php echo __('Help lines distance'); ?> - {{Mapeditor.helplines.size}}
                         </button>
                         <ul class="dropdown-menu">
                             <?php
@@ -77,16 +77,16 @@
                         </ul>
                     </div>
                     <button class="btn btn-danger btn-xs mr-1 shadow-0"
-                            ng-hide="gridSizeAndHelplineSizeAreEqual"
-                            ng-click="gridSizeAndHelplineSizeAreEqual = true">
+                            ng-hide="Mapeditor.synchronizeGridAndHelplinesSize"
+                            ng-click="Mapeditor.synchronizeGridAndHelplinesSize = true">
                         <i class="fas fa-arrow-left padding-right-10"></i>
                         <i class="fas fa-unlink"></i>
                         <?= __('Change size automatically'); ?>
                         <i class="fas fa-arrow-right padding-left-10"></i>
                     </button>
                     <button class="btn btn-success btn-xs mr-1 shadow-0"
-                            ng-show="gridSizeAndHelplineSizeAreEqual"
-                            ng-click="gridSizeAndHelplineSizeAreEqual = false">
+                            ng-show="Mapeditor.synchronizeGridAndHelplinesSize"
+                            ng-click="Mapeditor.synchronizeGridAndHelplinesSize = false">
                         <i class="fas fa-arrow-left padding-right-10"></i>
                         <i class="fas fa-link"></i>
                         <?= __('Change size automatically'); ?>
@@ -95,13 +95,13 @@
                     <div role="group">
                         <label class="checkbox small-checkbox-label margin-right-10 margin-top-2">
                             <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="grid.enabled">
+                                   ng-model="Mapeditor.grid.enabled">
                             <i class="checkbox-primary"></i>
                             <?php echo __('Enable grid'); ?>
                         </label>
                         <button class="btn dropdown-toggle btn-default btn-xs mr-1 shadow-0" data-toggle="dropdown">
                             <i class="fas fa-th"></i>
-                            <?php echo __('Grid size'); ?> - {{grid.size}}
+                            <?php echo __('Grid size'); ?> - {{Mapeditor.grid.size}}
                         </button>
                         <ul class="dropdown-menu">
                             <?php
@@ -134,7 +134,7 @@
                         <div style="overflow: auto; min-height: 600px;position: relative;"
                              ng-click="addNewObjectFunc($event)"
                              id="mainMapContainer">
-                            <div id="mapContent" ng-if="helplines.enabled" ng-class="getHelplinesClass()"></div>
+                            <div id="mapContent" ng-if="Mapeditor.helplines.enabled" ng-class="getHelplinesClass()"></div>
                             <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
                                  ng-if="map.Map.background"/>
                             <div ng-repeat="item in map.Mapitems" class="draggable" ng-dblclick="editItem(item)"
