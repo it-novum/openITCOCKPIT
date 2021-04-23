@@ -8351,7 +8351,7 @@ msgstr "Agent abfragen"
 
 #: src/Template/Agentconnector/push.php:42
 msgid "By deleting, the corresponding openITCOCKPIT Agent is not able to send data to the openITCOCKPIT server anymore."
-msgstr ""
+msgstr "Wenn gelöscht, kann der zugehörige openITCOCKPIT Agent keine Daten mehr an den openITCOCKPIT Server senden."
 
 #: src/Template/Agentconnector/push.php:112
 msgid "Host assignments"
@@ -8379,11 +8379,11 @@ msgstr "Agent Hostname"
 
 #: src/Template/Agentconnector/push.php:171
 msgid "Agent IP address"
-msgstr ""
+msgstr "Agenten IP-Adresse"
 
 #: src/Template/Agentconnector/push.php:175
 msgid "Remote address"
-msgstr ""
+msgstr "Entfernte Adresse"
 
 #: src/Template/Agentconnector/push.php:180
 #: src/Template/Angular/system_health.php:295
@@ -8393,51 +8393,51 @@ msgstr "Letztes Update"
 
 #: src/Template/Agentconnector/push.php:209
 msgid "No host assignment defined"
-msgstr ""
+msgstr "Keine Hostzuweisung definiert"
 
 #: src/Template/Agentconnector/push.php:260
 msgid "Assign to host"
-msgstr ""
+msgstr "Einem Host zuweisen"
 
 #: src/Template/Agentconnector/push.php:268
 msgid "Show received data"
-msgstr ""
+msgstr "Zeige empfangene Daten"
 
 #: src/Template/Agentconnector/select_agent.php:106
 msgid "Select Agent to create host assignment"
-msgstr ""
+msgstr "Wählen Sie einen Agenten un eine Hostzuweisung zu erstellen"
 
 #: src/Template/Agentconnector/select_agent.php:123
 msgid "Agent not in list?"
-msgstr ""
+msgstr "Agent nicht in der Liste?"
 
 #: src/Template/Agentconnector/select_agent.php:126
 msgid "Most likely the Agent did not send any data to the openITCOCKPIT Server yet. Please check the log file of the Agent and refresh the list."
-msgstr ""
+msgstr "Sehr wahrscheinlich hat der Agent noch keine Daten an den openITCOCKPIT Server geschickt. Bitte überprüfen Sie die Logdatei auf dem Agenten oder aktualisieren Sie die Liste neu."
 
 #: src/Template/Agentconnector/select_agent.php:133
 msgid "Refresh list"
-msgstr ""
+msgstr "Aktualisiere Liste"
 
 #: src/Template/Agentconnector/select_agent.php:144
 msgid "Available Agents"
-msgstr ""
+msgstr "Verfügbare Agenten"
 
 #: src/Template/Agentconnector/select_agent.php:156
 msgid "Agents with an exact match of the IP-Address will be selected automatically. If none of the IP-Addresses matches openITCOCKPIT will pre-select the best matching hostname."
-msgstr ""
+msgstr "Agenten bei denen die IP-Adresse übereinstimmt werdenn automatisch vorausgewählt. Ansonsten wird der Hostname mit der größten Übereinstimmung vorausgewählt."
 
 #: src/Template/Agentconnector/show_output.php:46
 msgid "openITCOCKPIT Agent Output of:"
-msgstr ""
+msgstr "Ausgabe des openITCOCKPIT Agenten von:"
 
 #: src/Template/Agentconnector/show_output.php:49
 msgid "Agent: "
-msgstr ""
+msgstr "Agent: "
 
 #: src/Template/Agentconnector/show_output.php:77
 msgid "openITCOCKPIT Monitoring Agent Output"
-msgstr ""
+msgstr "openITCOCKPIT Monitoring Agent Ausgabe"
 
 #: src/Template/Agentconnector/wizard.php:115
 #: src/Template/Services/add.php:94
@@ -8499,32 +8499,32 @@ msgstr "Erstelle neue Services"
 
 #: src/Template/Agentconnector/wizard.php:207
 msgid "Agent is already configured"
-msgstr ""
+msgstr "Agent wurde bereits konfiguriert"
 
 #: src/Template/Agentconnector/wizard.php:210
 msgid "Add new services to your monitoring"
-msgstr ""
+msgstr "Neue Dienste zur Überwachung hinzufügen"
 
 #: src/Template/Agentconnector/wizard.php:221
 msgid "Continue with service creation"
-msgstr ""
+msgstr "Weiter mit Erstellung der Dienste"
 
 #: src/Template/Agentconnector/wizard.php:232
 #: src/Template/Agentconnector/wizard.php:255
 msgid "Edit agent configuration"
-msgstr ""
+msgstr "Bearbeiten der Agenten Konfiguration"
 
 #: src/Template/Agentconnector/wizard.php:239
 msgid "When is a configuration change required?"
-msgstr ""
+msgstr "Wann ist eine Anpassung der Konfiguration notwendig?"
 
 #: src/Template/Agentconnector/wizard.php:242
 msgid "To enable new agent checks/features"
-msgstr ""
+msgstr "Um neue Agenten Prüfungen/Funktionen zu aktivieren"
 
 #: src/Template/Agentconnector/wizard.php:244
 msgid "To switch from \"Push\" to \"Pull\" mode and vice versa"
-msgstr ""
+msgstr "Um vom \"Push\" in den \"Pull\" Modus zu wechseln und umgekehrt."
 
 #: src/Template/Angular/acknowledge_host.php:7
 #: src/Template/Browsers/index.php:736
@@ -12228,7 +12228,7 @@ msgstr "Ihre ausgewählte Zeitzone ist "
 
 #: src/Template/Dashboards/welcome_widget.php:47
 msgid "{0} version is {1},"
-msgstr ""
+msgstr "{0} Version ist {1},"
 
 #: src/Template/Dashboards/welcome_widget.php:50
 #: src/Template/element/header.php:36
@@ -12243,7 +12243,7 @@ msgstr "Community Edition"
 
 #: src/Template/Dashboards/welcome_widget.php:55
 msgid "Enterprise Edition"
-msgstr ""
+msgstr "Enterprise Edition"
 
 #: src/Template/DeletedHosts/index.php:38
 #: src/Template/DeletedHosts/index.php:75
@@ -13273,12 +13273,12 @@ msgstr "Erstelle neuen Host"
 #: src/Template/Hosts/add.php:81
 #: src/Template/Hosts/edit.php:80
 msgid "+ %s Services created successfully"
-msgstr ""
+msgstr "+ %s Dienste erfolgreich erstellt"
 
 #: src/Template/Hosts/add.php:81
 #: src/Template/Hosts/edit.php:80
 msgid ". %s service template groups has been removed due to insufficient permissions"
-msgstr ""
+msgstr ". %s Servicetemplategruppen wurden aufgrund fehlender Berechtigungen entfernt"
 
 #: src/Template/Hosts/add.php:113
 #: src/Template/Hosts/browser.php:831
@@ -13745,7 +13745,7 @@ msgstr "Speichern und Agent erstellen"
 
 #: src/Template/Hosts/add.php:1033
 msgid "Save host and assign matching service template groups"
-msgstr ""
+msgstr "Host speichern und passende Servicetemplategruppen zuweisen"
 
 #: src/Template/Hosts/add.php:1041
 msgid "Save and run Checkmk discovery"
@@ -14109,7 +14109,7 @@ msgstr "Bearbeite Host:"
 
 #: src/Template/Hosts/edit.php:80
 msgid " + %s Services has been disabled"
-msgstr ""
+msgstr "+ %s Dienste wurden deaktiviert"
 
 #: src/Template/Hosts/edit.php:106
 msgid "Objects in /root can't be moved to other containers"
@@ -14136,19 +14136,19 @@ msgstr "Aktualisiere Host"
 
 #: src/Template/Hosts/edit.php:1061
 msgid "Update and create service"
-msgstr ""
+msgstr "Aktualisiere und erstelle Dienst"
 
 #: src/Template/Hosts/edit.php:1069
 msgid "Update and setup agent"
-msgstr ""
+msgstr "Aktualisiere und Setup Agenten"
 
 #: src/Template/Hosts/edit.php:1078
 msgid "Update host and assign matching service template groups"
-msgstr ""
+msgstr "Aktualisiere und weise Servicetemplategruppen zu"
 
 #: src/Template/Hosts/edit.php:1086
 msgid "Update and run Checkmk discovery"
-msgstr ""
+msgstr "Aktualisiere und Checkmk discovery"
 
 #: src/Template/Hosts/edit_details.php:38
 #: src/Template/Hosts/edit_details.php:48
@@ -15656,7 +15656,7 @@ msgstr "Bitte wähle eine Servicevorlagengruppe"
 #: src/Template/Servicetemplategroups/allocate_to_host.php:112
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:111
 msgid "Please notice"
-msgstr ""
+msgstr "Bitte beachten Sie"
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:126
 msgid "Service/s to deploy on target host:"
@@ -16752,67 +16752,67 @@ msgstr "Autorisierung durch SSL-Zertifikat erfolgreich."
 #: src/Template/Wizards/wizard_host_configuration.php:38
 #: NWCModule/templates/Wizards/networkbasic.php:34
 msgid "Wizards"
-msgstr ""
+msgstr "Wizards"
 
 #: src/Template/Wizards/assignments.php:36
 #: src/Template/Wizards/assignments.php:45
 #: src/Template/Wizards/edit.php:36
 #: src/Template/Wizards/edit.php:45
 msgid "Assignments"
-msgstr ""
+msgstr "Zuweisungen"
 
 #: src/Template/Wizards/assignments.php:101
 msgid "Wizard title"
-msgstr ""
+msgstr "Wizard Titel"
 
 #: src/Template/Wizards/assignments.php:107
 msgid "Assignments necessary"
-msgstr ""
+msgstr "Ziweisungen nötig"
 
 #: src/Template/Wizards/edit.php:47
 msgid "edit service templates assignments"
-msgstr ""
+msgstr "Servicetemplate Zuweisungen bearbeiten"
 
 #: src/Template/Wizards/edit.php:58
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:687
 msgid "Wizard assignments"
-msgstr ""
+msgstr "Wizard Zuweisungen"
 
 #: src/Template/Wizards/edit.php:100
 msgid "Save assignments"
-msgstr ""
+msgstr "Speichere Zuweisungen"
 
 #: src/Template/Wizards/index.php:43
 msgid "Configuration Wizards"
-msgstr ""
+msgstr "Konfigurations Wizards"
 
 #: src/Template/Wizards/index.php:44
 msgid "Beta"
-msgstr ""
+msgstr "Beta"
 
 #: src/Template/Wizards/index.php:144
 msgid "Require module"
-msgstr ""
+msgstr "Erfordert Modul"
 
 #: src/Template/Wizards/linuxserverssh.php:47
 msgid "Configuration Wizard: Linux Server (SSH)"
-msgstr ""
+msgstr "Konfigurations Wizard: Linux Server (SSH)"
 
 #: src/Template/Wizards/linuxserverssh.php:58
 msgid "Linux Server Information"
-msgstr ""
+msgstr "Linux Server Informationen"
 
 #: src/Template/Wizards/linuxserverssh.php:62
 msgid "Contact configuration"
-msgstr ""
+msgstr "Kontakt Konfiguration"
 
 #: src/Template/Wizards/linuxserverssh.php:66
 msgid "Configuration overview"
-msgstr ""
+msgstr "Konfigurationsübersicht"
 
 #: src/Template/Wizards/linuxserverssh.php:82
 msgid "Main server configuration"
-msgstr ""
+msgstr "Haupt-Server Konfiguration"
 
 #: src/Template/Wizards/linuxserverssh.php:114
 #: DistributeModule/templates/Satellites/add.php:160
@@ -16842,35 +16842,35 @@ msgstr "Time-out"
 
 #: src/Template/Wizards/mysqlserver.php:38
 msgid "MySQL"
-msgstr ""
+msgstr "MySQL"
 
 #: src/Template/Wizards/mysqlserver.php:47
 msgid "Configuration Wizard: MySQL Server"
-msgstr ""
+msgstr "Konfigurations Wizard: MySQL Server"
 
 #: src/Template/Wizards/mysqlserver.php:61
 msgid "MySQL Information"
-msgstr ""
+msgstr "MySQL Informationen"
 
 #: src/Template/Wizards/mysqlserver.php:74
 msgid "MySQL Server"
-msgstr ""
+msgstr "MySQL SErver"
 
 #: src/Template/Wizards/mysqlserver.php:85
 msgid "MySQL configuration help"
-msgstr ""
+msgstr "MySQL Konfigurationshilfe"
 
 #: src/Template/Wizards/mysqlserver.php:102
 msgid "To enable external databases access you have to change the {0} of your MySQL server."
-msgstr ""
+msgstr "Um externen Datenbankzugriff zu aktivieren müssen Sie die Datei {0} Ihres MySQL Servers anpassen."
 
 #: src/Template/Wizards/mysqlserver.php:104
 msgid "Changing the bind address can be a potential security issue!"
-msgstr ""
+msgstr "Das Ändern der bind address kann ein potenzielles Sicherheitsrisiko sein!"
 
 #: src/Template/Wizards/mysqlserver.php:107
 msgid "The bind-address is configured in my.cnf. Most likely this file is located at {0} or {1}"
-msgstr ""
+msgstr "Der Wert bind-address wird in der my.cnf gesetzt. Sehr wahrscheinlich liegt diese Datei unter {0} oder {1}"
 
 #: src/Template/Wizards/mysqlserver.php:117
 msgid "Change the bind-address from 127.0.0.1 to the external address of the system or use 0.0.0.0 to bind to all interfaces."
@@ -16878,23 +16878,23 @@ msgstr ""
 
 #: src/Template/Wizards/mysqlserver.php:124
 msgid "Restart the MySQL server to apply the changes."
-msgstr ""
+msgstr "Starten Sie den MySQL Server neu um die Änderungen zu übernehmen."
 
 #: src/Template/Wizards/mysqlserver.php:131
 msgid "Create a new MySQL user for {0}"
-msgstr ""
+msgstr "Erstellen Sie einen neuen MySQL Benutzer für {0}"
 
 #: src/Template/Wizards/mysqlserver.php:134
 msgid "Please replace {0} with the address of the {1} server and set a secure password"
-msgstr ""
+msgstr "Bitte ersetzen Sie {0} mit der Adresse des {1} Server und setzen Sie ein sicheres Passwort"
 
 #: src/Template/Wizards/mysqlserver.php:176
 msgid "Database"
-msgstr ""
+msgstr "Datenbank"
 
 #: src/Template/Wizards/mysqlserver.php:191
 msgid "MySQL services"
-msgstr ""
+msgstr "MySQL Dienste"
 
 #: src/Template/Wizards/mysqlserver.php:240
 #: AutoreportModule/templates/Autoreports/create_report.php:74
@@ -22193,7 +22193,7 @@ msgstr ""
 
 #: NWCModule/templates/Wizards/networkbasic.php:142
 msgid "Auth Protocol"
-msgstr ""
+msgstr "Authentifizierungsprotokoll"
 
 #: NWCModule/templates/Wizards/networkbasic.php:148
 msgid "MD5"
@@ -22205,15 +22205,15 @@ msgstr "SHA"
 
 #: NWCModule/templates/Wizards/networkbasic.php:154
 msgid "Security name"
-msgstr ""
+msgstr "Sicherheitsname"
 
 #: NWCModule/templates/Wizards/networkbasic.php:167
 msgid "Auth Password"
-msgstr ""
+msgstr "Authentifizierungspasswort"
 
 #: NWCModule/templates/Wizards/networkbasic.php:180
 msgid "Privacy Protocol"
-msgstr ""
+msgstr "Datenschutzprotokoll"
 
 #: NWCModule/templates/Wizards/networkbasic.php:187
 msgid "DES"
