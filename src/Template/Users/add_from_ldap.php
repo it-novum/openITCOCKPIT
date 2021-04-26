@@ -438,7 +438,53 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 </strong>
                             </div>
                         </div>
+                        <!-- api key start-->
 
+                        <fieldset>
+                            <legend class="margin-0 padding-top-10">
+                                <h4><?php echo __('Api keys'); ?> </h4>
+                            </legend>
+                            <div ng-repeat="(index,apikey) in post.User.apikeys">
+                                <table class="table-default col-lg-12">
+                                    <tr class="col-lg-12">
+                                        <td class=""><?php echo __('Description'); ?></td>
+                                        <td class="col-8"><?php echo __('Api key'); ?></td>
+                                    </tr>
+                                </table>
+                                <!--label></label-->
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control col-lg-4 mr-2"
+                                           ng-model="post.User.apikeys[index].description" maxlength="255"
+                                           id="description_{{ index }}">
+                                    <input ng-model="post.User.apikeys[index].apikey"
+                                           class="form-control col-lg-6"
+                                           readonly
+                                           maxlength="255"
+                                           type="text"
+                                           id="ApiKey_{{ index }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-success"
+                                                ng-click="createApiKey(index)"
+                                                type="button"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            <i class="fa fa-key"></i>
+                                            <?= __('Generate new API key'); ?>
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-danger btn-sm waves-effect waves-themed ml-2" type="button"
+                                            ng-click="removeApikey(apikey.index)">
+                                        <i class="fa fa-trash fa-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="col-lg-12 text-right mt-2">
+                            <a href="javascript:void(0);" class="btn btn-success btn-sm" ng-click="addApikey()">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('Add ApiKey'); ?>
+                            </a>
+                        </div>
+                        <!-- api key end-->
 
                         <!-- Prevent FireFox and Chrome from filling the users email into the timezone select box  :facepalm: -->
                         <input type="text" name="name" style="display:none">
