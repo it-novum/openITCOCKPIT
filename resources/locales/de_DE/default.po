@@ -16874,7 +16874,7 @@ msgstr "Der Wert bind-address wird in der my.cnf gesetzt. Sehr wahrscheinlich li
 
 #: src/Template/Wizards/mysqlserver.php:117
 msgid "Change the bind-address from 127.0.0.1 to the external address of the system or use 0.0.0.0 to bind to all interfaces."
-msgstr ""
+msgstr "Ändern Sie die bind-address von 127.0.0.1 auf die externe Adresse des Systems oder nutzen Sie 0.0.0 um alle Netzwerkkarten zu verwenden."
 
 #: src/Template/Wizards/mysqlserver.php:124
 msgid "Restart the MySQL server to apply the changes."
@@ -16905,15 +16905,15 @@ msgstr "Erstelle"
 
 #: src/Template/Wizards/wizard_host_configuration.php:51
 msgid "Configuration Wizard: "
-msgstr ""
+msgstr "Konfigurations Wizard:"
 
 #: src/Template/Wizards/wizard_host_configuration.php:65
 msgid "Host Information"
-msgstr ""
+msgstr "Host Informationen"
 
 #: src/Template/Wizards/wizard_host_configuration.php:97
 msgid "Use existing host"
-msgstr ""
+msgstr "Benutze existierenden Host"
 
 #: src/Template/element/apikey_help.php:32
 msgid "API Keys Overview"
@@ -17216,54 +17216,54 @@ msgstr "Es sind keine Zeitrahmen definiert. Die Daten des Zeitbewertungsberichts
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:117
 msgid "Certificates where already exchanged."
-msgstr ""
+msgstr "Zertifikate wurden bereits ausgetauscht."
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:146
 msgid "Agent is only reachable through HTTP but should be reachable through secure HTTPS. Most likely someone deleted the certificate file on the agent."
-msgstr ""
+msgstr "Der Agent ist nur über HTTP erreichbar, sollte aber das sichere HTTPS nutzen. Höstwarscheinlich wurde das Zertifikate auf dem Agenten gelöscht."
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:162
 msgid "TLS certificate mismatch. Agent has maybe compromised. Please make sure that you are connected to the right Agent. To resolve this issue delete the files \"agent.crt\", \"agent.csr\" and \"server_ca-crt\" and restart the Agent."
-msgstr ""
+msgstr "TLS-Zertifikat stimmt nicht überein. Agent vielleicht kompromittiert. Bitte stelen Sie sicher das Sie mit dem richtigen Agenten verbunden sind. Um das Problem zu lösen löschen Sie die Dateien \"agent.crt\", \"agent.csr\" und \"server_ca-crt\" und starten sie den Agenten neu."
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:209
 msgid "AutoTLS certificates successfully exchanged."
-msgstr ""
+msgstr "AutoTLS Zertifikat erfolgreich ausgetauscht."
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:217
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:225
 msgid "Error while sending certificate to Agent."
-msgstr ""
+msgstr "Fehler beim Senden des Zertifikats zum Agenten"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:234
 msgid "No JSON response from Agent or key csr is missing in the result"
-msgstr ""
+msgstr "Keine JSON Antwort vom Agenten oder der Schlüssel csr fehlt in der Antwort"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:242
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:251
 msgid "Could not establish HTTP connection for AutoTLS certificate exchange."
-msgstr ""
+msgstr "Konnte keine HTTP Verbindung aufbauen für den AutoTLS Zertifikatstausch"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:272
 msgid "Successfully establish HTTPS connection to the Agent (No AutoTLS)."
-msgstr ""
+msgstr "HTTPS Verbindung erfolgreich aufgebaut. (Kein AutoTLS)"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:282
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:318
 msgid "No JSON response from Agent or key agent is missing in the result"
-msgstr ""
+msgstr "Keine JSON Antwort vom Agenten oder der Schlüssel agent fehlt in der Antwort"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:289
 msgid "Could not establish HTTPS connection"
-msgstr ""
+msgstr "Konnte keine HTTPS Verbindung aufbauen"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:308
 msgid "Connection established successfully using insecure HTTP (plaintext)."
-msgstr ""
+msgstr "Verbindung über unsicheres HTTP (Klartext) erfolgreich hergestellt."
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentHttpClient.php:325
 msgid "Could not establish insecure HTTP connection"
-msgstr ""
+msgstr "Konnte keine unsichere HTTP Verbindung aufbauen."
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:106
 msgid "Memory usage percentage"
@@ -17279,55 +17279,55 @@ msgstr "Prozentsatz der CPU-Auslastung"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:311
 msgid "Sensor: {0}"
-msgstr ""
+msgstr "Sensor: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:321
 msgid "Battery: {0}"
-msgstr ""
+msgstr "Batterie: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:352
 msgid "Disk stats of: {0}"
-msgstr ""
+msgstr "Festplatten Statistik von: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:381
 msgid "Disk usage of: {0} ({1})"
-msgstr ""
+msgstr "Festplattenauslastung von: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:429
 msgid "Network stats of: {0}"
-msgstr ""
+msgstr "Netzwerk Statistik von: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:459
 msgid "Network state of: {0}"
-msgstr ""
+msgstr "Netzwerkauslastung von: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:501
 msgid "Process: {0}"
-msgstr ""
+msgstr "Prozess: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:609
 msgid "Service: {0}"
-msgstr ""
+msgstr "Dienst: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:638
 msgid "Custom check: {0}"
-msgstr ""
+msgstr "Benutzerdefinierte Prüfung: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:675
 msgid "Container {0} is running"
-msgstr ""
+msgstr "Container {0} läuft"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:694
 msgid "Container {0} CPU percentage"
-msgstr ""
+msgstr "Container {0} CPU Prozent"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:720
 msgid "Container {0} Memory used"
-msgstr ""
+msgstr "Container {0} Arbeitsspeicher"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:807
 msgid "VM: {0}"
-msgstr ""
+msgstr "VM: {0}"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/AfterExport.php:80
 msgid "SSH user used to establish SSH connection with satellite systems."
@@ -17379,19 +17379,19 @@ msgstr "Datenbank-Backend, das von openITCOCKPIT verwendet wird. Seien Sie vorsi
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/Gearman.php:55
 msgid "The host address where the gearman-job-server is running."
-msgstr ""
+msgstr "Die Host-Adresse wo der gearman-job-server läuft."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/Gearman.php:56
 msgid "Process id file used by the gearman_worker."
-msgstr ""
+msgstr "Prizess-ID Datei die vom gearman_worker genutzt wird."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/Gearman.php:57
 msgid "Port number of gearman-job-server."
-msgstr ""
+msgstr "Portnummer des gearman-job-server"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/Gearman.php:58
 msgid "Number of gearman_worker processes."
-msgstr ""
+msgstr "Anzahl der gearman_worker Prozesse"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:73
 msgid "openITCOCKPIT Interface configuration files"
@@ -17403,7 +17403,7 @@ msgstr "Carbon und Whisper (Graphing)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:97
 msgid "PHP-FPM"
-msgstr ""
+msgstr "PHP-FPM"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:103
 msgid "SnmpTrapModule"
@@ -17547,19 +17547,19 @@ msgstr "Zeitreihen-Backend, das von openITCOCKPIT zur Speicherung von Leistungsd
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/PhpFpmOitc.php:76
 msgid "Maximum number of children that can be alive at the same time"
-msgstr ""
+msgstr "Maximale Anzahl an Kindern die gleichzeitig leben."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/PhpFpmOitc.php:77
 msgid "Number of children created on startup."
-msgstr ""
+msgstr "Anzahl an Kindern die beim Starten erzeugt werden."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/PhpFpmOitc.php:78
 msgid "Minimum number of children in idle state (waiting to process)."
-msgstr ""
+msgstr "Minimum an Kindern im Leerlauf (warte auf Arbeit)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/PhpFpmOitc.php:79
 msgid "Maximum number of children in idle state (waiting to process)."
-msgstr ""
+msgstr "Maximum an Kindern im Leerlauf (warten auf Arbeit)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:91
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:97
@@ -22181,15 +22181,15 @@ msgstr "noAuthNoPriv"
 
 #: NWCModule/templates/Wizards/networkbasic.php:125
 msgid "Communication with authentication and privacy. The protocols used for Authentication are MD5 and SHA and for Privacy, DES (Data Encryption Standard) and AES (Advanced Encryption Standard)."
-msgstr ""
+msgstr "Communication with authentication and privacy. The protocols used for Authentication are MD5 and SHA and for Privacy, DES (Data Encryption Standard) and AES (Advanced Encryption Standard)."
 
 #: NWCModule/templates/Wizards/networkbasic.php:130
 msgid "Communication with authentication and without privacy. The protocols used for Authentication are MD5 and SHA (Secure Hash Algorithm)."
-msgstr ""
+msgstr "Kommunikation mit Authentifizierung und ohne Datenschutz. Die für die Authentifizierung verwendeten Protokolle sind MD5 und SHA (Secure Hash Algorithm)."
 
 #: NWCModule/templates/Wizards/networkbasic.php:135
 msgid "Communication without authentication and privacy."
-msgstr ""
+msgstr "Kommunikation ohne Authentifizierung und Datenschutz."
 
 #: NWCModule/templates/Wizards/networkbasic.php:142
 msgid "Auth Protocol"
@@ -22237,7 +22237,7 @@ msgstr "3DESDE"
 
 #: NWCModule/templates/Wizards/networkbasic.php:196
 msgid "Privacy password"
-msgstr ""
+msgstr "Datenschutzpasswort"
 
 #: NWCModule/templates/Wizards/networkbasic.php:210
 msgid "SNMP services"
@@ -22245,35 +22245,35 @@ msgstr "SNMP Dienste"
 
 #: NWCModule/templates/Wizards/networkbasic.php:212
 msgid "To avoiding duplicate service configuration, the existing services with the same name will be automatically deselected"
-msgstr ""
+msgstr "Um doppelte Dienstkonfigurationen zu vermeiden, werden die vorhandenen Dienste mit demselben Namen automatisch abgewählt"
 
 #: NWCModule/templates/Wizards/networkbasic.php:255
 msgid "SNNP Interfaces"
-msgstr ""
+msgstr "SNMP Schnittstellen"
 
 #: NWCModule/templates/Wizards/networkbasic.php:257
 msgid "To avoiding duplicate interface service configuration, the existing services with the same name will be automatically deselected"
-msgstr ""
+msgstr "Um eine doppelte Konfiguration der Schnittstellen zu vermeiden, werden die vorhandenen Dienste mit demselben Namen automatisch abgewählt"
 
 #: NWCModule/templates/Wizards/networkbasic.php:279
 msgid "Service template for checking interfaces does not exist"
-msgstr ""
+msgstr "Servicevorlage zur Prüfung von Schnittstellen existiert nicht."
 
 #: NWCModule/templates/Wizards/networkbasic.php:282
 msgid "Try to execute {0} to resolve the issue"
-msgstr ""
+msgstr "Sie können versuchen {0} auszuführen um das Problem zu lösen"
 
 #: NWCModule/templates/Wizards/networkbasic.php:301
 msgid "Discovering Interfaces for SNMP Services"
-msgstr ""
+msgstr "Erkenne Schnittstellen für SNMP Dienste"
 
 #: NWCModule/templates/Wizards/networkbasic.php:304
 msgid "Scan this device and locate all of the interfaces that reside on the device. Only possible with valid SNMP configuration"
-msgstr ""
+msgstr "Scanne dieses Gerät und suchen alle Schnittstellen auf dem Gerät. Nur mit gültiger SNMP-Konfiguration möglich"
 
 #: NWCModule/templates/Wizards/networkbasic.php:312
 msgid "Start SNMP Interface discovery"
-msgstr ""
+msgstr "Starte SNMP Schnittstellen Erkennung"
 
 #: OpenstreetmapModule/src/Controller/OpenstreetmapController.php:183
 msgid "Reset map"
