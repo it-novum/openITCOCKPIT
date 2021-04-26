@@ -204,6 +204,10 @@ class AgentHttpClient {
                                 $entity->autossl_successful = true;
                                 $AgentconfigsTable->save($entity);
 
+                                // Wait a few seconds so if the user press on "Next" he will not get an blank page
+                                // because the Agent needs a few Seconds to reload
+                                sleep(5);
+
                                 return [
                                     'status'       => 'success',
                                     'error'        => __('AutoTLS certificates successfully exchanged.'),
