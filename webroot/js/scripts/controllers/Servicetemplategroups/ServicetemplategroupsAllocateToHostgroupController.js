@@ -129,6 +129,9 @@ angular.module('openITCOCKPIT')
                             $scope.errors = result.data.error;
                         }
                     });
+                }else{
+                    i++;
+                    $scope.percentage = Math.round(i / count * 100);
                 }
             }
         };

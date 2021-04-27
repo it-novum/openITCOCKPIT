@@ -78,7 +78,7 @@
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
-                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('created successfully'); ?>', allocate_message: '<?php echo __('+ %s Services created successfully'); ?>', allocate_warning: '<?php echo __('. %s service template groups has been removed due to insufficient permissions'); ?>'}">
 
                         <!-- BASIC CONFIGURATION START -->
 
@@ -401,6 +401,43 @@
 
                                     <div class="col col-xs-12 col-md-offset-2 help-block">
                                         <?php echo __('If disabled the check command won\'t be executed. This is useful if an external program sends state data to openITCOCKPIT.'); ?>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" ng-class="{'has-error': errors.freshness_checks_enabled}"
+                                     ng-show="post.Host.active_checks_enabled == 0">
+                                    <div class="custom-control custom-checkbox  margin-bottom-10"
+                                         ng-class="{'has-error': errors.freshness_checks_enabled}">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="freshness_checks_enabled"
+                                               ng-model="post.Host.freshness_checks_enabled">
+                                        <label class="custom-control-label" for="freshness_checks_enabled">
+                                            <?php echo __('Enable freshness check'); ?>
+                                        </label>
+                                        <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                              value="post.Host.freshness_checks_enabled"
+                                                              template-value="hosttemplate.Hosttemplate.freshness_checks_enabled">
+                                        </template-diff-button>
+                                    </div>
+                                    <div class="help-block" ng-hide="post.Host.active_checks_enabled">
+                                        <?php echo __('Due to active checking is disabled, this command will only be used as freshness check command.'); ?>
+                                    </div>
+                                </div>
+
+                                <div class="form-group required" ng-class="{'has-error': errors.freshness_threshold}"
+                                     ng-show="post.Host.active_checks_enabled == 0 && post.Host.freshness_checks_enabled == 1">
+                                    <label class="col-xs-12 col-lg-2 control-label">
+                                        <?php echo __('Freshness threshold'); ?>
+                                    </label>
+                                    <interval-input-directive
+                                        interval="post.Host.freshness_threshold"></interval-input-directive>
+                                    <div class="col-xs-12 col-lg-offset-2">
+                                        <div ng-repeat="error in errors.freshness_threshold">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -930,6 +967,8 @@
                                         </div>
                                         <div class="help-block">
                                             <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
+                                            <br/>
+                                            <?php echo __('Before you could query the host through Prometheus, you need to refresh the monitoring configuration.'); ?>
                                         </div>
                                         <div ng-repeat="error in errors.prometheus_exporters">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -951,7 +990,7 @@
 
                                     <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
                                         <div class="btn-group" ng-if="!data.createAnother">
-                                            <a onclick="return false;" ng-click="submit('AgentconnectorsConfig')"
+                                            <a onclick="return false;" ng-click="submit('AgentconnectorsWizard')"
                                                class="btn btn-primary waves-effect waves-themed text-white">
                                                 <?php echo __('Create host and setup agent'); ?>
                                             </a>
@@ -965,9 +1004,11 @@
                                         <button type="button"
                                                 class="btn btn-primary dropdown-toggle dropdown-toggle-split waves-effect waves-themed"
                                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span class="sr-only">Toggle Dropdown</span>
+                                            <span class="sr-only">
+                                                Toggle Dropdown
+                                            </span>
                                         </button>
-                                        <div class="dropdown-menu">
+                                        <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
                                                    ng-click="submit('ServicesAdd')">
@@ -977,10 +1018,19 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ng-click="submit('AgentconnectorsConfig')"
+                                                   ng-click="submit('AgentconnectorsWizard')"
                                                    ng-if="!data.createAnother">
-                                                    <i class="fa fa fa-gear"></i>
+                                                    <i class="fa fa-user-secret"></i>
                                                     <?php echo __('Save and setup agent'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('add', 'services')): ?>
+                                                <a class="dropdown-item" href="javascript:void(0);"
+                                                   ng-click="submitSaveHostAndAssignMatchingServicetemplateGroups()"
+                                                   ng-if="!data.createAnother">
+                                                    <i class="fa fa-external-link-alt"></i>
+                                                    <?php echo __('Save host and assign matching service template groups'); ?>
                                                 </a>
                                             <?php endif; ?>
 

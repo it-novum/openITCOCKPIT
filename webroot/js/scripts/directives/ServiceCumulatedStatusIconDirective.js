@@ -27,7 +27,7 @@ angular.module('openITCOCKPIT').directive('servicecumulatedstatusicon', function
                         $scope.iconColor = 'text-danger';
                         return;
                     case 3:
-                        $scope.iconColor = 'text-default';
+                        $scope.iconColor = 'text-secondary';
                         return;
                     default:
                         $scope.iconColor = 'text-primary';

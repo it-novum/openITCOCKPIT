@@ -73,9 +73,9 @@
                                 chosen="servicetemplategroups"
                                 callback="loadServicetemplategroups"
                                 ng-options="servicetemplategroup.key as servicetemplategroup.value for servicetemplategroup in servicetemplategroups"
-                                ng-model="id">
+                                ng-model="post.Servicetemplategroup.id">
                             </select>
-                            <div ng-show="id < 1" class="warning-glow">
+                            <div ng-show="post.Servicetemplategroup.id < 1" class="warning-glow">
                                 <?php echo __('Please select a service template group.'); ?>
                             </div>
                         </div>
@@ -95,7 +95,8 @@
                                         <?php echo __('Append to service template group'); ?>
                                     </button>
                                     <?php if ($this->Acl->hasPermission('index', 'servicetemplategroups')): ?>
-                                        <a back-button href="javascript:void(0);" fallback-state='ServicetemplategroupsIndex'
+                                        <a back-button href="javascript:void(0);"
+                                           fallback-state='ServicetemplategroupsIndex'
                                            class="btn btn-default">
                                             <?php echo __('Cancel'); ?>
                                         </a>

@@ -2,14 +2,11 @@
 
 namespace App\Model\Table;
 
-use App\Lib\Exceptions\InvalidArgumentException;
 use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\QueryExpression;
-use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\RulesChecker;
@@ -17,9 +14,9 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use GrafanaModule\Model\Table\GrafanaUserdashboardsTable;
 use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 use MapModule\Model\Table\MapsTable;
-use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 
 /**
  * Containers Model
@@ -122,6 +119,11 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ]);
 
+        $this->hasMany('Tenants', [
+            'foreignKey'       => 'container_id',
+            'cascadeCallbacks' => true
+        ])->setDependent(true);
+
         //$this->belongsTo('ParentContainers', [
         //    'className' => 'Containers',
         //    'foreignKey' => 'parent_id'
@@ -206,9 +208,6 @@ class ContainersTable extends Table {
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('Servicetemplates', [
-            'foreignKey' => 'container_id'
-        ]);
-        $this->hasMany('Tenants', [
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('Timeperiods', [
@@ -361,6 +360,41 @@ class ContainersTable extends Table {
 
         } catch (RecordNotFoundException $e) {
             return '';
+        }
+    }
+
+    /**
+     *
+     * @param int $id of the container
+     * @param array $MY_RIGHTS_LEVEL
+     *
+     * @return array
+     */
+    public function getTreePathForBrowser($id, $MY_RIGHTS_LEVEL = []) {
+        try {
+            $result = [];
+            $tree = $this->find('path', ['for' => $id])
+                ->disableHydration()
+                ->toArray();
+
+            foreach ($tree as $node) {
+                if (isset($MY_RIGHTS_LEVEL[$node['id']])) {
+                    $result[] = [
+                        'id'   => $node['id'],
+                        'name' => $node['name']
+                    ];
+                } else {
+                    //User has no permission to this container
+                    $result[] = [
+                        'id'   => null,
+                        'name' => $node['name']
+                    ];
+                }
+            }
+
+            return $result;
+        } catch (RecordNotFoundException $e) {
+            return [];
         }
     }
 
@@ -595,7 +629,7 @@ class ContainersTable extends Table {
     public function getFirstContainers($browserAsNest, $MY_RIGHTS, $containerTypes) {
         $containers = [];
         foreach ($browserAsNest as $container) {
-            if (in_array($container['id'], $MY_RIGHTS) && in_array($container['containertype_id'], $containerTypes)) {
+            if (in_array($container['id'], $MY_RIGHTS) && in_array($container['containertype_id'], $containerTypes, true)) {
                 $containers[] = $container;
                 continue;
             }
@@ -646,6 +680,38 @@ class ContainersTable extends Table {
             return [
                 $hostPrimaryContainerId => $path
             ];
+        }
+
+        return null;
+    }
+
+    /**
+     * !!! ONLY USE THIS FOR DISPLAY PURPOSE !!!
+     * @param $hostSharingContainerIdsParam
+     * @param $MY_RIGHTS
+     * @param $MY_RIGHTS_LEVEL
+     * @return array|null
+     */
+    public function getFakePrimaryContainerForHostBrowserDisplay($hostSharingContainerIdsParam, $MY_RIGHTS, $MY_RIGHTS_LEVEL) {
+        $hostSharingContainerIds = [];
+        foreach ($hostSharingContainerIdsParam as $hostSharingContainerId) {
+            $hostSharingContainerId = (int)$hostSharingContainerId;
+            $hostSharingContainerIds[$hostSharingContainerId] = $hostSharingContainerId;
+        }
+
+
+        $containerIdUserHasPermissionsOn = null;
+        foreach ($MY_RIGHTS as $MY_RIGHT_CONTAINER_ID) {
+            if (isset($hostSharingContainerIds[$MY_RIGHT_CONTAINER_ID])) {
+                //Get the first container id that the user has permissions for
+                $containerIdUserHasPermissionsOn = $hostSharingContainerIds[$MY_RIGHT_CONTAINER_ID];
+                break;
+            }
+        }
+
+        //get the name of the container
+        if ($containerIdUserHasPermissionsOn !== null) {
+            return $this->getTreePathForBrowser($containerIdUserHasPermissionsOn, $MY_RIGHTS_LEVEL);
         }
 
         return null;
@@ -787,6 +853,12 @@ class ContainersTable extends Table {
          */
 
 
+        if (Plugin::isLoaded('GrafanaModule')) {
+            /** @var $GrafanaUserdashboardsTable GrafanaUserdashboardsTable */
+            $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+        }
+
+
         foreach ($containers as $index => $container) {
             switch ($container['containertype_id']) {
                 case CT_GLOBAL:
@@ -822,6 +894,11 @@ class ContainersTable extends Table {
 
                     // Load Maps
                     $containers[$index]['childsElements']['maps'] = $MapsTable->getMapsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+
+                    // Load Grafana User dashboards
+                    if (isset($GrafanaUserdashboardsTable)) {
+                        $containers[$index]['childsElements']['grafana_userdashboards'] = $GrafanaUserdashboardsTable->getGrafanaUserDashboardsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    }
 
                     break;
             }
@@ -917,28 +994,29 @@ class ContainersTable extends Table {
         $cluster = [];
 
         $possibleClusterTypesWithLabel = [
-            'root'                  => '/root',
-            'tenant'                => __('Tenant'),
-            'location'              => __('Location'),
-            'devicegroup'           => __('Device group'),
-            'node'                  => __('Node'),
-            'hosts'                 => __('Hosts'),
-            'hosttemplates'         => __('Host templates'),
-            'servicetemplates'      => __('Service templates'),
-            'contacts'              => __('Contacts'),
-            'contactgroups'         => __('Contact groups'),
-            'hostgroups'            => __('Host groups'),
-            'servicegroups'         => __('Service groups'),
-            'servicetemplategroups' => __('Service template groups'),
-            'hostdependencies'      => __('Host dependencies'),
-            'hostescalations'       => __('Host escalations'),
-            'servicedependencies'   => __('Service dependencies'),
-            'serviceescalations'    => __('Service escalations'),
-            'instantreports'        => __('Instant reports'),
-            'autoreports'           => __('Autoreports'),
-            'maps'                  => __('Maps'),
-            'satellites'            => __('Satellites'),
-            'timeperiods'           => __('Time periods'),
+            'root'                   => '/root',
+            'tenant'                 => __('Tenant'),
+            'location'               => __('Location'),
+            'devicegroup'            => __('Device group'),
+            'node'                   => __('Node'),
+            'hosts'                  => __('Hosts'),
+            'hosttemplates'          => __('Host templates'),
+            'servicetemplates'       => __('Service templates'),
+            'contacts'               => __('Contacts'),
+            'contactgroups'          => __('Contact groups'),
+            'hostgroups'             => __('Host groups'),
+            'servicegroups'          => __('Service groups'),
+            'servicetemplategroups'  => __('Service template groups'),
+            'hostdependencies'       => __('Host dependencies'),
+            'hostescalations'        => __('Host escalations'),
+            'servicedependencies'    => __('Service dependencies'),
+            'serviceescalations'     => __('Service escalations'),
+            'instantreports'         => __('Instant reports'),
+            'autoreports'            => __('Autoreports'),
+            'maps'                   => __('Maps'),
+            'satellites'             => __('Satellites'),
+            'timeperiods'            => __('Time periods'),
+            'grafana_userdashboards' => __('Grafana user dashboards'),
         ];
 
 

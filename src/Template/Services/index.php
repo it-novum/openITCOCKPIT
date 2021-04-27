@@ -511,7 +511,7 @@
 
                             <tbody>
                             <tr ng-repeat-start="service in services"
-                                ng-if="services[$index-1].Host.hostname !== service.Host.hostname">
+                                ng-if="services[$index-1].Host.uuid !== service.Host.uuid">
                                 <td colspan="13" class="service_table_host_header">
 
                                     <hoststatusicon host="service"></hoststatusicon>
@@ -532,6 +532,10 @@
                                                title=" <?php echo __('Go to Service list'); ?>"></i>
                                         </a>
                                     <?php endif; ?>
+                                    <div class="pull-right padding-right-30">
+                                        <i class="far fa-clock"></i>
+                                        <?= __('State since'); ?> {{ service.Hoststatus.last_state_change }}
+                                    </div>
                                 </td>
                             </tr>
 
@@ -631,8 +635,8 @@
                                 </td>
 
                                 <td>
-                                    <div
-                                        ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
+                                    <div class="word-break"
+                                         ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
                                 <td class="width-50">
@@ -755,9 +759,9 @@
                                     </a>
                                     <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
                                         <a
-                                           class="dropdown-item"
-                                           href="javascript:void(0);"
-                                           ng-click="confirmDeactivate(getObjectsForDelete())">
+                                            class="dropdown-item"
+                                            href="javascript:void(0);"
+                                            ng-click="confirmDeactivate(getObjectsForDelete())">
                                             <i class="fa fa-plug"></i>
                                             <?php echo __('Disable services'); ?>
                                         </a>

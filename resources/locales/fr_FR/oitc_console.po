@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-07-15 09:11+0200\n"
+"POT-Creation-Date: 2021-04-22 15:12+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -81,26 +81,6 @@ msgstr "commentaire d'accusé de réception hôte => $NOTIFICATIONCOMMENT$"
 #: src/Command/NagiosNotificationCommand.php:170
 #: src/Command/NagiosXmlNotificationCommand.php:169
 msgid "Disable emojis in subject"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:59
-msgid "IP of Host with the Agent to connect to"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:60
-msgid "Port of Host with the Agent to connect to"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:61
-msgid "Basic-Auth username from Agent"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:62
-msgid "Basic-Auth password from Agent"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:63
-msgid "Disable proxy"
 msgstr ""
 
 #: src/Command/CronjobsCommand.php:67
@@ -334,67 +314,67 @@ msgstr ""
 msgid "openITCOCKPIT User Id"
 msgstr "ID utilisateur openITCOCKPIT"
 
-#: src/Command/SetupCommand.php:133
+#: src/Command/SetupCommand.php:147
 msgid "[Y]es I want to continue the setup of openITCOCKPIT"
 msgstr "[Y] Oui je veux continuer la configuration de openITCOCKPIT"
 
-#: src/Command/SetupCommand.php:134
+#: src/Command/SetupCommand.php:148
 msgid "[N]o and exit shell"
 msgstr "[N]on et quitter le shell"
 
-#: src/Command/SetupCommand.php:136
+#: src/Command/SetupCommand.php:150
 msgid "Are you sure you want to continue?"
 msgstr ""
 
-#: src/Command/SetupCommand.php:142
+#: src/Command/SetupCommand.php:156
 msgid "Setup aborted!"
 msgstr ""
 
-#: src/Command/SetupCommand.php:145
+#: src/Command/SetupCommand.php:159
 msgid "You have made an invalid selection. Please choose by entering Y or N."
 msgstr "Vous avez fait une sélection non valide. Veuillez choisir en entrant Y ou N."
 
-#: src/Command/SetupCommand.php:260
+#: src/Command/SetupCommand.php:274
 msgid "Please enter your first name"
 msgstr "Veuillez entrer votre prénom"
 
-#: src/Command/SetupCommand.php:272
+#: src/Command/SetupCommand.php:286
 msgid "Please enter your last name"
 msgstr "Veuillez entrer votre nom de famille"
 
-#: src/Command/SetupCommand.php:284
+#: src/Command/SetupCommand.php:298
 msgid "Please enter your email address. This will be the username for the login."
 msgstr "S'il vous plaît entrez votre adresse email. Ce sera le nom d'utilisateur pour la connexion."
 
-#: src/Command/SetupCommand.php:299
+#: src/Command/SetupCommand.php:313
 msgid "Please enter a password for the login."
 msgstr "Veuillez saisir un mot de passe pour vous connecter."
 
-#: src/Command/SetupCommand.php:302
+#: src/Command/SetupCommand.php:316
 msgid "Please confirm your password"
 msgstr "Veuillez confirmer votre mot de passe"
 
-#: src/Command/SetupCommand.php:326
+#: src/Command/SetupCommand.php:340
 msgid "System Address or FQDN?"
 msgstr ""
 
-#: src/Command/SetupCommand.php:360
+#: src/Command/SetupCommand.php:374
 msgid "Please enter a sender email address"
 msgstr ""
 
-#: src/Command/SetupCommand.php:374
+#: src/Command/SetupCommand.php:388
 msgid "Please enter the address of your mail server (e.g. mail.example.org)"
 msgstr "Veuillez saisir l'adresse de votre serveur de messagerie (par exemple, mail.example.org)"
 
-#: src/Command/SetupCommand.php:386
+#: src/Command/SetupCommand.php:400
 msgid "Please enter the port of your mail server"
 msgstr "Veuillez entrer le port de votre serveur de messagerie"
 
-#: src/Command/SetupCommand.php:400
+#: src/Command/SetupCommand.php:414
 msgid "If required, set a username, or leave it blank if you don't need a user"
 msgstr ""
 
-#: src/Command/SetupCommand.php:410
+#: src/Command/SetupCommand.php:424
 msgid "Please enter your password, or leave it blank if you don't need a password"
 msgstr "Veuillez entrer votre mot de passe ou laissez le champ vide si vous n'avez pas besoin de mot de passe."
 
@@ -486,7 +466,7 @@ msgstr ""
 msgid "State ID of the current service state"
 msgstr ""
 
-#: CheckmkModule/src/Command/CheckmkNagiosExportCommand.php:55
+#: CheckmkModule/src/Command/CheckmkNagiosExportCommand.php:57
 msgid "Write initial Checkmk configuration"
 msgstr ""
 
@@ -538,6 +518,14 @@ msgstr ""
 #: ServicenowModule/src/Command/ServicenowNotificationCommand.php:56
 #: SlackModule/src/Command/SlackNotificationCommand.php:46
 msgid "output"
+msgstr ""
+
+#: PrometheusModule/src/Command/PrometheusBridgeCommand.php:54
+msgid "Run PrometheusBridge as endless loop (Daemon)"
+msgstr ""
+
+#: PrometheusModule/src/Command/PrometheusBridgeCommand.php:55
+msgid "Loop interval in seconds"
 msgstr ""
 
 #: ServicenowModule/src/Command/ServicenowNotificationCommand.php:59

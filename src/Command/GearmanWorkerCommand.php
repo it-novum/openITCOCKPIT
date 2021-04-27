@@ -51,7 +51,9 @@ use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
+use NWCModule\itnovum\openITCOCKPIT\SNMP\SNMPScan;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
  * GearmanWorker command.
@@ -1124,6 +1126,21 @@ class GearmanWorkerCommand extends Command {
 
                 $return = true;
                 */
+                break;
+            case 'WizardNwcInterfaceList':
+                $SnmpScan = new SNMPScan($payload['data']);
+                try {
+                    $interfaces = $SnmpScan->executeSnmpDiscovery($payload['host_address']);
+                    $return = [
+                        'success' => true,
+                        'interfaces' => $interfaces
+                    ];
+                } catch (ProcessFailedException $e) {
+                    $return = [
+                        'success' => false,
+                        'exception' => 'ProcessFailedException'
+                    ];
+                }
                 break;
         }
 

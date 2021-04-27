@@ -299,7 +299,7 @@ class TenantsController extends AppController {
                     'tenants',
                     $containerId,
                     OBJECT_TENANT,
-                    [ROOT_CONTAINER, $tenantForChangelog->get('container_id')],
+                    [ROOT_CONTAINER, $tenantForChangelog['container_id']],
                     $User->getId(),
                     $tenantForChangelog['container']['name'],
                     []

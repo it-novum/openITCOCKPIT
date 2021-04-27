@@ -27,7 +27,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
 use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
@@ -44,7 +43,6 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
-use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
@@ -55,7 +53,6 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
-use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -68,15 +65,14 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
-use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
@@ -109,7 +105,6 @@ use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
@@ -226,6 +221,7 @@ class ServicesController extends AppController {
         $HoststatusFields
             ->currentState()
             ->isFlapping()
+            ->lastStateChange()
             ->lastHardStateChange();
         $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
@@ -1330,13 +1326,19 @@ class ServicesController extends AppController {
      * @param int|string|null $idOrUuid
      * @throws MissingDbBackendException
      * @throws GuzzleException
+     * @throws \Exception
      */
     public function browser($idOrUuid = null) {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
         if ($this->isHtmlRequest()) {
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
             //Only ship template
             $this->set('username', $User->getFullName());
+            $this->set('masterInstanceName', $masterInstanceName);
             return;
         }
 
@@ -1379,6 +1381,8 @@ class ServicesController extends AppController {
         $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
         /** @var $DowntimehistoryServicesTable DowntimehistoryServicesTableInterface */
         $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         /** @var $SystemsettingsTable SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -1423,32 +1427,62 @@ class ServicesController extends AppController {
         $host = $hostObj->toArray();
         $host['is_satellite_host'] = $hostObj->isSatelliteHost();
 
+        //Load required data to merge and display inheritance data
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
+
+        //Merge host and inheritance data
+        $HostMergerForBrowser = new HostMergerForBrowser(
+            $HostsTable->getHostForBrowser($host['id']),
+            $hosttemplate
+        );
+        $mergedHost = $HostMergerForBrowser->getDataForView();
+
+        $replacePasswordInObjectMacros = false;
+        try {
+            $systemsettingsReplacePasswordsEntity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.REPLACE_PASSWORD_IN_OBJECT_MACROS');
+            if ($systemsettingsReplacePasswordsEntity->get('value') === '1') {
+                $replacePasswordInObjectMacros = true;
+            }
+        } catch (RecordNotFoundException $e) {
+            // Rocket not found in system settings - do replace passwords in $_HOSTFOOBAR$ custom variables
+        }
+
         //Replace macros in service url
         $HostMacroReplacer = new HostMacroReplacer($host);
         $ServiceMacroReplacer = new ServiceMacroReplacer($mergedService);
-        $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE);
+        $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE, $replacePasswordInObjectMacros);
+
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacros);
         $mergedService['service_url_replaced'] =
-            $ServiceCustomMacroReplacer->replaceAllMacros(
-                $HostMacroReplacer->replaceBasicMacros(
-                    $ServiceMacroReplacer->replaceBasicMacros($mergedService['service_url'])
-                ));
+            $ServiceMacroReplacer->replaceBasicMacros(                  // Replace $SERVICEDESCRIPTION$
+                $HostMacroReplacer->replaceBasicMacros(                 // Replace $HOSTNAME$
+                    $HostCustomMacroReplacer->replaceAllMacros(         // Replace $_HOSTFOOBAR$
+                        $ServiceCustomMacroReplacer->replaceAllMacros(  // Replace $_SERVICEFOOBAR$
+                            $mergedService['service_url']
+                        )
+                    )
+                )
+            );
 
         $checkCommand = $CommandsTable->getCommandById($mergedService['command_id']);
         $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedService['check_period_id']);
         $notifyPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedService['notify_period_id']);
 
-        // Replace $HOSTNAME$
-        $serviceCommandLine = $HostMacroReplacer->replaceBasicMacros($checkCommand['Command']['command_line']);
+        // Replace $ARGn$
+        $ArgnReplacer = new CommandArgReplacer($mergedService['servicecommandargumentvalues']);
+        $serviceCommandLine = $ArgnReplacer->replace($checkCommand['Command']['command_line']);
 
         // Replace $_SERVICEFOOBAR$
         $serviceCommandLine = $ServiceCustomMacroReplacer->replaceAllMacros($serviceCommandLine);
 
+        // Replace $_HOSTFOOBAR$
+        $serviceCommandLine = $HostCustomMacroReplacer->replaceAllMacros($serviceCommandLine);
+
+        // Replace $HOSTNAME$
+        $serviceCommandLine = $HostMacroReplacer->replaceBasicMacros($serviceCommandLine);
+
         // Replace $SERVICEDESCRIPTION$
         $serviceCommandLine = $ServiceMacroReplacer->replaceBasicMacros($serviceCommandLine);
-
-        // Replace $ARGn$
-        $ArgnReplacer = new CommandArgReplacer($mergedService['servicecommandargumentvalues']);
-        $serviceCommandLine = $ArgnReplacer->replace($serviceCommandLine);
 
         // Replace $USERn$ Macros (if enabled)
         try {
@@ -1487,6 +1521,16 @@ class ServicesController extends AppController {
                 if (!empty(array_intersect($contactsWithContainers[$contact['id']], $writeContainers))) {
                     $mergedService['contacts'][$key]['allowEdit'] = true;
                 }
+            }
+        }
+
+        //Load containers information
+        $mainContainer = $ContainersTable->getTreePathForBrowser($hostEntity->get('container_id'), $this->MY_RIGHTS_LEVEL);
+        //Add shared containers
+        $sharedContainers = [];
+        foreach ($hostEntity->getContainerIds() as $sharedContainerId) {
+            if ($sharedContainerId != $hostEntity->get('container_id')) {
+                $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($sharedContainerId, $this->MY_RIGHTS_LEVEL);
             }
         }
 
@@ -1671,6 +1715,8 @@ class ServicesController extends AppController {
         $this->set('checkPeriod', $checkPeriod);
         $this->set('notifyPeriod', $notifyPeriod);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
+        $this->set('mainContainer', $mainContainer);
+        $this->set('sharedContainers', $sharedContainers);
 
 
         $this->viewBuilder()->setOption('serialize', [
@@ -1690,7 +1736,9 @@ class ServicesController extends AppController {
             'checkCommand',
             'checkPeriod',
             'notifyPeriod',
-            'canSubmitExternalCommands'
+            'canSubmitExternalCommands',
+            'mainContainer',
+            'sharedContainers'
         ]);
     }
 
@@ -2105,7 +2153,7 @@ class ServicesController extends AppController {
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
-                $statehistoriesService[] = $StatehistoryService;
+                $statehistoriesService[] = $StatehistoryService->toArray();
             }
         }
 

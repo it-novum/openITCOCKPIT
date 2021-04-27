@@ -879,15 +879,15 @@ class HostgroupsTable extends Table {
 
         $hosts = [];
 
-        if(!empty($hostgroup['hosts'])) {
+        if (!empty($hostgroup['hosts'])) {
             foreach ($hostgroup['hosts'] as $host) {
                 $hosts[$host['id']] = $host;
             }
         }
 
-        if(!empty($hostgroup['hosttemplates'])) {
+        if (!empty($hostgroup['hosttemplates'])) {
             foreach ($hostgroup['hosttemplates'] as $hosttemplate) {
-                foreach($hosttemplate['hosts'] as $host){
+                foreach ($hosttemplate['hosts'] as $host) {
                     $hosts[$host['id']] = $host;
                 }
             }
@@ -1076,5 +1076,29 @@ class HostgroupsTable extends Table {
         }
 
         return $list;
+    }
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getHostgroupNamesByIds($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.name'
+            ])
+            ->contain(['Containers'])
+            ->where([
+                'Hostgroups.id IN'            => $ids,
+                'Containers.containertype_id' => CT_HOSTGROUP
+            ])
+            ->disableHydration();
+
+        $results = $query->toArray() ?? [];
+        return Hash::extract($results, '{n}.container.name');
     }
 }

@@ -167,6 +167,10 @@ class ConfigGeneratorShellCommand extends Command {
      * @param $configFile
      * @param $systemsettings
      * @param ConsoleIo $io
+     *
+     * !!!
+     * If you change this method, also change it in src/Command/ConfigGeneratorCommand.php
+     * !!!
      */
     private function restartByConfigFile($configFile, $systemsettings, ConsoleIo $io) {
         switch ($configFile) {
@@ -211,14 +215,24 @@ class ConfigGeneratorShellCommand extends Command {
                 break;
 
             case 'PrometheusCfgs_prometheus':
-                    $this->restartService('prometheus.service', 'Restart Prometheus service', $io);
-                    $this->restartService('prometheus_bridge.service', 'Restart Prometheus Bridge service', $io);
+                $this->restartService('prometheus.service', 'Restart Prometheus service', $io);
+                $this->restartService('prometheus_bridge.service', 'Restart Prometheus Bridge service', $io);
                 break;
-
 
             case 'NSTAMaster':
                 $command = $systemsettings['INIT']['INIT.NSTA_RESTART'];
                 $this->restartService($command, 'Restart NSTA service', $io);
+                break;
+
+            case 'PhpFpmOitc':
+                $version = substr(PHP_VERSION, 0, 3);
+                $command = sprintf("systemctl restart php%s-fpm", $version);
+                $this->restartService($command, sprintf('Restart php%s-fpm service', $version), $io);
+                break;
+
+            case 'Gearman':
+                $command = 'systemctl restart gearman_worker';
+                $this->restartService($command, 'Restart gearman_worker service', $io);
                 break;
 
             default:

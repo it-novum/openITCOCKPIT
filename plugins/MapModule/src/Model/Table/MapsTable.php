@@ -52,7 +52,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
@@ -289,9 +288,10 @@ class MapsTable extends Table {
     /**
      * @param $realMapId
      * @param $mapItemMapId
-     * @return array
+     * @param bool $enableHydration
+     * @return array|EntityInterface|null
      */
-    public function getMapsForMaps($realMapId, $mapItemMapId) {
+    public function getMapsForMaps($realMapId, $mapItemMapId, $enableHydration = true) {
         $query = $this->find()
             ->contain(['Containers'])
             ->join([
@@ -303,13 +303,14 @@ class MapsTable extends Table {
             ->where([
                 'Maps.id'         => $realMapId,
                 'Mapitems.map_id' => $mapItemMapId,
-            ]);
+            ])
+            ->enableHydration($enableHydration);
 
         $result = $query->first();
         if (empty($result)) {
             return [];
         }
-        return $query->toArray();
+        return $result;
     }
 
     /**
@@ -317,7 +318,7 @@ class MapsTable extends Table {
      * @param $mapItemMapId
      * @return array
      */
-    public function getMapsForMapsummaryitems($realMapId, $mapItemMapId) {
+    public function getMapsForMapsummaryitems($realMapId, $mapItemMapId, $enableHydration = true) {
         $query = $this->find()
             ->contain(['Containers'])
             ->join([
@@ -329,13 +330,14 @@ class MapsTable extends Table {
             ->where([
                 'Maps.id'                => $realMapId,
                 'Mapsummaryitems.map_id' => $mapItemMapId,
-            ]);
+            ])
+            ->enableHydration($enableHydration);
 
         $result = $query->first();
         if (empty($result)) {
             return [];
         }
-        return $query->toArray();
+        return $result;
     }
 
     /**
@@ -353,6 +355,7 @@ class MapsTable extends Table {
             ])
             ->select([
                 'Mapsummaryitems.object_id',
+                'Mapsummaryitems.map_id',
             ])
             ->where([
                 'Mapsummaryitems.object_id' => $object_id,
@@ -362,7 +365,7 @@ class MapsTable extends Table {
         if (empty($result)) {
             return [];
         }
-        return $query->toArray();
+        return $result->toArray();
     }
 
     /**
@@ -380,6 +383,7 @@ class MapsTable extends Table {
             ])
             ->select([
                 'Mapitems.object_id',
+                'Mapitems.map_id'
             ])
             ->where([
                 'Mapitems.object_id' => $object_id,
@@ -389,7 +393,7 @@ class MapsTable extends Table {
         if (empty($result)) {
             return [];
         }
-        return $query->toArray();
+        return $result->toArray();
     }
 
     /**
@@ -491,7 +495,6 @@ class MapsTable extends Table {
 
         $query->order(['Maps.name' => 'ASC'])->group('Maps.id');
         $mapsWithLimit = $query->toArray();
-
         $selectedMaps = [];
         if (!empty($selected)) {
             $query = $this->find('list')
@@ -516,9 +519,11 @@ class MapsTable extends Table {
                     'MapsToContainers.container_id IN' => $MapConditions->getContainerIds()
                 ]);
             }
-            $query->orderAsc('Maps.name')->groupBy('Maps.id');
+            $query->order(['Maps.name' => 'ASC'])->group('Maps.id');
+
             $selectedMaps = $query->toArray();
         }
+
         $maps = $mapsWithLimit + $selectedMaps;
         if (is_array($excluded) && !empty($excluded)) {
             foreach ($excluded as $idToExclude) {
@@ -2303,5 +2308,32 @@ class MapsTable extends Table {
         $result = $query->firstOrFail();
 
         return $result->toArray();
+    }
+
+    public function getDefaultMapeditorSettings() {
+        return [
+            'Mapeditor' => [
+                'synchronizeGridAndHelplinesSize' => true,
+                'grid'                            => [
+                    'enabled' => true,
+                    'size'    => 15
+                ],
+                'helplines'                       => [
+                    'enabled' => true,
+                    'size'    => 15
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @param $config
+     * @return array|mixed
+     */
+    public function getMapeditorSettings($config) {
+        if (empty($config)) {
+            return $this->getDefaultMapeditorSettings();
+        }
+        return json_decode($config, true);
     }
 }

@@ -45,6 +45,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/node-waves/dist/waves.js',
         'node_modules/angular/angular.min.js',
         'node_modules/angular-ui-router/release/angular-ui-router.min.js',
+        'node_modules/angular-ui-router/release/stateEvents.min.js',
         'node_modules/jquery.cookie/jquery.cookie.js',
         'js/lib/chosen.jquery.min.js',
         'node_modules/bootstrap4-tagsinput/tagsinput.js',
@@ -65,9 +66,11 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/angular-nestable.js',
         'js/lib/parseuri.js',
         'node_modules/moment/min/moment.min.js',
-        'node_modules/vis-data/dist/umd.js',
-        'node_modules/vis-network/dist/vis-network.js',
-        'node_modules/vis-timeline/peer/umd/vis-timeline-graph2d.js',
+        'node_modules/vis-util/peer/umd/vis-util.min.js',
+        'node_modules/vis-data/peer/umd/vis-data.min.js',
+        'node_modules/vis-network/peer/umd/vis-network.min.js',
+        //'node_modules/vis-timeline/peer/umd/vis-timeline-graph2d.min.js',
+        'node_modules/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js',
         'js/scripts/ng.app.js',
         'js/lib/UUID.js-4.0.3/dist/uuid.core.js',
         'node_modules/underscore/underscore-min.js',
@@ -101,7 +104,8 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/raphael-charts-cust/pielicious.js',
         'node_modules/file-saver/dist/FileSaver.min.js',
         'node_modules/canvas-gauges/gauge.min.js',
-        'node_modules/tsparticles/dist/tsparticles.min.js'
+        'node_modules/tsparticles/dist/tsparticles.min.js',
+        'node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js'
     ];
 
     /**
@@ -129,7 +133,9 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/vis-timeline/dist/vis-timeline-graph2d.css',
         '/node_modules/noty/lib/noty.css',
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
-        '/node_modules/angular-gridster/dist/angular-gridster.min.css'
+        '/node_modules/angular-gridster/dist/angular-gridster.min.css',
+        '/node_modules/font-logos/assets/font-logos.css',
+        '/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css'
     ];
 
     /**

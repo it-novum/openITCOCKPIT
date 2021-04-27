@@ -53,6 +53,11 @@ class Map {
     private $refresh_interval;
 
     /**
+     * @var string
+     */
+    private $json_data;
+
+    /**
      * Map constructor.
      * @param array $map
      */
@@ -75,6 +80,10 @@ class Map {
 
         if (isset($map['refresh_interval'])) {
             $this->refresh_interval = (int)$map['refresh_interval'];
+        }
+
+        if (isset($map['json_data'])) {
+            $this->json_data = $map['json_data'];
         }
     }
 
@@ -111,6 +120,13 @@ class Map {
      */
     public function getRefreshInterval() {
         return $this->refresh_interval;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJsonData() {
+        return $this->json_data;
     }
 
     /**

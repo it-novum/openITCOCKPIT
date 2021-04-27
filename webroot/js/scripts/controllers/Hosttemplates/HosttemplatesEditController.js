@@ -89,7 +89,8 @@ angular.module('openITCOCKPIT')
             $scope.post.Hosttemplate.customvariables.push({
                 objecttype_id: 512, //OBJECT_HOSTTEMPLATE
                 name: '',
-                value: ''
+                value: '',
+                password: 0
             });
         };
 

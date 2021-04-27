@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -35,6 +36,7 @@ class ServicetemplategroupsTable extends Table {
 
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method
@@ -159,14 +161,15 @@ class ServicetemplategroupsTable extends Table {
         $query->where($where);
         $query->order($ServicetemplategroupsFilter->getOrderForPaginator('Containers.name', 'asc'));
 
+
         if ($PaginateOMat === null) {
             //Just execute query
-            $result = $this->formatResultAsCake2($query->toArray(), false);
+            $result = $this->emptyArrayIfNull($query->toArray());
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
 
@@ -444,7 +447,7 @@ class ServicetemplategroupsTable extends Table {
                 }
             ])
             ->where([
-                'Servicegroups.id' => $id
+                'Servicetemplategroups.id' => $id
             ])
             ->disableHydration()
             ->first();
@@ -507,5 +510,219 @@ class ServicetemplategroupsTable extends Table {
         }
 
         return $list;
+    }
+
+    public function getServicetemplategroupsByNames($names) {
+        if (!is_array($names)) {
+            $names = [$names];
+        }
+
+        $query = $this->find()
+            ->contain([
+                'Containers',
+                'Servicetemplates'
+            ])
+            ->where([
+                'Containers.name IN'          => $names,
+                'Containers.containertype_id' => CT_SERVICETEMPLATEGROUP
+            ])
+            ->disableHydration();
+
+        return $query->toArray();
+
+    }
+
+    /**
+     * @param array $hostgroupIds
+     * @param int $hostId
+     * @param int $userId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function assignMatchingServicetemplategroupsByHostgroupsToHost($hostgroupIds, $hostId, $userId = 0, $MY_RIGHTS = []) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        if (empty($hostgroupIds)) {
+            //Host has no hostgroups
+            return [
+                'newServiceIds'                       => [],
+                'errors'                              => [],
+                'servicetemplategroups_removed_count' => 0
+            ];
+        }
+
+        $host = $HostsTable->getServicesByHostIdForAllocation($hostId);
+
+        $hostgroupNames = $HostgroupsTable->getHostgroupNamesByIds($hostgroupIds);
+
+
+        $servicetemplategroups_tmp = $this->getServicetemplategroupsByNames($hostgroupNames);
+        $servicetemplategroups_removed = [];
+        $servicetemplategroups = [];
+
+        if (empty($MY_RIGHTS)) {
+            //Permission check is disabled
+            $servicetemplategroups = $servicetemplategroups_tmp;
+        }
+
+        //Check container permissions - do not this in SQL so we know what servicetemplategroups got removed so we can print error messages
+        if (!empty($MY_RIGHTS)) {
+            foreach ($servicetemplategroups_tmp as $servicetemplategroup) {
+                if (in_array($servicetemplategroup['container']['parent_id'], $MY_RIGHTS, true)) {
+                    $servicetemplategroups[] = $servicetemplategroup;
+                } else {
+                    //User has no permissions to this servicetemplategroup
+                    $servicetemplategroups_removed[] = $servicetemplategroup;
+                }
+            }
+        }
+
+        if (!empty($servicetemplategroups_removed) && empty($servicetemplategroups)) {
+            //Removed all service template groups due to insufficient permissions
+            return [
+                'newServiceIds'                       => [],
+                'errors'                              => [],
+                'servicetemplategroups_removed_count' => sizeof($servicetemplategroups_removed)
+            ];
+        }
+
+        if (empty($servicetemplategroups)) {
+            //No matching service template groups found
+            return [
+                'newServiceIds'                       => [],
+                'errors'                              => [],
+                'servicetemplategroups_removed_count' => 0
+            ];
+        }
+
+        $existingServicetemplateIds = Hash::combine($host['services'], '{n}.servicetemplate_id', '{n}.servicetemplate_id');
+        $servicetemplatesToCreate = [];
+
+        foreach ($servicetemplategroups as $servicetemplategroup) {
+            foreach ($servicetemplategroup['servicetemplates'] as $servicetemplate) {
+                if (!isset($existingServicetemplateIds[$servicetemplate['id']])) {
+                    $servicetemplatesToCreate[$servicetemplate['id']] = $servicetemplate['id'];
+                }
+            }
+        }
+
+        $result = $ServicesTable->createServiceByServicetemplateIds($servicetemplatesToCreate, $hostId, $userId);
+        $result['servicetemplategroups_removed_count'] = sizeof($servicetemplategroups_removed);
+        return $result;
+    }
+
+
+    /**
+     * @param $hostId
+     * @param int $userId
+     * @param array|null $oldHostgroupsIds
+     * @param array|null $currentHostgroupsIds
+     * @return array
+     */
+    public function disableServicesIfMatchingHostgroupsHasBeenRemoved($hostId, $userId, $oldHostgroupsIds, $currentHostgroupsIds) {
+        $result = [
+            'disabledServiceIds'      => [],
+            'errors'                  => [],
+            'services_disabled_count' => 0
+        ];
+
+        if (empty($oldHostgroupsIds) && empty($currentHostgroupsIds)) {
+            //Host has no old host groups and no new host groups
+            return $result;
+        }
+        if (empty($oldHostgroupsIds)) {
+            //Host has no old host groups - no check needed
+            return $result;
+        }
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $hostgroupNamesToRemove = [];
+        $hostgroupNamesInUse = [];
+
+        if (!empty($oldHostgroupsIds) && empty($currentHostgroupsIds)) {
+            // all services from matching old matching by service template groups must be disabled
+            $hostgroupNamesToRemove = $HostgroupsTable->getHostgroupNamesByIds($oldHostgroupsIds);
+        }
+
+        if (!empty($oldHostgroupsIds) && !empty($currentHostgroupsIds)) {
+            // disable services from host if matching host group has been removed
+            $hostGroupIdsHasBeenRemoved = array_diff($oldHostgroupsIds, $currentHostgroupsIds);
+            if (!empty($hostGroupIdsHasBeenRemoved)) {
+                $hostgroupNamesToRemove = $HostgroupsTable->getHostgroupNamesByIds($hostGroupIdsHasBeenRemoved);
+            }
+            if (!empty($currentHostgroupsIds)) {
+                $hostGroupNamesInUse = $HostgroupsTable->getHostgroupNamesByIds($currentHostgroupsIds);
+            }
+        }
+
+        if (!empty($hostgroupNamesToRemove)) {
+            $servicetemplateGroups = $this->getServicetemplategroupsByNames($hostgroupNamesToRemove);
+            $serviceTemplateIdsToDisable = array_unique(Hash::extract($servicetemplateGroups, '{n}.servicetemplates.{n}.id'));
+            if (empty($serviceTemplateIdsToDisable)) {
+                return $result;
+            }
+
+            if (!empty($hostGroupNamesInUse)) {
+                $servicetemplateGroupsInUse = $this->getServicetemplategroupsByNames($hostGroupNamesInUse);
+                $serviceTemplateIdsInUse = array_unique(Hash::extract($servicetemplateGroupsInUse, '{n}.servicetemplates.{n}.id'));
+                $serviceTemplateIdsToDisable_tmp = [];
+                foreach ($serviceTemplateIdsToDisable as $serviceTemplateIdToDisable) {
+                    if (!in_array($serviceTemplateIdToDisable, $serviceTemplateIdsInUse, true)) {
+                        $serviceTemplateIdsToDisable_tmp[] = $serviceTemplateIdToDisable;
+                    }
+                }
+                if (empty($serviceTemplateIdsToDisable_tmp)) {
+                    return $result;
+                }
+                $serviceTemplateIdsToDisable = $serviceTemplateIdsToDisable_tmp;
+            }
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $result = $ServicesTable->disableServiceByServicetemplateIds($serviceTemplateIdsToDisable, $hostId, $userId);
+            $result['services_disabled_count'] = sizeof($result['disabledServiceIds']);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $containerIds
+     * @return array
+     */
+    public function getServicetemplategroupsByContainerId(array $containerIds) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this->find()
+            ->contain([
+                'Containers'
+            ])
+            ->select([
+                'Containers.name',
+                'Servicetemplategroups.id'
+            ])
+            ->where([
+                'Containers.parent_id IN ' => $containerIds
+            ])
+            ->order([
+                'Containers.name' => 'asc'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $servicetemplategroups = [];
+        $result = $this->emptyArrayIfNull($query->toArray());
+        foreach ($result as $row) {
+            $servicetemplategroups[$row['id']] = $row['container']['name'];
+        }
+
+        return $servicetemplategroups;
     }
 }

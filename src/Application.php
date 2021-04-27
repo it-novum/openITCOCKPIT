@@ -46,7 +46,6 @@ use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Http\ServerRequest;
-use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
@@ -64,7 +63,6 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
      * {@inheritDoc}
      */
     public function bootstrap(): void {
-
         // Call parent to load bootstrap from files.
         parent::bootstrap();
 
@@ -184,7 +182,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             'rememberMeField' => 'remember_me',
             'fields'          => $fields,
             'cookie'          => [
-                'expire' => $expireAt
+                'expires' => $expireAt
             ]
         ]);
         $service->loadAuthenticator('Authentication.Session');
@@ -195,7 +193,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 
         //oAuth
         $service->loadAuthenticator('Authentication.oAuth', [
-            'className'    => oAuthAuthenticator::class,
+            'className' => oAuthAuthenticator::class,
         ]);
 
         //Stateless API Key login

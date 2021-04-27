@@ -47,6 +47,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
@@ -123,6 +124,7 @@ class HostsController extends AppController {
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
         $satellites = [];
+
         if (Plugin::isLoaded('DistributeModule')) {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
@@ -245,7 +247,8 @@ class HostsController extends AppController {
 
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
-            if ($Host->isSatelliteHost()) {
+
+            if ($Host->isSatelliteHost() && isset($satellites[$Host->getSatelliteId()])) {
                 $satelliteName = $satellites[$Host->getSatelliteId()];
                 $satellite_id = $Host->getSatelliteId();
             }
@@ -485,8 +488,10 @@ class HostsController extends AppController {
                 throw new NotFoundException(__('Invalid host template'));
             }
 
+            $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
+
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
-            $HostComparisonForSave = new HostComparisonForSave($this->request->getData(), $hosttemplate);
+            $HostComparisonForSave = new HostComparisonForSave($this->request->getData(), $hosttemplate, true);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
             $hostData['uuid'] = UUID::v4();
 
@@ -531,6 +536,27 @@ class HostsController extends AppController {
                     $ChangelogsTable->save($changelogEntry);
                 }
 
+                if ($saveHostAndAssignMatchingServicetemplateGroups === true) {
+                    /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+                    $result = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
+                        $requestData['Host']['hostgroups']['_ids'],
+                        $host->get('id'),
+                        $User->getId(),
+                        $this->MY_RIGHTS
+                    );
+
+                    if ($this->isJsonRequest()) {
+                        $this->set('id', $host->get('id'));
+                        $this->set('services', ['_ids' => $result['newServiceIds']]);
+                        $this->set('errors', $result['errors']);
+                        $this->set('servicetemplategroups_removed_count', $result['servicetemplategroups_removed_count']);
+                        $this->viewBuilder()->setOption('serialize', ['id', 'services', 'errors', 'servicetemplategroups_removed_count']);
+                        return;
+                    }
+
+                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($host); // REST API ID serialization
@@ -566,11 +592,11 @@ class HostsController extends AppController {
 
         $host = $HostsTable->getHostForEdit($id);
         $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
-
         $HostMergerForView = new HostMergerForView($host, $hosttemplate);
         $mergedHost = $HostMergerForView->getDataForView();
-
         $hostForChangelog = $mergedHost;
+
+        $oldSharingContainers = $hostForChangelog['Host']['hosts_to_containers_sharing']['_ids'];
 
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
@@ -638,6 +664,9 @@ class HostsController extends AppController {
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
             }
+            $User = new User($this->getUser());
+            $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
+
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
 
             $HostContainersPermissions = new HostContainersPermissions(
@@ -647,6 +676,20 @@ class HostsController extends AppController {
                 $this->hasRootPrivileges
             );
             $requestData = $this->request->getData();
+
+            $newSharingContainers = array_merge(
+                $requestData['Host']['hosts_to_containers_sharing']['_ids'],
+                [$requestData['Host']['container_id']]
+            );
+
+            $removedSharingContainers = array_diff($oldSharingContainers, $newSharingContainers);
+
+            if (!empty($removedSharingContainers)) {
+                //update dependent service groups and remove services if permissions has been gone
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $ServicesTable->_cleanupServicesByHostIdAndRemovedContainerIds($id, $removedSharingContainers, $User->getId());
+            }
 
             if ($HostContainersPermissions->isPrimaryContainerChangeable() === false) {
                 //Overwrite post data. User is not permitted to set a new primary container id!
@@ -668,7 +711,7 @@ class HostsController extends AppController {
             $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
             //Update contact data
-            $User = new User($this->getUser());
+
             $hostEntity = $HostsTable->get($id);
             $hostEntity = $HostsTable->patchEntity($hostEntity, $dataForSave);
             $HostsTable->save($hostEntity);
@@ -699,6 +742,48 @@ class HostsController extends AppController {
                     $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                     $ChangelogsTable->save($changelogEntry);
                 }
+
+                if ($saveHostAndAssignMatchingServicetemplateGroups === true) {
+                    /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+                    $resultForAssign = $ServicetemplategroupsTable->assignMatchingServicetemplategroupsByHostgroupsToHost(
+                        $requestData['Host']['hostgroups']['_ids'],
+                        $hostEntity->get('id'),
+                        $User->getId(),
+                        $this->MY_RIGHTS
+                    );
+
+
+                    $resultForDisable = $ServicetemplategroupsTable->disableServicesIfMatchingHostgroupsHasBeenRemoved(
+                        $hostEntity->get('id'),
+                        $User->getId(),
+                        $mergedHost['Host']['hostgroups']['_ids'],
+                        $requestData['Host']['hostgroups']['_ids']
+                    );
+
+                    if ($this->isJsonRequest()) {
+                        $this->set('id', $hostEntity->get('id'));
+                        $this->set('services', ['_ids' => $resultForAssign['newServiceIds']]);
+                        $this->set('disabled_services', ['_ids' => $resultForDisable['disabledServiceIds']]);
+                        $this->set('errors', $resultForAssign['errors']);
+                        $this->set('disabled_errors', $resultForDisable['errors']);
+                        $this->set('servicetemplategroups_removed_count', $resultForAssign['servicetemplategroups_removed_count']);
+                        $this->set('services_disabled_count', $resultForDisable['services_disabled_count']);
+                        $this->viewBuilder()->setOption('serialize', [
+                            'id',
+                            'services',
+                            'disabled_services',
+                            'errors',
+                            'disabled_errors',
+                            'servicetemplategroups_removed_count',
+                            'services_disabled_count'
+                        ]);
+                        return;
+                    }
+
+                }
+
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization
@@ -1542,7 +1627,8 @@ class HostsController extends AppController {
                         $customvariables[] = [
                             'name'          => $customvariable->get('name'),
                             'value'         => $customvariable->get('value'),
-                            'objecttype_id' => OBJECT_HOST
+                            'objecttype_id' => OBJECT_HOST,
+                            'password'      => $customvariable->get('password')
                         ];
                     }
 
@@ -1830,7 +1916,7 @@ class HostsController extends AppController {
         $host = $HostsTable->getHostForBrowser($id);
 
         //Check permissions
-        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n},id');
+        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
         $containerIdsToCheck[] = $host['container_id'];
 
         //Check if user is permitted to see this object
@@ -1848,15 +1934,30 @@ class HostsController extends AppController {
         }
         $hostObj = new Host($host, $allowEdit);
 
+
         //Load containers information
-        $mainContainer = $ContainersTable->treePath($host['container_id']);
-        //Add shared containers
-        $sharedContainers = [];
-        foreach ($host['hosts_to_containers_sharing'] as $container) {
-            if (isset($container['id']) && $container['id'] != $host['container_id']) {
-                $sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+        if (array_key_exists($host['container_id'], $this->MY_RIGHTS_LEVEL)) {
+            $mainContainer = $ContainersTable->getTreePathForBrowser($host['container_id'], $this->MY_RIGHTS_LEVEL);
+            //Add shared containers
+            $sharedContainers = [];
+            foreach ($host['hosts_to_containers_sharing'] as $container) {
+                if (isset($container['id']) && $container['id'] != $host['container_id']) {
+                    $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
+                    //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+                }
             }
+        } else {
+            //The user only see this host via host sharing
+            //We need to "fake" a primary container because the user has no permissions to the real
+            //primary container
+            $mainContainer = $ContainersTable->getFakePrimaryContainerForHostBrowserDisplay(
+                Hash::extract($host, 'hosts_to_containers_sharing.{n}.id'),
+                $this->MY_RIGHTS,
+                $this->MY_RIGHTS_LEVEL
+            );
+            $sharedContainers = [];
         }
+
 
         //Load required data to merge and display inheritance data
         $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
@@ -1871,27 +1972,39 @@ class HostsController extends AppController {
         $mergedHost['is_satellite_host'] = $hostObj->isSatelliteHost();
         $mergedHost['allowEdit'] = $allowEdit;
 
+        $replacePasswordInObjectMacros = false;
+        try {
+            $systemsettingsReplacePasswordsEntity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.REPLACE_PASSWORD_IN_OBJECT_MACROS');
+            if ($systemsettingsReplacePasswordsEntity->get('value') === '1') {
+                $replacePasswordInObjectMacros = true;
+            }
+        } catch (RecordNotFoundException $e) {
+            // Rocket not found in system settings - do not replace passwords in $_HOSTFOOBAR$ custom variables
+        }
+
         //Replace macros in host url
         $HostMacroReplacer = new HostMacroReplacer($mergedHost);
-        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST, $replacePasswordInObjectMacros);
         $mergedHost['host_url_replaced'] =
-            $HostCustomMacroReplacer->replaceAllMacros(
-                $HostMacroReplacer->replaceBasicMacros($mergedHost['host_url'])
+            $HostMacroReplacer->replaceBasicMacros(          // Replace $HOSTNAME$
+                $HostCustomMacroReplacer->replaceAllMacros(  // Replace $_HOSTFOOBAR$
+                    $mergedHost['host_url']
+                )
             );
 
         $checkCommand = $CommandsTable->getCommandById($mergedHost['command_id']);
         $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['check_period_id']);
         $notifyPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['notify_period_id']);
 
-        // Replace $HOSTNAME$
-        $hostCommandLine = $HostMacroReplacer->replaceBasicMacros($checkCommand['Command']['command_line']);
+        // Replace $ARGn$
+        $ArgnReplacer = new CommandArgReplacer($mergedHost['hostcommandargumentvalues']);
+        $hostCommandLine = $ArgnReplacer->replace($checkCommand['Command']['command_line']);
 
         // Replace $_HOSTFOOBAR$
         $hostCommandLine = $HostCustomMacroReplacer->replaceAllMacros($hostCommandLine);
 
-        // Replace $ARGn$
-        $ArgnReplacer = new CommandArgReplacer($mergedHost['hostcommandargumentvalues']);
-        $hostCommandLine = $ArgnReplacer->replace($hostCommandLine);
+        // Replace $HOSTNAME$
+        $hostCommandLine = $HostMacroReplacer->replaceBasicMacros($hostCommandLine);
 
         // Replace $USERn$ Macros (if enabled)
         try {

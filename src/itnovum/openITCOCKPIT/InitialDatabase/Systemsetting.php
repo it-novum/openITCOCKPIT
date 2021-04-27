@@ -695,7 +695,7 @@ class Systemsetting extends Importer {
             ],
             (int)80 => [
                 'key'      => 'FRONTEND.REPLACE_USER_MACROS',
-                'value'    => '0',
+                'value'    => '1',
                 'info'     => 'If enabled $USERn$ macros will get replaced in the command_line in host and service status overviews',
                 'section'  => 'FRONTEND',
                 'created'  => '2020-04-17 08:43:17',
@@ -748,6 +748,14 @@ class Systemsetting extends Importer {
                 'section'  => 'FRONTEND',
                 'created'  => '2020-10-01 08:48:17',
                 'modified' => '2020-10-01 08:48:17'
+            ],
+            (int)87 => [
+                'key'      => 'FRONTEND.REPLACE_PASSWORD_IN_OBJECT_MACROS',
+                'value'    => '0',
+                'info'     => 'If enabled $_HOST...$ and $_SERVICE...$ custom object macros with "password" option will get replaced in the command_line in host and service status overviews',
+                'section'  => 'FRONTEND',
+                'created'  => '2020-04-17 08:43:17',
+                'modified' => '2020-04-17 08:43:17'
             ],
         ];
 

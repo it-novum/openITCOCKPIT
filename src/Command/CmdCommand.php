@@ -167,6 +167,9 @@ class CmdCommand extends Command {
                     return $query;
                 }
             ])
+            ->where([
+                'Services.disabled' => 0
+            ])
             ->disableHydration()
             ->all();
 
@@ -248,7 +251,8 @@ class CmdCommand extends Command {
                 }
             ])
             ->where([
-                'Hosts.uuid' => $hostUuid
+                'Hosts.uuid' => $hostUuid,
+                'Services.disabled' => 0
             ])
             ->having([
                 'servicename' => $serviceDescription

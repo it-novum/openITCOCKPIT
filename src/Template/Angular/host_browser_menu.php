@@ -31,8 +31,8 @@
         <h1 class="status_headline" ng-class="hostStatusTextClass" ng-if="config.includeHoststatus">
 
             <span class="flapping_airport stateClass" ng-show="hoststatus.isFlapping">
-                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
-                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
+                <i ng-class="flappingState === 1 ? 'fa fa-circle' : 'far fa-circle'"></i>
+                <i ng-class="flappingState === 0 ? 'fa fa-circle' : 'far fa-circle'"></i>
             </span>
 
             <i class="fa fa-desktop fa-fw"></i>
@@ -111,7 +111,7 @@
                title="<?php echo __('External link'); ?>"
                target="_blank"
                class="btn btn-default btn-sm">
-                <i class="fa fa-external-link fa-lg">
+                <i class="fas fa-external-link-alt fa-lg">
                 </i>
             </a>
 
@@ -144,8 +144,8 @@
                             <?php echo __('Allocate service template group'); ?>
                         </a>
                     <?php endif; ?>
-                    <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                        <a ui-sref="AgentconnectorsConfig({hostId: config.hostId})"
+                    <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
+                        <a ui-sref="AgentconnectorsWizard({hostId: config.hostId})"
                            class="dropdown-item">
                             <i class="fa fa-user-secret"></i>
                             <?php echo __('openITCOCKPIT Agent discovery'); ?>

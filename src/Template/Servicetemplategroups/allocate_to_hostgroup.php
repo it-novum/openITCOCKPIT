@@ -96,54 +96,53 @@
                         </div>
                     </div>
 
-                    <div class="row form-horizontal" ng-show="hostgroupId > 0">
-                        <div class="col-xs-12 col-md-9 col-lg-7">
-                            <div class="col col-md-2 control-label">
-                                <!-- Fancy layout -->
-                            </div>
-                            <div class="col col-xs-10">
-                                <div class="text-info">
-                                    <i class="fa fa-info-circle"></i>
-                                    <?php echo __('Please notice:'); ?>
-                                    <?php echo __('Services which use a service template that could not be assigned to the selected host due to container permissions, will be removed automatically.'); ?>
+                    <div class="row" ng-show="hostgroupId > 0">
+                        <div class="col-12">
+                            <div class="alert border-faded bg-transparent text-secondary margin-top-20 margin-bottom-10">
+                                <div class="d-flex align-items-center">
+                                    <div class="alert-icon">
+                                        <span class="icon-stack icon-stack-md">
+                                            <i class="base-7 icon-stack-3x color-info-600"></i>
+                                            <i class="fas fa-info icon-stack-1x text-white"></i>
+                                        </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="h5 color-info-600">
+                                            <?= __('Please notice'); ?>
+                                        </span>
+                                        <br>
+                                        <?= __('Services which use a service template that could not be assigned to the selected host due to container permissions, will be removed automatically.'); ?>
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="row form-horizontal" ng-show="hostgroupId > 0">
-                        <div class="col-xs-12 col-md-9 col-lg-7">
-                            <div class="col col-md-2 control-label">
-                                <!-- Fancy layout -->
-                            </div>
-                            <div class="col col-xs-10">
-                                <div class="text-info">
-                                    <i class="fa fa-info-circle"></i>
-                                    <?php echo __('Please notice:'); ?>
-                                    <?php echo __('Services which use a service template that could not be assigned to the selected host due to container permissions, will be removed automatically.'); ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="row form-horizontal" ng-show="hostgroupId > 0">
-                        <div class="col-xs-12 col-md-9 col-lg-7 padding-top-15" ng-repeat="hostWithServicesToDeploy in hostsWithServicesToDeploy">
+                        <div class="col-xs-12 col-md-9 col-lg-7 padding-top-15"
+                             ng-repeat="hostWithServicesToDeploy in hostsWithServicesToDeploy">
                             <fieldset>
-                                <legend>
-                                    <span class="text-info"><?php echo __('Service/s to deploy on host:'); ?></span>
-                                    {{hostWithServicesToDeploy.host.hostname}} ({{hostWithServicesToDeploy.host.address}})
+                                <legend class="margin-0 padding-top-10">
+                                    <h4>
+                                        <?= __('Service/s to deploy on host:'); ?>
+                                        <span class="text-info">
+                                            {{hostWithServicesToDeploy.host.hostname}}
+                                            ({{hostWithServicesToDeploy.host.address}})
+                                        </span>
+                                    </h4>
+
                                 </legend>
 
-                                <div ng-repeat="serviceToDeploy in hostWithServicesToDeploy.services" class="padding-bottom-5">
-
+                                <div ng-repeat="serviceToDeploy in hostWithServicesToDeploy.services"
+                                     class="padding-bottom-5 padding-left-10">
                                     <input type="checkbox" ng-model="serviceToDeploy.createServiceOnTargetHost">
 
                                     {{serviceToDeploy.servicetemplate.name}}
                                     <span class="text-info"
                                           ng-show="serviceToDeploy.servicetemplate.description">
-                                ({{serviceToDeploy.servicetemplate.description}})
-                            </span>
+                                        ({{serviceToDeploy.servicetemplate.description}})
+                                    </span>
 
                                     <span class="text-info"
                                           ng-show="serviceToDeploy.doesServicetemplateExistsOnTargetHost"
@@ -151,8 +150,8 @@
                                           data-placement="right"
                                           rel="tooltip"
                                           data-container="body">
-                                <i class="fa fa-info-circle"></i>
-                            </span>
+                                        <i class="fa fa-info-circle"></i>
+                                    </span>
 
                                     <span
                                         ng-show="serviceToDeploy.doesServicetemplateExistsOnTargetHostAndIsDisabled"
@@ -160,27 +159,25 @@
                                         data-placement="right"
                                         rel="tooltip"
                                         data-container="body">
-                                <i class="fa fa-plug"></i>
-                            </span>
-
+                                        <i class="fa fa-plug"></i>
+                                    </span>
                                 </div>
-
                             </fieldset>
                         </div>
                     </div>
 
-                    <div class="row padding-top-15" ng-show="hostgroupId > 0">
+                    <div class="row padding-left-10 padding-top-10" ng-show="hostgroupId > 0">
                         <div class="col-xs-6 col-md-2">
-                                <span ng-click="selectAll()" class="pointer">
-                                    <i class="fa fa-check-square"></i>
-                                    <?php echo __('Select all'); ?>
-                                </span>
+                            <span ng-click="selectAll()" class="pointer">
+                                <i class="fa fa-check-square"></i>
+                                <?php echo __('Select all'); ?>
+                            </span>
                         </div>
                         <div class="col-xs-6 col-md-2">
-                                <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fa fa-square"></i>
-                                    <?php echo __('Undo selection'); ?>
-                                </span>
+                            <span ng-click="undoSelection()" class="pointer">
+                                <i class="fa fa-square"></i>
+                                <?php echo __('Undo selection'); ?>
+                            </span>
                         </div>
                     </div>
 
@@ -199,9 +196,10 @@
                                     <?php echo __('Allocate to host group'); ?>
                                 </button>
                                 <?php if ($this->Acl->hasPermission('index', 'servicetemplategroups')): ?>
-                                <a back-button href="javascript:void(0);" fallback-state='ServicetemplategroupsIndex' class="btn btn-default">
-                                    <?php echo __('Cancel'); ?>
-                                </a>
+                                    <a back-button href="javascript:void(0);"
+                                       fallback-state='ServicetemplategroupsIndex' class="btn btn-default">
+                                        <?php echo __('Cancel'); ?>
+                                    </a>
                                 <?php endif; ?>
 
                             </div>

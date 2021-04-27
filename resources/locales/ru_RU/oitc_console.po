@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-07-15 09:11+0200\n"
+"POT-Creation-Date: 2021-04-22 15:12+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -82,26 +82,6 @@ msgstr "комментарий подтверждения узла => $NOTIFICAT
 #: src/Command/NagiosXmlNotificationCommand.php:169
 msgid "Disable emojis in subject"
 msgstr "Отключить смайлики в теме"
-
-#: src/Command/ConnectToAgentCommand.php:59
-msgid "IP of Host with the Agent to connect to"
-msgstr "IP узла с агентом для подключения"
-
-#: src/Command/ConnectToAgentCommand.php:60
-msgid "Port of Host with the Agent to connect to"
-msgstr "Порт узла с агентом для подключения"
-
-#: src/Command/ConnectToAgentCommand.php:61
-msgid "Basic-Auth username from Agent"
-msgstr "Basic-Auth имя пользователя от агента"
-
-#: src/Command/ConnectToAgentCommand.php:62
-msgid "Basic-Auth password from Agent"
-msgstr "Пароль Basic-Auth от Агента"
-
-#: src/Command/ConnectToAgentCommand.php:63
-msgid "Disable proxy"
-msgstr "Отключить прокси"
 
 #: src/Command/CronjobsCommand.php:67
 msgid "All cronjobs will be forced to execute!"
@@ -334,67 +314,67 @@ msgstr "Запустите WebSocketсервер, чтобы сделать жу
 msgid "openITCOCKPIT User Id"
 msgstr "openITCOCKPIT User Id"
 
-#: src/Command/SetupCommand.php:133
+#: src/Command/SetupCommand.php:147
 msgid "[Y]es I want to continue the setup of openITCOCKPIT"
 msgstr "[Y] Если я хочу продолжить настройку openITCOCKPIT"
 
-#: src/Command/SetupCommand.php:134
+#: src/Command/SetupCommand.php:148
 msgid "[N]o and exit shell"
 msgstr "[N] Нет и выход"
 
-#: src/Command/SetupCommand.php:136
+#: src/Command/SetupCommand.php:150
 msgid "Are you sure you want to continue?"
 msgstr "Вы уверены что хотите продолжить?"
 
-#: src/Command/SetupCommand.php:142
+#: src/Command/SetupCommand.php:156
 msgid "Setup aborted!"
 msgstr "Установка прервана!"
 
-#: src/Command/SetupCommand.php:145
+#: src/Command/SetupCommand.php:159
 msgid "You have made an invalid selection. Please choose by entering Y or N."
 msgstr "Вы сделали неверный выбор. Пожалуйста, выберите, введя Y или N."
 
-#: src/Command/SetupCommand.php:260
+#: src/Command/SetupCommand.php:274
 msgid "Please enter your first name"
 msgstr "Пожалуйста, введите ваше имя"
 
-#: src/Command/SetupCommand.php:272
+#: src/Command/SetupCommand.php:286
 msgid "Please enter your last name"
 msgstr "Пожалуйста, введите свою фамилию"
 
-#: src/Command/SetupCommand.php:284
+#: src/Command/SetupCommand.php:298
 msgid "Please enter your email address. This will be the username for the login."
 msgstr "Пожалуйста, введите Ваш адрес электронной почты. Это будет имя пользователя для входа."
 
-#: src/Command/SetupCommand.php:299
+#: src/Command/SetupCommand.php:313
 msgid "Please enter a password for the login."
 msgstr "Пожалуйста, введите пароль для входа."
 
-#: src/Command/SetupCommand.php:302
+#: src/Command/SetupCommand.php:316
 msgid "Please confirm your password"
 msgstr "Пожалуйста, подтвердите ваш пароль"
 
-#: src/Command/SetupCommand.php:326
+#: src/Command/SetupCommand.php:340
 msgid "System Address or FQDN?"
 msgstr "Системный адрес или полное доменное имя?"
 
-#: src/Command/SetupCommand.php:360
+#: src/Command/SetupCommand.php:374
 msgid "Please enter a sender email address"
 msgstr "Пожалуйста, введите адрес электронной почты отправителя"
 
-#: src/Command/SetupCommand.php:374
+#: src/Command/SetupCommand.php:388
 msgid "Please enter the address of your mail server (e.g. mail.example.org)"
 msgstr "Пожалуйста, введите адрес вашего почтового сервера (например, mail.example.org)"
 
-#: src/Command/SetupCommand.php:386
+#: src/Command/SetupCommand.php:400
 msgid "Please enter the port of your mail server"
 msgstr "Пожалуйста, введите порт вашего почтового сервера"
 
-#: src/Command/SetupCommand.php:400
+#: src/Command/SetupCommand.php:414
 msgid "If required, set a username, or leave it blank if you don't need a user"
 msgstr "Если необходимо, задайте имя пользователя или оставьте поле пустым, если вам не нужен пользователь"
 
-#: src/Command/SetupCommand.php:410
+#: src/Command/SetupCommand.php:424
 msgid "Please enter your password, or leave it blank if you don't need a password"
 msgstr "Пожалуйста, введите свой пароль или оставьте его пустым, если вам не нужен пароль"
 
@@ -486,7 +466,7 @@ msgstr "Выход службы"
 msgid "State ID of the current service state"
 msgstr "Идентификатор состояния текущего состояния службы"
 
-#: CheckmkModule/src/Command/CheckmkNagiosExportCommand.php:55
+#: CheckmkModule/src/Command/CheckmkNagiosExportCommand.php:57
 msgid "Write initial Checkmk configuration"
 msgstr "Написать начальную конфигурацию Checkmk"
 
@@ -539,6 +519,14 @@ msgstr "Состояние службы"
 #: SlackModule/src/Command/SlackNotificationCommand.php:46
 msgid "output"
 msgstr "выход"
+
+#: PrometheusModule/src/Command/PrometheusBridgeCommand.php:54
+msgid "Run PrometheusBridge as endless loop (Daemon)"
+msgstr ""
+
+#: PrometheusModule/src/Command/PrometheusBridgeCommand.php:55
+msgid "Loop interval in seconds"
+msgstr ""
 
 #: ServicenowModule/src/Command/ServicenowNotificationCommand.php:59
 msgid "comment"

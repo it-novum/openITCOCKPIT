@@ -12,6 +12,7 @@ use Cake\ORM\Entity;
  * @property int $objecttype_id
  * @property string $name
  * @property string $value
+ * @property int $password
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
@@ -33,6 +34,7 @@ class Customvariable extends Entity {
         'objecttype_id' => true,
         'name'          => true,
         'value'         => true,
+        'password'      => true,
         'created'       => true,
         'modified'      => true,
         'object'        => true,

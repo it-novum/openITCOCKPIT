@@ -34,7 +34,6 @@ use App\Model\Entity\Hostgroup;
 use App\Model\Entity\Service;
 use App\Model\Entity\Servicegroup;
 use App\Model\Table\AgentconfigsTable;
-use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\CalendarsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ConfigurationFilesTable;
@@ -65,10 +64,12 @@ use Cake\Filesystem\Folder;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\UUID;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 class NagiosConfigGenerator {
 
@@ -413,6 +414,13 @@ class NagiosConfigGenerator {
             $content .= $this->addContent('active_checks_enabled', 1, $hosttemplate->get('active_checks_enabled'));
             $content .= $this->addContent('passive_checks_enabled', 1, 1);
 
+            if ($hosttemplate->get('freshness_checks_enabled') !== null) {
+                $content .= $this->addContent('check_freshness', 1, $hosttemplate->get('freshness_checks_enabled'));
+
+                if ((int)$hosttemplate->get('freshness_threshold') > 0) {
+                    $content .= $this->addContent('freshness_threshold', 1, (int)$hosttemplate->get('freshness_threshold') + $this->FRESHNESS_THRESHOLD_ADDITION);
+                }
+            }
 
             $content .= PHP_EOL;
             $content .= $this->addContent(';Notification settings:', 1);
@@ -525,7 +533,13 @@ class NagiosConfigGenerator {
             }
 
             if (!$HosttemplatesCache->has($host->get('hosttemplate_id'))) {
-                $hosttemplate = $HosttemplatesTable->get($host->get('hosttemplate_id'));
+                $hosttemplate = $HosttemplatesTable->get($host->get('hosttemplate_id'), [
+                    'contain' => [
+                        'Hosttemplatecommandargumentvalues' => [
+                            'Commandarguments'
+                        ]
+                    ]
+                ]);
                 $HosttemplatesCache->set($host->get('hosttemplate_id'), $hosttemplate);
             }
 
@@ -562,7 +576,7 @@ class NagiosConfigGenerator {
 
                     $commandUuid = $this->CommandUuidsCache->get($commandId);
 
-                    $commandarguments = $host->getCommandargumentValuesForCfg();
+                    $commandarguments = $host->getCommandargumentValuesForCfg($hosttemplate);
                     $content .= $this->addContent('check_command', 1, sprintf(
                         '%s!%s; %s',
                         $commandUuid,
@@ -622,34 +636,36 @@ class NagiosConfigGenerator {
                 $checkInterval = 300;
             }
 
-
-            if ($host->get('freshness_checks_enabled') !== null && $host->get('freshness_threshold')) {
-                if ($host->isSatelliteHost() === true) {
-                    //Host gets checked through a satellite system
-                    $content .= $this->addContent('check_freshness', 1, 1);
-                    $content .= $this->addContent('freshness_threshold', 1, (int)$host->get('freshness_threshold') + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
-                } else {
-                    if ($host->get('freshness_checks_enabled') > 0) {
-                        //Passive host on the master system
-                        $content .= $this->addContent('check_freshness', 1, 1);
-                        $content .= $this->addContent('freshness_threshold', 1, (int)$host->get('freshness_threshold') + $this->FRESHNESS_THRESHOLD_ADDITION);
-                    }
-                }
-            } else {
-                /*
-                 * NOTICE:
-                 * At the moment the host has no freshness_checks_enabled and freshness_threshold field.
-                 * This will be available in one of the next versions...
-                 *
-                 * So this is a little workaround!!!
-                 * We only add the freshness for hosts on SAT-Systems! Normal hosts can't have this option at the moment!
-                 */
-                if ($host->isSatelliteHost()) {
-                    $content .= $this->addContent('check_freshness', 1, 1);
-                    $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
-                }
+            /* Freshness checks starts */
+            $freshnessChecksEnabled = $host->get('freshness_checks_enabled');
+            if ($freshnessChecksEnabled === null) {
+                $freshnessChecksEnabled = $hosttemplate->get('freshness_checks_enabled');
+            }
+            $freshnessThreshold = $host->get('freshness_threshold');
+            if ($freshnessThreshold === null) {
+                $freshnessThreshold = $hosttemplate->get('freshness_threshold');
             }
 
+            if ($host->isSatelliteHost() === true) {
+                // Host is checked by a satellite system
+                // Add freshness check on the master instance
+                $content .= $this->addContent('check_freshness', 1, 1);
+                if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                    $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                } else {
+                    $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                }
+            } else {
+                // Host is in the master instance
+                // Passive host on the master system
+                if ($host->get('freshness_checks_enabled')) {
+                    $content .= $this->addContent('check_freshness', 1, $host->get('freshness_checks_enabled'));
+                }
+                if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                    $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold);
+                }
+            }
+            /* Freshness checks ends */
 
             if ($host->get('passive_checks_enabled') !== null && $host->get('passive_checks_enabled') !== '')
                 $content .= $this->addContent('passive_checks_enabled', 1, $host->get('passive_checks_enabled'));
@@ -812,7 +828,7 @@ class NagiosConfigGenerator {
             }
 
             $commandUuid = $this->CommandUuidsCache->get($commandId);
-            $commandarguments = $host->getCommandargumentValuesForCfg();
+            $commandarguments = $host->getCommandargumentValuesForCfg($hosttemplate);
             $content .= $this->addContent('check_command', 1, sprintf(
                 '%s!%s; %s',
                 $commandUuid,
@@ -848,6 +864,24 @@ class NagiosConfigGenerator {
 
         if ($host->get('active_checks_enabled') !== null && $host->get('active_checks_enabled') !== '')
             $content .= $this->addContent('active_checks_enabled', 1, $host->get('active_checks_enabled'));
+
+        /* Freshness checks starts */
+        $freshnessChecksEnabled = $host->get('freshness_checks_enabled');
+        if ($freshnessChecksEnabled === null) {
+            $freshnessChecksEnabled = $hosttemplate->get('freshness_checks_enabled');
+        }
+        $freshnessThreshold = $host->get('freshness_threshold');
+        if ($freshnessThreshold === null) {
+            $freshnessThreshold = $hosttemplate->get('freshness_threshold');
+        }
+
+        if ($freshnessChecksEnabled > 0) {
+            $content .= $this->addContent('check_freshness', 1, 1);
+            if ($freshnessThreshold > 0) {
+                $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
+            }
+        }
+        /* Freshness checks ends */
 
         if ($host->get('passive_checks_enabled') !== null && $host->get('passive_checks_enabled') !== '')
             $content .= $this->addContent('passive_checks_enabled', 1, $host->get('passive_checks_enabled'));
@@ -1162,7 +1196,7 @@ class NagiosConfigGenerator {
                             $commandId = $service->get('command_id');
                         }
                         $commandUuid = $this->CommandUuidsCache->get($commandId);
-                        $commandarguments = $service->getCommandargumentValuesForCfg();
+                        $commandarguments = $service->getCommandargumentValuesForCfg($servicetemplate);
                         $content .= $this->addContent('check_command', 1, sprintf(
                             '%s!%s; %s',
                             $commandUuid,
@@ -1241,33 +1275,44 @@ class NagiosConfigGenerator {
                     }
                 }
 
-                if ($service->get('freshness_checks_enabled') > 0 || $host->isSatelliteHost() === true) {
-                    if ($host->isSatelliteHost() === true) {
-                        // Service is checked by a satellite system
-                        // Add freshness check on the master instance
-                        $content .= $this->addContent('check_freshness', 1, 1);
-                        $checkInterval = $service->get('check_interval');
-                        if ($checkInterval === null || $checkInterval === '' || $checkInterval === 0) {
-                            $checkInterval = $servicetemplate->get('check_interval');
-                        }
-
-                        $checkInterval = (int)$checkInterval;
-                        $freshnessThreshold = (int)$service->get('freshness_threshold');
-
-                        $content .= $this->addContent('freshness_threshold', 1, ($freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION));
-                    } else {
-                        // Service is in the master instance
-
-                        //Passive service on the master system
-                        $content .= $this->addContent('check_freshness', 1, 1);
-                        $freshnessThreshold = (int)$service->get('freshness_threshold');
-                        if ($freshnessThreshold === null || $freshnessThreshold === '' || $freshnessThreshold === 0) {
-                            $freshnessThreshold = (int)$servicetemplate->get('freshness_threshold');
-                        }
-                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
-                    }
-
+                /* Freshness checks starts */
+                $freshnessChecksEnabled = $service->get('freshness_checks_enabled');
+                if ($freshnessChecksEnabled === null) {
+                    $freshnessChecksEnabled = $servicetemplate->get('freshness_checks_enabled');
                 }
+                $freshnessThreshold = $service->get('freshness_threshold');
+                if ($freshnessThreshold === null) {
+                    $freshnessThreshold = $servicetemplate->get('freshness_threshold');
+                }
+
+                $checkInterval = $service->get('check_interval');
+                if ($checkInterval === null || $checkInterval === '' || $checkInterval === 0) {
+                    $checkInterval = $servicetemplate->get('check_interval');
+                }
+
+                $checkInterval = (int)$checkInterval;
+
+                if ($host->isSatelliteHost() === true) {
+                    // Service is checked by a satellite system
+                    // Add freshness check on the master instance
+
+                    $content .= $this->addContent('check_freshness', 1, 1);
+                    if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                    } else {
+                        $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                    }
+                } else {
+                    // Service is in the master instance
+                    // Passive service on the master system
+                    if ($service->get('freshness_checks_enabled') !== null) {
+                        $content .= $this->addContent('check_freshness', 1, $service->get('freshness_checks_enabled'));
+                    }
+                    if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold);
+                    }
+                }
+                /* Freshness checks ends */
 
                 $content .= PHP_EOL;
                 $content .= $this->addContent(';Notification settings:', 1);
@@ -1423,7 +1468,7 @@ class NagiosConfigGenerator {
                 $commandId = $service->get('command_id');
             }
             $commandUuid = $this->CommandUuidsCache->get($commandId);
-            $commandarguments = $service->getCommandargumentValuesForCfg();
+            $commandarguments = $service->getCommandargumentValuesForCfg($servicetemplate);
             $content .= $this->addContent('check_command', 1, sprintf(
                 '%s!%s; %s',
                 $commandUuid,
@@ -1492,16 +1537,23 @@ class NagiosConfigGenerator {
 
         $content .= $this->addContent('passive_checks_enabled', 1, 1);
 
-
-        if ($service->get('freshness_checks_enabled') > 0) {
-            $content .= $this->addContent('check_freshness', 1, 1);
-
-            $freshnessThreshold = $service->get('freshness_threshold');
-            if ($freshnessThreshold === null || $freshnessThreshold === '' || $freshnessThreshold === 0) {
-                $freshnessThreshold = (int)$servicetemplate->get('freshness_threshold');
-            }
-            $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
+        /* Freshness checks starts */
+        $freshnessChecksEnabled = $service->get('freshness_checks_enabled');
+        if ($freshnessChecksEnabled === null) {
+            $freshnessChecksEnabled = $servicetemplate->get('freshness_checks_enabled');
         }
+        $freshnessThreshold = $service->get('freshness_threshold');
+        if ($freshnessThreshold === null) {
+            $freshnessThreshold = $servicetemplate->get('freshness_threshold');
+        }
+        if ($freshnessChecksEnabled > 0) {
+            $content .= $this->addContent('check_freshness', 1, 1);
+            if ($freshnessThreshold > 0) {
+                $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
+            }
+        }
+
+        /* Freshness checks ends */
 
         $content .= PHP_EOL;
         $content .= $this->addContent(';Notification settings:', 1);
@@ -2515,6 +2567,7 @@ class NagiosConfigGenerator {
     }
 
     public function deleteHostPerfdata() {
+        return true; // @todo fix me
         $basePath = Configure::read('rrd.path');
 
         /** @var $DeletedHostsTable DeletedHostsTable */
@@ -2551,6 +2604,7 @@ class NagiosConfigGenerator {
     }
 
     public function deleteServicePerfdata() {
+        return true; // @todo fix me
         $basePath = Configure::read('rrd.path');
 
         /** @var $DeletedServicesTable DeletedServicesTable */
@@ -2716,33 +2770,24 @@ class NagiosConfigGenerator {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-        /** @var AgenthostscacheTable $AgenthostscacheTable */
-        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
-        /** @var $AgentconfigsTable AgentconfigsTable */
-        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         try {
             $servicetemplate = $ServicetemplatesTable->getServicetemplateByName('OITC_AGENT_ACTIVE', OITC_AGENT_SERVICE);
             $servicetemplateId = $servicetemplate->get('id');
-            $hosts = $HostsTable->getHostsThatUseOitcAgentForExport();
+            $hosts = $HostsTable->getHostsThatUseOitcAgentInPullModeForExport();
 
             foreach ($hosts as $host) {
-                $hostId = $host['id'];
-                /* Erstelle CHECK_AGENT_ACTIVE Service ...
-                 * wenn der Host keinen CHECK_AGENT_ACTIVE Service hat!
-                 * und keinen Push Eintrag in $AgenthostscacheTable oder
-                 *      einen Push Eintrag in $AgentconfigsTable und
-                 *      ein Eintrag in $AgentconfigsTable und zwischenzeitlich KEIN Push bemerkt wurde.
-                 */
-                if (!$HostsTable->hasHostServiceFromServicetemplateId($hostId, $servicetemplateId) &&
-                    (!$AgenthostscacheTable->existsByHostuuid($host['uuid']) ||
-                        ($AgentconfigsTable->existsByHostId($hostId) && !$AgentconfigsTable->pushNoticedForHost($hostId)))) {
-                    //Create active oITC Agent check
+                $usedServicetemplateIds = Hash::combine($host['services'], '{n}.servicetemplate_id', '{n}.servicetemplate_id');
+
+                //Make sure the host has agent services and has not the ACTIVE check already
+                if (!empty($host['services']) && !isset($usedServicetemplateIds[$servicetemplateId])) {
+                    // Create CHECK_AGENT_ACTIVE
+
                     $serviceData = [
                         'uuid'               => UUID::v4(),
-                        'host_id'            => $hostId,
+                        'host_id'            => $host['id'],
                         'servicetemplate_id' => $servicetemplateId,
                         'service_type'       => OITC_AGENT_SERVICE,
 
@@ -2751,22 +2796,6 @@ class NagiosConfigGenerator {
 
                     $service = $ServicesTable->newEntity($serviceData);
                     $ServicesTable->save($service);
-                }
-
-                /* Lösche CHECK_AGENT_ACTIVE Service ...
-                 * wenn der Host einen CHECK_AGENT_ACTIVE Service hat!
-                 * und einen Push Eintrag in $AgenthostscacheTable und
-                 *      keinen Eintrag in $AgentconfigsTable oder
-                 *          ein Eintrag in $AgentconfigsTable und
-                 *          zwischenzeitlich EIN Push bemerkt wurde.
-                 */
-                if ($HostsTable->hasHostServiceFromServicetemplateId($hostId, $servicetemplateId) &&
-                    $AgenthostscacheTable->existsByHostuuid($host['uuid']) &&
-                    (!$AgentconfigsTable->existsByHostId($hostId) ||
-                        ($AgentconfigsTable->existsByHostId($hostId) && $AgentconfigsTable->pushNoticedForHost($hostId)))) {
-                    //Remove active oITC Agent check
-                    $services = $ServicesTable->getServicesOfHostByServicetemplateId($hostId, $servicetemplateId);
-                    $ServicesTable->deleteMany($services);
                 }
             }
 
@@ -2779,74 +2808,142 @@ class NagiosConfigGenerator {
     private function createOitcAgentJsonConfig() {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         /** @var ProxiesTable $ProxiesTable */
         $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
         $proxySettings = $ProxiesTable->getSettings();
+        $proxyAddress = $proxySettings['ipaddress'] . ':' . $proxySettings['port'];
+
+        $isSystemsettingsProxyEnabled = false;
+        if ($proxySettings['enabled']) {
+            $isSystemsettingsProxyEnabled = true;
+        }
 
         $hosts = $HostsTable->getHostsThatUseOitcAgentForExport();
         if (empty($hosts)) {
             return;
         }
 
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateByName('OITC_AGENT_ACTIVE', OITC_AGENT_SERVICE);
+        $servicetemplateId = $servicetemplate->get('id');
+
+        $configDir = '/opt/openitc/receiver/etc/';
         $configFile = sprintf('/opt/openitc/receiver/etc/production_%s.json', date('Y-m-d-H-i-s'));
         $outfile = '/opt/openitc/receiver/etc/production.json';
-        $config = [];
-        foreach ($hosts as $hostId => $host) {
+        $jsonConfig = [];
+        foreach ($hosts as $host) {
             $hostUuid = $host['uuid'];
+            $agentConfigAsJsonFromDatabase = $host['_matchingData']['Agentconfigs']['config'];
+            $isOldAgent1Config = false;
 
-            if (!empty($host['agentconfig']) || !empty($host['agenthostscache'])) {
-                $services = $ServicesTable->getAllOitcAgentServicesByHostIdForExport($hostId);
+            if ($agentConfigAsJsonFromDatabase === '') {
+                // DB record exists but no json config
+                // Old 1.x agent config
 
-                if (!empty($services)) {
-                    if (!empty($host['agentconfig']) && $host['agentconfig']['push_noticed'] == 0) {
-                        $config[$hostUuid] = [
-                            'name'       => $host['name'],
-                            'address'    => $host['address'],
-                            'uuid'       => $hostUuid,
-                            'port'       => $host['agentconfig'] && $host['agentconfig']['port'] ? $host['agentconfig']['port'] : '',
-                            'proxy'      => $host['agentconfig'] && $host['agentconfig']['proxy'] && $host['agentconfig']['proxy'] == 1 && $proxySettings['ipaddress'] != '' ? $proxySettings['ipaddress'] . ':' . $proxySettings['port'] : '',
-                            'use_https'  => $host['agentconfig'] && $host['agentconfig']['use_https'] ? $host['agentconfig']['use_https'] : '',
-                            'insecure'   => $host['agentconfig'] && $host['agentconfig']['insecure'] ? $host['agentconfig']['insecure'] : '',
-                            'basic_auth' => $host['agentconfig'] && $host['agentconfig']['basic_auth'] ? $host['agentconfig']['basic_auth'] : '',
-                            'username'   => $host['agentconfig'] && $host['agentconfig']['username'] ? $host['agentconfig']['username'] : '',
-                            'password'   => $host['agentconfig'] && $host['agentconfig']['password'] ? $host['agentconfig']['password'] : '',
-                            'mode'       => 'pull',
-                            'checks'     => []
-                        ];
-                    } else if (!empty($host['agenthostscache'])) {
-                        $config[$hostUuid] = [
-                            'name'    => $host['name'],
-                            'address' => $host['address'],
-                            'uuid'    => $hostUuid,
-                            'mode'    => 'push',
-                            'checks'  => []
-                        ];
+                $record = $AgentconfigsTable->getConfigByHostId($host['id']);
+                $agentConfigAsJsonFromDatabase = $record->config;
+                $isOldAgent1Config = true;
+            }
+
+            $AgentConfiguration = new AgentConfiguration();
+            $config = $AgentConfiguration->unmarshal($agentConfigAsJsonFromDatabase);
+            if ($isOldAgent1Config === true && isset($record)) {
+                // Migrate old config from agent 1.x to 3.x
+                $config['int']['bind_port'] = (int)$record->port;
+                $config['bool']['use_http_basic_auth'] = $record->basic_auth;
+                $config['string']['username'] = $record->username;
+                $config['string']['password'] = $record->password;
+                $config['int']['bind_port'] = (int)$record->port;
+                $config['bool']['use_proxy'] = $record->proxy;
+                $config['bool']['enable_push_mode'] = false;
+                if ($record->push_noticed) {
+                    $config['bool']['enable_push_mode'] = true;
+                }
+            }
+            unset($record);
+
+            $services = $ServicesTable->getAllOitcAgentServicesByHostIdForExport($host['id']);
+            if (!empty($services)) {
+                //Host is Agent host and has agent services - write to config
+
+                if ($config['bool']['enable_push_mode'] === true) {
+                    // Agent is running in Push Mode
+                    $jsonConfig[$hostUuid] = [
+                        'name'    => $host['name'],
+                        'address' => $host['address'],
+                        'uuid'    => $hostUuid,
+                        'mode'    => 'push',
+                        'checks'  => []
+                    ];
+                } else {
+                    // Host is running in Pull Mode
+                    $proxy = false;
+                    if ($config['bool']['use_proxy'] && $isSystemsettingsProxyEnabled) {
+                        $proxy = $proxyAddress;
                     }
 
-                    foreach ($services as $service) {
-                        $servicename = $service['name'];
-                        if ($servicename === null || $servicename === '') {
-                            $servicename = $service['servicetemplate']['name'];
-                        }
+                    $jsonConfig[$hostUuid] = [
+                        'name'        => $host['name'],
+                        'address'     => $host['address'],
+                        'uuid'        => $hostUuid,
+                        'port'        => $config['int']['bind_port'],
+                        'proxy'       => $proxy,
+                        'use_autossl' => $config['bool']['use_autossl'],
+                        'use_https'   => $config['bool']['use_https'],
+                        'insecure'    => $config['bool']['use_https_verify'] === false,
+                        'basic_auth'  => $config['bool']['use_http_basic_auth'],
+                        'username'    => $config['string']['username'],
+                        'password'    => $config['string']['password'],
+                        'mode'        => 'pull',
+                        'checks'      => []
+                    ];
+                }
 
-                        $config[$hostUuid]['checks'][] = [
-                            'plugin'      => $service['servicetemplate']['agentcheck']['plugin_name'],
-                            'servicename' => $servicename,
-                            'uuid'        => $service['uuid'],
-                            'args'        => $service['args_for_config']
-                        ];
+                foreach ($services as $service) {
+                    // Ignore OITC_AGENT_ACTIVE service
+                    if ($service['servicetemplate_id'] == $servicetemplateId) {
+                        continue;
                     }
+
+                    $servicename = $service['name'];
+                    if ($servicename === null || $servicename === '') {
+                        $servicename = $service['servicetemplate']['name'];
+                    }
+
+                    $jsonConfig[$hostUuid]['checks'][] = [
+                        'plugin'      => $service['servicetemplate']['agentcheck']['plugin_name'],
+                        'servicename' => $servicename,
+                        'uuid'        => $service['uuid'],
+                        'args'        => $service['args_for_config']
+                    ];
                 }
             }
         }
 
-        file_put_contents($configFile, json_encode($config, JSON_PRETTY_PRINT));
+        // Store new openitcockpit-receiver json configuration
+        file_put_contents($configFile, json_encode($jsonConfig, JSON_PRETTY_PRINT));
 
         if (file_exists($outfile)) {
             unlink($outfile);
         }
+
         symlink($configFile, $outfile);
+
+        // Delete old files
+        $Finder = new Finder();
+        $Finder
+            ->name('*.json')
+            ->date('until 10 days ago');
+        foreach ($Finder->in($configDir) as $file) {
+            /** @var SplFileInfo $file */
+            unlink($file->getRealPath());
+        }
+
     }
 }

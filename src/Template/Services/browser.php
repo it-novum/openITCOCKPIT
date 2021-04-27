@@ -483,6 +483,17 @@ use Cake\Core\Plugin;
                                                     </code>
                                                 </td>
                                             </tr>
+                                            <tr  ng-show="servicestatus.currentState > 0">
+                                                <td>
+                                                    <?php echo __('Last time'); ?>
+                                                    <span class="badge badge-success" style="margin-right: 2px;">
+                                                        OK
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {{ servicestatus.last_time_ok }}
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
 
@@ -948,6 +959,59 @@ use Cake\Core\Plugin;
 
                                     <div class="col-lg-12">
                                         <table class="table table-bordered table-sm">
+                                            <tr>
+                                                <td><?php echo __('Container'); ?></td>
+
+                                                <td>
+                                                    <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
+                                                        <span ng-repeat="container in mainContainer">
+                                                                /
+                                                                <a ui-sref="BrowsersIndex({containerId: container.id})"
+                                                                   ng-if="container.id != null">
+                                                                    {{container.name}}
+                                                                </a>
+
+                                                                <span ng-if="container.id === null">
+                                                                    {{container.name}}
+                                                                </span>
+                                                            </span>
+                                                    <?php else: ?>
+                                                        <span ng-repeat="container in mainContainer">
+                                                                /
+                                                            {{container.name}}
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo __('Shared containers'); ?></td>
+                                                <td>
+
+                                                    <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
+                                                        <div ng-repeat="sharing in sharedContainers">
+                                                            <span ng-repeat="container in sharing">
+                                                                /
+                                                                <a ui-sref="BrowsersIndex({containerId: container.id})"
+                                                                   ng-if="container.id != null">
+                                                                    {{container.name}}
+                                                                </a>
+
+                                                                <span ng-if="container.id === null">
+                                                                    {{container.name}}
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div ng-repeat="sharing in sharedContainers">
+                                                            <span ng-repeat="container in sharing">
+                                                                /
+                                                                {{container.name}}
+                                                            </span>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
                                             <tr ng-show="tags.length">
                                                 <td><?php echo __('Tags'); ?></td>
                                                 <td>
@@ -966,6 +1030,12 @@ use Cake\Core\Plugin;
                                                     ></satellite-name>
                                                 </td>
                                             </tr>
+
+                                            <tr ng-show="host.Host.is_satellite_host === false">
+                                                <td><?php echo __('Satellite'); ?></td>
+                                                <td>
+                                                    <?php if (isset($masterInstanceName)) echo h($masterInstanceName); ?>
+                                                </td>
 
                                             <tr ng-show="mergedService.notes">
                                                 <td><?php echo __('Notes'); ?></td>

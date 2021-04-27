@@ -143,7 +143,7 @@ class ServiceComparisonForSave {
 
         //Add service default data
         $data['service_type'] = $this->service['service_type'] ?? GENERIC_SERVICE;
-        $data['usage_flag'] = 0;
+        $data['usage_flag'] = $this->service['usage_flag'] ?? 0;
         $data['own_contacts'] = (int)$this->hasOwnContacts;
         $data['own_contactgroups'] = (int)$this->hasOwnContacts;
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
@@ -605,13 +605,13 @@ class ServiceComparisonForSave {
         return $this->service['serviceeventcommandargumentvalues'];
     }
 
-    public static function getServiceSkeleton($hostId, $servicetemplateId) {
+    public static function getServiceSkeleton($hostId, $servicetemplateId, $serviceTypeId = GENERIC_SERVICE) {
         return [
 
             //Static service default data
             'host_id'             => $hostId,
             'servicetemplate_id'  => $servicetemplateId,
-            'service_type'        => GENERIC_SERVICE,
+            'service_type'        => $serviceTypeId,
             'usage_flag'          => 0,
             'own_contacts'        => 0,
             'own_contactgroups'   => 0,
