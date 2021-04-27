@@ -28,8 +28,8 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
             $scope.filter = {
                 DowntimeService: {
                     comment_data: '',
-                    was_cancelled: 0,
-                    was_not_cancelled: 0
+                    was_cancelled: false,
+                    was_not_cancelled: false
                 },
                 Host: {
                     name: ''
@@ -47,8 +47,9 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
                     $scope.filter.DowntimeService = result.data.config.DowntimeService;
-                    $scope.filter.DowntimeService.was_cancelled = result.data.config.DowntimeService.was_cancelled ? 1 : 0;
-                    $scope.filter.DowntimeService.was_not_cancelled = result.data.config.DowntimeService.was_not_cancelled ? 1 : 0;
+                    $scope.filter.DowntimeService.was_cancelled = result.data.config.DowntimeService.was_cancelled ? true : false;
+                    $scope.filter.DowntimeService.was_not_cancelled = result.data.config.DowntimeService.was_not_cancelled ? true : false;
+                    $scope.filter.DowntimeService.comment_data = result.data.config.DowntimeService.comment_data;
                     $scope.filter.isRunning = result.data.config.isRunning ? 1 : 0;
                     $scope.filter.hideExpired = result.data.config.hideExpired ? 1 : 0;
                     $scope.direction = result.data.config.direction;
@@ -72,11 +73,10 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                 options = options || {};
                 options.save = options.save || false;
 
-                var wasCancelled = 0;
+                var wasCancelled = '';
                 if($scope.filter.DowntimeService.was_cancelled ^ $scope.filter.DowntimeService.was_not_cancelled){
-                    wasCancelled = $scope.filter.DowntimeService.was_cancelled === 1 ? 1 : 0;
+                    wasCancelled = $scope.filter.DowntimeService.was_cancelled === true;
                 }
-
                 var params = {
                     'angular': true,
                     'scroll': $scope.useScroll,
@@ -88,7 +88,8 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                     'filter[Hosts.name]': $scope.filter.Host.name,
                     'filter[servicename]': $scope.filter.Service.name,
                     'filter[hideExpired]': $scope.filter.hideExpired,
-                    'filter[isRunning]': $scope.filter.isRunning
+                    'filter[isRunning]': $scope.filter.isRunning,
+                    'limit': $scope.limit
                 };
 
                 $http.get("/downtimes/service.json", {
@@ -97,9 +98,8 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                     $scope.downtimes = result.data.all_service_downtimes;
                     $scope.paging = result.data.paging;
                     $scope.scroll = result.data.scroll;
-
                     if(options.save === true){
-                        saveSettings(params);
+                        $scope.saveSettings(params);
                     }
                     if($scope.useScroll){
                         $scope.startScroll();
@@ -174,12 +174,11 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
             };
 
             var getLimit = function(height){
-                height = height - 34 - 128 - 61 - 10 - 37; //Unit: px
-                //                ^ widget Header
-                //                     ^ Widget filter
-                //                           ^ Paginator
-                //                                ^ Margin between header and table
-                //                                     ^ Table header
+                height = height - 42 - 61 - 10 - 37; //Unit: px
+                //                ^ Widget play/pause div
+                //                     ^ Paginator
+                //                          ^ Margin between header and table
+                //                                ^ Table header
 
                 var limit = Math.floor(height / 36); // 36px = table row height;
                 if(limit <= 0){
@@ -188,11 +187,19 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                 return limit;
             };
 
-            var saveSettings = function(){
+            $scope.saveSettings = function(){
                 var settings = $scope.filter;
                 settings['scroll_interval'] = $scope.scroll_interval;
                 settings['useScroll'] = $scope.useScroll;
+                settings['sort'] = $scope.sort;
+                settings['direction'] = $scope.direction;
                 $http.post("/dashboards/servicesDowntimeWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
+                    $scope.currentPage = 1;
+                    loadWidgetConfig();
+                    $scope.hideConfig();
+                    if($scope.init === true){
+                        return true;
+                    }
                     return true;
                 });
             };
@@ -208,20 +215,17 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                 }
             };
 
+            $scope.hideConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_IN');
+            };
+            $scope.showConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_OUT');
+                $scope.load();
+            };
+
             $scope.limit = getLimit($widget.height());
 
             loadWidgetConfig();
-
-            $scope.$watch('filter', function(){
-                $scope.currentPage = 1;
-                if($scope.init === true){
-                    return true;
-                }
-
-                $scope.load({
-                    save: true
-                });
-            }, true);
 
             $scope.$watch('scroll_interval', function(){
                 $scope.pagingTimeString = getTimeString();
@@ -230,6 +234,15 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                 }
                 $scope.pauseScroll();
                 $scope.startScroll();
+                $scope.load({
+                    save: true
+                });
+            });
+
+            $scope.$watch('sort', function(){
+                if($scope.init === true){
+                    return true;
+                }
                 $scope.load({
                     save: true
                 });
