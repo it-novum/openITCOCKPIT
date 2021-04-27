@@ -8,12 +8,13 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use TelegramModule\Lib\TelegramActions;
 
 /**
  * TelegramModule command.
  */
-class TelegramProcessUpdatesCommand extends Command {
+class TelegramProcessUpdatesCommand extends Command implements CronjobInterface {
 
     /**
      * @param ConsoleOptionParser $parser
@@ -34,13 +35,20 @@ class TelegramProcessUpdatesCommand extends Command {
      * @param ConsoleIo $io
      */
     public function execute(Arguments $args, ConsoleIo $io) {
+        $token = null;
         if ($args->hasOption('api-token') && $args->getOption('api-token') != '') {
             $token = $args->getOption('api-token');
         }
 
-        $TelegramActions = new TelegramActions(isset($token) && $token !== "" ? $token : null);
-        if (!$TelegramActions->isTwoWayWebhookEnabled()) {
+        $TelegramActions = new TelegramActions($token);
+
+        if ($TelegramActions->hasToken() === false) {
+            $io->error(__d('oitc_console', 'No telegram bot token configured!'));
+        }
+
+        if (!$TelegramActions->isTwoWayWebhookEnabled() && $TelegramActions->hasToken()) {
             $TelegramActions->processUpdates($TelegramActions->getUpdates());
         }
+        $io->hr();
     }
 }

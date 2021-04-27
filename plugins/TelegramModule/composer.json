@@ -4,7 +4,6 @@
     "type": "cakephp-plugin",
     "license": "MIT",
     "require": {
-        "cakephp/cakephp": "^4.0",
         "telegram-bot/api": "^2.3"
     },
     "require-dev": {
@@ -18,8 +17,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "TelegramModule\\Test\\": "tests/",
-            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+            "TelegramModule\\Test\\": "tests/"
         }
     }
 }

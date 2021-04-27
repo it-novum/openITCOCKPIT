@@ -32,8 +32,12 @@ class TelegramActions {
     /**
      * @var BotApi
      */
-    private $bot = BotApi::class;
+    private $bot;
 
+    /**
+     * TelegramActions constructor.
+     * @param string|null $tokenOverwrite
+     */
     public function __construct(string $tokenOverwrite = null) {
         $this->TelegramChatsTable = TableRegistry::getTableLocator()->get('TelegramModule.TelegramChats');
         $this->TelegramSettingsTable = TableRegistry::getTableLocator()->get('TelegramModule.TelegramSettings');
@@ -43,10 +47,14 @@ class TelegramActions {
         $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
         $this->proxySettings = $ProxiesTable->getSettings();
 
-        $this->token = $tokenOverwrite != null ? $tokenOverwrite : $this->telegramSettings->get('token');
+        $this->token = $this->telegramSettings->get('token');
+        if ($tokenOverwrite != null) {
+            $this->token = $tokenOverwrite;
+        }
+
         if (!$this->token || $this->token == '') {
-            echo __d('oitc_console', 'No telegram bot token configured!') . PHP_EOL;
-            return 1;
+            // No token configured
+            return false;
         }
 
         $this->bot = new BotApi($this->token);
@@ -58,6 +66,17 @@ class TelegramActions {
         if ($this->telegramSettings->get('last_update_id') > 0) {
             $this->updateOffset = $this->telegramSettings->get('last_update_id');
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasToken() {
+        if (!$this->token || $this->token == '') {
+            return false;
+        }
+
+        return true;
     }
 
     /**
