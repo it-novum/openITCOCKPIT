@@ -180,7 +180,7 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                 //                          ^ Margin between header and table
                 //                                ^ Table header
 
-                var limit = Math.floor(height / 50); // 50px = table row height;
+                var limit = Math.floor(height / 36); // 36px = table row height;
                 if(limit <= 0){
                     limit = 1;
                 }
