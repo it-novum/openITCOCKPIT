@@ -24,6 +24,8 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramModule\Model\Table\TelegramChatsTable;
 use TelegramModule\Model\Table\TelegramSettingsTable;
 
+require_once __DIR__ . DS . '..' . DS . '..' . DS . 'vendor' . DS . 'autoload.php';
+
 /**
  * TelegramModule command.
  */
@@ -94,7 +96,7 @@ class TelegramNotificationCommand extends Command {
     /**
      * @var BotApi
      */
-    private $bot = BotApi::class;
+    private $bot;
 
     /**
      * @var \Cake\Datasource\ResultSetInterface
