@@ -5,6 +5,7 @@ angular.module('openITCOCKPIT')
         $scope.isLdapUser = false;
         $scope.localeOptions = [];
 
+
         var getContainerName = function(containerId){
             containerId = parseInt(containerId, 10);
             for(var index in $scope.containers){
@@ -47,6 +48,18 @@ angular.module('openITCOCKPIT')
                     };
                 }
                 data.ContainersUsersMemberships = {};
+                var apikeys = [];
+                if(data.apikeys.length > 0){
+                    for(var i in data.apikeys){
+                        apikeys.push({
+                            id: data.apikeys[i].id,
+                            apikey: data.apikeys[i].apikey,
+                            description: data.apikeys[i].description,
+                            index: parseInt(i, 10)
+                        });
+                    }
+                    data.apikeys = apikeys;
+                }
 
                 $scope.post = {
                     User: data
@@ -61,6 +74,30 @@ angular.module('openITCOCKPIT')
                     $state.go('404');
                 }
             });
+        };
+        $scope.createApiKey = function(index){
+            $http.get("/profile/create_apikey.json?angular=true")
+                .then(function(result){
+                    $scope.post.User.apikeys[index].apikey = result.data.apikey;
+                });
+        };
+
+        $scope.addApikey = function(){
+            $scope.post.User.apikeys.push({
+                apikey: '',
+                description: '',
+                index: $scope.post.User.apikeys.length + 1
+            });
+        };
+
+        $scope.removeApikey = function(index){
+            var apikeys = [];
+            for(var i in $scope.post.User.apikeys){
+                if($scope.post.User.apikeys[i]['index'] !== index){
+                    apikeys.push($scope.post.User.apikeys[i]);
+                }
+            }
+            $scope.post.User.apikeys = apikeys;
         };
 
         $scope.loadUserContaineRoles = function(){
@@ -155,7 +192,16 @@ angular.module('openITCOCKPIT')
                 ContainersUsersMemberships[containerId] = $scope.selectedUserContainerWithPermission[containerId].permission_level;
             }
             $scope.post.User.ContainersUsersMemberships = ContainersUsersMemberships;
-
+            var apikeys = [];
+            var apikeysTmp = $scope.post.User.apikeys;
+            if($scope.post.User.apikeys.length > 0){
+                for(var i in $scope.post.User.apikeys){
+                    if($scope.post.User.apikeys[i].apikey != ''){
+                        apikeys.push($scope.post.User.apikeys[i]);
+                    }
+                }
+                $scope.post.User.apikeys = apikeys;
+            }
             $http.post("/users/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -172,6 +218,7 @@ angular.module('openITCOCKPIT')
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
+                    $scope.post.User.apikeys = apikeysTmp;
                 }
             });
         };
@@ -238,5 +285,6 @@ angular.module('openITCOCKPIT')
 
         $scope.loadUsergroups();
         $scope.loadDateformats();
+
 
     });
