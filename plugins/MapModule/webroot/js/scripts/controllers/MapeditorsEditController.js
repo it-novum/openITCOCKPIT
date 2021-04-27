@@ -26,6 +26,11 @@ angular.module('openITCOCKPIT')
 
         };
 
+        $scope.helplines = {
+            enabled: true,
+            size: 15
+        };
+
         $scope.addLink = false;
 
         $scope.uploadIconSet = false;
@@ -1428,6 +1433,7 @@ angular.module('openITCOCKPIT')
                         var startPosition = $(this).position();
                         var currentLeftOffset = (Math.round(startPosition.left)) % $scope.Mapeditor.grid.size;
                         var currentTopOffset = (Math.round(startPosition.top)) % $scope.Mapeditor.grid.size;
+
                         if(currentLeftOffset > 0 || currentTopOffset > 0){
                             $(this).css({
                                 'left': Math.round(startPosition.left - currentLeftOffset) + 'px',
@@ -1803,4 +1809,5 @@ angular.module('openITCOCKPIT')
             }
             saveMapeditorSettings();
         }, true);
+
     });
