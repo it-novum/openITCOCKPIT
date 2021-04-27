@@ -31,6 +31,7 @@ use Cake\Datasource\FactoryLocator;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Composer\Autoload\ClassLoader;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -89,6 +90,9 @@ class PluginManager {
             );
             $this->application->addPlugin($moduleName);
 
+            if (is_file(PLUGIN . $moduleName . DS . 'vendor/autoload.php')) {
+                require PLUGIN . $moduleName . DS . 'vendor/autoload.php';
+            }
 
             $pluginAssociationsFile = PLUGIN . $moduleName . DS . 'config' . DS . 'associations.php';
             if (file_exists($pluginAssociationsFile)) {
