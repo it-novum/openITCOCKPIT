@@ -472,9 +472,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <!--label></label-->
                                 <div class="input-group mb-3">
                                     <input type="text" class="form-control col-lg-4 mr-2"
-                                           ng-model="post.User.apikeys[index].description" maxlength="255"
+                                           ng-model="apikey.description" maxlength="255"
                                            id="description_{{ index }}">
-                                    <input ng-model="post.User.apikeys[index].apikey"
+                                    <input ng-model="apikey.apikey"
                                            class="form-control col-lg-6"
                                            readonly
                                            maxlength="255"
@@ -490,7 +490,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                         </button>
                                     </div>
                                     <button class="btn btn-danger btn-sm waves-effect waves-themed ml-2" type="button"
-                                            ng-click="removeApikey(apikey.index)">
+                                            ng-click="removeApikey(index)">
                                         <i class="fa fa-trash fa-lg"></i>
                                     </button>
                                 </div>
