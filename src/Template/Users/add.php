@@ -202,6 +202,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
+
                         <?php if ($isOAuth2): ?>
                             <div class="form-group" ng-class="{'has-error': errors.is_oauth}">
                                 <div class="custom-control custom-checkbox  margin-bottom-10"

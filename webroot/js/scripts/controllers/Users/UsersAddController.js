@@ -262,4 +262,3 @@ angular.module('openITCOCKPIT')
         $scope.loadDateformats();
         $scope.loadLocaleOptions();
     });
-
