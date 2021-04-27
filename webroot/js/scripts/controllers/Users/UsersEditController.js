@@ -75,6 +75,7 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
+
         $scope.createApiKey = function(index){
             $http.get("/profile/create_apikey.json?angular=true")
                 .then(function(result){
@@ -86,18 +87,19 @@ angular.module('openITCOCKPIT')
             $scope.post.User.apikeys.push({
                 apikey: '',
                 description: '',
-                index: $scope.post.User.apikeys.length + 1
             });
+
+            // Query new API Key from Server
+            var index = $scope.post.User.apikeys.length;
+            if( index > 0 ) {
+                // Array is not empty so current array index is lenght - 1, arrays start at 0
+                index = index - 1;
+            }
+            $scope.createApiKey(index);
         };
 
         $scope.removeApikey = function(index){
-            var apikeys = [];
-            for(var i in $scope.post.User.apikeys){
-                if($scope.post.User.apikeys[i]['index'] !== index){
-                    apikeys.push($scope.post.User.apikeys[i]);
-                }
-            }
-            $scope.post.User.apikeys = apikeys;
+            $scope.post.User.apikeys.splice(index, 1);
         };
 
         $scope.loadUserContaineRoles = function(){
