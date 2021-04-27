@@ -37,6 +37,7 @@ angular.module('openITCOCKPIT')
                         _ids: []
                     },
                     ContainersUsersMemberships: {},
+                    apikeys: []
                 }
             };
         };
@@ -78,6 +79,32 @@ angular.module('openITCOCKPIT')
                 $scope.ldapUsers = result.data.ldapUsers;
                 $scope.init = false;
             });
+        };
+
+        $scope.createApiKey = function(index){
+            $http.get("/profile/create_apikey.json?angular=true")
+                .then(function(result){
+                    $scope.post.User.apikeys[index].apikey = result.data.apikey;
+                });
+        };
+
+        $scope.addApikey = function(){
+            $scope.post.User.apikeys.push({
+                apikey: '',
+                description: '',
+            });
+
+            // Query new API Key from Server
+            var index = $scope.post.User.apikeys.length;
+            if( index > 0 ) {
+                // Array is not empty so current array index is lenght - 1, arrays start at 0
+                index = index - 1;
+            }
+            $scope.createApiKey(index);
+        };
+
+        $scope.removeApikey = function(index){
+            $scope.post.User.apikeys.splice(index, 1);
         };
 
         $scope.loadUserContaineRoles = function(){
@@ -160,6 +187,16 @@ angular.module('openITCOCKPIT')
                 ContainersUsersMemberships[containerId] = $scope.selectedUserContainerWithPermission[containerId].permission_level;
             }
             $scope.post.User.ContainersUsersMemberships = ContainersUsersMemberships;
+            var apikeys = [];
+            var apikeysTmp = $scope.post.User.apikeys;
+            if($scope.post.User.apikeys.length > 0){
+                for(var i in $scope.post.User.apikeys){
+                    if($scope.post.User.apikeys[i].apikey != ''){
+                        apikeys.push($scope.post.User.apikeys[i]);
+                    }
+                }
+                $scope.post.User.apikeys = apikeys;
+            }
 
             $http.post("/users/addFromLdap.json?angular=true",
                 $scope.post
@@ -185,6 +222,7 @@ angular.module('openITCOCKPIT')
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
+                    $scope.post.User.apikeys = apikeysTmp;
                 }
             });
         };
