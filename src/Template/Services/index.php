@@ -441,13 +441,15 @@
                     </div>
                     <!-- End Filter -->
 
-                    <div class="frame-wrap">
+                    <div class="frame-wrap table-scroll">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
                                 <th colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
-                                    <i class="fa" ng-class="getSortClass('Servicestatus.current_state')"></i>
-                                    <?php echo __('State'); ?>
+                                    <div class="table-resize">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.current_state')"></i>
+                                        <?php echo __('State'); ?>
+                                    </div>
                                 </th>
 
                                 <th class="no-sort text-center">
@@ -477,30 +479,40 @@
                                 </th>
 
                                 <th class="no-sort" ng-click="orderBy('servicename')">
-                                    <i class="fa" ng-class="getSortClass('servicename')"></i>
-                                    <?php echo __('Service name'); ?>
+                                    <div class="table-resize">
+                                        <i class="fa" ng-class="getSortClass('servicename')"></i>
+                                        <?php echo __('Service name'); ?>
+                                    </div>
                                 </th>
 
 
                                 <th class="no-sort tableStatewidth"
                                     ng-click="orderBy('Servicestatus.last_state_change')">
-                                    <i class="fa" ng-class="getSortClass('Servicestatus.last_state_change')"></i>
-                                    <?php echo __('Last state change'); ?>
+                                    <div class="table-resize">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.last_state_change')"></i>
+                                        <?php echo __('Last state change'); ?>
+                                    </div>
                                 </th>
 
                                 <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.last_check')">
-                                    <i class="fa" ng-class="getSortClass('Servicestatus.last_check')"></i>
-                                    <?php echo __('Last check'); ?>
+                                    <div class="table-resize">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.last_check')"></i>
+                                        <?php echo __('Last check'); ?>
+                                    </div>
                                 </th>
 
                                 <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.next_check')">
-                                    <i class="fa" ng-class="getSortClass('Servicestatus.next_check')"></i>
-                                    <?php echo __('Next check'); ?>
+                                    <div class="table-resize">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.next_check')"></i>
+                                        <?php echo __('Next check'); ?>
+                                    </div>
                                 </th>
 
                                 <th class="no-sort" ng-click="orderBy('Servicestatus.output')">
-                                    <i class="fa" ng-class="getSortClass('Servicestatus.output')"></i>
-                                    <?php echo __('Service output'); ?>
+                                    <div class="table-resize">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.output')"></i>
+                                        <?php echo __('Service output'); ?>
+                                    </div>
                                 </th>
 
                                 <th class="no-sort text-center editItemWidth">

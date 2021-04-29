@@ -50,6 +50,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\TableConfigsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -122,6 +123,9 @@ class HostsController extends AppController {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->getContainersAsList($this->MY_RIGHTS);
 
         $satellites = [];
 
@@ -136,6 +140,7 @@ class HostsController extends AppController {
         if (!$this->isApiRequest()) {
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
+            $this->set('containers', $containers);
             //Only ship HTML template
             return;
         }
@@ -792,6 +797,12 @@ class HostsController extends AppController {
             }
             $this->set('host', $hostEntity);
             $this->viewBuilder()->setOption('serialize', ['host']);
+        }
+    }
+    public function dynamicTableConfig(){
+        if(!$this->request->is('get')){
+            /** @var  $TableConfigsTable TableConfigsTable */
+            $TableConfigsTable = TableRegistry::getTableLocator()->get('TableConfigs');
         }
     }
 

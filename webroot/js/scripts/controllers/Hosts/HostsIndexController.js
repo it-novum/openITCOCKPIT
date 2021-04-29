@@ -7,6 +7,8 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
         $scope.useScroll = true;
+        $scope.id = QueryStringService.getStateValue($stateParams, 'id', 1);
+        console.log($scope.id);
 
         filterHostname = QueryStringService.getStateValue($stateParams, 'hostname');
         filterAddress = QueryStringService.getStateValue($stateParams, 'address');
@@ -30,6 +32,7 @@ angular.module('openITCOCKPIT')
                     not_keywords: '',
                     address: (filterAddress) ? filterAddress : '',
                     satellite_id: [],
+                    container_id: [],
                     priority: {
                         1: false,
                         2: false,
@@ -45,6 +48,25 @@ angular.module('openITCOCKPIT')
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/hosts/delete/';
         $scope.deactivateUrl = '/hosts/deactivate/';
+        /*** Dynamic custom table ***/
+        $scope.dynamictable = {
+            custom_hoststatus:0,
+            custom_acknowledgement: 0,
+            custom_indowntime: 0,
+            custom_shared: 0,
+            custom_passive: 0,
+            custom_priority: 0,
+            custom_hostname:0,
+            custom_ip_address:0,
+            custom_last_change: 0,
+            custom_last_check: 0,
+            custom_host_output: 0,
+            custom_instance: 0,
+            custom_service_summary: 0,
+            custom_description: 1,
+            custom_container_name:1
+        }
+        /*** Dynamic custom table end ***/
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -86,6 +108,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
+                'filter[Hosts.container_id][]': $scope.filter.Host.container_id,
                 'filter[hostpriority][]': priorityFilter
             };
             if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
@@ -100,6 +123,17 @@ angular.module('openITCOCKPIT')
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
+        };
+
+        $scope.loadContainer = function(){
+            $http.get("/hosts/browser/"+ $scope.id + ".json", {
+                params: {
+                    angular: true
+                }
+            }).then(function(result){
+                $scope.mergedHost = result.data.mergedHost;
+                $scope.mainContainer = result.data.mainContainer;
+            })
         };
 
         $scope.triggerFilter = function(){
@@ -258,5 +292,6 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
+        $scope.loadContainer();
 
     });
