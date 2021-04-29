@@ -254,11 +254,22 @@ class HosttemplatesController extends AppController {
                 return;
             } else {
                 //No errors
+                $requestData = $this->request->getData();
+
+                /**
+                 * update dependent hosts if host template command has been changed and their
+                 * command arguments values are not empty
+                 */
+                if ($requestData['Hosttemplate']['command_id'] != $hosttemplateForChangeLog['Hosttemplate']['command_id'] &&
+                    !empty($hosttemplateForChangeLog['Hosttemplate']['hosttemplatecommandargumentvalues'])) {
+                    $oldCommandId = $hosttemplateForChangeLog['Hosttemplate']['command_id'];
+                    /** @var $HostsTable HostsTable */
+                    $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                    $HostsTable->updateHostCommandIdIfHostHasOwnCommandArguments($id, $oldCommandId);
+                }
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                $requestData = $this->request->getData();
-
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'hosttemplates',

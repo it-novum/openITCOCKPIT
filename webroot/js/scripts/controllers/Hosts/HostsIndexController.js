@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
 
         filterHostname = QueryStringService.getStateValue($stateParams, 'hostname');
+        filterAddress = QueryStringService.getStateValue($stateParams, 'address');
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -27,7 +28,7 @@ angular.module('openITCOCKPIT')
                     hostdescription: '',
                     keywords: '',
                     not_keywords: '',
-                    address: QueryStringService.getValue('filter[Hosts.address]', ''),
+                    address: (filterAddress) ? filterAddress : '',
                     satellite_id: [],
                     priority: {
                         1: false,
@@ -50,6 +51,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
+
             lastHostUuid = null;
             var hasBeenAcknowledged = '';
             var inDowntime = '';

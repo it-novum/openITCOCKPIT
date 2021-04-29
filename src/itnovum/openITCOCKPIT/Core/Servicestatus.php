@@ -506,4 +506,10 @@ class Servicestatus {
         $this->currentState = (int)$state;
     }
 
+    /**
+     * @param string $output
+     */
+    public function setOutput($output){
+        $this->output = $output;
+    }
 }

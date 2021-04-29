@@ -35,7 +35,6 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
-use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
@@ -278,6 +277,19 @@ class ServicetemplatesController extends AppController {
                 return;
             } else {
                 //No errors
+                $requestData = $this->request->getData();
+
+                /**
+                 * update dependent services if service template command has been changed and their
+                 * command arguments values are not empty
+                 */
+                if ($requestData['Servicetemplate']['command_id'] != $servicetemplateForChangeLog['Servicetemplate']['command_id'] &&
+                    !empty($servicetemplateForChangeLog['Servicetemplate']['servicetemplatecommandargumentvalues'])) {
+                    $oldCommandId = $servicetemplateForChangeLog['Servicetemplate']['command_id'];
+                    /** @var $ServicesTable ServicesTable */
+                    $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                    $ServicesTable->updateServiceCommandIdIfServiceHasOwnCommandArguments($id, $oldCommandId);
+                }
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
@@ -290,7 +302,7 @@ class ServicetemplatesController extends AppController {
                     $servicetemplateEntity->get('container_id'),
                     $User->getId(),
                     $servicetemplateEntity->template_name,
-                    array_merge($ServicetemplatesTable->resolveDataForChangelog($this->request->getData()), $this->request->getData()),
+                    array_merge($ServicetemplatesTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($ServicetemplatesTable->resolveDataForChangelog($servicetemplateForChangeLog), $servicetemplateForChangeLog)
                 );
                 if ($changelog_data) {

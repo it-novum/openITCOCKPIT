@@ -859,7 +859,7 @@ class ServicetemplatesTable extends Table {
         }
 
         $servicetemplates = $servicetemplatesWithLimit + $selectedServicetemplates;
-  
+
         asort($servicetemplates, SORT_FLAG_CASE | SORT_NATURAL);
         return $servicetemplates;
     }
@@ -1069,6 +1069,9 @@ class ServicetemplatesTable extends Table {
         return $this->find()
             ->contain([
                 'Servicegroups',
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
             ])
             ->where([
                 'Servicetemplates.id' => $id

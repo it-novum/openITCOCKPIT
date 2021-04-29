@@ -48,7 +48,9 @@ angular.module('openITCOCKPIT').directive('rescheduleService', function($http, S
                 if(attr.hasOwnProperty('callback')){
                     $scope.setServiceRescheduleCallback(attr.callback);
                 }
+                $(".page-inner").append($('#angularRescheduleServiceModal'));
                 $('#angularRescheduleServiceModal').modal('show');
+
                 $scope.doReschedule(objects);
             };
         }

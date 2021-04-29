@@ -17,6 +17,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
+            
             $http.get("/wizards/index.json", {
                 params: {
                     'angular': true

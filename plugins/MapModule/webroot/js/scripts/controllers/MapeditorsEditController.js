@@ -13,7 +13,20 @@ angular.module('openITCOCKPIT')
         $scope.maxZIndex = 0;
         $scope.clickCount = 1;
 
-        $scope.grid = {
+        $scope.Mapeditor = {
+            grid: {
+                enabled: true,
+                size: 15
+            },
+            helplines: {
+                enabled: true,
+                size: 15
+            },
+            synchronizeGridAndHelplinesSize: true
+
+        };
+
+        $scope.helplines = {
             enabled: true,
             size: 15
         };
@@ -26,7 +39,6 @@ angular.module('openITCOCKPIT')
 
         $scope.visableLayers = {};
 
-
         $scope.load = function(){
             $http.get("/map_module/mapeditors/edit/" + $scope.id + ".json", {
                 params: {
@@ -34,6 +46,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.map = result.data.map;
+                $scope.Mapeditor = result.data.config.Mapeditor;
                 $scope.maxUploadLimit = result.data.maxUploadLimit;
                 $scope.maxZIndex = result.data.max_z_index;
                 $scope.layers = result.data.layers;
@@ -1328,9 +1341,29 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changeGridSize = function(size){
-            $scope.grid.size = parseInt(size, 10);
-            if($scope.grid.enabled){
+            $scope.Mapeditor.grid.size = parseInt(size, 10);
+            if($scope.Mapeditor.synchronizeGridAndHelplinesSize){
+                if($scope.Mapeditor.grid.size != $scope.Mapeditor.helplines.size){
+                    $scope.changeHelplinesSize($scope.Mapeditor.grid.size);
+                }
+            }
+            if($scope.Mapeditor.grid.enabled){
                 makeDraggable();
+            }
+        };
+
+        $scope.changeHelplinesSize = function(size){
+            $scope.Mapeditor.helplines.size = parseInt(size, 10);
+            if($scope.Mapeditor.synchronizeGridAndHelplinesSize){
+                if($scope.Mapeditor.grid.size != $scope.Mapeditor.helplines.size){
+                    $scope.changeGridSize($scope.Mapeditor.helplines.size);
+                }
+            }
+        };
+
+        $scope.getHelplinesClass = function(){
+            if($scope.Mapeditor.helplines.enabled){
+                return 'helplines' + $scope.Mapeditor.helplines.size;
             }
         };
 
@@ -1360,7 +1393,6 @@ angular.module('openITCOCKPIT')
                     }
                 }
             }
-
         };
 
         $scope.showLayer = function(key){
@@ -1390,7 +1422,26 @@ angular.module('openITCOCKPIT')
         var makeDraggable = function(){
             var options = {
                 grid: false,
+                dynamic: false,
+                containment: 'parent',
+                drag: function(){
+                    $(this).css('opacity', '0.5'); // Semi-transparent while being dragged
+                    $(this).css('border', '2px dashed #4285F4');
+                },
                 stop: function(event){
+                    if($scope.Mapeditor.grid.enabled){
+                        var startPosition = $(this).position();
+                        var currentLeftOffset = (Math.round(startPosition.left)) % $scope.Mapeditor.grid.size;
+                        var currentTopOffset = (Math.round(startPosition.top)) % $scope.Mapeditor.grid.size;
+
+                        if(currentLeftOffset > 0 || currentTopOffset > 0){
+                            $(this).css({
+                                'left': Math.round(startPosition.left - currentLeftOffset) + 'px',
+                                'top': Math.round(startPosition.top - currentTopOffset) + 'px'
+                            });
+                        }
+                    }
+
                     var $this = $(this);
                     var x = $this.css('left');
                     var y = $this.css('top');
@@ -1398,6 +1449,8 @@ angular.module('openITCOCKPIT')
                     var type = $this.data('type');
                     x = parseInt(x.replace('px', ''), 10);
                     y = parseInt(y.replace('px', ''), 10);
+                    $(this).css('opacity', '1.0'); // Semi-transparent while being dragged
+                    $(this).css('border', 'none');
 
                     switch(type){
                         case 'item':
@@ -1483,10 +1536,10 @@ angular.module('openITCOCKPIT')
                 }
             };
 
-            if($scope.grid.enabled){
+            if($scope.Mapeditor.grid.enabled){
                 options['grid'] = [
-                    $scope.grid.size,
-                    $scope.grid.size
+                    $scope.Mapeditor.grid.size,
+                    $scope.Mapeditor.grid.size
                 ];
             }
 
@@ -1579,6 +1632,25 @@ angular.module('openITCOCKPIT')
                             genericError();
                     }
                 }
+            });
+        };
+
+        var saveMapeditorSettings = function(){
+            $http.post("/map_module/mapeditors/saveMapeditorSettings.json?angular=true",
+                {
+                    'Map': {
+                        id: $scope.id,
+                    },
+                    'Mapeditor': $scope.Mapeditor
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
             });
         };
 
@@ -1715,11 +1787,27 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
-        $scope.$watch('grid.enabled', function(){
+        $scope.$watch('Mapeditor.grid.enabled', function(){
             if($scope.init){
                 return;
             }
             makeDraggable();
+        }, true);
+
+        $scope.$watch('Mapeditor.synchronizeGridAndHelplinesSize', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.Mapeditor.synchronizeGridAndHelplinesSize && ($scope.Mapeditor.helplines.size != $scope.Mapeditor.grid.size)){
+                $scope.changeGridSize($scope.Mapeditor.helplines.size);
+            }
+        }, true);
+
+        $scope.$watch('Mapeditor', function(){
+            if($scope.init){
+                return;
+            }
+            saveMapeditorSettings();
         }, true);
 
     });

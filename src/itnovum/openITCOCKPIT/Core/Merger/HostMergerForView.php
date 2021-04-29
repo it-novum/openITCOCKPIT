@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core\Merger;
 
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\CustomVariableMerger;
 
 /**
@@ -250,7 +251,23 @@ class HostMergerForView {
                 return $this->hosttemplate['hosttemplatecommandargumentvalues'];
             }
         }
-
+        $commandArgumentValuesDiff = array_diff(
+            Hash::extract($this->hosttemplate['hosttemplatecommandargumentvalues'], '{n}.commandargument_id'),
+            Hash::extract($this->host['hostcommandargumentvalues'], '{n}.commandargument_id')
+        );
+        if (!empty($commandArgumentValuesDiff) &&
+            ($this->host['command_id'] === $this->hosttemplate['command_id'] || $this->host['command_id'] === null)) {
+            //add missing (new) command argument values from host template to host command argument values
+            foreach ($commandArgumentValuesDiff as $commandArgumentValueId) {
+                $key = array_search($commandArgumentValueId, array_column($this->hosttemplate['hosttemplatecommandargumentvalues'], 'commandargument_id'), true);
+                $this->host['hostcommandargumentvalues'][] = [
+                    'commandargument_id' => $this->hosttemplate['hosttemplatecommandargumentvalues'][$key]['commandargument_id'],
+                    'host_id'            => $this->host['id'],
+                    'value'              => $this->hosttemplate['hosttemplatecommandargumentvalues'][$key]['value'],
+                    'commandargument'    => $this->hosttemplate['hosttemplatecommandargumentvalues'][$key]['commandargument']
+                ];
+            }
+        }
         return $this->host['hostcommandargumentvalues'];
     }
 

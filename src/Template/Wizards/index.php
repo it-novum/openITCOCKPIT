@@ -93,7 +93,7 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <div class="row">
+                    <div class="row wizard-card-group">
                         <!-- Real Wizards -->
                         <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3" ng-repeat="wizard in wizards"
                              ng-show="filterByCategory(wizard.category)">

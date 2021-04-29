@@ -31,7 +31,8 @@ angular.module('openITCOCKPIT')
                     $scope.args.push({
                         id: $scope.command.commandarguments[key].id,
                         name: $scope.command.commandarguments[key].name,
-                        human_name: $scope.command.commandarguments[key].human_name
+                        human_name: $scope.command.commandarguments[key].human_name,
+                        count: parseInt(key, 10)
                     });
                 }
                 $scope.post.Command.name = $scope.command.name;
@@ -53,10 +54,10 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.removeArg = function(arg){
+        $scope.removeArg = function(count){
             var args = [];
             for(var i in $scope.args){
-                if($scope.args[i].id !== arg.id){
+                if($scope.args[i].count !== count){
                     args.push($scope.args[i])
                 }
             }
@@ -66,14 +67,22 @@ angular.module('openITCOCKPIT')
 
         $scope.addArg = function(){
             var argsCount = 1;
+            var count = 1;
             var allArgNumbersInUse = _.map($scope.args, function(arg){
                 return arg.name.match(/\d+/g);
             });
             while(in_array(argsCount, allArgNumbersInUse)){
                 argsCount++;
             }
+            if($scope.args.length > 0){
+                //check for max count values for internal counter
+                var objectWithMaxCounter = _.maxBy($scope.args, function(arg){
+                    return arg.count;
+                });
+                count = objectWithMaxCounter.count + 1;
+            }
             $scope.args.push({
-                id: argsCount,
+                count: count,
                 name: '$ARG' + argsCount + '$',
                 human_name: ''
             });
@@ -98,7 +107,6 @@ angular.module('openITCOCKPIT')
             }else{
                 $('#argumentMisMatchModal').modal('show');
             }
-
         };
 
         $scope.submit = function(){
