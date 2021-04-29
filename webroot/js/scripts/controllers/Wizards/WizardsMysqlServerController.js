@@ -12,12 +12,14 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-            $http.get("/wizards/mysqlserver.json", {
+            $http.get("/wizards/mysqlserver/" + $scope.hostId + ".json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.servicetemplates = result.data.servicetemplates;
+                $scope.servicesNamesForExistCheck = result.data.servicesNamesForExistCheck;
+
                 for(var key in $scope.servicetemplates){
                     $scope.post.services.push(
                         {
@@ -26,7 +28,7 @@ angular.module('openITCOCKPIT')
                             'name': $scope.servicetemplates[key].name,
                             'description': $scope.servicetemplates[key].description,
                             'servicecommandargumentvalues': $scope.servicetemplates[key].servicetemplatecommandargumentvalues,
-                            'createService': true
+                            'createService': !(in_array($scope.servicetemplates[key].name, $scope.servicesNamesForExistCheck))
                         });
                 }
 
