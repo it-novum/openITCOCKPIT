@@ -258,7 +258,7 @@ class WizardAssignmentsTable extends Table {
             'sap'        => [
                 'type_id'     => 'sap',
                 'title'       => __('SAP'),
-                'description' => __('Monitoring SAP systems through SAP CCMS values'),
+                'description' => __('Monitoring SAP Systems'),
                 'image'       => 'SAP-Logo.svg',
                 'category'    => ['sap', 'linux']
             ],
