@@ -102,30 +102,36 @@ class TemplateImport {
      * command names must be unique so we need to check if the name is already in use
      * uuid is not in the database - this has been checked by the importCommands() method
      * in case of positive match (name already in use) rename it with "_legacy" suffix
-     * @param $command
+     * @param array $command
      */
     private function checkCommandNames($command): void {
         $commandName = $command['name'];
-        $newCommandName = $commandName . '_' . $this->getShortRand() . '_legacy';
-        $command = $this->CommandsTable->getCommandByName($commandName);
-        if (empty($command)) {
+
+        // Check if an command with the same name already exists
+        $existingCommand = $this->CommandsTable->getCommandByName($commandName);
+        if (empty($existingCommand)) {
+            // No command with the same name - nothing todo
             return;
         }
-        $command = $command['Command'][0];
-        //command name existing
-        $command = $this->CommandsTable->get($command['id']);
-        $command->name = $newCommandName;
-        $this->CommandsTable->save($command);
-    }
 
-    /**
-     * @param int $length
-     * @return false|string
-     */
-    private function getShortRand($length = 6) {
-        return substr(md5(uniqid(mt_rand(), true)), 0, $length);
-    }
+        // Command with the same name exists
+        $commandEntityToRename = $this->CommandsTable->get($existingCommand['Command'][0]['id']);
+        $retry = 1;
+        while (!empty($existingCommand)) {
+            if ($retry === 1) {
+                $newCommandName = sprintf('%s (before %s)', $commandName, OPENITCOCKPIT_VERSION);
+            } else {
+                $newCommandName = sprintf('%s (%s)', $commandName, $retry);
+            }
 
+            $existingCommand = $this->CommandsTable->getCommandByName($newCommandName);
+            $retry++;
+        }
+
+        // New name found
+        $commandEntityToRename->name = $newCommandName;
+        $this->CommandsTable->save($commandEntityToRename);
+    }
 
     /**
      * @param $data
