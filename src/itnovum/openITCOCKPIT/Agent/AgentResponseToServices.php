@@ -606,7 +606,7 @@ class AgentResponseToServices {
                     $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($match); // wisvc
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        $serviceName, // Windows Insider Service
+                        __('Service: {0}', $serviceName), // Windows Insider Service
                         $servicetemplatecommandargumentvalues
                     );
                 }

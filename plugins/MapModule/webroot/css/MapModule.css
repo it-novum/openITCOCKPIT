@@ -187,3 +187,47 @@
     width: 100%;
     background-color: #646464;
 }
+
+#mapContent{
+    position:absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.helpline-stack-icon{
+    height: 1.1em;
+    width: 1em;
+    line-height: 1em;
+}
+.helplines5{
+    background: repeating-linear-gradient(to right, transparent 0 calc(5px - 1px), #cccccc80 calc(5px - 1px) 5px),
+    repeating-linear-gradient(to bottom, transparent 0 calc(5px - 1px), #cccccc80 calc(5px - 1px) 5px) transparent;
+}
+.helplines10{
+    background: repeating-linear-gradient(to right, transparent 0 calc(10px - 1px), #cccccc80 calc(10px - 1px) 10px),
+    repeating-linear-gradient(to bottom, transparent 0 calc(10px - 1px), #cccccc80 calc(10px - 1px) 10px) transparent;
+}
+.helplines15{
+    background:repeating-linear-gradient(to right, transparent 0 calc(15px - 1px), #cccccc80 calc(15px - 1px) 15px),
+    repeating-linear-gradient(to bottom, transparent 0 calc(15px - 1px), #cccccc80 calc(15px - 1px) 15px) transparent;
+}
+.helplines20{
+    background:repeating-linear-gradient(to right, transparent 0 calc(20px - 1px), #cccccc80 calc(20px - 1px) 20px),
+    repeating-linear-gradient(to bottom, transparent 0 calc(20px - 1px), #cccccc80 calc(20px - 1px) 20px) transparent;
+}
+.helplines25{
+    background:repeating-linear-gradient(to right, transparent 0 calc(25px - 1px), #cccccc80 calc(25px - 1px) 25px),
+    repeating-linear-gradient(to bottom, transparent 0 calc(25px - 1px), #cccccc80 calc(25px - 1px) 25px) transparent;
+}
+.helplines30{
+    background:repeating-linear-gradient(to right, transparent 0 calc(30px - 1px), #cccccc80 calc(30px - 1px) 30px),
+    repeating-linear-gradient(to bottom, transparent 0 calc(30px - 1px), #cccccc80 calc(30px - 1px) 30px) transparent;
+}
+.helplines50{
+    background:repeating-linear-gradient(to right, transparent 0 calc(50px - 1px), #cccccc80 calc(50px - 1px) 50px),
+    repeating-linear-gradient(to bottom, transparent 0 calc(50px - 1px), #cccccc80 calc(50px - 1px) 50px) transparent;
+}
+.helplines80{
+    background:repeating-linear-gradient(to right, transparent 0 calc(80px - 1px), #cccccc80 calc(80px - 1px) 80px),
+    repeating-linear-gradient(to bottom, transparent 0 calc(80px - 1px), #cccccc80 calc(80px - 1px) 80px) transparent;
+}

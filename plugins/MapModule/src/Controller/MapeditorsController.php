@@ -1157,15 +1157,16 @@ class MapeditorsController extends AppController {
                 'Mapsummaryitems'
             ]
         ])->toArray();
-
         $MapForAngular = new MapForAngular($map);
         $map = $MapForAngular->toArray();
+        $config = $MapsTable->getMapeditorSettings($map['Map']['json_data']);
 
         $this->set('map', $map);
+        $this->set('config', $config);
         $this->set('maxUploadLimit', $FileUploadSize->toArray());
         $this->set('max_z_index', $MapForAngular->getMaxZIndex());
         $this->set('layers', $MapForAngular->getLayers());
-        $this->viewBuilder()->setOption('serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers']);
+        $this->viewBuilder()->setOption('serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers', 'config']);
     }
 
     public function backgroundImages() {
@@ -2007,5 +2008,32 @@ class MapeditorsController extends AppController {
             return;
         }
         throw new MethodNotAllowedException();
+    }
+
+    public function saveMapeditorSettings() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var MapsTable $MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
+        $id = $this->request->getData('Map.id');
+        if (!$MapsTable->existsById($id)) {
+            throw new NotFoundException();
+        }
+
+        $config['Mapeditor'] = $this->request->getData('Mapeditor', []);
+        if (!empty($config)) {
+            $MapsTable->updateAll([
+                'json_data' => json_encode($config)
+            ], [
+                'id' => $id
+            ]);
+        }
+        $this->set('success', true);
+        $this->set('message', __('Mapeditor settings successfully updated'));
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        return;
     }
 }

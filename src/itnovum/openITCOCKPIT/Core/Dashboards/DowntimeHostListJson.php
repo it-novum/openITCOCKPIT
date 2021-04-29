@@ -34,8 +34,9 @@ class DowntimeHostListJson extends DashboardJsonStandardizer {
      */
     protected $fields = [
         'DowntimeHost'    => [
-            'comment'       => '',
-            'was_cancelled' => false
+            'comment_data'      => '',
+            'was_cancelled'     => false,
+            'was_not_cancelled' => false
         ],
         'Host'            => [
             'name' => ''

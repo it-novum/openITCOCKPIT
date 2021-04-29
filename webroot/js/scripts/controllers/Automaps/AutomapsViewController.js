@@ -6,7 +6,7 @@ angular.module('openITCOCKPIT')
 
         $scope.currentPage = 1;
         $scope.useScroll = true;
-
+        $scope.onlyButtons = false;
 
         $scope.load = function(){
             var params = {
@@ -20,7 +20,6 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.automap = result.data.automap;
                 $scope.servicesByHost = result.data.servicesByHost;
-
                 if($scope.automap.use_paginator){
                     $scope.paging = result.data.paging;
                     $scope.scroll = result.data.scroll;

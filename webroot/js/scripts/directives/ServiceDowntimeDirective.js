@@ -111,6 +111,7 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
 
                 $scope.setServiceDowntimeAuthor(attr.author);
 
+                $(".page-inner").append($('#angularServiceDowntimeModal'));
                 $('#angularServiceDowntimeModal').modal('show');
             };
         }

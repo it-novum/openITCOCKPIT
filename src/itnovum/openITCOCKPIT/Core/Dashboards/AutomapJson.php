@@ -25,30 +25,17 @@
 namespace itnovum\openITCOCKPIT\Core\Dashboards;
 
 
-class DowntimeServiceListJson extends DashboardJsonStandardizer {
+class AutomapJson extends DashboardJsonStandardizer {
+
     /**
      * @var array
-     *
      * Add new fields to this list
      * oITC will take care of the rest of the work
      */
     protected $fields = [
-        'DowntimeService' => [
-            'comment_data'      => '',
-            'was_cancelled'     => false,
-            'was_not_cancelled' => false
-        ],
-        'Host'            => [
-            'name' => ''
-        ],
-        'Service'         => [
-            'name' => ''
-        ],
-        'isRunning'       => true,
-        'hideExpired'     => true,
-        'sort'            => 'DowntimeServices.scheduled_start_time',
-        'direction'       => 'desc',
+        'automap_id'      => null,
         'useScroll'       => true,
+        'limit'           => ITN_AJAX_LIMIT,
         'scroll_interval' => 30000
     ];
 
