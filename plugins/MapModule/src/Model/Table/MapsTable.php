@@ -2309,4 +2309,31 @@ class MapsTable extends Table {
 
         return $result->toArray();
     }
+
+    public function getDefaultMapeditorSettings() {
+        return [
+            'Mapeditor' => [
+                'synchronizeGridAndHelplinesSize' => true,
+                'grid'                            => [
+                    'enabled' => true,
+                    'size'    => 15
+                ],
+                'helplines'                       => [
+                    'enabled' => true,
+                    'size'    => 15
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @param $config
+     * @return array|mixed
+     */
+    public function getMapeditorSettings($config) {
+        if (empty($config)) {
+            return $this->getDefaultMapeditorSettings();
+        }
+        return json_decode($config, true);
+    }
 }
