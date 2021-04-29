@@ -19,7 +19,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -1945,11 +1944,8 @@ class HostsTable extends Table {
             $where['Hosts.uuid'] = $uuid;
         }
 
-
         $query = $this->find()
-            ->where([
-                'Hosts.disabled' => 0
-            ])
+            ->where($where)
             ->contain([
                 'Hosttemplates'             =>
                     function (Query $q) {
@@ -4041,5 +4037,45 @@ class HostsTable extends Table {
 
         return $result;
 
+    }
+
+    /**
+     * @param $hosttemplateId
+     * @param $commandId
+     */
+    public function updateHostCommandIdIfHostHasOwnCommandArguments($hosttemplateId, $commandId) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id'
+            ])
+            ->contain([
+                'Hostcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where([
+                'Hosts.command_id IS NULL',
+                'Hosts.hosttemplate_id' => $hosttemplateId
+            ])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if (!empty($query)) {
+            $hostIds = [];
+            foreach ($query as $row) {
+                if (!empty($row['hostcommandargumentvalues'])) {
+                    $hostIds[] = (int)$row['id'];
+                }
+            }
+            if (!empty($hostIds)) {
+                $this->updateAll([
+                    'command_id' => $commandId
+                ], [
+                    'id IN' => $hostIds
+                ]);
+            }
+        }
     }
 }

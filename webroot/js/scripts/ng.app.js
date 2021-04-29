@@ -1051,12 +1051,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "UsersLdapController"
             })
 
-            .state('UsersEditFromLdap', {
-                url: '/users/editFromLdap/:id',
-                templateUrl: "/users/editFromLdap.html",
-                controller: "UsersEditFromLdapController"
-            })
-
             .state('UsercontainerrolesIndex', {
                 url: '/usercontainerroles/index',
                 templateUrl: "/usercontainerroles/index.html",
@@ -1104,6 +1098,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 templateUrl: "/hosts/index.html",
                 params: {
                     hostname: {
+                        value: null
+                    },
+                    address: {
                         value: null
                     },
                     hoststate: {
@@ -1429,7 +1426,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('WizardHostConfiguration', {
-                url: '/wizards/hostConfiguration/:typeId/:title/:hostId',
+                url: '/wizards/wizardHostConfiguration/:typeId/:title/:hostId',
                 params: {
                     state: {
                         value: null
@@ -1442,7 +1439,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         squash: false
                     }
                 },
-                templateUrl: "/wizards/hostConfiguration.html",
+                templateUrl: "/wizards/wizardHostConfiguration.html",
                 controller: "WizardHostConfigurationController"
             })
 

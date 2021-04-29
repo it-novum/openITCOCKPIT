@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-11-30 11:02+0100\n"
+"POT-Creation-Date: 2021-04-22 15:12+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -81,26 +81,6 @@ msgstr ""
 #: src/Command/NagiosNotificationCommand.php:170
 #: src/Command/NagiosXmlNotificationCommand.php:169
 msgid "Disable emojis in subject"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:59
-msgid "IP of Host with the Agent to connect to"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:60
-msgid "Port of Host with the Agent to connect to"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:61
-msgid "Basic-Auth username from Agent"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:62
-msgid "Basic-Auth password from Agent"
-msgstr ""
-
-#: src/Command/ConnectToAgentCommand.php:63
-msgid "Disable proxy"
 msgstr ""
 
 #: src/Command/CronjobsCommand.php:67

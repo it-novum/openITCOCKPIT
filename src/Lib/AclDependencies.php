@@ -142,7 +142,9 @@ class AclDependencies {
 
         $this
             ->allow('Automaps', 'icon')
-            ->allow('Automaps', 'loadContainers');
+            ->allow('Automaps', 'loadContainers')
+            ->allow('Automaps', 'automapWidget')
+            ->allow('Automaps', 'loadAutomapsByString');
 
         $this
             ->allow('Calendars', 'loadCalendarsByContainerId');
@@ -265,8 +267,8 @@ class AclDependencies {
 
         $this
             ->dependency('Automaps', 'add', 'Automaps', 'getMatchingHostAndServices')
-            ->dependency('Automaps', 'edit', 'Automaps', 'getMatchingHostAndServices');
-
+            ->dependency('Automaps', 'edit', 'Automaps', 'getMatchingHostAndServices')
+            ->dependency('Automaps', 'view', 'Automaps', 'automap');
 
         $this
             ->dependency('Browsers', 'index', 'Browsers', 'tenantBrowser')
@@ -420,7 +422,9 @@ class AclDependencies {
 
         $this
             ->dependency('Servicedependencies', 'index', 'Servicedependencies', 'view')
+            ->dependency('Servicedependencies', 'add', 'Servicedependencies', 'loadContainers')
             ->dependency('Servicedependencies', 'add', 'Servicedependencies', 'loadElementsByContainerId')
+            ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadContainers')
             ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadElementsByContianerId');
 
 
@@ -586,8 +590,14 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'PhpFpmOitc');
 
         $this
+            ->dependency('Wizards', 'index', 'Wizards', 'mysqlserver')
+            ->dependency('Wizards', 'index', 'Wizards', 'linuxserverssh')
+            ->dependency('Wizards', 'index', 'Wizards', 'agent')
+            ->dependency('Wizards', 'agent', 'Wizards', 'wizardHostConfiguration')
             ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular')
-            ->dependency('Wizards', 'hostConfiguration', 'Wizards', 'loadElementsByContainerId');
+            ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadElementsByContainerId')
+            ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadHostsByString')
+            ->dependency('Wizards', 'linuxserverssh', 'Wizards', 'loadServicetemplatesByWizardType');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {

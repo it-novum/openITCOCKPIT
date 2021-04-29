@@ -70,6 +70,12 @@ class AgentCommand extends Command {
             'boolean' => true
         ]);
 
+        // Options to generate the server certificate if it is missing
+        $parser->addOption('generate-server-ca', [
+            'help'    => 'Generate a new server certificate (does nothing if /opt/openitc/agent/server_ca.pem exists)',
+            'boolean' => true
+        ]);
+
         // Freshness check options
         $parser->addOption('check', [
             'help'    => 'Determines the host state of an host running in Push Mode by evaluating the timestamp of the last received check  results.',
@@ -106,6 +112,10 @@ class AgentCommand extends Command {
     public function execute(Arguments $args, ConsoleIo $io) {
         if ($args->getOption('migrate')) {
             $this->migrateAgentConfig();
+        }
+
+        if ($args->getOption('generate-server-ca')) {
+            $this->generateServerCA($args, $io);
         }
 
         if ($args->getOption('check')) {
@@ -272,5 +282,16 @@ class AgentCommand extends Command {
         echo "\n";
         exit($rc);
 
+    }
+
+    /**
+     * @param Arguments $args
+     * @param ConsoleIo $io
+     */
+    private function generateServerCA(Arguments $args, ConsoleIo $io) {
+        $AgentCertificateData = new AgentCertificateData();
+        if (!is_file($AgentCertificateData->getCaCertFile())) {
+            $AgentCertificateData->generateServerCA();
+        }
     }
 }

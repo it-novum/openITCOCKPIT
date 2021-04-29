@@ -76,7 +76,7 @@ class AcknowledgementSerializer {
                 'start'     => $this->UserTime->customFormat('Y-m-d H:i:s', $this->records[$i]->getEntryTime()),
                 'type'      => 'box',
                 'className' => 'bg-ack',
-                'content'   => '<i class="fa fa-commenting"></i>',
+                'content'   => '<i class="not-xss-filtered-html fa fa-commenting"></i>',
                 'title'     => $title,
                 'group'     => $this->groupId
             ];
