@@ -45,7 +45,7 @@ return [
             'path'                                     => '/opt/openitc/nagios/etc/',
             'service_perfdata_file_processing_command' => '/bin/mv /opt/openitc/nagios/var/service-perfdata /opt/openitc/nagios/var/spool/perfdata/service-perfdata.$TIMET$',
             'service_perfdata_command'                 => '/usr/bin/perl /opt/openitc/nagios/libexec/process_perfdata.pl',
-            'check_fresh'                              => '/opt/openitc/nagios/libexec/check_dummy 3 "Service is no longer current"',
+            'check_fresh'                              => '/opt/openitc/nagios/libexec/check_dummy 3 "State is no longer current"',
             'config'                                   => 'config/',
             'suffix'                                   => '.cfg',
             'hosttemplates'                            => 'config/hosttemplates/',
