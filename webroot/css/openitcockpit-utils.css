@@ -674,7 +674,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     height: 80px;
     width: 80px;
     position: relative;
-    border: 5px solid #4285F4;
+    border: 5px outset #4285F4;
     flex: 0 0 80px;
 }
 
@@ -701,6 +701,8 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     left: 0;
     right: 0;
     margin: auto;
+    clip-path: circle(65% at center);
+    -webkit-clip-path: circle(65% at center);
 }
 
 .wizard-logo-image-placeholder {
