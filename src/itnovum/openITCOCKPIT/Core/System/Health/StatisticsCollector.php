@@ -74,7 +74,8 @@ class StatisticsCollector {
             'cpu'               => [
                 'load'            => $CpuLoad->getLoad(),
                 'number_of_cores' => $CpuLoad->getNumberOfCores(),
-                'model_name'      => $CpuLoad->getModel()
+                'model_name'      => $CpuLoad->getModel(),
+                'architecture'    => $CpuLoad->getArchitecture()
             ],
             'memory'            => [
                 'memory' => $memory['memory'],
