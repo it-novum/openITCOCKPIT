@@ -701,8 +701,8 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     left: 0;
     right: 0;
     margin: auto;
-    clip-path: circle(65% at center);
-    -webkit-clip-path: circle(65% at center);
+    clip-path: circle(35px at center);
+    -webkit-clip-path: circle(35px at center);
 }
 
 .wizard-logo-image-placeholder {
