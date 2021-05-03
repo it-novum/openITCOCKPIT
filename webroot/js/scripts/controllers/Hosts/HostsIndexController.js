@@ -8,7 +8,6 @@ angular.module('openITCOCKPIT')
 
         $scope.useScroll = true;
         $scope.id = QueryStringService.getStateValue($stateParams, 'id', 1);
-        console.log($scope.id);
 
         filterHostname = QueryStringService.getStateValue($stateParams, 'hostname');
         filterAddress = QueryStringService.getStateValue($stateParams, 'address');
@@ -50,21 +49,22 @@ angular.module('openITCOCKPIT')
         $scope.deactivateUrl = '/hosts/deactivate/';
         /*** Dynamic custom table ***/
         $scope.dynamictable = {
-            custom_hoststatus:0,
-            custom_acknowledgement: 0,
-            custom_indowntime: 0,
-            custom_shared: 0,
-            custom_passive: 0,
-            custom_priority: 0,
-            custom_hostname:0,
-            custom_ip_address:0,
-            custom_last_change: 0,
-            custom_last_check: 0,
-            custom_host_output: 0,
-            custom_instance: 0,
-            custom_service_summary: 0,
-            custom_description: 1,
-            custom_container_name:1
+            user_id: $scope.user_id,
+            custom_hoststatus: 1,
+            custom_acknowledgement: 1,
+            custom_indowntime: 1,
+            custom_shared: 1,
+            custom_passive: 1,
+            custom_priority: 1,
+            custom_hostname: 1,
+            custom_ip_address: 1,
+            custom_last_change: 1,
+            custom_last_check: 1,
+            custom_host_output: 1,
+            custom_instance: 1,
+            custom_service_summary: 1,
+            custom_description: 0,
+            custom_container_name: 0
         }
         /*** Dynamic custom table end ***/
 
@@ -126,7 +126,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainer = function(){
-            $http.get("/hosts/browser/"+ $scope.id + ".json", {
+            $http.get("/hosts/browser/" + $scope.id + ".json", {
                 params: {
                     angular: true
                 }
@@ -134,6 +134,59 @@ angular.module('openITCOCKPIT')
                 $scope.mergedHost = result.data.mergedHost;
                 $scope.mainContainer = result.data.mainContainer;
             })
+        };
+        $scope.loadTableConfig = function(){
+            $http.get("/hosts/dynamicTableConfig.json", {
+                angular: true
+            }).then(function(result){
+                $scope.user_id = result.data.user_id;
+
+                //console.log($scope.table_data[0].custom_last_change);
+                if( result.data.table_config[0] == null ){
+                    $scope.dynamictable = {
+                        user_id : $scope.user_id,
+                        custom_hoststatus: 1,
+                        custom_acknowledgement: 1,
+                        custom_indowntime: 1,
+                        custom_shared: 1,
+                        custom_passive: 1,
+                        custom_priority: 1,
+                        custom_hostname: 1,
+                        custom_ip_address: 1,
+                        custom_last_change: 1,
+                        custom_last_check: 1,
+                        custom_host_output: 1,
+                        custom_instance: 1,
+                        custom_service_summary: 1,
+                        custom_description: 0,
+                        custom_container_name: 0
+                    }
+                } else {
+                    $scope.dynamictable = result.data.table_config[0];
+
+                }
+
+
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
+        $scope.loadTableConfig();
+
+        $scope.toggleColumn = function(){
+            $http.post("/hosts/dynamicTableConfig.json?angular=true",
+                {ConfigTable : $scope.dynamictable}
+            ).then(function(result){
+                console.log('posted');
+                console.log(typeof $scope.dynamictable.custom_hoststatus);
+                console.log(result);
+            });
         };
 
         $scope.triggerFilter = function(){

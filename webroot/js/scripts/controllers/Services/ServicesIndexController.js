@@ -46,6 +46,24 @@ angular.module('openITCOCKPIT')
             };
         };
         /*** Filter end ***/
+        /*** dynamic Table ***/
+        $scope.dynamictable = {
+            custom_state:1,
+            custom_acknowledgement: 1,
+            custom_indowntime: 1,
+            custom_grapher: 1,
+            custom_passive: 1,
+            custom_priority: 1,
+            custom_servicename:1,
+            custom_last_change: 1,
+            custom_last_check: 1,
+            custom_next_check: 1,
+            custom_service_output: 1,
+            custom_instance: 0,
+            custom_description: 0,
+            custom_container_name:0
+        }
+        /*** dynamic table end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/services/delete/';

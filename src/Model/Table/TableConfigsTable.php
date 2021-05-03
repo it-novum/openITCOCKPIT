@@ -27,16 +27,14 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\TableConfig[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
  * @method \App\Model\Entity\TableConfig[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
  */
-class TableConfigsTable extends Table
-{
+class TableConfigsTable extends Table {
     /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config): void
-    {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('table_configs');
@@ -45,7 +43,7 @@ class TableConfigsTable extends Table
 
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
-            'joinType' => 'INNER',
+            'joinType'   => 'INNER',
         ]);
     }
 
@@ -55,8 +53,7 @@ class TableConfigsTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator): Validator
-    {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -79,7 +76,37 @@ class TableConfigsTable extends Table
 
         $validator
             ->integer('custom_service_summery')
-            ->notEmptyString('custom_service_summery');
+            ->notEmptyString('custom_service_summary');
+        $validator
+            ->integer('custom_hoststatus')
+            ->notEmptyString('custom_hoststatus');
+        $validator
+            ->integer('custom_acknowledgement')
+            ->notEmptyString('custom_acknowledgement');
+        $validator
+            ->integer('custom_indowntime')
+            ->notEmptyString('custom_indowntime');
+        $validator
+            ->integer('custom_shared')
+            ->notEmptyString('custom_shared');
+        $validator
+            ->integer('custom_passive')
+            ->notEmptyString('custom_passive');
+        $validator
+            ->integer('custom_priority')
+            ->notEmptyString('custom_priority');
+        $validator
+            ->integer('custom_hostname')
+            ->notEmptyString('custom_hostname');
+        $validator
+            ->integer('custom_ip_address')
+            ->notEmptyString('custom_ip_address');
+        $validator
+            ->integer('custom_description')
+            ->notEmptyString('custom_description');
+        $validator
+            ->integer('custom_container_name')
+            ->notEmptyString('custom_container_name');
 
         return $validator;
     }
@@ -91,10 +118,20 @@ class TableConfigsTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules): RulesChecker
-    {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->existsIn(['user_id'], 'Users'), ['errorField' => 'user_id']);
 
         return $rules;
+    }
+
+    /**
+     *
+     * @param int $id
+     * @return bool
+     */
+
+    public function existByUserId($id){
+        return $this->exists(['TableConfigs.user_id' => $id] );
+
     }
 }

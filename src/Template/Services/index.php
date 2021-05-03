@@ -83,6 +83,173 @@
                             </li>
                         <?php endif; ?>
                     </ul>
+
+                    <div class="btn-group">
+                        <button class="btn btn-xs btn-default mr-1 shadow-0" type="button" data-toggle="dropdown"
+                                aria-expanded="false">
+                            <?php echo __('Show/Hide Column'); ?> <i class="fas fa-angle-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_state"
+                                       ng-model="dynamictable.custom_state">
+                                <label class="custom-control-label ml-3" for="custom_state">
+                                    <?php echo __('State'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_acknowledgement"
+                                       ng-model="dynamictable.custom_acknowledgement">
+                                <label class="custom-control-label ml-3" for="custom_acknowledgement">
+                                    <?php echo __('Acknowledgement'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_indowntime"
+                                       ng-model="dynamictable.custom_indowntime">
+                                <label class="custom-control-label ml-3" for="custom_indowntime">
+                                    <?php echo __('In downtime'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_grapher"
+                                       ng-model="dynamictable.custom_grapher">
+                                <label class="custom-control-label ml-3" for="custom_grapher">
+                                    <?php echo __('Grapher'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_passive"
+                                       ng-model="dynamictable.custom_passive">
+                                <label class="custom-control-label ml-3" for="custom_passive">
+                                    <?php echo __('Passive'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_priority"
+                                       ng-model="dynamictable.custom_priority">
+                                <label class="custom-control-label ml-3" for="custom_priority">
+                                    <?php echo __('Priority'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_servicename"
+                                       ng-model="dynamictable.custom_servicename">
+                                <label class="custom-control-label ml-3" for="custom_servicename">
+                                    <?php echo __('Service name'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_last_change"
+                                       ng-model="dynamictable.custom_last_change">
+                                <label class="custom-control-label ml-3" for="custom_last_change">
+                                    <?php echo __('Last state change'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_last_check"
+                                       ng-model="dynamictable.custom_last_check">
+                                <label class="custom-control-label ml-3" for="custom_last_check">
+                                    <?php echo __('Last check'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_next_check"
+                                       ng-model="dynamictable.custom_next_check">
+                                <label class="custom-control-label ml-3" for="custom_next_check">
+                                    <?php echo __('Next check'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_service_output"
+                                       ng-model="dynamictable.custom_service_output">
+                                <label class="custom-control-label ml-3" for="custom_service_output">
+                                    <?php echo __('Service output'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_instance"
+                                       ng-model="dynamictable.custom_instance">
+                                <label class="custom-control-label ml-3" for="custom_instance">
+                                    <?php echo __('Satellite'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_description"
+                                       ng-model="dynamictable.custom_description">
+                                <label class="custom-control-label ml-3" for="custom_description">
+                                    <?php echo __('Description'); ?>
+                                </label>
+                            </div>
+                            <div class="dropdown-item custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="custom_container_name"
+                                       ng-model="dynamictable.custom_container_name">
+                                <label class="custom-control-label ml-3" for="custom_container_name">
+                                    <?php echo __('Container'); ?>
+                                </label>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <!-- toggle table end-->
+
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
@@ -445,73 +612,91 @@
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
+                                <th colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')" ng-show="dynamictable.custom_state">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.current_state')"></i>
                                         <?php echo __('State'); ?>
                                     </div>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th class="no-sort text-center" ng-show="dynamictable.custom_acknowledgement">
                                     <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th class="no-sort text-center" ng-show="dynamictable.custom_indowntime">
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
 
 
-                                <th class="no-sort text-center">
+                                <th class="no-sort text-center" ng-show="dynamictable.custom_grapher">
                                     <i class="fa fa-lg fa-area-chart" title="<?php echo __('Grapher'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th class="no-sort text-center" ng-show="dynamictable.custom_passive">
                                     <strong title="<?php echo __('Passively transferred service'); ?>">
                                         P
                                     </strong>
                                 </th>
 
-                                <th class="no-sort text-center" ng-click="orderBy('servicepriority')">
+                                <th class="no-sort text-center" ng-click="orderBy('servicepriority')" ng-show="dynamictable.custom_priority">
                                     <i class="fa" ng-class="getSortClass('servicepriority')"></i>
                                     <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
                                     </i>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('servicename')">
+                                <th class="no-sort" ng-click="orderBy('servicename')" ng-show="dynamictable.custom_servicename">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('servicename')"></i>
                                         <?php echo __('Service name'); ?>
                                     </div>
                                 </th>
 
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.container_name')" ng-show="dynamictable.custom_container_name">
+                                    <div class="table-resize">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.container_name')"></i>
+                                        <?php echo __('Container'); ?>
+                                    </div>
+                                </th>
 
                                 <th class="no-sort tableStatewidth"
-                                    ng-click="orderBy('Servicestatus.last_state_change')">
+                                    ng-click="orderBy('Servicestatus.last_state_change')" ng-show="dynamictable.custom_last_change">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.last_state_change')"></i>
                                         <?php echo __('Last state change'); ?>
                                     </div>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.last_check')">
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.last_check')" ng-show="dynamictable.custom_last_check">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.last_check')"></i>
                                         <?php echo __('Last check'); ?>
                                     </div>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.next_check')">
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.next_check')" ng-show="dynamictable.custom_next_check">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.next_check')"></i>
                                         <?php echo __('Next check'); ?>
                                     </div>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Servicestatus.output')">
+                                <th class="no-sort" ng-click="orderBy('Servicestatus.output')" ng-show="dynamictable.custom_service_output">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.output')"></i>
                                         <?php echo __('Service output'); ?>
+                                    </div>
+                                </th>
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.instance')" ng-show="dynamictable.custom_instance">
+                                    <div class="table-resize">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.instance')"></i>
+                                        <?php echo __('Instance'); ?>
+                                    </div>
+                                </th>
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.descriptiion')" ng-show="dynamictable.custom_description">
+                                    <div class="table-resize">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.descriptiion')"></i>
+                                        <?php echo __('Description'); ?>
                                     </div>
                                 </th>
 
@@ -558,11 +743,11 @@
                                            ng-show="service.Service.allow_edit">
                                 </td>
 
-                                <td class="text-center">
+                                <td class="text-center" ng-show="dynamictable.custom_state">
                                     <servicestatusicon service="service"></servicestatusicon>
                                 </td>
 
-                                <td class="text-center">
+                                <td class="text-center" ng-show="dynamictable.custom_acknowledgement">
                                     <i class="far fa-user"
                                        ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                        ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
@@ -573,12 +758,12 @@
                                        title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                 </td>
 
-                                <td class="text-center">
+                                <td class="text-center" ng-show="dynamictable.custom_indowntime">
                                     <i class="fa fa-power-off"
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
-                                <td class="text-center">
+                                <td class="text-center" ng-show="dynamictable.custom_grapher">
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                            class="txt-color-blueDark"
@@ -598,14 +783,14 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td class="text-center">
+                                <td class="text-center" ng-show="dynamictable.custom_passive">
                                     <strong title="<?php echo __('Passively transferred service'); ?>"
                                             ng-show="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                                         P
                                     </strong>
                                 </td>
 
-                                <td class="text-center">
+                                <td class="text-center" ng-show="dynamictable.custom_priority">
                                     <i class="fa fa-fire"
                                        ng-class="{'ok-soft' : service.Service.priority==1,
                                         'ok' : service.Service.priority==2, 'warning' : service.Service.priority==3,
@@ -613,7 +798,7 @@
                                     </i>
                                 </td>
 
-                                <td>
+                                <td ng-show="dynamictable.custom_servicename">
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                             {{ service.Service.servicename }}
@@ -622,12 +807,15 @@
                                         {{ service.Service.servicename }}
                                     <?php endif; ?>
                                 </td>
+                                <td ng-show="dynamictable.custom_container_name">
+                                    {{ containername }}
+                                </td>
 
-                                <td>
+                                <td ng-show="dynamictable.custom_last_change">
                                     {{ service.Servicestatus.last_state_change }}
                                 </td>
 
-                                <td>
+                                <td ng-show="dynamictable.custom_last_check">
                                     <span
                                         ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
                                         service.Servicestatus.lastCheck }}</span>
@@ -636,7 +824,7 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                <td ng-show="dynamictable.custom_next_check">
                                     <span
                                         ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
                                         service.Servicestatus.nextCheck }}</span>
@@ -646,9 +834,15 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                <td ng-show="dynamictable.custom_service_output">
                                     <div class="word-break"
                                          ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
+                                </td>
+                                <td ng-show="dynamictable.custom_instance">
+                                    {{ instance }}
+                                </td>
+                                <td ng-show="dynamictable.custom_description">
+                                    {{ service.description }}
                                 </td>
 
                                 <td class="width-50">

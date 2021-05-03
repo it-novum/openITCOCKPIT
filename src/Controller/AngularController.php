@@ -615,12 +615,9 @@ class AngularController extends AppController {
             'from_time'       => $UserTime->customFormat('H:i', time()),
             'to_date'         => $UserTime->customFormat('d.m.Y', time()),
             'to_time'         => $UserTime->customFormat('H:i', time() + 60 * 15),
-            'from_date_js'    => $UserTime->customFormat(DATE_ATOM, time()),
-            'to_date_js'      => $UserTime->customFormat(DATE_ATOM, time() + 60 * 15),
             'duration'        => 15,
             'comment'         => __('In maintenance'),
             'downtimetype_id' => $downtimetypeId,
-            'user_timezone'   => $User->getTimezone()
         ];
 
         $this->set('defaultValues', $defaultValues);

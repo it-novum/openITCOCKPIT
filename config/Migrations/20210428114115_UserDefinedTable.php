@@ -49,7 +49,7 @@ class UserDefinedTable extends AbstractMigration {
                 'limit'   => 1,
                 'null'    => false,
             ])
-            ->addColumn('custom_service_summery', 'integer', [
+            ->addColumn('custom_service_summary', 'integer', [
                 'default' => '0',
                 'limit'   => 1,
                 'null'    => false,

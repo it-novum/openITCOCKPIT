@@ -106,6 +106,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use function MongoDB\BSON\toJSON;
 
 
 /**
@@ -799,11 +800,70 @@ class HostsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['host']);
         }
     }
-    public function dynamicTableConfig(){
-        if(!$this->request->is('get')){
-            /** @var  $TableConfigsTable TableConfigsTable */
-            $TableConfigsTable = TableRegistry::getTableLocator()->get('TableConfigs');
+
+    public function dynamicTableConfig() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
+        $User = new User($this->getUser());
+
+        /** @var  $TableConfigsTable TableConfigsTable */
+        $TableConfigsTable = TableRegistry::getTableLocator()->get('TableConfigs');
+        if ($this->request->is('get')) {
+            $user_id = $User->getId();
+            $table_config = $TableConfigsTable->find('all');
+            $table_config = $table_config->where(['user_id' => $user_id]);
+
+            $this->set('user_id', $user_id);
+            $this->set('table_config', $table_config);
+
+            $this->viewBuilder()->setOption('serialize', ['user_id', 'table_config']);
+        }
+
+        // Post Data
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $data = $this->request->getData('ConfigTable', []);
+            $user_id = $User->getId();
+
+            if (!$TableConfigsTable->existByUserId($user_id)) {
+                $data['user_id'] = $user_id;
+                $table_config = $TableConfigsTable->newEntity($data);
+                $TableConfigsTable->save($table_config);
+                if ($table_config->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $table_config->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                    return;
+
+                }
+                $this->set('table_config', $table_config);
+                $this->viewBuilder()->setOption('serialize', ['table_config']);
+            }
+
+            $table_id = $data['id'];
+            $id = $TableConfigsTable->get($table_id);
+            if (!$id == $table_id) {
+                //error
+                throw new NotFoundException('Invalid id');
+            } else {
+
+                $table_config = $TableConfigsTable->patchEntity($id, $data);
+                $TableConfigsTable->save($table_config);
+                if ($table_config->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $table_config->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                    return;
+
+                }
+                $this->set('table_config', $table_config);
+                $this->viewBuilder()->setOption('serialize', ['table_config']);
+            }
+
+
+        }
+
     }
 
     public function sharing($id = null) {
