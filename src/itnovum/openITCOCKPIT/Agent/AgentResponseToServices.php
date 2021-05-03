@@ -96,7 +96,7 @@ class AgentResponseToServices {
     /**
      * @param bool $onlyMissingServices
      * @return array
-     * @todo implement: alfresco, windows_eventlog
+     * @todo implement: alfresco
      */
     public function getAllServices() {
         $services = [];
@@ -183,6 +183,13 @@ class AgentResponseToServices {
                     if ($windowsServices) {
                         $services['windows_services'] = $windowsServices;
                     }
+                    break;
+                case 'windows_eventlog':
+                    $windowsEventlogs = $this->getServiceStructForWindowsEventlogs();
+                    if ($windowsEventlogs) {
+                        $services['windows_eventlog'] = $windowsEventlogs;
+                    }
+                    break;
                     break;
                 case 'customchecks':
                     $customchecks = $this->getServiceStructForCustomchecks();
@@ -607,6 +614,39 @@ class AgentResponseToServices {
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
                         __('Service: {0}', $serviceName), // Windows Insider Service
+                        $servicetemplatecommandargumentvalues
+                    );
+                }
+            }
+        }
+        if (empty($services)) {
+            return false;
+        }
+        return $services;
+    }
+
+    public function getServiceStructForWindowsEventlogs(){
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName('windows_eventlog');
+        if (empty($agentcheck)) {
+            return false;
+        }
+        $services = [];
+        if (isset($this->agentResponse['windows_eventlog'])) {
+            $eventlogs = array_keys($this->agentResponse['windows_eventlog']);
+            if(empty($eventlogs)){
+                //No Windows Event Logs (Application, Security, System, etc...) in agent output
+                return false;
+            }
+
+            $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+            foreach ($eventlogs as $item) {
+                $logType = $item; // Application
+
+                if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $this->shortCommandargumentValue($logType)])) {
+                    $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($logType); // Application
+                    $services[] = $this->getServiceStruct(
+                        $agentcheck['servicetemplate_id'],
+                        __('Event log: {0}', $item),
                         $servicetemplatecommandargumentvalues
                     );
                 }
