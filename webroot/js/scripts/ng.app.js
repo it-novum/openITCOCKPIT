@@ -1426,7 +1426,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('WizardHostConfiguration', {
-                url: '/wizards/wizardHostConfiguration/:typeId/:title/:hostId',
+                url: '/wizards/wizardHostConfiguration/:typeId/:title/:hostId/:state/:selectedOs',
                 params: {
                     state: {
                         value: null
