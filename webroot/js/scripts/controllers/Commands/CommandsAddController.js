@@ -49,8 +49,10 @@ angular.module('openITCOCKPIT')
         $scope.addArg = function(){
             var argsCount = 1;
             var count = 1;
-            var allIds = _.map($scope.args, 'id');
-            while(in_array(argsCount, allIds)){
+            var allArgNumbersInUse = _.map($scope.args, function(arg){
+                return arg.name.match(/\d+/g);
+            });
+            while(in_array(argsCount, allArgNumbersInUse)){
                 argsCount++;
             }
             if($scope.args.length > 0){
@@ -65,7 +67,7 @@ angular.module('openITCOCKPIT')
                 human_name: '',
                 count: count
             });
-            $scope.args = _.sortBy($scope.args, 'id');
+            $scope.args = _.sortBy($scope.args, 'name');
         };
 
         $scope.checkForMisingArguments = function(){
