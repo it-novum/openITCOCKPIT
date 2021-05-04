@@ -48,20 +48,21 @@ angular.module('openITCOCKPIT')
         /*** Filter end ***/
         /*** dynamic Table ***/
         $scope.dynamictable = {
-            custom_state:1,
+            user_id : $scope.user_id,
+            custom_state: 1,
             custom_acknowledgement: 1,
             custom_indowntime: 1,
             custom_grapher: 1,
             custom_passive: 1,
             custom_priority: 1,
-            custom_servicename:1,
+            custom_servicename: 1,
             custom_last_change: 1,
             custom_last_check: 1,
             custom_next_check: 1,
             custom_service_output: 1,
             custom_instance: 0,
             custom_description: 0,
-            custom_container_name:0
+            custom_container_name: 0
         }
         /*** dynamic table end ***/
         $scope.massChange = {};
@@ -137,6 +138,52 @@ angular.module('openITCOCKPIT')
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
+            });
+        };
+
+        $scope.loadTableConfig = function(){
+            $http.get("/services/dynamicServiceTable.json", {
+                angular : true
+            }).then(function(result){
+                $scope.user_id = result.data.user_id;
+                if(result.data.table_config[0] == null) {
+                    $scope.dynamictable = {
+                        user_id : $scope.user_id,
+                        custom_state: 1,
+                        custom_acknowledgement: 1,
+                        custom_indowntime: 1,
+                        custom_grapher: 1,
+                        custom_passive: 1,
+                        custom_priority: 1,
+                        custom_servicename: 1,
+                        custom_last_change: 1,
+                        custom_last_check: 1,
+                        custom_next_check: 1,
+                        custom_service_output: 1,
+                        custom_instance: 0,
+                        custom_description: 0,
+                        custom_container_name: 0
+                    }
+
+                }else {
+                    $scope.dynamictable = result.data.table_config[0];
+                }
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+        $scope.loadTableConfig();
+
+        $scope.toggleColumn = function(){
+            $http.post("/services/dynamicTableConfig.json?angular=true",
+                {ConfigTable: $scope.dynamictable}
+            ).then(function(result){
+                console.log(result);
             });
         };
 

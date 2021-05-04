@@ -141,10 +141,9 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.user_id = result.data.user_id;
 
-                //console.log($scope.table_data[0].custom_last_change);
-                if( result.data.table_config[0] == null ){
+                if(result.data.table_config[0] == null){
                     $scope.dynamictable = {
-                        user_id : $scope.user_id,
+                        user_id: $scope.user_id,
                         custom_hoststatus: 1,
                         custom_acknowledgement: 1,
                         custom_indowntime: 1,
@@ -161,11 +160,9 @@ angular.module('openITCOCKPIT')
                         custom_description: 0,
                         custom_container_name: 0
                     }
-                } else {
+                }else{
                     $scope.dynamictable = result.data.table_config[0];
-
                 }
-
 
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -181,10 +178,8 @@ angular.module('openITCOCKPIT')
 
         $scope.toggleColumn = function(){
             $http.post("/hosts/dynamicTableConfig.json?angular=true",
-                {ConfigTable : $scope.dynamictable}
+                {ConfigTable: $scope.dynamictable}
             ).then(function(result){
-                console.log('posted');
-                console.log(typeof $scope.dynamictable.custom_hoststatus);
                 console.log(result);
             });
         };

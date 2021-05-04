@@ -96,7 +96,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_state"
-                                       ng-model="dynamictable.custom_state">
+                                       ng-model="dynamictable.custom_state" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_state">
                                     <?php echo __('State'); ?>
                                 </label>
@@ -107,7 +107,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_acknowledgement"
-                                       ng-model="dynamictable.custom_acknowledgement">
+                                       ng-model="dynamictable.custom_acknowledgement" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_acknowledgement">
                                     <?php echo __('Acknowledgement'); ?>
                                 </label>
@@ -118,7 +118,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_indowntime"
-                                       ng-model="dynamictable.custom_indowntime">
+                                       ng-model="dynamictable.custom_indowntime" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_indowntime">
                                     <?php echo __('In downtime'); ?>
                                 </label>
@@ -129,7 +129,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_grapher"
-                                       ng-model="dynamictable.custom_grapher">
+                                       ng-model="dynamictable.custom_grapher" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_grapher">
                                     <?php echo __('Grapher'); ?>
                                 </label>
@@ -140,7 +140,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_passive"
-                                       ng-model="dynamictable.custom_passive">
+                                       ng-model="dynamictable.custom_passive" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_passive">
                                     <?php echo __('Passive'); ?>
                                 </label>
@@ -151,7 +151,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_priority"
-                                       ng-model="dynamictable.custom_priority">
+                                       ng-model="dynamictable.custom_priority" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_priority">
                                     <?php echo __('Priority'); ?>
                                 </label>
@@ -162,7 +162,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_servicename"
-                                       ng-model="dynamictable.custom_servicename">
+                                       ng-model="dynamictable.custom_servicename" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_servicename">
                                     <?php echo __('Service name'); ?>
                                 </label>
@@ -173,7 +173,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_last_change"
-                                       ng-model="dynamictable.custom_last_change">
+                                       ng-model="dynamictable.custom_last_change" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_last_change">
                                     <?php echo __('Last state change'); ?>
                                 </label>
@@ -184,7 +184,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_last_check"
-                                       ng-model="dynamictable.custom_last_check">
+                                       ng-model="dynamictable.custom_last_check" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_last_check">
                                     <?php echo __('Last check'); ?>
                                 </label>
@@ -195,7 +195,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_next_check"
-                                       ng-model="dynamictable.custom_next_check">
+                                       ng-model="dynamictable.custom_next_check" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_next_check">
                                     <?php echo __('Next check'); ?>
                                 </label>
@@ -206,7 +206,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_service_output"
-                                       ng-model="dynamictable.custom_service_output">
+                                       ng-model="dynamictable.custom_service_output" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_service_output">
                                     <?php echo __('Service output'); ?>
                                 </label>
@@ -217,7 +217,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_instance"
-                                       ng-model="dynamictable.custom_instance">
+                                       ng-model="dynamictable.custom_instance" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_instance">
                                     <?php echo __('Satellite'); ?>
                                 </label>
@@ -228,7 +228,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_description"
-                                       ng-model="dynamictable.custom_description">
+                                       ng-model="dynamictable.custom_description" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_description">
                                     <?php echo __('Description'); ?>
                                 </label>
@@ -239,7 +239,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_container_name"
-                                       ng-model="dynamictable.custom_container_name">
+                                       ng-model="dynamictable.custom_container_name" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_container_name">
                                     <?php echo __('Container'); ?>
                                 </label>
@@ -612,7 +612,8 @@
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')" ng-show="dynamictable.custom_state">
+                                <th colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')"
+                                    ng-show="dynamictable.custom_state">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.current_state')"></i>
                                         <?php echo __('State'); ?>
@@ -639,20 +640,23 @@
                                     </strong>
                                 </th>
 
-                                <th class="no-sort text-center" ng-click="orderBy('servicepriority')" ng-show="dynamictable.custom_priority">
+                                <th class="no-sort text-center" ng-click="orderBy('servicepriority')"
+                                    ng-show="dynamictable.custom_priority">
                                     <i class="fa" ng-class="getSortClass('servicepriority')"></i>
                                     <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
                                     </i>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('servicename')" ng-show="dynamictable.custom_servicename">
+                                <th class="no-sort" ng-click="orderBy('servicename')"
+                                    ng-show="dynamictable.custom_servicename">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('servicename')"></i>
                                         <?php echo __('Service name'); ?>
                                     </div>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.container_name')" ng-show="dynamictable.custom_container_name">
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.container_name')"
+                                    ng-show="dynamictable.custom_container_name">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.container_name')"></i>
                                         <?php echo __('Container'); ?>
@@ -660,40 +664,46 @@
                                 </th>
 
                                 <th class="no-sort tableStatewidth"
-                                    ng-click="orderBy('Servicestatus.last_state_change')" ng-show="dynamictable.custom_last_change">
+                                    ng-click="orderBy('Servicestatus.last_state_change')"
+                                    ng-show="dynamictable.custom_last_change">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.last_state_change')"></i>
                                         <?php echo __('Last state change'); ?>
                                     </div>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.last_check')" ng-show="dynamictable.custom_last_check">
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.last_check')"
+                                    ng-show="dynamictable.custom_last_check">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.last_check')"></i>
                                         <?php echo __('Last check'); ?>
                                     </div>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.next_check')" ng-show="dynamictable.custom_next_check">
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.next_check')"
+                                    ng-show="dynamictable.custom_next_check">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.next_check')"></i>
                                         <?php echo __('Next check'); ?>
                                     </div>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Servicestatus.output')" ng-show="dynamictable.custom_service_output">
+                                <th class="no-sort" ng-click="orderBy('Servicestatus.output')"
+                                    ng-show="dynamictable.custom_service_output">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.output')"></i>
                                         <?php echo __('Service output'); ?>
                                     </div>
                                 </th>
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.instance')" ng-show="dynamictable.custom_instance">
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.instance')"
+                                    ng-show="dynamictable.custom_instance">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.instance')"></i>
                                         <?php echo __('Instance'); ?>
                                     </div>
                                 </th>
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.descriptiion')" ng-show="dynamictable.custom_description">
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.descriptiion')"
+                                    ng-show="dynamictable.custom_description">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Servicestatus.descriptiion')"></i>
                                         <?php echo __('Description'); ?>

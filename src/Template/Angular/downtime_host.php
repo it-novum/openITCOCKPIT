@@ -64,7 +64,7 @@
                             <div class="col col-xs-5">
                                 <input class="form-control"
                                        ng-model="downtimeModal.from_date"
-                                       type="date">
+                                       type="text">
                             </div>
                             <div class="col col-xs-5">
                                 <input class="form-control"

@@ -807,7 +807,6 @@ class HostsController extends AppController {
             return;
         }
         $User = new User($this->getUser());
-
         /** @var  $TableConfigsTable TableConfigsTable */
         $TableConfigsTable = TableRegistry::getTableLocator()->get('TableConfigs');
         if ($this->request->is('get')) {
@@ -847,7 +846,6 @@ class HostsController extends AppController {
                 //error
                 throw new NotFoundException('Invalid id');
             } else {
-
                 $table_config = $TableConfigsTable->patchEntity($id, $data);
                 $TableConfigsTable->save($table_config);
                 if ($table_config->hasErrors()) {
@@ -860,10 +858,7 @@ class HostsController extends AppController {
                 $this->set('table_config', $table_config);
                 $this->viewBuilder()->setOption('serialize', ['table_config']);
             }
-
-
         }
-
     }
 
     public function sharing($id = null) {

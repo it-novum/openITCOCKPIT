@@ -50,6 +50,7 @@ use App\Model\Table\ServicecommandargumentvaluesTable;
 use App\Model\Table\ServiceeventcommandargumentvaluesTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServiceTableConfigsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
@@ -2680,5 +2681,59 @@ class ServicesController extends AppController {
 
         $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);
+    }
+
+    public function dynamicServiceTable() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+        $User = new User($this->getUser());
+        /** @var $ServiceTableConfig ServiceTableConfigsTable */
+        $ServiceTableConfig = TableRegistry::getTableLocator()->get('ServiceTableConfigs');
+        if ($this->request->is('get')) {
+            $user_id = $User->getId();
+            $table_config = $ServiceTableConfig->find('all');
+            $table_config = $table_config->where(['user_id' => $user_id]);
+            $this->set('user_id', $user_id);
+            $this->set('table_config', $table_config);
+
+            $this->viewBuilder()->setOption('serialize', ['user_id', 'table_config']);
+        }
+        //Post req
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $data = $this->request->getData('ConfigTable', []);
+            $user_id = $User->getId();
+            if (!$ServiceTableConfig->existByUserId($user_id)) {
+                // $data['user_id'] = $user_id;
+                $table_config = $ServiceTableConfig->newEntity($data);
+                $ServiceTableConfig->save($table_config);
+                if ($table_config->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $table_config->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                    return;
+                }
+                $this->set('table_config', $table_config);
+                $this->viewBuilder()->setOption('serialize', ['table_config']);
+            }
+            $table_id = $data['id'];
+            $id = $ServiceTableConfig->get($table_id);
+            if (!$id == $table_id) {
+                throw new NotFoundException('Invalid id');
+            } else {
+                $table_config = $ServiceTableConfig->patchEntity($id, $data);
+                $ServiceTableConfig->save($table_config);
+                if ($table_config->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $table_config->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                    return;
+                }
+                $this->set('table_config', $table_config);
+                $this->viewBuilder()->setOption('serialize', ['table_config']);
+            }
+
+        }
     }
 }

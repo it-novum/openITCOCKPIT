@@ -133,4 +133,12 @@ class ServiceTableConfigsTable extends Table
 
         return $rules;
     }
+    /**
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function existByUserId($id) {
+        $this->exists(['ServiceTableConfigs.user_id' => $id]);
+    }
 }
