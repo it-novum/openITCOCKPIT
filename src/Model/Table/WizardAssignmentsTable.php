@@ -255,19 +255,26 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'network.png',
                 'category'    => ['linux', 'network']
             ],
-            'sap'        => [
+            'sap'                    => [
                 'type_id'     => 'sap',
                 'title'       => __('SAP'),
                 'description' => __('Monitoring SAP Systems'),
                 'image'       => 'SAP-Logo.svg',
-                'category'    => ['sap', 'linux']
+                'category'    => ['sap', 'linux', 'database']
             ],
-            'sap-hana'   => [
-                'type_id'     => 'sap-hana',
-                'title'       => __('SAP HANA'),
-                'description' => __('Monitoring for your SAP Hana Database'),
+            'sap-hana-system'        => [
+                'type_id'     => 'sap-hana-system',
+                'title'       => __('SAP HANA (System)'),
+                'description' => __('Monitoring for your SAP Hana System Database'),
                 'image'       => 'SAP-Logo.svg',
-                'category'    => ['sap', 'linux']
+                'category'    => ['sap', 'linux', 'database']
+            ],
+            'sap-hana-tenant'        => [
+                'type_id'     => 'sap-hana-tenant',
+                'title'       => __('SAP HANA (Tenant)'),
+                'description' => __('Monitoring for your SAP Hana Tenant Database'),
+                'image'       => 'SAP-Logo.svg',
+                'category'    => ['sap', 'linux', 'database']
             ],
             'vmware-through-vcenter' => [
                 'type_id'     => 'vmware-through-vcenter',
