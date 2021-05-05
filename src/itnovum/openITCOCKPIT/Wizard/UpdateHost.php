@@ -55,7 +55,7 @@ class UpdateHost {
 
         //Update custom variables
         $currentHostCustomVariables = Hash::combine($mergedHost['Host']['customvariables'], '{n}.name', '{n}');
-        foreach ($customVariablestoCheck as $hostCustomvariableName => $postDataKey)
+        foreach ($customVariablestoCheck as $hostCustomvariableName => $postDataKey) {
             if (isset($currentHostCustomVariables[$hostCustomvariableName])) {
                 $currentHostCustomVariables[$hostCustomvariableName]['value'] = $postData[$postDataKey];
             } else {
@@ -63,10 +63,10 @@ class UpdateHost {
                     'name'          => $hostCustomvariableName,
                     'value'         => $postData[$postDataKey],
                     'objecttype_id' => OBJECT_HOST,
-                    'password'      => 0
+                    'password'      => (preg_match('/(?i)password/', $hostCustomvariableName)) ? 1 : 0
                 ];
             }
-
+        }
         $mergedHost['Host']['customvariables'] = $currentHostCustomVariables;
         $HostComparisonForSave = new HostComparisonForSave($mergedHost, $hosttemplate);
 

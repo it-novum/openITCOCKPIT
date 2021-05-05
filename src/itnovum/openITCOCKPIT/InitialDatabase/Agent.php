@@ -28,6 +28,7 @@ use App\Model\Table\AgentchecksTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
 
 /**
  * Class Cronjob
@@ -120,6 +121,32 @@ class Agent extends Importer {
             }
         }
 
+        // Delete old 1.x legacy Agentchecks
+        $legacyServicetemplateUuids = [
+            'be4c9649-8771-4704-b409-c56b5f67abc8',
+            '3e0bd59e-822d-47ed-a5b2-15f1e53fe043',
+            'f73dc076-bdb0-4302-9776-88ca1ba79364',
+            '21057a75-57a1-4972-8f2f-073c8a6000b0',
+            'dda2d5dc-7987-49a5-b4c2-0540e8aaf45e',
+            'ca73653f-2bba-4542-b11b-0bbd0ecc8b7a',
+            'a9f7757e-34b0-4df9-8fca-ab8b594c2c26',
+            'aef4c1a8-ed71-4799-a164-3ad469baadc5'
+        ];
+        foreach ($legacyServicetemplateUuids as $legacyServicetemplateUuid) {
+            $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($legacyServicetemplateUuid, [], false);
+            if (!empty($servicetemplate)) {
+                try {
+                    $agentcheck = $this->AgentchecksTable->find()
+                        ->where(['servicetemplate_id' => $servicetemplate['id']])
+                        ->firstOrFail();
+                    $this->AgentchecksTable->delete($agentcheck);
+                } catch (RecordNotFoundException $e) {
+                    //Nothing to delete
+                }
+            }
+        }
+
+        // Create new Agent Checks
         foreach ($data['Agentchecks'] as $agentcheck) {
             //debug($this->ServicetemplatesTable->getServicetemplateByUuid($agentcheck['servicetemplate_id']));die();
             $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($agentcheck['servicetemplate_id']);
@@ -158,11 +185,11 @@ class Agent extends Importer {
                 'servicetemplate_id' => 'c475f1c8-fd28-493d-aad0-7861e418170d'
             ],
             // Agent 1.x legacy - delete this
-            [
-                'name'               => 'cpu_percentage',
-                'plugin_name'        => 'CpuTotalPercentage',
-                'servicetemplate_id' => 'be4c9649-8771-4704-b409-c56b5f67abc8'
-            ],
+            //[
+            //    'name'               => 'cpu_percentage',
+            //    'plugin_name'        => 'CpuTotalPercentage',
+            //    'servicetemplate_id' => 'be4c9649-8771-4704-b409-c56b5f67abc8'
+            //],
             // Agent 3.x (can use the sam command and service template as 1.x)
             [
                 'name'               => 'cpu.cpu_percentage',
@@ -195,11 +222,11 @@ class Agent extends Importer {
                 'servicetemplate_id' => '24851d0d-32fa-4048-bd67-6a30d710bba1'
             ],
             // Agent 1.x legacy - delete this
-            [
-                'name'               => 'sensors',
-                'plugin_name'        => 'Fan',
-                'servicetemplate_id' => '3e0bd59e-822d-47ed-a5b2-15f1e53fe043'
-            ],
+            //[
+            //    'name'               => 'sensors',
+            //    'plugin_name'        => 'Fan',
+            //    'servicetemplate_id' => '3e0bd59e-822d-47ed-a5b2-15f1e53fe043'
+            //],
             // Agent 1.x legacy - delete this
             [
                 'name'               => 'sensors',
@@ -213,11 +240,11 @@ class Agent extends Importer {
                 'servicetemplate_id' => 'a73aa635-a0d0-463a-b065-9c8fe9a5a20b'
             ],
             // Agent 1.x legacy - delete this
-            [
-                'name'               => 'sensors',
-                'plugin_name'        => 'Battery',
-                'servicetemplate_id' => '21057a75-57a1-4972-8f2f-073c8a6000b0'
-            ],
+            //[
+            //    'name'               => 'sensors',
+            //    'plugin_name'        => 'Battery',
+            //    'servicetemplate_id' => '21057a75-57a1-4972-8f2f-073c8a6000b0'
+            //],
             // Agent 3.x
             [
                 'name'               => 'sensors.Batteries',
@@ -250,11 +277,20 @@ class Agent extends Importer {
                 'plugin_name'        => 'SystemdService',
                 'servicetemplate_id' => 'd21e3462-7430-4d38-b92a-853bcfc12356'
             ],
+
+            // Agent 1.x legacy - delete this
+            //[
+            //    'name'               => 'windows_eventlog',
+            //    'plugin_name'        => 'WindowsEventlog',
+            //    'servicetemplate_id' => 'dda2d5dc-7987-49a5-b4c2-0540e8aaf45e'
+            //],
+            // Agent 3.x
             [
                 'name'               => 'windows_eventlog',
                 'plugin_name'        => 'WindowsEventlog',
-                'servicetemplate_id' => 'dda2d5dc-7987-49a5-b4c2-0540e8aaf45e'
+                'servicetemplate_id' => 'f9205afd-3530-4b65-b6cc-347a652f7b66'
             ],
+
             // Agent 1.x legacy - delete this
             [
                 'name'               => 'dockerstats',
@@ -269,11 +305,11 @@ class Agent extends Importer {
             ],
 
             // Agent 1.x legacy - delete this
-            [
-                'name'               => 'dockerstats',
-                'plugin_name'        => 'DockerContainerCPU',
-                'servicetemplate_id' => 'a9f7757e-34b0-4df9-8fca-ab8b594c2c26'
-            ],
+            //[
+            //    'name'               => 'dockerstats',
+            //    'plugin_name'        => 'DockerContainerCPU',
+            //    'servicetemplate_id' => 'a9f7757e-34b0-4df9-8fca-ab8b594c2c26'
+            //],
             // Agent 3.x
             [
                 'name'               => 'docker.cpu',
@@ -282,11 +318,11 @@ class Agent extends Importer {
             ],
 
             // Agent 1.x legacy - delete this
-            [
-                'name'               => 'dockerstats',
-                'plugin_name'        => 'DockerContainerMemory',
-                'servicetemplate_id' => 'aef4c1a8-ed71-4799-a164-3ad469baadc5'
-            ],
+            //[
+            //    'name'               => 'dockerstats',
+            //    'plugin_name'        => 'DockerContainerMemory',
+            //    'servicetemplate_id' => 'aef4c1a8-ed71-4799-a164-3ad469baadc5'
+            //],
             // Agent 3.x
             [
                 'name'               => 'docker.memory',
@@ -518,37 +554,37 @@ class Agent extends Importer {
             ],
 
             // Agent 1.x legacy - delete this
-            [
-                'name'             => 'check_oitc_agent_temperature',
-                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
-                'command_type'     => CHECK_COMMAND,
-                'human_args'       => null,
-                'uuid'             => '42e3e6c9-a989-4044-a993-193558ad7964',
-                'description'      => "Return the temperature of a given sensor.\n" .
-                    "Warning: Temperature as integer\n" .
-                    "Critical: Temperature as integer\n" .
-                    "Average: Use average value of all temperatures, if a device has multiple temperature values (eg. for each core of one cpu device) \n" .
-                    "Device: Sensor name (e.g. coretemp / acpitz / pch_skylake) \n" .
-                    "Only available on Linux.\n",
-                'commandarguments' => [
-                    [
-                        'name'       => '$ARG1$',
-                        'human_name' => 'Warning'
-                    ],
-                    [
-                        'name'       => '$ARG2$',
-                        'human_name' => 'Critical'
-                    ],
-                    [
-                        'name'       => '$ARG3$',
-                        'human_name' => 'Average 1/0'
-                    ],
-                    [
-                        'name'       => '$ARG4$',
-                        'human_name' => 'Device'
-                    ]
-                ]
-            ],
+            //[
+            //    'name'             => 'check_oitc_agent_temperature',
+            //    'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+            //    'command_type'     => CHECK_COMMAND,
+            //    'human_args'       => null,
+            //    'uuid'             => '42e3e6c9-a989-4044-a993-193558ad7964',
+            //    'description'      => "Return the temperature of a given sensor.\n" .
+            //        "Warning: Temperature as integer\n" .
+            //        "Critical: Temperature as integer\n" .
+            //        "Average: Use average value of all temperatures, if a device has multiple temperature values (eg. for each core of one cpu device) \n" .
+            //        "Device: Sensor name (e.g. coretemp / acpitz / pch_skylake) \n" .
+            //        "Only available on Linux.\n",
+            //    'commandarguments' => [
+            //        [
+            //            'name'       => '$ARG1$',
+            //            'human_name' => 'Warning'
+            //        ],
+            //        [
+            //            'name'       => '$ARG2$',
+            //            'human_name' => 'Critical'
+            //        ],
+            //        [
+            //            'name'       => '$ARG3$',
+            //            'human_name' => 'Average 1/0'
+            //        ],
+            //        [
+            //            'name'       => '$ARG4$',
+            //            'human_name' => 'Device'
+            //        ]
+            //    ]
+            //],
             // Agent 3.x
             [
                 'name'             => 'check_oitc_agent3_temperature',
@@ -577,28 +613,28 @@ class Agent extends Importer {
             ],
 
             // Agent 1.x legacy - delete this
-            [
-                'name'             => 'check_oitc_agent_battery',
-                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
-                'command_type'     => CHECK_COMMAND,
-                'human_args'       => null,
-                'uuid'             => '02289d0e-0a3c-46e5-94f1-b18e57be4e70',
-                'description'      => "Check battery power left in percentage. \nWarning and Critical thresholds are percentage values from 0-100",
-                'commandarguments' => [
-                    [
-                        'name'       => '$ARG1$',
-                        'human_name' => 'Warning %'
-                    ],
-                    [
-                        'name'       => '$ARG2$',
-                        'human_name' => 'Critical %'
-                    ],
-                    [
-                        'name'       => '$ARG3$',
-                        'human_name' => 'ID'
-                    ]
-                ]
-            ],
+            //[
+            //    'name'             => 'check_oitc_agent_battery',
+            //    'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+            //    'command_type'     => CHECK_COMMAND,
+            //    'human_args'       => null,
+            //    'uuid'             => '02289d0e-0a3c-46e5-94f1-b18e57be4e70',
+            //    'description'      => "Check battery power left in percentage. \nWarning and Critical thresholds are percentage values from 0-100",
+            //    'commandarguments' => [
+            //        [
+            //            'name'       => '$ARG1$',
+            //            'human_name' => 'Warning %'
+            //        ],
+            //        [
+            //            'name'       => '$ARG2$',
+            //            'human_name' => 'Critical %'
+            //        ],
+            //        [
+            //            'name'       => '$ARG3$',
+            //            'human_name' => 'ID'
+            //        ]
+            //    ]
+            //],
             //Agent 3.x
             [
                 'name'             => 'check_oitc_agent3_battery',
@@ -789,18 +825,59 @@ class Agent extends Importer {
                 ]
             ],
 
+            // Agent 1.x legacy - delete this
+            //[
+            //    'name'             => 'check_oitc_agent_windows_eventlog',
+            //    'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+            //    'command_type'     => CHECK_COMMAND,
+            //    'human_args'       => null,
+            //    'uuid'             => 'af3f0cac-f562-4830-9935-a9b2d69d494e',
+            //    'description'      => "Returns the state of a windows event log entry.\n" .
+            //        "Log type: The windows event log type to search in. Need to be specified in the agent configuration. (e.g. 'System', 'Application', 'Security')\n" .
+            //        "Default state: The service state if no log entry will be found. (default: 'ok', eg. 'ok', 'warning', 'critical', 'unknown')\n" .
+            //        "Check past minutes: Check for the log entry within the last X minutes. (default: '60', complete log: '0')\n" .
+            //        "Match: String that must match with the event log source name.\n" .
+            //        "Strict: Decides if the match must be completely or just in a part (1/0).\n",
+            //    'commandarguments' => [
+            //        [
+            //            'name'       => '$ARG1$',
+            //            'human_name' => 'Log type'
+            //        ],
+            //        [
+            //            'name'       => '$ARG2$',
+            //            'human_name' => 'Default state'
+            //        ],
+            //        [
+            //            'name'       => '$ARG3$',
+            //            'human_name' => 'Check past minutes'
+            //        ],
+            //        [
+            //            'name'       => '$ARG4$',
+            //            'human_name' => 'Match'
+            //        ],
+            //        [
+            //            'name'       => '$ARG5$',
+            //            'human_name' => 'Strict'
+            //        ]
+            //    ]
+            //],
+            // Agent 3.x
             [
-                'name'             => 'check_oitc_agent_windows_eventlog',
+                'name'             => 'check_oitc_agent3_windows_eventlog',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
-                'uuid'             => 'af3f0cac-f562-4830-9935-a9b2d69d494e',
-                'description'      => "Returns the state of a windows event log entry.\n" .
+                'uuid'             => '2342bf29-de87-40e3-ba04-c83b5a48a42f',
+                'description'      => "Checks for error messages in the given Windows Event Log.\n" .
                     "Log type: The windows event log type to search in. Need to be specified in the agent configuration. (e.g. 'System', 'Application', 'Security')\n" .
-                    "Default state: The service state if no log entry will be found. (default: 'ok', eg. 'ok', 'warning', 'critical', 'unknown')\n" .
-                    "Check past minutes: Check for the log entry within the last X minutes. (default: '60', complete log: '0')\n" .
-                    "Match: String that must match with the event log source name.\n" .
-                    "Strict: Decides if the match must be completely or just in a part (1/0).\n",
+                    "Default state: The service state if no log entry will be found. (default: 0, 0=ok, 1=warning, 2=critical, 3=unknown)\n" .
+                    "EntryTypeIds: Comma separated list of entry types IDs (Level) to include or exclude from evaluation. (1=Error, 2=Warning, 4=Information, 8=SuccessAudit 16=FailureAudit)\n" .
+                    "EntryTypeIds Mode: Determine if the defined Ids at EntryTypeIds will be included or excluded from the check evaluation ('included' or 'excluded')\n" .
+                    "EventIDs: Comma separated list of event IDs to includ or exclude from evaluation. If empty all events gets evaluated. \n" .
+                    "EventIDs Mode: Determine if the defined Ids at EventIDs will be included or excluded from the check evaluation ('included' or 'excluded') \n" .
+                    "Match source: A regular expression that must match with the event source. (e.g. '/Windows/')\n" .
+                    "Match message: A regular expression that must match with the event message. (e.g. '/svchost/')\n\n" .
+                    "For data collection PowerShell gets used by the Agent: https://docs.microsoft.com/de-de/dotnet/api/system.diagnostics.eventlogentrytype?view=net-5.0\n",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -812,16 +889,28 @@ class Agent extends Importer {
                     ],
                     [
                         'name'       => '$ARG3$',
-                        'human_name' => 'Check past minutes'
+                        'human_name' => 'EntryTypeIds'
                     ],
                     [
                         'name'       => '$ARG4$',
-                        'human_name' => 'Match'
+                        'human_name' => 'EntryTypeIds Mode'
                     ],
                     [
                         'name'       => '$ARG5$',
-                        'human_name' => 'Strict'
-                    ]
+                        'human_name' => 'EventIDs'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'EventIDs Mode'
+                    ],
+                    [
+                        'name'       => '$ARG7$',
+                        'human_name' => 'Match source'
+                    ],
+                    [
+                        'name'       => '$ARG8$',
+                        'human_name' => 'Match message'
+                    ],
                 ]
             ],
 
@@ -877,40 +966,40 @@ class Agent extends Importer {
             ],
 
             // Agent 1.x legacy - delete this
-            [
-                'name'             => 'check_oitc_agent_docker_memory',
-                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
-                'command_type'     => CHECK_COMMAND,
-                'human_args'       => null,
-                'uuid'             => 'ba2b3392-a769-4b20-8ea2-10b60f2c74e8',
-                'description'      => "Return the memory usage of a docker container.\n" .
-                    "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the container.\n" .
-                    "Identifier:  Name or id of the container.\n" .
-                    "Warning and Critical thresholds are percentage values from 0-100 or float values depending on the chosen unit.\n" .
-                    "Unit: Determines if warning and critical is defined as percentage (%) or amount of ('B', 'kB', 'KiB', 'MB', 'MiB', 'GB', 'GiB', 'TB', 'TiB', 'PB', 'PiB', 'EB', 'EiB')",
-                'commandarguments' => [
-                    [
-                        'name'       => '$ARG1$',
-                        'human_name' => 'Identifier Type'
-                    ],
-                    [
-                        'name'       => '$ARG2$',
-                        'human_name' => 'Identifier'
-                    ],
-                    [
-                        'name'       => '$ARG3$',
-                        'human_name' => 'Warning'
-                    ],
-                    [
-                        'name'       => '$ARG4$',
-                        'human_name' => 'Critical'
-                    ],
-                    [
-                        'name'       => '$ARG5$',
-                        'human_name' => 'Unit'
-                    ],
-                ]
-            ],
+            //[
+            //    'name'             => 'check_oitc_agent_docker_memory',
+            //    'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+            //    'command_type'     => CHECK_COMMAND,
+            //    'human_args'       => null,
+            //    'uuid'             => 'ba2b3392-a769-4b20-8ea2-10b60f2c74e8',
+            //    'description'      => "Return the memory usage of a docker container.\n" .
+            //        "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the container.\n" .
+            //        "Identifier:  Name or id of the container.\n" .
+            //        "Warning and Critical thresholds are percentage values from 0-100 or float values depending on the chosen unit.\n" .
+            //        "Unit: Determines if warning and critical is defined as percentage (%) or amount of ('B', 'kB', 'KiB', 'MB', 'MiB', 'GB', 'GiB', 'TB', 'TiB', 'PB', 'PiB', 'EB', 'EiB')",
+            //    'commandarguments' => [
+            //        [
+            //            'name'       => '$ARG1$',
+            //            'human_name' => 'Identifier Type'
+            //        ],
+            //        [
+            //            'name'       => '$ARG2$',
+            //            'human_name' => 'Identifier'
+            //        ],
+            //        [
+            //            'name'       => '$ARG3$',
+            //            'human_name' => 'Warning'
+            //        ],
+            //        [
+            //            'name'       => '$ARG4$',
+            //            'human_name' => 'Critical'
+            //        ],
+            //        [
+            //            'name'       => '$ARG5$',
+            //            'human_name' => 'Unit'
+            //        ],
+            //    ]
+            //],
             // Agent 3.x
             [
                 'name'             => 'check_oitc_agent3_docker_memory',
@@ -1679,150 +1768,150 @@ class Agent extends Importer {
             ],
 
             // Agent 1.x legacy - delete this
-            [
-                'uuid'                                      => '3e0bd59e-822d-47ed-a5b2-15f1e53fe043',
-                'template_name'                             => 'OITC_AGENT_FAN_SPEED',
-                'name'                                      => 'Fan Speed',
-                'container_id'                              => ROOT_CONTAINER,
-                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
-                'check_period_id'                           => '1',
-                'notify_period_id'                          => '1',
-                'description'                               => '',
-                'command_id'                                => '7bee1594-b029-4db1-8059-694a75b4f83e',
-                'check_command_args'                        => '',
-                'checkcommand_info'                         => '',
-                'eventhandler_command_id'                   => '0',
-                'timeperiod_id'                             => '0',
-                'check_interval'                            => '300',
-                'retry_interval'                            => '60',
-                'max_check_attempts'                        => '3',
-                'first_notification_delay'                  => '0',
-                'notification_interval'                     => '7200',
-                'notify_on_warning'                         => '1',
-                'notify_on_unknown'                         => '1',
-                'notify_on_critical'                        => '1',
-                'notify_on_recovery'                        => '1',
-                'notify_on_flapping'                        => '0',
-                'notify_on_downtime'                        => '0',
-                'flap_detection_enabled'                    => '0',
-                'flap_detection_on_ok'                      => '0',
-                'flap_detection_on_warning'                 => '0',
-                'flap_detection_on_unknown'                 => '0',
-                'flap_detection_on_critical'                => '0',
-                'low_flap_threshold'                        => '0',
-                'high_flap_threshold'                       => '0',
-                'process_performance_data'                  => '1',
-                'freshness_checks_enabled'                  => '1',
-                'freshness_threshold'                       => '300',
-                'passive_checks_enabled'                    => '1',
-                'event_handler_enabled'                     => '0',
-                'active_checks_enabled'                     => '0',
-                'retain_status_information'                 => '0',
-                'retain_nonstatus_information'              => '0',
-                'notifications_enabled'                     => '0',
-                'notes'                                     => '',
-                'priority'                                  => '1',
-                'tags'                                      => '',
-                'service_url'                               => '',
-                'is_volatile'                               => '0',
-                'check_freshness'                           => '0',
-                'servicetemplateeventcommandargumentvalues' => [],
-                'servicetemplatecommandargumentvalues'      => [
-                    [
-                        'commandargument_id' => '$ARG1$',
-                        'value'              => '2900',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG2$',
-                        'value'              => '3300',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG3$',
-                        'value'              => '0',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG4$',
-                        'value'              => 'thinkpad',
-                    ]
-                ],
-                'customvariables'                           => [],
-                'servicegroups'                             => [],
-                'contactgroups'                             => [],
-                'contacts'                                  => []
-            ],
+            //[
+            //    'uuid'                                      => '3e0bd59e-822d-47ed-a5b2-15f1e53fe043',
+            //    'template_name'                             => 'OITC_AGENT_FAN_SPEED',
+            //    'name'                                      => 'Fan Speed',
+            //    'container_id'                              => ROOT_CONTAINER,
+            //    'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+            //    'check_period_id'                           => '1',
+            //    'notify_period_id'                          => '1',
+            //    'description'                               => '',
+            //    'command_id'                                => '7bee1594-b029-4db1-8059-694a75b4f83e',
+            //    'check_command_args'                        => '',
+            //    'checkcommand_info'                         => '',
+            //    'eventhandler_command_id'                   => '0',
+            //    'timeperiod_id'                             => '0',
+            //    'check_interval'                            => '300',
+            //    'retry_interval'                            => '60',
+            //    'max_check_attempts'                        => '3',
+            //    'first_notification_delay'                  => '0',
+            //    'notification_interval'                     => '7200',
+            //    'notify_on_warning'                         => '1',
+            //    'notify_on_unknown'                         => '1',
+            //    'notify_on_critical'                        => '1',
+            //    'notify_on_recovery'                        => '1',
+            //    'notify_on_flapping'                        => '0',
+            //    'notify_on_downtime'                        => '0',
+            //    'flap_detection_enabled'                    => '0',
+            //    'flap_detection_on_ok'                      => '0',
+            //    'flap_detection_on_warning'                 => '0',
+            //    'flap_detection_on_unknown'                 => '0',
+            //    'flap_detection_on_critical'                => '0',
+            //    'low_flap_threshold'                        => '0',
+            //    'high_flap_threshold'                       => '0',
+            //    'process_performance_data'                  => '1',
+            //    'freshness_checks_enabled'                  => '1',
+            //    'freshness_threshold'                       => '300',
+            //    'passive_checks_enabled'                    => '1',
+            //    'event_handler_enabled'                     => '0',
+            //    'active_checks_enabled'                     => '0',
+            //    'retain_status_information'                 => '0',
+            //    'retain_nonstatus_information'              => '0',
+            //    'notifications_enabled'                     => '0',
+            //    'notes'                                     => '',
+            //    'priority'                                  => '1',
+            //    'tags'                                      => '',
+            //    'service_url'                               => '',
+            //    'is_volatile'                               => '0',
+            //    'check_freshness'                           => '0',
+            //    'servicetemplateeventcommandargumentvalues' => [],
+            //    'servicetemplatecommandargumentvalues'      => [
+            //        [
+            //            'commandargument_id' => '$ARG1$',
+            //            'value'              => '2900',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG2$',
+            //            'value'              => '3300',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG3$',
+            //            'value'              => '0',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG4$',
+            //            'value'              => 'thinkpad',
+            //        ]
+            //    ],
+            //    'customvariables'                           => [],
+            //    'servicegroups'                             => [],
+            //    'contactgroups'                             => [],
+            //    'contacts'                                  => []
+            //],
 
             // Agent 1.x legacy - delete this
-            [
-                'uuid'                                      => 'f73dc076-bdb0-4302-9776-88ca1ba79364',
-                'template_name'                             => 'OITC_AGENT_DEVICE_TEMPERATURE',
-                'name'                                      => 'Device Temperature',
-                'container_id'                              => ROOT_CONTAINER,
-                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
-                'check_period_id'                           => '1',
-                'notify_period_id'                          => '1',
-                'description'                               => '',
-                'command_id'                                => '42e3e6c9-a989-4044-a993-193558ad7964',
-                'check_command_args'                        => '',
-                'checkcommand_info'                         => '',
-                'eventhandler_command_id'                   => '0',
-                'timeperiod_id'                             => '0',
-                'check_interval'                            => '300',
-                'retry_interval'                            => '60',
-                'max_check_attempts'                        => '3',
-                'first_notification_delay'                  => '0',
-                'notification_interval'                     => '7200',
-                'notify_on_warning'                         => '1',
-                'notify_on_unknown'                         => '1',
-                'notify_on_critical'                        => '1',
-                'notify_on_recovery'                        => '1',
-                'notify_on_flapping'                        => '0',
-                'notify_on_downtime'                        => '0',
-                'flap_detection_enabled'                    => '0',
-                'flap_detection_on_ok'                      => '0',
-                'flap_detection_on_warning'                 => '0',
-                'flap_detection_on_unknown'                 => '0',
-                'flap_detection_on_critical'                => '0',
-                'low_flap_threshold'                        => '0',
-                'high_flap_threshold'                       => '0',
-                'process_performance_data'                  => '1',
-                'freshness_checks_enabled'                  => '1',
-                'freshness_threshold'                       => '300',
-                'passive_checks_enabled'                    => '1',
-                'event_handler_enabled'                     => '0',
-                'active_checks_enabled'                     => '0',
-                'retain_status_information'                 => '0',
-                'retain_nonstatus_information'              => '0',
-                'notifications_enabled'                     => '0',
-                'notes'                                     => '',
-                'priority'                                  => '1',
-                'tags'                                      => '',
-                'service_url'                               => '',
-                'is_volatile'                               => '0',
-                'check_freshness'                           => '0',
-                'servicetemplateeventcommandargumentvalues' => [],
-                'servicetemplatecommandargumentvalues'      => [
-                    [
-                        'commandargument_id' => '$ARG1$',
-                        'value'              => '100',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG2$',
-                        'value'              => '110',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG3$',
-                        'value'              => '1',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG4$',
-                        'value'              => 'coretemp',
-                    ]
-                ],
-                'customvariables'                           => [],
-                'servicegroups'                             => [],
-                'contactgroups'                             => [],
-                'contacts'                                  => []
-            ],
+            //[
+            //    'uuid'                                      => 'f73dc076-bdb0-4302-9776-88ca1ba79364',
+            //    'template_name'                             => 'OITC_AGENT_DEVICE_TEMPERATURE',
+            //    'name'                                      => 'Device Temperature',
+            //    'container_id'                              => ROOT_CONTAINER,
+            //    'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+            //    'check_period_id'                           => '1',
+            //    'notify_period_id'                          => '1',
+            //    'description'                               => '',
+            //    'command_id'                                => '42e3e6c9-a989-4044-a993-193558ad7964',
+            //    'check_command_args'                        => '',
+            //    'checkcommand_info'                         => '',
+            //    'eventhandler_command_id'                   => '0',
+            //    'timeperiod_id'                             => '0',
+            //    'check_interval'                            => '300',
+            //    'retry_interval'                            => '60',
+            //    'max_check_attempts'                        => '3',
+            //    'first_notification_delay'                  => '0',
+            //    'notification_interval'                     => '7200',
+            //    'notify_on_warning'                         => '1',
+            //    'notify_on_unknown'                         => '1',
+            //    'notify_on_critical'                        => '1',
+            //    'notify_on_recovery'                        => '1',
+            //    'notify_on_flapping'                        => '0',
+            //    'notify_on_downtime'                        => '0',
+            //    'flap_detection_enabled'                    => '0',
+            //    'flap_detection_on_ok'                      => '0',
+            //    'flap_detection_on_warning'                 => '0',
+            //    'flap_detection_on_unknown'                 => '0',
+            //    'flap_detection_on_critical'                => '0',
+            //    'low_flap_threshold'                        => '0',
+            //    'high_flap_threshold'                       => '0',
+            //    'process_performance_data'                  => '1',
+            //    'freshness_checks_enabled'                  => '1',
+            //    'freshness_threshold'                       => '300',
+            //    'passive_checks_enabled'                    => '1',
+            //    'event_handler_enabled'                     => '0',
+            //    'active_checks_enabled'                     => '0',
+            //    'retain_status_information'                 => '0',
+            //    'retain_nonstatus_information'              => '0',
+            //    'notifications_enabled'                     => '0',
+            //    'notes'                                     => '',
+            //    'priority'                                  => '1',
+            //    'tags'                                      => '',
+            //    'service_url'                               => '',
+            //    'is_volatile'                               => '0',
+            //    'check_freshness'                           => '0',
+            //    'servicetemplateeventcommandargumentvalues' => [],
+            //    'servicetemplatecommandargumentvalues'      => [
+            //        [
+            //            'commandargument_id' => '$ARG1$',
+            //            'value'              => '100',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG2$',
+            //            'value'              => '110',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG3$',
+            //            'value'              => '1',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG4$',
+            //            'value'              => 'coretemp',
+            //        ]
+            //    ],
+            //    'customvariables'                           => [],
+            //    'servicegroups'                             => [],
+            //    'contactgroups'                             => [],
+            //    'contacts'                                  => []
+            //],
             // Agent 3.x
             [
                 'uuid'                                      => 'a73aa635-a0d0-463a-b065-9c8fe9a5a20b',
@@ -1893,69 +1982,69 @@ class Agent extends Importer {
             ],
 
             // Agent 1.x legacy - delete this
-            [
-                'uuid'                                      => '21057a75-57a1-4972-8f2f-073c8a6000b0',
-                'template_name'                             => 'OITC_AGENT_BATTERY_LEVEL',
-                'name'                                      => 'Battery Level',
-                'container_id'                              => ROOT_CONTAINER,
-                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
-                'check_period_id'                           => '1',
-                'notify_period_id'                          => '1',
-                'description'                               => '',
-                'command_id'                                => '02289d0e-0a3c-46e5-94f1-b18e57be4e70',
-                'check_command_args'                        => '',
-                'checkcommand_info'                         => '',
-                'eventhandler_command_id'                   => '0',
-                'timeperiod_id'                             => '0',
-                'check_interval'                            => '300',
-                'retry_interval'                            => '60',
-                'max_check_attempts'                        => '3',
-                'first_notification_delay'                  => '0',
-                'notification_interval'                     => '7200',
-                'notify_on_warning'                         => '1',
-                'notify_on_unknown'                         => '1',
-                'notify_on_critical'                        => '1',
-                'notify_on_recovery'                        => '1',
-                'notify_on_flapping'                        => '0',
-                'notify_on_downtime'                        => '0',
-                'flap_detection_enabled'                    => '0',
-                'flap_detection_on_ok'                      => '0',
-                'flap_detection_on_warning'                 => '0',
-                'flap_detection_on_unknown'                 => '0',
-                'flap_detection_on_critical'                => '0',
-                'low_flap_threshold'                        => '0',
-                'high_flap_threshold'                       => '0',
-                'process_performance_data'                  => '1',
-                'freshness_checks_enabled'                  => '1',
-                'freshness_threshold'                       => '300',
-                'passive_checks_enabled'                    => '1',
-                'event_handler_enabled'                     => '0',
-                'active_checks_enabled'                     => '0',
-                'retain_status_information'                 => '0',
-                'retain_nonstatus_information'              => '0',
-                'notifications_enabled'                     => '0',
-                'notes'                                     => '',
-                'priority'                                  => '1',
-                'tags'                                      => '',
-                'service_url'                               => '',
-                'is_volatile'                               => '0',
-                'check_freshness'                           => '0',
-                'servicetemplateeventcommandargumentvalues' => [],
-                'servicetemplatecommandargumentvalues'      => [
-                    [
-                        'commandargument_id' => '$ARG1$',
-                        'value'              => '@35',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG2$',
-                        'value'              => '@20',
-                    ]
-                ],
-                'customvariables'                           => [],
-                'servicegroups'                             => [],
-                'contactgroups'                             => [],
-                'contacts'                                  => []
-            ],
+            //[
+            //    'uuid'                                      => '21057a75-57a1-4972-8f2f-073c8a6000b0',
+            //    'template_name'                             => 'OITC_AGENT_BATTERY_LEVEL',
+            //    'name'                                      => 'Battery Level',
+            //    'container_id'                              => ROOT_CONTAINER,
+            //    'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+            //    'check_period_id'                           => '1',
+            //    'notify_period_id'                          => '1',
+            //    'description'                               => '',
+            //    'command_id'                                => '02289d0e-0a3c-46e5-94f1-b18e57be4e70',
+            //    'check_command_args'                        => '',
+            //    'checkcommand_info'                         => '',
+            //    'eventhandler_command_id'                   => '0',
+            //    'timeperiod_id'                             => '0',
+            //    'check_interval'                            => '300',
+            //    'retry_interval'                            => '60',
+            //    'max_check_attempts'                        => '3',
+            //    'first_notification_delay'                  => '0',
+            //    'notification_interval'                     => '7200',
+            //    'notify_on_warning'                         => '1',
+            //    'notify_on_unknown'                         => '1',
+            //    'notify_on_critical'                        => '1',
+            //    'notify_on_recovery'                        => '1',
+            //    'notify_on_flapping'                        => '0',
+            //    'notify_on_downtime'                        => '0',
+            //    'flap_detection_enabled'                    => '0',
+            //    'flap_detection_on_ok'                      => '0',
+            //    'flap_detection_on_warning'                 => '0',
+            //    'flap_detection_on_unknown'                 => '0',
+            //    'flap_detection_on_critical'                => '0',
+            //    'low_flap_threshold'                        => '0',
+            //    'high_flap_threshold'                       => '0',
+            //    'process_performance_data'                  => '1',
+            //    'freshness_checks_enabled'                  => '1',
+            //    'freshness_threshold'                       => '300',
+            //    'passive_checks_enabled'                    => '1',
+            //    'event_handler_enabled'                     => '0',
+            //    'active_checks_enabled'                     => '0',
+            //    'retain_status_information'                 => '0',
+            //    'retain_nonstatus_information'              => '0',
+            //    'notifications_enabled'                     => '0',
+            //    'notes'                                     => '',
+            //    'priority'                                  => '1',
+            //    'tags'                                      => '',
+            //    'service_url'                               => '',
+            //    'is_volatile'                               => '0',
+            //    'check_freshness'                           => '0',
+            //    'servicetemplateeventcommandargumentvalues' => [],
+            //    'servicetemplatecommandargumentvalues'      => [
+            //        [
+            //            'commandargument_id' => '$ARG1$',
+            //            'value'              => '@35',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG2$',
+            //            'value'              => '@20',
+            //        ]
+            //    ],
+            //    'customvariables'                           => [],
+            //    'servicegroups'                             => [],
+            //    'contactgroups'                             => [],
+            //    'contacts'                                  => []
+            //],
             //Agent 3.x
             [
                 'uuid'                                      => '7d2961c3-b02b-4727-b870-5b391628b96f',
@@ -2397,16 +2486,93 @@ class Agent extends Importer {
                 'contacts'                                  => []
             ],
 
+            // Agent 1.x legacy - delete this
+            //[
+            //    'uuid'                                      => 'dda2d5dc-7987-49a5-b4c2-0540e8aaf45e',
+            //    'template_name'                             => 'OITC_AGENT_WINDOWS_EVENTLOG',
+            //    'name'                                      => 'Check windows eventlog entry',
+            //    'container_id'                              => ROOT_CONTAINER,
+            //    'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+            //    'check_period_id'                           => '1',
+            //    'notify_period_id'                          => '1',
+            //    'description'                               => '',
+            //    'command_id'                                => 'af3f0cac-f562-4830-9935-a9b2d69d494e',
+            //    'check_command_args'                        => '',
+            //    'checkcommand_info'                         => '',
+            //    'eventhandler_command_id'                   => '0',
+            //    'timeperiod_id'                             => '0',
+            //    'check_interval'                            => '300',
+            //    'retry_interval'                            => '60',
+            //    'max_check_attempts'                        => '3',
+            //    'first_notification_delay'                  => '0',
+            //    'notification_interval'                     => '7200',
+            //    'notify_on_warning'                         => '1',
+            //    'notify_on_unknown'                         => '1',
+            //    'notify_on_critical'                        => '1',
+            //    'notify_on_recovery'                        => '1',
+            //    'notify_on_flapping'                        => '0',
+            //    'notify_on_downtime'                        => '0',
+            //    'flap_detection_enabled'                    => '0',
+            //    'flap_detection_on_ok'                      => '0',
+            //    'flap_detection_on_warning'                 => '0',
+            //    'flap_detection_on_unknown'                 => '0',
+            //    'flap_detection_on_critical'                => '0',
+            //    'low_flap_threshold'                        => '0',
+            //    'high_flap_threshold'                       => '0',
+            //    'process_performance_data'                  => '1',
+            //    'freshness_checks_enabled'                  => '1',
+            //    'freshness_threshold'                       => '300',
+            //    'passive_checks_enabled'                    => '1',
+            //    'event_handler_enabled'                     => '0',
+            //    'active_checks_enabled'                     => '0',
+            //    'retain_status_information'                 => '0',
+            //    'retain_nonstatus_information'              => '0',
+            //    'notifications_enabled'                     => '0',
+            //    'notes'                                     => '',
+            //    'priority'                                  => '1',
+            //    'tags'                                      => '',
+            //    'service_url'                               => '',
+            //    'is_volatile'                               => '0',
+            //    'check_freshness'                           => '0',
+            //    'servicetemplateeventcommandargumentvalues' => [],
+            //    'servicetemplatecommandargumentvalues'      => [
+            //        [
+            //            'commandargument_id' => '$ARG1$',
+            //            'value'              => '',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG2$',
+            //            'value'              => 'ok',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG3$',
+            //            'value'              => '60',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG4$',
+            //            'value'              => '',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG5$',
+            //            'value'              => '1',
+            //        ],
+            //    ],
+            //    'customvariables'                           => [],
+            //    'servicegroups'                             => [],
+            //    'contactgroups'                             => [],
+            //    'contacts'                                  => []
+            //],
+            // Agent 3.x
             [
-                'uuid'                                      => 'dda2d5dc-7987-49a5-b4c2-0540e8aaf45e',
-                'template_name'                             => 'OITC_AGENT_WINDOWS_EVENTLOG',
-                'name'                                      => 'Check windows eventlog entry',
+                'uuid'                                      => 'f9205afd-3530-4b65-b6cc-347a652f7b66',
+                'template_name'                             => 'OITC_AGENT3_WINDOWS_EVENTLOG',
+                'name'                                      => 'Check windows event log entries',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
                 'notify_period_id'                          => '1',
                 'description'                               => '',
-                'command_id'                                => 'af3f0cac-f562-4830-9935-a9b2d69d494e',
+                'command_id'                                => '2342bf29-de87-40e3-ba04-c83b5a48a42f',
                 'check_command_args'                        => '',
                 'checkcommand_info'                         => '',
                 'eventhandler_command_id'                   => '0',
@@ -2452,19 +2618,31 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => 'ok',
+                        'value'              => '0',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
-                        'value'              => '60',
+                        'value'              => '1,2,16',
                     ],
                     [
                         'commandargument_id' => '$ARG4$',
-                        'value'              => '',
+                        'value'              => 'included',
                     ],
                     [
                         'commandargument_id' => '$ARG5$',
-                        'value'              => '1',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG6$',
+                        'value'              => 'excluded',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG7$',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG8$',
+                        'value'              => '',
                     ],
                 ],
                 'customvariables'                           => [],
@@ -2610,81 +2788,81 @@ class Agent extends Importer {
             ],
 
             // Agent 1.x legacy - delete this
-            [
-                'uuid'                                      => 'aef4c1a8-ed71-4799-a164-3ad469baadc5',
-                'template_name'                             => 'OITC_AGENT_DOCKER_MEMORY',
-                'name'                                      => 'Docker Container Memory Usage',
-                'container_id'                              => ROOT_CONTAINER,
-                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
-                'check_period_id'                           => '1',
-                'notify_period_id'                          => '1',
-                'description'                               => '',
-                'command_id'                                => 'ba2b3392-a769-4b20-8ea2-10b60f2c74e8',
-                'check_command_args'                        => '',
-                'checkcommand_info'                         => '',
-                'eventhandler_command_id'                   => '0',
-                'timeperiod_id'                             => '0',
-                'check_interval'                            => '300',
-                'retry_interval'                            => '60',
-                'max_check_attempts'                        => '3',
-                'first_notification_delay'                  => '0',
-                'notification_interval'                     => '7200',
-                'notify_on_warning'                         => '1',
-                'notify_on_unknown'                         => '1',
-                'notify_on_critical'                        => '1',
-                'notify_on_recovery'                        => '1',
-                'notify_on_flapping'                        => '0',
-                'notify_on_downtime'                        => '0',
-                'flap_detection_enabled'                    => '0',
-                'flap_detection_on_ok'                      => '0',
-                'flap_detection_on_warning'                 => '0',
-                'flap_detection_on_unknown'                 => '0',
-                'flap_detection_on_critical'                => '0',
-                'low_flap_threshold'                        => '0',
-                'high_flap_threshold'                       => '0',
-                'process_performance_data'                  => '1',
-                'freshness_checks_enabled'                  => '1',
-                'freshness_threshold'                       => '300',
-                'passive_checks_enabled'                    => '1',
-                'event_handler_enabled'                     => '0',
-                'active_checks_enabled'                     => '0',
-                'retain_status_information'                 => '0',
-                'retain_nonstatus_information'              => '0',
-                'notifications_enabled'                     => '0',
-                'notes'                                     => '',
-                'priority'                                  => '1',
-                'tags'                                      => '',
-                'service_url'                               => '',
-                'is_volatile'                               => '0',
-                'check_freshness'                           => '0',
-                'servicetemplateeventcommandargumentvalues' => [],
-                'servicetemplatecommandargumentvalues'      => [
-                    [
-                        'commandargument_id' => '$ARG1$',
-                        'value'              => 'name',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG2$',
-                        'value'              => 'container_name',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG3$',
-                        'value'              => '50.0',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG4$',
-                        'value'              => '80.5',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG5$',
-                        'value'              => 'MiB',
-                    ]
-                ],
-                'customvariables'                           => [],
-                'servicegroups'                             => [],
-                'contactgroups'                             => [],
-                'contacts'                                  => []
-            ],
+            //[
+            //    'uuid'                                      => 'aef4c1a8-ed71-4799-a164-3ad469baadc5',
+            //    'template_name'                             => 'OITC_AGENT_DOCKER_MEMORY',
+            //    'name'                                      => 'Docker Container Memory Usage',
+            //    'container_id'                              => ROOT_CONTAINER,
+            //    'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+            //    'check_period_id'                           => '1',
+            //    'notify_period_id'                          => '1',
+            //    'description'                               => '',
+            //    'command_id'                                => 'ba2b3392-a769-4b20-8ea2-10b60f2c74e8',
+            //    'check_command_args'                        => '',
+            //    'checkcommand_info'                         => '',
+            //    'eventhandler_command_id'                   => '0',
+            //    'timeperiod_id'                             => '0',
+            //    'check_interval'                            => '300',
+            //    'retry_interval'                            => '60',
+            //    'max_check_attempts'                        => '3',
+            //    'first_notification_delay'                  => '0',
+            //    'notification_interval'                     => '7200',
+            //    'notify_on_warning'                         => '1',
+            //    'notify_on_unknown'                         => '1',
+            //    'notify_on_critical'                        => '1',
+            //    'notify_on_recovery'                        => '1',
+            //    'notify_on_flapping'                        => '0',
+            //    'notify_on_downtime'                        => '0',
+            //    'flap_detection_enabled'                    => '0',
+            //    'flap_detection_on_ok'                      => '0',
+            //    'flap_detection_on_warning'                 => '0',
+            //    'flap_detection_on_unknown'                 => '0',
+            //    'flap_detection_on_critical'                => '0',
+            //    'low_flap_threshold'                        => '0',
+            //    'high_flap_threshold'                       => '0',
+            //    'process_performance_data'                  => '1',
+            //    'freshness_checks_enabled'                  => '1',
+            //    'freshness_threshold'                       => '300',
+            //    'passive_checks_enabled'                    => '1',
+            //    'event_handler_enabled'                     => '0',
+            //    'active_checks_enabled'                     => '0',
+            //    'retain_status_information'                 => '0',
+            //    'retain_nonstatus_information'              => '0',
+            //    'notifications_enabled'                     => '0',
+            //    'notes'                                     => '',
+            //    'priority'                                  => '1',
+            //    'tags'                                      => '',
+            //    'service_url'                               => '',
+            //    'is_volatile'                               => '0',
+            //    'check_freshness'                           => '0',
+            //    'servicetemplateeventcommandargumentvalues' => [],
+            //    'servicetemplatecommandargumentvalues'      => [
+            //        [
+            //            'commandargument_id' => '$ARG1$',
+            //            'value'              => 'name',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG2$',
+            //            'value'              => 'container_name',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG3$',
+            //            'value'              => '50.0',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG4$',
+            //            'value'              => '80.5',
+            //        ],
+            //        [
+            //            'commandargument_id' => '$ARG5$',
+            //            'value'              => 'MiB',
+            //        ]
+            //    ],
+            //    'customvariables'                           => [],
+            //    'servicegroups'                             => [],
+            //    'contactgroups'                             => [],
+            //    'contacts'                                  => []
+            //],
             // Agent 3.x
             [
                 'uuid'                                      => '7f86be31-0bb9-45f1-82bd-898deeba2cbd',

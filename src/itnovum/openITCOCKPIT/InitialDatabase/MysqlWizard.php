@@ -641,7 +641,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => 'b471e570-2921-487d-8189-c4bbfa9a09d5',
                 'template_name'                             => 'MYSQL_UPTIME',
-                'name'                                      => 'MySQL Update',
+                'name'                                      => 'MySQL Uptime',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
