@@ -192,6 +192,29 @@ class WizardsController extends AppController {
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException();
             }
+            $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+            if (!$this->allowedByContainerId($host->getContainerIds())) {
+                $this->render403();
+                return;
+            }
+
+            $hostCustomVariables = $HostsTable->get($hostId, [
+                'contain' => [
+                    'Customvariables'
+                ]
+            ])->getCustomvariablesForCfg();
+
+            $username = '';
+            if (!empty($hostCustomVariables['_MYSQL_USER'])) {
+                $username = $hostCustomVariables['_MYSQL_USER'];
+            }
+            $password = '';
+            if (!empty($hostCustomVariables['_MYSQL_PASSWORD'])) {
+                $password = $hostCustomVariables['_MYSQL_PASSWORD'];
+            }
+            $this->set('username', $username);
+            $this->set('password', $password);
+
             //Return mysql wizard data
             $servicetemplates = [];
             $wizardAssignments = [];
@@ -212,13 +235,14 @@ class WizardsController extends AppController {
             }
             $servicesNamesForExistCheck = $ServicesTable->getServiceNamesByHostIdForWizard($hostId);
 
-
             $this->set('servicetemplates', $servicetemplates);
             $this->set('servicesNamesForExistCheck', $servicesNamesForExistCheck);
 
             $this->viewBuilder()->setOption('serialize', [
                 'servicetemplates',
-                'servicesNamesForExistCheck'
+                'servicesNamesForExistCheck',
+                'username',
+                'password'
             ]);
             return;
         }
