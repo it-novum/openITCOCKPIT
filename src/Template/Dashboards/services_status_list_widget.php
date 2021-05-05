@@ -253,8 +253,6 @@
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
                                                id="isAck_{{widget.id}}"
                                                ng-model="filter.Servicestatus.acknowledged"
                                                ng-model-options="{debounce: 500}">
@@ -266,8 +264,6 @@
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
                                                id="isNotAck_{{widget.id}}"
                                                ng-model="filter.Servicestatus.not_acknowledged"
                                                ng-model-options="{debounce: 500}">
@@ -286,8 +282,6 @@
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
                                                id="inDowntime_{{widget.id}}"
                                                ng-model="filter.Servicestatus.in_downtime"
                                                ng-model-options="{debounce: 500}">
@@ -299,8 +293,6 @@
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
                                                id="notInDowntime_{{widget.id}}"
                                                ng-model="filter.Servicestatus.not_in_downtime"
                                                ng-model-options="{debounce: 500}">

@@ -31,10 +31,10 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                         down: 0,
                         unreachable: 0
                     },
-                    acknowledged: 0,
-                    not_acknowledged: 0,
-                    in_downtime: 0,
-                    not_in_downtime: 0,
+                    acknowledged: false,
+                    not_acknowledged: false,
+                    in_downtime: false,
+                    not_in_downtime: false,
                     output: ''
                 },
                 Host: {
@@ -49,10 +49,10 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     $scope.filter.Hoststatus.current_state.up = result.data.config.Hoststatus.current_state.up ? 1 : 0;
                     $scope.filter.Hoststatus.current_state.down = result.data.config.Hoststatus.current_state.down ? 1 : 0;
                     $scope.filter.Hoststatus.current_state.unreachable = result.data.config.Hoststatus.current_state.unreachable ? 1 : 0;
-                    $scope.filter.Hoststatus.acknowledged = result.data.config.Hoststatus.acknowledged ? 1 : 0;
-                    $scope.filter.Hoststatus.not_acknowledged = result.data.config.Hoststatus.not_acknowledged ? 1 : 0;
-                    $scope.filter.Hoststatus.in_downtime = result.data.config.Hoststatus.in_downtime ? 1 : 0;
-                    $scope.filter.Hoststatus.not_in_downtime = result.data.config.Hoststatus.not_in_downtime ? 1 : 0;
+                    $scope.filter.Hoststatus.acknowledged = result.data.config.Hoststatus.acknowledged;
+                    $scope.filter.Hoststatus.not_acknowledged = result.data.config.Hoststatus.not_acknowledged;
+                    $scope.filter.Hoststatus.in_downtime = result.data.config.Hoststatus.in_downtime;
+                    $scope.filter.Hoststatus.not_in_downtime = result.data.config.Hoststatus.not_in_downtime;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
@@ -80,6 +80,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
 
                 var hasBeenAcknowledged = '';
                 var inDowntime = '';
+                console.log($scope.filter.Hoststatus);
                 if($scope.filter.Hoststatus.acknowledged ^ $scope.filter.Hoststatus.not_acknowledged){
                     hasBeenAcknowledged = $scope.filter.Hoststatus.acknowledged === true;
                 }
