@@ -214,8 +214,6 @@
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
                                                id="isAck_{{widget.id}}"
                                                ng-model="filter.Hoststatus.acknowledged"
                                                ng-model-options="{debounce: 500}">
@@ -227,8 +225,6 @@
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
                                                id="isNotAck_{{widget.id}}"
                                                ng-model="filter.Hoststatus.not_acknowledged"
                                                ng-model-options="{debounce: 500}">
@@ -247,8 +243,6 @@
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
                                                id="inDowntime_{{widget.id}}"
                                                ng-model="filter.Hoststatus.in_downtime"
                                                ng-model-options="{debounce: 500}">
@@ -260,8 +254,6 @@
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox"
                                                class="custom-control-input"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
                                                id="notInDowntime_{{widget.id}}"
                                                ng-model="filter.Hoststatus.not_in_downtime"
                                                ng-model-options="{debounce: 500}">
