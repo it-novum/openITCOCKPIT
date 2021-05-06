@@ -31,6 +31,7 @@ angular.module('openITCOCKPIT')
                     keywords: '',
                     not_keywords: '',
                     servicedescription: '',
+                    container: '',
                     priority: {
                         1: false,
                         2: false,
@@ -47,23 +48,29 @@ angular.module('openITCOCKPIT')
         };
         /*** Filter end ***/
         /*** dynamic Table ***/
-        $scope.dynamictable = {
-            user_id : $scope.user_id,
-            custom_state: 1,
-            custom_acknowledgement: 1,
-            custom_indowntime: 1,
-            custom_grapher: 1,
-            custom_passive: 1,
-            custom_priority: 1,
-            custom_servicename: 1,
-            custom_last_change: 1,
-            custom_last_check: 1,
-            custom_next_check: 1,
-            custom_service_output: 1,
-            custom_instance: 0,
-            custom_description: 0,
-            custom_container_name: 0
-        }
+        $scope.post = {
+            id: '',
+            user_id: '',
+            table_name: '',
+            dynamictable: {
+                custom_state: '',
+                custom_acknowledgement: '',
+                custom_indowntime: '',
+                custom_grapher: '',
+                custom_passive: '',
+                custom_priority: '',
+                custom_servicename: '',
+                custom_last_change: '',
+                custom_last_check: '',
+                custom_next_check: '',
+                custom_service_output: '',
+                custom_instance: '',
+                custom_description: '',
+                custom_container_name: ''
+            }
+
+        };
+
         /*** dynamic table end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
@@ -124,7 +131,8 @@ angular.module('openITCOCKPIT')
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive,
-                'filter[servicepriority][]': priorityFilter
+                'filter[servicepriority][]': priorityFilter,
+                'filter[Services.container]': $scope.filter.Services.container
 
             };
             if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
@@ -141,32 +149,23 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadTableConfig = function(){
-            $http.get("/services/dynamicServiceTable.json", {
-                angular : true
+        $scope.customaizedTableConfig = function(){
+            $http.get("/services/CustomDynamicTable.json", {
+                angular: true
             }).then(function(result){
-                $scope.user_id = result.data.user_id;
-                if(result.data.table_config[0] == null) {
-                    $scope.dynamictable = {
-                        user_id : $scope.user_id,
-                        custom_state: 1,
-                        custom_acknowledgement: 1,
-                        custom_indowntime: 1,
-                        custom_grapher: 1,
-                        custom_passive: 1,
-                        custom_priority: 1,
-                        custom_servicename: 1,
-                        custom_last_change: 1,
-                        custom_last_check: 1,
-                        custom_next_check: 1,
-                        custom_service_output: 1,
-                        custom_instance: 0,
-                        custom_description: 0,
-                        custom_container_name: 0
-                    }
+                if(result.data.table_data){
+                    // $scope.post.id = '';
+                    // $scope.post.user_id = result.data.table_data.user_id;
+                    // $scope.post.dynamictable = JSON.parse(result.data.table_data.json_data);
+                    // $scope.post.table_name = result.data.table_data.table_name;
+                    // console.log($scope.post.dynamictable);
 
-                }else {
-                    $scope.dynamictable = result.data.table_config[0];
+                }
+                if(result.data.table_data[0]){
+                    $scope.post.id = result.data.table_data[0].id;
+                    $scope.post.user_id = result.data.table_data[0].user_id;
+                    $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
+                    $scope.post.table_name = result.data.table_data[0].table_name;
                 }
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -177,11 +176,11 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
-        $scope.loadTableConfig();
+        $scope.customaizedTableConfig();
 
         $scope.toggleColumn = function(){
-            $http.post("/services/dynamicTableConfig.json?angular=true",
-                {ConfigTable: $scope.dynamictable}
+            $http.post("/services/CustomDynamicTable.json?angular=true",
+                $scope.post
             ).then(function(result){
                 console.log(result);
             });

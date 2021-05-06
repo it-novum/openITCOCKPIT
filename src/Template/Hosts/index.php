@@ -112,7 +112,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_hoststatus"
-                                       ng-model="dynamictable.custom_hoststatus" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_hoststatus" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_hoststatus">
                                     <?php echo __('Hoststatus'); ?>
                                 </label>
@@ -123,7 +123,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_acknowledgement"
-                                       ng-model="dynamictable.custom_acknowledgement" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_acknowledgement" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_acknowledgement">
                                     <?php echo __('Acknowledgement'); ?>
                                 </label>
@@ -134,7 +134,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_indowntime"
-                                       ng-model="dynamictable.custom_indowntime" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_indowntime" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_indowntime">
                                     <?php echo __('In downtime'); ?>
                                 </label>
@@ -145,7 +145,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_shared"
-                                       ng-model="dynamictable.custom_shared" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_shared" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_shared">
                                     <?php echo __('Shared'); ?>
                                 </label>
@@ -156,7 +156,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_passive"
-                                       ng-model="dynamictable.custom_passive" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_passive" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_passive">
                                     <?php echo __('Passive'); ?>
                                 </label>
@@ -167,7 +167,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_priority"
-                                       ng-model="dynamictable.custom_priority" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_priority" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_priority">
                                     <?php echo __('Priority'); ?>
                                 </label>
@@ -178,7 +178,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_hostname"
-                                       ng-model="dynamictable.custom_hostname" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_hostname" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_hostname">
                                     <?php echo __('Hostname'); ?>
                                 </label>
@@ -189,7 +189,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_ip_address"
-                                       ng-model="dynamictable.custom_ip_address" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_ip_address" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_ip_address">
                                     <?php echo __('IP address'); ?>
                                 </label>
@@ -201,7 +201,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_last_change"
-                                       ng-model="dynamictable.custom_last_change" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_last_change" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_last_change">
                                     <?php echo __('Last state change'); ?>
                                 </label>
@@ -212,7 +212,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_last_check"
-                                       ng-model="dynamictable.custom_last_check" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_last_check" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_last_check">
                                     <?php echo __('Last state check'); ?>
                                 </label>
@@ -223,7 +223,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_host_output"
-                                       ng-model="dynamictable.custom_host_output" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_host_output" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_host_output">
                                     <?php echo __('Host output'); ?>
                                 </label>
@@ -234,7 +234,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_instance"
-                                       ng-model="dynamictable.custom_instance" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_instance" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_instance">
                                     <?php echo __('Instance'); ?>
                                 </label>
@@ -245,7 +245,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_service_summary"
-                                       ng-model="dynamictable.custom_service_summary" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_service_summary" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_service_summary">
                                     <?php echo __('Service Summary'); ?>
                                 </label>
@@ -256,7 +256,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_description"
-                                       ng-model="dynamictable.custom_description" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_description" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_description">
                                     <?php echo __('Description'); ?>
                                 </label>
@@ -267,7 +267,7 @@
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        id="custom_container_name"
-                                       ng-model="dynamictable.custom_container_name" ng-change="toggleColumn()">
+                                       ng-model="post.dynamictable.custom_container_name" ng-change="toggleColumn()">
                                 <label class="custom-control-label ml-3" for="custom_container_name">
                                     <?php echo __('Container'); ?>
                                 </label>
@@ -401,7 +401,7 @@
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by Container'); ?>"
-                                                   ng-model="filter.Host.container_id"
+                                                   ng-model="filter.Host.container"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -636,39 +636,39 @@
                             <tr>
                                 <th colspan="2" class="no-sort width-90"
                                     ng-click="orderBy('Hoststatus.current_state')"
-                                    ng-show="dynamictable.custom_hoststatus">
+                                    ng-show="post.dynamictable.custom_hoststatus">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Hoststatus.current_state')"></i>
                                         <?php echo __('Hoststatus'); ?>
                                     </div>
                                 </th>
 
-                                <th class="no-sort text-center" ng-show="dynamictable.custom_acknowledgement">
+                                <th class="no-sort text-center" ng-show="post.dynamictable.custom_acknowledgement">
                                     <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center" ng-show="dynamictable.custom_indowntime">
+                                <th class="no-sort text-center" ng-show="post.dynamictable.custom_indowntime">
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center" ng-show="dynamictable.custom_shared">
+                                <th class="no-sort text-center" ng-show="post.dynamictable.custom_shared">
                                     <i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap"></i>
                                 </th>
 
-                                <th class="no-sort text-center" ng-show="dynamictable.custom_passive">
+                                <th class="no-sort text-center" ng-show="post.dynamictable.custom_passive">
                                     <strong title="<?php echo __('Passively transferred host'); ?>">P</strong>
                                 </th>
 
                                 <th class="no-sort text-center" ng-click="orderBy('hostpriority')"
-                                    ng-show="dynamictable.custom_priority">
+                                    ng-show="post.dynamictable.custom_priority">
                                     <i class="fa" ng-class="getSortClass('hostpriority')"></i>
                                     <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
                                     </i>
                                 </th>
 
                                 <th class="no-sort" ng-click="orderBy('Hosts.name')"
-                                    ng-show="dynamictable.custom_hostname">
+                                    ng-show="post.dynamictable.custom_hostname">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                         <?php echo __('Host name'); ?>
@@ -676,21 +676,21 @@
                                 </th>
 
                                 <th class="no-sort" ng-click="orderBy('Hosts.address')"
-                                    ng-show="dynamictable.custom_ip_address">
+                                    ng-show="post.dynamictable.custom_ip_address">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Hosts.address')"></i>
                                         <?php echo __('IP address'); ?>
                                     </div>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Hosts.description')"
-                                    ng-show="dynamictable.custom_description">
+                                    ng-show="post.dynamictable.custom_description">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Hosts.description')"></i>
                                         <?php echo __('Description'); ?>
                                     </div>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Hosts.description')"
-                                    ng-show="dynamictable.custom_container_name">
+                                    ng-show="post.dynamictable.custom_container_name">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Hosts.container_name')"></i>
                                         <?php echo __('Container'); ?>
@@ -700,7 +700,7 @@
 
                                 <th class="no-sort tableStatewidth"
                                     ng-click="orderBy('Hoststatus.last_state_change')"
-                                    ng-show="dynamictable.custom_last_change">
+                                    ng-show="post.dynamictable.custom_last_change">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Hoststatus.last_state_change')"></i>
                                         <?php echo __('Last state change'); ?>
@@ -708,7 +708,7 @@
                                 </th>
 
                                 <th class="no-sort tableStatewidth" ng-click="orderBy('Hoststatus.last_check')"
-                                    ng-show="dynamictable.custom_last_check">
+                                    ng-show="post.dynamictable.custom_last_check">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Hoststatus.last_check')"></i>
                                         <?php echo __('Last check'); ?>
@@ -716,7 +716,7 @@
                                 </th>
 
                                 <th class="no-sort" ng-click="orderBy('Hoststatus.output')"
-                                    ng-show="dynamictable.custom_host_output">
+                                    ng-show="post.dynamictable.custom_host_output">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Hoststatus.output')"></i>
                                         <?php echo __('Host output'); ?>
@@ -724,14 +724,14 @@
                                 </th>
 
                                 <th class="no-sort" ng-click="orderBy('Hosts.satellite_id')"
-                                    ng-show="dynamictable.custom_instance">
+                                    ng-show="post.dynamictable.custom_instance">
                                     <div class="table-resize">
                                         <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
                                         <?php echo __('Instance'); ?>
                                     </div>
                                 </th>
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                    <th class="text-center" ng-show="dynamictable.custom_service_summary">
+                                    <th class="text-center" ng-show="post.dynamictable.custom_service_summary">
                                         <div class="table-resize">
                                             <?php echo __('Service Summary '); ?>
                                         </div>
@@ -748,11 +748,11 @@
                                            ng-show="host.Host.allow_edit">
                                 </td>
 
-                                <td class="text-center" ng-show="dynamictable.custom_hoststatus">
+                                <td class="text-center" ng-show="post.dynamictable.custom_hoststatus">
                                     <hoststatusicon host="host"></hoststatusicon>
                                 </td>
 
-                                <td class="text-center" ng-show="dynamictable.custom_acknowledgement">
+                                <td class="text-center" ng-show="post.dynamictable.custom_acknowledgement">
                                     <i class="far fa-user"
                                        ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                        ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
@@ -763,12 +763,12 @@
                                        title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                 </td>
 
-                                <td class="text-center" ng-show="dynamictable.custom_indowntime">
+                                <td class="text-center" ng-show="post.dynamictable.custom_indowntime">
                                     <i class="fa fa-power-off"
                                        ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
-                                <td class="text-center" ng-show="dynamictable.custom_shared">
+                                <td class="text-center" ng-show="post.dynamictable.custom_shared">
 
                                     <a class="txt-color-blueDark" title="<?php echo __('Shared'); ?>"
                                        ng-if="host.Host.allow_sharing === true && host.Host.containerIds.length > 1"
@@ -780,14 +780,14 @@
                                        title="<?php echo __('Restricted view'); ?>"></i>
                                 </td>
 
-                                <td class="text-center" ng-show="dynamictable.custom_passive">
+                                <td class="text-center" ng-show="post.dynamictable.custom_passive">
                                     <strong title="<?php echo __('Passively transferred host'); ?>"
                                             ng-show="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
                                         P
                                     </strong>
                                 </td>
 
-                                <td class="text-center" ng-show="dynamictable.custom_priority">
+                                <td class="text-center" ng-show="post.dynamictable.custom_priority">
                                     <i class="fa fa-fire"
                                        ng-class="{'ok-soft' : host.Host.priority==1,
                                         'ok' : host.Host.priority==2, 'warning' : host.Host.priority==3,
@@ -795,7 +795,7 @@
                                     </i>
                                 </td>
 
-                                <td ng-show="dynamictable.custom_hostname">
+                                <td ng-show="post.dynamictable.custom_hostname">
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <a ui-sref="HostsBrowser({id:host.Host.id})">
                                             {{ host.Host.hostname }}
@@ -805,34 +805,34 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td ng-show="dynamictable.custom_ip_address">
+                                <td ng-show="post.dynamictable.custom_ip_address">
                                     {{ host.Host.address }}
                                 </td>
-                                <td ng-show="dynamictable.custom_description">
-                                    {{mergedHost.description}}
+                                <td ng-show="post.dynamictable.custom_description">post.
+                                    {{host.Host.description}}
                                 </td>
-                                <td ng-show="dynamictable.custom_container_name" ng-repeat="container in mainContainer">
-                                    {{ container.name }}
+                                <td ng-show="post.dynamictable.custom_container_name" >
+                                    {{ containerName }}
                                 </td>
 
-                                <td ng-show="dynamictable.custom_last_change">
+                                <td ng-show="post.dynamictable.custom_last_change">
                                     {{ host.Hoststatus.last_state_change }}
                                 </td>
 
-                                <td ng-show="dynamictable.custom_last_check">
+                                <td ng-show="post.dynamictable.custom_last_check">
                                     {{ host.Hoststatus.lastCheck }}
                                 </td>
 
-                                <td ng-show="dynamictable.custom_host_output">
+                                <td ng-show="post.dynamictable.custom_host_output">
                                     <div class="word-break"
                                          ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
-                                <td ng-show="dynamictable.custom_instance">
+                                <td ng-show="post.dynamictable.custom_instance">
                                     {{ host.Host.satelliteName }}
                                 </td>
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                    <td class="width-160" ng-show="dynamictable.custom_service_summary">
+                                    <td class="width-160" ng-show="post.dynamictable.custom_service_summary">
                                         <div class="btn-group btn-group-justified" role="group" style="width: 100%">
                                             <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                                 <a class="btn btn-success state-button-small"

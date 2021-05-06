@@ -31,7 +31,7 @@ angular.module('openITCOCKPIT')
                     not_keywords: '',
                     address: (filterAddress) ? filterAddress : '',
                     satellite_id: [],
-                    container_id: [],
+                    container: '',
                     priority: {
                         1: false,
                         2: false,
@@ -48,25 +48,38 @@ angular.module('openITCOCKPIT')
         $scope.deleteUrl = '/hosts/delete/';
         $scope.deactivateUrl = '/hosts/deactivate/';
         /*** Dynamic custom table ***/
-        $scope.dynamictable = {
-            user_id: $scope.user_id,
-            custom_hoststatus: 1,
-            custom_acknowledgement: 1,
-            custom_indowntime: 1,
-            custom_shared: 1,
-            custom_passive: 1,
-            custom_priority: 1,
-            custom_hostname: 1,
-            custom_ip_address: 1,
-            custom_last_change: 1,
-            custom_last_check: 1,
-            custom_host_output: 1,
-            custom_instance: 1,
-            custom_service_summary: 1,
-            custom_description: 0,
-            custom_container_name: 0
+        $scope.post = {
+            id: '',
+            user_id: '',
+            table_name: '',
+            dynamictable: {
+                custom_hoststatus: '',
+                custom_acknowledgement: '',
+                custom_indowntime: '',
+                custom_shared: '',
+                custom_passive: '',
+                custom_priority: '',
+                custom_hostname: '',
+                custom_ip_address: '',
+                custom_last_change: '',
+                custom_last_check: '',
+                custom_host_output: '',
+                custom_instance: '',
+                custom_service_summary: '',
+                custom_description: '',
+                custom_container_name: ''
+            }
         }
         /*** Dynamic custom table end ***/
+        var getContainerName = function(containerId){
+            containerId = parseInt(containerId, 10);
+            for(var index in $scope.containers){
+                if($scope.containers[index].key === containerId){
+                    return $scope.containers[index].value;
+                }
+            }
+            return 'ERROR UNKNOWN CONTAINER';
+        };
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -108,7 +121,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
-                'filter[Hosts.container_id][]': $scope.filter.Host.container_id,
+                'filter[Hosts.container]': $scope.filter.Host.container,
                 'filter[hostpriority][]': priorityFilter
             };
             if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
@@ -119,6 +132,7 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.hosts = result.data.all_hosts;
+                $scope.containerName = getContainerName($scope.hosts[0].Host.containerId);
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
@@ -126,44 +140,36 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainer = function(){
-            $http.get("/hosts/browser/" + $scope.id + ".json", {
+            $http.get("/containers/loadContainersForAngular.json", {
                 params: {
-                    angular: true
+                    'angular': true
                 }
             }).then(function(result){
-                $scope.mergedHost = result.data.mergedHost;
-                $scope.mainContainer = result.data.mainContainer;
-            })
+                $scope.containers = result.data.containers;
+            });
         };
-        $scope.loadTableConfig = function(){
-            $http.get("/hosts/dynamicTableConfig.json", {
+
+        $scope.customaizedTableConfig = function(){
+
+            $http.get("/hosts/CustomDynamicTable.json", {
                 angular: true
             }).then(function(result){
-                $scope.user_id = result.data.user_id;
 
-                if(result.data.table_config[0] == null){
-                    $scope.dynamictable = {
-                        user_id: $scope.user_id,
-                        custom_hoststatus: 1,
-                        custom_acknowledgement: 1,
-                        custom_indowntime: 1,
-                        custom_shared: 1,
-                        custom_passive: 1,
-                        custom_priority: 1,
-                        custom_hostname: 1,
-                        custom_ip_address: 1,
-                        custom_last_change: 1,
-                        custom_last_check: 1,
-                        custom_host_output: 1,
-                        custom_instance: 1,
-                        custom_service_summary: 1,
-                        custom_description: 0,
-                        custom_container_name: 0
-                    }
-                }else{
-                    $scope.dynamictable = result.data.table_config[0];
+                if(result.data.table_data){
+                    // $scope.post.id = '';
+                    // $scope.post.user_id = result.data.table_data.user_id;
+                    // $scope.post.dynamictable = JSON.parse(result.data.table_data.json_data);
+                    // $scope.post.table_name = result.data.table_data.table_name;
+                    // console.log(result.data.table_data);
+
                 }
-
+                if(result.data.table_data[0]){
+                    $scope.post.id = result.data.table_data[0].id;
+                    $scope.post.id = result.data.table_data[0].user_id;
+                    $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
+                    $scope.post.table_name = result.data.table_data[0].table_name;
+                    console.log(result.data.table_data[0]);
+                }
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -173,12 +179,11 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
-
-        $scope.loadTableConfig();
+        $scope.customaizedTableConfig();
 
         $scope.toggleColumn = function(){
-            $http.post("/hosts/dynamicTableConfig.json?angular=true",
-                {ConfigTable: $scope.dynamictable}
+            $http.post("/hosts/CustomDynamicTable.json?angular=true",
+                $scope.post
             ).then(function(result){
                 console.log(result);
             });
@@ -340,6 +345,7 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
+
         $scope.loadContainer();
 
     });
