@@ -833,7 +833,13 @@ class HostsController extends AppController {
             $table_data = $table_data->where(['user_id' => $user_id, 'table_name' => $table_name]);
 
             if (!$DynamicTableConfig->existEntiy($user_id, $table_name)) {
-                $table_data = ['user_id' => $user_id, 'json_data' => json_encode($defaultConfig), 'table_name' => $table_name];
+                $table_data = [
+                   0 => [
+                        'user_id'    => $user_id,
+                        'json_data'  => json_encode($defaultConfig),
+                        'table_name' => $table_name
+                    ]
+                ];
             }
 
             $this->set('table_data', $table_data);

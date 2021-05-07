@@ -2718,9 +2718,11 @@ class ServicesController extends AppController {
 
             if (!$DynamicTableConfig->existEntiy($user_id, $table_name)) {
                 $table_data = [
-                    'user_id'    => $user_id,
-                    'json_data'  => json_encode($defaultConfig),
-                    'table_name' => $table_name
+                    0 => [
+                        'user_id'    => $user_id,
+                        'json_data'  => json_encode($defaultConfig),
+                        'table_name' => $table_name
+                    ]
                 ];
             }
 

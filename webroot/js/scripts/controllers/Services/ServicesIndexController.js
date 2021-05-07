@@ -153,20 +153,10 @@ angular.module('openITCOCKPIT')
             $http.get("/services/CustomDynamicTable.json", {
                 angular: true
             }).then(function(result){
-                if(result.data.table_data){
-                    // $scope.post.id = '';
-                    // $scope.post.user_id = result.data.table_data.user_id;
-                    // $scope.post.dynamictable = JSON.parse(result.data.table_data.json_data);
-                    // $scope.post.table_name = result.data.table_data.table_name;
-                    // console.log($scope.post.dynamictable);
-
-                }
-                if(result.data.table_data[0]){
                     $scope.post.id = result.data.table_data[0].id;
                     $scope.post.user_id = result.data.table_data[0].user_id;
                     $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
                     $scope.post.table_name = result.data.table_data[0].table_name;
-                }
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');

@@ -7,7 +7,7 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
         $scope.useScroll = true;
-        $scope.id = QueryStringService.getStateValue($stateParams, 'id', 1);
+        //$scope.id = QueryStringService.getStateValue($stateParams, 'id', 1);
 
         filterHostname = QueryStringService.getStateValue($stateParams, 'hostname');
         filterAddress = QueryStringService.getStateValue($stateParams, 'address');
@@ -154,22 +154,12 @@ angular.module('openITCOCKPIT')
             $http.get("/hosts/CustomDynamicTable.json", {
                 angular: true
             }).then(function(result){
-
-                if(result.data.table_data){
-                    // $scope.post.id = '';
-                    // $scope.post.user_id = result.data.table_data.user_id;
-                    // $scope.post.dynamictable = JSON.parse(result.data.table_data.json_data);
-                    // $scope.post.table_name = result.data.table_data.table_name;
-                    // console.log(result.data.table_data);
-
-                }
-                if(result.data.table_data[0]){
                     $scope.post.id = result.data.table_data[0].id;
-                    $scope.post.id = result.data.table_data[0].user_id;
+                    $scope.post.user_id = result.data.table_data[0].user_id;
                     $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
                     $scope.post.table_name = result.data.table_data[0].table_name;
                     console.log(result.data.table_data[0]);
-                }
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
