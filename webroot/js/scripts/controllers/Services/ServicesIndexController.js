@@ -172,7 +172,7 @@ angular.module('openITCOCKPIT')
             $http.post("/services/CustomDynamicTable.json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log(result);
+                $scope.customaizedTableConfig();
             });
         };
 
