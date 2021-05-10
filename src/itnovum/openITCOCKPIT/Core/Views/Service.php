@@ -84,16 +84,6 @@ class Service {
      */
     private $priority;
 
-    /**
-     * @var int
-     */
-    private $container_id;
-
-    /**
-     * @var int
-     */
-
-    private $satellite_id;
 
     /**
      * Service constructor.
@@ -207,12 +197,8 @@ class Service {
             $this->priority = $service['Service']['servicepriority'];
         }
 
-        if (isset($service['Service']['_matchingData']['Servicetemplates']['container_id'])) {
-            $this->container_id = $service['Service']['_matchingData']['Servicetemplates']['container_id'];
-        }
-
-        if (isset($service['Service']['_matchingData']['Servicetemplates']['satellite_id'])) {
-            $this->satellite_id = $service['Service']['_matchingData']['Servicetemplates']['satellite_id'];
+        if (isset($service['Service']['_matchingData']['Servicetemplates']['description'])) {
+            $this->description = $service['Service']['_matchingData']['Servicetemplates']['description'];
         }
 
     }
@@ -303,19 +289,6 @@ class Service {
         return $this->priority;
     }
 
-    /**
-     * @return int
-     */
-    public function getContainerId() {
-        return $this->container_id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getSatelliteId() {
-        return $this->satellite_id;
-    }
 
 
     /**

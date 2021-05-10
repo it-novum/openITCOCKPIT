@@ -132,21 +132,11 @@ class ServicesController extends AppController {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
-        $satellites = [];
-
-        if (Plugin::isLoaded('DistributeModule')) {
-            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
-            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-
-            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
-            $satellites[0] = $masterInstanceName;
-        }
 
         if (!$this->isApiRequest()) {
             $User = new User($this->getUser());
             $this->set('username', $User->getFullName());
             $this->set('containers', $containers);
-            $this->set('satellites', $satellites);
             //Only ship HTML template
             return;
         }
@@ -2736,7 +2726,7 @@ class ServicesController extends AppController {
             'custom_service_output'  => 1,
             'custom_instance'        => 0,
             'custom_description'     => 0,
-            'custom_container_name'  => 0
+            'custom_tag'             => 0
         ];
 
         if ($this->request->is('get')) {

@@ -68,6 +68,7 @@ angular.module('openITCOCKPIT')
                 custom_instance: '',
                 custom_service_summary: '',
                 custom_description: '',
+                custom_tag:'',
                 custom_container_name: ''
             }
         }
@@ -134,7 +135,9 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.hosts = result.data.all_hosts;
-                $scope.containerName = getContainerName($scope.hosts[0].Host.containerId);
+                if($scope.hosts.length != 0){
+                    $scope.containerName = getContainerName($scope.hosts[0].Host.containerId);
+                }
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;

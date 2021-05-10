@@ -830,6 +830,7 @@ class HostsController extends AppController {
             'custom_instance'        => 1,
             'custom_service_summary' => 1,
             'custom_description'     => 0,
+            'custom_tag'             => 0,
             'custom_container_name'  => 0
         ];
 
@@ -839,7 +840,7 @@ class HostsController extends AppController {
 
             if (!$DynamicTableConfig->existEntiy($user_id, $table_name)) {
                 $table_data = [
-                   0 => [
+                    0 => [
                         'user_id'    => $user_id,
                         'json_data'  => json_encode($defaultConfig),
                         'table_name' => $table_name

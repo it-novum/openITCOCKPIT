@@ -32,8 +32,6 @@ angular.module('openITCOCKPIT')
                     not_keywords: '',
                     servicedescription: '',
                     container: '',
-                    container_id: [],
-                    satellite_id:[],
                     priority: {
                         1: false,
                         2: false,
@@ -68,21 +66,12 @@ angular.module('openITCOCKPIT')
                 custom_service_output: '',
                 custom_instance: '',
                 custom_description: '',
-                custom_container_name: ''
+                custom_tag: ''
             }
 
         };
 
         /*** dynamic table end ***/
-        var getContainerName = function(containerId){
-            containerId = parseInt(containerId, 10);
-            for(var index in $scope.containers){
-                if($scope.containers[index].key === containerId){
-                    return $scope.containers[index].value;
-                }
-            }
-            return 'ERROR UNKNOWN CONTAINER';
-        };
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/services/delete/';
@@ -143,9 +132,7 @@ angular.module('openITCOCKPIT')
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive,
                 'filter[servicepriority][]': priorityFilter,
-                'filter[Services.container]': $scope.filter.Services.container,
-                'filter[Services.container_id][]': $scope.filter.Services.container_id,
-                'filter[Services.satellite_id][]': $scope.filter.Services.satellite_id,
+                'filter[Services.container]': $scope.filter.Services.container
 
             };
             if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
@@ -158,19 +145,7 @@ angular.module('openITCOCKPIT')
                 $scope.services = result.data.all_services;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
-                $scope.containerName = getContainerName($scope.services[0].Service.container_id);
-                console.log($scope.containerName);
                 $scope.init = false;
-            });
-        };
-
-        $scope.loadContainer = function(){
-            $http.get("/containers/loadContainersForAngular.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.containers = result.data.containers;
             });
         };
 
@@ -178,10 +153,10 @@ angular.module('openITCOCKPIT')
             $http.get("/services/CustomDynamicTable.json", {
                 angular: true
             }).then(function(result){
-                    $scope.post.id = result.data.table_data[0].id;
-                    $scope.post.user_id = result.data.table_data[0].user_id;
-                    $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
-                    $scope.post.table_name = result.data.table_data[0].table_name;
+                $scope.post.id = result.data.table_data[0].id;
+                $scope.post.user_id = result.data.table_data[0].user_id;
+                $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
+                $scope.post.table_name = result.data.table_data[0].table_name;
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -362,6 +337,5 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
-        $scope.loadContainer();
 
     });

@@ -238,10 +238,10 @@
                                        class="custom-control-input"
                                        ng-true-value="1"
                                        ng-false-value="0"
-                                       id="custom_container_name"
-                                       ng-model="post.dynamictable.custom_container_name" ng-change="toggleColumn()">
-                                <label class="custom-control-label ml-3" for="custom_container_name">
-                                    <?php echo __('Container'); ?>
+                                       id="custom_tag"
+                                       ng-model="post.dynamictable.custom_tag" ng-change="toggleColumn()">
+                                <label class="custom-control-label ml-3" for="custom_tag">
+                                    <?php echo __('Tags'); ?>
                                 </label>
                             </div>
 
@@ -362,19 +362,6 @@
                                                        ng-model="filter.Services.not_keywords"
                                                        ng-model-options="{debounce: 500}">
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-6 margin-bottom-10">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by Container'); ?>"
-                                                   ng-model="filter.Services.container"
-                                                   ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
                                 </div>
@@ -611,51 +598,6 @@
                                     </fieldset>
                                 </div>
 
-                                <?php if (sizeof($satellites) > 1): ?>
-                                    <div class="col-xs-12 col-md-3">
-                                        <fieldset>
-                                            <h5><?php echo __('Instance'); ?></h5>
-                                            <div class="form-group smart-form">
-                                                <select
-                                                    id="Instance"
-                                                    data-placeholder="<?php echo __('Filter by instance'); ?>"
-                                                    class="form-control"
-                                                    chosen="{}"
-                                                    multiple
-                                                    ng-model="filter.Services.satellite_id"
-                                                    ng-model-options="{debounce: 500}">
-                                                    <?php
-                                                    foreach ($satellites as $satelliteId => $satelliteName):
-                                                        printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
-                                                    endforeach;
-                                                    ?>
-                                                </select>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                <?php endif; ?>
-
-                                <div class="col-xs-12 col-md-3">
-                                    <fieldset>
-                                        <h5><?php echo __('Container'); ?></h5>
-                                        <div class="form-group smart-form">
-                                            <select
-                                                id="Container"
-                                                data-placeholder="<?php echo __('Filter by container'); ?>"
-                                                class="form-control"
-                                                chosen="{}"
-                                                multiple
-                                                ng-model="filter.Services.container_id"
-                                                ng-model-options="{debounce: 500}">
-                                                <?php
-                                                foreach ($containers as $containerId => $containerName):
-                                                    printf('<option value="%s">%s</option>', h($containerId), h($containerName));
-                                                endforeach;
-                                                ?>
-                                            </select>
-                                        </div>
-                                    </fieldset>
-                                </div>
                             </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"
@@ -714,11 +656,11 @@
                                     </div>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.container_name')"
-                                    ng-show="post.dynamictable.custom_container_name">
+                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.tags')"
+                                    ng-show="post.dynamictable.custom_tag">
                                     <div class="table-resize">
-                                        <i class="fa" ng-class="getSortClass('Servicestatus.container_name')"></i>
-                                        <?php echo __('Container'); ?>
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.tags')"></i>
+                                        <?php echo __('Tags'); ?>
                                     </div>
                                 </th>
 
@@ -876,8 +818,8 @@
                                         {{ service.Service.servicename }}
                                     <?php endif; ?>
                                 </td>
-                                <td ng-show="post.dynamictable.custom_container_name">
-                                    {{ containerName }}
+                                <td ng-show="post.dynamictable.custom_tag">
+                                    {{ service.Service.tags }}
                                 </td>
 
                                 <td ng-show="post.dynamictable.custom_last_change">
@@ -911,7 +853,7 @@
                                     {{ service.Service.satelliteName }}
                                 </td>
                                 <td ng-show="post.dynamictable.custom_description">
-                                    {{ service.description }}
+                                    {{ service.Service.description }}
                                 </td>
 
                                 <td class="width-50">
