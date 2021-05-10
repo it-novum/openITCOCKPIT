@@ -168,7 +168,7 @@
                                     <input
                                         id="DateFrom"
                                         class="form-control"
-                                        type="date"
+                                        type="text"
                                         ng-model="post.from_date"
                                         placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.from_date">
@@ -183,7 +183,7 @@
                                     <input
                                         id="DateTo"
                                         class="form-control"
-                                        type="date"
+                                        type="text"
                                         ng-model="post.to_date"
                                         placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.to_date">

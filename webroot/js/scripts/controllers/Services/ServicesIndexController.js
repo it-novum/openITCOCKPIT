@@ -31,7 +31,7 @@ angular.module('openITCOCKPIT')
                     keywords: '',
                     not_keywords: '',
                     servicedescription: '',
-                    container: '',
+                    // container: '',
                     priority: {
                         1: false,
                         2: false,
@@ -131,8 +131,7 @@ angular.module('openITCOCKPIT')
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive,
-                'filter[servicepriority][]': priorityFilter,
-                'filter[Services.container]': $scope.filter.Services.container
+                'filter[servicepriority][]': priorityFilter
 
             };
             if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){

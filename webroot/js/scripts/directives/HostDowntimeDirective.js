@@ -16,7 +16,6 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
                 hostDowntimeType: "1"
             };
 
-
             var objects = {};
             var author = '';
             var callbackName = false;
@@ -39,27 +38,19 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
                         'angular': true
                     }
                 }).then(function(result){
-
-                    var now = new Date(result.data.defaultValues.from_date_js);
-                    var toDate = new Date(result.data.defaultValues.to_date_js);
-
-                    $scope.downtimeModal.from_date = now;
-                    $scope.downtimeModal.from_time = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), 0, 0);
-                    $scope.downtimeModal.to_date = toDate;
-                    $scope.downtimeModal.to_time = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), toDate.getHours(), toDate.getMinutes(), 0, 0);
+                    $scope.downtimeModal.from_date = result.data.defaultValues.from_date;
+                    $scope.downtimeModal.from_time = result.data.defaultValues.from_time;
+                    $scope.downtimeModal.to_date = result.data.defaultValues.to_date;
+                    $scope.downtimeModal.to_time = result.data.defaultValues.to_time;
                     $scope.downtimeModal.hostDowntimeType = String(result.data.defaultValues.downtimetype_id);
                 });
             };
 
             $scope.doHostDowntime = function(){
-                var downtimeModal = JSON.parse(JSON.stringify($scope.downtimeModal)); // Remove JS binding
-                downtimeModal.from_date = date('d.m.Y', $scope.downtimeModal.from_date);
-                downtimeModal.from_time = date('H:i', $scope.downtimeModal.from_time);
-                downtimeModal.to_date = date('d.m.Y', $scope.downtimeModal.to_date);
-                downtimeModal.to_time = date('H:i', $scope.downtimeModal.to_time);
+
 
                 $http.post("/downtimes/validateDowntimeInputFromAngular.json?angular=true",
-                    downtimeModal
+                    $scope.downtimeModal
                 ).then(function(result){
                     var count = Object.keys(objects).length;
                     var i = 0;
