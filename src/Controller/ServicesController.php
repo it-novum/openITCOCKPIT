@@ -55,6 +55,7 @@ use App\Model\Table\ServiceTableConfigsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -125,9 +126,27 @@ class ServicesController extends AppController {
      * @throws MissingDbBackendException
      */
     public function index() {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->getContainersAsList($this->MY_RIGHTS);
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+        $satellites = [];
+
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
+        }
+
         if (!$this->isApiRequest()) {
             $User = new User($this->getUser());
             $this->set('username', $User->getFullName());
+            $this->set('containers', $containers);
+            $this->set('satellites', $satellites);
             //Only ship HTML template
             return;
         }
@@ -244,6 +263,12 @@ class ServicesController extends AppController {
             $Service = new Service($service, null, $allowEdit);
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend, $service['service_type']);
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+            if ($Host->isSatelliteHost() && isset($satellites[$Host->getSatelliteId()])) {
+                $satelliteName = $satellites[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
 
             $tmpRecord = [
                 'Service'       => $Service->toArray(),
@@ -252,6 +277,7 @@ class ServicesController extends AppController {
                 'Servicestatus' => $Servicestatus->toArray(),
                 'ServiceType'   => $serviceTypes[$service['service_type']]
             ];
+            $tmpRecord['Service']['satelliteName'] = $satelliteName;
             $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
         }

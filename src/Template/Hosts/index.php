@@ -619,6 +619,28 @@
                                         </fieldset>
                                     </div>
                                 <?php endif; ?>
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <h5><?php echo __('Container'); ?></h5>
+                                        <div class="form-group smart-form">
+                                            <select
+                                                id="Container"
+                                                data-placeholder="<?php echo __('Filter by container'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Host.container_id"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($containers as $containerId => $containerName):
+                                                    printf('<option value="%s">%s</option>', h($containerId), h($containerName));
+                                                endforeach;
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
                             </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"
@@ -808,7 +830,7 @@
                                 <td ng-show="post.dynamictable.custom_ip_address">
                                     {{ host.Host.address }}
                                 </td>
-                                <td ng-show="post.dynamictable.custom_description">post.
+                                <td ng-show="post.dynamictable.custom_description">
                                     {{host.Host.description}}
                                 </td>
                                 <td ng-show="post.dynamictable.custom_container_name" >

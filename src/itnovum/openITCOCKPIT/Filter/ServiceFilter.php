@@ -40,7 +40,9 @@ class ServiceFilter extends Filter {
                 'Hosts.name',
                 'servicename',
                 'Servicestatus.output',
-                'servicedescription'
+                'servicedescription',
+                //'servicetemplates.container_id',
+                //'container_id'
             ],
             'rlike'    => [
                 'keywords'
@@ -53,7 +55,9 @@ class ServiceFilter extends Filter {
                 'Services.id',
                 'Services.uuid',
                 'Services.disabled',
-                'servicepriority'
+                'servicepriority',
+                //'container_id'
+                'servicetemplates.container_id'
             ],
             'downtime' => [
                 'Servicestatus.scheduled_downtime_depth',

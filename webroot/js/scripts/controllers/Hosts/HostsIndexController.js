@@ -31,6 +31,7 @@ angular.module('openITCOCKPIT')
                     not_keywords: '',
                     address: (filterAddress) ? filterAddress : '',
                     satellite_id: [],
+                    container_id:[],
                     container: '',
                     priority: {
                         1: false,
@@ -121,6 +122,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
+                'filter[Hosts.container_id][]': $scope.filter.Host.container_id,
                 'filter[Hosts.container]': $scope.filter.Host.container,
                 'filter[hostpriority][]': priorityFilter
             };
@@ -150,15 +152,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.customaizedTableConfig = function(){
-
             $http.get("/hosts/CustomDynamicTable.json", {
                 angular: true
             }).then(function(result){
-                    $scope.post.id = result.data.table_data[0].id;
-                    $scope.post.user_id = result.data.table_data[0].user_id;
-                    $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
-                    $scope.post.table_name = result.data.table_data[0].table_name;
-                    console.log(result.data.table_data[0]);
+                $scope.post.id = result.data.table_data[0].id;
+                $scope.post.user_id = result.data.table_data[0].user_id;
+                $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
+                $scope.post.table_name = result.data.table_data[0].table_name;
 
             }, function errorCallback(result){
                 if(result.status === 403){

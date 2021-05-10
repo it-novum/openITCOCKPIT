@@ -610,6 +610,52 @@
                                         </div>
                                     </fieldset>
                                 </div>
+
+                                <?php if (sizeof($satellites) > 1): ?>
+                                    <div class="col-xs-12 col-md-3">
+                                        <fieldset>
+                                            <h5><?php echo __('Instance'); ?></h5>
+                                            <div class="form-group smart-form">
+                                                <select
+                                                    id="Instance"
+                                                    data-placeholder="<?php echo __('Filter by instance'); ?>"
+                                                    class="form-control"
+                                                    chosen="{}"
+                                                    multiple
+                                                    ng-model="filter.Host.satellite_id"
+                                                    ng-model-options="{debounce: 500}">
+                                                    <?php
+                                                    foreach ($satellites as $satelliteId => $satelliteName):
+                                                        printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
+                                                    endforeach;
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <h5><?php echo __('Container'); ?></h5>
+                                        <div class="form-group smart-form">
+                                            <select
+                                                id="Container"
+                                                data-placeholder="<?php echo __('Filter by container'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Services.container_id"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($containers as $containerId => $containerName):
+                                                    printf('<option value="%s">%s</option>', h($containerId), h($containerName));
+                                                endforeach;
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
                             </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"
@@ -862,7 +908,7 @@
                                          ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                 </td>
                                 <td ng-show="post.dynamictable.custom_instance">
-                                    {{ instance }}
+                                    {{ service.Service.satelliteName }}
                                 </td>
                                 <td ng-show="post.dynamictable.custom_description">
                                     {{ service.description }}

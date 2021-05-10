@@ -85,6 +85,17 @@ class Service {
     private $priority;
 
     /**
+     * @var int
+     */
+    private $container_id;
+
+    /**
+     * @var int
+     */
+
+    private $satellite_id;
+
+    /**
      * Service constructor.
      * @param $service
      * @param null $servicename
@@ -195,6 +206,15 @@ class Service {
         if (!empty($service['Service']['servicepriority'])) {
             $this->priority = $service['Service']['servicepriority'];
         }
+
+        if (isset($service['Service']['container_id'])) {
+            $this->container_id = (int)$service['Service']['container_id'];
+        }
+
+        if (isset($service['Service']['satellite_id'])) {
+            $this->satellite_id = (int)$service['Service']['satellite_id'];
+        }
+
     }
 
     public static function fromServiceNotification($serviceNotification) {
@@ -282,6 +302,21 @@ class Service {
     public function getPriority() {
         return $this->priority;
     }
+
+    /**
+     * @return int
+     */
+    public function getContainerId() {
+        return $this->container_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSatellitteId() {
+        return $this->satellite_id;
+    }
+
 
     /**
      * @return array

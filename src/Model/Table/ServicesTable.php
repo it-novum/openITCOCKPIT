@@ -528,6 +528,8 @@ class ServicesTable extends Table {
                         ->select([
                             'Servicetemplates.id',
                             'Servicetemplates.name',
+                            'Servicetemplates.container_id',
+                            'Servicetemplates.satellite_id',
                         ]);
                     return $query;
                 }
@@ -1766,6 +1768,8 @@ class ServicesTable extends Table {
                 'Services.active_checks_enabled',
                 'Services.tags',
                 'Services.priority',
+                'Services.container_id',
+                'Services.satellite_id',
                 'Services.service_type',
                 'servicename'        => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
                 'servicepriority'    => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
@@ -1778,6 +1782,8 @@ class ServicesTable extends Table {
                 'Servicetemplates.active_checks_enabled',
                 'Servicetemplates.tags',
                 'Servicetemplates.priority',
+                'Servicetemplates.container_id',
+                'Servicetemplates.satellite_id',
 
                 'Objects.object_id',
 
@@ -1935,6 +1941,7 @@ class ServicesTable extends Table {
                 'servicename'        => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
                 'servicepriority'    => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
                 'servicedescription' => $query->newExpr('IF(Services.description IS NULL, Servicetemplates.description, Services.description)'),
+                'servicecontainer_id' => $query->newExpr('IF(Services.container_id IS NULL, Servicetemplates.container_id, Services.container_id)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1943,6 +1950,8 @@ class ServicesTable extends Table {
                 'Servicetemplates.active_checks_enabled',
                 'Servicetemplates.tags',
                 'Servicetemplates.priority',
+                'Servicetemplates.container_id',
+                'Servicetemplates.satellite_id',
 
                 'Servicestatus.current_state',
                 'Servicestatus.last_check',
