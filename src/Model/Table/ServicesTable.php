@@ -1941,7 +1941,6 @@ class ServicesTable extends Table {
                 'servicename'        => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
                 'servicepriority'    => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
                 'servicedescription' => $query->newExpr('IF(Services.description IS NULL, Servicetemplates.description, Services.description)'),
-                'servicecontainer_id' => $query->newExpr('IF(Services.container_id IS NULL, Servicetemplates.container_id, Services.container_id)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',

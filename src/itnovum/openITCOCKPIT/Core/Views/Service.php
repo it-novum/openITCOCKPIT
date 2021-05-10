@@ -207,12 +207,12 @@ class Service {
             $this->priority = $service['Service']['servicepriority'];
         }
 
-        if (isset($service['Service']['container_id'])) {
-            $this->container_id = (int)$service['Service']['container_id'];
+        if (isset($service['Service']['_matchingData']['Servicetemplates']['container_id'])) {
+            $this->container_id = $service['Service']['_matchingData']['Servicetemplates']['container_id'];
         }
 
-        if (isset($service['Service']['satellite_id'])) {
-            $this->satellite_id = (int)$service['Service']['satellite_id'];
+        if (isset($service['Service']['_matchingData']['Servicetemplates']['satellite_id'])) {
+            $this->satellite_id = $service['Service']['_matchingData']['Servicetemplates']['satellite_id'];
         }
 
     }
@@ -313,7 +313,7 @@ class Service {
     /**
      * @return int
      */
-    public function getSatellitteId() {
+    public function getSatelliteId() {
         return $this->satellite_id;
     }
 

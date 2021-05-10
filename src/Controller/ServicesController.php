@@ -261,6 +261,7 @@ class ServicesController extends AppController {
                 $Hoststatus = new Hoststatus([], $UserTime);
             }
             $Service = new Service($service, null, $allowEdit);
+            //debug($service);
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend, $service['service_type']);
             $satelliteName = $masterInstanceName;

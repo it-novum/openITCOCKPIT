@@ -622,7 +622,7 @@
                                                     class="form-control"
                                                     chosen="{}"
                                                     multiple
-                                                    ng-model="filter.Host.satellite_id"
+                                                    ng-model="filter.Services.satellite_id"
                                                     ng-model-options="{debounce: 500}">
                                                     <?php
                                                     foreach ($satellites as $satelliteId => $satelliteName):
@@ -877,7 +877,7 @@
                                     <?php endif; ?>
                                 </td>
                                 <td ng-show="post.dynamictable.custom_container_name">
-                                    {{ containername }}
+                                    {{ containerName }}
                                 </td>
 
                                 <td ng-show="post.dynamictable.custom_last_change">
