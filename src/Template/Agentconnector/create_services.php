@@ -442,6 +442,24 @@
                                                         </select>
                                                     </div>
                                                 </div>
+                                                <div class="form-group col-12 padding-left-0 ">
+                                                    <label class="col-12 control-label"
+                                                           for="windows_services">
+                                                        <?php echo __('Windows event logs'); ?>
+                                                        ({{lengthOf(services.windows_eventlog)}})
+                                                    </label>
+                                                    <div class="col-12">
+                                                        <select
+                                                            id="windows_eventlog"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.windows_eventlog"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.windows_eventlog"
+                                                            ng-model="servicesToCreateArrayIndices.windows_eventlog">
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div ng-show="services.launchd_services">
                                                 <hr class="hr-text-brands" data-content="&#xf179; <?= __('macOS'); ?>">

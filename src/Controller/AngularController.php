@@ -37,7 +37,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Cache\Cache;
-use Cake\Http\CallbackStream;
+use \Laminas\Diactoros\CallbackStream;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Table;
@@ -854,10 +854,13 @@ class AngularController extends AppController {
         $HostAndServiceSummaryIcon->createSummaryIcon($bitMaskHostState, $bitMaskServiceState);
         $image = $HostAndServiceSummaryIcon->getImage();
 
-        $this->autoRender = false;
-        header('Content-Type: image/png');
-        imagepng($image, null, 0);
-        imagedestroy($image);
+        $this->disableAutoRender();
+        $this->response = $this->response->withHeader('Content-Type', 'image/png');
+        $stream = new \Laminas\Diactoros\CallbackStream(function () use ($image) {
+            imagepng($image, null, 0);
+            imagedestroy($image);
+        });
+        $this->response = $this->response->withBody($stream);
     }
 
     public function macros() {

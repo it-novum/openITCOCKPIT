@@ -182,7 +182,6 @@ angular.module('openITCOCKPIT')
                 ).then(function(result){
                     var hostId = result.data.id;
                     NotyService.genericSuccess();
-
                     $state.go($scope.state, {
                         hostId: hostId,
                         selectedOs: $scope.selectedOs,
@@ -208,7 +207,8 @@ angular.module('openITCOCKPIT')
                 ).then(function(result){
                     $state.go($scope.state, {
                         hostId: $scope.hostId,
-                        selectedOs: $scope.selectedOs
+                        selectedOs: $scope.selectedOs,
+                        typeId: $scope.typeId
                     }).then(function(){
                         NotyService.scrollTop();
                     });

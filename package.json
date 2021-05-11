@@ -41,6 +41,7 @@
         "jquery-ui-dist": "^1.12.1",
         "jquery.cookie": "^1.4.1",
         "keycharm": "^0.3.0",
+        "lodash": "^4.17.21",
         "ng-nestable": "^0.0.1",
         "node-waves": "^0.7.6",
         "noty": "^3.1.4",

@@ -31,10 +31,10 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                         down: 0,
                         unreachable: 0
                     },
-                    acknowledged: 0,
-                    not_acknowledged: 0,
-                    in_downtime: 0,
-                    not_in_downtime: 0,
+                    acknowledged: false,
+                    not_acknowledged: false,
+                    in_downtime: false,
+                    not_in_downtime: false,
                     output: ''
                 },
                 Host: {
@@ -49,10 +49,10 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     $scope.filter.Hoststatus.current_state.up = result.data.config.Hoststatus.current_state.up ? 1 : 0;
                     $scope.filter.Hoststatus.current_state.down = result.data.config.Hoststatus.current_state.down ? 1 : 0;
                     $scope.filter.Hoststatus.current_state.unreachable = result.data.config.Hoststatus.current_state.unreachable ? 1 : 0;
-                    $scope.filter.Hoststatus.acknowledged = result.data.config.Hoststatus.acknowledged ? 1 : 0;
-                    $scope.filter.Hoststatus.not_acknowledged = result.data.config.Hoststatus.not_acknowledged ? 1 : 0;
-                    $scope.filter.Hoststatus.in_downtime = result.data.config.Hoststatus.in_downtime ? 1 : 0;
-                    $scope.filter.Hoststatus.not_in_downtime = result.data.config.Hoststatus.not_in_downtime ? 1 : 0;
+                    $scope.filter.Hoststatus.acknowledged = result.data.config.Hoststatus.acknowledged;
+                    $scope.filter.Hoststatus.not_acknowledged = result.data.config.Hoststatus.not_acknowledged;
+                    $scope.filter.Hoststatus.in_downtime = result.data.config.Hoststatus.in_downtime;
+                    $scope.filter.Hoststatus.not_in_downtime = result.data.config.Hoststatus.not_in_downtime;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
@@ -80,6 +80,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
 
                 var hasBeenAcknowledged = '';
                 var inDowntime = '';
+                console.log($scope.filter.Hoststatus);
                 if($scope.filter.Hoststatus.acknowledged ^ $scope.filter.Hoststatus.not_acknowledged){
                     hasBeenAcknowledged = $scope.filter.Hoststatus.acknowledged === true;
                 }
@@ -108,7 +109,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     $scope.scroll = result.data.scroll;
 
                     if(options.save === true){
-                        saveSettings(params);
+                        $scope.saveSettings(params);
                     }
 
                     $scope.init = false;
@@ -180,12 +181,11 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             };
 
             var getLimit = function(height){
-                height = height - 34 - 128 - 61 - 10 - 37; //Unit: px
-                //                ^ widget Header
-                //                     ^ Widget filter
-                //                           ^ Paginator
-                //                                ^ Margin between header and table
-                //                                     ^ Table header
+                height = height - 42 - 61 - 10 - 37; //Unit: px
+                //                ^ Widget play/pause div
+                //                     ^ Paginator
+                //                          ^ Margin between header and table
+                //                                ^ Table header
 
                 var limit = Math.floor(height / 36); // 36px = table row height;
                 if(limit <= 0){
@@ -194,11 +194,19 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                 return limit;
             };
 
-            var saveSettings = function(){
+            $scope.saveSettings = function(){
                 var settings = $scope.filter;
                 settings['scroll_interval'] = $scope.scroll_interval;
                 settings['useScroll'] = $scope.useScroll;
+                settings['sort'] = $scope.sort;
+                settings['direction'] = $scope.direction;
                 $http.post("/dashboards/hostsStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
+                    $scope.currentPage = 1;
+                    loadWidgetConfig();
+                    $scope.hideConfig();
+                    if($scope.init === true){
+                        return true;
+                    }
                     return true;
                 });
             };
@@ -214,20 +222,17 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                 }
             };
 
+            $scope.hideConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_IN');
+            };
+            $scope.showConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_OUT');
+                $scope.load();
+            };
+
             $scope.limit = getLimit($widget.height());
 
             loadWidgetConfig();
-
-            $scope.$watch('filter', function(){
-                $scope.currentPage = 1;
-                if($scope.init === true){
-                    return true;
-                }
-
-                $scope.load({
-                    save: true
-                });
-            }, true);
 
             $scope.$watch('scroll_interval', function(){
                 $scope.pagingTimeString = getTimeString();
@@ -249,8 +254,6 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     save: true
                 });
             });
-
-
         },
 
         link: function($scope, element, attr){

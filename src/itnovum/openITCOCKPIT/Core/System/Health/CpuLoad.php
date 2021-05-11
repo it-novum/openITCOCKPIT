@@ -143,4 +143,11 @@ class CpuLoad {
         return (float)$this->load15;
     }
 
+    /**
+     * @return string
+     */
+    public function getArchitecture(){
+        return php_uname('m');
+    }
+
 }

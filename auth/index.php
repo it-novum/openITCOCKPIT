@@ -34,6 +34,7 @@
  * and Nginx will block the access to Grafana.
  */
 
+use App\Identifier\ApikeyIdentifier;
 use Authentication\Identifier\IdentifierCollection;
 use Authentication\Identifier\IdentifierInterface;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
@@ -68,6 +69,9 @@ if ($debug === true) {
 
     fwrite($file, var_export('$_SESSION:' . PHP_EOL, true));
     fwrite($file, var_export($_SESSION, true));
+
+    //fwrite($file, var_export('HTTP Headers:' . PHP_EOL, true));
+    //fwrite($file, var_export(getallheaders(), true));
 }
 
 try {
@@ -120,6 +124,35 @@ try {
         }
 
         throw new UnauthorizedException();
+    }
+
+    if (isset($_COOKIE['Authorization'])) {
+        // This is used if openITCOCKPIT is embedded into an iframe via /iframe-oitc/
+        $apiKeyArray = explode('X-OITC-API ', $_COOKIE['Authorization']);
+
+        if (sizeof($apiKeyArray) === 2) {
+            $apikey = $apiKeyArray[1];
+            $IdentifierCollection = new IdentifierCollection([
+                'Authentication.Apikey' => [
+                    'className' => ApikeyIdentifier::class
+                ]
+            ]);
+
+            $identity = $IdentifierCollection->identify(['apikey' => $apikey]);
+
+            if (!empty($identity)) {
+                //Login success
+                if ($debug) {
+                    fwrite($file, 'Login Ok !!');
+                }
+                header("HTTP/1.0 200 Ok");
+                return;
+            }
+
+            throw new UnauthorizedException();
+        }
+
+
     }
 } catch (\Exception $e) {
 
