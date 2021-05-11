@@ -123,7 +123,7 @@ class WidgetsTable extends Table {
 
         $validator
             ->scalar('json_data')
-            ->maxLength('json_data', 2000)
+            ->maxLength('json_data', 65535)
             ->allowEmptyString('json_data');
 
         return $validator;
