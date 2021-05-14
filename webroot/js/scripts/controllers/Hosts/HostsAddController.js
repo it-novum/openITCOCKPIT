@@ -260,7 +260,7 @@ angular.module('openITCOCKPIT')
                 var checkHostName = $scope.parenthosts.map(function(el){
                     return el.value;
                 });
-                // console.log(checkValue);
+                
                 $scope.$watch('post.Host.name', function(){
                     if(checkHostName.includes($scope.post.Host.name)) {
                         console.log('hai i am here');
@@ -433,7 +433,6 @@ angular.module('openITCOCKPIT')
                 }else{
                     clearForm();
                     $scope.errors = {};
-                    $scope.errorMessage = '';
                     NotyService.scrollTop();
                 }
 
