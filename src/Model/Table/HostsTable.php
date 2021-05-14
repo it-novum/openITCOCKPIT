@@ -2242,6 +2242,14 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param string $name
+     * @return bool
+     */
+    public function existsByName($name){
+        return $this->exists(['Hosts.name' => $name]);
+    }
+
+    /**
      * @param int $id
      * @return bool
      */

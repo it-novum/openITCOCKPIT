@@ -78,6 +78,7 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
 
         $scope.showRootAlert = false;
+        $scope.showDuplicateName = false;
 
         var setValuesFromHosttemplate = function(){
             var fields = [
@@ -256,9 +257,20 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.parenthosts = result.data.hosts;
+                var checkHostName = $scope.parenthosts.map(function(el){
+                    return el.value;
+                });
+                // console.log(checkValue);
+                $scope.$watch('post.Host.name', function(){
+                    if(checkHostName.includes($scope.post.Host.name)) {
+                        console.log('hai i am here');
+                        $scope.showDuplicateName = true;
+                    }else{
+                        $scope.showDuplicateName = false;
+                    }
+                });
             });
         };
-
         $scope.loadHosttemplate = function(){
             var hosttemplateId = $scope.post.Host.hosttemplate_id;
             if(hosttemplateId === 0){
@@ -421,6 +433,7 @@ angular.module('openITCOCKPIT')
                 }else{
                     clearForm();
                     $scope.errors = {};
+                    $scope.errorMessage = '';
                     NotyService.scrollTop();
                 }
 
