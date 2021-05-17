@@ -137,7 +137,7 @@
 
                                         <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                             <span ng-show="userdashboard.grafana_url == ''"
-                                                  class="label label-primary font-xs pointer"
+                                                  class="badge badge-primary font-xs pointer"
                                                   ng-click="synchronizeWithGrafana(userdashboard.id)">
                                                 <span
                                                     class="badge border border-primary text-primary"><?php echo __('Not synchronized'); ?></span>
@@ -145,7 +145,7 @@
                                             </span>
                                         <?php else: ?>
                                             <span ng-show="userdashboard.grafana_url == ''"
-                                                  class="label label-primary font-xs">
+                                                  class="badge badge-primary font-xs">
                                                 <span
                                                     class="badge border border-primary text-primary"><?php echo __('Not synchronized'); ?></span>
                                             </span>
