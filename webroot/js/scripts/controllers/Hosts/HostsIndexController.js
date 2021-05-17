@@ -73,15 +73,15 @@ angular.module('openITCOCKPIT')
             }
         }
         /*** Dynamic custom table end ***/
-        var getContainerName = function(containerId){
-            containerId = parseInt(containerId, 10);
-            for(var index in $scope.containers){
-                if($scope.containers[index].key === containerId){
-                    return $scope.containers[index].value;
-                }
-            }
-            return 'ERROR UNKNOWN CONTAINER';
-        };
+        // var getContainerName = function(containerId){
+        //     containerId = parseInt(containerId, 10);
+        //     for(var index in $scope.containers){
+        //         if($scope.containers[index].key === containerId){
+        //             return $scope.containers[index].value;
+        //         }
+        //     }
+        //     return 'ERROR UNKNOWN CONTAINER';
+        // };
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -135,24 +135,24 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.hosts = result.data.all_hosts;
-                if($scope.hosts.length != 0){
-                    $scope.containerName = getContainerName($scope.hosts[0].Host.containerId);
-                }
+                // if($scope.hosts.length != 0){
+                //     //$scope.containerName = getContainerName($scope.hosts[0].Host.containerId);
+                // }
+
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
-
-        $scope.loadContainer = function(){
-            $http.get("/containers/loadContainersForAngular.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.containers = result.data.containers;
-            });
-        };
+        // $scope.loadContainer = function(){
+        //     $http.get("/containers/loadContainersForAngular.json", {
+        //         params: {
+        //             'angular': true
+        //         }
+        //     }).then(function(result){
+        //         $scope.containers = result.data.containers;
+        //     });
+        // };
 
         $scope.customaizedTableConfig = function(){
             $http.get("/hosts/CustomDynamicTable.json", {
@@ -339,6 +339,6 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
 
-        $scope.loadContainer();
+        // $scope.loadContainer();
 
     });

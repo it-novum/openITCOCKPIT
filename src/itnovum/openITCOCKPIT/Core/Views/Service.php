@@ -153,8 +153,12 @@ class Service {
             $this->servicename = $servicename;
         }
 
-        if (isset($service['Service']['description'])) {
-            $this->description = $service['Service']['description'];
+        if (empty(isset($service['Service']['description'])) && isset($service['Service']['_matchingData']['Servicetemplates']['description'])) {
+            $this->description = $service['Service']['_matchingData']['Servicetemplates']['description'];
+        }else{
+            if(!empty(isset($service['Service']['description']))){
+                $this->description = $service['Service']['description'];
+            }
         }
 
         if (isset($service['Service']['active_checks_enabled']) && $service['Service']['active_checks_enabled'] !== '') {
@@ -195,10 +199,6 @@ class Service {
         }
         if (!empty($service['Service']['servicepriority'])) {
             $this->priority = $service['Service']['servicepriority'];
-        }
-
-        if (isset($service['Service']['_matchingData']['Servicetemplates']['description'])) {
-            $this->description = $service['Service']['_matchingData']['Servicetemplates']['description'];
         }
 
     }
