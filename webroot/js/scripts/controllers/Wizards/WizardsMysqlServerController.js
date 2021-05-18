@@ -19,6 +19,8 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.servicetemplates = result.data.servicetemplates;
                 $scope.servicesNamesForExistCheck = result.data.servicesNamesForExistCheck;
+                $scope.post.username = result.data.username;
+                $scope.post.password = result.data.password;
 
                 for(var key in $scope.servicetemplates){
                     $scope.post.services.push(
