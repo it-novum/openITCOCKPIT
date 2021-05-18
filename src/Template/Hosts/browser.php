@@ -859,7 +859,7 @@ use Cake\Core\Plugin;
                                             <tr ng-show="tags.length">
                                                 <td><?php echo __('Tags'); ?></td>
                                                 <td>
-                                                    <span class="label label-primary"
+                                                    <span class="badge badge-primary"
                                                           ng-repeat="tag in tags"
                                                           style="margin-right: 2px;">{{tag}}</span>
                                                 </td>
