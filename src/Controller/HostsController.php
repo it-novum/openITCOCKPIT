@@ -261,6 +261,10 @@ class HostsController extends AppController {
                 $satelliteName = $satellites[$Host->getSatelliteId()];
                 $satellite_id = $Host->getSatelliteId();
             }
+            $containerName = '';
+            if ($Host->isContainerHost() && isset($containers[$Host->getContainerId()])) {
+                $containerName = $containers[$Host->getContainerId()];
+            }
 
             $tmpRecord = [
                 'Host'                 => $Host->toArray(),
@@ -269,6 +273,7 @@ class HostsController extends AppController {
             ];
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['containerName'] = $containerName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
 

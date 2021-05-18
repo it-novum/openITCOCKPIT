@@ -853,7 +853,7 @@
                                     {{host.Host.tags}}
                                 </td>
                                 <td ng-show="post.dynamictable.custom_container_name" >
-                                    {{ containerName }}
+                                    {{ host.Host.containerName }}
                                 </td>
 
                                 <td ng-show="post.dynamictable.custom_last_change">

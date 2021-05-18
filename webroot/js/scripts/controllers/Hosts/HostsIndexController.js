@@ -31,7 +31,7 @@ angular.module('openITCOCKPIT')
                     not_keywords: '',
                     address: (filterAddress) ? filterAddress : '',
                     satellite_id: [],
-                    container_id:[],
+                    container_id: [],
                     container: '',
                     priority: {
                         1: false,
@@ -68,20 +68,11 @@ angular.module('openITCOCKPIT')
                 custom_instance: '',
                 custom_service_summary: '',
                 custom_description: '',
-                custom_tag:'',
+                custom_tag: '',
                 custom_container_name: ''
             }
         }
         /*** Dynamic custom table end ***/
-        // var getContainerName = function(containerId){
-        //     containerId = parseInt(containerId, 10);
-        //     for(var index in $scope.containers){
-        //         if($scope.containers[index].key === containerId){
-        //             return $scope.containers[index].value;
-        //         }
-        //     }
-        //     return 'ERROR UNKNOWN CONTAINER';
-        // };
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -135,25 +126,11 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.hosts = result.data.all_hosts;
-                // if($scope.hosts.length != 0){
-                //     //$scope.containerName = getContainerName($scope.hosts[0].Host.containerId);
-                // }
-
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
-        // $scope.loadContainer = function(){
-        //     $http.get("/containers/loadContainersForAngular.json", {
-        //         params: {
-        //             'angular': true
-        //         }
-        //     }).then(function(result){
-        //         $scope.containers = result.data.containers;
-        //     });
-        // };
-
         $scope.customaizedTableConfig = function(){
             $http.get("/hosts/CustomDynamicTable.json", {
                 angular: true
@@ -338,7 +315,5 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
-
-        // $scope.loadContainer();
 
     });
