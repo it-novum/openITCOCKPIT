@@ -587,7 +587,7 @@
                                 </td>
 
                                 <td>
-                                    <div
+                                    <div class="word-break"
                                         ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
@@ -720,8 +720,8 @@
                                                     <?php echo __('Append to host group'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                                                <a ui-sref="AgentconnectorsConfig({hostId: host.Host.id})"
+                                            <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
+                                                <a ui-sref="AgentconnectorsWizard({hostId: host.Host.id})"
                                                    class="dropdown-item">
                                                     <i class="fa fa-user-secret"></i>
                                                     <?php echo __('openITCOCKPIT Agent discovery'); ?>

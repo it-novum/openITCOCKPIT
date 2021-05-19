@@ -88,7 +88,8 @@ class AclDependencies extends PluginAclDependencies {
             ->dependency('Mapeditors', 'edit', 'Mapeditors', 'saveBackground')
             ->dependency('Mapeditors', 'edit', 'Mapeditors', 'getIcons')
             ->dependency('Mapeditors', 'edit', 'Mapeditors', 'saveSummaryitem')
-            ->dependency('Mapeditors', 'edit', 'Mapeditors', 'deleteSummaryitem');
+            ->dependency('Mapeditors', 'edit', 'Mapeditors', 'deleteSummaryitem')
+            ->dependency('Mapeditors', 'edit', 'Mapeditors', 'saveMapeditorSettings');
     }
 
 }

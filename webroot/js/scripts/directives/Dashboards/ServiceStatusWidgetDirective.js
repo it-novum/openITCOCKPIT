@@ -32,10 +32,10 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                         critical: 0,
                         unknown: 0
                     },
-                    acknowledged: 0,
-                    not_acknowledged: 0,
-                    in_downtime: 0,
-                    not_in_downtime: 0,
+                    acknowledged: false,
+                    not_acknowledged: false,
+                    in_downtime: false,
+                    not_in_downtime: false,
                     output: ''
                 },
                 Host: {
@@ -55,10 +55,10 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     $scope.filter.Servicestatus.current_state.warning = result.data.config.Servicestatus.current_state.warning ? 1 : 0;
                     $scope.filter.Servicestatus.current_state.critical = result.data.config.Servicestatus.current_state.critical ? 1 : 0;
                     $scope.filter.Servicestatus.current_state.unknown = result.data.config.Servicestatus.current_state.unknown ? 1 : 0;
-                    $scope.filter.Servicestatus.acknowledged = result.data.config.Servicestatus.acknowledged ? 1 : 0;
-                    $scope.filter.Servicestatus.not_acknowledged = result.data.config.Servicestatus.not_acknowledged ? 1 : 0;
-                    $scope.filter.Servicestatus.in_downtime = result.data.config.Servicestatus.in_downtime ? 1 : 0;
-                    $scope.filter.Servicestatus.not_in_downtime = result.data.config.Servicestatus.not_in_downtime ? 1 : 0;
+                    $scope.filter.Servicestatus.acknowledged = result.data.config.Servicestatus.acknowledged;
+                    $scope.filter.Servicestatus.not_acknowledged = result.data.config.Servicestatus.not_acknowledged;
+                    $scope.filter.Servicestatus.in_downtime = result.data.config.Servicestatus.in_downtime;
+                    $scope.filter.Servicestatus.not_in_downtime = result.data.config.Servicestatus.not_in_downtime;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
@@ -115,7 +115,7 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     $scope.scroll = result.data.scroll;
 
                     if(options.save === true){
-                        saveSettings(params);
+                        $scope.saveSettings(params);
                     }
 
                     $scope.init = false;
@@ -187,12 +187,11 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
             };
 
             var getLimit = function(height){
-                height = height - 34 - 180 - 61 - 10 - 37; //Unit: px
-                //                ^ widget Header
-                //                     ^ Widget filter
-                //                           ^ Paginator
-                //                                ^ Margin between header and table
-                //                                     ^ Table header
+                height = height - 42 - 61 - 10 - 37; //Unit: px
+                //                ^ Widget play/pause div
+                //                     ^ Paginator
+                //                          ^ Margin between header and table
+                //                                ^ Table header
 
                 var limit = Math.floor(height / 36); // 36px = table row height;
                 if(limit <= 0){
@@ -201,11 +200,19 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                 return limit;
             };
 
-            var saveSettings = function(){
+            $scope.saveSettings = function(){
                 var settings = $scope.filter;
                 settings['scroll_interval'] = $scope.scroll_interval;
                 settings['useScroll'] = $scope.useScroll;
+                settings['sort'] = $scope.sort;
+                settings['direction'] = $scope.direction;
                 $http.post("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
+                    $scope.currentPage = 1;
+                    loadWidgetConfig();
+                    $scope.hideConfig();
+                    if($scope.init === true){
+                        return true;
+                    }
                     return true;
                 });
             };
@@ -221,20 +228,17 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                 }
             };
 
+            $scope.hideConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_IN');
+            };
+            $scope.showConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_OUT');
+                $scope.load();
+            };
+
             $scope.limit = getLimit($widget.height());
 
             loadWidgetConfig();
-
-            $scope.$watch('filter', function(){
-                $scope.currentPage = 1;
-                if($scope.init === true){
-                    return true;
-                }
-
-                $scope.load({
-                    save: true
-                });
-            }, true);
 
             $scope.$watch('scroll_interval', function(){
                 $scope.pagingTimeString = getTimeString();

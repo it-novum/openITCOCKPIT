@@ -695,7 +695,7 @@ class Systemsetting extends Importer {
             ],
             (int)80 => [
                 'key'      => 'FRONTEND.REPLACE_USER_MACROS',
-                'value'    => '0',
+                'value'    => '1',
                 'info'     => 'If enabled $USERn$ macros will get replaced in the command_line in host and service status overviews',
                 'section'  => 'FRONTEND',
                 'created'  => '2020-04-17 08:43:17',

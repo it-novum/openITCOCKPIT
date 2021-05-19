@@ -3,6 +3,15 @@ declare(strict_types=1);
 
 use Migrations\AbstractMigration;
 
+/**
+ * Class UpdateAgentshostscache
+ *
+ * Created:
+ * oitc migrations create UpdateAgentshostscache
+ *
+ * Usage:
+ * openitcockpit-update
+ */
 class UpdateAgentshostscache extends AbstractMigration {
 
     public function up() {

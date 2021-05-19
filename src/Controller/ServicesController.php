@@ -221,6 +221,7 @@ class ServicesController extends AppController {
         $HoststatusFields
             ->currentState()
             ->isFlapping()
+            ->lastStateChange()
             ->lastHardStateChange();
         $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
@@ -1325,6 +1326,7 @@ class ServicesController extends AppController {
      * @param int|string|null $idOrUuid
      * @throws MissingDbBackendException
      * @throws GuzzleException
+     * @throws \Exception
      */
     public function browser($idOrUuid = null) {
         $User = new User($this->getUser());

@@ -26,7 +26,8 @@ angular.module('openITCOCKPIT')
                     Servicetemplate: 1,
                     Timeperiod: 1,
                     Location: 1,
-                    Tenant: 1
+                    Tenant: 1,
+                    Container: 1
                 },
                 Actions: {
                     add: 1,

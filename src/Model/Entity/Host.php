@@ -228,19 +228,42 @@ class Host extends Entity {
     }
 
     /**
+     * @param Hosttemplate $hosttemplate
      * @return array
      */
-    public function getCommandargumentValuesForCfg() {
+    public function getCommandargumentValuesForCfg(Hosttemplate $hosttemplate) {
         $hostcommandargumentvaluesForCfg = [];
         $hostcommandargumentvalues = $this->get('hostcommandargumentvalues');
+        if (!empty($hostcommandargumentvalues)) {
+            $host = $this->toArray();
+            $hosttemplate = $hosttemplate->toArray();
+            if ($host['command_id'] === null || $host['command_id'] == $hosttemplate['command_id']) {
+                $hostcommandargumentvalues = $host['hostcommandargumentvalues'];
 
-        foreach ($hostcommandargumentvalues as $hostcommandargumentvalue) {
-            /** @var $hostcommandargumentvalue Hostcommandargumentvalue */
-            $hostcommandargumentvaluesForCfg[] = [
-                'name'       => $hostcommandargumentvalue->get('commandargument')->get('name'),
-                'human_name' => $hostcommandargumentvalue->get('commandargument')->get('human_name'),
-                'value'      => $hostcommandargumentvalue->get('value')
-            ];
+                $commandArgumentValuesDiff = array_diff(
+                    Hash::extract($hosttemplate['hosttemplatecommandargumentvalues'], '{n}.commandargument_id'),
+                    Hash::extract($hostcommandargumentvalues, '{n}.commandargument_id')
+                );
+                if (!empty($commandArgumentValuesDiff)) {
+                    //add missing (new) command argument values from host template to host command argument values
+                    foreach ($commandArgumentValuesDiff as $commandArgumentValueId) {
+                        $key = array_search(
+                            $commandArgumentValueId,
+                            array_column($hosttemplate['hosttemplatecommandargumentvalues'], 'commandargument_id'), true
+                        );
+                        $hostcommandargumentvalues[] = $hosttemplate['hosttemplatecommandargumentvalues'][$key];
+                    }
+                }
+            }
+
+
+            foreach ($hostcommandargumentvalues as $hostcommandargumentvalue) {
+                $hostcommandargumentvaluesForCfg[] = [
+                    'name'       => $hostcommandargumentvalue['commandargument']['name'],
+                    'human_name' => $hostcommandargumentvalue['commandargument']['human_name'],
+                    'value'      => $hostcommandargumentvalue['value']
+                ];
+            }
         }
 
         return Hash::sort($hostcommandargumentvaluesForCfg, '{n}.name', 'asc', 'natural');

@@ -106,6 +106,7 @@
                                             id="ServiceName"
                                             class="form-control"
                                             type="text"
+                                            ng-disabled="post.Servicetemplate.template_name == 'OITC_AGENT_ACTIVE'"
                                             ng-model="post.Servicetemplate.template_name">
                                     <div ng-repeat="error in errors.template_name">
                                         <div class="help-block text-danger">{{ error }}</div>

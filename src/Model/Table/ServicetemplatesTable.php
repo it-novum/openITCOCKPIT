@@ -123,8 +123,8 @@ class ServicetemplatesTable extends Table {
         ]);
 
         $this->hasOne('Agentchecks', [
-            'foreignKey' => 'servicetemplate_id',
-        ]);
+            'foreignKey' => 'servicetemplate_id'
+        ])->setDependent(true);
 
         $this->hasMany('Customvariables', [
             'conditions'   => [
@@ -253,7 +253,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_recovery', 'create')
             ->allowEmptyString('notify_on_recovery', null, false)
             ->add('notify_on_recovery', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -262,7 +262,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_warning', 'create')
             ->allowEmptyString('notify_on_warning', null, false)
             ->add('notify_on_warning', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -271,7 +271,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_critical', 'create')
             ->allowEmptyString('notify_on_critical', null, false)
             ->add('notify_on_critical', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -280,7 +280,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_unknown', 'create')
             ->allowEmptyString('notify_on_unknown', null, false)
             ->add('notify_on_unknown', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -289,7 +289,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_flapping', 'create')
             ->allowEmptyString('notify_on_flapping', null, false)
             ->add('notify_on_flapping', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -298,7 +298,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_downtime', 'create')
             ->allowEmptyString('notify_on_downtime', null, false)
             ->add('notify_on_downtime', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -410,7 +410,6 @@ class ServicetemplatesTable extends Table {
 
         $validator
             ->integer('freshness_threshold')
-            ->greaterThan('check_period_id', 0, __('This field cannot be empty'))
             ->allowEmptyString('freshness_threshold');
 
         return $validator;
@@ -605,7 +604,7 @@ class ServicetemplatesTable extends Table {
             ->disableHydration()
             ->first();
 
-        if(!$formatAsCake2){
+        if (!$formatAsCake2) {
             return $query;
         }
         return $this->formatFirstResultAsCake2($query, true);
@@ -682,6 +681,106 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
+     * @param $ids
+     * @param array $MY_RIGHTS
+     * @param array $excludedUuids
+     * @return array
+     */
+    public function getServicetemplatesFoWizardDeploy($ids, $MY_RIGHTS = [], $excludedUuids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        if (!is_array($excludedUuids)) {
+            $excludedUuids = [$excludedUuids];
+        }
+
+        $query = $this->find()
+            ->where([
+                'Servicetemplates.id IN' => $ids
+            ]);
+        if (!empty($excludedUuids)) {
+            $query->whereNotInList('Servicetemplates.uuid', $excludedUuids);
+        }
+
+        $query->contain([
+            'Servicetemplatecommandargumentvalues' => [
+                'Commandarguments'
+            ],
+            'CheckCommand'                         => [
+                'Commandarguments'
+            ]
+        ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Servicetemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration()
+            ->all();
+
+        $servicetemplates = [];
+        foreach ($query as $servicetemplate) {
+            // Merge new command arguments that are missing in the service template to service template command arguments
+            // and remove old command arguments that don't exists in the command anymore.
+            $filteredCommandArgs = [];
+            foreach ($servicetemplate['check_command']['commandarguments'] as $commandargument) {
+                $valueExists = false;
+                foreach ($servicetemplate['servicetemplatecommandargumentvalues'] as $servicetemplatecommandargumentvalue) {
+                    if ($commandargument['id'] === $servicetemplatecommandargumentvalue['commandargument']['id']) {
+                        $filteredCommandArgs[] = $servicetemplatecommandargumentvalue;
+                        $valueExists = true;
+                    }
+                }
+                if (!$valueExists) {
+                    $filteredCommandArgs[] = [
+                        'commandargument_id' => $commandargument['id'],
+                        'servicetemplate_id' => $servicetemplate['id'],
+                        'value'              => '',
+                        'commandargument'    => [
+                            'name'       => $commandargument['name'],
+                            'human_name' => $commandargument['human_name'],
+                            'command_id' => $commandargument['command_id'],
+                        ]
+                    ];
+                }
+            }
+            $servicetemplate['servicetemplatecommandargumentvalues'] = $filteredCommandArgs;
+            $servicetemplates[] = $servicetemplate;
+        }
+
+        return $servicetemplates;
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getServicetemplateFoWizardDeployInterfaces($MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where([
+                'Servicetemplates.uuid' => 'de5e3045-3011-45d8-8ac6-bc5fbb3d396d'
+            ])
+            ->contain([
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ],
+                'CheckCommand'                         => [
+                    'Commandarguments'
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Servicetemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration();
+        if (!is_null($query)) {
+            return $query->first();
+        }
+        return [];
+    }
+
+    /**
      * @param int $id
      * @return array
      */
@@ -723,14 +822,13 @@ class ServicetemplatesTable extends Table {
 
         $where = $ServicetemplateFilter->ajaxFilter();
         $where['Servicetemplates.container_id IN'] = $containerIds;
-        $query = $this->find('list')
-            ->select([
-                'Servicetemplates.id',
-                'Servicetemplates.name'
-            ])
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'template_name'
+        ])
             ->where($where)
             ->order([
-                'Servicetemplates.name' => 'asc'
+                'Servicetemplates.template_name' => 'asc'
             ])
             ->limit(ITN_AJAX_LIMIT)
             ->disableHydration();
@@ -742,13 +840,16 @@ class ServicetemplatesTable extends Table {
 
         $selectedServicetemplates = [];
         if (!empty($selected)) {
-            $query = $this->find('list')
+            $query = $this->find('list', [
+                'keyField'   => 'id',
+                'valueField' => 'template_name'
+            ])
                 ->where([
                     'Servicetemplates.id IN'           => $selected,
                     'Servicetemplates.container_id IN' => $containerIds
                 ])
                 ->order([
-                    'Servicetemplates.name' => 'asc'
+                    'Servicetemplates.template_name' => 'asc'
                 ]);
 
             $selectedServicetemplates = $query->toArray();
@@ -758,6 +859,7 @@ class ServicetemplatesTable extends Table {
         }
 
         $servicetemplates = $servicetemplatesWithLimit + $selectedServicetemplates;
+
         asort($servicetemplates, SORT_FLAG_CASE | SORT_NATURAL);
         return $servicetemplates;
     }
@@ -967,6 +1069,9 @@ class ServicetemplatesTable extends Table {
         return $this->find()
             ->contain([
                 'Servicegroups',
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
             ])
             ->where([
                 'Servicetemplates.id' => $id
@@ -1283,6 +1388,8 @@ class ServicetemplatesTable extends Table {
     /**
      * @param $id
      * @return array
+     * @deprecated
+     * @todo delete this method with oITC 4.3 !!
      */
     public function getServicetemplateForNewAgentService($id) {
         $query = $this->find()
@@ -1491,4 +1598,44 @@ class ServicetemplatesTable extends Table {
 
         return $list;
     }
+
+    /**
+     * @param int $servicetemplateIds
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicetemplatesByIds($servicetemplateIds = [], $MY_RIGHTS = [], $enableHydration = true) {
+        if (!is_array($servicetemplateIds)) {
+            $servicetemplateIds = [$servicetemplateIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id',
+                'Servicetemplates.name',
+                'Servicetemplates.description',
+                'Servicetemplates.uuid'
+            ])
+            ->contain([
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Servicetemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->andWhere([
+            'Servicetemplates.id IN ' => $servicetemplateIds
+        ])
+            ->order(['Servicetemplates.name' => 'asc'])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
 }

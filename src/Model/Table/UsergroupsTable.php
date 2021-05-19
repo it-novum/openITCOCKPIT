@@ -74,7 +74,12 @@ class UsergroupsTable extends Table {
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
-            ->allowEmptyString('name', null, false);
+            ->allowEmptyString('name', null, false)
+            ->add('name', 'unique', [
+                'rule'     => 'validateUnique',
+                'provider' => 'table',
+                'message'  => __('This user role name has already been taken.')
+            ]);
 
         $validator
             ->scalar('description')

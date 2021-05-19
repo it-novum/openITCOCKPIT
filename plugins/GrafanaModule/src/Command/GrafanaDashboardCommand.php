@@ -136,6 +136,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         $ServicestatusFields->perfdata();
         $ServicestatusConditions = new ServicestatusConditions($DbBackend);
         $ServicestatusConditions->perfdataIsNotNull();
+        $ServicestatusConditions->perfdataIsNotEmpty();
 
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');

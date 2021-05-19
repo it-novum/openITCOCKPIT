@@ -62,6 +62,7 @@ config/openitcGrafanaTag.php
 config/datasource.php
 config/dbbackend.php
 config/perfdatabackend.php
+config/gearman.php
 webroot/img/logo_custom.png
 webroot/img/logo_small_custom.png
 webroot/img/logos/logo_custom.png
@@ -88,6 +89,9 @@ plugins/MasterSelfMonitoringModule
 plugins/MkModule
 plugins/NWCModule
 plugins/ImportModule
+plugins/HANAModule
+plugins/HelloworldModule
+plugins/IntialavatarModule
 plugins/CheckmkModule
 plugins/OpenstreetmapModule
 plugins/SAPModule

@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+    - name: 🕵️‍♀️ openITCOCKPIT Monitoring Agent
+      url: https://github.com/it-novum/openitcockpit-agent-go/
+      about: Please post all issues related to the openITCOCKPIT Monitoring Agent into the corresponding repository.
+    - name: 💬 Discord
+      url: https://discord.gg/G8KhxKuQ9G
+      about: Join the openITCOCKPIT Community Discord
+    - name: Reddit
+      url: https://www.reddit.com/r/openitcockpit/
+      about: Join the openITCOCKPIT subreddit
+    - name: Report a security vulnerability
+      url: https://openitcockpit.io/security/
+      about: Please review our security policy for more details

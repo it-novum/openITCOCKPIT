@@ -35,7 +35,7 @@ class AutomapsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('automaps');
@@ -56,7 +56,7 @@ class AutomapsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -150,7 +150,7 @@ class AutomapsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
 
         return $rules;
@@ -218,5 +218,62 @@ class AutomapsTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $selected
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getAutomapsForAngular($selected = [], $MY_RIGHTS = []) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+        $query = $this->find('list')
+            ->limit(ITN_AJAX_LIMIT)
+            ->select([
+                'Automaps.id',
+                'Automaps.name'
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Automaps.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $selected = array_filter($selected);
+        if (!empty($selected)) {
+            $query->where([
+                'Automaps.id NOT IN' => $selected
+            ]);
+            if (!empty($MY_RIGHTS)) {
+                $query->andWhere([
+                    'Automaps.container_id IN' => $MY_RIGHTS
+                ]);
+            }
+        }
+
+        $query->order(['Automaps.name' => 'ASC']);
+        $automapsWithLimit = $query->toArray();
+        $selectedAutomaps = [];
+        if (!empty($selected)) {
+            $query = $this->find('list')
+                ->select([
+                    'Automaps.id',
+                    'Automaps.name'
+                ])
+                ->where([
+                    'Automaps.id IN' => $selected
+                ]);
+
+            $query->order(['Automaps.name' => 'ASC']);
+
+            $selectedAutomaps = $query->toArray();
+        }
+
+        $automaps = $automapsWithLimit + $selectedAutomaps;
+        asort($automaps, SORT_FLAG_CASE | SORT_NATURAL);
+        return $automaps;
     }
 }

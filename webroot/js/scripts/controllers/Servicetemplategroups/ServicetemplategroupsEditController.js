@@ -54,7 +54,6 @@ angular.module('openITCOCKPIT')
                 });
         };
 
-
         $scope.submit = function(){
             $http.post("/servicetemplategroups/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
@@ -77,7 +76,6 @@ angular.module('openITCOCKPIT')
                     $scope.errors = result.data.error;
                 }
             });
-
         };
 
 

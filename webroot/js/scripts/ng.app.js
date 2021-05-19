@@ -168,41 +168,81 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentchecksEditController"
             })
 
-            .state('AgentconfigsConfig', {
-                url: '/agentconfigs/config/:hostId',
-                templateUrl: "/agentconfigs/config.html",
-                controller: "AgentconfigsConfigController"
-            })
-
-            .state('AgentconfigsScan', {
-                url: '/agentconfigs/scan/:hostId',
-                templateUrl: "/agentconfigs/scan.html",
-                controller: "AgentconfigsScanController"
+            .state('AgentconnectorsWizard', {
+                url: '/agentconnector/wizard/:hostId/:pushAgentId',
+                params: {
+                    hostId: {
+                        value: null,
+                        squash: false
+                    },
+                    pushAgentId: {
+                        value: null,
+                        squash: true
+                    }
+                },
+                templateUrl: "/agentconnector/wizard.html",
+                controller: "AgentconnectorsWizardController"
             })
 
             .state('AgentconnectorsConfig', {
-                url: '/agentconnector/config',
+                url: '/agentconnector/config/:hostId/:pushAgentId',
                 params: {
-                    hostId: {
+                    mode: {
                         value: null
+                    },
+                    selectedOs: {
+                        value: null
+                    },
+                    pushAgentId: {
+                        value: null,
+                        squash: true
                     }
                 },
                 templateUrl: "/agentconnector/config.html",
                 controller: "AgentconnectorsConfigController"
             })
 
-            .state('AgentconnectorsAgent', {
-                url: '/agentconnector/agents?hostuuid&selection',
-                params: {
-                    hostuuid: {
-                        value: null
-                    },
-                    selection: {
-                        value: null
-                    }
-                },
-                templateUrl: "/agentconnector/agents.html",
-                controller: "AgentconnectorsAgentController"
+
+            .state('AgentconnectorsInstall', {
+                url: '/agentconnector/install/:hostId',
+                templateUrl: "/agentconnector/install.html",
+                controller: "AgentconnectorsInstallController"
+            })
+
+            .state('AgentconnectorsAutotls', {
+                url: '/agentconnector/autotls/:hostId',
+                templateUrl: "/agentconnector/autotls.html",
+                controller: "AgentconnectorsAutotlsController"
+            })
+
+            .state('AgentconnectorsSelectAgent', {
+                url: '/agentconnector/select_agent/:hostId',
+                templateUrl: "/agentconnector/select_agent.html",
+                controller: "AgentconnectorsSelectAgentController"
+            })
+
+            .state('AgentconnectorsCreateServices', {
+                url: '/agentconnector/create_services/:hostId/:testConnection',
+                templateUrl: "/agentconnector/create_services.html",
+                controller: "AgentconnectorsCreateServicesController"
+            })
+
+            .state('AgentconnectorsPull', {
+                url: '/agentconnector/pull',
+                templateUrl: "/agentconnector/pull.html",
+                controller: "AgentconnectorsPullController"
+            })
+
+            .state('AgentconnectorsPush', {
+                url: '/agentconnector/push',
+                templateUrl: "/agentconnector/push.html",
+                controller: "AgentconnectorsPushController"
+            })
+
+            .state('AgentconnectorsShowOutput', {
+                url: '/agentconnector/showOutput/:mode/:id',
+                templateUrl: "/agentconnector/showOutput.html",
+                controller: "AgentconnectorsShowOutputController"
             })
 
             .state('BackupsIndex', {
@@ -1011,12 +1051,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "UsersLdapController"
             })
 
-            .state('UsersEditFromLdap', {
-                url: '/users/editFromLdap/:id',
-                templateUrl: "/users/editFromLdap.html",
-                controller: "UsersEditFromLdapController"
-            })
-
             .state('UsercontainerrolesIndex', {
                 url: '/usercontainerroles/index',
                 templateUrl: "/usercontainerroles/index.html",
@@ -1064,6 +1098,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 templateUrl: "/hosts/index.html",
                 params: {
                     hostname: {
+                        value: null
+                    },
+                    address: {
                         value: null
                     },
                     hoststate: {
@@ -1382,6 +1419,72 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ChangelogsIndexController"
             })
 
+            .state('WizardsIndex', {
+                url: '/wizards/index',
+                templateUrl: "/wizards/index.html",
+                controller: "WizardsIndexController"
+            })
+
+            .state('WizardHostConfiguration', {
+                url: '/wizards/wizardHostConfiguration/:typeId/:title/:hostId/:state/:selectedOs',
+                params: {
+                    state: {
+                        value: null
+                    },
+                    selectedOs: {
+                        value: null
+                    },
+                    hostId: {
+                        value: null,
+                        squash: false
+                    }
+                },
+                templateUrl: "/wizards/wizardHostConfiguration.html",
+                controller: "WizardHostConfigurationController"
+            })
+
+            .state('WizardsAgent', {
+                url: '/wizards/agent',
+                params: {
+                    selectedOs: {
+                        value: null
+                    }
+                },
+                templateUrl: "/wizards/agent.html",
+                controller: "WizardsAgentController"
+            })
+
+            .state('WizardsLinuxServerSsh', {
+                url: '/wizards/linuxserverssh',
+                templateUrl: "/wizards/linuxserverssh.html",
+                controller: "WizardsLinuxServerSshController"
+            })
+
+            .state('WizardsMysqlServer', {
+                url: '/wizards/mysqlserver/:hostId',
+                templateUrl: "/wizards/mysqlserver.html",
+                controller: "WizardsMysqlServerController"
+            })
+
+            .state('WizardsAssignments', {
+                url: '/wizards/assignments',
+                templateUrl: "/wizards/assignments.html",
+                controller: "WizardsAssignmentsController"
+            })
+
+            .state('WizardsEdit', {
+                url: '/wizards/edit/:uuid/:typeId',
+                params: {
+                    uuid: {
+                        value: null
+                    },
+                    typeId: {
+                        value: null
+                    }
+                },
+                templateUrl: "/wizards/edit.html",
+                controller: "WizardsEditController"
+            })
     })
 
     /*

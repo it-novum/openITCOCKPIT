@@ -36,29 +36,38 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.removeArg = function(arg){
+        $scope.removeArg = function(count){
             var args = [];
             for(var i in $scope.args){
-                if($scope.args[i].id !== arg.id){
-                    args.push($scope.args[i]);
+                if($scope.args[i].count !== count){
+                    args.push($scope.args[i])
                 }
             }
-
             $scope.args = _.sortBy(args, 'id');
         };
 
         $scope.addArg = function(){
             var argsCount = 1;
-            var allIds = _.map($scope.args, 'id');
-            while(in_array(argsCount, allIds)){
+            var count = 1;
+            var allArgNumbersInUse = _.map($scope.args, function(arg){
+                return arg.name.match(/\d+/g);
+            });
+            while(in_array(argsCount, allArgNumbersInUse)){
                 argsCount++;
             }
+            if($scope.args.length > 0){
+                //check for max count values for internal counter
+                var objectWithMaxCounter = _.maxBy($scope.args, function(arg){
+                    return arg.count;
+                });
+                count = objectWithMaxCounter.count + 1;
+            }
             $scope.args.push({
-                id: argsCount,
                 name: '$ARG' + argsCount + '$',
-                human_name: ''
+                human_name: '',
+                count: count
             });
-            $scope.args = _.sortBy($scope.args, 'id');
+            $scope.args = _.sortBy($scope.args, 'name');
         };
 
         $scope.checkForMisingArguments = function(){
@@ -140,15 +149,15 @@ angular.module('openITCOCKPIT')
                     className: 'highlight-green'
                 },
                 {
-                    highlight: /(\$_HOST.*\$)/g,
+                    highlight: /(\$_HOST.*?\$)/g,
                     className: 'highlight-purple'
                 },
                 {
-                    highlight: /(\$_SERVICE.*\$)/g,
+                    highlight: /(\$_SERVICE.*?\$)/g,
                     className: 'highlight-purple'
                 },
                 {
-                    highlight: /(\$_CONTACT.*\$)/g,
+                    highlight: /(\$_CONTACT.*?\$)/g,
                     className: 'highlight-purple'
                 }
             ];

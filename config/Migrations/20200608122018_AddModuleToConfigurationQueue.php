@@ -3,6 +3,15 @@ declare(strict_types=1);
 
 use Migrations\AbstractMigration;
 
+/**
+ * Class AddModuleToConfigurationQueue
+ *
+ * Created:
+ * oitc migrations create AddModuleToConfigurationQueue
+ *
+ * Usage:
+ * openitcockpit-update
+ */
 class AddModuleToConfigurationQueue extends AbstractMigration {
 
     public function up() {
