@@ -77,6 +77,7 @@ angular.module('openITCOCKPIT')
         clearForm();
 
         $scope.init = true;
+        $scope.showDuplicateName = false;
 
         var setValuesFromServicetemplate = function(){
             var fields = [
@@ -290,7 +291,13 @@ angular.module('openITCOCKPIT')
             $http.post("/services/loadServicetemplate/" + servicetemplateId + "/" + hostId + ".json?angular=true", {}).then(function(result){
                 $scope.servicetemplate = result.data.servicetemplate;
                 setValuesFromServicetemplate();
-
+                $scope.$watch('post.Service.name', function(){
+                   if($scope.post.Service.name == $scope.servicetemplate.Servicetemplate.name){
+                       $scope.showDuplicateName = true;
+                   }else {
+                       $scope.showDuplicateName = false;
+                   }
+                });
                 //Services add. At this point all contacts must be inherited from somewhere because the service does not exists jet.
                 $scope.data.disableInheritance = false;
                 $scope.data.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
