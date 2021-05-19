@@ -257,17 +257,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.parenthosts = result.data.hosts;
-                var checkHostName = $scope.parenthosts.map(function(el){
-                    return el.value;
-                });
-
-                $scope.$watch('post.Host.name', function(){
-                    if(checkHostName.includes($scope.post.Host.name)) {
-                        $scope.showDuplicateName = true;
-                    }else{
-                        $scope.showDuplicateName = false;
-                    }
-                });
             });
         };
         $scope.loadHosttemplate = function(){
@@ -290,6 +279,25 @@ angular.module('openITCOCKPIT')
                 $scope.init = false;
             }, 500);
         };
+        $scope.loadHostsNames = function(){
+            $http.get("/hosts/loadHostsName.json", {
+                angular: true
+            }).then(function(result){
+                $scope.hostnamesData = result.data.hostnames;
+                var nameArray = $scope.hostnamesData.map(function(el){
+                    return el.name;
+                });
+                // console.log(nameArray);
+                //$scope.hostnames = $scope.hostnames.push(...nameArray);
+                $scope.$watch('post.Host.name', function(){
+                    if(nameArray.includes($scope.post.Host.name)){
+                        $scope.showDuplicateName = true;
+                    }else{
+                        $scope.showDuplicateName = false;
+                    }
+                });
+            });
+        }
 
         $scope.setPriority = function(priority){
             $scope.post.Host.priority = parseInt(priority, 10);
@@ -458,6 +466,7 @@ angular.module('openITCOCKPIT')
 
         $scope.loadContainers();
         $scope.loadCommands();
+        $scope.loadHostsNames();
 
 
         jQuery(function(){

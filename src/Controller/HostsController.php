@@ -3035,4 +3035,19 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
+    public function loadHostsName() {
+        if (!$this->isApiRequest()) {
+            // Only ship HTML template for angular
+            return;
+        }
+        /** @var $HostTable HostsTable */
+        $HostTable = TableRegistry::getTableLocator()->get('Hosts');
+        $query = $HostTable->find('all');
+        $host_names = $query->select(['name']);
+
+        $this->set('hostnames', $host_names);
+        $this->viewBuilder()->setOption('serialize', ['hostnames']);
+
+    }
+
 }
