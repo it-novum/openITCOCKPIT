@@ -894,24 +894,6 @@ use Cake\Core\Plugin;
                                                     {{mergedHost.description}}
                                                 </td>
                                             </tr>
-                                            <tr ng-show="hoststatus.last_state_change">
-                                                <td><?php echo __('Last state change'); ?></td>
-                                                <td>
-                                                    {{hoststatus.last_state_change}}
-                                                </td>
-                                            </tr>
-                                            <tr ng-show="hoststatus.lastCheck">
-                                                <td><?php echo __('Last check'); ?></td>
-                                                <td>
-                                                    {{hoststatus.lastCheck}}
-                                                </td>
-                                            </tr>
-                                            <tr ng-show="hoststatus.output">
-                                                <td><?php echo __('Host Output'); ?></td>
-                                                <td>
-                                                    {{hoststatus.output}}
-                                                </td>
-                                            </tr>
                                         </table>
                                     </div>
                                 </div>
