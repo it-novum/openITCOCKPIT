@@ -41,6 +41,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DocumentationsTable;
+use App\Model\Table\DynamicTableConfigsTable;
 use App\Model\Table\HostcommandargumentvaluesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
@@ -50,6 +51,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\TableConfigsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -105,6 +107,8 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use phpDocumentor\Reflection\Types\Object_;
+use function MongoDB\BSON\toJSON;
 
 
 /**
@@ -122,6 +126,10 @@ class HostsController extends AppController {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+        // $containers = [];
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->getContainersAsList($this->MY_RIGHTS);
 
         $satellites = [];
 
@@ -136,6 +144,7 @@ class HostsController extends AppController {
         if (!$this->isApiRequest()) {
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
+            $this->set('containers', $containers);
             //Only ship HTML template
             return;
         }
@@ -252,6 +261,10 @@ class HostsController extends AppController {
                 $satelliteName = $satellites[$Host->getSatelliteId()];
                 $satellite_id = $Host->getSatelliteId();
             }
+            $containerName = '';
+            if ($Host->isContainerHost() && isset($containers[$Host->getContainerId()])) {
+                $containerName = $containers[$Host->getContainerId()];
+            }
 
             $tmpRecord = [
                 'Host'                 => $Host->toArray(),
@@ -260,6 +273,7 @@ class HostsController extends AppController {
             ];
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['containerName'] = $containerName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
 
@@ -792,6 +806,94 @@ class HostsController extends AppController {
             }
             $this->set('host', $hostEntity);
             $this->viewBuilder()->setOption('serialize', ['host']);
+        }
+    }
+
+    public function CustomDynamicTable() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+        $User = new User($this->getUser());
+        /** @var  $DynamicTableConfig DynamicTableConfigsTable */
+        $DynamicTableConfig = TableRegistry::getTableLocator()->get('DynamicTableConfigs');
+        // set table name as a string
+        $table_name = 'Hosts';
+        $user_id = $User->getId();
+        $defaultConfig = [
+            'custom_hoststatus'      => 1,
+            'custom_acknowledgement' => 1,
+            'custom_indowntime'      => 1,
+            'custom_shared'          => 1,
+            'custom_passive'         => 1,
+            'custom_priority'        => 1,
+            'custom_hostname'        => 1,
+            'custom_ip_address'      => 1,
+            'custom_last_change'     => 1,
+            'custom_last_check'      => 1,
+            'custom_host_output'     => 1,
+            'custom_instance'        => 1,
+            'custom_service_summary' => 1,
+            'custom_description'     => 0,
+            'custom_tag'             => 0,
+            'custom_container_name'  => 0
+        ];
+
+        if ($this->request->is('get')) {
+            $table_data = $DynamicTableConfig->find('all');
+            $table_data = $table_data->where(['user_id' => $user_id, 'table_name' => $table_name]);
+
+            if (!$DynamicTableConfig->existEntiy($user_id, $table_name)) {
+                $table_data = [
+                    0 => [
+                        'user_id'    => $user_id,
+                        'json_data'  => json_encode($defaultConfig),
+                        'table_name' => $table_name
+                    ]
+                ];
+            }
+
+            $this->set('table_data', $table_data);
+            $this->viewBuilder()->setOption('serialize', ['table_data']);
+        }
+        // Post Data
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $req_data = $this->request->getData();
+            $id = $req_data['id'];
+            $table = [
+                'user_id'    => $req_data['user_id'],
+                'json_data'  => json_encode($req_data['dynamictable']),
+                'table_name' => $req_data['table_name']
+            ];
+            // json_encode($req_data['dynamictable']);
+            if ($id == '' or $id == null) {
+                $table_data = $DynamicTableConfig->newEntity($table);
+                $DynamicTableConfig->save($table_data);
+                if ($table_data->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $table_data->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                }
+                $this->set('table_data', $table_data);
+                $this->viewBuilder()->setOption('serialize', ['table_data']);
+            }
+            //debug($id);
+            if ($DynamicTableConfig->existById($id)) {
+                $id = $DynamicTableConfig->get($id);
+                $table = [
+                    'json_data' => json_encode($req_data['dynamictable'])
+                ];
+                $table_data = $DynamicTableConfig->patchEntity($id, $table);
+                $DynamicTableConfig->save($table_data);
+                if ($table_data->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $table_data->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                    return;
+                }
+                $this->set('table_data', $table_data);
+                $this->viewBuilder()->setOption('serialize', ['table_data']);
+            }
         }
     }
 

@@ -617,7 +617,7 @@ class AngularController extends AppController {
             'to_time'         => $UserTime->customFormat('H:i', time() + 60 * 15),
             'duration'        => 15,
             'comment'         => __('In maintenance'),
-            'downtimetype_id' => $downtimetypeId
+            'downtimetype_id' => $downtimetypeId,
         ];
 
         $this->set('defaultValues', $defaultValues);

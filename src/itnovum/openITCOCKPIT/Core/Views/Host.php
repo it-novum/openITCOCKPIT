@@ -130,8 +130,12 @@ class Host {
             $this->address = $host['Host']['address'];
         }
 
-        if (isset($host['Host']['description'])) {
-            $this->description = $host['Host']['description'];
+        if (empty(isset($host['Host']['description'])) && isset($host['Host']['hosttemplate']['description'])) {
+            $this->description = $host['Host']['hosttemplate']['description'];
+        } else {
+            if (!empty(isset($host['Host']['description']))) {
+                $this->description = $host['Host']['description'];
+            }
         }
 
         if (isset($host['Host']['hosttemplate_id'])) {
@@ -271,6 +275,17 @@ class Host {
     }
 
     /**
+     * @return bool
+     */
+    public function isContainerHost() {
+        // return $this->containerName;
+        if ($this->containerId === null) {
+            return false;
+        }
+        return ((int)$this->containerId !== 0);
+    }
+
+    /**
      * @return string
      */
     public function getTags() {
@@ -304,6 +319,17 @@ class Host {
     public function toArray() {
         $arr = get_object_vars($this);
         $arr['is_satellite_host'] = $this->isSatelliteHost();
+        $arr['name'] = $this->hostname;
+        return $arr;
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function toContainerArray() {
+        $arr = get_object_vars($this);
+        $arr['is_container_host'] = $this->isContainerHost();
         $arr['name'] = $this->hostname;
         return $arr;
     }

@@ -43,6 +43,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
+use App\Model\Table\DynamicTableConfigsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
@@ -50,9 +51,11 @@ use App\Model\Table\ServicecommandargumentvaluesTable;
 use App\Model\Table\ServiceeventcommandargumentvaluesTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServiceTableConfigsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -123,9 +126,17 @@ class ServicesController extends AppController {
      * @throws MissingDbBackendException
      */
     public function index() {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->getContainersAsList($this->MY_RIGHTS);
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
         if (!$this->isApiRequest()) {
             $User = new User($this->getUser());
             $this->set('username', $User->getFullName());
+            $this->set('containers', $containers);
             //Only ship HTML template
             return;
         }
@@ -240,8 +251,15 @@ class ServicesController extends AppController {
                 $Hoststatus = new Hoststatus([], $UserTime);
             }
             $Service = new Service($service, null, $allowEdit);
+            //debug($service);
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend, $service['service_type']);
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+            if ($Host->isSatelliteHost() && isset($satellites[$Host->getSatelliteId()])) {
+                $satelliteName = $satellites[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
 
             $tmpRecord = [
                 'Service'       => $Service->toArray(),
@@ -250,6 +268,7 @@ class ServicesController extends AppController {
                 'Servicestatus' => $Servicestatus->toArray(),
                 'ServiceType'   => $serviceTypes[$service['service_type']]
             ];
+            $tmpRecord['Service']['satelliteName'] = $satelliteName;
             $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
         }
@@ -2680,5 +2699,91 @@ class ServicesController extends AppController {
 
         $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);
+    }
+
+    public function CustomDynamicTable() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+        $User = new User($this->getUser());
+        /** @var  $DynamicTableConfig DynamicTableConfigsTable */
+        $DynamicTableConfig = TableRegistry::getTableLocator()->get('DynamicTableConfigs');
+        // set table name as a string
+        $table_name = 'Services';
+        $user_id = $User->getId();
+        $defaultConfig = [
+            'custom_state'           => 1,
+            'custom_acknowledgement' => 1,
+            'custom_indowntime'      => 1,
+            'custom_grapher'         => 1,
+            'custom_passive'         => 1,
+            'custom_priority'        => 1,
+            'custom_servicename'     => 1,
+            'custom_last_change'     => 1,
+            'custom_last_check'      => 1,
+            'custom_next_check'      => 1,
+            'custom_service_output'  => 1,
+            'custom_instance'        => 0,
+            'custom_description'     => 0,
+            'custom_tag'             => 0
+        ];
+
+        if ($this->request->is('get')) {
+            $table_data = $DynamicTableConfig->find('all');
+            $table_data = $table_data->where(['user_id' => $user_id, 'table_name' => $table_name]);
+
+            if (!$DynamicTableConfig->existEntiy($user_id, $table_name)) {
+                $table_data = [
+                    0 => [
+                        'user_id'    => $user_id,
+                        'json_data'  => json_encode($defaultConfig),
+                        'table_name' => $table_name
+                    ]
+                ];
+            }
+
+            $this->set('table_data', $table_data);
+            $this->viewBuilder()->setOption('serialize', ['table_data']);
+        }
+        // Post Data
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $req_data = $this->request->getData();
+            $id = $req_data['id'];
+            $table = [
+                'user_id'    => $req_data['user_id'],
+                'json_data'  => json_encode($req_data['dynamictable']),
+                'table_name' => $req_data['table_name']
+            ];
+            // json_encode($req_data['dynamictable']);
+            if ($id == '' or $id == null) {
+                $table_data = $DynamicTableConfig->newEntity($table);
+                $DynamicTableConfig->save($table_data);
+                if ($table_data->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $table_data->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                }
+                $this->set('table_data', $table_data);
+                $this->viewBuilder()->setOption('serialize', ['table_data']);
+            }
+
+            if ($DynamicTableConfig->existById($id)) {
+                $id = $DynamicTableConfig->get($id);
+                $table = [
+                    'json_data' => json_encode($req_data['dynamictable'])
+                ];
+                $table_data = $DynamicTableConfig->patchEntity($id, $table);
+                $DynamicTableConfig->save($table_data);
+                if ($table_data->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $table_data->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                    return;
+                }
+                $this->set('table_data', $table_data);
+                $this->viewBuilder()->setOption('serialize', ['table_data']);
+            }
+        }
     }
 }

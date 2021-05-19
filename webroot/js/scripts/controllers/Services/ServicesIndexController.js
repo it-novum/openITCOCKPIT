@@ -31,6 +31,7 @@ angular.module('openITCOCKPIT')
                     keywords: '',
                     not_keywords: '',
                     servicedescription: '',
+                    // container: '',
                     priority: {
                         1: false,
                         2: false,
@@ -46,6 +47,31 @@ angular.module('openITCOCKPIT')
             };
         };
         /*** Filter end ***/
+        /*** dynamic Table ***/
+        $scope.post = {
+            id: '',
+            user_id: '',
+            table_name: '',
+            dynamictable: {
+                custom_state: '',
+                custom_acknowledgement: '',
+                custom_indowntime: '',
+                custom_grapher: '',
+                custom_passive: '',
+                custom_priority: '',
+                custom_servicename: '',
+                custom_last_change: '',
+                custom_last_check: '',
+                custom_next_check: '',
+                custom_service_output: '',
+                custom_instance: '',
+                custom_description: '',
+                custom_tag: ''
+            }
+
+        };
+
+        /*** dynamic table end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/services/delete/';
@@ -119,6 +145,33 @@ angular.module('openITCOCKPIT')
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
+            });
+        };
+
+        $scope.customaizedTableConfig = function(){
+            $http.get("/services/CustomDynamicTable.json", {
+                angular: true
+            }).then(function(result){
+                $scope.post.id = result.data.table_data[0].id;
+                $scope.post.user_id = result.data.table_data[0].user_id;
+                $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
+                $scope.post.table_name = result.data.table_data[0].table_name;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+        $scope.customaizedTableConfig();
+
+        $scope.toggleColumn = function(){
+            $http.post("/services/CustomDynamicTable.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                $scope.customaizedTableConfig();
             });
         };
 

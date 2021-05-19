@@ -7,6 +7,7 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
         $scope.useScroll = true;
+        //$scope.id = QueryStringService.getStateValue($stateParams, 'id', 1);
 
         filterHostname = QueryStringService.getStateValue($stateParams, 'hostname');
         filterAddress = QueryStringService.getStateValue($stateParams, 'address');
@@ -30,6 +31,8 @@ angular.module('openITCOCKPIT')
                     not_keywords: '',
                     address: (filterAddress) ? filterAddress : '',
                     satellite_id: [],
+                    container_id: [],
+                    container: '',
                     priority: {
                         1: false,
                         2: false,
@@ -45,6 +48,31 @@ angular.module('openITCOCKPIT')
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/hosts/delete/';
         $scope.deactivateUrl = '/hosts/deactivate/';
+        /*** Dynamic custom table ***/
+        $scope.post = {
+            id: '',
+            user_id: '',
+            table_name: '',
+            dynamictable: {
+                custom_hoststatus: '',
+                custom_acknowledgement: '',
+                custom_indowntime: '',
+                custom_shared: '',
+                custom_passive: '',
+                custom_priority: '',
+                custom_hostname: '',
+                custom_ip_address: '',
+                custom_last_change: '',
+                custom_last_check: '',
+                custom_host_output: '',
+                custom_instance: '',
+                custom_service_summary: '',
+                custom_description: '',
+                custom_tag: '',
+                custom_container_name: ''
+            }
+        }
+        /*** Dynamic custom table end ***/
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -86,6 +114,8 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
+                'filter[Hosts.container_id][]': $scope.filter.Host.container_id,
+                'filter[Hosts.container]': $scope.filter.Host.container,
                 'filter[hostpriority][]': priorityFilter
             };
             if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
@@ -99,6 +129,33 @@ angular.module('openITCOCKPIT')
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
+            });
+        };
+        $scope.customaizedTableConfig = function(){
+            $http.get("/hosts/CustomDynamicTable.json", {
+                angular: true
+            }).then(function(result){
+                $scope.post.id = result.data.table_data[0].id;
+                $scope.post.user_id = result.data.table_data[0].user_id;
+                $scope.post.dynamictable = JSON.parse(result.data.table_data[0].json_data);
+                $scope.post.table_name = result.data.table_data[0].table_name;
+
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+        $scope.customaizedTableConfig();
+
+        $scope.toggleColumn = function(){
+            $http.post("/hosts/CustomDynamicTable.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                $scope.customaizedTableConfig();
             });
         };
 

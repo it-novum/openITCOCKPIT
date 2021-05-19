@@ -757,6 +757,24 @@ class ContainersTable extends Table {
         return $result->toArray();
     }
 
+    /**
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getContainersAsList($MY_RIGHTS=[]){
+        $query = $this->find('list');
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->order([
+            'Containers.name' => 'ASC'
+        ]);
+        return $query->toArray();
+
+    }
+
 
     /**
      * @param int $containerId

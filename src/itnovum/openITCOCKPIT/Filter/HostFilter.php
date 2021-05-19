@@ -42,6 +42,7 @@ class HostFilter extends Filter {
                 'Hoststatus.output',
                 'Hosts.address',
                 'hostdescription'
+
             ],
             'rlike'    => [
                 'Hosts.keywords'
@@ -54,7 +55,8 @@ class HostFilter extends Filter {
                 'Hosts.uuid',
                 'Hosts.disabled',
                 'Hosts.satellite_id',
-                'hostpriority'
+                'hostpriority',
+                'Hosts.container_id'
             ],
             'downtime' => [
                 'Hoststatus.scheduled_downtime_depth',
