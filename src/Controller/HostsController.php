@@ -107,8 +107,6 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
-use phpDocumentor\Reflection\Types\Object_;
-use function MongoDB\BSON\toJSON;
 
 
 /**

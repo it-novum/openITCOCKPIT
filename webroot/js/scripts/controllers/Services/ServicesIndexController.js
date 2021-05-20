@@ -148,7 +148,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.customaizedTableConfig = function(){
+        $scope.customizedTableConfig = function(){
             $http.get("/services/CustomDynamicTable.json", {
                 angular: true
             }).then(function(result){
@@ -165,13 +165,13 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
-        $scope.customaizedTableConfig();
+        $scope.customizedTableConfig();
 
         $scope.toggleColumn = function(){
             $http.post("/services/CustomDynamicTable.json?angular=true",
                 $scope.post
             ).then(function(result){
-                $scope.customaizedTableConfig();
+                $scope.customizedTableConfig();
             });
         };
 
