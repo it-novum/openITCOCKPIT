@@ -2681,4 +2681,18 @@ class ServicesController extends AppController {
         $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
+
+    public function loadServiceNameHostName() {
+        if(!$this->isApiRequest()){
+            return;
+        }
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $result = $ServicesTable->loadServiceNameForCheckDouble();
+
+        $this->set('result', $result);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+
+    }
 }

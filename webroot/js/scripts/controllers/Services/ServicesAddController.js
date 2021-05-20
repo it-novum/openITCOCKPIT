@@ -202,6 +202,26 @@ angular.module('openITCOCKPIT')
             });
         };
         */
+        $scope.loadServiceNameHostName = function(){
+            $http.get("/services/loadServiceNameHostName.json",{
+                angular: true
+            }).then(function(result){
+                $scope.hostandservice = result.data.result;
+                var toCompainedarray = $scope.hostandservice.map(function(el){
+                    return [el.Servicetemplates.name,el.Hosts.id, el.Hosts.name];
+                });
+                // console.log(toCompainedarray);
+                $scope.$watch('post.Service.name', function(){
+                    if(toCompainedarray.includes([$scope.post.Service.name, $scope.post.Service.host_id])) {
+                        console.log('true');
+                        $scope.showDuplicateName = true;
+                    }else {
+                        $scope.showDuplicateName = false;
+                    }
+                });
+            });
+        };
+        $scope.loadServiceNameHostName();
 
         $scope.loadCommands = function(){
             var params = {
@@ -291,13 +311,6 @@ angular.module('openITCOCKPIT')
             $http.post("/services/loadServicetemplate/" + servicetemplateId + "/" + hostId + ".json?angular=true", {}).then(function(result){
                 $scope.servicetemplate = result.data.servicetemplate;
                 setValuesFromServicetemplate();
-                $scope.$watch('post.Service.name', function(){
-                   if($scope.post.Service.name == $scope.servicetemplate.Servicetemplate.name){
-                       $scope.showDuplicateName = true;
-                   }else {
-                       $scope.showDuplicateName = false;
-                   }
-                });
                 //Services add. At this point all contacts must be inherited from somewhere because the service does not exists jet.
                 $scope.data.disableInheritance = false;
                 $scope.data.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;

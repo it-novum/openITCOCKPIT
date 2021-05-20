@@ -3992,4 +3992,36 @@ class ServicesTable extends Table {
             }
         }
     }
+/**
+ * load Service name and hostname for check duplicate service name
+ * @return  array
+ */
+    public function loadServiceNameForCheckDouble() {
+        $query = $this->find()
+            ->join([
+                'table'      => 'servicetemplates',
+                'alias'      => 'Servicetemplates',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Services.servicetemplate_id= Servicetemplates.id'
+                ],
+            ])
+            ->join([
+                'table'      => 'hosts',
+                'alias'      => 'Hosts',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Services.host_id = Hosts.id',
+                ],
+            ])->select([
+                'Servicetemplates.name',
+                'Hosts.name',
+                'Hosts.id',
+            ]);
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
+    }
 }
