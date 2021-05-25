@@ -409,53 +409,46 @@
                                         <fieldset>
                                             <div class="form-group smart-form">
                                                 <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i
+                                                                class="fa fa-filter"></i></span>
+                                                    </div>
+                                                    <select
+                                                        id="Instance"
+                                                        data-placeholder="<?php echo __('Filter by instance'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        multiple
+                                                        ng-model="filter.Host.satellite_id"
+                                                        ng-model-options="{debounce: 500}">
+                                                        <?php
+                                                        foreach ($satellites as $satelliteId => $satelliteName):
+                                                            printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
+                                                        endforeach;
+                                                        ?>
+                                                    </select>
                                                 </div>
-                                                <select
-                                                    id="Instance"
-                                                    data-placeholder="<?php echo __('Filter by instance'); ?>"
-                                                    class="form-control"
-                                                    chosen="{}"
-                                                    multiple
-                                                    ng-model="filter.Host.satellite_id"
-                                                    ng-model-options="{debounce: 500}">
-                                                    <?php
-                                                    foreach ($satellites as $satelliteId => $satelliteName):
-                                                        printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
-                                                    endforeach;
-                                                    ?>
-                                                </select>
-                                            </div>
                                             </div>
                                         </fieldset>
                                     </div>
                                 <?php endif; ?>
 
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
-                                    <fieldset>
-                                        <div class="form-group smart-form">
-                                            <div class="input-group">
+                                    <div class="form-group">
+                                        <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
-                                            <select
-                                                id="Container"
-                                                data-placeholder="<?php echo __('Filter by container'); ?>"
-                                                class="form-control"
-                                                chosen="{}"
-                                                multiple
-                                                ng-model="filter.Host.container_id"
-                                                ng-model-options="{debounce: 500}">
-                                                <?php
-                                                foreach ($containers as $containerId => $containerName):
-                                                    printf('<option value="%s">%s</option>', h($containerId), h($containerName));
-                                                endforeach;
-                                                ?>
+                                            <select id="Container" class="form-control form-control-sm"
+                                                    data-placeholder="<?php echo __('Filter by Container'); ?>"
+                                                    chosen="containers"
+                                                    ng-options="available_container.key as available_container.value for available_container in containers"
+                                                    ng-model="filter.Host.container_id"
+                                                    ng-model-options="{debounce: 500}"
+                                                    style=" -webkit-appearance: none; -moz-appearance: none;">
                                             </select>
-                                            </div>
                                         </div>
-                                    </fieldset>
+                                    </div>
                                 </div>
 
 
@@ -852,7 +845,7 @@
                                 <td ng-show="post.dynamictable.custom_tag">
                                     {{host.Host.tags}}
                                 </td>
-                                <td ng-show="post.dynamictable.custom_container_name" >
+                                <td ng-show="post.dynamictable.custom_container_name">
                                     {{ host.Host.containerName }}
                                 </td>
 

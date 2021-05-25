@@ -159,6 +159,20 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadContainers = function(){
+            var params = {
+                'angular': true
+            };
+
+            $http.get("/hosts/loadContainers.json", {
+                params: params
+            }).then(function(result){
+                $scope.containers = result.data.containers;
+                $scope.init = false;
+            });
+        };
+
+
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
         };
@@ -315,5 +329,6 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
+        $scope.loadContainers();
 
     });
