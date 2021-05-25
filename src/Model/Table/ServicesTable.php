@@ -3992,11 +3992,12 @@ class ServicesTable extends Table {
             }
         }
     }
-/**
- * load Service name and hostname for check duplicate service name
- * @return  array
- */
-    public function loadServiceNameForCheckDouble() {
+
+    /**
+     * load Service name and hostname for check duplicate service name
+     * @return  array
+     */
+    public function loadSerivceNameForDuplicate() {
         $query = $this->find()
             ->join([
                 'table'      => 'servicetemplates',

@@ -78,6 +78,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.showDuplicateName = false;
+        $scope.getIndexHostName = '';
 
         var setValuesFromServicetemplate = function(){
             var fields = [
@@ -203,19 +204,22 @@ angular.module('openITCOCKPIT')
         };
         */
         $scope.loadServiceNameHostName = function(){
-            $http.get("/services/loadServiceNameHostName.json",{
+            $http.get("/services/loadServiceNameHostName.json", {
                 angular: true
             }).then(function(result){
                 $scope.hostandservice = result.data.result;
-                var toCompainedarray = $scope.hostandservice.map(function(el){
-                    return [el.Servicetemplates.name,el.Hosts.id, el.Hosts.name];
+                var resultArrayObject = $scope.hostandservice.map(function(el){
+                    return {name: el.Servicetemplates.name, id: el.Hosts.id, Host_name: el.Hosts.name};
                 });
-                // console.log(toCompainedarray);
                 $scope.$watch('post.Service.name', function(){
-                    if(toCompainedarray.includes([$scope.post.Service.name, $scope.post.Service.host_id])) {
-                        console.log('true');
+                    var checkObj = resultArrayObject.map(function(obj){
+                        var HostId = $scope.post.Service.host_id.toString();
+                        return obj.name === $scope.post.Service.name && obj.id === HostId;
+                    });
+                    if(checkObj.includes(true)){
+                        $scope.getIndexHostName = resultArrayObject[checkObj.indexOf(true)].Host_name;
                         $scope.showDuplicateName = true;
-                    }else {
+                    }else{
                         $scope.showDuplicateName = false;
                     }
                 });

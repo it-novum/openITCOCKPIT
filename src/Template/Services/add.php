@@ -141,7 +141,7 @@
                                     <div ng-repeat="error in errors.name">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
-                                    
+
                                     <div class="alert alert-info alert-dismissible fade show ng-hide mt-1" role="alert"
                                          ng-show="showDuplicateName">
                                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -158,7 +158,7 @@
                                                 <?php echo __('Service name'); ?>
                                                 <span
                                                     class="h5 m-0 fw-700"><?php echo __('/{{ post.Service.name }}!'); ?></span>
-                                                <?php echo __('already existed in selected host. Please choose another name otherwise Service name will be duplicated.'); ?>
+                                                <?php echo __('already existed under <b> /{{ getIndexHostName }}</b>. Please choose another name otherwise Service name will be duplicated.'); ?>
                                             </div>
                                         </div>
                                     </div>

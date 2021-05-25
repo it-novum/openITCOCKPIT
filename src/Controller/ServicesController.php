@@ -2683,13 +2683,13 @@ class ServicesController extends AppController {
     }
 
     public function loadServiceNameHostName() {
-        if(!$this->isApiRequest()){
+        if (!$this->isApiRequest()) {
             return;
         }
 
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        $result = $ServicesTable->loadServiceNameForCheckDouble();
+        $result = $ServicesTable->loadSerivceNameForDuplicate();
 
         $this->set('result', $result);
         $this->viewBuilder()->setOption('serialize', ['result']);
