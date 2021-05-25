@@ -360,8 +360,17 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                 </div>
 
                 <div class="row padding-top-5">
-                    <div class="col-lg-12">
+                    <div class="col-lg-12" id="cmdDiv">
                         <div class="bg-color-black txt-color-white code-font padding-7 packetmanager-selection">
+                            <button class="btn btn-outline-light btn-xs"
+                                    type="button"
+                                    data-toggle="popover"
+                                    data-placement="bottom"
+                                    data-content="Copied!"
+                                    style="float: right"
+                                    ng-click="copyCmd();">
+                                <i class="far fa-copy"></i> <?= __('Copy') ?>
+                            </button>
                             sudo apt-get update && apt-get dist-upgrade
                             <br>
                             sudo apt-get install <span ng-bind-html="getCliCommand() | trustAsHtml"></span>

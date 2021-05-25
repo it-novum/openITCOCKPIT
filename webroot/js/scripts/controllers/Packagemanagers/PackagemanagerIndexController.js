@@ -59,6 +59,20 @@ angular.module('openITCOCKPIT')
                 $('#installPackageModal').modal('show');
             }
         };
+        $scope.copyCmd = function(){
+            var range = document.createRange();
+            range.selectNode(document.getElementById("cmdDiv"));
+            window.getSelection().removeAllRanges(); // clear current selection
+            window.getSelection().addRange(range); // to select text
+            document.execCommand("copy");
+            window.getSelection().removeAllRanges(); // to deselect
+            $(function(){
+                $('[data-toggle="popover"]').popover();
+                setTimeout(function(){
+                    $('[data-toggle="popover"]').popover('hide');
+                },3000);
+            });
+        };
 
         /**
          * used for v3 License tags
