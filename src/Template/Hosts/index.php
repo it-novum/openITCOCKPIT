@@ -434,23 +434,26 @@
                                 <?php endif; ?>
 
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
-                                            </div>
-                                            <select id="Container" class="form-control form-control-sm"
-                                                    data-placeholder="<?php echo __('Filter by Container'); ?>"
+                                    <fieldset>
+                                        <div class="form-group smart-form">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                                </div>
+                                                <select
+                                                    id="Container"
+                                                    data-placeholder="<?php echo __('Filter by container'); ?>"
+                                                    class="form-control"
                                                     chosen="containers"
+                                                    multiple
                                                     ng-options="available_container.key as available_container.value for available_container in containers"
                                                     ng-model="filter.Host.container_id"
-                                                    ng-model-options="{debounce: 500}"
-                                                    style=" -webkit-appearance: none; -moz-appearance: none;">
-                                            </select>
+                                                    ng-model-options="{debounce: 500}">
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </fieldset>
                                 </div>
-
 
                             </div>
 
