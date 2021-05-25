@@ -125,6 +125,9 @@ class HostsController extends AppController {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
         $satellites = [];
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->getContainersAsList($this->MY_RIGHTS);
 
         if (Plugin::isLoaded('DistributeModule')) {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
@@ -137,12 +140,10 @@ class HostsController extends AppController {
         if (!$this->isApiRequest()) {
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
+            $this->set('containers', $containers);
             //Only ship HTML template
             return;
         }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $HostFilter = new HostFilter($this->request);
 
