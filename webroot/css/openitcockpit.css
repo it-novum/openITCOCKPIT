@@ -1273,3 +1273,6 @@ label.menu-open-button:hover {
 .strikethrough {
     text-decoration: line-through;
 }
+.popover {
+    border: 1px solid white;
+}

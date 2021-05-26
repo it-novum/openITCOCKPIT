@@ -67,10 +67,10 @@ angular.module('openITCOCKPIT')
             document.execCommand("copy");
             window.getSelection().removeAllRanges(); // to deselect
             $(function(){
-                $('[data-toggle="popover"]').popover();
+                $('[data-toggle="popover"]').popover('show');
                 setTimeout(function(){
                     $('[data-toggle="popover"]').popover('hide');
-                },3000);
+                }, 2000);
             });
         };
 
