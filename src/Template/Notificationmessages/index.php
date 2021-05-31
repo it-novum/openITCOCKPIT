@@ -72,14 +72,14 @@
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('')">
                                     <i class="fa" ng-class="getSortClass('')"></i>
-                                    <?php echo __('Date'); ?>
+                                    <?php echo __('Output'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('')">
                                     <i class="fa" ng-class="getSortClass('')"></i>
-                                    <?php echo __('Output'); ?>
+                                    <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort text-center">
-                                    <i class="fa fa-cog"></i>
+                                <th class="no-sort text-center" style="width: 10%">
+                                    <i class="fa fa-trash"></i>
                                 </th>
                             </tr>
                             </thead>
@@ -89,13 +89,23 @@
 
                                 </td>
                                 <td> {{ message.name }}</td>
-                                <td> {{ message.date }} &nbsp; {{ message.time }}</td>
                                 <td> {{ message.message }}</td>
-                                <td></td>
+                                <td> {{ message.date }} &nbsp; {{ message.time }}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-xs btn-danger" ng-click="deleteMessage(message.id)">
+                                        <i class="fas fa-trash"></i> <?php echo __('Delete'); ?>
+                                    </button>
+                                </td>
 
                             </tr>
                             </tbody>
                         </table>
+
+                        <div class="margin-top-10" ng-show="messages.length == 0">
+                            <div class="text-center text-danger italic">
+                                <?php echo __('No messages'); ?>
+                            </div>
+                        </div>
 
                     </div>
                 </div>

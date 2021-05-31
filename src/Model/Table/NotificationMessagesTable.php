@@ -77,4 +77,32 @@ class NotificationMessagesTable extends Table {
 
         return $validator;
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['NotificationMessages.id' => $id]);
+    }
+
+
+    /**
+     * @return array
+     */
+    public function showAllMessages(){
+        $query = $this->find('all')->order(['id' => 'DESC']);
+        return $query->toArray();
+    }
+
+    /**
+     * @return array
+     */
+    public function messagesForWidget(){
+        $query = $this->find('all');
+        $result = $query->select(['message'])->where(['date' => date('d.m.Y')])->order(['id' => 'DESC']);
+        return $result->toArray();
+    }
+
+
 }

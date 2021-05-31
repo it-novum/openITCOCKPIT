@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\NotificationMessagesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 
 class NotificationmessagesController extends AppController {
@@ -39,12 +41,11 @@ class NotificationmessagesController extends AppController {
         }
         /** @var $NotificationMessageTable NotificationMessagesTable */
         $NotificationMessageTable = TableRegistry::getTableLocator()->get('NotificationMessages');
-        if($this->request->is('get')){
-            $messages = $NotificationMessageTable->find('all');
+        if ($this->request->is('get')) {
+            $messages = $NotificationMessageTable->showAllMessages();
         }
 
         $this->set('messages', $messages);
-
         $this->viewBuilder()->setOption('serialize', ['messages']);
     }
 
@@ -69,11 +70,31 @@ class NotificationmessagesController extends AppController {
             $this->set('notification', $notification_message);
             $this->viewBuilder()->setOption('serialize', ['notification']);
 
-
         }
 
-//        $this->set('add', 'add_message');
-//        $this->viewBuilder()->setOption('serialize', ['add']);
+    }
+
+    public function deleteMessage() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+        $message = $this->request->getData('Message', []);
+        // debug($message);
+        $messageId = (int)$message['id'];
+        /** @var $NotificationMessageTable NotificationMessagesTable */
+        $NotificationMessageTable = TableRegistry::getTableLocator()->get('NotificationMessages');
+        if (!$NotificationMessageTable->existsById($messageId)) {
+            throw new NotFoundException('message does not exists!');
+        }
+        if ($NotificationMessageTable->delete($NotificationMessageTable->get($messageId))) {
+            $this->set('success', __('Successfully deleted'));
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+        $this->set('failed', __('delete failed'));
+        $this->viewBuilder()->setOption('serialize', ['failed']);
+        return;
+
     }
 
 

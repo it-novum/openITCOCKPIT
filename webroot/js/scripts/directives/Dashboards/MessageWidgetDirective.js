@@ -15,9 +15,7 @@ angular.module('openITCOCKPIT').directive('messageWidget', function($http){
                         'angular': true
                     }
                 }).then(function(result){
-                    console.log(result);
                     $scope.messages = result.data.messages;
-                    console.log($scope.messages);
                     $scope.init = false;
                 });
             };

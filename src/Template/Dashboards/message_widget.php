@@ -29,12 +29,15 @@
         <b><?= "Today's Message:" ?></b>
     </div>
     <div class="col-12">
-        <ul class="list-group" ng-repeat="message in messages">
+        <ul class="list-group list-group-flush" ng-repeat="message in messages">
             <li class="list-group-item p-0"> {{ message.message }}</li>
-
         </ul>
+        <div class="margin-top-10" ng-show="messages.length == 0">
+            <div class="text-left text-danger italic">
+                <?php echo __('Today you have no Messages'); ?>
+            </div>
+        </div>
 
     </div>
-
 </div>
 

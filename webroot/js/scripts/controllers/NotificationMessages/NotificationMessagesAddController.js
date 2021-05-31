@@ -22,8 +22,6 @@ angular.module('openITCOCKPIT')
             post.messages.date = date('d.m.Y', $scope.post.messages.date);
             post.messages.time = date('H:i', $scope.post.messages.time);
             $http.post("/Notificationmessages/add.json?angular=true", post.messages).then(function(result){
-                // console.log(result);
-                // console.log('submited succesfully');
                 clearForm();
                 RedirectService.redirectWithFallback('NotificationMessagesIndex');
 

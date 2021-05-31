@@ -253,6 +253,14 @@ class WidgetsTable extends Table {
                 'height'    => 7
             ]
             */
+            [
+                'type_id'   => 20,
+                'title'     => __('Message Of the Day'),
+                'icon'      => 'far fa-envelope',
+                'directive' => 'message-widget',
+                'width'     => 6,
+                'height'    => 7
+            ]
         ];
 
         //Depands on user rights
@@ -346,16 +354,16 @@ class WidgetsTable extends Table {
             ];
         }
 
-        if (isset($ACL_PERMISSIONS['notificationmessages']['index'])) {
-            $widgets[] = [
-                'type_id'   => 20,
-                'title'     => __('Message Of the Day'),
-                'icon'      => 'far fa-envelope',
-                'directive' => 'message-widget',
-                'width'     => 6,
-                'height'    => 7
-            ];
-        }
+//        if (isset($ACL_PERMISSIONS['notificationmessages']['index'])) {
+//            $widgets[] = [
+//                'type_id'   => 20,
+//                'title'     => __('Message Of the Day'),
+//                'icon'      => 'far fa-envelope',
+//                'directive' => 'message-widget',
+//                'width'     => 6,
+//                'height'    => 7
+//            ];
+//        }
 
         $modules = PluginManager::getAvailablePlugins();
         foreach ($modules as $module) {

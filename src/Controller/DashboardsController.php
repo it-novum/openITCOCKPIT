@@ -1676,14 +1676,11 @@ class DashboardsController extends AppController {
         /** @var $NotificationMessageTable NotificationMessagesTable */
         $NotificationMessageTable = TableRegistry::getTableLocator()->get('NotificationMessages');
         if ($this->request->is('get')) {
-            $query = $NotificationMessageTable->find('all');
-            $messages = $query->select(['message']);
-
+            $messages = $NotificationMessageTable->messagesForWidget();
         }
 
-        $this->set('msg_widget', 'message');
         $this->set('messages', $messages);
-
         $this->viewBuilder()->setOption('serialize', ['msg_widget', 'messages']);
     }
+
 }
