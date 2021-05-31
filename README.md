@@ -6,9 +6,8 @@ The open source configuration interface for [Nagios](https://www.nagios.org/), [
 <img src="https://openitcockpit.io/img/openitcockpit_logo_webseite_weisse_kacheln_nur_logo.svg" alt="openITCOCKPIT logo" width="auto" height="200">
 </center>
 
-
-[![Chat on Matrix](https://img.shields.io/badge/style-matrix-blue.svg?style=flat&label=chat)](https://riot.im/app/#/room/#openitcockpit:matrix.org)
-[![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-freenode-blue.svg)](https://kiwiirc.com/client/chat.freenode.net/#openitcockpit)
+[![Discord: ](https://img.shields.io/badge/Discord-Discord.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/G8KhxKuQ9G)
+[![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-Libera.Chat-blue.svg)](https://web.libera.chat/#openitcockpit)
 
 
 # What is openITCOCKPIT?
@@ -66,6 +65,9 @@ openITCOCKPIT runs on Ubuntu and Debian Linux systems and is available for downl
 
 To install openITCOCKPIT on your system, please follow the official documentation: https://openitcockpit.io/download_server/
 
+## Raspberry Pi and arm64
+openITCOCKPIT is 100% compatible to arm64. More information can be found on the project website: [https://openitcockpit.io/download_server/](https://openitcockpit.io/download_server/)
+
 # Register openitcockpit community version:
 
 You can register your openITCOCKPIT installation to get access to free community modules.
@@ -111,8 +113,9 @@ openITCOCKPIT's development is publicly available in GitHub. Everybody is welcom
 - [Creating a new check plugin](https://docs.it-novum.com/display/ODE/Creating+a+new+openITCOCKPIT+check+plugin)
 
 # Need help or support?
-* Join [#openitcockpit](http://webchat.freenode.net/?channels=openitcockpit) on freenode.net
-* [it-novum GmbH](https://it-novum.com/en/it-service-management/openitcockpit/openitcockpit-enterprise-subscription-license) provides commercial support
+* Official [Discord Server](https://discord.gg/G8KhxKuQ9G)
+* Join [#openitcockpit](https://web.libera.chat/#openitcockpit) on Libera Chat
+* [it-novum GmbH](https://it-services.it-novum.com/support-2/) provides commercial support
 
 # Security
 Please send security vulnerabilities found in openITCOCKPIT or software that is used by openITCOCKPIT to: `security@openitcockpit.io`.
