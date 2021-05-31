@@ -313,7 +313,7 @@ chmod 775 /opt/openitc/logs/frontend/nagios
 
 mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
-chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
 
 chmod u+s /opt/openitc/nagios/libexec/check_icmp
 chmod u+s /opt/openitc/nagios/libexec/check_dhcp
@@ -472,7 +472,7 @@ chown www-data:www-data /opt/openitc/frontend/
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
-chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
 chmod u+s /opt/openitc/nagios/libexec/check_icmp
 chmod u+s /opt/openitc/nagios/libexec/check_dhcp
 

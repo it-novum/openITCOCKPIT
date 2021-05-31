@@ -1135,7 +1135,7 @@ class GearmanWorkerCommand extends Command {
                         'success' => true,
                         'interfaces' => $interfaces
                     ];
-                } catch (ProcessFailedException $e) {
+                } catch (\RuntimeException $e) {
                     $return = [
                         'success' => false,
                         'exception' => 'ProcessFailedException'
