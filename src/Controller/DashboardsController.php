@@ -31,6 +31,7 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
+use App\Model\Table\NotificationMessagesTable;
 use App\Model\Table\ParenthostsTable;
 use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
@@ -1666,5 +1667,23 @@ class DashboardsController extends AppController {
             return;
         }
         throw new MethodNotAllowedException();
+    }
+
+    public function messageWidget() {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+        /** @var $NotificationMessageTable NotificationMessagesTable */
+        $NotificationMessageTable = TableRegistry::getTableLocator()->get('NotificationMessages');
+        if ($this->request->is('get')) {
+            $query = $NotificationMessageTable->find('all');
+            $messages = $query->select(['message']);
+
+        }
+
+        $this->set('msg_widget', 'message');
+        $this->set('messages', $messages);
+
+        $this->viewBuilder()->setOption('serialize', ['msg_widget', 'messages']);
     }
 }

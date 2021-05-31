@@ -306,6 +306,16 @@ class Menu {
                     [],
                     9
                 ))
+                ->addLink(new MenuLink(
+                    __('Notification Messages'),
+                    'NotificationMessagesIndex',
+                    'Notificationmessages',
+                    'index',
+                    '',
+                    'far fa-bell',
+                    [],
+                    10
+                ))
             )
             ->addCategory((new MenuCategory(
                 'groups_category',
