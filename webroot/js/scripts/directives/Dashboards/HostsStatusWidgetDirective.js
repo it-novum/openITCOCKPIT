@@ -80,7 +80,6 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
 
                 var hasBeenAcknowledged = '';
                 var inDowntime = '';
-                console.log($scope.filter.Hoststatus);
                 if($scope.filter.Hoststatus.acknowledged ^ $scope.filter.Hoststatus.not_acknowledged){
                     hasBeenAcknowledged = $scope.filter.Hoststatus.acknowledged === true;
                 }
