@@ -88,7 +88,6 @@ class NotificationmessagesController extends AppController {
             throw new MethodNotAllowedException();
         }
         $message = $this->request->getData('Message', []);
-        // debug($message);
         $messageId = (int)$message['id'];
         /** @var $NotificationMessageTable NotificationMessagesTable */
         $NotificationMessageTable = TableRegistry::getTableLocator()->get('NotificationMessages');

@@ -2,7 +2,6 @@ angular.module('openITCOCKPIT')
     .controller('NotificationMessagesAddController', function($scope, $http, RedirectService){
 
         $scope.init = true;
-        console.log('Notification Messages Add is loaded');
 
         var clearForm = function(){
             var datetime = new Date();

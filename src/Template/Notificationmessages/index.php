@@ -146,7 +146,7 @@
                                     {{ message.NotificationMessage.time }}
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-xs btn-danger" ng-click="deleteMessage(message.id)">
+                                    <button class="btn btn-xs btn-danger" ng-click="deleteMessage(message.NotificationMessage.id)">
                                         <i class="fas fa-trash"></i> <?php echo __('Delete'); ?>
                                     </button>
                                 </td>
