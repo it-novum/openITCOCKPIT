@@ -2,6 +2,20 @@ angular.module('openITCOCKPIT')
     .controller('NotificationMessagesIndexController', function($scope, $http){
 
         $scope.init = true;
+        $scope.showFilter = false;
+        $scope.currentPage = 1;
+        $scope.useScroll = true;
+
+        var defaultFilter = function(){
+            $scope.filter = {
+                Messages: {
+                    // id: QueryStringService.getStateValue($stateParams, 'id', []),
+                    title: '',
+                    output: ''
+                }
+            };
+        }
+
         var genericError = function(){
             new Noty({
                 theme: 'metroui',
@@ -15,13 +29,32 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
             $http.get("/Notificationmessages/index.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'scroll': $scope.useScroll,
+                    'page': $scope.currentPage,
+                    'filter[NotificationMessages.name]': $scope.filter.Messages.title,
+                    'filter[NotificationMessages.message]': $scope.filter.Messages.output
                 }
             }).then(function(result){
                 $scope.messages = result.data.messages;
 
             });
         }
+
+        // $scope.changepage = function(page){
+        //     if(page !== $scope.currentPage){
+        //         $scope.currentPage = page;
+        //         $scope.load();
+        //     }
+        // };
+
+        $scope.triggerFilter = function(){
+            $scope.showFilter = !$scope.showFilter === true;
+        };
+
+        $scope.resetFilter = function(){
+            defaultFilter();
+        };
 
         // delete method
         $scope.deleteMessage = function(id){
@@ -50,6 +83,12 @@ angular.module('openITCOCKPIT')
                 });
         };
 
+        defaultFilter();
         $scope.load();
+        $scope.$watch('filter', function(){
+            // $scope.currentPage = 1;
+            // $scope.undoSelection();
+            $scope.load();
+        }, true);
 
     });

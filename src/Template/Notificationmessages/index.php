@@ -48,15 +48,66 @@
                     <span class="fw-300"><i><?php echo __('Message'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <?php if ($this->Acl->hasPermission('add', 'calendars')): ?>
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('add', 'notificationmessages')): ?>
                         <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="NotificationMessagesAdd">
                             <i class="fas fa-plus"></i> <?php echo __('Create'); ?>
                         </button>
                     <?php endif; ?>
+                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
+                        <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
+                    </button>
                 </div>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
+
+                    <!-- Start Filter -->
+                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
+                        <div class="card-header">
+                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by Message Title'); ?>"
+                                                   ng-model="filter.Messages.title"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by Message'); ?>"
+                                                   ng-model="filter.Messages.output"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="float-right">
+                                <button type="button" ng-click="resetFilter()"
+                                        class="btn btn-xs btn-danger">
+                                    <?php echo __('Reset Filter'); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Filter -->
 
                     <div class="frame-wrap">
 
@@ -72,7 +123,7 @@
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('')">
                                     <i class="fa" ng-class="getSortClass('')"></i>
-                                    <?php echo __('Output'); ?>
+                                    <?php echo __('Message'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('')">
                                     <i class="fa" ng-class="getSortClass('')"></i>
@@ -107,7 +158,13 @@
                             </div>
                         </div>
 
+
                     </div>
+
+                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <?php echo $this->element('paginator_or_scroll'); ?>
+
                 </div>
             </div>
         </div>

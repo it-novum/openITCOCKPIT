@@ -31,6 +31,8 @@ use App\Model\Table\NotificationMessagesTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\MessagesFilter;
 
 class NotificationmessagesController extends AppController {
 
@@ -41,12 +43,18 @@ class NotificationmessagesController extends AppController {
         }
         /** @var $NotificationMessageTable NotificationMessagesTable */
         $NotificationMessageTable = TableRegistry::getTableLocator()->get('NotificationMessages');
+        $MessagesFilter = new MessagesFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $MessagesFilter->getPage());
         if ($this->request->is('get')) {
-            $messages = $NotificationMessageTable->showAllMessages();
+            $messages = $NotificationMessageTable->showAllMessages($MessagesFilter, $PaginateOMat);
         }
 
         $this->set('messages', $messages);
-        $this->viewBuilder()->setOption('serialize', ['messages']);
+        $toJson = ['messages', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['messages', 'scroll'];
+        }
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function add() {

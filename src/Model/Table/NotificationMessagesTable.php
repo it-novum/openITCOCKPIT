@@ -7,6 +7,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\MessagesFilter;
 
 /**
  * NotificationMessages Model
@@ -58,22 +60,22 @@ class NotificationMessagesTable extends Table {
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->allowEmptyString('name',null,false);
+            ->allowEmptyString('name', null, false);
 
         $validator
             ->scalar('message')
             ->maxLength('message', 255)
-            ->allowEmptyString('message',null,false);
+            ->allowEmptyString('message', null, false);
 
         $validator
             ->scalar('date')
             ->maxLength('date', 255)
-            ->allowEmptyString('date',null,false);
+            ->allowEmptyString('date', null, false);
 
         $validator
             ->scalar('time')
             ->maxLength('time', 255)
-            ->allowEmptyString('time',null,false);
+            ->allowEmptyString('time', null, false);
 
         return $validator;
     }
@@ -88,17 +90,31 @@ class NotificationMessagesTable extends Table {
 
 
     /**
+     * @param MessagesFilter $MessagesFilter
+     * @param null|PaginateOMat $PaginateOMat
      * @return array
      */
-    public function showAllMessages(){
-        $query = $this->find('all')->order(['id' => 'DESC']);
+    public function showAllMessages(MessagesFilter $MessagesFilter, $PaginateOMat = null) {
+        $query = $this->find('all')->where($MessagesFilter->indexFilter())->order(['id' => 'DESC']);
+
+//        if ($PaginateOMat === null) {
+//            //Just execute query
+//            $query = $this->formatResultAsCake2($query->toArray(), false);
+//        } else {
+//            if ($PaginateOMat->useScroll()) {
+//                $query = $this->scroll($query, $PaginateOMat->getHandler(), false);
+//            } else {
+//                $query = $this->paginate($query, $PaginateOMat->getHandler(), false);
+//            }
+//        }
+
         return $query->toArray();
     }
 
     /**
      * @return array
      */
-    public function messagesForWidget(){
+    public function messagesForWidget() {
         $query = $this->find('all');
         $result = $query->select(['message'])->where(['date' => date('d.m.Y')])->order(['id' => 'DESC']);
         return $result->toArray();
