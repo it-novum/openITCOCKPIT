@@ -139,9 +139,12 @@
                                 <td>
 
                                 </td>
-                                <td> {{ message.name }}</td>
-                                <td> {{ message.message }}</td>
-                                <td> {{ message.date }} &nbsp; {{ message.time }}</td>
+                                <td> {{ message.NotificationMessage.name }}</td>
+                                <td> {{ message.NotificationMessage.message }}</td>
+                                <td>
+                                    {{ message.NotificationMessage.date }} &nbsp;
+                                    {{ message.NotificationMessage.time }}
+                                </td>
                                 <td class="text-center">
                                     <button class="btn btn-xs btn-danger" ng-click="deleteMessage(message.id)">
                                         <i class="fas fa-trash"></i> <?php echo __('Delete'); ?>
@@ -157,8 +160,6 @@
                                 <?php echo __('No messages'); ?>
                             </div>
                         </div>
-
-
                     </div>
 
                     <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>

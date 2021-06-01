@@ -9,7 +9,6 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Messages: {
-                    // id: QueryStringService.getStateValue($stateParams, 'id', []),
                     title: '',
                     output: ''
                 }
@@ -37,16 +36,19 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.messages = result.data.messages;
+                $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
+                $scope.init = false;
 
             });
         }
 
-        // $scope.changepage = function(page){
-        //     if(page !== $scope.currentPage){
-        //         $scope.currentPage = page;
-        //         $scope.load();
-        //     }
-        // };
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
@@ -86,8 +88,7 @@ angular.module('openITCOCKPIT')
         defaultFilter();
         $scope.load();
         $scope.$watch('filter', function(){
-            // $scope.currentPage = 1;
-            // $scope.undoSelection();
+             $scope.currentPage = 1;
             $scope.load();
         }, true);
 

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -30,6 +32,8 @@ use itnovum\openITCOCKPIT\Filter\MessagesFilter;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class NotificationMessagesTable extends Table {
+    use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
     /**
      * Initialize method
      *
@@ -95,20 +99,23 @@ class NotificationMessagesTable extends Table {
      * @return array
      */
     public function showAllMessages(MessagesFilter $MessagesFilter, $PaginateOMat = null) {
-        $query = $this->find('all')->where($MessagesFilter->indexFilter())->order(['id' => 'DESC']);
+        $query = $this->find('all');
+        $query->where($MessagesFilter->indexFilter());
+        $query->order(['id' => 'DESC']);
 
-//        if ($PaginateOMat === null) {
-//            //Just execute query
-//            $query = $this->formatResultAsCake2($query->toArray(), false);
-//        } else {
-//            if ($PaginateOMat->useScroll()) {
-//                $query = $this->scroll($query, $PaginateOMat->getHandler(), false);
-//            } else {
-//                $query = $this->paginate($query, $PaginateOMat->getHandler(), false);
-//            }
-//        }
+        $query->disableHydration();
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
 
-        return $query->toArray();
+        return $result;
     }
 
     /**

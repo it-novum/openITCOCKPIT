@@ -37,6 +37,7 @@ use itnovum\openITCOCKPIT\Filter\MessagesFilter;
 class NotificationmessagesController extends AppController {
 
     public function index() {
+
         if (!$this->isAngularJsRequest()) {
             $this->set('message', 'hallo_ message');
             return;
