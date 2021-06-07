@@ -625,7 +625,7 @@ class AgentResponseToServices {
         return $services;
     }
 
-    public function getServiceStructForWindowsEventlogs(){
+    public function getServiceStructForWindowsEventlogs() {
         $agentcheck = $this->AgentchecksTable->getAgentcheckByName('windows_eventlog');
         if (empty($agentcheck)) {
             return false;
@@ -633,7 +633,7 @@ class AgentResponseToServices {
         $services = [];
         if (isset($this->agentResponse['windows_eventlog'])) {
             $eventlogs = array_keys($this->agentResponse['windows_eventlog']);
-            if(empty($eventlogs)){
+            if (empty($eventlogs)) {
                 //No Windows Event Logs (Application, Security, System, etc...) in agent output
                 return false;
             }
@@ -836,7 +836,7 @@ class AgentResponseToServices {
             return false;
         }
         $services = [];
-        if (isset($this->agentResponse['libvirt'])) {
+        if (isset($this->agentResponse['libvirt']) && !isset($this->agentResponse['libvirt']['error'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
             foreach ($this->agentResponse['libvirt'] as $checkName => $item) {
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $item['Uuid']])) {
