@@ -112,3 +112,5 @@ plugins/VMWAREModule
 plugins/UCSModule
 plugins/SatelliteSelfMonitoringModule
 plugins/MassenversandDeModule
+plugins/HyperscaleModule
+
