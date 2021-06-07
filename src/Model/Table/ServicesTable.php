@@ -3992,4 +3992,33 @@ class ServicesTable extends Table {
             }
         }
     }
+
+    /**
+     * @param $type
+     * @return array
+     */
+    public function getServiceCountOfAllHostsByHostType($type = GENERIC_HOST) {
+        $query = $this->find();
+        $query->select([
+            'count' => $query->newExpr('COUNT(*)'),
+            'Services.host_id'
+        ])
+            ->contain([
+                'Hosts' => function (Query $q) use ($type) {
+                    $q->where([
+                        'Hosts.host_type' => $type
+                    ]);
+                    return $q;
+                }
+            ])
+            ->where([
+                'Services.disabled' => 0
+            ])
+            ->group([
+                'Services.host_id'
+            ])
+            ->disableHydration();
+
+        return $query->toArray();
+    }
 }
