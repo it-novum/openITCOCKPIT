@@ -495,6 +495,10 @@ class HostsController extends AppController {
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
             $hostData['uuid'] = UUID::v4();
 
+            // HyperscaleModule
+            $hostData['node_id'] = MASTER_NODE;
+            $hostData['reassign_node'] = 1;
+
             //Add required fields for validation
             $hostData['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
             $hostData['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
@@ -710,6 +714,14 @@ class HostsController extends AppController {
             $dataForSave['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
             $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
+            // HyperscaleModule
+            // If the parent hosts have been changed - the hosts probably have to been reassigned to a new worker node
+            $parentDiff1 = array_diff($requestData['Host']['parenthosts']['_ids'], $hostForChangelog['Host']['parenthosts']['_ids']);
+            $parentDiff2 = array_diff($hostForChangelog['Host']['parenthosts']['_ids'], $requestData['Host']['parenthosts']['_ids']);
+            if (!empty($parentDiff1) || !empty($parentDiff2)) {
+                $dataForSave['reassign_node'] = 1;
+            }
+
             //Update contact data
 
             $hostEntity = $HostsTable->get($id);
@@ -737,6 +749,7 @@ class HostsController extends AppController {
                     array_merge($HostsTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                 );
+
                 if ($changelog_data) {
                     /** @var Changelog $changelogEntry */
                     $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
@@ -1602,6 +1615,10 @@ class HostsController extends AppController {
                     $tmpHost->set('description', $host2copyData['Host']['description']);
                     $tmpHost->set('address', $host2copyData['Host']['address']);
                     $tmpHost->set('host_url', $host2copyData['Host']['host_url']);
+
+                    // HyperscaleModule
+                    $tmpHost->set('node_id', MASTER_NODE);
+                    $tmpHost->set('reassign_node', 1);
                     foreach ($sourceHost->get('hostgroups') as $hostgroup) {
                         $hostgroupsIds[] = $hostgroup->get('id');
                     }

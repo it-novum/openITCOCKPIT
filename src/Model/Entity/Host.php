@@ -54,6 +54,8 @@ use Cake\Utility\Hash;
  * @property int $own_customvariables
  * @property string|null $host_url
  * @property int|null $satellite_id
+ * @property int|null $node_id
+ * @property bool $reassign_node
  * @property int $host_type
  * @property int|null $disabled
  * @property int $usage_flag
@@ -140,6 +142,8 @@ class Host extends Entity {
         'own_customvariables'           => true,
         'host_url'                      => true,
         'satellite_id'                  => true,
+        'node_id'                       => true,
+        'reassign_node'                 => true,
         'host_type'                     => true,
         'disabled'                      => true,
         'usage_flag'                    => true,

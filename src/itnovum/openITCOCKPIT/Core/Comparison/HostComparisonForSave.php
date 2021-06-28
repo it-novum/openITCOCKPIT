@@ -89,8 +89,8 @@ class HostComparisonForSave {
         $data['prometheus_exporters'] = $this->getDataForPrometheusExporters();
 
         //Add host default data
-        $data['host_type'] = isset($this->host['host_type']) ? $this->host['host_type'] : GENERIC_HOST;
-        $data['usage_flag'] = isset($this->host['usage_flag']) ? $this->host['usage_flag'] : 0;
+        $data['host_type'] = $this->host['host_type'] ?? GENERIC_HOST;
+        $data['usage_flag'] = $this->host['usage_flag'] ?? 0;
         $data['own_contacts'] = (int)$this->hasOwnContacts;
         $data['own_contactgroups'] = (int)$this->hasOwnContacts;
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
@@ -98,8 +98,14 @@ class HostComparisonForSave {
         $data['hosttemplate_id'] = $this->host['hosttemplate_id'];
         $data['address'] = $this->host['address'];
         $data['container_id'] = $this->host['container_id'];
-        $data['hosts_to_containers_sharing'] = isset($this->host['hosts_to_containers_sharing']) ? $this->host['hosts_to_containers_sharing'] : [];
-        $data['satellite_id'] = isset($this->host['satellite_id']) ? $this->host['satellite_id'] : 0;
+        $data['hosts_to_containers_sharing'] = $this->host['hosts_to_containers_sharing'] ?? [];
+
+        // DistributedModule
+        $data['satellite_id'] = $this->host['satellite_id'] ?? 0;
+
+        // HyperscaleModule
+        $data['node_id'] = $this->host['node_id'] ?? MASTER_NODE;
+        $data['reassign_node'] = $this->host['reassign_node'] ?? 1;
 
         if (isset($data['hosts_to_containers_sharing']['_ids'])) {
             $data['hosts_to_containers_sharing']['_ids'][] = $data['container_id'];
@@ -111,7 +117,7 @@ class HostComparisonForSave {
             $data['hosts_to_containers_sharing']['_ids'][] = $data['container_id'];
         }
 
-        $data['parenthosts'] = isset($this->host['parenthosts']) ? $this->host['parenthosts'] : [];
+        $data['parenthosts'] = $this->host['parenthosts'] ?? [];
 
         return $data;
     }
@@ -312,7 +318,7 @@ class HostComparisonForSave {
     public function getDataForCustomvariables() {
         // for easy host add in wizard - use from template
         if (!isset($this->host['customvariables'])) {
-            $this->host['customvariables'] =  $this->hosttemplate['customvariables'];
+            $this->host['customvariables'] = $this->hosttemplate['customvariables'];
         }
 
         $customVariableDiffer = new CustomVariableDiffer(

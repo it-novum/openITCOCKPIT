@@ -28,8 +28,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\ServicedependenciesTable;
 use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -132,6 +134,17 @@ class ServicedependenciesController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
+
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $HostsTable->markHostsForReassignment(
+                    $ServicesTable->getHostIdsByServiceIds(
+                        Hash::extract($data['services'], '{n}.id')
+                    )
+                );
+
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicedependency); // REST API ID serialization
                     return;
@@ -170,6 +183,13 @@ class ServicedependenciesController extends AppController {
             $this->render403();
             return;
         }
+
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $oldHostIds = $ServicesTable->getHostIdsByServiceIds(
+            Hash::extract($servicedependency, 'services.{n}.id')
+        );
+
         if ($this->request->is('post')) {
             $data['services'] = $ServicedependenciesTable->parseServiceMembershipData(
                 $this->request->getData('Servicedependency.services._ids'),
@@ -190,6 +210,19 @@ class ServicedependenciesController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
+
+                // HyperscaleModule
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $newHostIds = $ServicesTable->getHostIdsByServiceIds(
+                    Hash::extract($data['services'], '{n}.id')
+                );
+
+                if (!empty(array_diff($oldHostIds, $newHostIds)) || !empty(array_diff($newHostIds, $oldHostIds))) {
+                    /** @var HostsTable $HostsTable */
+                    $HostsTable->markHostsForReassignment($newHostIds);
+                }
+
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicedependency); // REST API ID serialization
                     return;

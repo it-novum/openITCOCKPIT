@@ -40,6 +40,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </li>
 </ol>
 
+<?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) :
+    echo $this->element('HyperscaleModule.warning');
+endif; ?>
 
 <div class="row">
     <div class="col-xl-12">
@@ -50,7 +53,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hostescalations')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HostescalationsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HostescalationsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -140,6 +144,10 @@ Once a host or service escalated, contacts, contact group and notification optio
                                     class="custom-select"
                                     multiple
                                     chosen="hostgroups"
+                                    <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                        readonly="readonly"
+                                        disabled="disabled"
+                                    <?php endif; ?>
                                     ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
                                     ng-model="post.Hostescalation.hostgroups._ids">
                                 </select>
@@ -147,6 +155,11 @@ Once a host or service escalated, contacts, contact group and notification optio
                             <div ng-repeat="error in errors.hostgroups">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                <div class="help-block text-info">
+                                    <?= __('This feature is not available while {0} is loaded.', '<i>' . __('Hyperscale Module') . '</i>'); ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.hostgroups_excluded}">
@@ -161,6 +174,10 @@ Once a host or service escalated, contacts, contact group and notification optio
                                     class="custom-select"
                                     multiple
                                     chosen="hostgroups_excluded"
+                                    <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                        readonly="readonly"
+                                        disabled="disabled"
+                                    <?php endif; ?>
                                     ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_excluded"
                                     ng-model="post.Hostescalation.hostgroups_excluded._ids">
                                 </select>
@@ -168,6 +185,11 @@ Once a host or service escalated, contacts, contact group and notification optio
                             <div ng-repeat="error in errors.hostgroups_excluded">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                <div class="help-block text-info">
+                                    <?= __('This feature is not available while {0} is loaded.', '<i>' . __('Hyperscale Module') . '</i>'); ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.first_notification}">
@@ -229,7 +251,8 @@ Once a host or service escalated, contacts, contact group and notification optio
                                        ng-if="post.Hostescalation.timeperiod_id > 0">
                                         <?php echo __('Escalation period'); ?>
                                     </a>
-                                    <span ng-if="!post.Hostescalation.timeperiod_id"><?php echo __('Escalation period'); ?></span>
+                                    <span
+                                        ng-if="!post.Hostescalation.timeperiod_id"><?php echo __('Escalation period'); ?></span>
                                 <?php else: ?>
                                     <?php echo __('Escalation period'); ?>
                                 <?php endif; ?>
@@ -332,7 +355,8 @@ Once a host or service escalated, contacts, contact group and notification optio
                                        ng-model="post.Hostescalation.escalate_on_unreachable">
                                 <label class="custom-control-label"
                                        for="escalate_on_unreachable">
-                                    <span class="badge badge-secondary notify-label"><?php echo __('Unreachable'); ?></span>
+                                    <span
+                                        class="badge badge-secondary notify-label"><?php echo __('Unreachable'); ?></span>
                                     <i class="checkbox-secondary"></i>
                                 </label>
                             </div>
@@ -341,7 +365,8 @@ Once a host or service escalated, contacts, contact group and notification optio
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
-                                            type="submit" ng-click="submit()"><?php echo __('Create host escalation'); ?></button>
+                                            type="submit"
+                                            ng-click="submit()"><?php echo __('Create host escalation'); ?></button>
                                     <a back-button href="javascript:void(0);" fallback-state='HostescalationsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>

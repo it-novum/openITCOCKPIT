@@ -40,6 +40,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </li>
 </ol>
 
+<?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) :
+    echo $this->element('HyperscaleModule.warning');
+endif; ?>
 
 <div class="row">
     <div class="col-xl-12">
@@ -66,12 +69,12 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                    id="HostdependenciesContainer"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Hostdependency.container_id">
+                                id="HostdependenciesContainer"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="post.Hostdependency.container_id">
                             </select>
                             <div ng-show="post.Hostdependency.container_id < 1" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -92,14 +95,14 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                        id="HostdependenciesHosts"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="custom-select"
-                                        multiple
-                                        chosen="hosts"
-                                        callback="loadHosts"
-                                        ng-options="host.key as host.value disable when host.disabled for host in hosts"
-                                        ng-model="post.Hostdependency.hosts._ids">
+                                    id="HostdependenciesHosts"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="custom-select"
+                                    multiple
+                                    chosen="hosts"
+                                    callback="loadHosts"
+                                    ng-options="host.key as host.value disable when host.disabled for host in hosts"
+                                    ng-model="post.Hostdependency.hosts._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hosts">
@@ -114,14 +117,14 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                        id="HostdependenciesDependentHosts"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="custom-select"
-                                        multiple
-                                        chosen="hosts_dependent"
-                                        callback="loadDependentHosts"
-                                        ng-options="host.key as host.value disable when host.disabled for host in hosts_dependent"
-                                        ng-model="post.Hostdependency.hosts_dependent._ids">
+                                    id="HostdependenciesDependentHosts"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="custom-select"
+                                    multiple
+                                    chosen="hosts_dependent"
+                                    callback="loadDependentHosts"
+                                    ng-options="host.key as host.value disable when host.disabled for host in hosts_dependent"
+                                    ng-model="post.Hostdependency.hosts_dependent._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hosts_dependent">
@@ -136,18 +139,27 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                        id="HostdependencyHostgroups"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="custom-select"
-                                        multiple
-                                        chosen="hostgroups"
-                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
-                                        ng-model="post.Hostdependency.hostgroups._ids">
+                                    id="HostdependencyHostgroups"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="custom-select"
+                                    multiple
+                                    chosen="hostgroups"
+                                    <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                        readonly="readonly"
+                                        disabled="disabled"
+                                    <?php endif; ?>
+                                    ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
+                                    ng-model="post.Hostdependency.hostgroups._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hostgroups">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                <div class="help-block text-info">
+                                    <?= __('This feature is not available while {0} is loaded.', '<i>' . __('Hyperscale Module') . '</i>'); ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.hostgroups_dependent}">
@@ -157,18 +169,27 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <div class="input-group">
                                 <select
-                                        id="HostedepemdenciesDependentHostgroups"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="custom-select"
-                                        multiple
-                                        chosen="hostgroups_dependent"
-                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_dependent"
-                                        ng-model="post.Hostdependency.hostgroups_dependent._ids">
+                                    id="HostedepemdenciesDependentHostgroups"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="custom-select"
+                                    multiple
+                                    chosen="hostgroups_dependent"
+                                    <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                        readonly="readonly"
+                                        disabled="disabled"
+                                    <?php endif; ?>
+                                    ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_dependent"
+                                    ng-model="post.Hostdependency.hostgroups_dependent._ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hostgroups_dependent">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                <div class="help-block text-info">
+                                    <?= __('This feature is not available while {0} is loaded.', '<i>' . __('Hyperscale Module') . '</i>'); ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group">
@@ -178,19 +199,20 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        ng-if="post.Hostdependency.timeperiod_id > 0">
                                         <?php echo __('Timeperiod'); ?>
                                     </a>
-                                    <span ng-if="!post.Hostdependency.timeperiod_id"><?php echo __('Timeperiod'); ?></span>
+                                    <span
+                                        ng-if="!post.Hostdependency.timeperiod_id"><?php echo __('Timeperiod'); ?></span>
                                 <?php else: ?>
                                     <?php echo __('Timeperiod'); ?>
                                 <?php endif; ?>
                             </label>
                             <div class="input-group">
                                 <select
-                                        id="HostedepemdenciesTimeperiod"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="custom-select"
-                                        chosen="timeperiods"
-                                        ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                        ng-model="post.Hostdependency.timeperiod_id">
+                                    id="HostedepemdenciesTimeperiod"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="custom-select"
+                                    chosen="timeperiods"
+                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                    ng-model="post.Hostdependency.timeperiod_id">
                                     <option></option>
                                 </select>
                             </div>
@@ -206,11 +228,20 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        id="HostdependenciesInheritParent"
                                        ng-true-value="1"
                                        ng-false-value="0"
+                                    <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                        readonly="readonly"
+                                        disabled="disabled"
+                                    <?php endif; ?>
                                        ng-model="post.Hostdependency.inherits_parent">
                                 <label class="custom-control-label" for="HostdependenciesInheritParent">
                                     <?php echo __('Inherits parent'); ?>
                                 </label>
                             </div>
+                            <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                <div class="help-block text-info">
+                                    <?= __('This feature is not available while {0} is loaded.', '<i>' . __('Hyperscale Module') . '</i>'); ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
 
@@ -236,7 +267,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.execution_fail_on_up">
                                         <label class="custom-control-label"
                                                for="execution_fail_on_up">
-                                            <span class="badge badge-success notify-label"><?php echo __('Recovery'); ?></span>
+                                            <span
+                                                class="badge badge-success notify-label"><?php echo __('Recovery'); ?></span>
                                             <i class="checkbox-success"></i>
                                         </label>
                                     </div>
@@ -250,7 +282,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.execution_fail_on_down">
                                         <label class="custom-control-label"
                                                for="execution_fail_on_down">
-                                            <span class="badge badge-danger notify-label"><?php echo __('Down'); ?></span>
+                                            <span
+                                                class="badge badge-danger notify-label"><?php echo __('Down'); ?></span>
                                             <i class="checkbox-danger"></i>
                                         </label>
                                     </div>
@@ -264,7 +297,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.execution_fail_on_unreachable">
                                         <label class="custom-control-label"
                                                for="execution_fail_on_unreachable">
-                                            <span class="badge badge-secondary notify-label"><?php echo __('Unreachable'); ?></span>
+                                            <span
+                                                class="badge badge-secondary notify-label"><?php echo __('Unreachable'); ?></span>
                                             <i class="checkbox-secondary"></i>
                                         </label>
                                     </div>
@@ -278,7 +312,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.execution_fail_on_pending">
                                         <label class="custom-control-label"
                                                for="execution_fail_on_pending">
-                                            <span class="badge badge-primary notify-label"><?php echo __('Pending'); ?></span>
+                                            <span
+                                                class="badge badge-primary notify-label"><?php echo __('Pending'); ?></span>
                                             <i class="checkbox-primary"></i>
                                         </label>
                                     </div>
@@ -292,7 +327,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.execution_none">
                                         <label class="custom-control-label"
                                                for="execution_fail_none">
-                                            <span class="badge badge-primary notify-label"><?php echo __('Execution none'); ?></span>
+                                            <span
+                                                class="badge badge-primary notify-label"><?php echo __('Execution none'); ?></span>
                                             <i class="checkbox-primary"></i>
                                         </label>
                                     </div>
@@ -319,7 +355,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.notification_fail_on_up">
                                         <label class="custom-control-label"
                                                for="notification_fail_on_up">
-                                            <span class="badge badge-success notify-label"><?php echo __('Recovery'); ?></span>
+                                            <span
+                                                class="badge badge-success notify-label"><?php echo __('Recovery'); ?></span>
                                             <i class="checkbox-success"></i>
                                         </label>
                                     </div>
@@ -333,7 +370,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.notification_fail_on_down">
                                         <label class="custom-control-label"
                                                for="notification_fail_on_down">
-                                            <span class="badge badge-danger notify-label"><?php echo __('Down'); ?></span>
+                                            <span
+                                                class="badge badge-danger notify-label"><?php echo __('Down'); ?></span>
                                             <i class="checkbox-danger"></i>
                                         </label>
                                     </div>
@@ -347,7 +385,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.notification_fail_on_unreachable">
                                         <label class="custom-control-label"
                                                for="notification_fail_on_unreachable">
-                                            <span class="badge badge-secondary notify-label"><?php echo __('Unreachable'); ?></span>
+                                            <span
+                                                class="badge badge-secondary notify-label"><?php echo __('Unreachable'); ?></span>
                                             <i class="checkbox-secondary"></i>
                                         </label>
                                     </div>
@@ -361,7 +400,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.notification_fail_on_pending">
                                         <label class="custom-control-label"
                                                for="notification_fail_on_pending">
-                                            <span class="badge badge-primary notify-label"><?php echo __('Pending'); ?></span>
+                                            <span
+                                                class="badge badge-primary notify-label"><?php echo __('Pending'); ?></span>
                                             <i class="checkbox-primary"></i>
                                         </label>
                                     </div>
@@ -375,7 +415,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.notification_none">
                                         <label class="custom-control-label"
                                                for="notification_none">
-                                            <span class="badge badge-primary notify-label"><?php echo __('Notification none'); ?></span>
+                                            <span
+                                                class="badge badge-primary notify-label"><?php echo __('Notification none'); ?></span>
                                             <i class="checkbox-primary"></i>
                                         </label>
                                     </div>

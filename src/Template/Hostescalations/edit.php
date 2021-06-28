@@ -40,6 +40,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </li>
 </ol>
 
+<?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) :
+    echo $this->element('HyperscaleModule.warning');
+endif; ?>
 
 <div class="row">
     <div class="col-xl-12">
@@ -140,6 +143,10 @@ Once a host or service escalated, contacts, contact group and notification optio
                                     class="custom-select"
                                     multiple
                                     chosen="hostgroups"
+                                    <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                        readonly="readonly"
+                                        disabled="disabled"
+                                    <?php endif; ?>
                                     ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
                                     ng-model="post.Hostescalation.hostgroups._ids">
                                 </select>
@@ -147,6 +154,11 @@ Once a host or service escalated, contacts, contact group and notification optio
                             <div ng-repeat="error in errors.hostgroups">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                <div class="help-block text-info">
+                                    <?= __('This feature is not available while {0} is loaded.', '<i>' . __('Hyperscale Module') . '</i>'); ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.hostgroups_excluded}">
@@ -161,6 +173,10 @@ Once a host or service escalated, contacts, contact group and notification optio
                                     class="custom-select"
                                     multiple
                                     chosen="hostgroups_excluded"
+                                    <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                        readonly="readonly"
+                                        disabled="disabled"
+                                    <?php endif; ?>
                                     ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_excluded"
                                     ng-model="post.Hostescalation.hostgroups_excluded._ids">
                                 </select>
@@ -168,6 +184,11 @@ Once a host or service escalated, contacts, contact group and notification optio
                             <div ng-repeat="error in errors.hostgroups_excluded">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                <div class="help-block text-info">
+                                    <?= __('This feature is not available while {0} is loaded.', '<i>' . __('Hyperscale Module') . '</i>'); ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.first_notification}">

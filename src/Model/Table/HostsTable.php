@@ -4078,4 +4078,25 @@ class HostsTable extends Table {
             }
         }
     }
+
+
+    /**
+     * HyperscaleModule
+     * @param int[] $hostIds
+     */
+    public function markHostsForReassignment($hostIds = []) {
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+
+        if (empty($hostIds)) {
+            return;
+        }
+
+        $this->updateAll([
+            'reassign_node' => 1
+        ], [
+            'id IN' => $hostIds
+        ]);
+    }
 }

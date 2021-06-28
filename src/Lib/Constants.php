@@ -48,6 +48,8 @@ class Constants {
 
         $this->defineAjaxLimit();
 
+        $this->defineMasterNode();
+
         $this->attachContainerpropertiesToContainers();
     }
 
@@ -237,6 +239,12 @@ class Constants {
     public function defineAjaxLimit() {
         $this->define([
             'ITN_AJAX_LIMIT' => 150
+        ]);
+    }
+
+    public function defineMasterNode() {
+        $this->define([
+            'MASTER_NODE' => 0
         ]);
     }
 

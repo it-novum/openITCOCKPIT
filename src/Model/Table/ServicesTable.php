@@ -4021,4 +4021,32 @@ class ServicesTable extends Table {
 
         return $query->toArray();
     }
+
+
+    /**
+     * @param array $serviceIds
+     * @return array
+     */
+    public function getHostIdsByServiceIds($serviceIds = []) {
+        if (!is_array($serviceIds)) {
+            $serviceIds = [$serviceIds];
+        }
+
+        if (empty($serviceIds)) {
+            return [];
+        }
+
+        $result = $this->find()
+            ->select('host_id')
+            ->where([
+                'id IN' => $serviceIds
+            ])
+            ->group(
+                ['host_id']
+            )
+            ->disableHydration()
+            ->all();
+
+        return Hash::extract($result->toArray(), '{n}.host_id');
+    }
 }

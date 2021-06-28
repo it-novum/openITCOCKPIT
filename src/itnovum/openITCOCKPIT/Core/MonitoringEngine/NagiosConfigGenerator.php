@@ -1795,7 +1795,10 @@ class NagiosConfigGenerator {
             }
 
             if (!empty($hostgroups)) {
-                $content .= $this->addContent('hostgroup_name', 1, implode(',', array_merge($hostgroupsForCfg, $excludedHostgroupsForCfg)));
+                if (!Plugin::isLoaded('HyperscaleModule')) {
+                    // Only if HyperscaleModule is NOT loaded
+                    $content .= $this->addContent('hostgroup_name', 1, implode(',', array_merge($hostgroupsForCfg, $excludedHostgroupsForCfg)));
+                }
             }
             if (!empty($contactUuids)) {
                 $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
@@ -1905,7 +1908,10 @@ class NagiosConfigGenerator {
                     $content .= $this->addContent('service_description', 1, implode(',', $serviceUuids));
 
                     if (!empty($servicegroupsForCfg)) {
-                        $content .= $this->addContent('servicegroup_name', 1, implode(',', $servicegroupsForCfg));
+                        if (!Plugin::isLoaded('HyperscaleModule')) {
+                            // Only if HyperscaleModule is NOT loaded
+                            $content .= $this->addContent('servicegroup_name', 1, implode(',', $servicegroupsForCfg));
+                        }
                     }
 
                     if (!empty($contactUuids)) {
@@ -2244,14 +2250,19 @@ class NagiosConfigGenerator {
                 $content .= $this->addContent('dependent_host_name', 1, implode(',', $dependentHostsForCfg));
             }
 
-            if (!empty($hostgroupsForCfg)) {
-                $content .= $this->addContent('hostgroup_name', 1, implode(',', $hostgroupsForCfg));
-            }
-            if (!empty($dependentHostgroupsForCfg)) {
-                $content .= $this->addContent('dependent_hostgroup_name', 1, implode(',', $dependentHostgroupsForCfg));
+            if (!Plugin::isLoaded('HyperscaleModule')) {
+                // Only if HyperscaleModule is NOT loaded
+                if (!empty($hostgroupsForCfg)) {
+                    $content .= $this->addContent('hostgroup_name', 1, implode(',', $hostgroupsForCfg));
+                }
+                if (!empty($dependentHostgroupsForCfg)) {
+                    $content .= $this->addContent('dependent_hostgroup_name', 1, implode(',', $dependentHostgroupsForCfg));
+                }
+
+                $content .= $this->addContent('inherits_parent', 1, $hostdependency->get('inherits_parent'));
+
             }
 
-            $content .= $this->addContent('inherits_parent', 1, $hostdependency->get('inherits_parent'));
 
             $executionFailureCriteriaForCfgString = $hostdependency->getExecutionFailureCriteriaForCfg();
             if (!empty($executionFailureCriteriaForCfgString)) {
@@ -2376,16 +2387,18 @@ class NagiosConfigGenerator {
                     $content .= $this->addContent('dependent_host_name', 1, $dependentServiceForCfg['hostUuid']);
                     $content .= $this->addContent('dependent_service_description', 1, $dependentServiceForCfg['serviceUuid']);
 
+                    if (!Plugin::isLoaded('HyperscaleModule')) {
+                        // Only if HyperscaleModule is NOT loaded
+                        if (!empty($servicegroupsForCfg)) {
+                            $content .= $this->addContent('servicegroup_name', 1, implode(', ', $servicegroupsForCfg));
+                        }
 
-                    if (!empty($servicegroupsForCfg)) {
-                        $content .= $this->addContent('servicegroup_name', 1, implode(', ', $servicegroupsForCfg));
+                        if (!empty($dependentServicegroupsForCfg)) {
+                            $content .= $this->addContent('dependent_servicegroup_name', 1, implode(', ', $dependentServicegroupsForCfg));
+                        }
+
+                        $content .= $this->addContent('inherits_parent', 1, $servicedependency->get('inherits_parent'));
                     }
-
-                    if (!empty($dependentServicegroupsForCfg)) {
-                        $content .= $this->addContent('dependent_servicegroup_name', 1, implode(', ', $dependentServicegroupsForCfg));
-                    }
-
-                    $content .= $this->addContent('inherits_parent', 1, $servicedependency->get('inherits_parent'));
 
                     if (!empty($executionFailureCriteriaForCfgString)) {
                         // If all states are selected you get an warning like this:

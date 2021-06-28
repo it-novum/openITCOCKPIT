@@ -287,6 +287,11 @@
                                         <div ng-repeat="error in errors.parenthosts">
                                             <div class="help-block text-danger">{{ error }}</div>
                                         </div>
+                                        <?php if (\Cake\Core\Plugin::isLoaded('HyperscaleModule')) : ?>
+                                        <div class="help-block warning-glow">
+                                            <?php echo __('Changes could cause a reallocation of hosts and services to a different worker node which will drop downtime, acknowledgement and state history information.'); ?>
+                                        </div>
+                                        <?php endif; ?>
                                     </div>
 
                                     <div class="form-group" ng-class="{'has-error': errors.tags}">

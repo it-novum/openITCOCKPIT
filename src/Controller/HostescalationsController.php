@@ -138,6 +138,11 @@ class HostescalationsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
+                // HyperscaleModule
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $HostsTable->markHostsForReassignment(Hash::extract($data['hosts'], '{n}.id'));
+
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostescalation); // REST API ID serialization
                     return;
@@ -186,6 +191,8 @@ class HostescalationsController extends AppController {
             return;
         }
 
+        $oldHostIds = Hash::extract($hostescalation, 'hosts.{n}.id');
+
         if ($this->request->is('post')) {
             /** @var HostescalationsTable $HostescalationsTable */
             $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
@@ -208,6 +215,15 @@ class HostescalationsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
+
+                // HyperscaleModule
+                $newHostIds = Hash::extract($data['hosts'], '{n}.id');
+                if (!empty(array_diff($oldHostIds, $newHostIds)) || !empty(array_diff($newHostIds, $oldHostIds))) {
+                    /** @var HostsTable $HostsTable */
+                    $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                    $HostsTable->markHostsForReassignment($newHostIds);
+                }
+
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostescalation); // REST API ID serialization
                     return;
