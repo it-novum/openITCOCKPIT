@@ -2079,7 +2079,7 @@ class HostsController extends AppController {
         if ($Hoststatus->isAcknowledged()) {
             $acknowledgement = $AcknowledgementHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($acknowledgement)) {
-                $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime);
+                $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime, $allowEdit);
                 $acknowledgement = $Acknowledgement->toArray();
 
                 $ticketDetails = [];

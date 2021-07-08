@@ -1662,6 +1662,29 @@ class ExternalCommands {
         return true;
     }
 
+    /**
+     * Delete a host acknowledgement by given hostUuid
+     *
+     * @param int $satellite_id
+     * @param string $hostUuid
+     * @param array $downtime the details of the downtime
+     */
+    public function deleteHostAcknowledgement(string $hostUuid, int $satellite_id) {
+        //REMOVE_HOST_ACKNOWLEDGEMENT
+        $payload = [
+            'Command' => 'raw',
+            'Data'    => 'REMOVE_HOST_ACKNOWLEDGEMENT;' . $hostUuid
+        ];
+
+        // Delete acknowledgement on the master system
+        $this->toQueue($payload, 0);
+
+        if ($satellite_id > 0) {
+            // Delete acknowledgement on the satellite system
+            $this->toQueue($payload, $satellite_id);
+        }
+    }
+
     public function toQueue(array $payload, $satelliteId = 0) {
         $GearmanClient = new \GearmanClient();
         $GearmanClient->addServer($this->gearmanConfig['address'], $this->gearmanConfig['port']);
