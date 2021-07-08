@@ -9,11 +9,10 @@ CREATE TABLE `statusengine_logentries`
     `id`            bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `entry_time`    bigint(20)          NOT NULL,
     `logentry_type` int(11)                              DEFAULT '0',
-    `logentry_data` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-    `node_name`     varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `logentry_data` varchar(2048) COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `node_name`     varchar(255)  COLLATE utf8mb4_general_ci DEFAULT NULL,
     PRIMARY KEY (`id`, `entry_time`),
-    KEY `logentries` (`entry_time`, `logentry_data`, `node_name`),
-    KEY `logentry_data_time` (`logentry_data`, `entry_time`)
+    KEY `logentries_se` (`entry_time`, `node_name`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci

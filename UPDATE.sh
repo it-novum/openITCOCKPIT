@@ -214,6 +214,19 @@ done
 echo "Update Containertype from Devicegroup to Node"
 mysql "--defaults-extra-file=$INIFILE" -e "UPDATE containers SET containertype_id=5 WHERE containertype_id=4"
 
+# Update column length of logentry_data ITC-2551 and Statusengine 3.7.3
+echo "Checking column length of statusengine_logentries table"
+CURRENT_LOGENTRY_COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT COLUMN_TYPE FROM \`information_schema\`.\`COLUMNS\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\`='statusengine_logentries' AND \`COLUMN_NAME\`='logentry_data'" -B -s 2>/dev/null)
+if [ "$CURRENT_LOGENTRY_COLUMN_TYPE" = "varchar(255)" ]; then
+    echo "Increasing column length of statusengine_logentries table. This will take a while..."
+
+    # Update statusengine_logentries table to use varchar(2048)
+    mysql --defaults-extra-file=${INIFILE} -e "DROP INDEX logentries ON statusengine_logentries"
+    mysql --defaults-extra-file=${INIFILE} -e "DROP INDEX logentry_data_time ON statusengine_logentries"
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE statusengine_logentries CHANGE logentry_data logentry_data VARCHAR(2048) DEFAULT NULL"
+    mysql --defaults-extra-file=${INIFILE} -e "CREATE INDEX logentries_se ON statusengine_logentries (entry_time, node_name)"
+fi
+
 #Check and create missing cronjobs
 #oitc api --model Cronjob --action create_missing_cronjobs --data ""
 
