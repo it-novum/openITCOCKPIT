@@ -105,7 +105,9 @@ class ChangelogsTable extends Table {
      * @return \Cake\ORM\RulesChecker
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
-        $rules->add($rules->existsIn(['user_id'], 'Users'));
+
+        // ITC-485 Export Finished has no user
+        //$rules->add($rules->existsIn(['user_id'], 'Users'));
         return $rules;
     }
 

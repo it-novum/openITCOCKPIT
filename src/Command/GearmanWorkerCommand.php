@@ -28,9 +28,10 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\itnovum\openITCOCKPIT\Core\MonitoringEngine\SatelliteCopy;
 use App\itnovum\openITCOCKPIT\Database\Backup;
 use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ExportsTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Console\Arguments;
@@ -53,7 +54,6 @@ use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 use NWCModule\itnovum\openITCOCKPIT\SNMP\SNMPScan;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
  * GearmanWorker command.
@@ -1132,12 +1132,12 @@ class GearmanWorkerCommand extends Command {
                 try {
                     $interfaces = $SnmpScan->executeSnmpDiscovery($payload['host_address']);
                     $return = [
-                        'success' => true,
+                        'success'    => true,
                         'interfaces' => $interfaces
                     ];
                 } catch (\RuntimeException $e) {
                     $return = [
-                        'success' => false,
+                        'success'   => false,
                         'exception' => 'ProcessFailedException'
                     ];
                 }
@@ -1549,6 +1549,30 @@ class GearmanWorkerCommand extends Command {
                 $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
                 $SatellitesTable->disableAllInstanceConfigSyncs();
             }
+        }
+
+        /** @var  ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $statusMsg = __('with an error');
+        if ($successfully) {
+            $successfullyMsg = __('successfully');
+        }
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'export',
+            'exports',
+            1,
+            OBJECT_HOST,
+            ROOT_CONTAINER,
+            0,
+            __('Refresh of monitoring configuration finished {0}', $successfullyMsg),
+            []
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
         }
 
     }
