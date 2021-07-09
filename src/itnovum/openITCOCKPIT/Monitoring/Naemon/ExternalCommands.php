@@ -612,7 +612,8 @@ class ExternalCommands {
      */
     public function setHostAckWithQuery(array $options) {
         $_options = [
-            'type' => 'hostOnly',
+            'type'   => 'hostOnly',
+            'notify' => true,
         ];
 
         $options = Hash::merge($_options, $options);
@@ -632,6 +633,11 @@ class ExternalCommands {
             }
         }
 
+        $notify = 1;
+        if (!$options['notify']) {
+            $notify = 0;
+        }
+
         $DbBackend = new DbBackend();
         $HoststatusTable = $DbBackend->getHoststatusTable();
 
@@ -646,9 +652,10 @@ class ExternalCommands {
                 $payload = [
                     'Command' => 'raw',
                     'Data'    => sprintf(
-                        'ACKNOWLEDGE_HOST_PROBLEM;%s;%s;1;1;%s;%s',
+                        'ACKNOWLEDGE_HOST_PROBLEM;%s;%s;%s;1;%s;%s',
                         $options['hostUuid'],
                         $options['sticky'],
+                        $notify,
                         $options['author'],
                         $options['comment']
                     )
@@ -698,6 +705,7 @@ class ExternalCommands {
                                 'author'       => $options['author'],
                                 'comment'      => $options['comment'],
                                 'sticky'       => $options['sticky'],
+                                'notify'       => (bool)$notify,
                                 'satellite_id' => $options['satellite_id']
                             ]);
                         }
@@ -750,6 +758,7 @@ class ExternalCommands {
                                 'author'       => $options['author'],
                                 'comment'      => $options['comment'],
                                 'sticky'       => $options['sticky'],
+                                'notify'       => ($options['notify'] ?? true),
                                 'type'         => $options['type'],
                                 'satellite_id' => $host['satellite_id']
                             ]);
