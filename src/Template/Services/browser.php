@@ -460,10 +460,35 @@ use Cake\Core\Plugin;
 
                                             <tr>
                                                 <td><?php echo __('Command line'); ?></td>
+                                                <input type='text' style='display:none;' id='serviceCommandLine-copy'
+                                                       value='{{ mergedService.serviceCommandLine }}'>
                                                 <td>
-                                                    <code class="no-background">
+                                                    <code ng-class="{'macroPassword': hideCommand}">
                                                         {{ mergedService.serviceCommandLine }}
                                                     </code>
+
+                                                    <button class='btn btn-default txt-color-red btn-icon btn-sm'
+                                                            title="<?php echo __('Hide Command Line'); ?>"
+                                                            ng-click='hideCommand = 1'
+                                                            ng-hide='hideCommand'>
+                                                        <i class='fa fa-eye-slash'></i>
+                                                    </button>
+
+                                                    <button class='btn btn-default txt-color-blue btn-icon btn-sm'
+                                                            title="<?php echo __('Show Command Line'); ?>"
+                                                            ng-click='hideCommand = 0'
+                                                            ng-show='hideCommand'>
+                                                        <i class='fa fa-eye'></i>
+                                                    </button>
+
+                                                    <button class='btn btn-default txt-color-blue btn-icon btn-sm'
+                                                            title="<?php echo __('Copy Command Line'); ?>"
+                                                            onclick="$('#serviceCommandLine-copy').show().select();document.execCommand('copy');$('#serviceCommandLine-copy').hide();"
+                                                            ng-click="copyCommand">
+                                                        <i class='fa fa-copy'></i>
+                                                    </button>
+
+
                                                 </td>
                                             </tr>
 

@@ -9,6 +9,8 @@ angular.module('openITCOCKPIT')
 
         $scope.canSubmitExternalCommands = false;
 
+        $scope.hideCommand = 1;
+
         $scope.tags = [];
 
         $scope.init = true;
