@@ -376,6 +376,7 @@ class ChangelogsTable extends Table {
             case 'mass_delete':
             case 'deactivate':
             case 'activate':
+            case 'export':
                 return [
                     'action'        => $action,
                     'model'         => ucwords(Inflector::singularize($controller)),
@@ -511,6 +512,8 @@ class ChangelogsTable extends Table {
                 return 'fa fa-plug';
             case 'copy':
                 return 'fa fa-files-o';
+            case 'export':
+                return 'fa fa-retweet';
             default:
                 return 'fas fa-edit';
         }
@@ -536,6 +539,9 @@ class ChangelogsTable extends Table {
 
             case 'edit':
                 return 'bg-warning';
+
+            case 'export':
+                return 'bg-info';
 
             default:
                 return 'bg-primary';
