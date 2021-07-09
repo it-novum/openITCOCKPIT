@@ -1623,7 +1623,7 @@ class ServicesController extends AppController {
         if ($Servicestatus->isAcknowledged()) {
             $acknowledgement = $AcknowledgementServicesTable->byServiceUuid($serviceObj->getUuid());
             if (!empty($acknowledgement)) {
-                $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime);
+                $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime, $allowEdit);
                 $acknowledgement = $Acknowledgement->toArray();
 
                 $ticketDetails = [];
@@ -1660,7 +1660,7 @@ class ServicesController extends AppController {
         if ($Hoststatus->isAcknowledged()) {
             $hostAcknowledgement = $AcknowledgementHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($hostAcknowledgement)) {
-                $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement, $UserTime);
+                $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement, $UserTime, $allowEdit);
                 $hostAcknowledgement = $AcknowledgementHost->toArray();
 
                 $ticketDetails = [];

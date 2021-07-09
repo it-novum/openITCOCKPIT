@@ -1665,15 +1665,37 @@ class ExternalCommands {
     /**
      * Delete a host acknowledgement by given hostUuid
      *
-     * @param int $satellite_id
      * @param string $hostUuid
-     * @param array $downtime the details of the downtime
+     * @param int $satellite_id
      */
     public function deleteHostAcknowledgement(string $hostUuid, int $satellite_id) {
         //REMOVE_HOST_ACKNOWLEDGEMENT
         $payload = [
             'Command' => 'raw',
             'Data'    => 'REMOVE_HOST_ACKNOWLEDGEMENT;' . $hostUuid
+        ];
+
+        // Delete acknowledgement on the master system
+        $this->toQueue($payload, 0);
+
+        if ($satellite_id > 0) {
+            // Delete acknowledgement on the satellite system
+            $this->toQueue($payload, $satellite_id);
+        }
+    }
+
+    /**
+     * Delete a service acknowledgement by given host and serviceUuid
+     *
+     * @param string $hostUuid
+     * @param string $serviceUuid
+     * @param int $satellite_id
+     */
+    public function deleteServiceAcknowledgement(string $hostUuid, string $serviceUuid, int $satellite_id) {
+        //REMOVE_SVC_ACKNOWLEDGEMENT
+        $payload = [
+            'Command' => 'raw',
+            'Data'    => 'REMOVE_SVC_ACKNOWLEDGEMENT;' . $hostUuid . ';' . $serviceUuid
         ];
 
         // Delete acknowledgement on the master system
