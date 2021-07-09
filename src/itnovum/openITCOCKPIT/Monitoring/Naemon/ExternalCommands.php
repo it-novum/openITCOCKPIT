@@ -502,7 +502,8 @@ class ExternalCommands {
      */
     public function setHostAck(array $options) {
         $_options = [
-            'type' => 'hostOnly',
+            'type'   => 'hostOnly',
+            'notify' => true,
         ];
 
         $options = Hash::merge($_options, $options);
@@ -522,13 +523,19 @@ class ExternalCommands {
             }
         }
 
+        $notify = 1;
+        if (!$options['notify']) {
+            $notify = 0;
+        }
+
         // ACKNOWLEDGE_HOST_PROBLEM
         $payload = [
             'Command' => 'raw',
             'Data'    => sprintf(
-                'ACKNOWLEDGE_HOST_PROBLEM;%s;%s;1;1;%s;%s',
+                'ACKNOWLEDGE_HOST_PROBLEM;%s;%s;%s;1;%s;%s',
                 $options['hostUuid'],
                 $options['sticky'],
+                $notify,
                 $options['author'],
                 $options['comment']
             )
@@ -577,6 +584,7 @@ class ExternalCommands {
                                 'author'       => $options['author'],
                                 'comment'      => $options['comment'],
                                 'sticky'       => $options['sticky'],
+                                'notify'       => (bool)$notify,
                                 'satellite_id' => $options['satellite_id']
                             ]);
                         }
@@ -780,14 +788,22 @@ class ExternalCommands {
             }
         }
 
+        $notify = 1;
+        if (isset($options['notify'])) {
+            if (!$options['notify']) {
+                $notify = 0;
+            }
+        }
+
         // ACKNOWLEDGE_SVC_PROBLEM
         $payload = [
             'Command' => 'raw',
             'Data'    => sprintf(
-                'ACKNOWLEDGE_SVC_PROBLEM;%s;%s;%s;1;1;%s;%s',
+                'ACKNOWLEDGE_SVC_PROBLEM;%s;%s;%s;%s;1;%s;%s',
                 $options['hostUuid'],
                 $options['serviceUuid'],
                 $options['sticky'],
+                $notify,
                 $options['author'],
                 $options['comment']
             )
