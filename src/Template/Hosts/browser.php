@@ -1028,11 +1028,11 @@ use Cake\Core\Plugin;
                     <!-- Grafana Module end -->
                 </div>
                 <!-- Import Module start -->
-                <div class="" ng-show="selectedTab == 'tab6'">
+                <div class="" ng-show="selectedTab == 'tab6'" ng-if="AdditionalInformationExists">
                     <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
 
                         <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('host_configuration', 'elements', 'servicenowModule')): ?>
-                            <idoit-additional-information-element host-id="">
+                            <idoit-additional-information-element host-id="{{mergedHost.id}}">
 
                             </idoit-additional-information-element>
                         <?php else: ?>

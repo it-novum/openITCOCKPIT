@@ -3047,7 +3047,7 @@ class HostsController extends AppController {
         $additionalInformationExists = false;
 
         if (Plugin::isLoaded('ImportModule')) {
-            /** @var ImportedHostsTable $ImportedHostsTable*/
+            /** @var ImportedHostsTable $ImportedHostsTable */
             $ImportedHostsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHosts');
             $additionalInformationExists = $ImportedHostsTable->existsImportedHostByHostId($id);
         }
