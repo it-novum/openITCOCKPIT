@@ -1863,6 +1863,8 @@ class HostsController extends AppController {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
+        $canUserSeeCheckCommand = isset($this->PERMISSIONS['hosts']['checkcommand']);
+
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
@@ -2126,6 +2128,12 @@ class HostsController extends AppController {
         }
 
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
+
+        if ($canUserSeeCheckCommand === false) {
+            $mergedHost['hostCommandLine'] = 'Removed due to insufficient permissions';
+            $mergedHost['hostcommandargumentvalues'] = 'Removed due to insufficient permissions';
+            $checkCommand = 'Removed due to insufficient permissions';
+        }
 
         // Set data to fronend
         $this->set('mergedHost', $mergedHost);

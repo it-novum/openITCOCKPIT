@@ -445,27 +445,29 @@ use Cake\Core\Plugin;
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-9">
                                         <table class="table table-bordered table-sm">
-                                            <tr>
-                                                <td><?php echo __('Check command'); ?></td>
-                                                <td>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
-                                                        <a ui-sref="CommandsEdit({id: checkCommand.Command.id})">
+                                            <?php if ($this->Acl->hasPermission('checkcommand', 'services')): ?>
+                                                <tr>
+                                                    <td><?php echo __('Check command'); ?></td>
+                                                    <td>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                                            <a ui-sref="CommandsEdit({id: checkCommand.Command.id})">
+                                                                {{ checkCommand.Command.name }}
+                                                            </a>
+                                                        <?php else: ?>
                                                             {{ checkCommand.Command.name }}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        {{ checkCommand.Command.name }}
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
 
-                                            <tr>
-                                                <td><?php echo __('Command line'); ?></td>
-                                                <td>
-                                                    <code class="no-background">
-                                                        {{ mergedService.serviceCommandLine }}
-                                                    </code>
-                                                </td>
-                                            </tr>
+                                                <tr>
+                                                    <td><?php echo __('Command line'); ?></td>
+                                                    <td>
+                                                        <code class="no-background">
+                                                            {{ mergedService.serviceCommandLine }}
+                                                        </code>
+                                                    </td>
+                                                </tr>
+                                            <?php endif; ?>
 
                                             <tr>
                                                 <td><?php echo __('Output'); ?></td>
