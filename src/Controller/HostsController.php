@@ -1872,7 +1872,9 @@ class HostsController extends AppController {
             //Only ship template
 
             $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+            $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
             $this->set('masterInstanceName', $masterInstanceName);
+            $this->set('blurryCommandLine', $blurryCommandLine);
             $this->set('username', $User->getFullName());
             return;
         }

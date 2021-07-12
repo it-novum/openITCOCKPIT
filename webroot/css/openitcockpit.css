@@ -1277,8 +1277,7 @@ label.menu-open-button:hover {
 
 /** Copy to clipboard button **/
 
-#copy-to-clipboard-container {
-
+.copy-to-clipboard-container {
 }
 
 /* Hide button by default */
@@ -1294,8 +1293,17 @@ label.menu-open-button:hover {
 }
 
 .copy-to-clipboard-btn-top-right {
-    float: right;
-    padding: 0;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.unblur-on-hover {
+    filter: blur(4px);
+}
+
+.unblur-on-hover:hover {
+    filter: blur(0);
 }
 
 /** End copy to clipboard **/

@@ -27,6 +27,7 @@
  * @var \App\View\AppView $this
  * @var string $masterInstanceName
  * @var string $username
+ * @var bool $blurryCommandLine
  */
 
 use Cake\Core\Plugin;
@@ -392,23 +393,26 @@ use Cake\Core\Plugin;
 
                                                 <tr>
                                                     <td><?php echo __('Command line'); ?></td>
-                                                    <td class="copy-to-clipboard-container">
-                                                        <code class="no-background">
+                                                    <td class="copy-to-clipboard-container"
+                                                        style="display: block; position: relative;">
+                                                        <code
+                                                            class="no-background <?php echo $blurryCommandLine ? 'unblur-on-hover' : '' ?>">
                                                             {{ mergedHost.hostCommandLine }}
                                                         </code>
 
-                                                        <div class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
-                                                             rel="tooltip"
-                                                             data-toggle="tooltip"
-                                                             data-trigger="click"
-                                                             data-placement="left"
-                                                             data-original-title="<?= __('Copied'); ?>">
-                                                            <span
+                                                        <div
+                                                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
+                                                            rel="tooltip"
+                                                            data-toggle="tooltip"
+                                                            data-trigger="click"
+                                                            data-placement="left"
+                                                            data-original-title="<?= __('Copied'); ?>">
+                                                            <div
                                                                 class="btn btn-default btn-xs waves-effect waves-themed"
                                                                 ng-click="clipboardCommand()"
                                                                 title="<?php echo __('Copy to clipboard'); ?>">
-                                                            <i class="fa fa-copy"></i>
-                                                            </span>
+                                                                <i class="fa fa-copy"></i>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>

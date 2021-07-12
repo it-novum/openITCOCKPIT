@@ -26,6 +26,7 @@
 /**
  * @var \App\View\AppView $this
  * @var string $username
+ * @var bool $blurryCommandLine
  */
 
 use Cake\Core\Plugin;
@@ -38,9 +39,9 @@ use Cake\Core\Plugin;
 
 
 <service-browser-menu
-        ng-if="serviceBrowserMenuConfig"
-        config="serviceBrowserMenuConfig"
-        last-load-date="lastLoadDate"></service-browser-menu>
+    ng-if="serviceBrowserMenuConfig"
+    config="serviceBrowserMenuConfig"
+    last-load-date="lastLoadDate"></service-browser-menu>
 
 
 <reschedule-service callback="showFlashMsg"></reschedule-service>
@@ -144,11 +145,11 @@ use Cake\Core\Plugin;
                                     </div>
                                     <div class="col-6">
                                             <span
-                                                    ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
                                                 {{ servicestatus.nextCheck }}
                                             </span>
                                         <span
-                                                ng-if="mergedService.active_checks_enabled == 0 || host.Host.is_satellite_host === true">
+                                            ng-if="mergedService.active_checks_enabled == 0 || host.Host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </div>
@@ -233,7 +234,7 @@ use Cake\Core\Plugin;
 
                         <div class="row" style="display: flex;">
                             <div
-                                    class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
+                                class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
                                 <div class="alert alert-danger opacity-80 margin-bottom-5" role="alert"
                                      ng-show="mergedService.disabled">
                                     <div class="d-flex align-items-center">
@@ -293,9 +294,9 @@ use Cake\Core\Plugin;
                                                 <div class="col-lg-12">
                                                     <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
                                                         <button
-                                                                class="btn btn-xs btn-danger float-right"
-                                                                ng-if="downtime.allowEdit && downtime.isCancellable"
-                                                                ng-click="confirmServiceDowntimeDelete(getObjectForDowntimeDelete())">
+                                                            class="btn btn-xs btn-danger float-right"
+                                                            ng-if="downtime.allowEdit && downtime.isCancellable"
+                                                            ng-click="confirmServiceDowntimeDelete(getObjectForDowntimeDelete())">
                                                             <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
                                                         </button>
                                                     <?php endif; ?>
@@ -400,9 +401,9 @@ use Cake\Core\Plugin;
                                                 <div class="col-lg-12">
                                                     <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
                                                         <button
-                                                                class="btn btn-xs btn-danger float-right"
-                                                                ng-if="hostDowntime.allowEdit && hostDowntime.isCancellable"
-                                                                ng-click="confirmHostDowntimeDelete(getObjectForHostDowntimeDelete())">
+                                                            class="btn btn-xs btn-danger float-right"
+                                                            ng-if="hostDowntime.allowEdit && hostDowntime.isCancellable"
+                                                            ng-click="confirmHostDowntimeDelete(getObjectForHostDowntimeDelete())">
                                                             <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
                                                         </button>
                                                     <?php endif; ?>
@@ -461,23 +462,26 @@ use Cake\Core\Plugin;
 
                                                 <tr>
                                                     <td><?php echo __('Command line'); ?></td>
-                                                    <td class="copy-to-clipboard-container">
-                                                        <code class="no-background">
+                                                    <td class="copy-to-clipboard-container"
+                                                        style="display: block; position: relative;">
+                                                        <code
+                                                            class="no-background <?php echo $blurryCommandLine ? 'unblur-on-hover' : '' ?>">
                                                             {{ mergedService.serviceCommandLine }}
                                                         </code>
 
-                                                        <div class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
-                                                             rel="tooltip"
-                                                             data-toggle="tooltip"
-                                                             data-trigger="click"
-                                                             data-placement="left"
-                                                             data-original-title="<?= __('Copied'); ?>">
-                                                            <span
+                                                        <div
+                                                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
+                                                            rel="tooltip"
+                                                            data-toggle="tooltip"
+                                                            data-trigger="click"
+                                                            data-placement="left"
+                                                            data-original-title="<?= __('Copied'); ?>">
+                                                            <div
                                                                 class="btn btn-default btn-xs waves-effect waves-themed"
                                                                 ng-click="clipboardCommand()"
                                                                 title="<?php echo __('Copy to clipboard'); ?>">
-                                                            <i class="fa fa-copy"></i>
-                                                            </span>
+                                                                <i class="fa fa-copy"></i>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -499,7 +503,7 @@ use Cake\Core\Plugin;
                                                     </code>
                                                 </td>
                                             </tr>
-                                            <tr  ng-show="servicestatus.currentState > 0">
+                                            <tr ng-show="servicestatus.currentState > 0">
                                                 <td>
                                                     <?php echo __('Last time'); ?>
                                                     <span class="badge badge-success" style="margin-right: 2px;">
@@ -554,9 +558,9 @@ use Cake\Core\Plugin;
                                 <?php if (\Cake\Core\Plugin::isLoaded('PrometheusModule')): ?>
                                     <!-- Prometheus state overview table -->
                                     <prometheus-service-browser
-                                            ng-if="mergedService.service_type === <?= PROMETHEUS_SERVICE ?>"
-                                            service-id="mergedService.id"
-                                            last-load="lastLoadDate"></prometheus-service-browser>
+                                        ng-if="mergedService.service_type === <?= PROMETHEUS_SERVICE ?>"
+                                        service-id="mergedService.id"
+                                        last-load="lastLoadDate"></prometheus-service-browser>
                                 <?php endif; ?>
 
                                 <!-- Host state overview table -->
@@ -576,8 +580,8 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td class="text-center">
                                                     <hoststatusicon
-                                                            ng-if="hoststatus"
-                                                            state="hoststatus.currentState"
+                                                        ng-if="hoststatus"
+                                                        state="hoststatus.currentState"
                                                     ></hoststatusicon>
                                                 </td>
                                                 <td>
@@ -604,12 +608,12 @@ use Cake\Core\Plugin;
 
 
                                     <div
-                                            class="col-xs-12 col-sm-12 col-md-6 text-info"
-                                            ng-hide="areContactsFromService">
+                                        class="col-xs-12 col-sm-12 col-md-6 text-info"
+                                        ng-hide="areContactsFromService">
                                         <?php echo __('Contacts and contact groups got inherited from'); ?>
 
                                         <span
-                                                ng-class="{'bold': areContactsInheritedFromServicetemplate}">
+                                            ng-class="{'bold': areContactsInheritedFromServicetemplate}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
                                                     <a ui-sref="ServicetemplatesEdit({id: mergedService.servicetemplate_id})">
                                                         <?php echo __('service template'); ?>
@@ -789,14 +793,14 @@ use Cake\Core\Plugin;
                                         <div><?php echo __('Next check'); ?></div>
                                         <h3 class="margin-top-0">
                                                 <span
-                                                        ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                    ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
                                                     {{ servicestatus.nextCheck }}
                                                     <small style="color: #333;" ng-show="servicestatus.latency > 1">
                                                         (+ {{ servicestatus.latency }})
                                                     </small>
                                                 </span>
                                             <span
-                                                    ng-if="mergedService.active_checks_enabled == 0 || host.Host.is_satellite_host === true">
+                                                ng-if="mergedService.active_checks_enabled == 0 || host.Host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
 
 
@@ -938,9 +942,9 @@ use Cake\Core\Plugin;
                                                 <td>
                                                     <code>{{ host.Host.uuid }}</code>
                                                     <span
-                                                            class="btn btn-default btn-xs"
-                                                            onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
-                                                            title="<?php echo __('Copy to clipboard'); ?>">
+                                                        class="btn btn-default btn-xs"
+                                                        onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
+                                                        title="<?php echo __('Copy to clipboard'); ?>">
                                                             <i class="fa fa-copy"></i>
                                                         </span>
                                                     <input type="text" style="display:none;" id="host-uuid-copy"
@@ -952,9 +956,9 @@ use Cake\Core\Plugin;
                                                 <td>
                                                     <code>{{ mergedService.uuid }}</code>
                                                     <span
-                                                            class="btn btn-default btn-xs"
-                                                            onclick="$('#service-uuid-copy').show().select();document.execCommand('copy');$('#service-uuid-copy').hide();"
-                                                            title="<?php echo __('Copy to clipboard'); ?>">
+                                                        class="btn btn-default btn-xs"
+                                                        onclick="$('#service-uuid-copy').show().select();document.execCommand('copy');$('#service-uuid-copy').hide();"
+                                                        title="<?php echo __('Copy to clipboard'); ?>">
                                                             <i class="fa fa-copy"></i>
                                                         </span>
                                                     <input type="text" style="display:none;" id="service-uuid-copy"
@@ -964,7 +968,8 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Service type'); ?></td>
                                                 <td>
-                                                    <span class="badge border margin-right-10 {{serviceType.class}} {{serviceType.color}}">
+                                                    <span
+                                                        class="badge border margin-right-10 {{serviceType.class}} {{serviceType.color}}">
                                                         <i class="{{serviceType.icon}}"></i>
                                                         {{serviceType.title}}
                                                     </span>
@@ -1041,8 +1046,8 @@ use Cake\Core\Plugin;
                                                 <td><?php echo __('Satellite'); ?></td>
                                                 <td>
                                                     <satellite-name
-                                                            satellite-id="host.Host.satelliteId"
-                                                            ng-if="host.Host.is_satellite_host"
+                                                        satellite-id="host.Host.satelliteId"
+                                                        ng-if="host.Host.is_satellite_host"
                                                     ></satellite-name>
                                                 </td>
                                             </tr>
@@ -1085,9 +1090,10 @@ use Cake\Core\Plugin;
                                             <span ng-hide="failureDurationInPercent">
                                                     <i class="fa fa-refresh fa-spin txt-primary"></i>
                                                 </span>
-                                            <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent+' %' :
-                                                    '<?php echo __('No data available !'); ?>'}}
-                                                </span>
+                                            <span
+                                                ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent + ' %' :
+                                                    '<?php echo __('No data available!'); ?>'}}
+                                            </span>
                                         </h3>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-12">
@@ -1257,7 +1263,8 @@ use Cake\Core\Plugin;
                             </div>
                         </div>
 
-                        <div class="btn-group btn-group-xs panelToolbarInput" ng-show="mergedService.service_type !== <?= PROMETHEUS_SERVICE ?>">
+                        <div class="btn-group btn-group-xs panelToolbarInput"
+                             ng-show="mergedService.service_type !== <?= PROMETHEUS_SERVICE ?>">
                             <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <?php echo __('Aggregation: '); ?>

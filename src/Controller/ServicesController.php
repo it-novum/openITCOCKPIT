@@ -1338,9 +1338,11 @@ class ServicesController extends AppController {
             /** @var SystemsettingsTable $SystemsettingsTable */
             $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
             $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+            $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
 
             //Only ship template
             $this->set('username', $User->getFullName());
+            $this->set('blurryCommandLine', $blurryCommandLine);
             $this->set('masterInstanceName', $masterInstanceName);
             return;
         }
