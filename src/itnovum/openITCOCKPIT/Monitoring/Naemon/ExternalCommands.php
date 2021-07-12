@@ -1540,6 +1540,10 @@ class ExternalCommands {
                 $DbBackend = new DbBackend();
                 $DowntimeServicesTable = $DbBackend->getDowntimehistoryServicesTable();
                 $serviceDowntimeArray = $DowntimeServicesTable->getHostAndServiceUuidWithDowntimeByInternalDowntimeId($command['parameters']['downtime_id']);
+
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
                 if (!empty($serviceDowntimeArray)) {
                     $ServiceDowntime = new Downtime($serviceDowntimeArray['DowntimeServices']);
 
