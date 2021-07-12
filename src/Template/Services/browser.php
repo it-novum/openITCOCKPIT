@@ -461,10 +461,24 @@ use Cake\Core\Plugin;
 
                                                 <tr>
                                                     <td><?php echo __('Command line'); ?></td>
-                                                    <td>
+                                                    <td class="copy-to-clipboard-container">
                                                         <code class="no-background">
                                                             {{ mergedService.serviceCommandLine }}
                                                         </code>
+
+                                                        <div class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
+                                                             rel="tooltip"
+                                                             data-toggle="tooltip"
+                                                             data-trigger="click"
+                                                             data-placement="left"
+                                                             data-original-title="<?= __('Copied'); ?>">
+                                                            <span
+                                                                class="btn btn-default btn-xs waves-effect waves-themed"
+                                                                ng-click="clipboardCommand()"
+                                                                title="<?php echo __('Copy to clipboard'); ?>">
+                                                            <i class="fa fa-copy"></i>
+                                                            </span>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             <?php endif; ?>

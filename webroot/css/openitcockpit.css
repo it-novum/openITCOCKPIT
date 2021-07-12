@@ -1273,3 +1273,30 @@ label.menu-open-button:hover {
 .strikethrough {
     text-decoration: line-through;
 }
+
+
+/** Copy to clipboard button **/
+
+#copy-to-clipboard-container {
+
+}
+
+/* Hide button by default */
+.copy-to-clipboard-btn {
+    animation: fade-out .2s both;
+    display: none;
+}
+
+/* Show button on hover */
+.copy-to-clipboard-container:hover .copy-to-clipboard-btn {
+    animation: fade-in .2s both;
+    display: block;
+}
+
+.copy-to-clipboard-btn-top-right {
+    float: right;
+    padding: 0;
+}
+
+/** End copy to clipboard **/
+
