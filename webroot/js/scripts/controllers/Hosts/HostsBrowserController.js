@@ -150,6 +150,8 @@ angular.module('openITCOCKPIT')
 
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
+                $scope.loadAdditionalInformation();
+
 
                 if(typeof $scope.hostBrowserMenuConfig === "undefined"){
                     $scope.hostBrowserMenuConfig = {
@@ -568,6 +570,18 @@ angular.module('openITCOCKPIT')
                 $scope.loadHost();
             }
         };
+
+        $scope.loadAdditionalInformation = function(){
+            $http.get("/hosts/loadAdditionalInformation/.json", {
+                params: {
+                    'id': $scope.mergedHost.id,
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.AdditionalInformationExists = result.data.AdditionalInformationExists;
+            });
+        };
+
 
         /*** Service mass change methods ***/
         $scope.selectAll = function(){

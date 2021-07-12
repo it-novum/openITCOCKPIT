@@ -58,6 +58,8 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
+use ImportModule\Model\Table\ImportedHostsTable;
+use ImportModule\Model\Table\ImportersTable;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
@@ -3035,4 +3037,22 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
+    public function loadAdditionalInformation() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+
+        $additionalInformationExists = false;
+
+        if (Plugin::isLoaded('ImportModule')) {
+            /** @var ImportedHostsTable $ImportedHostsTable*/
+            $ImportedHostsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHosts');
+            $additionalInformationExists = $ImportedHostsTable->existsImportedHostByHostId($id);
+        }
+
+        $this->set('AdditionalInformationExists', $additionalInformationExists);
+        $this->viewBuilder()->setOption('serialize', ['AdditionalInformationExists']);
+    }
 }

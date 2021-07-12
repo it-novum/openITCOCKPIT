@@ -105,7 +105,15 @@ use Cake\Core\Plugin;
                             <li class="nav-item pointer" ng-show="GrafanaDashboardExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
                                    role="tab">
-                                    <i class="fa fa-lg fa-area-chart">&nbsp;</i> <?php echo __('Grafana'); ?>
+                                    <i class="fas fa-info">&nbsp;</i> <?php echo __('Grafana'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if (Plugin::isLoaded('ImportModule')): ?>
+                            <li class="nav-item pointer" ng-show="AdditionalInformationExists">
+                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab6'; hideTimeline()"
+                                   role="tab">
+                                    <i class="fas fa-database">&nbsp;</i> <?php echo __('i-doit'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
@@ -913,10 +921,15 @@ use Cake\Core\Plugin;
                                                 <i class="fa fa-refresh fa-spin txt-primary"></i>
                                             </span>
                                             <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ?
-                                                failureDurationInPercent+' %' :
-                                                '<?php echo __('No data available !'); ?>'}}
+                                                    failureDurationInPercent + ' %' :
+                                                    '<?php echo __('
+                                                No
+                                                data
+                                                available
+                                                !'); ?>'}}
                                             </span>
-                                        </h3></div>
+                                        </h3>
+                                    </div>
                                     <div class="col-12">
                                         <div id="visualization"></div>
                                     </div>
@@ -1013,8 +1026,23 @@ use Cake\Core\Plugin;
                                           ng-if="GrafanaDashboardExists && selectedTab == 'tab5'"></iframe-directive>
                     </div>
                     <!-- Grafana Module end -->
-
                 </div>
+                <!-- Import Module start -->
+                <div class="" ng-show="selectedTab == 'tab6'">
+                    <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
+
+                        <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('host_configuration', 'elements', 'servicenowModule')): ?>
+                            <idoit-additional-information-element host-id="">
+
+                            </idoit-additional-information-element>
+                        <?php else: ?>
+                            <label class="text-danger">
+                                <?php echo __('No permissions'); ?>
+                            </label>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <!-- Import Module end -->
             </div>
         </div>
     </div>
