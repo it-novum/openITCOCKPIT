@@ -1197,4 +1197,12 @@ class ContainersTable extends Table {
         }
         return false;
     }
+
+    /**
+     * @return int
+     */
+    public function getContainersCount() {
+        $query = $this->find();
+        return $query->count();
+    }
 }

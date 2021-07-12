@@ -665,8 +665,8 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
-
 /* Weather icons end */
+
 
 .wizard-logo-image {
     border-radius: 50%;
@@ -719,6 +719,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 
 .card-body-wizard {
     background-color: transparent !important;
+}
+
+.statusicon::before {
+    border-width: 0px !important;
 }
 
 .agent-mode-box-pull:before {
