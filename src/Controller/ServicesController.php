@@ -2318,6 +2318,7 @@ class ServicesController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
+        $existingServices = $ServicesTable->getListOfServiceNamesForUniqueCheck($hostId);
 
         $this->set('servicetemplates', $servicetemplates);
         $this->set('servicegroups', $servicegroups);
@@ -2325,6 +2326,7 @@ class ServicesController extends AppController {
         $this->set('checkperiods', $checkperiods);
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
+        $this->set('existingServices', $existingServices);
 
         $this->viewBuilder()->setOption('serialize', [
             'servicetemplates',
@@ -2332,7 +2334,8 @@ class ServicesController extends AppController {
             'timeperiods',
             'checkperiods',
             'contacts',
-            'contactgroups'
+            'contactgroups',
+            'existingServices'
         ]);
     }
 

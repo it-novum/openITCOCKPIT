@@ -269,6 +269,8 @@ angular.module('openITCOCKPIT')
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.servicegroups = result.data.servicegroups;
+
+                $scope.existingServices = result.data.existingServices;
             });
         };
 
@@ -300,6 +302,8 @@ angular.module('openITCOCKPIT')
                 $scope.inheritedContactsAndContactgroups = result.data.contactsAndContactgroups;
                 $scope.post.Service.contacts._ids = result.data.contactsAndContactgroups.contacts._ids;
                 $scope.post.Service.contactgroups._ids = result.data.contactsAndContactgroups.contactgroups._ids;
+
+                $scope.checkForDuplicateServicename();
 
                 $('#ContactBlocker').block({
                     message: null,
@@ -390,6 +394,20 @@ angular.module('openITCOCKPIT')
             });
 
         };
+
+        $scope.checkForDuplicateServicename = function(){
+            $scope.checkedName = $scope.post.Service.name
+
+            $scope.isServicenameInUse = false;
+            for(var id in $scope.existingServices){
+                if($scope.existingServices[id] === $scope.post.Service.name){
+                    $scope.isServicenameInUse = true;
+                    return;
+                }
+            }
+        };
+
+        // Fire on page load
 
         if(hostId > 0){
             $scope.loadHosts('', hostId);

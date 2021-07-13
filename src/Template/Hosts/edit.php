@@ -201,7 +201,7 @@
                                             </div>
                                         </div>
                                         <div class="flex-1">
-                                            <?= __('An host with the name <strong>{0}</strong> already exists. Duplicate hostnames could lead to confusion.', '{{ checkedName }}'); ?>
+                                            <?= __('A host with the name <strong>{0}</strong> already exists. Duplicate host names could lead to confusion.', '{{ checkedName }}'); ?>
                                         </div>
                                     </div>
                                 </div>

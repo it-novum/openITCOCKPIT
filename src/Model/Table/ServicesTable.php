@@ -3992,4 +3992,43 @@ class ServicesTable extends Table {
             }
         }
     }
+
+    /**
+     * @param int $hostId
+     * @param int[] $excludedServiceIds
+     * @return array
+     */
+    public function getListOfServiceNamesForUniqueCheck($hostId, $excludedServiceIds = []){
+        if(!is_array($excludedServiceIds)){
+            $excludedServiceIds = [$excludedServiceIds];
+        }
+
+        $where = [
+            'Services.host_id' => $hostId
+        ];
+
+        if(!empty($excludedServiceIds)){
+            $where['Services.id NOT in'] = $excludedServiceIds;
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                'Services.id',
+            ])
+            ->where(
+                $where
+            )
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Servicetemplates')
+            ->disableHydration();
+
+       $result = [];
+       foreach($query->all() as $item){
+           $result[$item['id']] = $item['servicename'];
+       }
+
+       return $result;
+    }
 }
