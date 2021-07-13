@@ -734,6 +734,10 @@ class AngularController extends AppController {
         return;
     }
 
+    public function mass_delete_acknowledgements() {
+        return;
+    }
+
     public function submit_host_result() {
         return;
     }

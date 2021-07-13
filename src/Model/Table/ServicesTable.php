@@ -1044,7 +1044,8 @@ class ServicesTable extends Table {
                         'Hosts.id',
                         'Hosts.uuid',
                         'Hosts.name',
-                        'Hosts.container_id'
+                        'Hosts.container_id',
+                        'Hosts.satellite_id'
                     ])
                         ->contain([
                             'HostsToContainersSharing'
