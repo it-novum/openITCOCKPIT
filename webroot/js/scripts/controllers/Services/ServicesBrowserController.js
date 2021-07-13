@@ -191,6 +191,12 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.init = false;
+
+                setTimeout(function(){
+                    jQuery(function(){
+                        jQuery("[rel=tooltip]").tooltip();
+                    });
+                }, 250);
             }, function errorCallback(results){
                 if(results.status === 403){
                     $state.go('403');
@@ -868,6 +874,13 @@ angular.module('openITCOCKPIT')
             disableGraphAutorefresh();
         });
 
+
+        $scope.clipboardCommand = function(){
+            navigator.clipboard.writeText($scope.mergedService.serviceCommandLine);
+        };
+
+        // Fire on page load
+
         $scope.loadIdOrUuid();
 
         $scope.$watch('servicestatus.isFlapping', function(){
@@ -902,6 +915,12 @@ angular.module('openITCOCKPIT')
                 return;
             }
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
+        });
+
+        jQuery(document).on('show.bs.tooltip', function(e){
+            setTimeout(function(){
+                jQuery('[data-toggle="tooltip"]').tooltip('hide');
+            }, 1500);
         });
 
     });

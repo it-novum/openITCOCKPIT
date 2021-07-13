@@ -757,6 +757,14 @@ class Systemsetting extends Importer {
                 'created'  => '2020-04-17 08:43:17',
                 'modified' => '2020-04-17 08:43:17'
             ],
+            (int)88 => [
+                'key'      => 'FRONTEND.BLUR_COMMAND_LINE_IN_BROWSER',
+                'value'    => '0',
+                'info'     => 'If enabled the check command line in host and service browser will be displayed blurry. On mouseover the command line will be displayed normally.',
+                'section'  => 'FRONTEND',
+                'created'  => '2020-07-12 16:09:17',
+                'modified' => '2020-07-12 16:09:17'
+            ],
         ];
 
         return $data;

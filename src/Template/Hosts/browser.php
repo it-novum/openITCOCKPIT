@@ -27,6 +27,7 @@
  * @var \App\View\AppView $this
  * @var string $masterInstanceName
  * @var string $username
+ * @var bool $blurryCommandLine
  */
 
 use Cake\Core\Plugin;
@@ -376,27 +377,46 @@ use Cake\Core\Plugin;
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-9">
                                         <table class="table table-bordered table-sm">
-                                            <tr>
-                                                <td><?php echo __('Check command'); ?></td>
-                                                <td>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
-                                                        <a ui-sref="CommandsEdit({id: checkCommand.Command.id})">
+                                            <?php if ($this->Acl->hasPermission('checkcommand', 'hosts')): ?>
+                                                <tr>
+                                                    <td><?php echo __('Check command'); ?></td>
+                                                    <td>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                                            <a ui-sref="CommandsEdit({id: checkCommand.Command.id})">
+                                                                {{ checkCommand.Command.name }}
+                                                            </a>
+                                                        <?php else: ?>
                                                             {{ checkCommand.Command.name }}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        {{ checkCommand.Command.name }}
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
 
-                                            <tr>
-                                                <td><?php echo __('Command line'); ?></td>
-                                                <td>
-                                                    <code class="no-background">
-                                                        {{ mergedHost.hostCommandLine }}
-                                                    </code>
-                                                </td>
-                                            </tr>
+                                                <tr>
+                                                    <td><?php echo __('Command line'); ?></td>
+                                                    <td class="copy-to-clipboard-container"
+                                                        style="display: block; position: relative;">
+                                                        <code
+                                                            class="no-background <?php echo $blurryCommandLine ? 'unblur-on-hover' : '' ?>">
+                                                            {{ mergedHost.hostCommandLine }}
+                                                        </code>
+
+                                                        <div
+                                                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
+                                                            rel="tooltip"
+                                                            data-toggle="tooltip"
+                                                            data-trigger="click"
+                                                            data-placement="left"
+                                                            data-original-title="<?= __('Copied'); ?>">
+                                                            <div
+                                                                class="btn btn-default btn-xs waves-effect waves-themed"
+                                                                ng-click="clipboardCommand()"
+                                                                title="<?php echo __('Copy to clipboard'); ?>">
+                                                                <i class="fa fa-copy"></i>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endif; ?>
 
                                             <tr>
                                                 <td><?php echo __('Output'); ?></td>
@@ -913,8 +933,8 @@ use Cake\Core\Plugin;
                                                 <i class="fa fa-refresh fa-spin txt-primary"></i>
                                             </span>
                                             <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ?
-                                                failureDurationInPercent+' %' :
-                                                '<?php echo __('No data available !'); ?>'}}
+                                                    failureDurationInPercent + ' %' :
+                                                    '<?php echo __('No data available!'); ?>'}}
                                             </span>
                                         </h3></div>
                                     <div class="col-12">

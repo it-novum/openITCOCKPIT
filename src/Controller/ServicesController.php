@@ -1331,13 +1331,18 @@ class ServicesController extends AppController {
     public function browser($idOrUuid = null) {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
+
+        $canUserSeeCheckCommand = isset($this->PERMISSIONS['services']['checkcommand']);
+
         if ($this->isHtmlRequest()) {
             /** @var SystemsettingsTable $SystemsettingsTable */
             $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
             $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+            $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
 
             //Only ship template
             $this->set('username', $User->getFullName());
+            $this->set('blurryCommandLine', $blurryCommandLine);
             $this->set('masterInstanceName', $masterInstanceName);
             return;
         }
@@ -1696,6 +1701,12 @@ class ServicesController extends AppController {
 
         $typesForView = $ServicesTable->getServiceTypesWithStyles();
         $serviceType = $typesForView[$mergedService['service_type']];
+
+        if ($canUserSeeCheckCommand === false) {
+            $mergedService['serviceCommandLine'] = 'Removed due to insufficient permissions';
+            $mergedService['servicecommandargumentvalues'] = 'Removed due to insufficient permissions';
+            $checkCommand = 'Removed due to insufficient permissions';
+        }
 
         // Set data to fronend
         $this->set('mergedService', $mergedService);

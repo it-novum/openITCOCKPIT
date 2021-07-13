@@ -360,7 +360,13 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                 </div>
 
                 <div class="row padding-top-5">
-                    <div class="col-lg-12">
+
+                    <!--
+                    If you change this command please make also sure to change the command
+                    in the PackagemanagerIndexController clipboardCommand function !!
+                    -->
+
+                    <div class="col-lg-12 copy-to-clipboard-container" style="display: block; position: relative;">
                         <div class="bg-color-black txt-color-white code-font padding-7 packetmanager-selection">
                             sudo apt-get update && apt-get dist-upgrade
                             <br>
@@ -368,6 +374,21 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                             \ <br>
                             && echo "#########################################" \ <br>
                             && echo "<?= __('Installation done. Please reload your {0} web interface.', $systemname) ?>"
+                        </div>
+                        <div
+                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
+                            style="right: 20px;"
+                            rel="tooltip"
+                            data-toggle="tooltip"
+                            data-trigger="click"
+                            data-placement="left"
+                            data-original-title="<?= __('Copied'); ?>">
+                            <div
+                                class="btn btn-default btn-xs waves-effect waves-themed"
+                                ng-click="clipboardCommand()"
+                                title="<?php echo __('Copy to clipboard'); ?>">
+                                <i class="fa fa-copy"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
