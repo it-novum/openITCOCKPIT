@@ -37,10 +37,29 @@
                                 <?php echo __('Sticky'); ?>
                             </label>
                         </div>
-                        <div class="helptext">
+                        <div class="helptext help-block">
                             <?php echo __('Sticky acknowledgements will be stay until the service is back in state Ok'); ?>
                         </div>
                     </div>
+
+                    <div class="col-lg-12 margin-top-10">
+
+                        <div class="custom-control custom-checkbox  margin-bottom-10">
+                            <input type="checkbox"
+                                   name="checkbox"
+                                   class="custom-control-input"
+                                   checked="checked"
+                                   ng-model="ack.notify"
+                                   id="ackNotify">
+                            <label class="custom-control-label" for="ackNotify">
+                                <?php echo __('Notify'); ?>
+                            </label>
+                        </div>
+                        <div class="helptext help-block">
+                            <?php echo __('The system will send a notification to inform contacts that the current service problem has been acknowledged.'); ?>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="col-xs-12 margin-top-10" ng-show="doAck">
                     <h4><?php echo __('Executing command'); ?></h4>

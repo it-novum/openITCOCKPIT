@@ -57,6 +57,7 @@ use Cake\Core\Plugin;
 <enable-service-notifications callback="showFlashMsg"></enable-service-notifications>
 <send-service-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-service-notification>
 <mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>
+<mass-delete-acknowledgements delete-url="/acknowledgements/delete/" callback="showFlashMsg"></mass-delete-acknowledgements>
 
 
 <div class="row">
@@ -309,27 +310,48 @@ use Cake\Core\Plugin;
                                 <div class="row" ng-show="servicestatus.problemHasBeenAcknowledged">
                                     <div class="col-lg-12 margin-bottom-10">
                                         <div class="browser-border padding-10" style="width: 100%;">
-                                            <div>
-                                                <h4 class="no-padding">
-                                                    <i class="far fa-user" ng-show="!acknowledgement.is_sticky"></i>
-                                                    <i class="fas fa-user" ng-show="acknowledgement.is_sticky"></i>
-                                                    <?php echo __('State of service is acknowledged'); ?>
-                                                    <span ng-show="acknowledgement.is_sticky">
+
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div>
+                                                        <h4 class="no-padding">
+                                                            <i class="far fa-user"
+                                                               ng-show="!acknowledgement.is_sticky"></i>
+                                                            <i class="fas fa-user"
+                                                               ng-show="acknowledgement.is_sticky"></i>
+                                                            <?php echo __('State of service is acknowledged'); ?>
+                                                            <span ng-show="acknowledgement.is_sticky">
                                                             (<?php echo __('Sticky'); ?>)
                                                         </span>
-                                                </h4>
+                                                        </h4>
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Acknowledgement was set by'); ?>
+                                                        <b>{{acknowledgement.author_name}}</b>
+                                                        <?php echo __('at'); ?>
+                                                        {{acknowledgement.entry_time}}
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Comment: '); ?>
+                                                        <div style="display:inline"
+                                                             ng-bind-html="acknowledgement.commentDataHtml | trustAsHtml"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <?php if ($this->Acl->hasPermission('delete', 'acknowledgements')): ?>
+                                                        <button
+                                                            class="btn btn-xs btn-danger float-right"
+                                                            ng-if="acknowledgement.allowEdit"
+                                                            ng-click="confirmAcknowledgementsDelete(getObjectForServiceAcknowledgementDelete())">
+                                                            <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
+                                                        </button>
+                                                    <?php endif; ?>
+                                                </div>
+
                                             </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Acknowledgement was set by'); ?>
-                                                <b>{{acknowledgement.author_name}}</b>
-                                                <?php echo __('at'); ?>
-                                                {{acknowledgement.entry_time}}
-                                            </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Comment: '); ?>
-                                                <div style="display:inline"
-                                                     ng-bind-html="acknowledgement.commentDataHtml | trustAsHtml"></div>
-                                            </div>
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -416,6 +438,9 @@ use Cake\Core\Plugin;
                                 <div class="row" ng-show="hoststatus.problemHasBeenAcknowledged">
                                     <div class="col-lg-12 margin-bottom-10">
                                         <div class="browser-border padding-10" style="width: 100%;">
+
+                                            <div class="row">
+                                                <div class="col-12">
                                             <div>
                                                 <h4 class="no-padding">
                                                     <i class="far fa-user"
@@ -438,6 +463,20 @@ use Cake\Core\Plugin;
                                                 <?php echo __('Comment: '); ?>
                                                 <div style="display:inline"
                                                      ng-bind-html="hostAcknowledgement.commentDataHtml | trustAsHtml"></div>
+                                            </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <?php if ($this->Acl->hasPermission('delete', 'acknowledgements')): ?>
+                                                        <button
+                                                            class="btn btn-xs btn-danger float-right"
+                                                            ng-if="hostAcknowledgement.allowEdit"
+                                                            ng-click="confirmAcknowledgementsDelete(getObjectForHostAcknowledgementDelete())">
+                                                            <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
+                                                        </button>
+                                                    <?php endif; ?>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>

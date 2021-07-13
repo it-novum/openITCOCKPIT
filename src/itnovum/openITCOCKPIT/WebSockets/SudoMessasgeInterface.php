@@ -215,11 +215,11 @@ class SudoMessasgeInterface implements MessageComponentInterface {
                 break;
 
             case 'submitServicestateAck':
-                $this->ExternalCommands->setServiceAck(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'author' => $msg->data[3], 'sticky' => $msg->data[4]]);
+                $this->ExternalCommands->setServiceAck(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'author' => $msg->data[3], 'sticky' => $msg->data[4], 'notify' => $msg->data[5]]);
                 break;
 
             case 'submitHoststateAck':
-                $this->ExternalCommands->setHostAck(['hostUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
+                $this->ExternalCommands->setHostAck(['hostUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4], 'notify' => $msg->data[5]]);
                 break;
 
             case 'submitServiceDowntime':

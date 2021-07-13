@@ -31,7 +31,7 @@
                     <label class="custom-control-label" for="forceSend">
                         <?php echo __('Force'); ?>
                     </label>
-                    <div class="helptext">
+                    <div class="helptext help-block">
                         <?php echo __('Time period and notifications disabled configuration will be ignored'); ?>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                     <label class="custom-control-label" for="broadcastSend">
                         <?php echo __('Broadcast'); ?>
                     </label>
-                    <div class="helptext">
+                    <div class="helptext help-block">
                         <?php echo __('Notification will also be sent to escalation contacts'); ?>
                     </div>
                 </div>

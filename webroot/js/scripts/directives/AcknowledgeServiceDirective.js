@@ -9,7 +9,8 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
             $scope.ack = {
                 comment: '',
                 sticky: false,
-                error: false
+                error: false,
+                notify: true
             };
 
             var objects = {};
@@ -56,7 +57,8 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
                         object.Service.uuid,
                         $scope.ack.comment,
                         author,
-                        sticky
+                        sticky,
+                        $scope.ack.notify,
                     ]));
                 }
 

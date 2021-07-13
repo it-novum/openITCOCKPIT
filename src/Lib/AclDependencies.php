@@ -134,7 +134,8 @@ class AclDependencies {
             ->allow('Angular', 'reload_required')
             ->allow('Angular', 'colorpicker')
             ->allow('Angular', 'popover_graph')
-            ->allow('Angular', 'thresholds');
+            ->allow('Angular', 'thresholds')
+            ->allow('Angular', 'mass_delete_acknowledgements');
 
         $this
             ->allow('Agentconnector', 'register_agent')

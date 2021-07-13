@@ -620,7 +620,8 @@ class HostsTable extends Table {
                 'Hosts.uuid',
                 'Hosts.name',
                 'Hosts.address',
-                'Hosts.container_id'
+                'Hosts.container_id',
+                'Hosts.satellite_id'
             ])
             ->where([
                 'Hosts.id' => $id

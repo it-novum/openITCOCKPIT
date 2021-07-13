@@ -220,6 +220,26 @@ angular.module('openITCOCKPIT')
             return object;
         };
 
+        $scope.getObjectForServiceAcknowledgementDelete = function(){
+            var object = {};
+            object[$scope.mergedService.id] = {
+                name: $scope.host.Host.hostname + ' / ' + $scope.mergedService.name,
+                hostId: $scope.mergedService.host_id,
+                serviceId: $scope.mergedService.id
+            };
+            return object;
+        };
+
+        $scope.getObjectForHostAcknowledgementDelete = function(){
+            var object = {};
+            object[$scope.host.Host.id] = {
+                name: $scope.host.Host.hostname,
+                hostId: $scope.host.Host.id,
+                serviceId: null
+            };
+            return object;
+        };
+
         $scope.getObjectsForExternalCommand = function(){
             return [{
                 Service: {

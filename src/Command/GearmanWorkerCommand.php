@@ -759,6 +759,23 @@ class GearmanWorkerCommand extends Command {
                 );
                 break;
 
+            case 'deleteHostAcknowledgement':
+                $ExternalCommands = new ExternalCommands();
+                $ExternalCommands->deleteHostAcknowledgement(
+                    $payload['hostUuid'],
+                    intval($payload['satellite_id'])
+                );
+                break;
+
+            case 'deleteServiceAcknowledgement':
+                $ExternalCommands = new ExternalCommands();
+                $ExternalCommands->deleteServiceAcknowledgement(
+                    $payload['hostUuid'],
+                    $payload['serviceUuid'],
+                    intval($payload['satellite_id'])
+                );
+                break;
+
             //Called by NagiosModule/CmdController/submit
             case 'cmd_external_command':
                 $ExternalCommands = new ExternalCommands();
