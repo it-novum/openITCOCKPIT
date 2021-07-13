@@ -1026,11 +1026,8 @@ use Cake\Core\Plugin;
                                           ng-if="GrafanaDashboardExists && selectedTab == 'tab5'"></iframe-directive>
                     </div>
                     <!-- Grafana Module end -->
-                </div>
-                <!-- Import Module start -->
-                <div class="" ng-show="selectedTab == 'tab6'" ng-if="AdditionalInformationExists">
-                    <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
-
+                    <!-- Import Module start -->
+                    <div ng-show="selectedTab == 'tab6'" ng-if="AdditionalInformationExists">
                         <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('host_configuration', 'elements', 'servicenowModule')): ?>
                             <idoit-additional-information-element host-id="{{mergedHost.id}}">
 
@@ -1041,8 +1038,8 @@ use Cake\Core\Plugin;
                             </label>
                         <?php endif; ?>
                     </div>
+                    <!-- Import Module end -->
                 </div>
-                <!-- Import Module end -->
             </div>
         </div>
     </div>
