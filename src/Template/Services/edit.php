@@ -175,7 +175,8 @@
                                                 id="ServiceName"
                                                 class="form-control"
                                                 type="text"
-                                                ng-model="post.Service.name">
+                                                ng-model="post.Service.name"
+                                                ng-blur="checkForDuplicateServicename();">
                                         <template-diff ng-show="post.Service.servicetemplate_id"
                                                        value="post.Service.name"
                                                        template-value="servicetemplate.Servicetemplate.name"></template-diff>
@@ -194,6 +195,20 @@
 
                                     <div ng-repeat="error in errors.name">
                                         <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-warning" role="alert" ng-show="isServicenameInUse">
+                                    <div class="d-flex align-items-center">
+                                        <div class="alert-icon width-3">
+                                            <div class='icon-stack  icon-stack-sm'>
+                                                <i class="base base-9 icon-stack-3x opacity-100 color-warning-600"></i>
+                                                <i class="fas fa-exclamation-circle icon-stack-1x opacity-100 color-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <?= __('A service with the name <strong>{0}</strong> already exists on this host. Duplicate service names could lead to confusion.', '{{ checkedName }}'); ?>
+                                        </div>
                                     </div>
                                 </div>
 
