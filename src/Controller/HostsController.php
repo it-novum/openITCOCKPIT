@@ -332,7 +332,7 @@ class HostsController extends AppController {
         try {
             $host = $HostsTable->getHostByUuid($uuid);
 
-            if (!$this->allowedByContainerId($host->getContainerIds())) {
+            if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
                 $this->render403();
                 return;
             }
