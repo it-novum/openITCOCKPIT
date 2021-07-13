@@ -1660,7 +1660,7 @@ use Cake\Core\Plugin;
                                 </span>
                             </div>
 
-                            <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                            <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                 <div class="col-xs-12 col-md-2">
                                     <a ng-click="confirmActivate(getServiceObjectsForDelete())" class="a-clean"
                                        href="javascript:void(0);">
