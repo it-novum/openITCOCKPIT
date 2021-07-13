@@ -92,12 +92,12 @@
                                         <?php echo __('Container'); ?>
                                     </label>
                                     <select
-                                            id="HostContainer"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="containers"
-                                            ng-options="container.key as container.value for container in containers"
-                                            ng-model="post.Host.container_id">
+                                        id="HostContainer"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="containers"
+                                        ng-options="container.key as container.value for container in containers"
+                                        ng-model="post.Host.container_id">
                                     </select>
                                     <div ng-show="post.Host.container_id < 1" class="warning-glow">
                                         <?php echo __('Please select a container.'); ?>
@@ -113,13 +113,13 @@
                                         <?php echo __('Shared containers'); ?>
                                     </label>
                                     <select
-                                            id="HostSharingContainer"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="sharingContainers"
-                                            multiple
-                                            ng-options="container.key as container.value for container in sharingContainers"
-                                            ng-model="post.Host.hosts_to_containers_sharing._ids">
+                                        id="HostSharingContainer"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="sharingContainers"
+                                        multiple
+                                        ng-options="container.key as container.value for container in sharingContainers"
+                                        ng-model="post.Host.hosts_to_containers_sharing._ids">
                                     </select>
                                     <div ng-repeat="error in errors.hosts_to_containers_sharing">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -133,18 +133,19 @@
                                                ng-if="post.Host.hosttemplate_id > 0">
                                                 <?= __('Host template'); ?>
                                             </a>
-                                            <span ng-if="post.Host.hosttemplate_id == 0"><?php echo __('Host template'); ?></span>
+                                            <span
+                                                ng-if="post.Host.hosttemplate_id == 0"><?php echo __('Host template'); ?></span>
                                         <?php else: ?>
                                             <?= __('Host template'); ?>
                                         <?php endif; ?>
                                     </label>
                                     <select
-                                            id="HostTemplate"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="hosttemplates"
-                                            ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
-                                            ng-model="post.Host.hosttemplate_id">
+                                        id="HostTemplate"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosttemplates"
+                                        ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
+                                        ng-model="post.Host.hosttemplate_id">
                                     </select>
                                     <div ng-show="post.Host.hosttemplate_id < 1" class="warning-glow">
                                         <?php echo __('Please select a host template.'); ?>
@@ -159,11 +160,11 @@
                                         <?php echo __('Host name'); ?>
                                     </label>
                                     <input
-                                            id="HostName"
-                                            class="form-control"
-                                            type="text"
-                                            ng-model="post.Host.name"
-                                            ng-blur="runDnsLookup(true)">
+                                        id="HostName"
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="post.Host.name"
+                                        ng-blur="runDnsLookup(true); checkForDuplicateHostname();">
                                     <div ng-repeat="error in errors.name">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -172,6 +173,21 @@
                                         <?php echo __('Could not resolve hostname.'); ?>
                                     </div>
                                 </div>
+
+                                <div class="alert alert-warning" role="alert" ng-show="isHostnameInUse">
+                                    <div class="d-flex align-items-center">
+                                        <div class="alert-icon width-3">
+                                            <div class='icon-stack  icon-stack-sm'>
+                                                <i class="base base-9 icon-stack-3x opacity-100 color-warning-600"></i>
+                                                <i class="fas fa-exclamation-circle icon-stack-1x opacity-100 color-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <?= __('An host with the name <strong>{0}</strong> already exists. Duplicate hostnames could lead to confusion.', '{{ checkedName }}'); ?>
+                                        </div>
+                                    </div>
+                                </div>
+
 
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox  margin-bottom-10">
@@ -190,12 +206,12 @@
                                         <?php echo __('Host address'); ?>
                                     </label>
                                     <input
-                                            id="HostAddress"
-                                            class="form-control"
-                                            type="text"
-                                            placeholder="<?php echo __('IPv4/IPv6 address or FQDN'); ?>"
-                                            ng-model="post.Host.address"
-                                            ng-blur="runDnsLookup(false)">
+                                        id="HostAddress"
+                                        class="form-control"
+                                        type="text"
+                                        placeholder="<?php echo __('IPv4/IPv6 address or FQDN'); ?>"
+                                        ng-model="post.Host.address"
+                                        ng-blur="runDnsLookup(false)">
                                     <div ng-repeat="error in errors.address">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -211,9 +227,9 @@
                                         </label>
                                         <div class="input-group">
                                             <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="post.Host.description">
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="post.Host.description">
 
                                             <template-diff ng-show="post.Host.hosttemplate_id"
                                                            value="post.Host.description"
@@ -232,13 +248,13 @@
                                         </label>
                                         <div class="input-group" style="width: 100%;">
                                             <select
-                                                    id="HostgroupsSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="hostgroups"
-                                                    multiple
-                                                    ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                                    ng-model="post.Host.hostgroups._ids">
+                                                id="HostgroupsSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="hostgroups"
+                                                multiple
+                                                ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                                ng-model="post.Host.hostgroups._ids">
                                             </select>
                                             <template-diff ng-show="post.Host.hosttemplate_id"
                                                            value="post.Host.hostgroups._ids"
@@ -255,14 +271,14 @@
                                             <?php echo __('Parent hosts'); ?>
                                         </label>
                                         <select
-                                                id="ParentHostsSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="parenthosts"
-                                                callback="loadParentHosts"
-                                                multiple
-                                                ng-options="parenthost.key as parenthost.value for parenthost in parenthosts"
-                                                ng-model="post.Host.parenthosts._ids">
+                                            id="ParentHostsSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="parenthosts"
+                                            callback="loadParentHosts"
+                                            multiple
+                                            ng-options="parenthost.key as parenthost.value for parenthost in parenthosts"
+                                            ng-model="post.Host.parenthosts._ids">
                                         </select>
                                         <div ng-repeat="error in errors.parenthosts">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -319,18 +335,19 @@
                                                        ng-if="post.Host.satellite_id > 0">
                                                         <?= __('Satellite'); ?>
                                                     </a>
-                                                    <span ng-if="post.Host.satellite_id == 0"><?php echo __('Satellite'); ?></span>
+                                                    <span
+                                                        ng-if="post.Host.satellite_id == 0"><?php echo __('Satellite'); ?></span>
                                                 <?php else: ?>
                                                     <?= __('Satellite'); ?>
                                                 <?php endif; ?>
                                             </label>
                                             <select
-                                                    id="SatellitesSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="satellites"
-                                                    ng-options="satellite.key as satellite.value for satellite in satellites"
-                                                    ng-model="post.Host.satellite_id">
+                                                id="SatellitesSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="satellites"
+                                                ng-options="satellite.key as satellite.value for satellite in satellites"
+                                                ng-model="post.Host.satellite_id">
                                             </select>
                                             <div ng-repeat="error in errors.satellite_id">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -361,12 +378,12 @@
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                                id="CheckPeriodSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="checkperiods"
-                                                ng-options="checkperiod.key as checkperiod.value for checkperiod in checkperiods"
-                                                ng-model="post.Host.check_period_id">
+                                            id="CheckPeriodSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkperiods"
+                                            ng-options="checkperiod.key as checkperiod.value for checkperiod in checkperiods"
+                                            ng-model="post.Host.check_period_id">
                                         </select>
                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                        value="post.Host.check_period_id"
@@ -454,12 +471,12 @@
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                                id="HostCheckCommandSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="commands"
-                                                ng-options="command.key as command.value for command in commands"
-                                                ng-model="post.Host.command_id">
+                                            id="HostCheckCommandSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="commands"
+                                            ng-options="command.key as command.value for command in commands"
+                                            ng-model="post.Host.command_id">
                                         </select>
                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                        value="post.Host.command_id"
@@ -483,12 +500,12 @@
                                     <div class="col-xs-12 col-lg-8">
                                         <div class="input-group">
                                             <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="hostcommandargumentvalue.value">
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="hostcommandargumentvalue.value">
                                             <template-diff
-                                                    value="hostcommandargumentvalue.value"
-                                                    template-value="hosttemplate.Hosttemplate.hosttemplatecommandargumentvalues[$index].value"></template-diff>
+                                                value="hostcommandargumentvalue.value"
+                                                template-value="hosttemplate.Hosttemplate.hosttemplatecommandargumentvalues[$index].value"></template-diff>
                                         </div>
                                         <div ng-repeat="error in errors.hostcommandargumentvalues">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -512,9 +529,9 @@
                                         <?php echo __('Check interval'); ?>
                                     </label>
                                     <interval-input-with-differ-directive
-                                            template-id="post.Host.hosttemplate_id"
-                                            interval="post.Host.check_interval"
-                                            template-value="hosttemplate.Hosttemplate.check_interval"></interval-input-with-differ-directive>
+                                        template-id="post.Host.hosttemplate_id"
+                                        interval="post.Host.check_interval"
+                                        template-value="hosttemplate.Hosttemplate.check_interval"></interval-input-with-differ-directive>
                                     <div class="col-xs-12 col-lg-offset-2">
                                         <div ng-repeat="error in errors.check_interval">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -527,9 +544,9 @@
                                         <?php echo __('Retry interval'); ?>
                                     </label>
                                     <interval-input-with-differ-directive
-                                            template-id="post.Host.hosttemplate_id"
-                                            interval="post.Host.retry_interval"
-                                            template-value="hosttemplate.Hosttemplate.retry_interval"></interval-input-with-differ-directive>
+                                        template-id="post.Host.hosttemplate_id"
+                                        interval="post.Host.retry_interval"
+                                        template-value="hosttemplate.Hosttemplate.retry_interval"></interval-input-with-differ-directive>
 
                                     <div class="col-xs-12 col-lg-offset-2">
                                         <div ng-repeat="error in errors.retry_interval">
@@ -549,10 +566,10 @@
                                             <div class="btn-group flex-wrap">
                                                 <?php for ($i = 1; $i <= 10; $i++): ?>
                                                     <button
-                                                            type="button"
-                                                            class="btn btn-default"
-                                                            ng-click="post.Host.max_check_attempts = <?php echo h($i) ?>"
-                                                            ng-class="{'active': post.Host.max_check_attempts == <?php echo h($i); ?>}">
+                                                        type="button"
+                                                        class="btn btn-default"
+                                                        ng-click="post.Host.max_check_attempts = <?php echo h($i) ?>"
+                                                        ng-class="{'active': post.Host.max_check_attempts == <?php echo h($i); ?>}">
                                                         <?php echo h($i); ?>
                                                     </button>
                                                 <?php endfor; ?>
@@ -561,10 +578,10 @@
                                         <div class="col-xs-12 col-lg-6">
                                             <div class="input-group" style="width: 100%;">
                                                 <input
-                                                        class="form-control"
-                                                        type="number"
-                                                        min="0"
-                                                        ng-model="post.Host.max_check_attempts">
+                                                    class="form-control"
+                                                    type="number"
+                                                    min="0"
+                                                    ng-model="post.Host.max_check_attempts">
                                                 <template-diff ng-show="post.Host.hosttemplate_id"
                                                                value="post.Host.max_check_attempts"
                                                                template-value="hosttemplate.Hosttemplate.max_check_attempts"></template-diff>
@@ -578,7 +595,7 @@
                                         <div class="help-block">
                                             <?php echo __('Worst case time delay until notification command gets executed after state hits a non ok state: '); ?>
                                             <human-time-directive
-                                                    seconds="(post.Host.check_interval + (post.Host.max_check_attempts -1) * post.Host.retry_interval)"></human-time-directive>
+                                                seconds="(post.Host.check_interval + (post.Host.max_check_attempts -1) * post.Host.retry_interval)"></human-time-directive>
                                         </div>
                                         <div ng-repeat="error in errors.max_check_attempts">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -609,12 +626,12 @@
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                                id="HostCheckCommandSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="timeperiods"
-                                                ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                                ng-model="post.Host.notify_period_id">
+                                            id="HostCheckCommandSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="timeperiods"
+                                            ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                            ng-model="post.Host.notify_period_id">
                                         </select>
                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                        value="post.Host.notify_period_id"
@@ -631,9 +648,9 @@
                                         <?php echo __('Notification interval'); ?>
                                     </label>
                                     <interval-input-with-differ-directive
-                                            template-id="post.Host.hosttemplate_id"
-                                            interval="post.Host.notification_interval"
-                                            template-value="hosttemplate.Hosttemplate.notification_interval"></interval-input-with-differ-directive>
+                                        template-id="post.Host.hosttemplate_id"
+                                        interval="post.Host.notification_interval"
+                                        template-value="hosttemplate.Hosttemplate.notification_interval"></interval-input-with-differ-directive>
                                     <div class="col-xs-12 col-lg-offset-2">
                                         <div ng-repeat="error in errors.notification_interval">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -648,13 +665,13 @@
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                                id="ContactsPeriodSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="contacts"
-                                                multiple
-                                                ng-options="contact.key as contact.value for contact in contacts"
-                                                ng-model="post.Host.contacts._ids">
+                                            id="ContactsPeriodSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="contacts"
+                                            multiple
+                                            ng-options="contact.key as contact.value for contact in contacts"
+                                            ng-model="post.Host.contacts._ids">
                                         </select>
                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                        value="post.Host.contacts._ids"
@@ -672,13 +689,13 @@
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                                id="ContactgroupsSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="contactgroups"
-                                                multiple
-                                                ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                                ng-model="post.Host.contactgroups._ids">
+                                            id="ContactgroupsSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="contactgroups"
+                                            multiple
+                                            ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                            ng-model="post.Host.contactgroups._ids">
                                         </select>
                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                        value="post.Host.contactgroups._ids"
@@ -735,8 +752,8 @@
                                     <div class="row">
                                         <?php foreach ($hostOptions as $hostOption): ?>
                                             <div
-                                                    class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                    ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
                                                 <input type="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -746,7 +763,7 @@
                                                 <label for="<?php echo $hostOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $hostOption['class']; ?> padding-top-0 margin-right-10 ">
                                                         <span
-                                                                class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
+                                                            class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
                                                             <?php echo $hostOption['text']; ?>
                                                         </span>
                                                 </label>
@@ -777,10 +794,10 @@
                                     </label>
                                     <div class="input-group">
                                         <input
-                                                class="form-control"
-                                                type="text"
-                                                placeholder="https://issues.example.org?host=$HOSTNAME$"
-                                                ng-model="post.Host.host_url">
+                                            class="form-control"
+                                            type="text"
+                                            placeholder="https://issues.example.org?host=$HOSTNAME$"
+                                            ng-model="post.Host.host_url">
 
                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                        value="post.Host.host_url"
@@ -800,9 +817,9 @@
                                     </label>
                                     <div class="input-group">
                                         <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.Host.notes">
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="post.Host.notes">
                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                        value="post.Host.notes"
                                                        template-value="hosttemplate.Hosttemplate.notes"></template-diff>
@@ -867,8 +884,8 @@
                                     <div class="row">
                                         <?php foreach ($hostFlapOptions as $hostFlapOption): ?>
                                             <div
-                                                    class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                    ng-class="{'has-error': errors.<?php echo $hostFlapOption['field']; ?>}">
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $hostFlapOption['field']; ?>}">
                                                 <input type="checkbox" name="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -879,7 +896,7 @@
                                                 <label for="<?php echo $hostFlapOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $hostFlapOption['class']; ?> padding-top-0 margin-right-10">
                                                         <span
-                                                                class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
+                                                            class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
                                                             <?php echo $hostFlapOption['text']; ?>
                                                         </span>
                                                 </label>
@@ -953,13 +970,13 @@
 
                                         <div class="input-group" style="width: 100%;">
                                             <select
-                                                    id="ExportersSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="exporters"
-                                                    multiple
-                                                    ng-options="exporter.key as exporter.value for exporter in exporters"
-                                                    ng-model="post.Host.prometheus_exporters._ids">
+                                                id="ExportersSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="exporters"
+                                                multiple
+                                                ng-options="exporter.key as exporter.value for exporter in exporters"
+                                                ng-model="post.Host.prometheus_exporters._ids">
                                             </select>
                                             <template-diff ng-show="post.Host.hosttemplate_id"
                                                            value="post.Host.prometheus_exporters._ids"
