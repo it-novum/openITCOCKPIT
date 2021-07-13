@@ -3045,13 +3045,14 @@ class HostsController extends AppController {
         $HostTable = TableRegistry::getTableLocator()->get('Hosts');
 
         $hostname = $this->request->getData('hostname', '');
+        $excludedHostIds = $this->request->getData('excludedHostIds', []);
 
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
             $MY_RIGHTS = $this->MY_RIGHTS;
         }
 
-        $isHostnameUnique = $HostTable->isHostnameUnique($hostname, $MY_RIGHTS);
+        $isHostnameUnique = $HostTable->isHostnameUnique($hostname, $MY_RIGHTS, $excludedHostIds);
 
         $isHostnameInUse = $isHostnameUnique === false;
 
