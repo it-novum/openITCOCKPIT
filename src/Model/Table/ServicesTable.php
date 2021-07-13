@@ -11,6 +11,7 @@ use App\Model\Entity\Servicedependency;
 use App\Model\Entity\Serviceescalation;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
+use Cake\Database\Expression\QueryExpression;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -3438,12 +3439,13 @@ class ServicesTable extends Table {
      * @param bool $enableActiveChecksEnabledCondition
      * @return array
      */
-    public function getServicesForCheckmk($host_id, $enableActiveChecksEnabledCondition = false) {
+    public function getServicesForCheckmk($host_id) {
         $query = $this->find()
             ->select([
                 'Services.id',
                 'Services.name',
                 'Services.servicetemplate_id',
+                'Services.active_checks_enabled'
             ])
             ->contain([
                 'Servicetemplates' => function (Query $q) {
@@ -3456,11 +3458,12 @@ class ServicesTable extends Table {
                 },
             ]);
 
-        if ($enableActiveChecksEnabledCondition) {
-            $query->where([
-                'Services.active_checks_enabled' => 0
-            ]);
-        }
+        $query->where(function (QueryExpression $exp) {
+            return $exp
+                ->add(
+                    'IF(Services.active_checks_enabled IS NULL, Servicetemplates.active_checks_enabled, Services.active_checks_enabled) = 0'
+                );
+        });
 
         $query
             ->where([
