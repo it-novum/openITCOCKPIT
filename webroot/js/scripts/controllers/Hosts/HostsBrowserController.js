@@ -163,6 +163,12 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.init = false;
+
+                setTimeout(function(){
+                    jQuery(function(){
+                        jQuery("[rel=tooltip]").tooltip();
+                    });
+                }, 250);
             });
         };
 
@@ -276,6 +282,16 @@ angular.module('openITCOCKPIT')
         $scope.getObjectForDowntimeDelete = function(){
             var object = {};
             object[$scope.downtime.internalDowntimeId] = $scope.mergedHost.name;
+            return object;
+        };
+
+        $scope.getObjectForAcknowledgementDelete = function(){
+            var object = {};
+            object[$scope.mergedHost.id] = {
+                name: $scope.mergedHost.name,
+                hostId: $scope.mergedHost.id,
+                serviceId: null
+            };
             return object;
         };
 
@@ -622,6 +638,10 @@ angular.module('openITCOCKPIT')
         };
         /*** End of service mass change methods ***/
 
+        $scope.clipboardCommand = function(){
+            navigator.clipboard.writeText($scope.mergedHost.hostCommandLine);
+        };
+
         //Fire on page load
         $scope.loadIdOrUuid();
         $scope.loadTimezone();
@@ -640,5 +660,11 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
+
+        jQuery(document).on('show.bs.tooltip', function(e){
+            setTimeout(function(){
+                jQuery('[data-toggle="tooltip"]').tooltip('hide');
+            }, 1500);
+        });
 
     });

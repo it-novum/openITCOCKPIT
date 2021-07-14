@@ -6,34 +6,62 @@ angular.module('openITCOCKPIT')
         var _url = '';
         var _key = '';
 
-        var _hasError = false;
-        var _tried_reconnect = false;
-
         var _onSuccess = function(event){
-            console.info(event)
+            console.info(event);
+            _reconnectAttempt = 1;
+
+            $('#globalSudoServerCouldNotConnect').hide();
+            $('#globalSudoServerLostConnection').hide();
         };
 
+        var _keepAliveInterval = null;
+        var _reconnectAttempt = 1;
+        var _isReconnectScheduled = false;
+
         var _onError = function(event){
-            _hasError = true;
-            if(_tried_reconnect){
-                $('#globalSudoServerCouldNotConnect').show();
-            } else {
-                _hasError = false;
-                _tried_reconnect = true;
-                _connect();
-            }
             console.error(event);
+            $('#globalSudoServerCouldNotConnect').show();
+
+            // Disable keepAlive
+            if(_keepAliveInterval){
+                $interval.cancel(_keepAliveInterval);
+                _keepAliveInterval = null;
+            }
+
+            if(_isReconnectScheduled === false){
+                console.log('Schedule SudoServer reconnect in ' + (_reconnectAttempt * 10) + ' seconds');
+                //No reconnect is running - schedule reconnect
+                setTimeout(function(){
+                    console.log('Reconnect onError');
+                    _connect();
+                }, (_reconnectAttempt * 10 * 1000));
+                _isReconnectScheduled = true;
+                _reconnectAttempt++;
+            }
+
         };
 
         var _onClose = function(event){
             console.error(event);
-            if(_hasError === false){
-                if(_tried_reconnect){
-                    $('#globalSudoServerLostConnection').show();
-                } else {
-                    _tried_reconnect = true;
+
+            // Disable keepAlive
+            if(_keepAliveInterval){
+                $interval.cancel(_keepAliveInterval);
+                _keepAliveInterval = null;
+            }
+
+            if(_isReconnectScheduled === false){
+
+                $('#globalSudoServerLostConnection').show();
+
+                console.log('Schedule SudoServer reconnect in ' + (_reconnectAttempt * 10) + ' seconds');
+                //No reconnect is running - schedule reconnect
+                setTimeout(function(){
+                    console.log('Reconnect _onClose');
                     _connect();
-                }
+                }, (_reconnectAttempt * 10 * 1000));
+                _isReconnectScheduled = true;
+                _reconnectAttempt++;
             }
         };
 
@@ -57,13 +85,15 @@ angular.module('openITCOCKPIT')
         var _connect = function(){
             _connection = new WebSocket(_url);
 
+            _isReconnectScheduled = false;
+
 
             _connection.onopen = _onResponse;
             _connection.onmessage = _parseResponse;
             _connection.onerror = _onError;
             _connection.onclose = _onClose;
 
-            var keepAliveInterval = $interval(function(){
+            _keepAliveInterval = $interval(function(){
                 keepAlive();
             }, 30000);
         };
@@ -140,9 +170,6 @@ angular.module('openITCOCKPIT')
             },
             send: function(json){
                 _send(json);
-            },
-            hasError: function(){
-                return _hasError;
             }
         }
     });

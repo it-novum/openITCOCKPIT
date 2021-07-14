@@ -214,6 +214,39 @@ done
 echo "Update Containertype from Devicegroup to Node"
 mysql "--defaults-extra-file=$INIFILE" -e "UPDATE containers SET containertype_id=5 WHERE containertype_id=4"
 
+# Update column length of logentry_data ITC-2551 and Statusengine 3.7.3
+echo "Checking column length of statusengine_logentries table"
+CURRENT_LOGENTRY_COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT COLUMN_TYPE FROM \`information_schema\`.\`COLUMNS\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\`='statusengine_logentries' AND \`COLUMN_NAME\`='logentry_data'" -B -s 2>/dev/null)
+if [ "$CURRENT_LOGENTRY_COLUMN_TYPE" = "varchar(255)" ]; then
+    echo "Increasing column length of statusengine_logentries table. This will take a while..."
+
+    # Update statusengine_logentries table to use varchar(2048)
+    mysql --defaults-extra-file=${INIFILE} -e "DROP INDEX logentries ON statusengine_logentries"
+    mysql --defaults-extra-file=${INIFILE} -e "DROP INDEX logentry_data_time ON statusengine_logentries"
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE statusengine_logentries CHANGE logentry_data logentry_data VARCHAR(2048) DEFAULT NULL"
+    mysql --defaults-extra-file=${INIFILE} -e "CREATE INDEX logentries_se ON statusengine_logentries (entry_time, node_name)"
+fi
+
+echo "Checking column length of statusengine_hoststatus table"
+CURRENT_LOGENTRY_COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT COLUMN_TYPE FROM \`information_schema\`.\`COLUMNS\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\`='statusengine_hoststatus' AND \`COLUMN_NAME\`='long_output'" -B -s 2>/dev/null)
+if [ "$CURRENT_LOGENTRY_COLUMN_TYPE" = "varchar(1024)" ]; then
+    echo "Increasing column length of statusengine_hoststatus table. This will take a while..."
+
+    # Perfdata is 2048 because of bionic
+    # Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE statusengine_hoststatus CHANGE long_output long_output VARCHAR(8192) DEFAULT NULL, CHANGE perfdata perfdata VARCHAR(2048) DEFAULT NULL"
+fi
+
+echo "Checking column length of statusengine_servicestatus table"
+CURRENT_LOGENTRY_COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT COLUMN_TYPE FROM \`information_schema\`.\`COLUMNS\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\`='statusengine_servicestatus' AND \`COLUMN_NAME\`='long_output'" -B -s 2>/dev/null)
+if [ "$CURRENT_LOGENTRY_COLUMN_TYPE" = "varchar(1024)" ]; then
+    echo "Increasing column length of statusengine_servicestatus table. This will take a while..."
+
+    # Perfdata is 2048 because of bionic
+    # Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE statusengine_servicestatus CHANGE long_output long_output VARCHAR(8192) DEFAULT NULL, CHANGE perfdata perfdata VARCHAR(2084) DEFAULT NULL"
+fi
+
 #Check and create missing cronjobs
 #oitc api --model Cronjob --action create_missing_cronjobs --data ""
 
@@ -313,7 +346,7 @@ chmod 775 /opt/openitc/logs/frontend/nagios
 
 mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
-chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
 
 chmod u+s /opt/openitc/nagios/libexec/check_icmp
 chmod u+s /opt/openitc/nagios/libexec/check_dhcp
@@ -472,7 +505,7 @@ chown www-data:www-data /opt/openitc/frontend/
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
-chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
 chmod u+s /opt/openitc/nagios/libexec/check_icmp
 chmod u+s /opt/openitc/nagios/libexec/check_dhcp
 

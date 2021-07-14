@@ -85,6 +85,12 @@ mysql:
   database: {{mysql_database}}
   encoding: utf8mb4
 
+# Dump MySQL Query Parameters on Error
+# Determines if Statusengine will call PDOStatement::debugDumpParams (https://www.php.net/manual/de/pdostatement.debugdumpparams.php)
+# in case of a MySQL error or not.
+# Warning: This will produce massive output to stdout (or the syslog if Statusengine is running via systemd)
+dump_mysql_query_parameters: 0
+
 # If Statusengine should save historical data to CrateDB
 # WARNING: Do not set use_crate and use_mysql to 1 at the same time!
 use_crate: 0

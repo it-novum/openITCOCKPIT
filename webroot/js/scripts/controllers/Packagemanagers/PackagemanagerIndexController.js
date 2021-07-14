@@ -74,6 +74,30 @@ angular.module('openITCOCKPIT')
             return $scope.modulesToInstall.join(' \\ <br>');
         };
 
+        $scope.clipboardCommand = function(){
+            // If you change this command please make also sure to change the command in the index.php template !!
+
+            var command = 'sudo apt-get update && apt-get dist-upgrade && apt-get install ';
+            command += $scope.modulesToInstall.join(' ');
+            command += ' && echo "#########################################" && echo "Installation done. Please reload your openITCOCKPIT web interface."';
+
+            navigator.clipboard.writeText(command);
+        };
+
+        jQuery(document).ready(function(){
+            setTimeout(function(){
+                jQuery(function(){
+                    jQuery("[rel=tooltip]").tooltip();
+                });
+            }, 250);
+        });
+
+        jQuery(document).on('show.bs.tooltip', function(e){
+            setTimeout(function(){
+                jQuery('[data-toggle="tooltip"]').tooltip('hide');
+            }, 1500);
+        });
+
         //Fire on page load
         $scope.load();
 

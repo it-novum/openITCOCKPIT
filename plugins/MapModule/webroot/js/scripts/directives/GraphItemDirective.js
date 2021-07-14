@@ -196,6 +196,63 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     return;
                 }
                 initTooltip();
+
+                var thresholdLines = [];
+                var thresholdAreas = [];
+
+                var GraphDefaultsObj = new GraphDefaults();
+
+                var defaultColor = GraphDefaultsObj.defaultFillColor;
+
+                if(performance_data.datasource.warn !== "" &&
+                    performance_data.datasource.crit !== "" &&
+                    performance_data.datasource.warn !== null &&
+                    performance_data.datasource.crit !== null){
+
+                    var warn = parseFloat(performance_data.datasource.warn);
+                    var crit = parseFloat(performance_data.datasource.crit);
+
+                    //Add warning and critical line to chart
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.warningBorderColor,
+                        yaxis: {
+                            from: warn,
+                            to: warn
+                        }
+                    });
+
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.criticalBorderColor,
+                        yaxis: {
+                            from: crit,
+                            to: crit
+                        }
+                    });
+
+                    //Change color of the area chart for warning and critical
+                    if(warn > crit){
+                        defaultColor = GraphDefaultsObj.okFillColor;
+                        thresholdAreas.push({
+                            below: warn,
+                            color: GraphDefaultsObj.warningFillColor
+                        });
+                        thresholdAreas.push({
+                            below: crit,
+                            color: GraphDefaultsObj.criticalFillColor
+                        });
+                    }else{
+                        defaultColor = GraphDefaultsObj.criticalFillColor;
+                        thresholdAreas.push({
+                            below: crit,
+                            color: GraphDefaultsObj.warningFillColor
+                        });
+                        thresholdAreas.push({
+                            below: warn,
+                            color: GraphDefaultsObj.okFillColor
+                        });
+                    }
+                }
+
                 var graph_data = [];
 
                 var gaugeData = [];
@@ -216,7 +273,6 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     data: gaugeData,
                     unit: performance_data.datasource.unit
                 });
-                var GraphDefaultsObj = new GraphDefaults();
                 var options = GraphDefaultsObj.getDefaultOptions();
                 options.height = $scope.height + 'px';
                 options.colors = [GraphDefaultsObj.defaultBorderColor];
@@ -243,6 +299,10 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
                 };
 
+                options.series.color = defaultColor;
+                options.series.threshold = thresholdAreas;
+                options.grid.markings = thresholdLines;
+                options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
                 options.points = {
                     show: false,
                     radius: 1

@@ -6788,7 +6788,7 @@ msgstr "Kommentar"
 #: src/Template/Services/browser.php:426
 #: src/Template/Services/details.php:248
 msgid "Sticky"
-msgstr "Klebrig"
+msgstr "Klebrig (Sticky)"
 
 #: src/Template/Acknowledgements/host.php:204
 #: src/Template/Acknowledgements/service.php:217
@@ -8582,7 +8582,7 @@ msgstr "Bestätigen Servicestatus"
 
 #: src/Template/Angular/acknowledge_service.php:41
 msgid "Sticky acknowledgements will be stay until the service is back in state Ok"
-msgstr "Klebrige Bestätigungen bleiben so lange bestehen, bis der Service wieder in Ordnung ist."
+msgstr "Klebrige (Sticky) Bestätigungen bleiben so lange bestehen, bis der Service wieder in Ordnung ist."
 
 #: src/Template/Angular/confirm_deactivate.php:6
 #: src/Template/Angular/confirm_delete.php:6
@@ -9027,7 +9027,7 @@ msgstr "Servicevorlagengruppe zuordnen"
 #: src/Template/Hosts/not_monitored.php:304
 #: src/Template/Services/service_list.php:95
 msgid "openITCOCKPIT Agent discovery"
-msgstr "openITCOCKPIT Agent Entdeckung"
+msgstr "openITCOCKPIT Agent Discovery"
 
 #: src/Template/Angular/human_time.php:28
 msgid "hour"
@@ -10160,7 +10160,7 @@ msgstr "Instanz"
 #: src/Template/Services/index.php:561
 #: src/Template/Services/service_list.php:252
 msgid "Sticky Acknowledgedment"
-msgstr "Klebrige Bestätigung"
+msgstr "Klebrige (Sticky) Bestätigung"
 
 #: src/Template/Browsers/index.php:523
 #: src/Template/Hosts/index.php:549
@@ -11388,7 +11388,7 @@ msgstr "Baum"
 #: src/Template/Locations/index.php:185
 #: src/Template/Tenants/index.php:184
 msgid "Show details"
-msgstr "Zeite Details"
+msgstr "Zeige Details"
 
 #: src/Template/Containers/index.php:324
 msgid "Sub containers:"
@@ -12664,7 +12664,7 @@ msgstr "Optionen"
 #: src/Template/Downtimes/host.php:411
 #: src/Template/Downtimes/service.php:437
 msgid "Cancel selected"
-msgstr "Abbrechen ausgewählt"
+msgstr "Ausgewählte abbrechen"
 
 #: src/Template/Downtimes/icon.php:28
 msgid "Downtime currently running"
@@ -16066,8 +16066,8 @@ msgid "or just join our IRC channel"
 msgstr "oder treten Sie einfach unserem IRC-Kanal bei"
 
 #: src/Template/Supports/issue.php:209
-msgid "Join #openITCOCKPIT on freenode."
-msgstr "Trete #openITCOCKPIT auf freenode bei."
+msgid "Join #openITCOCKPIT on libera.chat."
+msgstr "Trete #openITCOCKPIT auf libera.chat bei."
 
 #: src/Template/Systemdowntimes/add.php:32
 msgid "create"

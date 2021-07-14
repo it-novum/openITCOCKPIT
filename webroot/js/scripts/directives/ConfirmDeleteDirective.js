@@ -16,6 +16,7 @@ angular.module('openITCOCKPIT').directive('confirmDelete', function($http, $stat
                 $http.post($scope.deleteUrl).then(
                     function(result){
                         if($scope.successState != null){
+                            $('#angularConfirmDeactivate').modal('hide');
                             $state.go($scope.successState);
                         } else {
                             window.location.href = $scope.sucessUrl;

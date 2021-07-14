@@ -29,14 +29,16 @@ namespace App\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Entity\Host;
+use App\Model\Entity\Service;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\AcknowledgementsControllerRequest;
-use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
@@ -181,5 +183,75 @@ class AcknowledgementsController extends AppController {
             $toJson = ['all_acknowledgements', 'scroll'];
         }
         $this->viewBuilder()->setOption('serialize', $toJson);
+    }
+
+    public function delete() {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $hostId = $this->request->getData('hostId', null);
+        $serviceId = $this->request->getData('serviceId', null);
+
+        if ($hostId === null) {
+            throw new \InvalidArgumentException('$hostId needs to be set!');
+        }
+
+        $GearmanClient = new Gearman();
+
+        if ($serviceId != null) {
+
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            if (!$ServicesTable->existsById($serviceId)) {
+                throw new NotFoundException(__('Invalid service'));
+            }
+
+            /** @var Service $service */
+            $service = $ServicesTable->getServiceByIdForPermissionsCheck($serviceId);
+            if (!$this->allowedByContainerId($service->getContainerIds(), true)) {
+                $this->render403();
+                return;
+            }
+
+            //Delete service acknowledgement
+            $GearmanClient->sendBackground('deleteServiceAcknowledgement', [
+                'hostUuid'     => $service->host->uuid,
+                'serviceUuid'  => $service->uuid,
+                'satellite_id' => $service->host->satellite_id
+            ]);
+
+            $this->set('success', true);
+            $this->set('message', __('Successfully'));
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
+            return;
+        }
+
+        //Delete host acknowledgement
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        /** @var Host $host */
+        $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+        if (!$this->allowedByContainerId($host->getContainerIds(), true)) {
+            $this->render403();
+            return;
+        }
+
+        $GearmanClient->sendBackground('deleteHostAcknowledgement', [
+            'hostUuid'     => $host->uuid,
+            'satellite_id' => $host->satellite_id
+        ]);
+
+        $this->set('success', true);
+        $this->set('message', __('Successfully'));
+        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
+        return;
     }
 }

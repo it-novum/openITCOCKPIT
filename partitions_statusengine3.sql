@@ -9,11 +9,10 @@ CREATE TABLE `statusengine_logentries`
     `id`            bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `entry_time`    bigint(20)          NOT NULL,
     `logentry_type` int(11)                              DEFAULT '0',
-    `logentry_data` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-    `node_name`     varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `logentry_data` varchar(2048) COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `node_name`     varchar(255)  COLLATE utf8mb4_general_ci DEFAULT NULL,
     PRIMARY KEY (`id`, `entry_time`),
-    KEY `logentries` (`entry_time`, `logentry_data`, `node_name`),
-    KEY `logentry_data_time` (`logentry_data`, `entry_time`)
+    KEY `logentries_se` (`entry_time`, `node_name`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci
@@ -94,7 +93,7 @@ CREATE TABLE `statusengine_hostchecks`
     `early_timeout`         tinyint(1)                DEFAULT '0',
     `latency`               double                    DEFAULT '0',
     `execution_time`        double                    DEFAULT '0',
-    `perfdata`              varchar(1024)             DEFAULT NULL,
+    `perfdata`              varchar(8192)             DEFAULT NULL,
     `command`               varchar(1024)             DEFAULT NULL,
     `current_check_attempt` smallint(3)               DEFAULT '0',
     `max_check_attempts`    smallint(3)               DEFAULT '0',
@@ -127,7 +126,7 @@ CREATE TABLE `statusengine_servicechecks`
     `early_timeout`         tinyint(1)                DEFAULT '0',
     `latency`               double                    DEFAULT '0',
     `execution_time`        double                    DEFAULT '0',
-    `perfdata`              varchar(1024)             DEFAULT NULL,
+    `perfdata`              varchar(8192)             DEFAULT NULL,
     `command`               varchar(1024)             DEFAULT NULL,
     `current_check_attempt` smallint(3)               DEFAULT '0',
     `max_check_attempts`    smallint(3)               DEFAULT '0',

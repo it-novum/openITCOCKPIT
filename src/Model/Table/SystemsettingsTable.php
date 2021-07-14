@@ -195,6 +195,18 @@ class SystemsettingsTable extends Table {
     }
 
     /**
+     * @return bool
+     */
+    public function blurCheckCommand() {
+        if (!Cache::read('systemsettings_blur_command_line_in_browser', 'permissions')) {
+            $settings = $this->findAsArraySection('FRONTEND');
+            $value = $settings['FRONTEND']['FRONTEND.BLUR_COMMAND_LINE_IN_BROWSER'] === '1';
+            Cache::write('systemsettings_blur_command_line_in_browser', $value, 'permissions');
+        }
+        return Cache::read('systemsettings_blur_command_line_in_browser', 'permissions');
+    }
+
+    /**
      * @param string $key
      * @return array
      */

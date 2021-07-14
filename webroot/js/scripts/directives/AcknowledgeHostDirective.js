@@ -10,7 +10,8 @@ angular.module('openITCOCKPIT').directive('acknowledgeHost', function($http, Sud
             $scope.ack = {
                 comment: '',
                 sticky: false,
-                error: false
+                error: false,
+                notify: true
             };
 
             var objects = {};
@@ -56,7 +57,8 @@ angular.module('openITCOCKPIT').directive('acknowledgeHost', function($http, Sud
                         $scope.ack.comment,
                         author,
                         sticky,
-                        $scope.hostAckType
+                        $scope.hostAckType,
+                        $scope.ack.notify
                     ]));
                 }
 

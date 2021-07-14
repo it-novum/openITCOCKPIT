@@ -27,6 +27,7 @@
  * @var \App\View\AppView $this
  * @var string $masterInstanceName
  * @var string $username
+ * @var bool $blurryCommandLine
  */
 
 use Cake\Core\Plugin;
@@ -56,6 +57,7 @@ use Cake\Core\Plugin;
 <disable-host-flap-detection callback="showFlashMsg"></disable-host-flap-detection>
 <send-host-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-host-notification>
 <mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>
+<mass-delete-acknowledgements delete-url="/acknowledgements/delete/" callback="showFlashMsg"></mass-delete-acknowledgements>
 <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
     <add-services-to-servicegroup></add-services-to-servicegroup>
 <?php endif; ?>
@@ -313,26 +315,42 @@ use Cake\Core\Plugin;
                                 <div class="row" ng-show="hoststatus.problemHasBeenAcknowledged">
                                     <div class="col-lg-12 margin-bottom-10">
                                         <div class="browser-border padding-10" style="width: 100%;">
-                                            <div>
-                                                <h4 class="no-padding">
-                                                    <i class="far fa-user" ng-show="!acknowledgement.is_sticky"></i>
-                                                    <i class="fas fa-user" ng-show="acknowledgement.is_sticky"></i>
-                                                    <?php echo __('State of host is acknowledged'); ?>
-                                                    <span ng-show="acknowledgement.is_sticky">
+
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div>
+                                                        <h4 class="no-padding">
+                                                            <i class="far fa-user" ng-show="!acknowledgement.is_sticky"></i>
+                                                            <i class="fas fa-user" ng-show="acknowledgement.is_sticky"></i>
+                                                            <?php echo __('State of host is acknowledged'); ?>
+                                                            <span ng-show="acknowledgement.is_sticky">
                                                         (<?php echo __('Sticky'); ?>)
                                                     </span>
-                                                </h4>
-                                            </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Acknowledgement was set by'); ?>
-                                                <b>{{acknowledgement.author_name}}</b>
-                                                <?php echo __('at'); ?>
-                                                {{acknowledgement.entry_time}}
-                                            </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Comment: '); ?>
-                                                <div style="display:inline"
-                                                     ng-bind-html="acknowledgement.commentDataHtml | trustAsHtml"></div>
+                                                        </h4>
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Acknowledgement was set by'); ?>
+                                                        <b>{{acknowledgement.author_name}}</b>
+                                                        <?php echo __('at'); ?>
+                                                        {{acknowledgement.entry_time}}
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Comment: '); ?>
+                                                        <div style="display:inline"
+                                                             ng-bind-html="acknowledgement.commentDataHtml | trustAsHtml"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <?php if ($this->Acl->hasPermission('delete', 'acknowledgements')): ?>
+                                                        <button
+                                                            class="btn btn-xs btn-danger float-right"
+                                                            ng-if="acknowledgement.allowEdit"
+                                                            ng-click="confirmAcknowledgementsDelete(getObjectForAcknowledgementDelete())">
+                                                            <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
+                                                        </button>
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -376,27 +394,46 @@ use Cake\Core\Plugin;
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-9">
                                         <table class="table table-bordered table-sm">
-                                            <tr>
-                                                <td><?php echo __('Check command'); ?></td>
-                                                <td>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
-                                                        <a ui-sref="CommandsEdit({id: checkCommand.Command.id})">
+                                            <?php if ($this->Acl->hasPermission('checkcommand', 'hosts')): ?>
+                                                <tr>
+                                                    <td><?php echo __('Check command'); ?></td>
+                                                    <td>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                                            <a ui-sref="CommandsEdit({id: checkCommand.Command.id})">
+                                                                {{ checkCommand.Command.name }}
+                                                            </a>
+                                                        <?php else: ?>
                                                             {{ checkCommand.Command.name }}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        {{ checkCommand.Command.name }}
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
 
-                                            <tr>
-                                                <td><?php echo __('Command line'); ?></td>
-                                                <td>
-                                                    <code class="no-background">
-                                                        {{ mergedHost.hostCommandLine }}
-                                                    </code>
-                                                </td>
-                                            </tr>
+                                                <tr>
+                                                    <td><?php echo __('Command line'); ?></td>
+                                                    <td class="copy-to-clipboard-container"
+                                                        style="display: block; position: relative;">
+                                                        <code
+                                                            class="no-background <?php echo $blurryCommandLine ? 'unblur-on-hover' : '' ?>">
+                                                            {{ mergedHost.hostCommandLine }}
+                                                        </code>
+
+                                                        <div
+                                                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
+                                                            rel="tooltip"
+                                                            data-toggle="tooltip"
+                                                            data-trigger="click"
+                                                            data-placement="left"
+                                                            data-original-title="<?= __('Copied'); ?>">
+                                                            <div
+                                                                class="btn btn-default btn-xs waves-effect waves-themed"
+                                                                ng-click="clipboardCommand()"
+                                                                title="<?php echo __('Copy to clipboard'); ?>">
+                                                                <i class="fa fa-copy"></i>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endif; ?>
 
                                             <tr>
                                                 <td><?php echo __('Output'); ?></td>
@@ -913,8 +950,8 @@ use Cake\Core\Plugin;
                                                 <i class="fa fa-refresh fa-spin txt-primary"></i>
                                             </span>
                                             <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ?
-                                                failureDurationInPercent+' %' :
-                                                '<?php echo __('No data available !'); ?>'}}
+                                                    failureDurationInPercent + ' %' :
+                                                    '<?php echo __('No data available!'); ?>'}}
                                             </span>
                                         </h3></div>
                                     <div class="col-12">
@@ -1660,7 +1697,7 @@ use Cake\Core\Plugin;
                                 </span>
                             </div>
 
-                            <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                            <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                 <div class="col-xs-12 col-md-2">
                                     <a ng-click="confirmActivate(getServiceObjectsForDelete())" class="a-clean"
                                        href="javascript:void(0);">

@@ -27,7 +27,8 @@ angular.module('openITCOCKPIT')
                     Timeperiod: 1,
                     Location: 1,
                     Tenant: 1,
-                    Container: 1
+                    Container: 1,
+                    Export: 1
                 },
                 Actions: {
                     add: 1,
@@ -35,7 +36,8 @@ angular.module('openITCOCKPIT')
                     copy: 1,
                     delete: 1,
                     deactivate: 1,
-                    activate: 1
+                    activate: 1,
+                    export: 1
                 },
                 from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30 * 4)),
                 to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 5)),

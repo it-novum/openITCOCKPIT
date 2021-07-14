@@ -769,6 +769,15 @@
                                         </a>
                                     </div>
                                 <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2">
+                                        <a ng-click="confirmActivate(getObjectsForDelete())" class="a-clean"
+                                           href="javascript:void(0);">
+                                            <i class="fa fa-lg fa-plug"></i>
+                                            <?php echo __('Enable'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                     <div class="col-xs-12 col-md-2 txt-color-red">
                                         <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">

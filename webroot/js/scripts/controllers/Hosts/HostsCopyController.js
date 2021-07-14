@@ -3,6 +3,9 @@ angular.module('openITCOCKPIT')
 
         var ids = $stateParams.ids.split(',');
 
+        $scope.checkedName = [];
+        $scope.isHostnameInUse = [];
+
         if(ids.length === 0 || ids[0] === ''){
             //No ids to copy given - redirect
             RedirectService.redirectWithFallback('HostsIndex');
@@ -52,5 +55,20 @@ angular.module('openITCOCKPIT')
                 $scope.sourceHosts = result.data.result;
             });
         };
+
+        $scope.checkForDuplicateHostname = function(hostname, index){
+            $scope.checkedName[index] = hostname;
+            var data = {
+                hostname: $scope.checkedName[index]
+            };
+            $http.post("/hosts/checkForDuplicateHostname.json?angular=true",
+                data
+            ).then(function(result){
+                $scope.isHostnameInUse[index] = result.data.isHostnameInUse;
+            });
+        };
+
+        // Fire on page load
+
         $scope.load();
     });

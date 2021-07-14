@@ -332,7 +332,7 @@ class HostsController extends AppController {
         try {
             $host = $HostsTable->getHostByUuid($uuid);
 
-            if (!$this->allowedByContainerId($host->getContainerIds())) {
+            if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
                 $this->render403();
                 return;
             }
@@ -1863,6 +1863,8 @@ class HostsController extends AppController {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
+        $canUserSeeCheckCommand = isset($this->PERMISSIONS['hosts']['checkcommand']);
+
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
@@ -1870,7 +1872,9 @@ class HostsController extends AppController {
             //Only ship template
 
             $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+            $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
             $this->set('masterInstanceName', $masterInstanceName);
+            $this->set('blurryCommandLine', $blurryCommandLine);
             $this->set('username', $User->getFullName());
             return;
         }
@@ -2079,7 +2083,7 @@ class HostsController extends AppController {
         if ($Hoststatus->isAcknowledged()) {
             $acknowledgement = $AcknowledgementHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($acknowledgement)) {
-                $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime);
+                $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime, $allowEdit);
                 $acknowledgement = $Acknowledgement->toArray();
 
                 $ticketDetails = [];
@@ -2126,6 +2130,12 @@ class HostsController extends AppController {
         }
 
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
+
+        if ($canUserSeeCheckCommand === false) {
+            $mergedHost['hostCommandLine'] = 'Removed due to insufficient permissions';
+            $mergedHost['hostcommandargumentvalues'] = 'Removed due to insufficient permissions';
+            $checkCommand = 'Removed due to insufficient permissions';
+        }
 
         // Set data to fronend
         $this->set('mergedHost', $mergedHost);
@@ -3033,6 +3043,31 @@ class HostsController extends AppController {
 
         $this->set('hosts', $hosts);
         $this->viewBuilder()->setOption('serialize', ['hosts']);
+    }
+
+    public function checkForDuplicateHostname() {
+        if (!$this->isApiRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+
+        /** @var $HostTable HostsTable */
+        $HostTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $hostname = $this->request->getData('hostname', '');
+        $excludedHostIds = $this->request->getData('excludedHostIds', []);
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+
+        $isHostnameUnique = $HostTable->isHostnameUnique($hostname, $MY_RIGHTS, $excludedHostIds);
+
+        $isHostnameInUse = $isHostnameUnique === false;
+
+        $this->set('isHostnameInUse', $isHostnameInUse);
+        $this->viewBuilder()->setOption('serialize', ['isHostnameInUse']);
     }
 
 }

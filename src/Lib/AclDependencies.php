@@ -134,7 +134,8 @@ class AclDependencies {
             ->allow('Angular', 'reload_required')
             ->allow('Angular', 'colorpicker')
             ->allow('Angular', 'popover_graph')
-            ->allow('Angular', 'thresholds');
+            ->allow('Angular', 'thresholds')
+            ->allow('Angular', 'mass_delete_acknowledgements');
 
         $this
             ->allow('Agentconnector', 'register_agent')
@@ -380,12 +381,15 @@ class AclDependencies {
             ->dependency('Hosts', 'add', 'Hosts', 'loadHosttemplate')
             ->dependency('Hosts', 'add', 'Hosts', 'runDnsLookup')
             ->dependency('Hosts', 'add', 'Hosts', 'loadCommandArguments')
+            ->dependency('Hosts', 'add', 'Hosts', 'checkForDuplicateHostname')
             ->dependency('Hosts', 'edit', 'Hosts', 'loadContainers')
             ->dependency('Hosts', 'edit', 'Hosts', 'loadCommands')
             ->dependency('Hosts', 'edit', 'Hosts', 'loadElementsByContainerId')
             ->dependency('Hosts', 'edit', 'Hosts', 'loadHosttemplate')
             ->dependency('Hosts', 'edit', 'Hosts', 'runDnsLookup')
-            ->dependency('Hosts', 'edit', 'Hosts', 'loadCommandArguments');
+            ->dependency('Hosts', 'edit', 'Hosts', 'loadCommandArguments')
+            ->dependency('Hosts', 'edit', 'Hosts', 'checkForDuplicateHostname')
+            ->dependency('Hosts', 'copy', 'Hosts', 'checkForDuplicateHostname');
 
 
         $this

@@ -13,7 +13,7 @@
     "support": {
         "issues": "https://github.com/it-novum/openITCOCKPIT/issues",
         "source": "https://github.com/it-novum/openITCOCKPIT",
-        "irc": "irc://irc.freenode.org/openitcockpit"
+        "irc": "irc://irc.libera.chat/openitcockpit"
     },
     "repositories": [
         {

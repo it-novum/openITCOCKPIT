@@ -135,7 +135,8 @@
                                             'Timeperiod'      => __('Time periods'),
                                             'Location'        => __('Locations'),
                                             'Tenant'          => __('Tenants'),
-                                            'Container'       => __('Nodes')
+                                            'Container'       => __('Nodes'),
+                                            'Export'          => __('Refresh configuration')
                                         ];
                                         ?>
 
@@ -240,6 +241,19 @@
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label"
                                                        for="FilterDeactivate"><?php echo __('Deactivate'); ?></label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="FilterActionExport"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-false-value="0"
+                                                       ng-true-value="1"
+                                                       ng-model="filter.Actions.export"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="FilterActionExport"><?php echo __('Export'); ?></label>
                                             </div>
 
                                         </div>

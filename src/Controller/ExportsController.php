@@ -27,10 +27,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
 use App\Model\Entity\Export;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ExportsTable;
 use App\Model\Table\SystemsettingsTable;
-use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
@@ -87,9 +88,6 @@ class ExportsController extends AppController {
 
         $tasks = [];
         if ($exportRunning) {
-            $User = new User($this->getUser());
-            $UserTime = $User->getUserTime();
-
             foreach ($ExportsTable->getCurrentExportState() as $taskEntity) {
                 /** @var Export $taskEntity */
                 $task = $taskEntity->toArray();
@@ -206,6 +204,26 @@ class ExportsController extends AppController {
 
         $createBackup = (int)$this->request->getData('create_backup', 1);
         $GearmanClient->sendBackground('export_start_export', ['backup' => (int)$createBackup]);
+
+        $User = new User($this->getUser());
+        /** @var  ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'export',
+            'exports',
+            1,
+            OBJECT_HOST,
+            ROOT_CONTAINER,
+            $User->getId(),
+            __('Refresh of monitoring configuration started'),
+            []
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
 
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);

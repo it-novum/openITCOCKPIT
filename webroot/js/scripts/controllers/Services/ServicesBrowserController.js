@@ -191,6 +191,12 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.init = false;
+
+                setTimeout(function(){
+                    jQuery(function(){
+                        jQuery("[rel=tooltip]").tooltip();
+                    });
+                }, 250);
             }, function errorCallback(results){
                 if(results.status === 403){
                     $state.go('403');
@@ -211,6 +217,26 @@ angular.module('openITCOCKPIT')
         $scope.getObjectForHostDowntimeDelete = function(){
             var object = {};
             object[$scope.hostDowntime.internalDowntimeId] = $scope.host.Host.hostname;
+            return object;
+        };
+
+        $scope.getObjectForServiceAcknowledgementDelete = function(){
+            var object = {};
+            object[$scope.mergedService.id] = {
+                name: $scope.host.Host.hostname + ' / ' + $scope.mergedService.name,
+                hostId: $scope.mergedService.host_id,
+                serviceId: $scope.mergedService.id
+            };
+            return object;
+        };
+
+        $scope.getObjectForHostAcknowledgementDelete = function(){
+            var object = {};
+            object[$scope.host.Host.id] = {
+                name: $scope.host.Host.hostname,
+                hostId: $scope.host.Host.id,
+                serviceId: null
+            };
             return object;
         };
 
@@ -868,6 +894,13 @@ angular.module('openITCOCKPIT')
             disableGraphAutorefresh();
         });
 
+
+        $scope.clipboardCommand = function(){
+            navigator.clipboard.writeText($scope.mergedService.serviceCommandLine);
+        };
+
+        // Fire on page load
+
         $scope.loadIdOrUuid();
 
         $scope.$watch('servicestatus.isFlapping', function(){
@@ -902,6 +935,12 @@ angular.module('openITCOCKPIT')
                 return;
             }
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
+        });
+
+        jQuery(document).on('show.bs.tooltip', function(e){
+            setTimeout(function(){
+                jQuery('[data-toggle="tooltip"]').tooltip('hide');
+            }, 1500);
         });
 
     });

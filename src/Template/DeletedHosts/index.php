@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="DeletedHostsIndex">
+        <a ui-sref="HostsIndex">
             <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
         </a>
     </li>

@@ -502,7 +502,8 @@ class ExternalCommands {
      */
     public function setHostAck(array $options) {
         $_options = [
-            'type' => 'hostOnly',
+            'type'   => 'hostOnly',
+            'notify' => true,
         ];
 
         $options = Hash::merge($_options, $options);
@@ -522,13 +523,19 @@ class ExternalCommands {
             }
         }
 
+        $notify = 1;
+        if (!$options['notify']) {
+            $notify = 0;
+        }
+
         // ACKNOWLEDGE_HOST_PROBLEM
         $payload = [
             'Command' => 'raw',
             'Data'    => sprintf(
-                'ACKNOWLEDGE_HOST_PROBLEM;%s;%s;1;1;%s;%s',
+                'ACKNOWLEDGE_HOST_PROBLEM;%s;%s;%s;1;%s;%s',
                 $options['hostUuid'],
                 $options['sticky'],
+                $notify,
                 $options['author'],
                 $options['comment']
             )
@@ -577,6 +584,7 @@ class ExternalCommands {
                                 'author'       => $options['author'],
                                 'comment'      => $options['comment'],
                                 'sticky'       => $options['sticky'],
+                                'notify'       => (bool)$notify,
                                 'satellite_id' => $options['satellite_id']
                             ]);
                         }
@@ -604,7 +612,8 @@ class ExternalCommands {
      */
     public function setHostAckWithQuery(array $options) {
         $_options = [
-            'type' => 'hostOnly',
+            'type'   => 'hostOnly',
+            'notify' => true,
         ];
 
         $options = Hash::merge($_options, $options);
@@ -624,6 +633,11 @@ class ExternalCommands {
             }
         }
 
+        $notify = 1;
+        if (!$options['notify']) {
+            $notify = 0;
+        }
+
         $DbBackend = new DbBackend();
         $HoststatusTable = $DbBackend->getHoststatusTable();
 
@@ -638,9 +652,10 @@ class ExternalCommands {
                 $payload = [
                     'Command' => 'raw',
                     'Data'    => sprintf(
-                        'ACKNOWLEDGE_HOST_PROBLEM;%s;%s;1;1;%s;%s',
+                        'ACKNOWLEDGE_HOST_PROBLEM;%s;%s;%s;1;%s;%s',
                         $options['hostUuid'],
                         $options['sticky'],
+                        $notify,
                         $options['author'],
                         $options['comment']
                     )
@@ -690,6 +705,7 @@ class ExternalCommands {
                                 'author'       => $options['author'],
                                 'comment'      => $options['comment'],
                                 'sticky'       => $options['sticky'],
+                                'notify'       => (bool)$notify,
                                 'satellite_id' => $options['satellite_id']
                             ]);
                         }
@@ -742,6 +758,7 @@ class ExternalCommands {
                                 'author'       => $options['author'],
                                 'comment'      => $options['comment'],
                                 'sticky'       => $options['sticky'],
+                                'notify'       => ($options['notify'] ?? true),
                                 'type'         => $options['type'],
                                 'satellite_id' => $host['satellite_id']
                             ]);
@@ -780,14 +797,22 @@ class ExternalCommands {
             }
         }
 
+        $notify = 1;
+        if (isset($options['notify'])) {
+            if (!$options['notify']) {
+                $notify = 0;
+            }
+        }
+
         // ACKNOWLEDGE_SVC_PROBLEM
         $payload = [
             'Command' => 'raw',
             'Data'    => sprintf(
-                'ACKNOWLEDGE_SVC_PROBLEM;%s;%s;%s;1;1;%s;%s',
+                'ACKNOWLEDGE_SVC_PROBLEM;%s;%s;%s;%s;1;%s;%s',
                 $options['hostUuid'],
                 $options['serviceUuid'],
                 $options['sticky'],
+                $notify,
                 $options['author'],
                 $options['comment']
             )
@@ -1540,6 +1565,10 @@ class ExternalCommands {
                 $DbBackend = new DbBackend();
                 $DowntimeServicesTable = $DbBackend->getDowntimehistoryServicesTable();
                 $serviceDowntimeArray = $DowntimeServicesTable->getHostAndServiceUuidWithDowntimeByInternalDowntimeId($command['parameters']['downtime_id']);
+
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
                 if (!empty($serviceDowntimeArray)) {
                     $ServiceDowntime = new Downtime($serviceDowntimeArray['DowntimeServices']);
 
@@ -1660,6 +1689,51 @@ class ExternalCommands {
         }
 
         return true;
+    }
+
+    /**
+     * Delete a host acknowledgement by given hostUuid
+     *
+     * @param string $hostUuid
+     * @param int $satellite_id
+     */
+    public function deleteHostAcknowledgement(string $hostUuid, int $satellite_id) {
+        //REMOVE_HOST_ACKNOWLEDGEMENT
+        $payload = [
+            'Command' => 'raw',
+            'Data'    => 'REMOVE_HOST_ACKNOWLEDGEMENT;' . $hostUuid
+        ];
+
+        // Delete acknowledgement on the master system
+        $this->toQueue($payload, 0);
+
+        if ($satellite_id > 0) {
+            // Delete acknowledgement on the satellite system
+            $this->toQueue($payload, $satellite_id);
+        }
+    }
+
+    /**
+     * Delete a service acknowledgement by given host and serviceUuid
+     *
+     * @param string $hostUuid
+     * @param string $serviceUuid
+     * @param int $satellite_id
+     */
+    public function deleteServiceAcknowledgement(string $hostUuid, string $serviceUuid, int $satellite_id) {
+        //REMOVE_SVC_ACKNOWLEDGEMENT
+        $payload = [
+            'Command' => 'raw',
+            'Data'    => 'REMOVE_SVC_ACKNOWLEDGEMENT;' . $hostUuid . ';' . $serviceUuid
+        ];
+
+        // Delete acknowledgement on the master system
+        $this->toQueue($payload, 0);
+
+        if ($satellite_id > 0) {
+            // Delete acknowledgement on the satellite system
+            $this->toQueue($payload, $satellite_id);
+        }
     }
 
     public function toQueue(array $payload, $satelliteId = 0) {
