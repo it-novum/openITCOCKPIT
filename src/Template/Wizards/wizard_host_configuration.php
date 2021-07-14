@@ -177,13 +177,27 @@ use Cake\Core\Plugin;
                                                 class="form-control"
                                                 type="text"
                                                 ng-model="post.Host.name"
-                                                ng-blur="runDnsLookup(true)">
+                                                ng-blur="runDnsLookup(true); checkForDuplicateHostname();">
                                             <div ng-repeat="error in errors.name">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
                                             <div class="text-warning" ng-show="data.dnsHostnameNotFound">
                                                 <i class="fa fa-exclamation-triangle"></i>
                                                 <?php echo __('Could not resolve hostname.'); ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="alert alert-warning" role="alert" ng-show="isHostnameInUse">
+                                            <div class="d-flex align-items-center">
+                                                <div class="alert-icon width-3">
+                                                    <div class='icon-stack  icon-stack-sm'>
+                                                        <i class="base base-9 icon-stack-3x opacity-100 color-warning-600"></i>
+                                                        <i class="fas fa-exclamation-circle icon-stack-1x opacity-100 color-white"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <?= __('A host with the name <strong>{0}</strong> already exists. Duplicate host names could lead to confusion.', '{{ checkedName }}'); ?>
+                                                </div>
                                             </div>
                                         </div>
 

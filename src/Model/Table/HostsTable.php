@@ -4079,4 +4079,47 @@ class HostsTable extends Table {
             }
         }
     }
+
+    /**
+     * @param string $hostname
+     * @param int[] $MY_RIGHTS
+     * @param int[] $hostIdsToExclude
+     * @return array
+     */
+    public function isHostnameUnique($hostname, $MY_RIGHTS = [], $hostIdsToExclude = []) {
+        if (!is_array($hostIdsToExclude)) {
+            $hostIdsToExclude = [$hostIdsToExclude];
+        }
+
+        $query = $this->find();
+
+        $where = [
+            'Hosts.name' => $hostname
+        ];
+
+        if (!empty($hostIdsToExclude)) {
+            $where['Hosts.id NOT IN'] = $hostIdsToExclude;
+        }
+
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->contain('HostsToContainersSharing');
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+
+        $result = $query->count();
+
+        if ($result > 0) {
+            return false;
+        }
+        return true;
+    }
 }
