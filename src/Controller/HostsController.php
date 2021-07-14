@@ -3045,4 +3045,29 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
+    public function checkForDuplicateHostname() {
+        if (!$this->isApiRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+
+        /** @var $HostTable HostsTable */
+        $HostTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $hostname = $this->request->getData('hostname', '');
+        $excludedHostIds = $this->request->getData('excludedHostIds', []);
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+
+        $isHostnameUnique = $HostTable->isHostnameUnique($hostname, $MY_RIGHTS, $excludedHostIds);
+
+        $isHostnameInUse = $isHostnameUnique === false;
+
+        $this->set('isHostnameInUse', $isHostnameInUse);
+        $this->viewBuilder()->setOption('serialize', ['isHostnameInUse']);
+    }
+
 }

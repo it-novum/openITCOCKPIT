@@ -381,12 +381,15 @@ class AclDependencies {
             ->dependency('Hosts', 'add', 'Hosts', 'loadHosttemplate')
             ->dependency('Hosts', 'add', 'Hosts', 'runDnsLookup')
             ->dependency('Hosts', 'add', 'Hosts', 'loadCommandArguments')
+            ->dependency('Hosts', 'add', 'Hosts', 'checkForDuplicateHostname')
             ->dependency('Hosts', 'edit', 'Hosts', 'loadContainers')
             ->dependency('Hosts', 'edit', 'Hosts', 'loadCommands')
             ->dependency('Hosts', 'edit', 'Hosts', 'loadElementsByContainerId')
             ->dependency('Hosts', 'edit', 'Hosts', 'loadHosttemplate')
             ->dependency('Hosts', 'edit', 'Hosts', 'runDnsLookup')
-            ->dependency('Hosts', 'edit', 'Hosts', 'loadCommandArguments');
+            ->dependency('Hosts', 'edit', 'Hosts', 'loadCommandArguments')
+            ->dependency('Hosts', 'edit', 'Hosts', 'checkForDuplicateHostname')
+            ->dependency('Hosts', 'copy', 'Hosts', 'checkForDuplicateHostname');
 
 
         $this

@@ -72,6 +72,8 @@ angular.module('openITCOCKPIT')
                     }
                 }
             };
+
+            $scope.isHostnameInUse = false;
         };
         clearForm();
 
@@ -351,6 +353,7 @@ angular.module('openITCOCKPIT')
                         $scope.data.dnsAddressNotFound = false;
                         $scope.post.Host.name = hostname;
                         highlight($('#HostName'));
+                        $scope.checkForDuplicateHostname();
                     }
                 }
             }, function errorCallback(result){
@@ -444,6 +447,20 @@ angular.module('openITCOCKPIT')
             });
 
         };
+
+        $scope.checkForDuplicateHostname = function(){
+            $scope.checkedName = $scope.post.Host.name;
+            var data = {
+                hostname: $scope.checkedName
+            };
+            $http.post("/hosts/checkForDuplicateHostname.json?angular=true",
+                data
+            ).then(function(result){
+                $scope.isHostnameInUse = result.data.isHostnameInUse;
+            });
+        };
+
+        // Fire on page load
 
         $scope.loadContainers();
         $scope.loadCommands();
