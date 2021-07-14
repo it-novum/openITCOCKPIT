@@ -105,7 +105,9 @@ class ChangelogsTable extends Table {
      * @return \Cake\ORM\RulesChecker
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
-        $rules->add($rules->existsIn(['user_id'], 'Users'));
+
+        // ITC-485 Export Finished has no user
+        //$rules->add($rules->existsIn(['user_id'], 'Users'));
         return $rules;
     }
 
@@ -376,6 +378,7 @@ class ChangelogsTable extends Table {
             case 'mass_delete':
             case 'deactivate':
             case 'activate':
+            case 'export':
                 return [
                     'action'        => $action,
                     'model'         => ucwords(Inflector::singularize($controller)),
@@ -511,6 +514,8 @@ class ChangelogsTable extends Table {
                 return 'fa fa-plug';
             case 'copy':
                 return 'fa fa-files-o';
+            case 'export':
+                return 'fa fa-retweet';
             default:
                 return 'fas fa-edit';
         }
@@ -536,6 +541,9 @@ class ChangelogsTable extends Table {
 
             case 'edit':
                 return 'bg-warning';
+
+            case 'export':
+                return 'bg-info';
 
             default:
                 return 'bg-primary';

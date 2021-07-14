@@ -3,6 +3,8 @@ angular.module('openITCOCKPIT')
 
         $scope.id = $stateParams.id;
 
+        $scope.isHostnameInUse = false;
+
         $scope.data = {
             dnsLookUp: LocalStorageService.getItemWithDefault('HostsDnsLookUpEnabled', 'false') === 'true',
             dnsHostnameNotFound: false,
@@ -324,6 +326,7 @@ angular.module('openITCOCKPIT')
                         $scope.data.dnsAddressNotFound = false;
                         $scope.post.Host.name = hostname;
                         highlight($('#HostName'));
+                        $scope.checkForDuplicateHostname();
                     }
                 }
             }, function errorCallback(result){
@@ -410,6 +413,21 @@ angular.module('openITCOCKPIT')
             });
 
         };
+
+        $scope.checkForDuplicateHostname = function(){
+            $scope.checkedName = $scope.post.Host.name;
+            var data = {
+                hostname: $scope.checkedName,
+                excludedHostIds: [$scope.id]
+            };
+            $http.post("/hosts/checkForDuplicateHostname.json?angular=true",
+                data
+            ).then(function(result){
+                $scope.isHostnameInUse = result.data.isHostnameInUse;
+            });
+        };
+
+        // Fire on page load
 
         $scope.loadContainers();
 

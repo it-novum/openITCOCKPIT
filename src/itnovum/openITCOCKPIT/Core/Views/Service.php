@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+
 class Service {
 
     /**
@@ -184,6 +186,9 @@ class Service {
             $this->serviceType = (int)$service['Service']['service_type'];
         }
 
+        if (!empty($service['Servicetemplate']['priority'])) {
+            $this->priority = $service['Servicetemplate']['priority'];
+        }
 
         if (empty($service['Service']['priority']) && isset($service['Service']['_matchingData']['Servicetemplates']['priority'])) {
             $this->priority = $service['Service']['_matchingData']['Servicetemplates']['priority'];

@@ -76,10 +76,17 @@ abstract class Acknowledgement {
     private $UserTime;
 
     /**
-     * StatehistoryHost constructor.
-     * @param array $data
+     * @var bool
      */
-    public function __construct($data, $UserTime = null) {
+    private $allowEdit = false;
+
+    /**
+     * Acknowledgement constructor.
+     * @param $data
+     * @param null $UserTime
+     * @param false $allowEdit
+     */
+    public function __construct($data, $UserTime = null, $allowEdit = false) {
         if (isset($data['acknowledgement_type'])) {
             $this->acknowledgement_type = (int)$data['acknowledgement_type'];
         }
@@ -113,6 +120,8 @@ abstract class Acknowledgement {
         }
 
         $this->UserTime = $UserTime;
+
+        $this->allowEdit = $allowEdit;
     }
 
     /**
@@ -177,6 +186,13 @@ abstract class Acknowledgement {
      */
     public function getState() {
         return $this->state;
+    }
+
+    /**
+     * @return bool
+     */
+    public function allowEdit() {
+        return $this->allowEdit;
     }
 
     /**

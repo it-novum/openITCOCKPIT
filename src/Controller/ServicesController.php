@@ -1331,13 +1331,18 @@ class ServicesController extends AppController {
     public function browser($idOrUuid = null) {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
+
+        $canUserSeeCheckCommand = isset($this->PERMISSIONS['services']['checkcommand']);
+
         if ($this->isHtmlRequest()) {
             /** @var SystemsettingsTable $SystemsettingsTable */
             $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
             $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+            $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
 
             //Only ship template
             $this->set('username', $User->getFullName());
+            $this->set('blurryCommandLine', $blurryCommandLine);
             $this->set('masterInstanceName', $masterInstanceName);
             return;
         }
@@ -1623,7 +1628,7 @@ class ServicesController extends AppController {
         if ($Servicestatus->isAcknowledged()) {
             $acknowledgement = $AcknowledgementServicesTable->byServiceUuid($serviceObj->getUuid());
             if (!empty($acknowledgement)) {
-                $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime);
+                $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime, $allowEdit);
                 $acknowledgement = $Acknowledgement->toArray();
 
                 $ticketDetails = [];
@@ -1660,7 +1665,7 @@ class ServicesController extends AppController {
         if ($Hoststatus->isAcknowledged()) {
             $hostAcknowledgement = $AcknowledgementHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($hostAcknowledgement)) {
-                $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement, $UserTime);
+                $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement, $UserTime, $allowEdit);
                 $hostAcknowledgement = $AcknowledgementHost->toArray();
 
                 $ticketDetails = [];
@@ -1696,6 +1701,12 @@ class ServicesController extends AppController {
 
         $typesForView = $ServicesTable->getServiceTypesWithStyles();
         $serviceType = $typesForView[$mergedService['service_type']];
+
+        if ($canUserSeeCheckCommand === false) {
+            $mergedService['serviceCommandLine'] = 'Removed due to insufficient permissions';
+            $mergedService['servicecommandargumentvalues'] = 'Removed due to insufficient permissions';
+            $checkCommand = 'Removed due to insufficient permissions';
+        }
 
         // Set data to fronend
         $this->set('mergedService', $mergedService);
@@ -2318,6 +2329,7 @@ class ServicesController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
+        $existingServices = $ServicesTable->getListOfServiceNamesForUniqueCheck($hostId);
 
         $this->set('servicetemplates', $servicetemplates);
         $this->set('servicegroups', $servicegroups);
@@ -2325,6 +2337,7 @@ class ServicesController extends AppController {
         $this->set('checkperiods', $checkperiods);
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
+        $this->set('existingServices', $existingServices);
 
         $this->viewBuilder()->setOption('serialize', [
             'servicetemplates',
@@ -2332,7 +2345,8 @@ class ServicesController extends AppController {
             'timeperiods',
             'checkperiods',
             'contacts',
-            'contactgroups'
+            'contactgroups',
+            'existingServices'
         ]);
     }
 

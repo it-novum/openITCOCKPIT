@@ -227,6 +227,26 @@ if [ "$CURRENT_LOGENTRY_COLUMN_TYPE" = "varchar(255)" ]; then
     mysql --defaults-extra-file=${INIFILE} -e "CREATE INDEX logentries_se ON statusengine_logentries (entry_time, node_name)"
 fi
 
+echo "Checking column length of statusengine_hoststatus table"
+CURRENT_LOGENTRY_COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT COLUMN_TYPE FROM \`information_schema\`.\`COLUMNS\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\`='statusengine_hoststatus' AND \`COLUMN_NAME\`='long_output'" -B -s 2>/dev/null)
+if [ "$CURRENT_LOGENTRY_COLUMN_TYPE" = "varchar(1024)" ]; then
+    echo "Increasing column length of statusengine_hoststatus table. This will take a while..."
+
+    # Perfdata is 2048 because of bionic
+    # Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE statusengine_hoststatus CHANGE long_output long_output VARCHAR(8192) DEFAULT NULL, CHANGE perfdata perfdata VARCHAR(2048) DEFAULT NULL"
+fi
+
+echo "Checking column length of statusengine_servicestatus table"
+CURRENT_LOGENTRY_COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT COLUMN_TYPE FROM \`information_schema\`.\`COLUMNS\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\`='statusengine_servicestatus' AND \`COLUMN_NAME\`='long_output'" -B -s 2>/dev/null)
+if [ "$CURRENT_LOGENTRY_COLUMN_TYPE" = "varchar(1024)" ]; then
+    echo "Increasing column length of statusengine_servicestatus table. This will take a while..."
+
+    # Perfdata is 2048 because of bionic
+    # Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE statusengine_servicestatus CHANGE long_output long_output VARCHAR(8192) DEFAULT NULL, CHANGE perfdata perfdata VARCHAR(2084) DEFAULT NULL"
+fi
+
 #Check and create missing cronjobs
 #oitc api --model Cronjob --action create_missing_cronjobs --data ""
 

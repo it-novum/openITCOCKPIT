@@ -712,7 +712,7 @@ $table->addColumn("perfdata", "string", array (
     'autoincrement' => false,
     'notnull' => false,
     'default' => NULL,
-    'length' => 8192,
+    'length' => 2048,
 ));
 $table->addColumn("current_state", "smallint", array (
     'unsigned' => true,
@@ -1837,7 +1837,7 @@ $table->addColumn("perfdata", "string", array (
     'autoincrement' => false,
     'notnull' => false,
     'default' => NULL,
-    'length' => 8192,
+    'length' => 2048,
 ));
 $table->addColumn("current_state", "smallint", array (
     'unsigned' => true,
