@@ -279,7 +279,7 @@ class ServicesController extends AppController {
         /** @var \App\Model\Entity\Service $service */
         $service = $ServicesTable->getServiceById($id);
 
-        if (!$this->allowedByContainerId($service->get('host')->getContainerIds())) {
+        if (!$this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
             $this->render403();
             return;
         }
@@ -311,7 +311,7 @@ class ServicesController extends AppController {
         try {
             $service = $ServicesTable->getServiceByUuid($uuid);
 
-            if (!$this->allowedByContainerId($service->get('host')->getContainerIds())) {
+            if (!$this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
                 $this->render403();
                 return;
             }
