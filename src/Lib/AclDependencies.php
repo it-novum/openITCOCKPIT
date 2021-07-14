@@ -387,7 +387,8 @@ class AclDependencies {
             ->dependency('Hosts', 'edit', 'Hosts', 'loadHosttemplate')
             ->dependency('Hosts', 'edit', 'Hosts', 'runDnsLookup')
             ->dependency('Hosts', 'edit', 'Hosts', 'loadCommandArguments')
-            ->dependency('Hosts', 'edit', 'Hosts', 'checkForDuplicateHostname');
+            ->dependency('Hosts', 'edit', 'Hosts', 'checkForDuplicateHostname')
+            ->dependency('Hosts', 'copy', 'Hosts', 'checkForDuplicateHostname');
 
 
         $this
