@@ -279,7 +279,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                     <div class="row" ng-if="!module.Module.license_included">
                                         <div class="col-lg-12 padding-right-0">
                                             <a
-                                                href="https://it-novum.com/en/contact/contact-form-itsm/"
+                                                href="https://it-services.it-novum.com/support-2/"
                                                 target="_blank"
                                                 class="btn btn-primary float-right">
                                                 <i class="fas fa-shopping-cart"></i>

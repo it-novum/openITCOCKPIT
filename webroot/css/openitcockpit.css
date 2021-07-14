@@ -1308,3 +1308,27 @@ label.menu-open-button:hover {
 
 /** End copy to clipboard **/
 
+/** issues page **/
+
+.supportCard {
+    border-radius: 5px !important;
+}
+
+.supportCard .card-header {
+    height: 74px;
+}
+
+.supportCard .card-body {
+    height: 384px;
+}
+
+.supportCard .card-footer {
+    height: 42px;
+    padding: 6px 6px 6px 20px !important;
+}
+
+.supportCard .card-footer .btn, .supportCard .card-footer a.btn {
+    height: 30px !important;
+}
+
+/** end issues page **/

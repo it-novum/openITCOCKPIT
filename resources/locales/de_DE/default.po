@@ -16066,8 +16066,8 @@ msgid "or just join our IRC channel"
 msgstr "oder treten Sie einfach unserem IRC-Kanal bei"
 
 #: src/Template/Supports/issue.php:209
-msgid "Join #openITCOCKPIT on freenode."
-msgstr "Trete #openITCOCKPIT auf freenode bei."
+msgid "Join #openITCOCKPIT on libera.chat."
+msgstr "Trete #openITCOCKPIT auf libera.chat bei."
 
 #: src/Template/Systemdowntimes/add.php:32
 msgid "create"
