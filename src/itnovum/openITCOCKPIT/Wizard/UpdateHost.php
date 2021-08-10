@@ -67,7 +67,7 @@ class UpdateHost {
                 ];
             }
         }
-        $mergedHost['Host']['customvariables'] = $currentHostCustomVariables;
+        $mergedHost['Host']['customvariables'] = array_values($currentHostCustomVariables);
         $HostComparisonForSave = new HostComparisonForSave($mergedHost, $hosttemplate);
 
         $dataForSave = $HostComparisonForSave->getDataForSaveForAllFields();
