@@ -56,6 +56,10 @@ class UpdateHost {
         //Update custom variables
         $currentHostCustomVariables = Hash::combine($mergedHost['Host']['customvariables'], '{n}.name', '{n}');
         foreach ($customVariablestoCheck as $hostCustomvariableName => $postDataKey) {
+            //ignore custom variables with empty value
+            if(empty(trim($postData[$postDataKey]))){
+                continue;
+            }
             if (isset($currentHostCustomVariables[$hostCustomvariableName])) {
                 $currentHostCustomVariables[$hostCustomvariableName]['value'] = $postData[$postDataKey];
             } else {
@@ -71,7 +75,6 @@ class UpdateHost {
         $HostComparisonForSave = new HostComparisonForSave($mergedHost, $hosttemplate);
 
         $dataForSave = $HostComparisonForSave->getDataForSaveForAllFields();
-
         //Add required fields for validation
         $dataForSave['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
         $dataForSave['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
