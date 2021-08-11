@@ -386,7 +386,10 @@ angular.module('openITCOCKPIT')
                     xss: {
                         disabled: false,
                         filterOptions: {
-                            whiteList: {i: ['class', 'not-xss-filtered-html']},
+                            whiteList: {
+                                i: ['class', 'not-xss-filtered-html'],
+                                b: ['class', 'not-xss-filtered-html']
+                            },
                         },
                     },
                     //showCurrentTime: true,

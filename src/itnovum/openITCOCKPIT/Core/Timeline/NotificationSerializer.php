@@ -77,7 +77,7 @@ class NotificationSerializer {
                 $notificationTime = $this->records[$i]['NotificationService']->getStartTime();
             }
             $title = sprintf(
-                '<b>%s</b> via <b>%s</b> at %s',
+                '<b class="not-xss-filtered-html">%s</b> via <b class="not-xss-filtered-html">%s</b> at %s',
                 h($this->records[$i]['Contact']->getName()),
                 h($this->records[$i]['Command']->getName()),
                 $this->UserTime->format($notificationTime)
