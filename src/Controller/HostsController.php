@@ -2925,7 +2925,12 @@ class HostsController extends AppController {
             }
         }
         $hostcommandargumentvalues = $filteredCommandArgumentsValules;
-
+        $hostcommandargumentvalues = Hash::sort(
+            $hostcommandargumentvalues,
+            '{n}.commandargument.name',
+            'asc',
+            'natural'
+        );
 
         $this->set('hostcommandargumentvalues', $hostcommandargumentvalues);
         $this->viewBuilder()->setOption('serialize', ['hostcommandargumentvalues']);

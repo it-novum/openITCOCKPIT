@@ -2533,6 +2533,12 @@ class ServicesController extends AppController {
             }
         }
         $servicecommandargumentvalues = $filteredCommandArgumentsValules;
+        $servicecommandargumentvalues = Hash::sort(
+            $servicecommandargumentvalues,
+            '{n}.commandargument.name',
+            'asc',
+            'natural'
+        );
 
         $this->set('servicecommandargumentvalues', $servicecommandargumentvalues);
         $this->viewBuilder()->setOption('serialize', ['servicecommandargumentvalues']);
