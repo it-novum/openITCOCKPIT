@@ -87,6 +87,11 @@
                                 ng-click="filter.Category.macos=!filter.Category.macos">
                             <i class="fab fa-apple"></i> <?= ('macOS'); ?>
                         </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.virtualization, 'btn-default': !filter.Category.virtualization}"
+                                ng-click="filter.Category.virtualization=!filter.Category.virtualization">
+                            <i class="fas fa-cloud"></i> <?= ('Virtualization'); ?>
+                        </button>
                     </div>
                 </div>
             </div>

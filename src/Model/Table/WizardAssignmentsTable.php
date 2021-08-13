@@ -289,6 +289,13 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('Check everything regarding VMWare. ESX Hosts, virtual machines...'),
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
+            ],
+            'vmware-horizon'    => [
+                'type_id'     => 'vmware-horizon',
+                'title'       => __('VMWare Horizon'),
+                'description' => __('Monitor your VMware Horizon Virtual Desktop Infrastructure'),
+                'image'       => 'vmware-horizon.png',
+                'category'    => ['virtualization', 'cloud'],
             ]
         ];
 
