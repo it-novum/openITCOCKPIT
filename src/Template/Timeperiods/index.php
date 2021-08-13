@@ -153,6 +153,11 @@
                                                class="btn btn-default btn-lower-padding disabled">
                                                 <i class="fa fa-cog"></i>
                                             </a>
+                                        <?php elseif ($this->Acl->hasPermission('viewDetails', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsViewDetails({id: timeperiod.Timeperiod.id})"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fas fa-calendar-week"></i>
+                                            </a>
                                         <?php else: ?>
                                             <a href="javascript:void(0);"
                                                class="btn btn-default btn-lower-padding disabled">
@@ -170,6 +175,13 @@
                                                    class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('viewDetails', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsViewDetails({id: timeperiod.Timeperiod.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-calendar-week"></i>
+                                                    <?php echo __('View details'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'timeperiods')): ?>
