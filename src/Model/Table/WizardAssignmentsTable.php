@@ -289,6 +289,13 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('Check everything regarding VMWare. ESX Hosts, virtual machines...'),
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
+            ],
+            'db2'                    => [
+                'type_id'     => 'db2',
+                'title'       => __('DB2 Monitoring'),
+                'description' => __('Monitor your DB2 server'),
+                'image'       => 'db2.png',
+                'category'    => ['database'],
             ]
         ];
 

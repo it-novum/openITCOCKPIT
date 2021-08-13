@@ -102,7 +102,8 @@
                                     <div ng-show="post.Host.container_id < 1" class="warning-glow">
                                         <?php echo __('Please select a container.'); ?>
                                     </div>
-                                    <div ng-show="post.Host.container_id === 1" class="help-block">
+                                    <div ng-show="post.Host.container_id === 1" class="help-block text-warning">
+                                        <i class="fas fa-exclamation"></i>
                                         <?php echo __('Objects in /root can\'t be moved to other containers'); ?>
                                     </div>
                                     <div ng-repeat="error in errors.container_id">
