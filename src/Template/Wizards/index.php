@@ -88,6 +88,11 @@
                                 ng-click="filter.Category.virtualization=!filter.Category.virtualization">
                             <i class="fas fa-cloud"></i> <?= ('Virtualization'); ?>
                         </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.hardware, 'btn-default': !filter.Category.hardware}"
+                                ng-click="filter.Category.hardware=!filter.Category.hardware">
+                            <i class="fas fa-server"></i> <?= ('Hardware'); ?>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -170,15 +175,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-

@@ -289,6 +289,13 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('Check everything regarding VMWare. ESX Hosts, virtual machines...'),
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
+            ],
+            'ups'                    => [
+                'type_id'     => 'ups',
+                'title'       => __('Uninterruptible Power Supply'),
+                'description' => __('Add your UPS for monitoring by specifying the device details'),
+                'image'       => 'ups.jpg',
+                'category'    => ['hardware'],
             ]
         ];
 
