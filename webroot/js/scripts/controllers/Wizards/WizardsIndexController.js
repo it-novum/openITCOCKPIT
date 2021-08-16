@@ -12,12 +12,13 @@ angular.module('openITCOCKPIT')
                 network: true,
                 docker: true,
                 macos: true,
-                virtualization: true
+                virtualization: true,
+                hardware: true
             }
         };
 
         $scope.load = function(){
-            
+
             $http.get("/wizards/index.json", {
                 params: {
                     'angular': true
