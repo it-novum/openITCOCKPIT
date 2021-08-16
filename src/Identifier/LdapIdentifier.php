@@ -37,7 +37,6 @@ use FreeDSx\Ldap\LdapClient;
 use FreeDSx\Ldap\Operation\ResultCode;
 use FreeDSx\Ldap\Operations;
 use FreeDSx\Ldap\Search\Filters;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
 
@@ -93,16 +92,25 @@ class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
         $systemsettings = $SystemsettingsTable->findAsArraySection('FRONTEND');
 
         //Connect to LDAP Server
+        //
+        //TLS Levels
+        // 0 = plain
+        // 1 = StartTLS
+        // 2 = TLS (ldaps)
+        $tlsLevel = (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'];
+
         try {
             $ldap = new LdapClient([
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                 'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
                 'ssl_allow_self_signed' => true,
                 'ssl_validate_cert'     => false,
-                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'use_ssl'               => ($tlsLevel === 2), // If true, this will start a TLS connection (ldaps)
                 'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
             ]);
-            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+
+            if ($tlsLevel === 1) {
+                // Upgrade plain text communication to TLS through StartTLS
                 $ldap->startTls();
             }
 
@@ -147,16 +155,24 @@ class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
             $userDn = (string)$entry->getDn();
             $ldap->unbind(); //Remove ldap search account
 
+            //TLS Levels
+            // 0 = plain
+            // 1 = StartTLS
+            // 2 = TLS (ldaps)
+            $tlsLevel = (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'];
+
             $ldap = new LdapClient([
                 # Servers are tried in order until one connects
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                 'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
                 'ssl_allow_self_signed' => true,
                 'ssl_validate_cert'     => false,
-                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                'base_dn'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+                'use_ssl'               => ($tlsLevel === 2), // If true, this will start a TLS connection (ldaps)
+                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
             ]);
-            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+
+            if ($tlsLevel === 1) {
+                // Upgrade plain text communication to TLS through StartTLS
                 $ldap->startTls();
             }
 
