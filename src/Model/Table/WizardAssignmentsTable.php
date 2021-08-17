@@ -289,6 +289,13 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('Check everything regarding VMWare. ESX Hosts, virtual machines...'),
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
+            ],
+            'oracle'                 => [
+                'type_id'     => 'oracle',
+                'title'       => __('Oracle'),
+                'description' => __('Track connection time, connected users, session and process usage, ....'),
+                'image'       => 'Oracle_logo.svg',
+                'category'    => ['linux', 'database'],
             ]
         ];
 

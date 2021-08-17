@@ -113,4 +113,9 @@ plugins/UCSModule
 plugins/SatelliteSelfMonitoringModule
 plugins/MassenversandDeModule
 plugins/HyperscaleModule
-
+plugins/DB2Module
+plugins/HPSERVERHARDWAREModule
+plugins/MSSQLModule
+plugins/PRINTERModule
+plugins/VMWAREHORIZONModule
+plugins/ORACLEModule
