@@ -118,7 +118,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Hosts.id]': $scope.hostId
+                'filter[Hosts.id]': $scope.data.hostId
             };
 
             $http.get("/services/notMonitored.json", {
