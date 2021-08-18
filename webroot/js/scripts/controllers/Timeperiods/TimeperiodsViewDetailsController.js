@@ -17,10 +17,11 @@ angular.module('openITCOCKPIT')
                 $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                     plugins: ['timeGrid'],
                     defaultView: 'timeGridWeek',
-                    //slotLabelFormat:"HH:mm",
+                    locale: 'ru',
                     theme: false,
                     header: false,
                     allDaySlot: false,
+                    contentHeight: 'auto',
                     duration: {
                         days: 7
                     },
@@ -40,22 +41,25 @@ angular.module('openITCOCKPIT')
                         hour12: false
                     },
 
-                    slotDuration: '00:15', // 15 minutes
+                    slotDuration: '01:00', // 1 hour
                     minTime: '00:00:00',
                     maxTime: '24:00:00',
                     firstDay: 1, // monday as first day of the week
                     editable: false,
-                    //events: $scope.timeperiod.timeperiod_timeranges
-
+                    nowIndicator: true,
                     events: [
                         {
+                            daysOfWeek: [0, 6], //Sundays and saturdays
+                            rendering: "background",
+                            className: "fc-nonbusiness",
+                            overLap: false,
+                            allDay: true
+                        },
 
-                            daysOfWeek: [1],
-                            start: new Date('2021-08-12T10:00:00'),
-                            end: new Date('2021-08-12T10:00:00'),
-
-                            //    startTime: '08:00',
-                            //    endTime: '15:10'
+                        {
+                            daysOfWeek: [0, 1, 2, 5, 6], //Sundays and saturdays
+                            rendering: "background",
+                            className: "no-events",
                         },
                         {
                             daysOfWeek: [3],
@@ -63,15 +67,11 @@ angular.module('openITCOCKPIT')
                             endTime: '20:00'
                         },
                         {
-                            title: "My repeating event",
-                            startTime: '10:00', // a start time (10am in this example)
-                            startRecur: '10:00', // a start time (10am in this example)
-                            endTime: '14:00', // an end time (6pm in this example)
-                            endRecur: '14:00', // an end time (6pm in this example)
-
-                            daysOfWeek: [1, 4] // Repeat monday and thursday
+                            daysOfWeek: [3],
+                            startTime: '22:30',
+                            endTime: '24:00'
                         }
-                    ],
+                    ]
                 });
                 $scope.calendar.render();
 
