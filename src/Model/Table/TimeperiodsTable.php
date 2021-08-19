@@ -666,7 +666,8 @@ class TimeperiodsTable extends Table {
                 $eventsFormated[] = [
                     'daysOfWeek' => [$day],
                     'startTime'  => $event['start'],
-                    'endTime'    => $event['end']
+                    'endTime'    => $event['end'],
+                    'title' => sprintf('%s - %s', $event['start'], $event['end'])
                 ];
             }
         }

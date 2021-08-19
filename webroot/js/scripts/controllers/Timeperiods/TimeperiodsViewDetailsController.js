@@ -34,11 +34,10 @@ angular.module('openITCOCKPIT')
                     locale: $scope.languageCode,
                     theme: false,
                     header: false,
+                    axisFormat: 'HH:mm',
+                    selectOverlap: true,
                     allDaySlot: false,
                     contentHeight: 'auto',
-                    duration: {
-                        days: 7
-                    },
                     columnHeaderFormat: {
                         weekday: 'long'
                     },
@@ -61,35 +60,8 @@ angular.module('openITCOCKPIT')
                     firstDay: 1, // monday as first day of the week
                     editable: false,
                     nowIndicator: true,
+                    displayEventTime: false,
                     events: $scope.timeperiod.events
-                    /*
-                    events: [
-                        {
-                            daysOfWeek: [0, 6], //Sundays and saturdays
-                            rendering: "background",
-                            className: "fc-nonbusiness",
-                            overLap: false,
-                            allDay: true
-                        },
-
-                        {
-                            daysOfWeek: [0, 1, 2, 5, 6], //Sundays and saturdays
-                            rendering: "background",
-                            className: "no-events",
-                        },
-                        {
-                            daysOfWeek: [3],
-                            startTime: '13:00',
-                            endTime: '20:00'
-                        },
-                        {
-                            daysOfWeek: [3],
-                            startTime: '22:30',
-                            endTime: '24:00'
-                        }
-                    ]
-
-                     */
                 });
                 $scope.calendar.render();
 
