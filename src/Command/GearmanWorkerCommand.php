@@ -306,11 +306,11 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    if ($this->systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
                         // Checkmk 2.x running inside a Docker Container
                         $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
                         $CmkHttpApi->executeRemoteCheckmkBinary('-II -v ' . $payload['hostuuid']);
-                        $output = $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']);
+                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']));
                         $CmkHttpApi->deleteRemoteAutochecks();
                     } else {
                         // Local running Checkmk 1.x
@@ -366,10 +366,10 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    if ($this->systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
                         // Checkmk 2.x running inside a Docker Container
                         $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
-                        $output = $CmkHttpApi->executeRemoteCheckmkBinary('-L');
+                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-L'));
                     } else {
                         // Local running Checkmk 1.x
                         exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
@@ -430,11 +430,12 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    if ($this->systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
                         // Checkmk 2.x running inside a Docker Container
                         $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
                         $CmkHttpApi->executeRemoteCheckmkBinary('-II -v ' . $payload['hostuuid']);
-                        $output = $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']);
+                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']));
+                        debug($output);
                         $CmkHttpApi->deleteRemoteAutochecks();
                     } else {
                         // Local running Checkmk 1.x
@@ -492,10 +493,10 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    if ($this->systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
                         // Checkmk 2.x running inside a Docker Container
-                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($this->systemsettings);
-                        $CmkHttpApi->executeRemoteCheckmkBinary('-d ' . $payload['hostUuid']);
+                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
+                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-d ' . $payload['hostUuid']));
                     } else {
                         exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
                         exec(sprintf(
