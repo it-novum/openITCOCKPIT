@@ -360,7 +360,7 @@ td.fc-other-month {
 }
 
 .fc-unthemed td.fc-today {
-    background: #00C85111 !important;
+    background: #00C85133 !important;
 }
 
 .no-events:before {
@@ -374,7 +374,7 @@ td.fc-other-month {
     left: 50%;
     margin-right: -50%;
     transform: translate(-50%, -50%);
-    background-image: radial-gradient(closest-side at 50% 60%, #CC0000 0, #CC0000 44%, #4285F4 30%);
+    background-image: radial-gradient(closest-side at 50% 59%, #C00 0, #C00 46%, #4285F4 30%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
