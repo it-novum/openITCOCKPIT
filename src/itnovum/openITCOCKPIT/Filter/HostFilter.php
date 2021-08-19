@@ -34,6 +34,7 @@ class HostFilter extends Filter {
         $filters = [
             'bool'     => [
                 'Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.notifications_enabled',
                 'Hoststatus.active_checks_enabled'
             ],
             'like'     => [
