@@ -147,11 +147,13 @@ class TimeperiodsController extends AppController {
         ]);
         $timeperiod = $timeperiod->toArray();
 
+
         if (!$this->allowedByContainerId(Hash::extract($timeperiod, 'container_id'))) {
             $this->render403();
             return;
         }
-
+        $timeperiod['events'] = $TimeperiodsTable->parseTimerangesForCalendar($timeperiod['timeperiod_timeranges']);
+        
         $this->set('timeperiod', $timeperiod);
         $this->viewBuilder()->setOption('serialize', ['timeperiod']);
     }

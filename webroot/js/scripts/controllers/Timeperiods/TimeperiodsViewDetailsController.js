@@ -1,23 +1,37 @@
 angular.module('openITCOCKPIT')
-    .controller('TimeperiodsViewDetailsController', function($scope, $http, $stateParams){
+    .controller('TimeperiodsViewDetailsController', function($scope, $http, $q, $stateParams){
         $scope.id = $stateParams.id;
 
         $scope.init = true;
+        $scope.languageCode = 'en';
+        $scope.id = $stateParams.id;
 
         $scope.load = function(){
-            $http.get("/timeperiods/viewDetails/" + $scope.id + ".json", {
-                params: {
-                    'angular': true
+            $q.all([
+                $http.get("/timeperiods/viewDetails/" + $scope.id + ".json", {
+                    params: {
+                        'angular': true
+                    }
+                }),
+                $http.get("/profile/edit.json", {
+                    params: {
+                        'angular': true
+                    }
+                })
+            ]).then(function(results){
+                $scope.timeperiod = results[0].data.timeperiod;
+                $scope.user = results[1].data.user;
+                $scope.i18n = $scope.user.i18n.split('_');
+                if($scope.i18n.length > 0){
+                    $scope.languageCode = $scope.i18n[0];
                 }
-            }).then(function(result){
-                $scope.timeperiod = result.data.timeperiod;
                 $scope.init = false;
 
                 var calendarEl = document.getElementById('calendar');
                 $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                     plugins: ['timeGrid'],
                     defaultView: 'timeGridWeek',
-                    locale: 'ru',
+                    locale: $scope.languageCode,
                     theme: false,
                     header: false,
                     allDaySlot: false,
@@ -47,6 +61,8 @@ angular.module('openITCOCKPIT')
                     firstDay: 1, // monday as first day of the week
                     editable: false,
                     nowIndicator: true,
+                    events: $scope.timeperiod.events
+                    /*
                     events: [
                         {
                             daysOfWeek: [0, 6], //Sundays and saturdays
@@ -72,6 +88,8 @@ angular.module('openITCOCKPIT')
                             endTime: '24:00'
                         }
                     ]
+
+                     */
                 });
                 $scope.calendar.render();
 

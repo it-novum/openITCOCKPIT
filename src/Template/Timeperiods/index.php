@@ -138,7 +138,16 @@
                                                ng-show="timeperiod.Timeperiod.allow_edit">
                                     <?php endif; ?>
                                 </td>
-                                <td>{{timeperiod.Timeperiod.name}}</td>
+
+                                <td class="word-break">
+                                    <?php if ($this->Acl->hasPermission('viewDetails', 'timeperiods')): ?>
+                                        <a ui-sref="TimeperiodsViewDetails({id:timeperiod.Timeperiod.id})">
+                                            {{timeperiod.Timeperiod.name}}
+                                        </a>
+                                    <?php else: ?>
+                                        {{timeperiod.Timeperiod.name}}
+                                    <?php endif; ?>
+                                </td>
                                 <td>{{timeperiod.Timeperiod.description}}</td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">

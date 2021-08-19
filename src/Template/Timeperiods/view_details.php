@@ -23,16 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-
-$weekdays = [
-    1 => __('Monday'),
-    2 => __('Tuesday'),
-    3 => __('Wednesday'),
-    4 => __('Thursday'),
-    5 => __('Friday'),
-    6 => __('Saturday'),
-    7 => __('Sunday')
-];
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -72,6 +62,12 @@ $weekdays = [
                            class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
+                    <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                        <button class="btn btn-xs btn-default mr-1 shadow-0"
+                                ui-sref="TimeperiodsEdit({id: id})">
+                            <i class="fas fa-cog"></i> <?php echo __('Edit'); ?>
+                        </button>
                     <?php endif; ?>
                 </div>
             </div>
