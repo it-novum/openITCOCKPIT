@@ -443,7 +443,7 @@
                         <!-- NOTIFICATION CONFIGURATION START -->
                         <div class="card margin-bottom-10">
                             <div class="card-header">
-                                <i class="fa fa-wrench"></i> <?php echo __('Notification configuration'); ?>
+                                <i class="fa fa-envelope-open"></i> <?php echo __('Notification configuration'); ?>
                             </div>
                             <div class="card-body">
 
