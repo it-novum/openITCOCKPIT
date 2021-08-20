@@ -57,7 +57,8 @@ use Cake\Core\Plugin;
 <disable-host-flap-detection callback="showFlashMsg"></disable-host-flap-detection>
 <send-host-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-host-notification>
 <mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>
-<mass-delete-acknowledgements delete-url="/acknowledgements/delete/" callback="showFlashMsg"></mass-delete-acknowledgements>
+<mass-delete-acknowledgements delete-url="/acknowledgements/delete/"
+                              callback="showFlashMsg"></mass-delete-acknowledgements>
 <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
     <add-services-to-servicegroup></add-services-to-servicegroup>
 <?php endif; ?>
@@ -320,8 +321,10 @@ use Cake\Core\Plugin;
                                                 <div class="col-12">
                                                     <div>
                                                         <h4 class="no-padding">
-                                                            <i class="far fa-user" ng-show="!acknowledgement.is_sticky"></i>
-                                                            <i class="fas fa-user" ng-show="acknowledgement.is_sticky"></i>
+                                                            <i class="far fa-user"
+                                                               ng-show="!acknowledgement.is_sticky"></i>
+                                                            <i class="fas fa-user"
+                                                               ng-show="acknowledgement.is_sticky"></i>
                                                             <?php echo __('State of host is acknowledged'); ?>
                                                             <span ng-show="acknowledgement.is_sticky">
                                                         (<?php echo __('Sticky'); ?>)
@@ -953,7 +956,8 @@ use Cake\Core\Plugin;
                                                     failureDurationInPercent + ' %' :
                                                     '<?php echo __('No data available!'); ?>'}}
                                             </span>
-                                        </h3></div>
+                                        </h3>
+                                    </div>
                                     <div class="col-12">
                                         <div id="visualization"></div>
                                     </div>
@@ -1118,6 +1122,13 @@ use Cake\Core\Plugin;
                                        title="<?php echo __('in Downtime'); ?>"></i>
                                 </th>
 
+                                <th class="no-sort text-center"
+                                    ng-click="orderBy('Servicestatus.notifications_enabled')">
+                                    <i class="fa" ng-class="getSortClass('Servicestatus.notifications_enabled')"></i>
+                                    <i class="fas fa-envelope" title="<?php echo __('Notifications enabled'); ?>">
+                                    </i>
+                                </th>
+
                                 <th class="no-sort text-center">
                                     <i class="fa fa fa-area-chart"
                                        title="<?php echo __('Grapher'); ?>"></i>
@@ -1212,6 +1223,7 @@ use Cake\Core\Plugin;
                                 <th></th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
 
                                 <th>
                                     <div class="form-group">
@@ -1273,6 +1285,19 @@ use Cake\Core\Plugin;
                                 <td class="text-center">
                                     <i class="fa fa-power-off"
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="icon-stack margin-right-5"
+                                         ng-show="service.Servicestatus.notifications_enabled">
+                                        <i class="fas fa-envelope opacity-100 "></i>
+                                        <i class="fas fa-check opacity-100 fa-xs text-success cornered cornered-lr"></i>
+                                    </div>
+                                    <div class="icon-stack margin-right-5"
+                                         ng-hide="service.Servicestatus.notifications_enabled">
+                                        <i class="fas fa-envelope opacity-100 "></i>
+                                        <i class="fas fa-times opacity-100 fa-xs text-danger cornered cornered-lr"></i>
+                                    </div>
                                 </td>
 
                                 <td class="text-center">
