@@ -502,7 +502,29 @@
                                 <i class="fa fa-envelope-open"></i> <?php echo __('Notification configuration'); ?>
                             </div>
                             <div class="card-body">
+                                <div class="form-group" ng-class="{'has-error': errors.notifications_enabled}">
+                                    <div class="custom-control custom-checkbox  margin-bottom-10"
+                                         ng-class="{'has-error': errors.notifications_enabled}">
 
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               id="notifications_enabled"
+                                               ng-model="post.Service.notifications_enabled">
+                                        <label class="custom-control-label" for="notifications_enabled">
+                                            <?php echo __('Enable notifications'); ?>
+                                        </label>
+                                        <template-diff-button ng-show="post.Service.servicetemplate_id"
+                                                              value="post.Service.notifications_enabled"
+                                                              template-value="servicetemplate.Servicetemplate.notifications_enabled">
+                                        </template-diff-button>
+                                    </div>
+
+                                    <div class="col col-xs-12 col-md-offset-2 help-block">
+                                        <?php echo __('If disabled the check command won\'t be executed. This is useful if an external program sends state data to openITCOCKPIT.'); ?>
+                                    </div>
+                                </div>
                                 <div class="form-group required"
                                      ng-class="{'has-error': errors.notify_period_id}">
                                     <label class="control-label" for="NotificationPeriod">
