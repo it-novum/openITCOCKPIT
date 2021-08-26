@@ -271,7 +271,7 @@ class GearmanWorkerCommand extends Command {
                     ], false);
                 }
 
-                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
                     /** @var SatellitesTable $SatellitesTable */
                     $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
@@ -331,7 +331,7 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckMKListChecks':
-                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
                     /** @var SatellitesTable $SatellitesTable */
                     $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
@@ -394,7 +394,7 @@ class GearmanWorkerCommand extends Command {
                     'host_address'  => $payload['host_address'],
                 ], false);
 
-                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
                     /** @var SatellitesTable $SatellitesTable */
                     $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
@@ -457,7 +457,7 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckMKProcesses':
-                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
                     /** @var SatellitesTable $SatellitesTable */
                     $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
