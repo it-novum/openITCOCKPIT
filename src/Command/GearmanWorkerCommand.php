@@ -435,7 +435,7 @@ class GearmanWorkerCommand extends Command {
                         $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
                         $CmkHttpApi->executeRemoteCheckmkBinary('-II -v ' . $payload['hostuuid']);
                         $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']));
-                        debug($output);
+                        //debug($output);
                         $CmkHttpApi->deleteRemoteAutochecks();
                     } else {
                         // Local running Checkmk 1.x
