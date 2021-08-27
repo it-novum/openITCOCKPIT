@@ -44,6 +44,7 @@ use Cake\Filesystem\Folder;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use CheckmkModule\Command\CheckmkNagiosExportCommand;
+use CheckmkModule\Lib\CmkHttpApi;
 use CheckmkModule\Lib\MkParser;
 use CheckmkModule\Model\Table\MkSatTasksTable;
 use DistributeModule\Model\Entity\Satellite;
@@ -270,7 +271,7 @@ class GearmanWorkerCommand extends Command {
                     ], false);
                 }
 
-                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
                     /** @var SatellitesTable $SatellitesTable */
                     $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
@@ -305,23 +306,32 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
-                    $output = null;
-                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
-                    $this->deleteMkAutochecks();
-                    exec(sprintf(
-                        'chown %s:%s %s -R',
-                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
-                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                    ));
+                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                        // Checkmk 2.x running inside a Docker Container
+                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
+                        $CmkHttpApi->executeRemoteCheckmkBinary('-II -v ' . $payload['hostuuid']);
+                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']));
+                        $CmkHttpApi->deleteRemoteAutochecks();
+                    } else {
+                        // Local running Checkmk 1.x
+                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+                        $output = null;
+                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+                        $this->deleteMkAutochecks();
+                        exec(sprintf(
+                            'chown %s:%s %s -R',
+                            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                            escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                            escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                        ));
+                    }
                 }
 
                 $return = $output;
                 break;
 
             case 'CheckMKListChecks':
-                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
                     /** @var SatellitesTable $SatellitesTable */
                     $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
@@ -356,13 +366,20 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
-                    exec(sprintf(
-                        'chown %s:%s %s -R',
-                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
-                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                    ));
+                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                        // Checkmk 2.x running inside a Docker Container
+                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
+                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-L'));
+                    } else {
+                        // Local running Checkmk 1.x
+                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
+                        exec(sprintf(
+                            'chown %s:%s %s -R',
+                            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                            escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                            escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                        ));
+                    }
                 }
                 $return = $output;
                 unset($output);
@@ -377,7 +394,7 @@ class GearmanWorkerCommand extends Command {
                     'host_address'  => $payload['host_address'],
                 ], false);
 
-                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
                     /** @var SatellitesTable $SatellitesTable */
                     $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
@@ -413,16 +430,26 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
-                    $output = null;
-                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
-                    $this->deleteMkAutochecks();
-                    exec(sprintf(
-                        'chown %s:%s %s -R',
-                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
-                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                    ));
+                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                        // Checkmk 2.x running inside a Docker Container
+                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
+                        $CmkHttpApi->executeRemoteCheckmkBinary('-II -v ' . $payload['hostuuid']);
+                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']));
+                        debug($output);
+                        $CmkHttpApi->deleteRemoteAutochecks();
+                    } else {
+                        // Local running Checkmk 1.x
+                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                        $output = null;
+                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                        $this->deleteMkAutochecks();
+                        exec(sprintf(
+                            'chown %s:%s %s -R',
+                            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                            escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                            escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                        ));
+                    }
                 }
 
                 $return = $output;
@@ -430,7 +457,7 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckMKProcesses':
-                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
                     /** @var SatellitesTable $SatellitesTable */
                     $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
@@ -466,13 +493,19 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
-                    exec(sprintf(
-                        'chown %s:%s %s -R',
-                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
-                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                    ));
+                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                        // Checkmk 2.x running inside a Docker Container
+                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
+                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-d ' . $payload['hostUuid']));
+                    } else {
+                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
+                        exec(sprintf(
+                            'chown %s:%s %s -R',
+                            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                            escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                            escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                        ));
+                    }
                 }
 
                 $return = $output;

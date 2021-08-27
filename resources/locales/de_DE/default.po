@@ -9433,7 +9433,7 @@ msgstr "Systemzustand"
 #: src/Template/Angular/system_health.php:48
 #: src/Template/Angular/system_health_menu.php:299
 msgid "Alright!"
-msgstr "In Ordung!"
+msgstr "In Ordnung!"
 
 #: src/Template/Angular/system_health.php:51
 #: src/Template/Angular/system_health_menu.php:302
