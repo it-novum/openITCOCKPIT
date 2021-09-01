@@ -96,7 +96,7 @@
                         <button class="btn"
                                 ng-class="{'btn-primary': filter.Category.hardware, 'btn-default': !filter.Category.hardware}"
                                 ng-click="filter.Category.hardware=!filter.Category.hardware">
-                            <i class="fas fa-cloud"></i> <?= ('Hardware'); ?>
+                            <i class="fas fa-server"></i> <?= ('Hardware'); ?>
                         </button>
                     </div>
                 </div>
@@ -141,7 +141,8 @@
                                     </span>
                                 </td>
                                 <td class="width-50">
-                                    <div class="btn-group btn-group-xs" role="group" ng-show="wizard.necessity_of_assignment">
+                                    <div class="btn-group btn-group-xs" role="group"
+                                         ng-show="wizard.necessity_of_assignment">
                                         <?php if ($this->Acl->hasPermission('edit', 'wizards')): ?>
                                             <a ui-sref="WizardsEdit({uuid: wizard.uuid, typeId: wizard.type_id})"
                                                class="btn btn-default btn-lower-padding">
