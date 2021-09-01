@@ -140,7 +140,8 @@
                                     </span>
                                 </td>
                                 <td class="width-50">
-                                    <div class="btn-group btn-group-xs" role="group" ng-show="wizard.necessity_of_assignment">
+                                    <div class="btn-group btn-group-xs" role="group"
+                                         ng-show="wizard.necessity_of_assignment">
                                         <?php if ($this->Acl->hasPermission('edit', 'wizards')): ?>
                                             <a ui-sref="WizardsEdit({uuid: wizard.uuid, typeId: wizard.type_id})"
                                                class="btn btn-default btn-lower-padding">
