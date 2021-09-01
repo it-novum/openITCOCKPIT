@@ -290,6 +290,13 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
             ],
+
+            'printer'                => [
+                'type_id'     => 'printer',
+                'title'       => __('Printer'),
+                'description' => __('Add your printers for monitoring by specifying the device details'),
+                'image'       => 'printer.jpg',
+            ],
             'mssql'                  => [
                 'type_id'     => 'mssql',
                 'title'       => __('MSSQL Monitoring'),

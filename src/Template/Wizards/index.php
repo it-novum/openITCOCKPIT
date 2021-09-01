@@ -91,7 +91,7 @@
                         <button class="btn"
                                 ng-class="{'btn-primary': filter.Category.hardware, 'btn-default': !filter.Category.hardware}"
                                 ng-click="filter.Category.hardware=!filter.Category.hardware">
-                            <i class="fas fa-cloud"></i> <?= ('Hardware'); ?>
+                            <i class="fas fa-server"></i> <?= ('Hardware'); ?>
                         </button>
                     </div>
                 </div>
