@@ -88,6 +88,11 @@
                                 ng-click="filter.Category.virtualization=!filter.Category.virtualization">
                             <i class="fas fa-cloud"></i> <?= ('Virtualization'); ?>
                         </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.hardware, 'btn-default': !filter.Category.hardware}"
+                                ng-click="filter.Category.hardware=!filter.Category.hardware">
+                            <i class="fas fa-cloud"></i> <?= ('Hardware'); ?>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -156,7 +161,7 @@
                                                 class="wizard-info-tags font-italic font-xs text-right padding-top-10 notify-label-small">
                                                 <i class="fas fa-tags wizard-info-tags"></i>
                                                 <i ng-repeat="category in possibleWizard.category">{{category}}{{$last ?
-                                                    '' : ', '}}</i>
+                                                        '' : ', '}}</i>
                                             </div>
                                         </div>
                                     </div>
@@ -170,15 +175,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
