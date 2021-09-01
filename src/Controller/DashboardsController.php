@@ -52,6 +52,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\NoticeJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\TacticalOverviewHostsJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\WebsiteJson;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
@@ -1667,4 +1668,55 @@ class DashboardsController extends AppController {
         }
         throw new MethodNotAllowedException();
     }
+
+    public function tacticalOverviewHostsWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+        $widgetId = (int)$this->request->getQuery('widgetId');
+        $TacticalOverviewHostsJson = new TacticalOverviewHostsJson();
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        $widget = $WidgetsTable->get($widgetId);
+
+        if ($this->request->is('get')) {
+            $data = [];
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
+            }
+
+            $config = $TacticalOverviewHostsJson->standardizedData($data);
+            $this->set('config', $config);
+
+            $this->viewBuilder()->setOption('serialize', ['config', 'url']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode([
+                    'url' => $this->request->getData('url', '')
+                ])
+            ]);
+
+            $WidgetsTable->save($widget);
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
+
+            $this->set('sucess', true);
+            $this->viewBuilder()->setOption('sucess', ['config']);
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
+
 }
