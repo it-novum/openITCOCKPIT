@@ -296,6 +296,20 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('Track connection time, connected users, session and process usage, ....'),
                 'image'       => 'Oracle_logo.svg',
                 'category'    => ['linux', 'database'],
+            ],
+            'mssql'                  => [
+                'type_id'     => 'mssql',
+                'title'       => __('MSSQL Monitoring'),
+                'description' => __('Monitor your Microsoft SQL Server'),
+                'image'       => 'mssql-server.png',
+                'category'    => ['database'],
+            ],
+            'hp-server-hardware'     => [
+                'type_id'     => 'hp-server-hardware',
+                'title'       => __('HP Server Hardware'),
+                'description' => __('These checks will allow you to monitor your HP server'),
+                'image'       => 'hp.svg',
+                'category'    => ['hardware'],
             ]
         ];
 
