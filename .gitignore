@@ -115,3 +115,7 @@ plugins/MassenversandDeModule
 plugins/HyperscaleModule
 plugins/VMWAREHORIZONModule
 plugins/PRINTERModule
+plugins/DB2Module
+plugins/HPSERVERHARDWAREModule
+plugins/MSSQLModule
+
