@@ -247,6 +247,10 @@ if [ "$CURRENT_LOGENTRY_COLUMN_TYPE" = "varchar(1024)" ]; then
     mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE statusengine_servicestatus CHANGE long_output long_output VARCHAR(8192) DEFAULT NULL, CHANGE perfdata perfdata VARCHAR(2084) DEFAULT NULL"
 fi
 
+# Upgrade to Checkmk 2 in Docker Container
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = '\$USER1\$/checkmk_http_client -H \$HOSTNAME\$' WHERE name = 'check_mk_active' AND command_line LIKE 'PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk%';"
+
+
 #Check and create missing cronjobs
 #oitc api --model Cronjob --action create_missing_cronjobs --data ""
 
