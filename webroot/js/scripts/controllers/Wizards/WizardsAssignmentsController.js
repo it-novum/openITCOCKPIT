@@ -12,6 +12,7 @@ angular.module('openITCOCKPIT')
                 network: true,
                 docker: true,
                 macos: true,
+                virtualization: true,
                 hardware: true
             }
         };

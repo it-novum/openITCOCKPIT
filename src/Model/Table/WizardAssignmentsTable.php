@@ -295,6 +295,19 @@ class WizardAssignmentsTable extends Table {
                 'title'       => __('Uninterruptible Power Supply'),
                 'description' => __('Add your UPS for monitoring by specifying the device details'),
                 'image'       => 'ups.jpg',
+            ],
+            'mssql'                  => [
+                'type_id'     => 'mssql',
+                'title'       => __('MSSQL Monitoring'),
+                'description' => __('Monitor your Microsoft SQL Server'),
+                'image'       => 'mssql-server.png',
+                'category'    => ['database'],
+            ],
+            'hp-server-hardware'     => [
+                'type_id'     => 'hp-server-hardware',
+                'title'       => __('HP Server Hardware'),
+                'description' => __('These checks will allow you to monitor your HP server'),
+                'image'       => 'hp.svg',
                 'category'    => ['hardware'],
             ]
         ];

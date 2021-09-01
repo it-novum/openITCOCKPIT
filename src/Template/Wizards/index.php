@@ -161,7 +161,7 @@
                                                 class="wizard-info-tags font-italic font-xs text-right padding-top-10 notify-label-small">
                                                 <i class="fas fa-tags wizard-info-tags"></i>
                                                 <i ng-repeat="category in possibleWizard.category">{{category}}{{$last ?
-                                                    '' : ', '}}</i>
+                                                        '' : ', '}}</i>
                                             </div>
                                         </div>
                                     </div>

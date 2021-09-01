@@ -114,3 +114,9 @@ plugins/SatelliteSelfMonitoringModule
 plugins/MassenversandDeModule
 plugins/HyperscaleModule
 plugins/UPSModule
+plugins/DB2Module
+plugins/HPSERVERHARDWAREModule
+plugins/PRINTERModule
+plugins/VMWAREHORIZONModule
+plugins/MSSQLModule
+plugins/PRINTERModule
