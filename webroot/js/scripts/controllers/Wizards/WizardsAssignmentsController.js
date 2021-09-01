@@ -11,7 +11,9 @@ angular.module('openITCOCKPIT')
                 mail: true,
                 network: true,
                 docker: true,
-                macos: true
+                macos: true,
+                virtualization: true,
+                hardware: true
             }
         };
 

@@ -118,3 +118,5 @@ plugins/HPSERVERHARDWAREModule
 plugins/PRINTERModule
 plugins/VMWAREHORIZONModule
 plugins/MSSQLModule
+plugins/PRINTERModule
+
