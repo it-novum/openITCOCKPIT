@@ -290,6 +290,13 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
             ],
+            'mssql'                  => [
+                'type_id'     => 'mssql',
+                'title'       => __('MSSQL Monitoring'),
+                'description' => __('Monitor your Microsoft SQL Server'),
+                'image'       => 'mssql-server.png',
+                'category'    => ['database'],
+            ],
             'hp-server-hardware'     => [
                 'type_id'     => 'hp-server-hardware',
                 'title'       => __('HP Server Hardware'),
