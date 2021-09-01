@@ -291,12 +291,34 @@ class WizardAssignmentsTable extends Table {
                 'category'    => ['virtualization', 'cloud'],
             ],
 
+
             'db2'                    => [
                 'type_id'     => 'db2',
                 'title'       => __('DB2 Monitoring'),
                 'description' => __('Monitor your DB2 server'),
                 'image'       => 'db2.png',
                 'category'    => ['database'],
+            ],  
+            'vmware-horizon'    => [
+                'type_id'     => 'vmware-horizon',
+                'title'       => __('VMWare Horizon'),
+                'description' => __('Monitor your VMware Horizon Virtual Desktop Infrastructure'),
+                'image'       => 'vmware-horizon.png',
+                'category'    => ['virtualization', 'cloud'],
+            ],
+            'ups'                    => [
+                'type_id'     => 'ups',
+                'title'       => __('Uninterruptible Power Supply'),
+                'description' => __('Add your UPS for monitoring by specifying the device details'),
+                'image'       => 'ups.jpg',
+                'category'    => ['hardware'],
+            ],
+            'printer'                => [
+                'type_id'     => 'printer',
+                'title'       => __('Printer'),
+                'description' => __('Add your printers for monitoring by specifying the device details'),
+                'image'       => 'printer.jpg',
+                'category'    => ['hardware'],
             ],
             'mssql'                  => [
                 'type_id'     => 'mssql',
