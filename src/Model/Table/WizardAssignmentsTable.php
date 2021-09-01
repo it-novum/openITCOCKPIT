@@ -295,6 +295,15 @@ class WizardAssignmentsTable extends Table {
                 'title'       => __('Uninterruptible Power Supply'),
                 'description' => __('Add your UPS for monitoring by specifying the device details'),
                 'image'       => 'ups.jpg',
+                'category'    => ['hardware'],
+            ],
+
+            'printer'                => [
+                'type_id'     => 'printer',
+                'title'       => __('Printer'),
+                'description' => __('Add your printers for monitoring by specifying the device details'),
+                'image'       => 'printer.jpg',
+                'category'    => ['hardware'],
             ],
             'mssql'                  => [
                 'type_id'     => 'mssql',
