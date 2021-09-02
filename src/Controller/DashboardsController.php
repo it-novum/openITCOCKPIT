@@ -1701,12 +1701,10 @@ class DashboardsController extends AppController {
 
 
         if ($this->request->is('post')) {
+            $config = $TacticalOverviewHostsJson->standardizedData($this->request->getData());
             $widget = $WidgetsTable->patchEntity($widget, [
-                'json_data' => json_encode([
-                    'url' => $this->request->getData('url', '')
-                ])
+                'json_data' => json_encode($config)
             ]);
-
             $WidgetsTable->save($widget);
             if ($widget->hasErrors()) {
                 return $this->serializeCake4ErrorMessage($widget);

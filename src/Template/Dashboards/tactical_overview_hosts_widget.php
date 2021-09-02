@@ -15,6 +15,41 @@
                     </a>
                 </div>
             </div>
+            <div class="container-fluid padding-top-10 text-center">
+                <div class="d-flex flex-row">
+                    <div class="p-1 bg-color-grayDark text-white tactical-overview-first-flex-item">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <div class="bg-up text-white tactical-overview-flex-item padding-top-50 padding-bottom-50">1234567</div>
+                    <div class="bg-down text-white tactical-overview-flex-item">2748357</div>
+                    <div class="bg-unreachable text-white tactical-overview-flex-item">64333</div>
+                </div>
+                <div class="d-flex flex-row">
+                    <div class="p-1 bg-color-grayDark tactical-overview-first-flex-item">
+                    </div>
+                    <div class="bg-color-grayDark tactical-overview-flex-item font-lg text-white text-left">Unhandled Hosts</div>
+                    <div class="bg-down-soft tactical-overview-flex-item font-xl text-white">65554</div>
+                    <div class="bg-unreachable-soft tactical-overview-flex-item font-xl text-white">33</div>
+                </div>
+                <div class="d-flex flex-row">
+                    <div class="p-1 tactical-overview-first-flex-item">
+                        <i class="fa fa-user text-primary" title="is acknowledged"></i>
+                    </div>
+                    <div class="up tactical-overview-flex-item font-xl">0</div>
+                    <div class="down  tactical-overview-flex-item font-xl">54</div>
+                    <div class="text-unreachable tactical-overview-flex-item font-xl">5767</div>
+                </div>
+
+                <div class="d-flex flex-row">
+                    <div class="p-1 tactical-overview-first-flex-item">
+                        <i class="fa fa-power-off text-primary" title="is in downtime"></i>
+                    </div>
+                    <div class="up tactical-overview-flex-item font-xl">0</div>
+                    <div class="down tactical-overview-flex-item font-xl">568</div>
+                    <div class="text-unreachable tactical-overview-flex-item font-xl">399</div>
+                </div>
+            </div>
+
         </flippy-front>
         <flippy-back class="fixFlippy">
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark margin-bottom-10"

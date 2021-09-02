@@ -36,9 +36,6 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
                 });
             };
 
-            $scope.$on('$destroy', function(){
-                $scope.pauseScroll();
-            });
 
             $scope.load = function(options){
 

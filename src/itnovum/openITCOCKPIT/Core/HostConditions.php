@@ -68,6 +68,11 @@ class HostConditions {
     private $satellite_id = null;
 
     /**
+     * @var array
+     */
+    private $hostgroupIds = [];
+
+    /**
      * HostConditions constructor.
      * @param array $conditions
      */
@@ -129,7 +134,7 @@ class HostConditions {
         if ($this->includeDisabled() === false) {
             $conditions['Hosts.disabled'] = 0;
         }
-        if($this->getSatelliteId() !== null){
+        if ($this->getSatelliteId() !== null) {
             $conditions['Hosts.satellite_id'] = $this->getSatelliteId();
         }
 
@@ -226,6 +231,20 @@ class HostConditions {
      */
     public function getSatelliteId() {
         return $this->satellite_id;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostgroupIds() {
+        return $this->hostgroupIds;
+    }
+
+    /**
+     * @param array $hostgroupIds
+     */
+    public function setHostgroupIds($hostgroupIds) {
+        $this->hostgroupIds = $hostgroupIds;
     }
 
 }

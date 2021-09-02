@@ -34,7 +34,9 @@ class TacticalOverviewHostsJson extends DashboardJsonStandardizer {
      */
     protected $fields = [
         'Host' => [
-            'name' => ''
+            'name' => '',
+            'keywords' => '',
+            'not_keywords' => ''
         ]
     ];
 }
