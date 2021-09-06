@@ -55,7 +55,7 @@ class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
         $identity = $this->_findIdentity($credentials['username']);
         if (array_key_exists('password', $credentials) && $identity !== null) {
             $password = $credentials['password'];
-            if (!$this->_checkPassword($identity, $password)) {
+            if (!$this->_checkPassword($identity, $credentials['username'], $password)) {
                 return null;
             }
         }
@@ -79,11 +79,12 @@ class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
      * Connect to LDAP Server and check provided credentials
      *
      * @param array|\ArrayAccess|null $identity The identity or null.
+     * @param string|null $username The LDAP username.
      * @param string|null $password The password.
      * @return bool
      */
-    protected function _checkPassword($identity, ?string $password): bool {
-        if (empty($password)) {
+    protected function _checkPassword($identity, ?string $username, ?string $password): bool {
+        if (empty($username) || empty($password)) {
             return false;
         }
 
@@ -134,15 +135,17 @@ class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
             Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
             Filters::equal('sAMAccountName', $identity->get('samaccountname'))
         );
+
         if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
             $filter = Filters::and(
                 Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                Filters::equal('dn', $identity->get('ldap_dn'))
+                Filters::equal('cn', $username)
             );
         }
 
         //Print the filters as string for ldapsearch
         //FileDebugger::dump((string)$filter);
+        // Microsoft Active Directory
         $search = Operations::search($filter, 'cn', 'memberof', 'dn');
 
         /** @var \FreeDSx\Ldap\Entry\Entries $entries */
@@ -196,6 +199,7 @@ class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
                 }
             }
         }
+
         return false;
     }
 }
