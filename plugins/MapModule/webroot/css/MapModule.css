@@ -200,34 +200,34 @@
     line-height: 1em;
 }
 .helplines5{
-    background: repeating-linear-gradient(to right, transparent 0 calc(5px - 1px), #cccccc80 calc(5px - 1px) 5px),
-    repeating-linear-gradient(to bottom, transparent 0 calc(5px - 1px), #cccccc80 calc(5px - 1px) 5px) transparent;
+    background: repeating-linear-gradient(transparent, transparent 4px, #cccccc80 4px, #cccccc80 5px),
+    repeating-linear-gradient(to right, transparent, transparent 4px, #cccccc80 4px, #cccccc80 5px);
 }
 .helplines10{
-    background: repeating-linear-gradient(to right, transparent 0 calc(10px - 1px), #cccccc80 calc(10px - 1px) 10px),
-    repeating-linear-gradient(to bottom, transparent 0 calc(10px - 1px), #cccccc80 calc(10px - 1px) 10px) transparent;
+    background: repeating-linear-gradient(transparent, transparent 9px, #cccccc80 9px, #cccccc80 10px),
+    repeating-linear-gradient(to right, transparent, transparent 9px, #cccccc80 9px, #cccccc80 10px);
 }
 .helplines15{
-    background:repeating-linear-gradient(to right, transparent 0 calc(15px - 1px), #cccccc80 calc(15px - 1px) 15px),
-    repeating-linear-gradient(to bottom, transparent 0 calc(15px - 1px), #cccccc80 calc(15px - 1px) 15px) transparent;
+    background: repeating-linear-gradient(transparent, transparent 14px, #cccccc80 14px, #cccccc80 15px),
+    repeating-linear-gradient(to right, transparent, transparent 14px, #cccccc80 14px, #cccccc80 15px);
 }
 .helplines20{
-    background:repeating-linear-gradient(to right, transparent 0 calc(20px - 1px), #cccccc80 calc(20px - 1px) 20px),
-    repeating-linear-gradient(to bottom, transparent 0 calc(20px - 1px), #cccccc80 calc(20px - 1px) 20px) transparent;
+    background: repeating-linear-gradient(transparent, transparent 19px, #cccccc80 19px, #cccccc80 20px),
+    repeating-linear-gradient(to right, transparent, transparent 19px, #cccccc80 19px, #cccccc80 20px);
 }
 .helplines25{
-    background:repeating-linear-gradient(to right, transparent 0 calc(25px - 1px), #cccccc80 calc(25px - 1px) 25px),
-    repeating-linear-gradient(to bottom, transparent 0 calc(25px - 1px), #cccccc80 calc(25px - 1px) 25px) transparent;
+    background: repeating-linear-gradient(transparent, transparent 24px, #cccccc80 24px, #cccccc80 25px),
+    repeating-linear-gradient(to right, transparent, transparent 24px, #cccccc80 24px, #cccccc80 25px);
 }
 .helplines30{
-    background:repeating-linear-gradient(to right, transparent 0 calc(30px - 1px), #cccccc80 calc(30px - 1px) 30px),
-    repeating-linear-gradient(to bottom, transparent 0 calc(30px - 1px), #cccccc80 calc(30px - 1px) 30px) transparent;
+    background: repeating-linear-gradient(transparent, transparent 29px, #cccccc80 29px, #cccccc80 30px),
+    repeating-linear-gradient(to right, transparent, transparent 29px, #cccccc80 29px, #cccccc80 30px);
 }
 .helplines50{
-    background:repeating-linear-gradient(to right, transparent 0 calc(50px - 1px), #cccccc80 calc(50px - 1px) 50px),
-    repeating-linear-gradient(to bottom, transparent 0 calc(50px - 1px), #cccccc80 calc(50px - 1px) 50px) transparent;
+    background: repeating-linear-gradient(transparent, transparent 49px, #cccccc80 49px, #cccccc80 50px),
+    repeating-linear-gradient(to right, transparent, transparent 49px, #cccccc80 49px, #cccccc80 50px);
 }
 .helplines80{
-    background:repeating-linear-gradient(to right, transparent 0 calc(80px - 1px), #cccccc80 calc(80px - 1px) 80px),
-    repeating-linear-gradient(to bottom, transparent 0 calc(80px - 1px), #cccccc80 calc(80px - 1px) 80px) transparent;
+    background: repeating-linear-gradient(transparent, transparent 79px, #cccccc80 79px, #cccccc80 80px),
+    repeating-linear-gradient(to right, transparent, transparent 79px, #cccccc80 79px, #cccccc80 80px);
 }
