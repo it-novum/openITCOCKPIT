@@ -13,10 +13,6 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
 
             var $widget = $('#widget-' + $scope.widget.id);
 
-            $widget.on('resize', function(event, items){
-                hasResize();
-            });
-
             $scope.hostListTimeout = null;
 
 
@@ -30,7 +26,14 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
             };
 
             var loadWidgetConfig = function(){
-                $http.get("/dashboards/tacticalOverviewHostsWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
+                //$http.get("/dashboards/tacticalOverviewWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter)
+                $http.get("/dashboards/tacticalOverviewWidget.json", {
+                    params: {
+                        'angular': true,
+                        'widgetId': $scope.widget.id,
+                        'type': 'hosts'
+                    }
+                }).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.load();
                 });
@@ -68,7 +71,7 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
 
             $scope.saveSettings = function(){
                 var settings = $scope.filter;
-                $http.post("/dashboards/tacticalOverviewHostsWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
+                $http.post("/dashboards/tacticalOverviewWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
                     $scope.currentPage = 1;
                     loadWidgetConfig();
                     $scope.hideConfig();

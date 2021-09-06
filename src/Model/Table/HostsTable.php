@@ -839,8 +839,6 @@ class HostsTable extends Table {
             'Hosts.container_id',
             'Hosts.tags',
             'Hosts.priority',
-            //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-            //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
 
             'Hoststatus.current_state',
             'Hoststatus.last_check',
@@ -4121,5 +4119,162 @@ class HostsTable extends Table {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array|\Cake\Datasource\ResultSetInterface
+     */
+    public function getHostsWithStatusByConditions($MY_RIGHTS, $conditions) {
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Hosts.uuid'
+            ])
+            ->where([
+                'Hosts.disabled'       => 0
+            ])
+            ->join([
+                'a' => [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Hosts.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+                ],
+                'b' => [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+        if (isset($where['Hosts.keywords rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.keywords rlike'],
+                'string',
+                'RLIKE'
+            );
+            unset($where['Hosts.keywords rlike']);
+        }
+
+        if (isset($where['Hosts.not_keywords not rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.not_keywords not rlike'],
+                'string',
+                'NOT RLIKE'
+            );
+            unset($where['Hosts.not_keywords not rlike']);
+        }
+
+        $query->disableHydration();
+
+        $where = [];
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+
+        $query->andWhere($where);
+        $result = $query->all();
+
+        if ($result === null) {
+            return [];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array|\Cake\Datasource\ResultSetInterface
+     */
+    public function getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Hosts.id'
+            ])
+            ->where([
+                'Hosts.disabled' => 0
+            ])
+            ->join([
+                'b' => [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Hosts.uuid',
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+
+        $where = [];
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+
+        if (isset($where['Hosts.keywords rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.keywords rlike'],
+                'string',
+                'RLIKE'
+            );
+            unset($where['Hosts.keywords rlike']);
+        }
+
+        if (isset($where['Hosts.not_keywords not rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.not_keywords not rlike'],
+                'string',
+                'NOT RLIKE'
+            );
+            unset($where['Hosts.not_keywords not rlike']);
+        }
+
+        $query->disableHydration();
+
+        $where = [];
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+
+        $query->andWhere($where);
+        $result = $query->all();
+
+        if ($result === null) {
+            return [];
+        }
+
+        return $result;
     }
 }

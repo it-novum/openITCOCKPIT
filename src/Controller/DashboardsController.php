@@ -1461,15 +1461,13 @@ class DashboardsController extends AppController {
 
             if ($this->DbBackend->isCrateDb()) {
                 throw new MissingDbBackendException('MissingDbBackendException');
-                //$query = $this->Hoststatus->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
-                //$modelName = 'Hoststatus';
             }
 
             if ($this->DbBackend->isStatusengine3()) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-                $count = $HostsTable->getHoststatusCountBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                $count = $HostsTable->getHostsWithStatusByConditionsStatusengine3($this->MY_RIGHTS, $config);
             }
             $this->set('config', $config);
             $this->set('statusCount', $count);
@@ -1670,12 +1668,20 @@ class DashboardsController extends AppController {
     }
 
     public function tacticalOverviewHostsWidget() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function tacticalOverviewWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
         $widgetId = (int)$this->request->getQuery('widgetId');
+        $type = (int)$this->request->getQuery('type');
         $TacticalOverviewHostsJson = new TacticalOverviewHostsJson();
+
+
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
@@ -1687,15 +1693,49 @@ class DashboardsController extends AppController {
         $widget = $WidgetsTable->get($widgetId);
 
         if ($this->request->is('get')) {
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                /** @var $ContainersTable ContainersTable */
+                $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+                $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            }
+
             $data = [];
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
             }
 
             $config = $TacticalOverviewHostsJson->standardizedData($data);
+
+            switch ($type){
+                case 'hosts':
+                case 'hosts_services':
+                if ($this->DbBackend->isNdoUtils()) {
+                    /** @var HostsTable $HostsTable */
+                    $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                    $hoststatus = $HostsTable->getHostsWithStatusByConditions($MY_RIGHTS, $config);
+                }
+
+                if ($this->DbBackend->isCrateDb()) {
+                    throw new MissingDbBackendException('MissingDbBackendException');
+                }
+
+                if ($this->DbBackend->isStatusengine3()) {
+                    /** @var ServicesTable $ServicesTable */
+                    $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                    $hoststatus = $HostsTable->getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $config);;
+                }
+                    break;
+                case 'services':
+                    break;
+
+            }
+
+
             $this->set('config', $config);
 
-            $this->viewBuilder()->setOption('serialize', ['config', 'url']);
+
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
