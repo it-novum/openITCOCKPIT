@@ -37,6 +37,20 @@ class TacticalOverviewHostsJson extends DashboardJsonStandardizer {
             'name' => '',
             'keywords' => '',
             'not_keywords' => ''
+        ],
+        'Hostgroup' => [
+            '_ids' => ''
         ]
     ];
+    /**
+     * @param array $request
+     * @return array
+     */
+    public function standardizedData($request = []) {
+        if(isset($request['Hostgroup']['_ids']) && is_array($request['Hostgroup']['_ids'])){
+            // POST request to save to database
+            $request['Hostgroup']['_ids'] = implode(',',$request['Hostgroup']['_ids']);
+        }
+        return $this->_standardizedData($this->fields, $request);
+    }
 }

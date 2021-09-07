@@ -857,5 +857,5 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    font-size: 2.5vw;
+    font-size: 3.5vw;
 }

@@ -9,7 +9,7 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
         controller: function($scope){
             $scope.interval = null;
             $scope.init = true;
-
+            $scope.hoststatusSummary = null;
 
             var $widget = $('#widget-' + $scope.widget.id);
 
@@ -22,11 +22,13 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
                     keywords: '',
                     not_keywords: '',
                     address: ''
+                },
+                Hostgroup: {
+                    _ids: []
                 }
             };
 
             var loadWidgetConfig = function(){
-                //$http.get("/dashboards/tacticalOverviewWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter)
                 $http.get("/dashboards/tacticalOverviewWidget.json", {
                     params: {
                         'angular': true,
@@ -35,11 +37,15 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
                     }
                 }).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
-                    $scope.load();
+                    $scope.filter.Hostgroup._ids = result.data.config.Hostgroup._ids.split(',').map(Number);
+
+                    $scope.hoststatusSummary = result.data.hoststatusSummary;
+                    $scope.loadHostgroups();
+                    //$scope.load();
                 });
             };
 
-
+/*
             $scope.load = function(options){
 
                 options = options || {};
@@ -68,6 +74,26 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
                 });
             };
 
+ */
+
+            $scope.loadHostgroups = function(searchString){
+                var selected = [];
+
+                if($scope.filter.Hostgroup._ids){
+                    selected = $scope.filter.Hostgroup._ids;
+                }
+
+                $http.get("/hostgroups/loadHostgroupsByString.json", {
+                    params: {
+                        'angular': true,
+                        'filter[Containers.name]': searchString,
+                        'selected[]': selected
+                    }
+                }).then(function(result){
+                    $scope.hostgroups = result.data.hostgroups;
+                });
+            };
+
 
             $scope.saveSettings = function(){
                 var settings = $scope.filter;
@@ -88,7 +114,6 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
             };
             $scope.showConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_OUT');
-                $scope.load();
             };
 
 

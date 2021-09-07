@@ -55,6 +55,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TacticalOverviewHostsJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\WebsiteJson;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -1678,9 +1679,8 @@ class DashboardsController extends AppController {
             return;
         }
         $widgetId = (int)$this->request->getQuery('widgetId');
-        $type = (int)$this->request->getQuery('type');
+        $type = $this->request->getQuery('type');
         $TacticalOverviewHostsJson = new TacticalOverviewHostsJson();
-
 
 
         /** @var WidgetsTable $WidgetsTable */
@@ -1704,27 +1704,29 @@ class DashboardsController extends AppController {
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
             }
-
             $config = $TacticalOverviewHostsJson->standardizedData($data);
 
-            switch ($type){
+            $hoststatusSummary = [];
+            $servicestatusSummary = [];
+            switch ($type) {
                 case 'hosts':
                 case 'hosts_services':
-                if ($this->DbBackend->isNdoUtils()) {
-                    /** @var HostsTable $HostsTable */
-                    $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                    $hoststatus = $HostsTable->getHostsWithStatusByConditions($MY_RIGHTS, $config);
-                }
+                    if ($this->DbBackend->isNdoUtils()) {
+                        /** @var HostsTable $HostsTable */
+                        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                        $hoststatus = $HostsTable->getHostsWithStatusByConditions($MY_RIGHTS, $config);
+                    }
 
-                if ($this->DbBackend->isCrateDb()) {
-                    throw new MissingDbBackendException('MissingDbBackendException');
-                }
+                    if ($this->DbBackend->isCrateDb()) {
+                        throw new MissingDbBackendException('MissingDbBackendException');
+                    }
 
-                if ($this->DbBackend->isStatusengine3()) {
-                    /** @var ServicesTable $ServicesTable */
-                    $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                    $hoststatus = $HostsTable->getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $config);;
-                }
+                    if ($this->DbBackend->isStatusengine3()) {
+                        /** @var HostsTable $HostsTable */
+                        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                        $hoststatus = $HostsTable->getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $config);
+                        $hoststatusSummary = $HostsTable->getHostStateSummary($hoststatus, true);
+                    }
                     break;
                 case 'services':
                     break;
@@ -1733,15 +1735,17 @@ class DashboardsController extends AppController {
 
 
             $this->set('config', $config);
+            $this->set('hoststatusSummary', $hoststatusSummary);
+            $this->set('servicestatusSummary', $servicestatusSummary);
 
-
-            $this->viewBuilder()->setOption('serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config', 'hoststatusSummary', 'servicestatusSummary']);
             return;
         }
 
 
         if ($this->request->is('post')) {
             $config = $TacticalOverviewHostsJson->standardizedData($this->request->getData());
+
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
             ]);

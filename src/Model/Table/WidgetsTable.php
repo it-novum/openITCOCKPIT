@@ -320,7 +320,7 @@ class WidgetsTable extends Table {
                 'icon'      => 'fas fa-th-list',
                 'directive' => 'tactical-overview-hosts-widget',
                 'width'     => 6,
-                'height'    => 12
+                'height'    => 15
             ];
         }
 
