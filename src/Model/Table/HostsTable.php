@@ -19,7 +19,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -4243,17 +4242,6 @@ class HostsTable extends Table {
                 'Hoststatus.active_checks_enabled',
                 'Hoststatus.problem_has_been_acknowledged'
             ]);
-/*
-        $query->select([
-            'hostgroup_ids' => $query->newExpr('
-            IF(GROUP_CONCAT(
-                    DISTINCT `HostToHostgroups`.`hostgroup_id`
-                ),
-                NULL)
-                ')
-
-        ]);
-*/
         $query->where([
             'Hosts.disabled' => 0
         ])
@@ -4297,61 +4285,24 @@ class HostsTable extends Table {
         ]);
         if (!empty($conditions['Hostgroup']['_ids'])) {
             $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
-
-            /*
-            $query->innerJoinWith('Hostgroups', function (Query $q) use ($hostgroupIds) {
-                return $q->where(['Hostgroups.id IN' => $hostgroupIds]);
-            });
-            */
-
-           // FileDebugger::dieQuery($query);
-
-            /*
-            $query->innerJoin([
-                'Hostgroups'
-            ])->where([
-                'Hostgroups.id IN' => $hostgroupIds
+            $query->select([
+                'hostgroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
+                'count'         => $query->newExpr(
+                    'SELECT COUNT(hostgroups.id)
+                                FROM hostgroups
+                                WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
+                                AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
             ]);
-            */
-            /*
-            $query->contain([
-                'Hostgroups' => [
-                    'Hosttemplates' => function (Query $query) {
-                        $query->disableAutoFields()
-                            ->select([
-                                'id',
-                            ])
-                            ->contain([
-                                'Hosts' => function (Query $query) {
-                                    $query->disableAutoFields()
-                                        ->select([
-                                            'Hosts.id',
-                                            'Hosts.uuid',
-                                            'Hosts.hosttemplate_id',
-                                            'Hostgroups.id'
-                                        ])
-                                        ->leftJoinWith('Hostgroups')
-                                        ->whereNull('Hostgroups.id');
-                                    return $query;
-                                }
-                            ]);
-                        return $query;
-                    },
-
-                    // Get all hosts from this host group
-                    'Hosts'         => function (Query $query) {
-                        $query->disableAutoFields()
-                            ->select([
-                                'Hosts.id',
-                                'Hosts.uuid',
-                            ]);
-                        return $query;
-                    }
-                ]
-            ])->where([
-                'Hostgroups.id IN' => $hostgroupIds
-            ]);*/
-
+            $query->having([
+                'hostgroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+            $query->group('Hosts.id');
         }
 
         $where = [];
