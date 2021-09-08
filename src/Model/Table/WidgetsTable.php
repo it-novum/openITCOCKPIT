@@ -286,17 +286,6 @@ class WidgetsTable extends Table {
             ];
         }
 
-        if (isset($ACL_PERMISSIONS['hosts']['index']) && isset($ACL_PERMISSIONS['services']['index'])) {
-            $widgets[] = [
-                'type_id'   => 20,
-                'title'     => __('Tactical overview for hosts and services'),
-                'icon'      => 'fas fa-th-list',
-                'directive' => 'tactical-overview-hosts-services-widget',
-                'width'     => 12,
-                'height'    => 12
-            ];
-        }
-
         if (isset($ACL_PERMISSIONS['hosts']['index'])) {
             $widgets[] = [
                 'type_id'   => 9,
@@ -347,7 +336,7 @@ class WidgetsTable extends Table {
                 'icon'      => 'fas fa-th-list',
                 'directive' => 'tactical-overview-services-widget',
                 'width'     => 6,
-                'height'    => 12
+                'height'    => 16
             ];
         }
 

@@ -50,7 +50,7 @@ $hasHostIndexPermissions = $this->Acl->hasPermission('index', 'hosts', '');
                     <div class="p-1 bg-color-grayDark text-white tactical-overview-first-flex-item">
                         <i class="fas fa-desktop"></i>
                     </div>
-                    <div class="bg-up text-white tactical-overview-flex-item padding-top-20 padding-bottom-20">
+                    <div class="bg-up text-white tactical-overview-flex-item padding-top-50 padding-bottom-50">
                         {{hoststatusSummary.state[0]}}
                     </div>
                     <div class="bg-down text-white tactical-overview-flex-item">
@@ -136,7 +136,7 @@ $hasHostIndexPermissions = $this->Acl->hasPermission('index', 'hosts', '');
                     </div>
                     <div class="unreachable tactical-overview-flex-item font-xl">
                         <?php if ($hasHostIndexPermissions): ?>
-                            <a ng-if="hoststatusSummary.acknowledged[2] > 0"
+                            <a class="unreachable" ng-if="hoststatusSummary.acknowledged[2] > 0"
                                ui-sref="HostsIndex({id: hoststatusSummary.acknowledged.hostIds[2]})">
                                 {{hoststatusSummary.acknowledged[2]}}
                             </a>

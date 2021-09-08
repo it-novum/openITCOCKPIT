@@ -4153,7 +4153,7 @@ class HostsTable extends Table {
     /**
      * @param $MY_RIGHTS
      * @param $conditions
-     * @return array|\Cake\Datasource\ResultSetInterface
+     * @return array
      */
     public function getHostsWithStatusByConditions($MY_RIGHTS, $conditions) {
         $query = $this->find();
@@ -4165,17 +4165,35 @@ class HostsTable extends Table {
                 'Hosts.disabled' => 0
             ])
             ->join([
-                'a' => [
+                'a'                           => [
                     'table'      => 'nagios_objects',
                     'type'       => 'INNER',
                     'alias'      => 'HostObject',
                     'conditions' => 'Hosts.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
                 ],
-                'b' => [
+                'b'                           => [
                     'table'      => 'nagios_hoststatus',
                     'type'       => 'INNER',
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ],
+                'hosttemplates'               => [
+                    'table'      => 'hosttemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hosttemplates',
+                    'conditions' => 'Hosttemplates.id = Hosts.hosttemplate_id',
+                ],
+                'hosts_to_hostgroups'         => [
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HostToHostgroups',
+                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
+                ],
+                'hosttemplates_to_hostgroups' => [
+                    'table'      => 'hosttemplates_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HosttemplatesToHostgroups',
+                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
                 ]
             ]);
         if (!empty($MY_RIGHTS)) {
@@ -4189,6 +4207,32 @@ class HostsTable extends Table {
         $query->contain([
             'HostsToContainersSharing'
         ]);
+
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+        if (!empty($conditions['Hostgroup']['_ids'])) {
+            $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
+            $query->select([
+                'hostgroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
+                'count'         => $query->newExpr(
+                    'SELECT COUNT(hostgroups.id)
+                                FROM hostgroups
+                                WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
+                                AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
+            ]);
+            $query->having([
+                'hostgroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+            $query->group('Hosts.id');
+        }
+
         if (isset($where['Hosts.keywords rlike'])) {
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
@@ -4215,22 +4259,20 @@ class HostsTable extends Table {
         if (!empty($conditions['Host']['name'])) {
             $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
         }
-
-
         $query->andWhere($where);
+        $query->disableHydration();
         $result = $query->all();
-
         if ($result === null) {
             return [];
         }
 
-        return $result;
+        return $result->toArray();
     }
 
     /**
      * @param $MY_RIGHTS
      * @param $conditions
-     * @return array|\Cake\Datasource\ResultSetInterface
+     * @return array
      */
     public function getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
         $query = $this->find();
@@ -4327,8 +4369,6 @@ class HostsTable extends Table {
                 'NOT RLIKE'
             );
         }
-
-
         $query->andWhere($where);
         $query->disableHydration();
         $result = $query->all();

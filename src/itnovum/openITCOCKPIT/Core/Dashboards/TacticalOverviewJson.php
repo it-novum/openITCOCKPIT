@@ -25,7 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\Dashboards;
 
 
-class TacticalOverviewHostsJson extends DashboardJsonStandardizer {
+class TacticalOverviewJson extends DashboardJsonStandardizer {
 
     /**
      * @var array
@@ -33,23 +33,34 @@ class TacticalOverviewHostsJson extends DashboardJsonStandardizer {
      * oITC will take care of the rest of the work
      */
     protected $fields = [
-        'Host' => [
-            'name' => '',
-            'keywords' => '',
+        'Host'         => [
+            'name' => ''
+        ],
+        'Service'      => [
+            'servicename'  => '',
+            'keywords'     => '',
             'not_keywords' => ''
         ],
-        'Hostgroup' => [
+        'Hostgroup'    => [
+            '_ids' => ''
+        ],
+        'Servicegroup' => [
             '_ids' => ''
         ]
     ];
+
     /**
      * @param array $request
      * @return array
      */
     public function standardizedData($request = []) {
-        if(isset($request['Hostgroup']['_ids']) && is_array($request['Hostgroup']['_ids'])){
+        if (isset($request['Hostgroup']['_ids']) && is_array($request['Hostgroup']['_ids'])) {
             // POST request to save to database
-            $request['Hostgroup']['_ids'] = implode(',',$request['Hostgroup']['_ids']);
+            $request['Hostgroup']['_ids'] = implode(',', $request['Hostgroup']['_ids']);
+        }
+        if (isset($request['Servicegroup']['_ids']) && is_array($request['Servicegroup']['_ids'])) {
+            // POST request to save to database
+            $request['Servicegroup']['_ids'] = implode(',', $request['Servicegroup']['_ids']);
         }
         return $this->_standardizedData($this->fields, $request);
     }
