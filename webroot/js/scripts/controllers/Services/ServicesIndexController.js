@@ -23,6 +23,7 @@ angular.module('openITCOCKPIT')
                     not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
                     passive: QueryStringService.getStateValue($stateParams, 'passive', false) == '1',
                     active: QueryStringService.getValue('active', false) === '1',
+                    notifications_enabled: QueryStringService.getStateValue($stateParams, 'notifications_not_enabled', false) == '1',
                     output: ''
                 },
                 Services: {
@@ -68,11 +69,16 @@ angular.module('openITCOCKPIT')
 
             var hasBeenAcknowledged = '';
             var inDowntime = '';
+            var notificationsEnabled = '';
+
             if($scope.filter.Servicestatus.acknowledged ^ $scope.filter.Servicestatus.not_acknowledged){
                 hasBeenAcknowledged = $scope.filter.Servicestatus.acknowledged === true;
             }
             if($scope.filter.Servicestatus.in_downtime ^ $scope.filter.Servicestatus.not_in_downtime){
                 inDowntime = $scope.filter.Servicestatus.in_downtime === true;
+            }
+            if($scope.filter.Servicestatus.notifications_enabled ^ $scope.filter.Servicestatus.notifications_not_enabled){
+                notificationsEnabled = $scope.filter.Servicestatus.notifications_enabled === true;
             }
 
             var passive = '';
@@ -105,6 +111,7 @@ angular.module('openITCOCKPIT')
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive,
+                'filter[Servicestatus.notifications_enabled]': notificationsEnabled,
                 'filter[servicepriority][]': priorityFilter
 
             };

@@ -1142,6 +1142,13 @@ use Cake\Core\Plugin;
                                        title="<?php echo __('in Downtime'); ?>"></i>
                                 </th>
 
+                                <th class="no-sort text-center"
+                                    ng-click="orderBy('Servicestatus.notifications_enabled')">
+                                    <i class="fa" ng-class="getSortClass('Servicestatus.notifications_enabled')"></i>
+                                    <i class="fas fa-envelope" title="<?php echo __('Notifications enabled'); ?>">
+                                    </i>
+                                </th>
+
                                 <th class="no-sort text-center">
                                     <i class="fa fa fa-area-chart"
                                        title="<?php echo __('Grapher'); ?>"></i>
@@ -1236,6 +1243,7 @@ use Cake\Core\Plugin;
                                 <th></th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
 
                                 <th>
                                     <div class="form-group">
@@ -1297,6 +1305,19 @@ use Cake\Core\Plugin;
                                 <td class="text-center">
                                     <i class="fa fa-power-off"
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="icon-stack margin-right-5"
+                                         ng-show="service.Servicestatus.notifications_enabled">
+                                        <i class="fas fa-envelope opacity-100 "></i>
+                                        <i class="fas fa-check opacity-100 fa-xs text-success cornered cornered-lr"></i>
+                                    </div>
+                                    <div class="icon-stack margin-right-5"
+                                         ng-hide="service.Servicestatus.notifications_enabled">
+                                        <i class="fas fa-envelope opacity-100 "></i>
+                                        <i class="fas fa-times opacity-100 fa-xs text-danger cornered cornered-lr"></i>
+                                    </div>
                                 </td>
 
                                 <td class="text-center">
