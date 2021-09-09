@@ -144,7 +144,8 @@ class HostComparisonForSave {
             'active_checks_enabled',
             'freshness_checks_enabled',
             'freshness_threshold',
-            'host_url'
+            'host_url',
+            'notifications_enabled'
         ];
 
         $data = [];
@@ -407,4 +408,3 @@ class HostComparisonForSave {
     }
 
 }
-
