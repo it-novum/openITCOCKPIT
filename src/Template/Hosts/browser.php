@@ -1064,7 +1064,7 @@ use Cake\Core\Plugin;
                     <!-- Grafana Module end -->
                     <!-- Import Module start -->
                     <div ng-show="selectedTab == 'tab6'" ng-if="AdditionalInformationExists && selectedTab == 'tab6'">
-                        <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('host_configuration', 'elements', 'servicenowModule')): ?>
+                        <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
                             <idoit-additional-information-element host-id="{{mergedHost.id}}">
 
                             </idoit-additional-information-element>
