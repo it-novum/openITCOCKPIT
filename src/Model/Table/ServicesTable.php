@@ -4197,6 +4197,8 @@ class ServicesTable extends Table {
                     'alias'      => 'ServicetemplatesToServicegroups',
                     'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
                 ]
+            ])->contain([
+                'Hosts'
             ]);
         if (!empty($MY_RIGHTS)) {
             $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
@@ -4208,6 +4210,7 @@ class ServicesTable extends Table {
                 return $q;
             });
         }
+
         if (!empty($conditions['Servicegroup']['_ids'])) {
             $servicegroupIds = explode(',', $conditions['Servicegroup']['_ids']);
             $query->select([
@@ -4250,9 +4253,12 @@ class ServicesTable extends Table {
             unset($where['Services.not_keywords not rlike']);
         }
 
-        $query->disableHydration();
-
         $where = [];
+        if (!empty($conditions['Service']['servicename'])) {
+            $query->having([
+                'servicename LIKE' => $conditions['Service']['servicename']
+            ]);
+        }
         if (!empty($conditions['Host']['name'])) {
             $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
         }
