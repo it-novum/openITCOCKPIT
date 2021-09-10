@@ -112,7 +112,7 @@ use Cake\Core\Plugin;
                                 </a>
                             </li>
                         <?php endif; ?>
-                        <?php if (Plugin::isLoaded('ImportModule')): ?>
+                        <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
                             <li class="nav-item pointer" ng-show="AdditionalInformationExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab6'; hideTimeline()"
                                    role="tab">
@@ -960,9 +960,9 @@ use Cake\Core\Plugin;
                                             <span ng-hide="failureDurationInPercent">
                                                 <i class="fa fa-refresh fa-spin txt-primary"></i>
                                             </span>
-                                            <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ?
-                                                    failureDurationInPercent + ' %' :
-                                                    '<?php echo __('No data available!'); ?>'}}
+                                            <span ng-show="failureDurationInPercent">
+                                                {{(failureDurationInPercent) ? failureDurationInPercent + ' %' :
+                                                    '<?= __('No data available!'); ?>'}}
                                             </span>
                                         </h3>
                                     </div>
