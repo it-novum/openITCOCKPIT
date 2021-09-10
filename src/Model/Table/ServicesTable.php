@@ -1796,6 +1796,7 @@ class ServicesTable extends Table {
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
                 'Servicestatus.perfdata',
+                'Servicestatus.notifications_enabled',
 
                 'Hosts.name',
                 'Hosts.id',
@@ -1959,6 +1960,7 @@ class ServicesTable extends Table {
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
                 'Servicestatus.perfdata',
+                'Servicestatus.notifications_enabled',
 
                 'Hosts.name',
                 'Hosts.id',
@@ -4002,8 +4004,8 @@ class ServicesTable extends Table {
      * @param int[] $excludedServiceIds
      * @return array
      */
-    public function getListOfServiceNamesForUniqueCheck($hostId, $excludedServiceIds = []){
-        if(!is_array($excludedServiceIds)){
+    public function getListOfServiceNamesForUniqueCheck($hostId, $excludedServiceIds = []) {
+        if (!is_array($excludedServiceIds)) {
             $excludedServiceIds = [$excludedServiceIds];
         }
 
@@ -4011,7 +4013,7 @@ class ServicesTable extends Table {
             'Services.host_id' => $hostId
         ];
 
-        if(!empty($excludedServiceIds)){
+        if (!empty($excludedServiceIds)) {
             $where['Services.id NOT in'] = $excludedServiceIds;
         }
 
@@ -4028,11 +4030,11 @@ class ServicesTable extends Table {
             ->innerJoinWith('Servicetemplates')
             ->disableHydration();
 
-       $result = [];
-       foreach($query->all() as $item){
-           $result[$item['id']] = $item['servicename'];
-       }
+        $result = [];
+        foreach ($query->all() as $item) {
+            $result[$item['id']] = $item['servicename'];
+        }
 
-       return $result;
+        return $result;
     }
 }

@@ -145,12 +145,20 @@
                                                                class="form-control systemsetting-input">
                                                     </div>
                                                     <div
-                                                        ng-switch-when="FRONTEND.LDAP.USE_TLS|MONITORING.SINGLE_INSTANCE_SYNC|MONITORING.HOST_CHECK_ACTIVE_DEFAULT|MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT|FRONTEND.HIDDEN_USER_IN_CHANGELOG|FRONTEND.DISABLE_LOGIN_ANIMATION|FRONTEND.REPLACE_USER_MACROS|FRONTEND.REPLACE_PASSWORD_IN_OBJECT_MACROS|FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS|FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE|FRONTEND.BLUR_COMMAND_LINE_IN_BROWSER"
+                                                        ng-switch-when="MONITORING.SINGLE_INSTANCE_SYNC|MONITORING.HOST_CHECK_ACTIVE_DEFAULT|MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT|FRONTEND.HIDDEN_USER_IN_CHANGELOG|FRONTEND.DISABLE_LOGIN_ANIMATION|FRONTEND.REPLACE_USER_MACROS|FRONTEND.REPLACE_PASSWORD_IN_OBJECT_MACROS|FRONTEND.ENABLE_IFRAME_IN_DASHBOARDS|FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE|FRONTEND.BLUR_COMMAND_LINE_IN_BROWSER"
                                                         ng-switch-when-separator="|">
                                                         <select class="form-control systemsetting-input"
                                                                 ng-model="systemsetting.value">
                                                             <option value="0"><?php echo __('False'); ?></option>
                                                             <option value="1"><?php echo __('True'); ?></option>
+                                                        </select>
+                                                    </div>
+                                                    <div ng-switch-when="FRONTEND.LDAP.USE_TLS">
+                                                        <select class="form-control systemsetting-input"
+                                                                ng-model="systemsetting.value">
+                                                            <option value="0"><?php echo __('Plain'); ?></option>
+                                                            <option value="1"><?php echo __('StartTLS'); ?></option>
+                                                            <option value="2"><?php echo __('TLS (ldaps)'); ?></option>
                                                         </select>
                                                     </div>
                                                     <div ng-switch-when="FRONTEND.PRESELECTED_DOWNTIME_OPTION">

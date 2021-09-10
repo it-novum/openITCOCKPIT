@@ -210,7 +210,7 @@ class ChangelogsTable extends Table {
                 'Hosttemplate'        => '{n}.{(id|name)}',
             ],
             'hosttemplate'         => [
-                'Hosttemplate'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|freshness_checks_enabled|freshness_threshold).*}',
+                'Hosttemplate'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|freshness_checks_enabled|freshness_threshold|notifications_enabled$).*}',
                 'CheckPeriod'                                    => '{(id|name)}',
                 'NotifyPeriod'                                   => '{(id|name)}',
                 'CheckCommand'                                   => '{(id|name)}',
@@ -221,7 +221,7 @@ class ChangelogsTable extends Table {
                 'Hostgroup'                                      => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicetemplate'      => [
-                'Servicetemplate'                                           => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
+                'Servicetemplate'                                           => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_|notifications_enabled$).*}',
                 'CheckPeriod'                                               => '{(id|name)}',
                 'NotifyPeriod'                                              => '{(id|name)}',
                 'CheckCommand'                                              => '{(id|name)}',
@@ -245,7 +245,7 @@ class ChangelogsTable extends Table {
                 'Servicetemplate'                => '{n}.{(id|template_name)}',
             ],
             'host'                 => [
-                'Host'                           => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|freshness_checks_enabled|freshness_threshold).*}',
+                'Host'                           => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|freshness_checks_enabled|freshness_threshold|notifications_enabled$).*}',
                 'Hosttemplate'                   => '{(id|name)}',
                 'CheckPeriod'                    => '{(id|name)}',
                 'NotifyPeriod'                   => '{(id|name)}',
@@ -258,7 +258,7 @@ class ChangelogsTable extends Table {
                 'Contactgroup'                   => '{n}.{(id|name)}',
             ],
             'service'              => [
-                'Service'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
+                'Service'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_|notifications_enabled$).*}',
                 'Host'                                      => '{(id|name)}',
                 'Servicetemplate'                           => '{(id|name)}',
                 'CheckPeriod'                               => '{(id|name)}',

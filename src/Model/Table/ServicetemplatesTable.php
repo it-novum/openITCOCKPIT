@@ -674,6 +674,13 @@ class ServicetemplatesTable extends Table {
         }
 
         $servicetemplate['servicetemplatecommandargumentvalues'] = $filteredCommandArgs;
+        $servicetemplate['servicetemplatecommandargumentvalues'] = Hash::sort(
+            $servicetemplate['servicetemplatecommandargumentvalues'],
+            '{n}.commandargument.name',
+            'asc',
+            'natural'
+        );
+
 
         return [
             'Servicetemplate' => $servicetemplate
@@ -745,6 +752,13 @@ class ServicetemplatesTable extends Table {
                 }
             }
             $servicetemplate['servicetemplatecommandargumentvalues'] = $filteredCommandArgs;
+            $servicetemplate['servicetemplatecommandargumentvalues'] = Hash::sort(
+                $servicetemplate['servicetemplatecommandargumentvalues'],
+                '{n}.commandargument.name',
+                'asc',
+                'natural'
+            );
+
             $servicetemplates[] = $servicetemplate;
         }
 
@@ -1263,6 +1277,12 @@ class ServicetemplatesTable extends Table {
         }
 
         $servicetemplate['servicetemplatecommandargumentvalues'] = $filteredCommandArgs;
+        $servicetemplate['servicetemplatecommandargumentvalues'] = Hash::sort(
+            $servicetemplate['servicetemplatecommandargumentvalues'],
+            '{n}.commandargument.name',
+            'asc',
+            'natural'
+        );
 
         return $servicetemplate;
     }
