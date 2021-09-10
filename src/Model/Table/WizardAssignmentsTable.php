@@ -297,7 +297,7 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'Oracle_logo.svg',
                 'category'    => ['linux', 'database'],
             ],
-            'vmware-horizon'         => [
+            'vmware-horizon'    => [
                 'type_id'     => 'vmware-horizon',
                 'title'       => __('VMWare Horizon'),
                 'description' => __('Monitor your VMware Horizon Virtual Desktop Infrastructure'),
