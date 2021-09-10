@@ -113,7 +113,11 @@
     border-left: 3px solid #C9302C;
 }
 
-.cbp_tmtimeline > li .cbp_tmlabel blockquote small{
+.changelog_delete {
+    text-decoration: line-through;
+}
+
+.cbp_tmtimeline > li .cbp_tmlabel blockquote small {
     font-size: 90%;
 }
 

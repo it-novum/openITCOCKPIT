@@ -424,7 +424,7 @@ class NagiosConfigGenerator {
 
             $content .= PHP_EOL;
             $content .= $this->addContent(';Notification settings:', 1);
-            $content .= $this->addContent('notifications_enabled', 1, 1);
+            $content .= $this->addContent('notifications_enabled', 1, $hosttemplate->get('notifications_enabled'));
 
             if ($hosttemplate->hasContacts()) {
                 $content .= $this->addContent('contacts', 1, $hosttemplate->getContactsForCfg());
@@ -1041,7 +1041,7 @@ class NagiosConfigGenerator {
 
             $content .= PHP_EOL;
             $content .= $this->addContent(';Notification settings:', 1);
-            $content .= $this->addContent('notifications_enabled', 1, 1);
+            $content .= $this->addContent('notifications_enabled', 1, $servicetemplate->get('notifications_enabled'));
 
             if ($servicetemplate->hasContacts()) {
                 $content .= $this->addContent('contacts', 1, $servicetemplate->getContactsForCfg());

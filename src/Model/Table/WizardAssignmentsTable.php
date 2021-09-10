@@ -290,8 +290,13 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
             ],
-
-
+            'vmware-horizon'    => [
+                'type_id'     => 'vmware-horizon',
+                'title'       => __('VMWare Horizon'),
+                'description' => __('Monitor your VMware Horizon Virtual Desktop Infrastructure'),
+                'image'       => 'vmware-horizon.png',
+                'category'    => ['virtualization', 'cloud'],
+            ],
             'db2'                    => [
                 'type_id'     => 'db2',
                 'title'       => __('DB2 Monitoring'),
@@ -299,12 +304,12 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'db2.png',
                 'category'    => ['database'],
             ],  
-            'vmware-horizon'    => [
-                'type_id'     => 'vmware-horizon',
-                'title'       => __('VMWare Horizon'),
-                'description' => __('Monitor your VMware Horizon Virtual Desktop Infrastructure'),
-                'image'       => 'vmware-horizon.png',
-                'category'    => ['virtualization', 'cloud'],
+            'oracle'                 => [
+                'type_id'     => 'oracle',
+                'title'       => __('Oracle'),
+                'description' => __('Track connection time, connected users, session and process usage, ....'),
+                'image'       => 'Oracle_logo.svg',
+                'category'    => ['linux', 'database'],
             ],
             'ups'                    => [
                 'type_id'     => 'ups',

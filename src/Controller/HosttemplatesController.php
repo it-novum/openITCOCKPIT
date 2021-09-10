@@ -45,6 +45,7 @@ use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -740,7 +741,14 @@ class HosttemplatesController extends AppController {
                 ];
             }
         }
+
         $hosttemplatecommandargumentvalues = $filteredCommandArgumentsValules;
+        $hosttemplatecommandargumentvalues = Hash::sort(
+            $hosttemplatecommandargumentvalues,
+            '{n}.commandargument.name',
+            'asc',
+            'natural'
+        );
 
         $this->set('hosttemplatecommandargumentvalues', $hosttemplatecommandargumentvalues);
         $this->viewBuilder()->setOption('serialize', ['hosttemplatecommandargumentvalues']);

@@ -131,7 +131,7 @@ class CreateService {
                     'name'          => $serviceCustomvariableName,
                     'value'         => $postData[$postDataKey],
                     'objecttype_id' => OBJECT_SERVICE,
-                    'password'      => (preg_match('/(?i)password/', $serviceCustomvariableName)) ? 1 : 0
+                    'password'      => (preg_match('/(?i)(password|pass)/', $serviceCustomvariableName)) ? 1 : 0
                 ];
             }
 

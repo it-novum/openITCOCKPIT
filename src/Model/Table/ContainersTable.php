@@ -836,11 +836,6 @@ class ContainersTable extends Table {
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
         }
 
-        /** Maps Objects */
-
-        /** @var $MapsTable MapsTable */
-        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
-
         /**
          * 'CT_GLOBAL'               => 1,
          * 'CT_TENANT'               => 2,
@@ -858,6 +853,10 @@ class ContainersTable extends Table {
             $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
         }
 
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+        }
 
         foreach ($containers as $index => $container) {
             switch ($container['containertype_id']) {
@@ -893,7 +892,9 @@ class ContainersTable extends Table {
                     }
 
                     // Load Maps
-                    $containers[$index]['childsElements']['maps'] = $MapsTable->getMapsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    if (isset($MapsTable)) {
+                        $containers[$index]['childsElements']['maps'] = $MapsTable->getMapsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    }
 
                     // Load Grafana User dashboards
                     if (isset($GrafanaUserdashboardsTable)) {
