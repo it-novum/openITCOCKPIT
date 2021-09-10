@@ -243,7 +243,7 @@
 
                             <div class="form-group required" ng-class="{'has-error': errors.to_time}">
                                 <label class="control-label">
-                                    <?php echo __('From'); ?>
+                                    <?php echo __('To'); ?>
                                 </label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
