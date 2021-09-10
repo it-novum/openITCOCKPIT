@@ -851,7 +851,8 @@ class HostsTable extends Table {
             'Hoststatus.state_type',
             'Hoststatus.is_flapping',
             'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.acknowledgement_type'
+            'Hoststatus.acknowledgement_type',
+            'Hoststatus.notifications_enabled'
         ]);
 
         $query->join([
@@ -999,7 +1000,8 @@ class HostsTable extends Table {
             'Hoststatus.is_hardstate',
             'Hoststatus.is_flapping',
             'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.acknowledgement_type'
+            'Hoststatus.acknowledgement_type',
+            'Hoststatus.notifications_enabled'
         ]);
 
         $query->join([
@@ -4165,35 +4167,23 @@ class HostsTable extends Table {
                 'Hosts.disabled' => 0
             ])
             ->join([
-                'a'                           => [
+                'a'             => [
                     'table'      => 'nagios_objects',
                     'type'       => 'INNER',
                     'alias'      => 'HostObject',
                     'conditions' => 'Hosts.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
                 ],
-                'b'                           => [
+                'b'             => [
                     'table'      => 'nagios_hoststatus',
                     'type'       => 'INNER',
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
                 ],
-                'hosttemplates'               => [
+                'hosttemplates' => [
                     'table'      => 'hosttemplates',
                     'type'       => 'INNER',
                     'alias'      => 'Hosttemplates',
                     'conditions' => 'Hosttemplates.id = Hosts.hosttemplate_id',
-                ],
-                'hosts_to_hostgroups'         => [
-                    'table'      => 'hosts_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HostToHostgroups',
-                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
-                ],
-                'hosttemplates_to_hostgroups' => [
-                    'table'      => 'hosttemplates_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HosttemplatesToHostgroups',
-                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
                 ]
             ]);
         if (!empty($MY_RIGHTS)) {
@@ -4225,6 +4215,20 @@ class HostsTable extends Table {
                                 GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
                                 GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
                                 AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
+            ]);
+            $query->join([
+                'hosts_to_hostgroups'         => [
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HostToHostgroups',
+                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
+                ],
+                'hosttemplates_to_hostgroups' => [
+                    'table'      => 'hosttemplates_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HosttemplatesToHostgroups',
+                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
+                ]
             ]);
             $query->having([
                 'hostgroup_ids IS NOT NULL',
@@ -4288,29 +4292,17 @@ class HostsTable extends Table {
             'Hosts.disabled' => 0
         ])
             ->join([
-                'b'                           => [
+                'b'             => [
                     'table'      => 'statusengine_hoststatus',
                     'type'       => 'INNER',
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.hostname = Hosts.uuid',
                 ],
-                'hosttemplates'               => [
+                'hosttemplates' => [
                     'table'      => 'hosttemplates',
                     'type'       => 'INNER',
                     'alias'      => 'Hosttemplates',
                     'conditions' => 'Hosttemplates.id = Hosts.hosttemplate_id',
-                ],
-                'hosts_to_hostgroups'         => [
-                    'table'      => 'hosts_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HostToHostgroups',
-                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
-                ],
-                'hosttemplates_to_hostgroups' => [
-                    'table'      => 'hosttemplates_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HosttemplatesToHostgroups',
-                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
                 ]
             ]);
         if (!empty($MY_RIGHTS)) {
@@ -4339,6 +4331,20 @@ class HostsTable extends Table {
                                 GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
                                 GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
                                 AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
+            ]);
+            $query->join([
+                'hosts_to_hostgroups'         => [
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HostToHostgroups',
+                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
+                ],
+                'hosttemplates_to_hostgroups' => [
+                    'table'      => 'hosttemplates_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HosttemplatesToHostgroups',
+                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
+                ]
             ]);
             $query->having([
                 'hostgroup_ids IS NOT NULL',

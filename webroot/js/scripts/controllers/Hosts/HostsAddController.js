@@ -41,7 +41,7 @@ angular.module('openITCOCKPIT')
                     active_checks_enabled: 1,
                     retain_status_information: 0,
                     retain_nonstatus_information: 0,
-                    notifications_enabled: 0,
+                    notifications_enabled: 1,
                     notes: '',
                     priority: 1,
                     check_period_id: 0,

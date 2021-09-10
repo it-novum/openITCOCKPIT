@@ -164,7 +164,7 @@ class CommandsController extends AppController {
         $command = $CommandsTable->get($id, [
             'contain' => 'Commandarguments'
         ]);
-        $commandForChangeLog = $command;
+        $commandForChangeLog = $command->toArray();
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $command = $CommandsTable->patchEntity($command, $this->request->getData('Command'));
@@ -190,7 +190,7 @@ class CommandsController extends AppController {
                     $User->getId(),
                     $requestData['Command']['name'],
                     $requestData,
-                    ['Command' => $commandForChangeLog->toArray()]
+                    ['Command' => $commandForChangeLog]
                 );
                 if ($changelog_data) {
                     /** @var Changelog $changelogEntry */

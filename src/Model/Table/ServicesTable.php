@@ -1797,6 +1797,7 @@ class ServicesTable extends Table {
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
                 'Servicestatus.perfdata',
+                'Servicestatus.notifications_enabled',
 
                 'Hosts.name',
                 'Hosts.id',
@@ -1960,6 +1961,7 @@ class ServicesTable extends Table {
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
                 'Servicestatus.perfdata',
+                'Servicestatus.notifications_enabled',
 
                 'Hosts.name',
                 'Hosts.id',
@@ -4033,7 +4035,6 @@ class ServicesTable extends Table {
         foreach ($query->all() as $item) {
             $result[$item['id']] = $item['servicename'];
         }
-
         return $result;
     }
 
@@ -4167,35 +4168,23 @@ class ServicesTable extends Table {
                 'Services.disabled' => 0
             ])
             ->join([
-                'a'                                 => [
+                'a'                => [
                     'table'      => 'nagios_objects',
                     'type'       => 'INNER',
                     'alias'      => 'ServiceObject',
                     'conditions' => 'ServiceObject.name2 = Services.uuid',
                 ],
-                'b'                                 => [
+                'b'                => [
                     'table'      => 'nagios_servicestatus',
                     'type'       => 'INNER',
                     'alias'      => 'Servicestatus',
                     'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
                 ],
-                'servicetemplates'                  => [
+                'servicetemplates' => [
                     'table'      => 'servicetemplates',
                     'type'       => 'INNER',
                     'alias'      => 'Servicetemplates',
                     'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
-                ],
-                'services_to_servicegroups'         => [
-                    'table'      => 'services_to_servicegroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'ServiceToServicegroups',
-                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
-                ],
-                'servicetemplates_to_servicegroups' => [
-                    'table'      => 'servicetemplates_to_servicegroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'ServicetemplatesToServicegroups',
-                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
                 ]
             ])->contain([
                 'Hosts'
@@ -4225,6 +4214,20 @@ class ServicesTable extends Table {
                                 GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
                                 GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
                                 AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
+            ]);
+            $query->join([
+                'services_to_servicegroups'         => [
+                    'table'      => 'services_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServiceToServicegroups',
+                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
+                ],
+                'servicetemplates_to_servicegroups' => [
+                    'table'      => 'servicetemplates_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServicetemplatesToServicegroups',
+                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
+                ]
             ]);
             $query->having([
                 'servicegroup_ids IS NOT NULL',
@@ -4292,29 +4295,17 @@ class ServicesTable extends Table {
             'Services.disabled' => 0
         ])
             ->join([
-                'b'                                 => [
+                'b'                => [
                     'table'      => 'statusengine_servicestatus',
                     'type'       => 'INNER',
                     'alias'      => 'Servicestatus',
                     'conditions' => 'Servicestatus.service_description = Services.uuid',
                 ],
-                'servicetemplates'                  => [
+                'servicetemplates' => [
                     'table'      => 'servicetemplates',
                     'type'       => 'INNER',
                     'alias'      => 'Servicetemplates',
                     'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
-                ],
-                'services_to_servicegroups'         => [
-                    'table'      => 'services_to_servicegroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'ServiceToServicegroups',
-                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
-                ],
-                'servicetemplates_to_servicegroups' => [
-                    'table'      => 'servicetemplates_to_servicegroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'ServicetemplatesToServicegroups',
-                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
                 ]
             ])->contain([
                 'Hosts'
@@ -4344,6 +4335,20 @@ class ServicesTable extends Table {
                                 GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
                                 GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
                                 AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
+            ]);
+            $query->join([
+                'services_to_servicegroups'         => [
+                    'table'      => 'services_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServiceToServicegroups',
+                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
+                ],
+                'servicetemplates_to_servicegroups' => [
+                    'table'      => 'servicetemplates_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServicetemplatesToServicegroups',
+                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
+                ]
             ]);
             $query->having([
                 'servicegroup_ids IS NOT NULL',
