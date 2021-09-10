@@ -853,7 +853,8 @@ class HostsTable extends Table {
             'Hoststatus.state_type',
             'Hoststatus.is_flapping',
             'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.acknowledgement_type'
+            'Hoststatus.acknowledgement_type',
+            'Hoststatus.notifications_enabled'
         ]);
 
         $query->join([
@@ -1001,7 +1002,8 @@ class HostsTable extends Table {
             'Hoststatus.is_hardstate',
             'Hoststatus.is_flapping',
             'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.acknowledgement_type'
+            'Hoststatus.acknowledgement_type',
+            'Hoststatus.notifications_enabled'
         ]);
 
         $query->join([

@@ -54,6 +54,12 @@ class LdapClient {
      */
     private $isOpenLdap = false;
 
+    const ENCRYPTION_PLAIN = 0;
+
+    const ENCRYPTION_STARTTLS = 1;
+
+    const ENCRYPTION_TLS = 2;
+
     /**
      * LdapClient constructor.
      * @param string $username
@@ -71,7 +77,7 @@ class LdapClient {
             'port'                  => 389,
             'ssl_allow_self_signed' => true,
             'ssl_validate_cert'     => false,
-            'use_tls'               => false,
+            'tls_level'             => 0,
             'base_dn'               => 'DC=example,DC=org'
         ];
 
@@ -79,8 +85,16 @@ class LdapClient {
         $this->isOpenLdap = $isOpenLdap;
 
 
+        if ($options['tls_level'] == self::ENCRYPTION_TLS) {
+            // Connect through an TLS encrypted connection (ldaps)
+            // https://github.com/FreeDSx/LDAP/blob/master/docs/Client/Configuration.md#ssl-and-tls-options
+            $options['use_ssl'] = true;
+        }
+
+
         $this->ldap = new \FreeDSx\Ldap\LdapClient($options);
-        if ($options['use_tls']) {
+        if ($options['tls_level'] == self::ENCRYPTION_STARTTLS) {
+            // Connection was established as plain text connection - send StartTLS package to upgrade it to an encrypted connection
             $this->ldap->startTls();
         }
 
@@ -108,7 +122,7 @@ class LdapClient {
                 'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
                 'ssl_allow_self_signed' => true,
                 'ssl_validate_cert'     => false,
-                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'tls_level'             => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
                 'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
             ],
             ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap')

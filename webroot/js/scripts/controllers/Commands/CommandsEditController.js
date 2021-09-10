@@ -35,6 +35,12 @@ angular.module('openITCOCKPIT')
                         count: parseInt(key, 10)
                     });
                 }
+                $scope.args = $scope.args.sort(function(a, b){
+                    return a.name.localeCompare(b.name, undefined, {
+                        numeric: true,
+                        sensitivity: 'base'
+                    });
+                });
                 $scope.post.Command.name = $scope.command.name;
                 $scope.post.Command.command_type = String($scope.command.command_type);
                 $scope.post.Command.command_line = $scope.command.command_line;
@@ -62,7 +68,12 @@ angular.module('openITCOCKPIT')
                 }
             }
 
-            $scope.args = _.sortBy(args, 'id');
+            $scope.args = args.sort(function(a, b){
+                return a.name.localeCompare(b.name, undefined, {
+                    numeric: true,
+                    sensitivity: 'base'
+                });
+            });
         };
 
         $scope.addArg = function(){
@@ -86,7 +97,12 @@ angular.module('openITCOCKPIT')
                 name: '$ARG' + argsCount + '$',
                 human_name: ''
             });
-            $scope.args = _.sortBy($scope.args, 'name');
+            $scope.args = $scope.args.sort(function(a, b){
+                return a.name.localeCompare(b.name, undefined, {
+                    numeric: true,
+                    sensitivity: 'base'
+                });
+            });
         };
 
         $scope.checkForMisingArguments = function(){
