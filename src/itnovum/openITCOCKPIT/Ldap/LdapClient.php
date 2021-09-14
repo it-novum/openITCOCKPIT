@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Ldap;
 
 
+use Cake\Log\Log;
 use Cake\Utility\Hash;
 
 class LdapClient {
@@ -157,8 +158,12 @@ class LdapClient {
 
         $result = [];
         $paging = $this->ldap->paging($search, 100);
+
+        $droppedUsers = 0;
+        $resultCount = 0;
         while ($paging->hasEntries()) {
             foreach ($paging->getEntries() as $entry) {
+                $resultCount++;
                 $userDn = (string)$entry->getDn();
                 if (empty($userDn)) {
                     continue;
@@ -168,6 +173,7 @@ class LdapClient {
                 $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
                 foreach ($requiredFields as $requiredField) {
                     if (!isset($entry[$requiredField])) {
+                        $droppedUsers++;
                         continue 2;
                     }
                 }
@@ -191,6 +197,16 @@ class LdapClient {
                 ];
             }
             $paging->end();
+        }
+
+        if ($droppedUsers > 0) {
+            Log::warning(
+                sprintf(
+                    'Dropped %s/%s AD/LDAP users due to missing required fields. [%s]',
+                    $droppedUsers,
+                    $resultCount,
+                    implode(', ', $requiredFields)
+                ));
         }
 
         return $result;
