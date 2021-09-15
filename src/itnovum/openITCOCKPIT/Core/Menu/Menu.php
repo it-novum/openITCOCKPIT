@@ -618,7 +618,16 @@ class Menu {
                     [],
                     3
                 ))
-            );
+                ->addLink(new MenuLink(
+                    __('Message of the day'),
+                    'MessageOTDIndex',
+                    'messageotd',
+                    'index',
+                    '',
+                    'fas fa-envelope-open-text',
+                    [__('message'), __('news'), __('information')],
+                    1
+                )));
         $Configuration = new MenuHeadline(self::MENU_CONFIGURATION, __('System Configuration'), 4);
         $Configuration
             ->addCategory(new MenuCategory(
