@@ -10,11 +10,11 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property string $title
+ * @property string $description
  * @property string|null $content
  * @property string $style
  * @property int $user_id
- * @property \Cake\I18n\FrozenDate $from
- * @property \Cake\I18n\FrozenDate $to
+ * @property \Cake\I18n\FrozenDate $date
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
@@ -33,11 +33,11 @@ class MessagesOtd extends Entity
      */
     protected $_accessible = [
         'title' => true,
+        'description' => true,
         'content' => true,
         'style' => true,
         'user_id' => true,
-        'from' => true,
-        'to' => true,
+        'date' => true,
         'created' => true,
         'modified' => true,
         'user' => true,

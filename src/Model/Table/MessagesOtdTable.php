@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 /**
  * MessagesOtd Model
@@ -29,16 +31,16 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class MessagesOtdTable extends Table
-{
+class MessagesOtdTable extends Table {
+    use PaginationAndScrollIndexTrait;
+
     /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config): void
-    {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('messages_otd');
@@ -49,7 +51,7 @@ class MessagesOtdTable extends Table
 
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
-            'joinType' => 'INNER',
+            'joinType'   => 'INNER',
         ]);
     }
 
@@ -59,8 +61,7 @@ class MessagesOtdTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator): Validator
-    {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -70,6 +71,12 @@ class MessagesOtdTable extends Table
             ->maxLength('title', 255)
             ->requirePresence('title', 'create')
             ->notEmptyString('title');
+
+        $validator
+            ->scalar('description')
+            ->maxLength('description', 1000)
+            ->requirePresence('description', 'create')
+            ->notEmptyString('description');
 
         $validator
             ->scalar('content')
@@ -82,14 +89,9 @@ class MessagesOtdTable extends Table
             ->notEmptyString('style');
 
         $validator
-            ->date('from')
-            ->requirePresence('from', 'create')
-            ->notEmptyDate('from');
-
-        $validator
-            ->date('to')
-            ->requirePresence('to', 'create')
-            ->notEmptyDate('to');
+            ->date('date')
+            ->requirePresence('date', 'create')
+            ->notEmptyDate('date');
 
         return $validator;
     }
@@ -101,10 +103,38 @@ class MessagesOtdTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules): RulesChecker
-    {
+    public function buildRules(RulesChecker $rules): RulesChecker {
+        $rules->add($rules->isUnique(['date']), ['errorField' => 'date']);
         $rules->add($rules->existsIn(['user_id'], 'Users'), ['errorField' => 'user_id']);
 
         return $rules;
+    }
+
+
+    /**
+     * @param GenericFilter $GenericFilter
+     * @param null $PaginateOMat
+     * @return mixed
+     */
+    public function getMessagesOTDIndex(GenericFilter $GenericFilter, $PaginateOMat = null) {
+        $query = $this->find('all')
+            ->disableHydration();
+        $query->where($GenericFilter->genericFilters());
+
+
+        $query->order($GenericFilter->getOrderForPaginator('MessagesOtd.date', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $query->toArray();
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
     }
 }

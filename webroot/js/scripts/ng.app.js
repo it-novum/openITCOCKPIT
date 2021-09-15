@@ -1486,10 +1486,22 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "WizardsEditController"
             })
 
-            .state('MessageOTDIndex', {
-                url: '/messagesotd/index',
-                templateUrl: "/messagesotd/index.html",
+            .state('MessagesOTDIndex', {
+                url: '/messagesOtd/index',
+                templateUrl: "/messagesOtd/index.html",
                 controller: "MessagesOTDIndexController"
+            })
+
+            .state('MessagesOTDAdd', {
+                url: '/messagesOtd/add',
+                templateUrl: "/messagesOtd/add.html",
+                controller: "MessagesOTDAddController"
+            })
+
+            .state('MessagesOTDEdit', {
+                url: '/messagesOtd/edit/:id',
+                templateUrl: "/messagesOtd/edit.html",
+                controller: "MessagesOTDEditController"
             })
     })
 

@@ -37,6 +37,11 @@ class MessageOfTheDay extends AbstractMigration {
                     'limit'   => 255,
                     'null'    => false,
                 ])
+                ->addColumn('description', 'string', [
+                    'default' => null,
+                    'limit'   => 1000,
+                    'null'    => false,
+                ])
                 ->addColumn('content', 'text', [
                     'default' => null,
                     'limit'   => \Phinx\Db\Adapter\MysqlAdapter::TEXT_REGULAR,
@@ -52,12 +57,7 @@ class MessageOfTheDay extends AbstractMigration {
                     'limit'   => 11,
                     'null'    => false,
                 ])
-                ->addColumn('from', 'date', [
-                    'default' => null,
-                    'limit'   => 11,
-                    'null'    => false,
-                ])
-                ->addColumn('to', 'date', [
+                ->addColumn('date', 'date', [
                     'default' => null,
                     'limit'   => 11,
                     'null'    => false,
@@ -72,6 +72,8 @@ class MessageOfTheDay extends AbstractMigration {
                     'limit'   => null,
                     'null'    => false,
                 ])
+
+                ->addIndex(['date'], ['unique' => true])
                 ->create();
 
             if (!$this->hasTable('messages_otd_to_usergroups')) {
