@@ -443,7 +443,7 @@ class Menu {
         $Administration
             ->addLink(new MenuLink(
                 __('Message of the day'),
-                'MessageOTDIndex',
+                'MessagesOTDIndex',
                 'messagesOtd',
                 'index',
                 '',

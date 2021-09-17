@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('MessagesOTDAddController', function($scope, $http, $state, NotyService, $location, RedirectService){
+    .controller('MessagesOTDAddController', function($scope, $http, $state, NotyService, $location, RedirectService, BBParserService){
 
         $scope.data = {
             createAnother: false
@@ -11,6 +11,9 @@ angular.module('openITCOCKPIT')
             displayView: true
         };
 
+        $scope.motdcontentPreview = '';
+        $scope.bbcode = '';
+
         var clearForm = function(){
             $scope.post = {
                 title: '',
@@ -20,13 +23,12 @@ angular.module('openITCOCKPIT')
             };
 
 
-
         };
         clearForm();
 
         //jQuery Bases WYSIWYG Editor
         $("[wysiwyg='true']").click(function(){
-            var $textarea = $('#docuText');
+            var $textarea = $('#motdcontent');
             var task = $(this).attr('task');
             switch(task){
                 case 'bold':
@@ -62,19 +64,19 @@ angular.module('openITCOCKPIT')
         // Bind click event for color selector
         $("[select-color='true']").click(function(){
             var color = $(this).attr('color');
-            var $textarea = $('#docuText');
+            var $textarea = $('#motdcontent');
             $textarea.surroundSelectedText("[color='" + color + "']", '[/color]');
         });
 
         // Bind click event for font size selector
         $("[select-fsize='true']").click(function(){
             var fontSize = $(this).attr('fsize');
-            var $textarea = $('#docuText');
+            var $textarea = $('#motdcontent');
             $textarea.surroundSelectedText("[text='" + fontSize + "']", "[/text]");
         });
 
         $scope.prepareHyperlinkSelection = function(){
-            var $textarea = $('#docuText');
+            var $textarea = $('#motdcontent');
             var selection = $textarea.getSelection();
             if(selection.length > 0){
                 $scope.docu.hyperlinkDescription = selection.text;
@@ -82,7 +84,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.insertWysiwygHyperlink = function(){
-            var $textarea = $('#docuText');
+            var $textarea = $('#motdcontent');
             var selection = $textarea.getSelection();
             var newTab = $('#modalLinkNewTab').is(':checked') ? " tab" : "";
             if(selection.length > 0){
@@ -102,7 +104,7 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
 
                 var url = $state.href('MessagesOTDEdit', {id: result.data.id});
-                $scope.content = $('#content').val();
+                $scope.content = $('#motdcontent').val();
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
@@ -125,4 +127,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.$watch('bbcode', function(){
+            $scope.motdcontentPreview = BBParserService.parse($scope.bbcode);
+        }, true);
     });

@@ -100,7 +100,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group col-lg-12 padding-top-10">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Style'); ?>
                             </label>
@@ -116,141 +116,193 @@
                             </select>
                         </div>
 
-                        <div class="panel">
-                            <div class="panel-hdr">
-                                <div class="panel-toolbar" style="width: 100%;">
-                                    <div class="mr-auto d-flex" role="menu">
-
-                                        <div class="dropdown">
-                                            <button type="button"
-                                                    class="btn btn-xs btn-default"
-                                                    id="currentColor"
-                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                                    color="#404040">
-                                                <i class="fas fa-palette"></i>
-                                            </button>
-                                            <div class="dropdown-menu flex-wrap" style="width: 10.2rem; padding: 0.5rem"
-                                                 aria-labelledby="currentColor">
-
-                                                <?php
-                                                $colors = [
-                                                    '#00C851',
-                                                    '#ffbb33',
-                                                    '#CC0000',
-                                                    '#727b84',
-                                                    '#9ccc65',
-                                                    '#ffd54f',
-                                                    '#ff4444',
-                                                    '#33b5e5',
-                                                    '#007E33',
-                                                    '#FF8800',
-                                                    '#ff5722',
-                                                    '#0099CC',
-                                                    '#2E2E2E',
-                                                    '#4B515D',
-                                                    '#aa66cc',
-                                                    '#4285F4'
-                                                ];
-                                                ?>
-                                                <?php foreach ($colors as $color): ?>
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="panel">
+                                    <div class="panel-hdr">
+                                        <div class="panel-toolbar" style="width: 100%;">
+                                            <div class="mr-auto d-flex" role="menu">
+                                                <div class="dropdown">
                                                     <button type="button"
-                                                            class="btn d-inline-block width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
-                                                            data-panel-setstyle="bg-widget-statusGreen-gradient"
-                                                            select-color="true" color="<?= h($color) ?>"
-                                                            style="margin:1px; background-color:<?= h($color) ?>"></button>
-                                                <?php endforeach; ?>
+                                                            class="btn btn-xs btn-default"
+                                                            id="currentColor"
+                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false"
+                                                            color="#404040">
+                                                        <i class="fas fa-palette"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu flex-wrap"
+                                                         style="width: 10.2rem; padding: 0.5rem"
+                                                         aria-labelledby="currentColor">
 
+                                                        <?php
+                                                        $colors = [
+                                                            '#00C851',
+                                                            '#ffbb33',
+                                                            '#CC0000',
+                                                            '#727b84',
+                                                            '#9ccc65',
+                                                            '#ffd54f',
+                                                            '#ff4444',
+                                                            '#33b5e5',
+                                                            '#007E33',
+                                                            '#FF8800',
+                                                            '#ff5722',
+                                                            '#0099CC',
+                                                            '#2E2E2E',
+                                                            '#4B515D',
+                                                            '#aa66cc',
+                                                            '#4285F4'
+                                                        ];
+                                                        ?>
+                                                        <?php foreach ($colors as $color): ?>
+                                                            <button type="button"
+                                                                    class="btn d-inline-block width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                                    data-panel-setstyle="bg-widget-statusGreen-gradient"
+                                                                    select-color="true" color="<?= h($color) ?>"
+                                                                    style="margin:1px; background-color:<?= h($color) ?>"></button>
+                                                        <?php endforeach; ?>
+
+                                                    </div>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button"
+                                                            id="docuFontSize" data-toggle="dropdown"
+                                                            aria-haspopup="true"
+                                                            aria-expanded="false">
+                                                        <i class="fa fa-font"></i>
+                                                        <?php echo __('Font size'); ?>
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="docuFontSize">
+                                                        <a class="dropdown-item" href="javascript:void(0);"
+                                                           select-fsize="true"
+                                                           fsize="xx-small"><?php echo __('Smallest'); ?></a>
+                                                        <a class="dropdown-item" href="javascript:void(0);"
+                                                           select-fsize="true"
+                                                           fsize="x-small"><?php echo __('Smaller'); ?></a>
+                                                        <a class="dropdown-item" href="javascript:void(0);"
+                                                           select-fsize="true"
+                                                           fsize="small"><?php echo __('Small'); ?></a>
+                                                        <a class="dropdown-item" href="javascript:void(0);"
+                                                           select-fsize="true"
+                                                           fsize="large"><?php echo __('Big'); ?></a>
+                                                        <a class="dropdown-item" href="javascript:void(0);"
+                                                           select-fsize="true"
+                                                           fsize="x-large"><?php echo __('Bigger'); ?></a>
+                                                        <a class="dropdown-item" href="javascript:void(0);"
+                                                           select-fsize="true"
+                                                           fsize="xx-large"><?php echo __('Biggest'); ?></a>
+                                                    </div>
+                                                </div>
+                                                <span class="padding-left-10"></span>
+                                                <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
+                                                   wysiwyg="true"
+                                                   task="bold"><i class="fa fa-bold"></i></a>
+                                                <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
+                                                   wysiwyg="true"
+                                                   task="italic"><i class="fa fa-italic"></i></a>
+                                                <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
+                                                   wysiwyg="true"
+                                                   task="underline"><i class="fa fa-underline"></i></a>
+                                                <span class="padding-left-10"></span>
+                                                <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
+                                                   wysiwyg="true"
+                                                   task="left"><i class="fa fa-align-left"></i></a>
+                                                <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
+                                                   wysiwyg="true"
+                                                   task="center"><i class="fa fa-align-center"></i></a>
+                                                <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
+                                                   wysiwyg="true"
+                                                   task="right"><i class="fa fa-align-right"></i></a>
+                                                <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
+                                                   wysiwyg="true"
+                                                   task="justify"><i class="fa fa-align-justify"></i></a>
+                                                <span class="padding-left-10"></span>
+                                                <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
+                                                   data-toggle="modal"
+                                                   data-target="#hyerlinkModal" ng-click="prepareHyperlinkSelection()"
+                                                   id="insert-link"><i
+                                                        class="fa fa-link"></i></a>
                                             </div>
                                         </div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-xs btn-default dropdown-toggle" type="button"
-                                                    id="docuFontSize" data-toggle="dropdown" aria-haspopup="true"
-                                                    aria-expanded="false">
-                                                <i class="fa fa-font"></i>
-                                                <?php echo __('Font size'); ?>
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="docuFontSize">
-                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
-                                                   fsize="xx-small"><?php echo __('Smallest'); ?></a>
-                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
-                                                   fsize="x-small"><?php echo __('Smaller'); ?></a>
-                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
-                                                   fsize="small"><?php echo __('Small'); ?></a>
-                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
-                                                   fsize="large"><?php echo __('Big'); ?></a>
-                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
-                                                   fsize="x-large"><?php echo __('Bigger'); ?></a>
-                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
-                                                   fsize="xx-large"><?php echo __('Biggest'); ?></a>
+                                    </div>
+                                    <div class="panel-container show">
+                                        <div class="panel-content">
+                                            <div ng-class="{'has-error': errors.text}">
+                                            <textarea class="form-control" ng-model="bbcode"
+                                                      style="width: 100%; height: 200px;" id="motdcontent">
+
+                                            </textarea>
+                                            </div>
+                                            <div ng-repeat="error in errors.text">
+                                                <div class="help-block text-danger">{{ error }}</div>
                                             </div>
                                         </div>
-                                        <span class="padding-left-10"></span>
-                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
-                                           wysiwyg="true"
-                                           task="bold"><i class="fa fa-bold"></i></a>
-                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
-                                           wysiwyg="true"
-                                           task="italic"><i class="fa fa-italic"></i></a>
-                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
-                                           wysiwyg="true"
-                                           task="underline"><i class="fa fa-underline"></i></a>
-                                        <span class="padding-left-10"></span>
-                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
-                                           wysiwyg="true"
-                                           task="left"><i class="fa fa-align-left"></i></a>
-                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
-                                           wysiwyg="true"
-                                           task="center"><i class="fa fa-align-center"></i></a>
-                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
-                                           wysiwyg="true"
-                                           task="right"><i class="fa fa-align-right"></i></a>
-                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
-                                           wysiwyg="true"
-                                           task="justify"><i class="fa fa-align-justify"></i></a>
-                                        <span class="padding-left-10"></span>
-                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon"
-                                           data-toggle="modal"
-                                           data-target="#hyerlinkModal" ng-click="prepareHyperlinkSelection()"
-                                           id="insert-link"><i
-                                                class="fa fa-link"></i></a>
-                                    </div>
-                                    <div class="ml-auto" role="menu">
-                                        <button type="button" class="btn btn-default btn-xs" ng-click="showView()">
-                                            <i class="fa fa-times"></i> <?php echo __('Cancel'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-success btn-xs" ng-click="saveText()">
-                                            <i class="fa fa-save"></i> <?php echo __('Save'); ?>
-                                        </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="panel-container show">
-                                <div class="panel-content">
-                                    <div ng-class="{'has-error': errors.content}">
-                        <textarea class="form-control" ng-model="bbcode"
-                                  style="width: 100%; height: 200px;" id="content"></textarea>
+                            <div class="col-xl-6">
+                                <div>
+                                    <div class="panel-hdr">
+                                        <div class="panel-toolbar" style="width: 100%;">
+                                            <div class="mr-auto d-flex text-primary bold" role="menu">
+                                                <?= __('Preview'); ?>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div ng-repeat="error in errors.content">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                    <div class="panel-container show">
+                                        <div class="panel-content">
+                                            <div class="alert border-info bg-transparent" role="alert">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="alert-icon">
+                                                        <span class="icon-stack icon-stack-md">
+                                                            <i class="base-2 icon-stack-3x color-info-400"></i>
+                                                            <i class="base-7 icon-stack-2x color-info-800"></i>
+                                                            <i class="fas fa-info icon-stack-1x text-white"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <span class="h4 text-info">
+                                                            {{post.title}}
+                                                        </span>
+                                                        <br>
+                                                        <div style="word-wrap: break-word;"
+                                                             ng-bind-html="motdcontentPreview | trustAsHtml">
+                                                            {{motdcontentPreview}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                        <div class="card margin-top-10">
-                            <div class="card-body">
-                                <div class="float-right">
-                                    <label>
-                                        <input type="checkbox" ng-model="data.createAnother">
-                                        <?php echo __('Create another'); ?>
-                                    </label>
-                                    <button class="btn btn-primary"
-                                            type="submit"><?php echo __('Create message of the day'); ?></button>
-                                    <a back-button href="javascript:void(0);" fallback-state='MessagesOTDIndex'
-                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+
+                                            <div class="alert alert-success" role="alert">
+                                                <h4 class="alert-heading">
+                                                    {{post.title}}
+                                                </h4>
+                                                <div style="word-wrap: break-word;"
+                                                     ng-bind-html="motdcontentPreview | trustAsHtml">
+                                                    {{motdcontentPreview}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+
+                            <div class="card margin-top-10">
+                                <div class="card-body">
+                                    <div class="float-right">
+                                        <label>
+                                            <input type="checkbox" ng-model="data.createAnother">
+                                            <?php echo __('Create another'); ?>
+                                        </label>
+                                        <button class="btn btn-primary"
+                                                type="submit"><?php echo __('Create message of the day'); ?></button>
+                                        <a back-button href="javascript:void(0);" fallback-state='MessagesOTDIndex'
+                                           class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                    </div>
+                                </div>
+                            </div>
                     </form>
                 </div>
             </div>
