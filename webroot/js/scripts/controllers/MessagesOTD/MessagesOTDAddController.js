@@ -19,7 +19,8 @@ angular.module('openITCOCKPIT')
                 title: '',
                 name: '',
                 content: '',
-                date: ''
+                date: '',
+                style: 'primary'
             };
 
 

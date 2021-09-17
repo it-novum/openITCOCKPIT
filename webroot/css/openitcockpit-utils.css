@@ -134,7 +134,7 @@ openITCOCKPIT v4 Utilities
 }
 
 .padding-left-15 {
-    padding-left: 15px;
+    padding-left: 15px!important;
 }
 
 .padding-bottom-20 {

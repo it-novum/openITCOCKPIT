@@ -108,9 +108,10 @@
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="{}"
-                                ng-model="modalVService.operator">
+                                ng-model="post.style">
                                 <option value="info"><?= __('Info'); ?></option>
-                                <option value="default"><?= __('Default'); ?></option>
+                                <option value="primary"><?= __('Primary'); ?></option>
+                                <option value="success"><?= __('Success'); ?></option>
                                 <option value="warning"><?= __('Warning'); ?></option>
                                 <option value="danger"><?= __('Danger'); ?></option>
                             </select>
@@ -252,36 +253,33 @@
                                     </div>
                                     <div class="panel-container show">
                                         <div class="panel-content">
-                                            <div class="alert border-info bg-transparent" role="alert">
-                                                <div class="d-flex align-items-center">
+                                            <div class="alert border-{{post.style}} bg-transparent" role="alert">
+                                                <div class="d-flex">
                                                     <div class="alert-icon">
-                                                        <span class="icon-stack icon-stack-md">
-                                                            <i class="base-2 icon-stack-3x color-info-400"></i>
-                                                            <i class="base-7 icon-stack-2x color-info-800"></i>
-                                                            <i class="fas fa-info icon-stack-1x text-white"></i>
+                                                        <span class="icon-stack icon-stack-lg">
+                                                            <i class="base base-12 icon-stack-3x opacity-100 color-{{post.style}}-500"></i>
+                                                            <i class="fas fa-info icon-stack-1x opacity-100 color-white margin-bottom-2"
+                                                               ng-show="post.style == 'primary' || post.style == 'info'"></i>
+                                                            <i class="fas fa-check icon-stack-1x opacity-100 color-white margin-bottom-2"
+                                                               ng-show="post.style == 'success'"></i>
+                                                            <i class="fas fa-exclamation icon-stack-1x opacity-100 color-white margin-bottom-2"
+                                                               ng-show="post.style == 'warning' || post.style == 'danger'"></i>
                                                         </span>
                                                     </div>
-                                                    <div class="flex-1">
-                                                        <span class="h4 text-info">
+                                                    <div class="flex-1 padding-left-15">
+                                                        <div ng-if="post.title"
+                                                             class="h4 text-{{post.style}} title-border title-border-bottom-{{post.style}}">
                                                             {{post.title}}
-                                                        </span>
+                                                        </div>
+                                                        <div class="italic">
+                                                            {{post.description}}
+                                                        </div>
                                                         <br>
                                                         <div style="word-wrap: break-word;"
                                                              ng-bind-html="motdcontentPreview | trustAsHtml">
                                                             {{motdcontentPreview}}
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
-
-
-                                            <div class="alert alert-success" role="alert">
-                                                <h4 class="alert-heading">
-                                                    {{post.title}}
-                                                </h4>
-                                                <div style="word-wrap: break-word;"
-                                                     ng-bind-html="motdcontentPreview | trustAsHtml">
-                                                    {{motdcontentPreview}}
                                                 </div>
                                             </div>
                                         </div>
