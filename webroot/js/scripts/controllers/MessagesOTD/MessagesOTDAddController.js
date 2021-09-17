@@ -20,7 +20,8 @@ angular.module('openITCOCKPIT')
                 name: '',
                 content: '',
                 date: '',
-                style: 'primary'
+                style: 'primary',
+                expire: true
             };
 
 

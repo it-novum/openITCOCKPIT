@@ -74,7 +74,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.description}">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Description'); ?>
                             </label>
@@ -82,12 +82,9 @@
                                 class="form-control"
                                 type="text"
                                 ng-model="post.description">
-                            <div ng-repeat="error in errors.description">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.date}">
+                        <div class="form-group required" ng-class="{'has-error': errors.date}">
                             <label class="control-label">
                                 <?php echo __('Date'); ?>
                             </label>
@@ -97,6 +94,28 @@
                                 ng-model="post.date">
                             <div ng-repeat="error in errors.date">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="input-group-prepend">
+                            <button class="btn btn-primary text-white btn-outline-secondary dropdown-toggle"
+                                    type="button" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                <i ng-class="(post.expire == 1)?'far fa-clock':'fas fa-infinity'"></i>
+                                {{post.expire ? 'expire' : 'no expire'}}
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="javascript:void(0);"
+                                   ng-click="post.expire = 1">
+                                    <i class="far fa-clock"></i>
+                                    65656
+                                </a>
+
+                                <a class="dropdown-item" href="javascript:void(0);"
+                                   ng-click="post.expire = 0">
+                                    <i class="fas fa-infinity"></i>
+                                    ---
+                                </a>
                             </div>
                         </div>
 

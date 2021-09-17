@@ -67,18 +67,7 @@ class MessagesOtdController extends AppController {
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
     public function add() {
-        $messagesOtd = $this->MessagesOtd->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $messagesOtd = $this->MessagesOtd->patchEntity($messagesOtd, $this->request->getData());
-            if ($this->MessagesOtd->save($messagesOtd)) {
-                $this->Flash->success(__('The messages otd has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The messages otd could not be saved. Please, try again.'));
-        }
-        $users = $this->MessagesOtd->Users->find('list', ['limit' => 200]);
-        $this->set(compact('messagesOtd', 'users'));
     }
 
     /**
@@ -89,20 +78,7 @@ class MessagesOtdController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function edit($id = null) {
-        $messagesOtd = $this->MessagesOtd->get($id, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $messagesOtd = $this->MessagesOtd->patchEntity($messagesOtd, $this->request->getData());
-            if ($this->MessagesOtd->save($messagesOtd)) {
-                $this->Flash->success(__('The messages otd has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The messages otd could not be saved. Please, try again.'));
-        }
-        $users = $this->MessagesOtd->Users->find('list', ['limit' => 200]);
-        $this->set(compact('messagesOtd', 'users'));
     }
 
     /**
@@ -113,14 +89,6 @@ class MessagesOtdController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($id = null) {
-        $this->request->allowMethod(['post', 'delete']);
-        $messagesOtd = $this->MessagesOtd->get($id);
-        if ($this->MessagesOtd->delete($messagesOtd)) {
-            $this->Flash->success(__('The messages otd has been deleted.'));
-        } else {
-            $this->Flash->error(__('The messages otd could not be deleted. Please, try again.'));
-        }
 
-        return $this->redirect(['action' => 'index']);
     }
 }
