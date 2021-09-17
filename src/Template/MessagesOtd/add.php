@@ -286,21 +286,21 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="card margin-top-10">
-                                <div class="card-body">
-                                    <div class="float-right">
-                                        <label>
-                                            <input type="checkbox" ng-model="data.createAnother">
-                                            <?php echo __('Create another'); ?>
-                                        </label>
-                                        <button class="btn btn-primary"
-                                                type="submit"><?php echo __('Create message of the day'); ?></button>
-                                        <a back-button href="javascript:void(0);" fallback-state='MessagesOTDIndex'
-                                           class="btn btn-default"><?php echo __('Cancel'); ?></a>
-                                    </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <label>
+                                        <input type="checkbox" ng-model="data.createAnother">
+                                        <?php echo __('Create another'); ?>
+                                    </label>
+                                    <button class="btn btn-primary"
+                                            type="submit"><?php echo __('Create message of the day'); ?></button>
+                                    <a back-button href="javascript:void(0);" fallback-state='MessagesOTDIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>
+                        </div>
                     </form>
                 </div>
             </div>
