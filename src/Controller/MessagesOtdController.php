@@ -4,9 +4,12 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\MessagesOtdTable;
+use Cake\I18n\FrozenDate;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\Filter;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 /**
@@ -65,9 +68,41 @@ class MessagesOtdController extends AppController {
      * Add method
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     * @throws \Exception
      */
     public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
+        if ($this->request->is('post')) {
+            /** @var MessagesOtdTable $MessagesOtdTable */
+            $MessagesOtdTable = TableRegistry::getTableLocator()->get('MessagesOtd');
+            $requestData = $this->request->getData();
+            if(!empty($requestData['MessagesOtd']['date'])){
+                /** @var FrozenDate $frozenDate */
+                $frozenDate = new FrozenDate($requestData['MessagesOtd']['date']);
+                $requestData['MessagesOtd']['date'] = $frozenDate->format('Y-m-d');
+            }
+            $messageOtd = $MessagesOtdTable->newEntity($requestData);
+
+            $MessagesOtdTable->save($messageOtd);
+
+            if ($messageOtd->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $messageOtd->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            } else {
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($messageOtd); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('messageOtd', $messageOtd);
+            $this->viewBuilder()->setOption('serialize', ['messageOtd']);
+        }
     }
 
     /**

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -73,14 +72,8 @@ class MessagesOtdTable extends Table {
             ->notEmptyString('title');
 
         $validator
-            ->scalar('description')
-            ->maxLength('description', 1000)
-            ->requirePresence('description', 'create')
-            ->notEmptyString('description');
-
-        $validator
             ->scalar('content')
-            ->allowEmptyString('content');
+            ->notEmptyString('content', __('Please set content for the message of the day'));
 
         $validator
             ->scalar('style')
@@ -89,9 +82,17 @@ class MessagesOtdTable extends Table {
             ->notEmptyString('style');
 
         $validator
-            ->date('date')
-            ->requirePresence('date', 'create')
-            ->notEmptyDate('date');
+            ->date('date', ['ymd'])
+            ->requirePresence('date')
+            ->notEmptyString('date');
+
+        $validator
+            ->scalar('expiration_duration')
+            ->requirePresence('expiration_duration', 'create')
+            ->notEmptyString('expiration_duration',
+                __('Please enter the expiry time in days'), function ($context) {
+                    return ($context['data']['expire'] === true);
+                });
 
         return $validator;
     }

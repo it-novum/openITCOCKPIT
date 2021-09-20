@@ -12,21 +12,50 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.motdcontentPreview = '';
-        $scope.bbcode = '';
+        $scope.useScroll = false;
 
         var clearForm = function(){
             $scope.post = {
-                title: '',
-                name: '',
-                content: '',
-                date: '',
-                style: 'primary',
-                expire: true
+                MessagesOtd: {
+                    title: '',
+                    name: '',
+                    content: '',
+                    date: '',
+                    style: 'primary',
+                    expire: false,
+                    expiration_duration: null,
+                    usergroups: {
+                        _ids: []
+                    }
+                }
             };
-
-
         };
+
+        $scope.load = function(){
+            $http.get("/usergroups/index.json", {
+                params: {
+                    'angular': true,
+                    'scroll': $scope.useScroll,
+                    'sort': 'Usergroups.name',
+                    'direction': 'asc'
+                }
+            }).then(function(result){
+                $scope.usergroups = result.data.allUsergroups;
+                $scope.init = false;
+
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
         clearForm();
+        $scope.load();
 
         //jQuery Bases WYSIWYG Editor
         $("[wysiwyg='true']").click(function(){
@@ -129,7 +158,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.$watch('bbcode', function(){
-            $scope.motdcontentPreview = BBParserService.parse($scope.bbcode);
+        $scope.$watch('post.MessagesOtd.content', function(){
+            $scope.motdcontentPreview = BBParserService.parse($scope.post.MessagesOtd.content);
         }, true);
     });

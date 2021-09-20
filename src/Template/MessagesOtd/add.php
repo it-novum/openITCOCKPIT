@@ -68,7 +68,7 @@
                             <input
                                 class="form-control"
                                 type="text"
-                                ng-model="post.title">
+                                ng-model="post.MessagesOtd.title">
                             <div ng-repeat="error in errors.title">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -81,7 +81,7 @@
                             <input
                                 class="form-control"
                                 type="text"
-                                ng-model="post.description">
+                                ng-model="post.MessagesOtd.description">
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.date}">
@@ -91,34 +91,58 @@
                             <input
                                 class="form-control"
                                 type="text"
-                                ng-model="post.date">
+                                placeholder="<?= date('d.m.Y', time()); ?>"
+                                ng-model="post.MessagesOtd.date">
                             <div ng-repeat="error in errors.date">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
 
-                        <div class="input-group-prepend">
-                            <button class="btn btn-primary text-white btn-outline-secondary dropdown-toggle"
-                                    type="button" data-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false">
-                                <i ng-class="(post.expire == 1)?'far fa-clock':'fas fa-infinity'"></i>
-                                {{post.expire ? 'expire' : 'no expire'}}
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="javascript:void(0);"
-                                   ng-click="post.expire = 1">
-                                    <i class="far fa-clock"></i>
-                                    65656
-                                </a>
 
-                                <a class="dropdown-item" href="javascript:void(0);"
-                                   ng-click="post.expire = 0">
-                                    <i class="fas fa-infinity"></i>
-                                    ---
-                                </a>
+                        <div class="form-group" ng-class="{'required' : post.MessagesOtd.expire}">
+                            <label class="control-label" for="Expiration">
+                                <?php echo __('Expiration'); ?>
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend width-180">
+                                    <button
+                                        class="btn btn-primary text-white text-left btn-outline-secondary dropdown-toggle w-100"
+                                        type="button" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        <i ng-class="(post.MessagesOtd.expire == true)?'far fa-clock':'fas fa-infinity'"></i>
+                                        {{post.MessagesOtd.expire ? "<?= __('expiration duration'); ?>" : "<?= __('no expiration'); ?>"}}
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="post.MessagesOtd.expire = true">
+                                            <i class="far fa-clock"></i>
+                                            <?= __('expiration duration'); ?>
+                                        </a>
+
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="post.MessagesOtd.expire = false; post.MessagesOtd.expiration_duration = null;">
+                                            <i class="fas fa-infinity"></i>
+                                            <?= __('no expiration'); ?>
+                                        </a>
+                                    </div>
+                                </div>
+                                <input class="form-control"
+                                       type="number"
+                                       placeholder="{{(post.MessagesOtd.expire)?1:''}}"
+                                       ng-disabled="!post.MessagesOtd.expire"
+                                       ng-model="post.MessagesOtd.expiration_duration"
+                                       min="1"
+                                       id="Expiration">
+                                <div class="input-group-append">
+                                    <span class="input-group-text" id="basic-addon2">
+                                        <?= __('in days'); ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <div ng-repeat="error in errors.expiration_duration">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Style'); ?>
@@ -127,7 +151,7 @@
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="{}"
-                                ng-model="post.style">
+                                ng-model="post.MessagesOtd.style">
                                 <option value="info"><?= __('Info'); ?></option>
                                 <option value="primary"><?= __('Primary'); ?></option>
                                 <option value="success"><?= __('Success'); ?></option>
@@ -136,9 +160,33 @@
                             </select>
                         </div>
 
-                        <div class="row">
+                        <div class="form-group">
+                            <label class="control-label">
+                                <?php echo __('Filter for user groups (optional)'); ?>
+                            </label>
+                            <select data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
+                                    chosen="{usergroups}"
+                                    multiple
+                                    ng-model="post.MessagesOtd.usergroups._ids">
+                            </select>
+                            <div class="help-block">
+                                <?php echo __('Select user groups for restricted visibility. Leave this field blank to avoid excluding users.'); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label class="control-label">
+                                <?php echo __('Text'); ?>
+                            </label>
+                            <div ng-repeat="error in errors.content">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                        <div class="row padding-top-10">
                             <div class="col-xl-6">
-                                <div class="panel">
+                                <div class="panel" ng-class="{'has-error-div': errors.content}">
                                     <div class="panel-hdr">
                                         <div class="panel-toolbar" style="width: 100%;">
                                             <div class="mr-auto d-flex" role="menu">
@@ -248,15 +296,10 @@
                                     </div>
                                     <div class="panel-container show">
                                         <div class="panel-content">
-                                            <div ng-class="{'has-error': errors.text}">
-                                            <textarea class="form-control" ng-model="bbcode"
+                                            <textarea class="form-control" ng-model="post.MessagesOtd.content"
                                                       style="width: 100%; height: 200px;" id="motdcontent">
 
                                             </textarea>
-                                            </div>
-                                            <div ng-repeat="error in errors.text">
-                                                <div class="help-block text-danger">{{ error }}</div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -272,26 +315,26 @@
                                     </div>
                                     <div class="panel-container show">
                                         <div class="panel-content">
-                                            <div class="alert border-{{post.style}} bg-transparent" role="alert">
+                                            <div class="alert border-{{post.MessagesOtd.style}} bg-transparent" role="alert">
                                                 <div class="d-flex">
                                                     <div class="alert-icon">
                                                         <span class="icon-stack icon-stack-lg">
-                                                            <i class="base base-12 icon-stack-3x opacity-100 color-{{post.style}}-500"></i>
+                                                            <i class="base base-12 icon-stack-3x opacity-100 color-{{post.MessagesOtd.style}}-500"></i>
                                                             <i class="fas fa-info icon-stack-1x opacity-100 color-white margin-bottom-2"
-                                                               ng-show="post.style == 'primary' || post.style == 'info'"></i>
+                                                               ng-show="post.MessagesOtd.style == 'primary' || post.MessagesOtd.style == 'info'"></i>
                                                             <i class="fas fa-check icon-stack-1x opacity-100 color-white margin-bottom-2"
-                                                               ng-show="post.style == 'success'"></i>
+                                                               ng-show="post.MessagesOtd.style == 'success'"></i>
                                                             <i class="fas fa-exclamation icon-stack-1x opacity-100 color-white margin-bottom-2"
-                                                               ng-show="post.style == 'warning' || post.style == 'danger'"></i>
+                                                               ng-show="post.MessagesOtd.style == 'warning' || post.MessagesOtd.style == 'danger'"></i>
                                                         </span>
                                                     </div>
                                                     <div class="flex-1 padding-left-15">
-                                                        <div ng-if="post.title"
-                                                             class="h4 text-{{post.style}} title-border title-border-bottom-{{post.style}}">
-                                                            {{post.title}}
+                                                        <div ng-if="post.MessagesOtd.title"
+                                                             class="h4 text-{{post.MessagesOtd.style}} title-border title-border-bottom-{{post.MessagesOtd.style}}">
+                                                            {{post.MessagesOtd.title}}
                                                         </div>
                                                         <div class="italic">
-                                                            {{post.description}}
+                                                            {{post.MessagesOtd.description}}
                                                         </div>
                                                         <br>
                                                         <div style="word-wrap: break-word;"

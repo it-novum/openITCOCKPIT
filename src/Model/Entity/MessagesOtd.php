@@ -15,13 +15,14 @@ use Cake\ORM\Entity;
  * @property string $style
  * @property int $user_id
  * @property \Cake\I18n\FrozenDate $date
+ * @property int $expiration_duration
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\Usergroup $usergroup
  */
-class MessagesOtd extends Entity
-{
+class MessagesOtd extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -32,14 +33,16 @@ class MessagesOtd extends Entity
      * @var array
      */
     protected $_accessible = [
-        'title' => true,
-        'description' => true,
-        'content' => true,
-        'style' => true,
-        'user_id' => true,
-        'date' => true,
-        'created' => true,
-        'modified' => true,
-        'user' => true,
+        'title'               => true,
+        'description'         => true,
+        'content'             => true,
+        'style'               => true,
+        'user_id'             => true,
+        'date'                => true,
+        'expiration_duration' => true,
+        'created'             => true,
+        'modified'            => true,
+        'user'                => true,
+        'usergroups'          => true
     ];
 }

@@ -62,6 +62,11 @@ class MessageOfTheDay extends AbstractMigration {
                     'limit'   => 11,
                     'null'    => false,
                 ])
+                ->addColumn('expiration_duration', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => true,
+                ])
                 ->addColumn('created', 'datetime', [
                     'default' => null,
                     'limit'   => null,

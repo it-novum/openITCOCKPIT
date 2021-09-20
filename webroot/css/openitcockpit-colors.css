@@ -1030,3 +1030,8 @@ div.packetmanager-selection > span::selection {
 .title-border-bottom-danger {
     border-image-source: linear-gradient(45deg, #CC0000, transparent);
 }
+
+.has-error-div{
+    border-width: 1px 1px 1px 4px;
+    border-color: #CC0000;
+}
