@@ -144,6 +144,10 @@
                                     <i class="fa" ng-class="getSortClass('MessagesOtd.date')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
+                                <th class="no-sort" ng-click="orderBy('MessagesOtd.expiration_duration')">
+                                    <i class="fa" ng-class="getSortClass('MessagesOtd.expiration_duration')"></i>
+                                    <?php echo __('Expiration duration (in days)'); ?>
+                                </th>
                                 <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
                                 </th>
@@ -161,7 +165,15 @@
                                     {{ messageOtd.description }}
                                 </td>
                                 <td>
-                                    {{ messageOtd.date }}
+                                    {{ messageOtd.date | date:"dd.MM.yyyy" }}
+                                </td>
+                                <td class="text-center">
+                                    <span ng-show="messageOtd.expiration_duration">
+                                        {{messageOtd.expiration_duration}}
+                                    </span>
+                                    <span ng-hide="messageOtd.expiration_duration">
+                                        <i class="fas fa-infinity text-primary"></i>
+                                    </span>
                                 </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">

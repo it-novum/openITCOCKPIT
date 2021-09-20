@@ -52,6 +52,16 @@ class MessagesOtdTable extends Table {
             'foreignKey' => 'user_id',
             'joinType'   => 'INNER',
         ]);
+
+
+        $this->belongsToMany('Usergroups', [
+            'className'        => 'Usergroups',
+            'foreignKey'       => 'message_otd_id',
+            'targetForeignKey' => 'usergroup_id',
+            'joinTable'        => 'messages_otd_to_usergroups',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
+        ]);
     }
 
     /**

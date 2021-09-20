@@ -145,6 +145,22 @@
                         </div>
                         <div class="form-group">
                             <label class="control-label">
+                                <?php echo __('Filter for user groups (optional)'); ?>
+                            </label>
+                            <select data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
+                                    chosen="{usergroups}"
+                                    multiple
+                                    ng-model="post.MessagesOtd.usergroups._ids">
+                            </select>
+                            <div class="help-block">
+                                <?php echo __('Select user groups for restricted visibility. Leave this field blank to avoid excluding users.'); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">
                                 <?php echo __('Style'); ?>
                             </label>
                             <select
@@ -158,22 +174,6 @@
                                 <option value="warning"><?= __('Warning'); ?></option>
                                 <option value="danger"><?= __('Danger'); ?></option>
                             </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label">
-                                <?php echo __('Filter for user groups (optional)'); ?>
-                            </label>
-                            <select data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
-                                    chosen="{usergroups}"
-                                    multiple
-                                    ng-model="post.MessagesOtd.usergroups._ids">
-                            </select>
-                            <div class="help-block">
-                                <?php echo __('Select user groups for restricted visibility. Leave this field blank to avoid excluding users.'); ?>
-                            </div>
                         </div>
 
                         <div class="form-group required">
