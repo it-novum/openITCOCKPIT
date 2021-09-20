@@ -79,7 +79,9 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                                <span class="input-group-text">
+                                                    <i class="fa fa-filter"></i>
+                                                </span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by title'); ?>"
@@ -92,7 +94,9 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                                <span class="input-group-text">
+                                                    <i class="fa fa-filter"></i>
+                                                </span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by description'); ?>"
@@ -105,7 +109,9 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-calendar-day"></i>
+                                                </span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by date'); ?>"

@@ -130,7 +130,13 @@ class MessagesOtdTable extends Table {
     public function getMessagesOTDIndex(GenericFilter $GenericFilter, $PaginateOMat = null) {
         $query = $this->find('all')
             ->disableHydration();
-        $query->where($GenericFilter->genericFilters());
+        $where = $GenericFilter->genericFilters();
+        if (!empty($where['MessagesOtd.date LIKE'])) {
+            $where['DATE_FORMAT(MessagesOtd.date, "%d.%m.%Y") LIKE'] = $where['MessagesOtd.date LIKE'];
+            unset($where['MessagesOtd.date LIKE']);
+        }
+
+        $query->where($where);
 
 
         $query->order($GenericFilter->getOrderForPaginator('MessagesOtd.date', 'asc'));
