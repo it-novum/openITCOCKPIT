@@ -79,6 +79,7 @@ class MessagesOtdController extends AppController {
         }
 
         if ($this->request->is('post')) {
+            $User = new User($this->getUser());
             /** @var MessagesOtdTable $MessagesOtdTable */
             $MessagesOtdTable = TableRegistry::getTableLocator()->get('MessagesOtd');
             $requestData = $this->request->getData();
@@ -87,6 +88,7 @@ class MessagesOtdController extends AppController {
                 $frozenDate = new FrozenDate($requestData['MessagesOtd']['date']);
                 $requestData['MessagesOtd']['date'] = $frozenDate->format('Y-m-d');
             }
+            $requestData['MessagesOtd']['user_id'] = $User->getId();
             $messageOtd = $MessagesOtdTable->newEntity($requestData);
 
             $MessagesOtdTable->save($messageOtd);
@@ -141,12 +143,14 @@ class MessagesOtdController extends AppController {
         }
 
         if ($this->request->is('post')) {
+            $User = new User($this->getUser());
             $requestData = $this->request->getData();
             if (!empty($requestData['MessagesOtd']['date'])) {
                 /** @var FrozenDate $frozenDate */
                 $frozenDate = new FrozenDate($requestData['MessagesOtd']['date']);
                 $requestData['MessagesOtd']['date'] = $frozenDate->format('Y-m-d');
             }
+            $requestData['MessagesOtd']['user_id'] = $User->getId();
 
             $Entity = $MessagesOtdTable->get($id);
             $Entity = $MessagesOtdTable->patchEntity($Entity, $requestData);
