@@ -386,13 +386,10 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckMkDiscovery':
-                //Generate .mk config to run -II and -D
+                //Generate .mk config for current host
                 $MkNagiosExportTask = new CheckmkNagiosExportCommand();
                 $MkNagiosExportTask->init();
-                $MkNagiosExportTask->createConfigFiles($payload['hostUuid'], [
-                    'for_snmp_scan' => true, //Hacky but works -.-
-                    'host_address'  => $payload['host_address'],
-                ], false);
+                $MkNagiosExportTask->createConfigFiles($payload['hostUuid'], [], false);
 
                 if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
                     /** @var SatellitesTable $SatellitesTable */
