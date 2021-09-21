@@ -100,6 +100,9 @@
         <div class="header-icon padding-left-5">
             <version-check></version-check>
         </div>
+        <div class="header-icon padding-left-5">
+            <message-otd></message-otd>
+        </div>
         <div class="header-icon">
             <server-time></server-time>
         </div>

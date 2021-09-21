@@ -33,6 +33,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\MessagesOtdTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
@@ -186,9 +187,32 @@ class AngularController extends AppController {
         if (version_compare($availableVersion, OPENITCOCKPIT_VERSION) > 0 && $this->hasRootPrivileges) {
             $newVersionAvailable = true;
         }
-
         $this->set('newVersionAvailable', $newVersionAvailable);
         $this->viewBuilder()->setOption('serialize', ['newVersionAvailable']);
+    }
+
+    public function message_of_the_day() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $messageOtdAvailable = false;
+        $User = new User($this->getUser());
+
+        /** @var MessagesOtdTable $MessagesOtdTable */
+        $MessagesOtdTable = TableRegistry::getTableLocator()->get('MessagesOtd');
+        $messageOtd = $MessagesOtdTable->getMessageOtdForToday(
+            $User->getTimezone(),
+            $this->getUser()->get('usergroup_id')
+        );
+        if(!empty($messageOtd)){
+debug($messageOtd);
+            $messageOtdAvailable = true;
+        }
+
+
+        $this->set('messageOtdAvailable', $messageOtdAvailable);
+        $this->viewBuilder()->setOption('serialize', ['messageOtdAvailable']);
     }
 
     public function menustats() {
