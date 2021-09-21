@@ -56,7 +56,7 @@ angular.module('openITCOCKPIT')
             if($scope.messagesOtd){
                 for(var key in $scope.messagesOtd){
                     var id = $scope.messagesOtd[key].id;
-                    $scope.messagesOtd[id] = true;
+                    $scope.massChange[id] = true;
                 }
             }
         };

@@ -6,6 +6,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
@@ -152,6 +153,35 @@ class MessagesOtdTable extends Table {
             }
         }
 
+        return $result;
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['MessagesOtd.id' => $id]);
+    }
+
+    /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getMessageOtdByIdForEdit($id) {
+        $result = $this->find()
+            ->contain([
+                'Usergroups'
+            ])
+            ->where([
+                'MessagesOtd.id' => $id
+            ])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $result['usergroups'] = [
+            '_ids' => Hash::extract($result, 'usergroups.{n}.id')
+        ];
         return $result;
     }
 }

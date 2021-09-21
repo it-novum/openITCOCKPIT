@@ -184,7 +184,7 @@
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'messagesOtd')): ?>
-                                            <a ui-sref="MessagesOTDEdit({id: messagesOtd.id})"
+                                            <a ui-sref="MessagesOTDEdit({id: messageOtd.id})"
                                                class="btn btn-default btn-lower-padding">
                                                 <i class="fa fa-cog"></i>
                                             </a>

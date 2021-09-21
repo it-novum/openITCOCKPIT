@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\MessagesOtdTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenDate;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
@@ -80,7 +82,7 @@ class MessagesOtdController extends AppController {
             /** @var MessagesOtdTable $MessagesOtdTable */
             $MessagesOtdTable = TableRegistry::getTableLocator()->get('MessagesOtd');
             $requestData = $this->request->getData();
-            if(!empty($requestData['MessagesOtd']['date'])){
+            if (!empty($requestData['MessagesOtd']['date'])) {
                 /** @var FrozenDate $frozenDate */
                 $frozenDate = new FrozenDate($requestData['MessagesOtd']['date']);
                 $requestData['MessagesOtd']['date'] = $frozenDate->format('Y-m-d');
@@ -113,17 +115,81 @@ class MessagesOtdController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
+        /** @var MessagesOtdTable $MessagesOtdTable */
+        $MessagesOtdTable = TableRegistry::getTableLocator()->get('MessagesOtd');
+
+        if (!$MessagesOtdTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid message of the day'));
+        }
+
+        $messageOtd = $MessagesOtdTable->getMessageOtdByIdForEdit($id);
+
+        if ($this->request->is('get')) {
+            if (!empty($messageOtd['date'])) {
+                /** @var FrozenDate $frozenDate */
+                $frozenDate = new FrozenDate($messageOtd['date']);
+                $messageOtd['date'] = $frozenDate->format('d.m.Y');
+            }
+            $this->set('messageOtd', $messageOtd);
+            $this->viewBuilder()->setOption('serialize', ['messageOtd']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $requestData = $this->request->getData();
+            if (!empty($requestData['MessagesOtd']['date'])) {
+                /** @var FrozenDate $frozenDate */
+                $frozenDate = new FrozenDate($requestData['MessagesOtd']['date']);
+                $requestData['MessagesOtd']['date'] = $frozenDate->format('Y-m-d');
+            }
+
+            $Entity = $MessagesOtdTable->get($id);
+            $Entity = $MessagesOtdTable->patchEntity($Entity, $requestData);
+
+            $MessagesOtdTable->save($Entity);
+            if ($Entity->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $Entity->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+            $this->set('messageOtd', $Entity);
+            $this->viewBuilder()->setOption('serialize', ['messageOtd']);
+        }
     }
 
     /**
-     * Delete method
-     *
-     * @param string|null $id Messages Otd id.
-     * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param null $id
      */
     public function delete($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
 
+        /** @var MessagesOtdTable $MessagesOtdTable */
+        $MessagesOtdTable = TableRegistry::getTableLocator()->get('MessagesOtd');
+
+        if (!$MessagesOtdTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid message of the day'));
+        }
+
+        $messageOtd = $MessagesOtdTable->get($id);
+
+        if ($MessagesOtdTable->delete($messageOtd)) {
+            $this->set('success', true);
+            $this->set('message', __('Message of the day deleted successfully'));
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
+            return;
+        }
+
+        $this->response = $this->response->withStatus(400);
+        $this->set('success', false);
+        $this->set('message', __('Issue while deleting message of the days'));
+        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
     }
 }

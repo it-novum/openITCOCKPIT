@@ -1,9 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('MessagesOTDAddController', function($scope, $http, $state, NotyService, $location, RedirectService, BBParserService){
+    .controller('MessagesOTDEditController', function($scope, $http, $state, $stateParams, NotyService, $location, RedirectService, BBParserService){
 
-        $scope.data = {
-            createAnother: false
-        };
+        $scope.id = $stateParams.id;
+        $scope.init = true;
 
         $scope.docu = {
             hyperlink: "",
@@ -14,24 +13,22 @@ angular.module('openITCOCKPIT')
         $scope.motdcontentPreview = '';
         $scope.useScroll = false;
 
-        var clearForm = function(){
-            $scope.post = {
-                MessagesOtd: {
-                    title: '',
-                    name: '',
-                    content: '',
-                    date: '',
-                    style: 'primary',
-                    expire: false,
-                    expiration_duration: null,
-                    usergroups: {
-                        _ids: []
-                    }
+        $scope.load = function(){
+            $http.get("/messagesOtd/edit/" + $scope.id + ".json", {
+                params: {
+                    'angular': true
                 }
-            };
+            }).then(function(result){
+                $scope.post = {
+                    MessagesOtd: result.data.messageOtd
+                };
+                $scope.post.MessagesOtd.expire = $scope.post.MessagesOtd.expiration_duration > 0;
+                $scope.loadUsergroups();
+                $scope.init = false;
+            });
         };
 
-        $scope.load = function(){
+        $scope.loadUsergroups = function(){
             $http.get("/usergroups/index.json", {
                 params: {
                     'angular': true,
@@ -54,7 +51,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        clearForm();
         $scope.load();
 
         //jQuery Bases WYSIWYG Editor
@@ -130,10 +126,10 @@ angular.module('openITCOCKPIT')
         /***** End WYSIWYG *****/
 
         $scope.submit = function(){
-            $http.post("/messagesOtd/add.json?angular=true",
+            $http.post("/messagesOtd/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                var url = $state.href('MessagesOTDEdit', {id: result.data.id});
+                var url = $state.href('MessagesOTDEdit', {id: result.data.messageOtd.id});
                 $scope.content = $('#motdcontent').val();
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
@@ -141,13 +137,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                if($scope.data.createAnother === false){
-                    RedirectService.redirectWithFallback('MessagesOTDIndex');
-
-                }else{
-                    clearForm();
-                    NotyService.scrollTop();
-                }
+                RedirectService.redirectWithFallback('MessagesOTDIndex');
 
             }, function errorCallback(result){
                 NotyService.genericError();
@@ -158,6 +148,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.$watch('post.MessagesOtd.content', function(){
+            if($scope.init){
+                return;
+            }
             $scope.motdcontentPreview = BBParserService.parse($scope.post.MessagesOtd.content);
         }, true);
     });
