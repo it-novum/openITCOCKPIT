@@ -48,8 +48,6 @@ use CheckmkModule\Lib\CmkHttpApi;
 use CheckmkModule\Lib\MkParser;
 use CheckmkModule\Model\Table\MkSatTasksTable;
 use DistributeModule\Model\Entity\Satellite;
-use DistributeModule\Model\Table\SatellitesTable;
-use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
@@ -241,145 +239,22 @@ class GearmanWorkerCommand extends Command {
 
 
         switch ($payload['task']) {
-            case 'CheckMKSNMP':
-                $MkNagiosExportTask = new CheckmkNagiosExportCommand();
-
-                //Generate check_mk config file, to run SNMP scan
-                $MkNagiosExportTask->init();
-                if ($payload['snmp_version'] < 3) {
-                    //SNMP V1 and V2
-                    $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                        'for_snmp_scan'  => true,
-                        'host_address'   => $payload['host_address'],
-                        'snmp_version'   => $payload['snmp_version'],
-                        'snmp_community' => $payload['snmp_community'],
-                    ], false);
-                } else {
-                    //SNMP V3
-                    $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                        'for_snmp_scan' => true,
-                        'host_address'  => $payload['host_address'],
-                        'snmp_version'  => $payload['snmp_version'],
-                        'v3'            => [
-                            'security_level'       => $payload['v3']['security_level'],
-                            'hash_algorithm'       => $payload['v3']['hash_algorithm'],
-                            'username'             => $payload['v3']['username'],
-                            'password'             => $payload['v3']['password'],
-                            'encryption_algorithm' => $payload['v3']['encryption_algorithm'],
-                            'encryption_password'  => $payload['v3']['encryption_password'],
-                        ],
-                    ], false);
-                }
-
-                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
-                    /** @var SatellitesTable $SatellitesTable */
-                    $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-
-                    $satellite = $SatellitesTable->get($payload['satellite_id']);
-                    if (empty($satellite)) {
-                        break;
-                    }
-
-                    try {
-                        $options = [
-                            'allow_redirects' => true,
-                            'verify'          => false,
-                            'stream_context'  => [
-                                'ssl' => [
-                                    'allow_self_signed' => true,
-                                    'verify'            => false
-                                ]
-                            ]
-                        ];
-                        $Client = new Client($options);
-                        $response = $Client->request('GET', sprintf(
-                                'https://%s/nagios/discover/dump-host/%s',
-                                $satellite['address'],
-                                $payload['hostUuid'])
-                        );
-
-                        $output = json_decode($response->getBody()->getContents(), true);
-                    } catch (\Exception $e) {
-                        $output = [];
-                        error_log($e->getMessage());
-                    }
-                } else {
-                    $systemsettings = $SystemsettingsTable->findAsArray();
-
-                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
-                        // Checkmk 2.x running inside a Docker Container
-                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
-                        $CmkHttpApi->executeRemoteCheckmkBinary('-II -v ' . $payload['hostuuid']);
-                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']));
-                        $CmkHttpApi->deleteRemoteAutochecks();
-                    } else {
-                        // Local running Checkmk 1.x
-                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
-                        $output = null;
-                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
-                        $this->deleteMkAutochecks();
-                        exec(sprintf(
-                            'chown %s:%s %s -R',
-                            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                            escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
-                            escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                        ));
-                    }
-                }
-
-                $return = $output;
-                break;
-
             case 'CheckMKListChecks':
-                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
-                    /** @var SatellitesTable $SatellitesTable */
-                    $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+                $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    $satellite = $SatellitesTable->get($payload['satellite_id']);
-                    if (empty($satellite)) {
-                        break;
-                    }
-
-                    try {
-                        $options = [
-                            'allow_redirects' => true,
-                            'verify'          => false,
-                            'stream_context'  => [
-                                'ssl' => [
-                                    'allow_self_signed' => true,
-                                    'verify'            => false
-                                ]
-                            ]
-                        ];
-                        $Client = new Client($options);
-                        $response = $Client->request('GET', sprintf(
-                            'https://%s/nagios/discover/check-types',
-                            $satellite['Satellite']['address']
-                        ));
-
-                        $output = json_decode($response->getBody()->getContents(), true);
-                    } catch (\Exception $e) {
-                        $output = [];
-                        error_log($e->getMessage());
-                    }
-
+                if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                    // Checkmk 2.x running inside a Docker Container
+                    $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
+                    $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-L'));
                 } else {
-                    $systemsettings = $SystemsettingsTable->findAsArray();
-
-                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
-                        // Checkmk 2.x running inside a Docker Container
-                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
-                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-L'));
-                    } else {
-                        // Local running Checkmk 1.x
-                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
-                        exec(sprintf(
-                            'chown %s:%s %s -R',
-                            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                            escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
-                            escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                        ));
-                    }
+                    // Local running Checkmk 1.x
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
+                    exec(sprintf(
+                        'chown %s:%s %s -R',
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                    ));
                 }
                 $return = $output;
                 unset($output);
@@ -389,64 +264,29 @@ class GearmanWorkerCommand extends Command {
                 //Generate .mk config for current host
                 $MkNagiosExportTask = new CheckmkNagiosExportCommand();
                 $MkNagiosExportTask->init();
-                $MkNagiosExportTask->createConfigFiles($payload['hostUuid'], [], false);
+                $MkNagiosExportTask->createConfigFiles($payload['hostUuid'], false);
 
-                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
-                    /** @var SatellitesTable $SatellitesTable */
-                    $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+                $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    $satellite = $SatellitesTable->get($payload['satellite_id']);
-                    if (empty($satellite)) {
-                        break;
-                    }
-
-                    try {
-                        $options = [
-                            'allow_redirects' => true,
-                            'verify'          => false,
-                            'stream_context'  => [
-                                'ssl' => [
-                                    'allow_self_signed' => true,
-                                    'verify'            => false
-                                ]
-                            ]
-                        ];
-                        $Client = new Client($options);
-                        $response = $Client->request('GET', sprintf(
-                                'https://%s/nagios/discover/dump-host/%s',
-                                $satellite['address'],
-                                $payload['hostUuid'])
-                        );
-
-                        $output = json_decode($response->getBody()->getContents(), true);
-                    } catch (\Exception $e) {
-                        $output = [];
-                        error_log($e->getMessage());
-                    }
-
+                if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                    // Checkmk 2.x running inside a Docker Container
+                    $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
+                    $CmkHttpApi->executeRemoteCheckmkBinary('-II -v ' . $payload['hostuuid']);
+                    $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']));
+                    //debug($output);
+                    $CmkHttpApi->deleteRemoteAutochecks();
                 } else {
-                    $systemsettings = $SystemsettingsTable->findAsArray();
-
-                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
-                        // Checkmk 2.x running inside a Docker Container
-                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
-                        $CmkHttpApi->executeRemoteCheckmkBinary('-II -v ' . $payload['hostuuid']);
-                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-D ' . $payload['hostuuid']));
-                        //debug($output);
-                        $CmkHttpApi->deleteRemoteAutochecks();
-                    } else {
-                        // Local running Checkmk 1.x
-                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
-                        $output = null;
-                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
-                        $this->deleteMkAutochecks();
-                        exec(sprintf(
-                            'chown %s:%s %s -R',
-                            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                            escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
-                            escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                        ));
-                    }
+                    // Local running Checkmk 1.x
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    $output = null;
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    $this->deleteMkAutochecks();
+                    exec(sprintf(
+                        'chown %s:%s %s -R',
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                    ));
                 }
 
                 $return = $output;
@@ -454,55 +294,20 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckMKProcesses':
-                if ($payload['satellite_id'] > 0 && Plugin::isLoaded('DistributeModule')) {
-                    /** @var SatellitesTable $SatellitesTable */
-                    $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+                $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    $satellite = $SatellitesTable->get($payload['satellite_id']);
-                    if (empty($satellite)) {
-                        break;
-                    }
-
-                    try {
-                        $options = [
-                            'allow_redirects' => true,
-                            'verify'          => false,
-                            'stream_context'  => [
-                                'ssl' => [
-                                    'allow_self_signed' => true,
-                                    'verify'            => false
-                                ]
-                            ]
-                        ];
-                        $Client = new Client($options);
-                        $response = $Client->request('GET', sprintf(
-                                'https://%s/nagios/discover/raw-info/%s',
-                                $satellite['address'],
-                                $payload['hostUuid'])
-                        );
-
-                        $output = json_decode($response->getBody()->getContents(), true);
-                    } catch (\Exception $e) {
-                        $output = [];
-                        error_log($e->getMessage());
-                    }
-
+                if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
+                    // Checkmk 2.x running inside a Docker Container
+                    $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
+                    $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-d ' . $payload['hostUuid']));
                 } else {
-                    $systemsettings = $SystemsettingsTable->findAsArray();
-
-                    if ($systemsettings['CHECK_MK']['CHECK_MK.DOCKERIZED'] == '1') {
-                        // Checkmk 2.x running inside a Docker Container
-                        $CmkHttpApi = CmkHttpApi::fromSystemsettings($systemsettings);
-                        $output = explode("\n", $CmkHttpApi->executeRemoteCheckmkBinary('-d ' . $payload['hostUuid']));
-                    } else {
-                        exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
-                        exec(sprintf(
-                            'chown %s:%s %s -R',
-                            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                            escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
-                            escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                        ));
-                    }
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
+                    exec(sprintf(
+                        'chown %s:%s %s -R',
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                    ));
                 }
 
                 $return = $output;
@@ -627,54 +432,22 @@ class GearmanWorkerCommand extends Command {
 
                     switch ($payload['cmk_task']) {
                         case 'health-scan':
+                        case 'snmp-scan':
+
                             /*  mkdir -p /opt/openitc/check_mk/var/check_mk/autochecks; rm -rf /opt/openitc/check_mk/var/check_mk/autochecks/*
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -II {hostuuid} >/dev/null
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -D {hostuuid}
                              */
                             $MkNagiosExportTask->init();
-                            $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                                'for_snmp_scan' => false,
-                                'host_address'  => $payload['host_address'],
-                            ], false));
+                            $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], false));
                             break;
-                        case 'snmp-scan':
-                            //Generate check_mk config file, to run SNMP scan
-                            $MkNagiosExportTask->init();
-                            if ($payload['snmp_version'] < 3) {
-                                //SNMP V1 and V2
-                                $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                                    'for_snmp_scan'  => true,
-                                    'host_address'   => $payload['host_address'],
-                                    'snmp_version'   => $payload['snmp_version'],
-                                    'snmp_community' => $payload['snmp_community'],
-                                ], false));
-                            } else {
-                                //SNMP V3
-                                $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                                    'for_snmp_scan' => true,
-                                    'host_address'  => $payload['host_address'],
-                                    'snmp_version'  => $payload['snmp_version'],
-                                    'v3'            => [
-                                        'security_level'       => $payload['v3']['security_level'],
-                                        'hash_algorithm'       => $payload['v3']['hash_algorithm'],
-                                        'username'             => $payload['v3']['username'],
-                                        'password'             => $payload['v3']['password'],
-                                        'encryption_algorithm' => $payload['v3']['encryption_algorithm'],
-                                        'encryption_password'  => $payload['v3']['encryption_password'],
-                                    ],
-                                ], false));
-                            }
 
-                            break;
                         case 'process-scan':
                             /*
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -d {hostuuid}
                              */
                             $MkNagiosExportTask->init();
-                            $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                                'for_snmp_scan' => false,
-                                'host_address'  => $payload['host_address'],
-                            ], false));
+                            $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], false));
                             break;
                         case 'write-file':
                             $NSTAOptions['Data']['File'] = base64_encode($payload['file']);
