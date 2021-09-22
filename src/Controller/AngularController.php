@@ -206,13 +206,12 @@ class AngularController extends AppController {
             $this->getUser()->get('usergroup_id')
         );
         if(!empty($messageOtd)){
-debug($messageOtd);
             $messageOtdAvailable = true;
         }
 
-
         $this->set('messageOtdAvailable', $messageOtdAvailable);
-        $this->viewBuilder()->setOption('serialize', ['messageOtdAvailable']);
+        $this->set('messageOtd', $messageOtd);
+        $this->viewBuilder()->setOption('serialize', ['messageOtdAvailable', 'messageOtd']);
     }
 
     public function menustats() {

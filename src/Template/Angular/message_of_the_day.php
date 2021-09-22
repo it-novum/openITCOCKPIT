@@ -23,10 +23,61 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div class="btn-group mr-2" role="group" aria-label="">
-    <button class="btn btn-default" data-original-title="<?= __('Message of the day!'); ?>" data-placement="bottom"
+<div class="btn-group mr-2" role="group" aria-label="" ng-if="messageOtd">
+    <button class="btn btn-outline-{{messageOtd.style}}"
+            ng-click="openMessageOtdModal()"
+            data-original-title="<?= __('Message of the day!'); ?>"
+            data-placement="bottom"
             rel="tooltip"
-            data-container="body" ui-sref="PackageManagerIndex" ng-show="messageOtdAvailable">
-        <i class="text-primary fas fa-bullhorn"></i>
+            data-container="body" ng-show="messageOtdAvailable">
+        <i class="fas fa-bullhorn"></i>
     </button>
+</div>
+
+<div id="angularMessageOtdModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white">
+                    <?= __('Message of the day!'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <div class="alert bg-transparent" role="alert">
+                        <div class="d-flex">
+                            <div class="alert-icon">
+                                <span class="icon-stack icon-stack-lg">
+                                    <i class="base base-12 icon-stack-3x opacity-100 color-{{messageOtd.style}}-500"></i>
+                                    <i class="fas fa-info icon-stack-1x opacity-100 color-white margin-bottom-2"
+                                       ng-show="messageOtd.style == 'primary' || messageOtd.style == 'info'"></i>
+                                    <i class="fas fa-check icon-stack-1x opacity-100 color-white margin-bottom-2"
+                                       ng-show="messageOtd.style == 'success'"></i>
+                                    <i class="fas fa-exclamation icon-stack-1x opacity-100 color-white margin-bottom-2"
+                                       ng-show="pmessageOtd.style == 'warning' || messageOtd.style == 'danger'"></i>
+                                </span>
+                            </div>
+                            <div class="flex-1 padding-left-15">
+                                <div ng-if="messageOtd.title"
+                                     class="h4 text-{{messageOtd.style}} title-border title-border-bottom-{{messageOtd.style}}">
+                                    {{messageOtd.title}}
+                                </div>
+                                <div class="italic">
+                                    {{messageOtd.description}}
+                                </div>
+                                <br>
+                                <div style="word-wrap: break-word;"
+                                     ng-bind-html="messageOtd.contentHtml | trustAsHtml">
+                                    {{messageOtd.contentHtml}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('messageOtd', function($http, $timeout){
+angular.module('openITCOCKPIT').directive('messageOtd', function($http, BBParserService){
     return {
         restrict: 'E',
         templateUrl: '/angular/message_of_the_day.html',
@@ -13,10 +13,17 @@ angular.module('openITCOCKPIT').directive('messageOtd', function($http, $timeout
                     }
                 }).then(function(result){
                     $scope.messageOtdAvailable = result.data.messageOtdAvailable;
+                    $scope.messageOtd = result.data.messageOtd;
+                    $scope.messageOtd.contentHtml = BBParserService.parse($scope.messageOtd.content);
                 });
             };
 
             $scope.load();
+
+            $scope.openMessageOtdModal = function(){
+                $(".page-inner").append($('#angularMessageOtdModal'));
+                $('#angularMessageOtdModal').modal('show');
+            };
 
         },
 
