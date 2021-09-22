@@ -24,6 +24,7 @@ angular.module('openITCOCKPIT')
                     style: 'primary',
                     expire: false,
                     expiration_duration: null,
+                    notify_users: 0,
                     usergroups: {
                         _ids: []
                     }

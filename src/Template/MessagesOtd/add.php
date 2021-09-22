@@ -160,6 +160,28 @@
                         </div>
 
                         <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       id="NotifyUsers"
+                                       name="checkbox"
+                                       class="custom-control-input"
+                                       ng-false-value="0"
+                                       ng-true-value="1"
+                                       ng-model="post.MessagesOtd.notify_users">
+                                <label class="custom-control-label"
+                                       for="NotifyUsers"><?php echo __('Notify users'); ?>
+                                    <div class="icon-stack margin-bottom-5">
+                                        <i class="fas fa-user opacity-100 "></i>
+                                        <i class="fas fa-envelope opacity-100 fa-xs text-primary cornered cornered-lr"></i>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="help-block">
+                                <?= __('If activated, the system sends notifications via email with the current content of the "Message of the day" to affected users'); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Style'); ?>
                             </label>
@@ -315,7 +337,8 @@
                                     </div>
                                     <div class="panel-container show">
                                         <div class="panel-content">
-                                            <div class="alert border-{{post.MessagesOtd.style}} bg-transparent" role="alert">
+                                            <div class="alert border-{{post.MessagesOtd.style}} bg-transparent"
+                                                 role="alert">
                                                 <div class="d-flex">
                                                     <div class="alert-icon">
                                                         <span class="icon-stack icon-stack-lg">

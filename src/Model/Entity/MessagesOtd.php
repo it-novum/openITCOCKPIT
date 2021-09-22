@@ -16,6 +16,7 @@ use Cake\ORM\Entity;
  * @property int $user_id
  * @property \Cake\I18n\FrozenDate $date
  * @property int $expiration_duration
+ * @property int $notify_users
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
@@ -40,6 +41,7 @@ class MessagesOtd extends Entity {
         'user_id'             => true,
         'date'                => true,
         'expiration_duration' => true,
+        'notify_users'        => true,
         'created'             => true,
         'modified'            => true,
         'user'                => true,

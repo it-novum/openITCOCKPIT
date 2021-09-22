@@ -67,6 +67,11 @@ class MessageOfTheDay extends AbstractMigration {
                     'limit'   => 11,
                     'null'    => true,
                 ])
+                ->addColumn('notify_users', 'integer', [
+                    'default' => '0',
+                    'limit'   => 1,
+                    'null'    => false,
+                ])
                 ->addColumn('created', 'datetime', [
                     'default' => null,
                     'limit'   => null,
