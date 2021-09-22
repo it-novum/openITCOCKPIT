@@ -24,7 +24,7 @@
 //	confirmation.
 ?>
 <div class="btn-group mr-2" role="group" aria-label="" ng-if="messageOtd">
-    <button class="btn btn-outline-{{messageOtd.style}}"
+    <button class="btn btn-outline-{{messageOtd.style}} pulse-{{messageOtd.style}}"
             ng-click="openMessageOtdModal()"
             data-original-title="<?= __('Message of the day!'); ?>"
             data-placement="bottom"

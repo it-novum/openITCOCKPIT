@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('messageOtd', function($http, BBParserService){
+angular.module('openITCOCKPIT').directive('messageOtd', function($http, BBParserService, $interval){
     return {
         restrict: 'E',
         templateUrl: '/angular/message_of_the_day.html',
@@ -17,6 +17,8 @@ angular.module('openITCOCKPIT').directive('messageOtd', function($http, BBParser
                     $scope.messageOtd.contentHtml = BBParserService.parse($scope.messageOtd.content);
                 });
             };
+
+            $interval($scope.load, 3600 * 1000); //every hour
 
             $scope.load();
 
