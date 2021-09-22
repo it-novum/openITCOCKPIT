@@ -37,7 +37,7 @@
 <div id="angularMessageOtdModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-primary">
+            <div class="modal-header bg-{{messageOtd.style}}">
                 <h5 class="modal-title text-white">
                     <?= __('Message of the day!'); ?>
                 </h5>
@@ -57,7 +57,7 @@
                                     <i class="fas fa-check icon-stack-1x opacity-100 color-white margin-bottom-2"
                                        ng-show="messageOtd.style == 'success'"></i>
                                     <i class="fas fa-exclamation icon-stack-1x opacity-100 color-white margin-bottom-2"
-                                       ng-show="pmessageOtd.style == 'warning' || messageOtd.style == 'danger'"></i>
+                                       ng-show="messageOtd.style == 'warning' || messageOtd.style == 'danger'"></i>
                                 </span>
                             </div>
                             <div class="flex-1 padding-left-15">
