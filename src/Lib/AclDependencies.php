@@ -605,6 +605,11 @@ class AclDependencies {
             ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadHostsByString')
             ->dependency('Wizards', 'linuxserverssh', 'Wizards', 'loadServicetemplatesByWizardType');
 
+
+        $this
+            ->dependency('MessagesOtd', 'add', 'MessagesOtd', 'notifyUsersViaMail')
+            ->dependency('MessagesOtd', 'edit', 'MessagesOtd', 'notifyUsersViaMail');
+
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {
             $className = sprintf('\%s\Lib\AclDependencies', $pluginName);

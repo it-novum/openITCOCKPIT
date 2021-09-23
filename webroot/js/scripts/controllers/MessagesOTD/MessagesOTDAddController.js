@@ -130,6 +130,20 @@ angular.module('openITCOCKPIT')
         };
         /***** End WYSIWYG *****/
 
+        $scope.notifyUsers = function(messageOtdId){
+            $http.get("/messagesOtd/notifyUsersViaMail/" + messageOtdId + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                if(result.data.success && result.data.success === true){
+                    NotyService.genericSuccess({message: result.data.message});
+                }else{
+                    NotyService.genericError();
+                }
+            });
+        };
+
         $scope.submit = function(){
             $http.post("/messagesOtd/add.json?angular=true",
                 $scope.post
@@ -142,9 +156,12 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
+                if($scope.post.MessagesOtd.notify_users){
+                    $scope.notifyUsers(result.data.id);
+                }
+
                 if($scope.data.createAnother === false){
                     RedirectService.redirectWithFallback('MessagesOTDIndex');
-
                 }else{
                     clearForm();
                     NotyService.scrollTop();

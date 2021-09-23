@@ -373,8 +373,14 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <button class="btn btn-primary"
-                                            type="submit"><?php echo __('Update message of the day'); ?></button>
+                                    <button class="btn btn-primary" ng-show="post.MessagesOtd.notify_users"
+                                            type="submit">
+                                        <?php echo __('Update message of the day and notify users'); ?>
+                                    </button>
+                                    <button class="btn btn-primary" ng-hide="post.MessagesOtd.notify_users"
+                                            type="submit">
+                                        <?php echo __('Update message of the day'); ?>
+                                    </button>
                                     <a back-button href="javascript:void(0);" fallback-state='MessagesOTDIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>

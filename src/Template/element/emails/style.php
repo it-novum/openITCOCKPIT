@@ -577,4 +577,76 @@
         padding: 10px 1px 10px 15px !important;
     }
 
+    /* Message of the day style settings for email notifcation*/
+
+    .message_otd_alert h1 {
+        color: #ffffff;
+    }
+
+    .alert-primary {
+        background-color: #4285F4;
+        background-image: linear-gradient(to bottom, #4285F4, #77a2ef) !important;
+        background-repeat: repeat-x;
+    }
+
+    .alert-info {
+        background-color: #33b5e5;
+        background-image: linear-gradient(to bottom, #33b5e5, #6fc0e2) !important;
+        background-repeat: repeat-x;
+    }
+
+    .alert-success {
+        background-color: #00C851;
+        background-image: linear-gradient(to bottom, #00C851, #45d081) !important;
+        background-repeat: repeat-x;
+    }
+
+    .alert-warning {
+        background-color: #ffbb33;
+        background-image: linear-gradient(to bottom, #ffbb33, #fabd52) !important;
+        background-repeat: repeat-x;
+    }
+
+    .alert-danger {
+        background-color: #CC0000 !important;
+        background-image: linear-gradient(to bottom, #CC0000, #ef2d2d) !important;
+        background-repeat: repeat-x;
+    }
+
+    .title-border {
+        border-bottom: 3px solid;
+        border-image-slice: 1;
+        line-height: 3;
+    }
+
+    .title-border-bottom-primary {
+        color: #4285F4;
+        border-image-source: linear-gradient(45deg, #4285F4, transparent);
+    }
+
+    .title-border-bottom-info {
+        color: #33b5e5;
+        border-image-source: linear-gradient(45deg, #33b5e5, transparent);
+    }
+
+    .title-border-bottom-success {
+        color: #00C851;
+        border-image-source: linear-gradient(45deg, #00C851, transparent);
+    }
+
+    .title-border-bottom-warning {
+        color: #ffbb33;
+        border-image-source: linear-gradient(45deg, #ffbb33, transparent);
+    }
+
+    .title-border-bottom-danger {
+        color: #CC0000;
+        border-image-source: linear-gradient(45deg, #CC0000, transparent);
+    }
+
+    .info-date {
+        font-size: 11px;
+        font-style: italic;
+        color: #5e5d5d;
+    }
 </style>
