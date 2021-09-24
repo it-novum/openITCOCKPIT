@@ -257,6 +257,8 @@ class MessagesOtdController extends AppController {
                     $content = $messageOtd->get('content');
                     $content = str_replace("'", "", $content);
                     $htmlContent = $BBCodeParser->asHtml($content);
+                    $textContent = strip_tags($htmlContent, '<br>');
+                    $textContent = str_replace('<br>', "\n", $textContent);
                     $Mailer->viewBuilder()
                         ->setTemplate('message_otd_mail')
                         ->setVar('systemname', $_systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])
@@ -265,7 +267,8 @@ class MessagesOtdController extends AppController {
                         ->setVar('title', $messageOtd->get('title'))
                         ->setVar('description', $messageOtd->get('description'))
                         ->setVar('style', $messageOtd->get('style'))
-                        ->setVar('content', $htmlContent);
+                        ->setVar('htmlContent', $htmlContent)
+                        ->setVar('textContent', $textContent);
 
                     $Mailer->deliver();
 

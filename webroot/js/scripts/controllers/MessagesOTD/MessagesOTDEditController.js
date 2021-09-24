@@ -126,7 +126,7 @@ angular.module('openITCOCKPIT')
         /***** End WYSIWYG *****/
 
         $scope.notifyUsers = function(messageOtdId){
-            $http.get("/messagesOtd/notifyUsersViaMail/" + messageOtdId + ".json", {
+            $http.post("/messagesOtd/notifyUsersViaMail/" + messageOtdId + ".json", {
                 params: {
                     'angular': true
                 }

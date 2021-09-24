@@ -89,7 +89,7 @@ echo $this->element('emails/style');
                     </tr>
                     <tr>
                         <td>
-                            <?= $content; ?>
+                            <?= $htmlContent; ?>
                         </td>
                     </tr>
                 </table>

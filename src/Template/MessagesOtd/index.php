@@ -200,7 +200,7 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'messagesOtd')): ?>
-                                                <a ui-sref="MessagesOTDEdit({id: messagesOtd.id})"
+                                                <a ui-sref="MessagesOTDEdit({id: messageOtd.id})"
                                                    class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>

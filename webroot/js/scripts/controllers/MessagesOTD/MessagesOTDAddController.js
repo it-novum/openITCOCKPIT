@@ -131,7 +131,7 @@ angular.module('openITCOCKPIT')
         /***** End WYSIWYG *****/
 
         $scope.notifyUsers = function(messageOtdId){
-            $http.get("/messagesOtd/notifyUsersViaMail/" + messageOtdId + ".json", {
+            $http.post("/messagesOtd/notifyUsersViaMail/" + messageOtdId + ".json", {
                 params: {
                     'angular': true
                 }
@@ -139,7 +139,7 @@ angular.module('openITCOCKPIT')
                 if(result.data.success && result.data.success === true){
                     NotyService.genericSuccess({message: result.data.message});
                 }else{
-                    NotyService.genericError();
+                    NotyService.genericError({message: result.data.message});
                 }
             });
         };

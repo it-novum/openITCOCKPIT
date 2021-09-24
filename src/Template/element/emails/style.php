@@ -615,7 +615,7 @@
 
     .title-border {
         border-bottom: 3px solid;
-        border-image-slice: 1;
+        border-image-slice: 0 0 1 0;
         line-height: 3;
     }
 
