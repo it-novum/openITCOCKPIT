@@ -205,13 +205,25 @@ class AngularController extends AppController {
             $User->getTimezone(),
             $this->getUser()->get('usergroup_id')
         );
-        if(!empty($messageOtd)){
+        $showMessageAfterLogin = false;
+
+        if (!empty($messageOtd)) {
             $messageOtdAvailable = true;
+            $session = $this->request->getSession();
+            if (!$session->check('MessageOtd.showMessage')) {
+                $session->write('MessageOtd.showMessage', true);
+                $showMessageAfterLogin = true;
+            }
         }
 
         $this->set('messageOtdAvailable', $messageOtdAvailable);
         $this->set('messageOtd', $messageOtd);
-        $this->viewBuilder()->setOption('serialize', ['messageOtdAvailable', 'messageOtd']);
+        $this->set('showMessageAfterLogin', $showMessageAfterLogin);
+        $this->viewBuilder()->setOption('serialize', [
+            'messageOtdAvailable',
+            'messageOtd',
+            'showMessageAfterLogin'
+        ]);
     }
 
     public function menustats() {

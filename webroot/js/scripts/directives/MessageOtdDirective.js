@@ -14,8 +14,12 @@ angular.module('openITCOCKPIT').directive('messageOtd', function($http, BBParser
                 }).then(function(result){
                     $scope.messageOtdAvailable = result.data.messageOtdAvailable;
                     $scope.messageOtd = result.data.messageOtd;
+                    $scope.showMessageAfterLogin = result.data.showMessageAfterLogin;
                     if($scope.messageOtd){
                         $scope.messageOtd.contentHtml = BBParserService.parse($scope.messageOtd.content);
+                        if($scope.showMessageAfterLogin === true){
+                            $scope.openMessageOtdModal();
+                        }
                     }
                 });
             };
