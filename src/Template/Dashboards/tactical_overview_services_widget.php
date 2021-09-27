@@ -224,7 +224,7 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                     <div class="unreachable tactical-overview-flex-item font-xl">
                         <?php if ($hasServiceIndexPermissions): ?>
                             <a class="unreachable" ng-if="servicestatusSummary.in_downtime[3] > 0"
-                               ui-sref="ServicesIndex({id: $hasServiceIndexPermissions.in_downtime.serviceIds[3]})">
+                               ui-sref="ServicesIndex({id: servicestatusSummary.in_downtime.serviceIds[3]})">
                                 {{servicestatusSummary.in_downtime[3]}}
                             </a>
                             <span ng-if="servicestatusSummary.in_downtime[3] === 0">
