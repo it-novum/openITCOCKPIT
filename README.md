@@ -40,7 +40,7 @@ Password: demo123
 * PHP >= 7.2
 * 2 CPU cores (x86-64)
 * 2 GB RAM
-* 15 GB space
+* 25 GB space
 
 ### Production system sizing
 Unfortunately there is no golden rule for the right sizing of a monitoring system. This depends on the amount of hosts and services you like to monitor.

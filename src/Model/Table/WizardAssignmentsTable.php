@@ -297,6 +297,20 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'vmware-horizon.png',
                 'category'    => ['virtualization', 'cloud'],
             ],
+            'db2'                    => [
+                'type_id'     => 'db2',
+                'title'       => __('DB2 Monitoring'),
+                'description' => __('Monitor your DB2 server'),
+                'image'       => 'db2.png',
+                'category'    => ['database'],
+            ],  
+            'oracle'                 => [
+                'type_id'     => 'oracle',
+                'title'       => __('Oracle'),
+                'description' => __('Track connection time, connected users, session and process usage, ....'),
+                'image'       => 'Oracle_logo.svg',
+                'category'    => ['linux', 'database'],
+            ],
             'ups'                    => [
                 'type_id'     => 'ups',
                 'title'       => __('Uninterruptible Power Supply'),
@@ -304,7 +318,6 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'ups.jpg',
                 'category'    => ['hardware'],
             ],
-
             'printer'                => [
                 'type_id'     => 'printer',
                 'title'       => __('Printer'),

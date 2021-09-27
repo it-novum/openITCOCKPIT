@@ -827,7 +827,7 @@ class NagiosNotificationCommand extends Command {
                 $textTemplateExists = true;
             }
 
-            if ($this->layout === 'both') {
+            if ($this->format === 'both') {
                 if ($htmlTemplateExists && $textTemplateExists) {
                     $this->layout = $layout;
                 } else {
@@ -835,7 +835,7 @@ class NagiosNotificationCommand extends Command {
                 }
             }
 
-            if ($this->layout === 'text') {
+            if ($this->format === 'text') {
                 if ($textTemplateExists) {
                     $this->layout = $layout;
                 } else {
@@ -843,7 +843,7 @@ class NagiosNotificationCommand extends Command {
                 }
             }
 
-            if ($this->layout === 'html') {
+            if ($this->format === 'html') {
                 if ($htmlTemplateExists) {
                     $this->layout = $layout;
                 } else {

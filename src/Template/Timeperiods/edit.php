@@ -70,6 +70,12 @@ $weekdays = [
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('viewDetails', 'timeperiods')): ?>
+                        <button class="btn btn-default btn-xs mr-1 shadow-0"
+                                ui-sref="TimeperiodsViewDetails({id: id})">
+                            <i class="fas fa-calendar-week"></i> <?php echo __('View details'); ?>
+                        </button>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="panel-container show">
@@ -82,12 +88,12 @@ $weekdays = [
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                    id="ContactContainers"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Timeperiod.container_id">
+                                id="ContactContainers"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="post.Timeperiod.container_id">
                             </select>
                             <div ng-show="post.Timeperiod.container_id < 1" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -102,9 +108,9 @@ $weekdays = [
                                 <?php echo __('Name'); ?>
                             </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Timeperiod.name">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Timeperiod.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -115,9 +121,9 @@ $weekdays = [
                                 <?php echo __('Description'); ?>
                             </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Timeperiod.description">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Timeperiod.description">
                             <div ng-repeat="error in errors.description">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -136,12 +142,12 @@ $weekdays = [
                                 <?php endif; ?>
                             </label>
                             <select
-                                    id="ContactContainers"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="calendars"
-                                    ng-options="calendar.key as calendar.value for calendar in calendars"
-                                    ng-model="post.Timeperiod.calendar_id">
+                                id="ContactContainers"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="calendars"
+                                ng-options="calendar.key as calendar.value for calendar in calendars"
+                                ng-model="post.Timeperiod.calendar_id">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -168,7 +174,7 @@ $weekdays = [
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i
-                                                        class="fas fa-calendar-day padding-top-3 padding-bottom-3"></i></span>
+                                                    class="fas fa-calendar-day padding-top-3 padding-bottom-3"></i></span>
                                         </div>
                                         <select class="form-control input-sm select" chosen="" id="tp_day_{{$index}}"
                                                 ng-model="range.day">

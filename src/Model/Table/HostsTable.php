@@ -3394,6 +3394,7 @@ class HostsTable extends Table {
         if ($offset !== null) {
             $query->offset($offset);
         }
+        $query->group('Hosts.id');
         $query->disableHydration()->all();
 
         if ($count === true) {
