@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('MessagesOTDIndexController', function($scope, $http, SortService, MassChangeService){
+    .controller('MessagesOTDIndexController', function($scope, $http, SortService, MassChangeService, NotyService){
         SortService.setSort('MessagesOtd.date');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
@@ -97,6 +97,20 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.notifyUsers = function(messageOtdId){
+            $http.post("/messagesOtd/notifyUsersViaMail/" + messageOtdId + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                if(result.data.success && result.data.success === true){
+                    NotyService.genericSuccess({message: result.data.message});
+                }else{
+                    NotyService.genericError();
+                }
+            });
         };
 
         //Fire on page load

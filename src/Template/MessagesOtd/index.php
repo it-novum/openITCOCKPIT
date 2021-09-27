@@ -205,6 +205,13 @@
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
                                                 </a>
+                                                <a ng-click="notifyUsers(messageOtd.id)"
+                                                   ng-if="messageOtd.notify_users"
+                                                   href="javascript:void(0);"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-envelope-open-text"></i>
+                                                    <?php echo __('Notify users'); ?>
+                                                </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'messagesOtd')): ?>
                                                 <div class="dropdown-divider"></div>
