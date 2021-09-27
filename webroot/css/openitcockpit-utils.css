@@ -831,6 +831,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     display: flex;
     flex-wrap: wrap;
 }
+
 .wizard-card {
     margin: 0;
     display: flex;
@@ -839,4 +840,22 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 
 .wizard-card-block {
     flex: 1;
+}
+
+.tactical-overview-first-flex-item {
+    flex: 0 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.tactical-overview-flex-item {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    font-size: 2.0vw;
 }

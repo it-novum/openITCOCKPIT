@@ -25,49 +25,43 @@
 namespace itnovum\openITCOCKPIT\Core\Dashboards;
 
 
-class DashboardJsonStandardizer {
+class TacticalOverviewJson extends DashboardJsonStandardizer {
 
     /**
      * @var array
+     * Add new fields to this list
+     * oITC will take care of the rest of the work
      */
-    protected $fields = [];
+    protected $fields = [
+        'Host'         => [
+            'name' => ''
+        ],
+        'Service'      => [
+            'servicename'  => '',
+            'keywords'     => '',
+            'not_keywords' => ''
+        ],
+        'Hostgroup'    => [
+            '_ids' => ''
+        ],
+        'Servicegroup' => [
+            '_ids' => ''
+        ]
+    ];
 
     /**
      * @param array $request
      * @return array
      */
     public function standardizedData($request = []) {
+        if (isset($request['Hostgroup']['_ids']) && is_array($request['Hostgroup']['_ids'])) {
+            // POST request to save to database
+            $request['Hostgroup']['_ids'] = implode(',', $request['Hostgroup']['_ids']);
+        }
+        if (isset($request['Servicegroup']['_ids']) && is_array($request['Servicegroup']['_ids'])) {
+            // POST request to save to database
+            $request['Servicegroup']['_ids'] = implode(',', $request['Servicegroup']['_ids']);
+        }
         return $this->_standardizedData($this->fields, $request);
     }
-
-    /**
-     * @param array $fields
-     * @param array $request
-     * @return array
-     */
-    protected function _standardizedData($fields, $request) {
-        $result = [];
-        foreach ($fields as $key => $value) {
-            if (is_array($value) && isset($request[$key])) {
-                $result[$key] = $this->_standardizedData($fields[$key], $request[$key]);
-            } else {
-                if (isset($request[$key])) {
-                    switch (gettype($fields[$key])) {
-                        case 'boolean':
-                            $result[$key] = (bool)$request[$key];
-                            break;
-                        case 'integer':
-                            $result[$key] = (int)$request[$key];
-                            break;
-                        default:
-                            $result[$key] = (string)$request[$key];
-                    }
-                } else {
-                    $result[$key] = $value;
-                }
-            }
-        }
-        return $result;
-    }
-
 }
