@@ -567,6 +567,7 @@ class ServicesTable extends Table {
             }
         }
 
+
         $where = $ServiceConditions->getConditions();
 
         if (!empty($selected)) {
@@ -613,6 +614,7 @@ class ServicesTable extends Table {
         $servicesWithLimit = [];
         $selectedServices = [];
         $results = $this->emptyArrayIfNull($query->toArray());
+
         foreach ($results as $result) {
             $servicesWithLimit[$result['id']] = $result;
         }
@@ -638,7 +640,6 @@ class ServicesTable extends Table {
                 ->order([
                     'servicename' => 'asc'
                 ])
-                ->limit(ITN_AJAX_LIMIT)
                 ->disableHydration()
                 ->all();
             $results = $this->emptyArrayIfNull($query->toArray());

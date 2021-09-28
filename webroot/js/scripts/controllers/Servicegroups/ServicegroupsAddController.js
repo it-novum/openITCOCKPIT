@@ -54,14 +54,15 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServices = function(searchString){
-            $http.get("/services/loadServicesByContainerIdCake4.json", {
-                params: {
-                    'angular': true,
-                    'containerId': $scope.post.Servicegroup.container.parent_id,
-                    'filter[servicename]': searchString,
-                    'selected[]': $scope.post.Servicegroup.services._ids
-                }
-            }).then(function(result){
+            $scope.params = {
+                'angular': true,
+                'containerId': $scope.post.Servicegroup.container.parent_id,
+                'filter[servicename]': searchString,
+                'selected': $scope.post.Servicegroup.services._ids
+            };
+            $http.post("/services/loadServicesByContainerIdCake4.json?angular=true",
+                $scope.params
+            ).then(function(result){
                 $scope.services = result.data.services;
             });
         };

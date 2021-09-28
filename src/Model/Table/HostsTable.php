@@ -1840,7 +1840,6 @@ class HostsTable extends Table {
             'HostsToContainersSharing'
         ]);
         $where = $HostConditions->getWhereForFind();
-
         if (is_array($selected)) {
             $selected = array_filter($selected);
         }
@@ -1912,7 +1911,6 @@ class HostsTable extends Table {
                     'OR' => $where['NOT']
                 ];
             }
-
 
             if (!empty($where)) {
                 $query->where($where);
