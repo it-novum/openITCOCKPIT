@@ -50,11 +50,11 @@ abstract class Filter {
                     switch ($operator) {
                         case 'bool':
                             $value = $this->getQueryFieldValue($field);
-                            if ($value === '1' || $value === 1 || $value === 'true') {
+                            if ($value === '1' || $value === 1 || $value === 'true' || $value === true) {
                                 $conditions[$field] = 1;
                             }
 
-                            if ($value === '0' || $value === 0 || $value === 'false') {
+                            if ($value === '0' || $value === 0 || $value === 'false' || $value === false) {
                                 $conditions[$field] = 0;
                             }
                             break;
@@ -141,10 +141,10 @@ abstract class Filter {
 
                         case 'downtime':
                             $value = $this->getQueryFieldValue($field);
-                            if ($value === '1' || $value === 1 || $value === 'true') {
+                            if ($value === '1' || $value === 1 || $value === 'true' || $value === true) {
                                 $conditions[sprintf('%s >=', $field)] = 1;
                             }
-                            if ($value === '0' || $value === 0 || $value === 'false') {
+                            if ($value === '0' || $value === 0 || $value === 'false' || $value === false) {
                                 $conditions[sprintf('%s =', $field)] = 0;
                             }
                             break;
@@ -163,7 +163,13 @@ abstract class Filter {
      * @return bool
      */
     public function queryHasField($field) {
-        $query = $this->Request->getQuery('filter');
+        if ($this->Request->is('post')) {
+            // POST Request
+            $query = $this->Request->getData('filter');
+        } else {
+            // GET Request
+            $query = $this->Request->getQuery('filter');
+        }
         return isset($query[$field]);
     }
 
@@ -174,12 +180,24 @@ abstract class Filter {
     public function getQueryFieldValue($field, $strict = false) {
         if ($this->queryHasField($field)) {
             if ($strict === false) {
-                $query = $this->Request->getQuery('filter');
+                if ($this->Request->is('post')) {
+                    // POST Request
+                    $query = $this->Request->getData('filter');
+                } else {
+                    // GET Request
+                    $query = $this->Request->getQuery('filter');
+                }
                 return $query[$field];
             }
 
             if ($strict === true) {
-                $query = $this->Request->getQuery('filter');
+                if ($this->Request->is('post')) {
+                    // POST Request
+                    $query = $this->Request->getData('filter');
+                } else {
+                    // GET Request
+                    $query = $this->Request->getQuery('filter');
+                }
                 $value = $query[$field];
                 if (is_array($value)) {
                     $value = array_filter($value, function ($val) {
@@ -228,6 +246,8 @@ abstract class Filter {
     }
 
     /**
+     * This parameter needs to be passed via the query string (GET)
+     *
      * @param string $default
      * @return string|array
      */
@@ -241,6 +261,8 @@ abstract class Filter {
     }
 
     /**
+     * This parameter needs to be passed via the query string (GET)
+     *
      * @param string $default
      * @return string
      */
@@ -288,6 +310,8 @@ abstract class Filter {
     }
 
     /**
+     * This parameter needs to be passed via the query string (GET)
+     *
      * @param int $default
      * @return int
      */
