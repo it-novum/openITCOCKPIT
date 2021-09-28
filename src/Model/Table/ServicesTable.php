@@ -620,7 +620,6 @@ class ServicesTable extends Table {
         }
 
         if (!empty($selected)) {
-            $ajaxLimit = ITN_AJAX_LIMIT + count($selected);
             $query = $this->find();
             $query
                 ->innerJoinWith('Hosts')
@@ -641,7 +640,6 @@ class ServicesTable extends Table {
                 ->order([
                     'servicename' => 'asc'
                 ])
-                ->limit($ajaxLimit)
                 ->disableHydration()
                 ->all();
             $results = $this->emptyArrayIfNull($query->toArray());
