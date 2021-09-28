@@ -142,7 +142,7 @@ echo $this->element('emails/style');
                                 </tr>
                                 <tr>
                                     <td><strong><?php echo __('Service description'); ?>:</strong></td>
-                                    <td><?= h($Host->getDescription()) ?></td>
+                                    <td><?= h($Service->getDescription()) ?></td>
                                 </tr>
                                 <tr>
                                     <td><strong><?php echo __('Host name'); ?>:</strong></td>

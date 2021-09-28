@@ -88,7 +88,7 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
                 $scope.setServiceAckObjects(objects);
 
                 $scope.setServiceAckAuthor(attr.author);
-
+                $(".page-inner").append($('#angularacknowledgeServiceModal'));
                 $('#angularacknowledgeServiceModal').modal('show');
             };
         }

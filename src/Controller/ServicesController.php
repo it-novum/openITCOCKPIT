@@ -2672,8 +2672,15 @@ class ServicesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->getQuery('selected');
-        $containerId = $this->request->getQuery('containerId');
+        if ($this->request->is('post')) {
+            // ITC-2124
+            $selected = $this->request->getData('selected');
+            $containerId = $this->request->getData('containerId');
+        } else {
+            // Keep the API stable for GET
+            $selected = $this->request->getQuery('selected');
+            $containerId = $this->request->getQuery('containerId');
+        }
 
         $ServiceFilter = new ServiceFilter($this->request);
         $containerIds = [ROOT_CONTAINER, $containerId];

@@ -25,7 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\Dashboards;
 
 
-class ServiceStatusListJson extends DashboardJsonStandardizer {
+class TacticalOverviewJson extends DashboardJsonStandardizer {
 
     /**
      * @var array
@@ -33,31 +33,35 @@ class ServiceStatusListJson extends DashboardJsonStandardizer {
      * oITC will take care of the rest of the work
      */
     protected $fields = [
-        'Servicestatus'   => [
-            'current_state'    => [
-                'ok'       => false,
-                'warning'  => false,
-                'critical' => false,
-                'unknown'  => false,
-            ],
-            'acknowledged'     => false,
-            'not_acknowledged' => false,
-            'in_downtime'      => false,
-            'not_in_downtime'  => false,
-            'output'           => '',
-        ],
-        'Host'            => [
+        'Host'         => [
             'name' => ''
         ],
-        'Service'         => [
-            'name'         => '',
+        'Service'      => [
+            'servicename'  => '',
             'keywords'     => '',
             'not_keywords' => ''
         ],
-        'sort'            => 'Servicestatus.current_state',
-        'direction'       => 'desc',
-        'useScroll'       => true,
-        'scroll_interval' => 30000
+        'Hostgroup'    => [
+            '_ids' => ''
+        ],
+        'Servicegroup' => [
+            '_ids' => ''
+        ]
     ];
 
+    /**
+     * @param array $request
+     * @return array
+     */
+    public function standardizedData($request = []) {
+        if (isset($request['Hostgroup']['_ids']) && is_array($request['Hostgroup']['_ids'])) {
+            // POST request to save to database
+            $request['Hostgroup']['_ids'] = implode(',', $request['Hostgroup']['_ids']);
+        }
+        if (isset($request['Servicegroup']['_ids']) && is_array($request['Servicegroup']['_ids'])) {
+            // POST request to save to database
+            $request['Servicegroup']['_ids'] = implode(',', $request['Servicegroup']['_ids']);
+        }
+        return $this->_standardizedData($this->fields, $request);
+    }
 }

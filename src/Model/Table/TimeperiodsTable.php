@@ -242,7 +242,7 @@ class TimeperiodsTable extends Table {
                 'Timeperiods.id' => $id
             ])
             ->first();
-        if(is_null($query)){
+        if (is_null($query)) {
             return null;
         }
 
@@ -375,7 +375,7 @@ class TimeperiodsTable extends Table {
                             }
                             $error_arr[$day]['state-error'][] = [
                                 'start' => $timerange_data[$intern_counter]['start'],
-                                'end' => $timerange_data[$intern_counter]['end']
+                                'end'   => $timerange_data[$intern_counter]['end']
                             ];
                             $timeranges[$intern_counter] = 'error';
                         } else {
@@ -643,6 +643,52 @@ class TimeperiodsTable extends Table {
         }
 
         return $list;
+    }
+
+
+    public function parseTimerangesForCalendar($timeRanges) {
+        $possibleWeekDays = [0, 1, 2, 3, 4, 5, 6];
+        $eventsFormated = [];
+        $calendarEvents = Hash::combine(
+            $timeRanges,
+            '{n}.id',
+            '{n}',
+            '{n}.day'
+        );
+        if (isset($calendarEvents[7])) { //replace key from sunday from 7 to 0
+            $calendarEvents[0] = $calendarEvents[7];
+            unset($calendarEvents[7]);
+        }
+        ksort($calendarEvents);
+
+        foreach ($calendarEvents as $day => $events) {
+            foreach ($events as $event) {
+                $eventsFormated[] = [
+                    'daysOfWeek' => [$day],
+                    'startTime'  => $event['start'],
+                    'endTime'    => $event['end'],
+                    'title' => sprintf('%s - %s', $event['start'], $event['end'])
+                ];
+            }
+        }
+        $emptyDays = array_diff($possibleWeekDays, array_keys($calendarEvents));
+        if (!empty($emptyDays)) {
+            $eventsFormated[] = [
+                'daysOfWeek' => array_keys($emptyDays),
+                'rendering'  => 'background',
+                'className'  => 'no-events'
+            ];
+        }
+         /** highlight non business days: saturday and sunday  */
+        $eventsFormated[] = [
+            'daysOfWeek' => [0, 6],
+            'rendering'  => 'background',
+            'className'  => 'fc-nonbusiness',
+            'allDay' =>  true,
+            'overLap' =>  false
+        ];
+
+        return $eventsFormated;
     }
 
 }
