@@ -494,6 +494,4 @@ angular.module('openITCOCKPIT')
                 }
             }
         });
-
-
     });

@@ -524,6 +524,12 @@ class HosttemplatesTable extends Table {
         }
 
         $hosttemplate['hosttemplatecommandargumentvalues'] = $filteredCommandArgs;
+        $hosttemplate['hosttemplatecommandargumentvalues'] = Hash::sort(
+            $hosttemplate['hosttemplatecommandargumentvalues'],
+            '{n}.commandargument.name',
+            'asc',
+            'natural'
+        );
 
         return [
             'Hosttemplate' => $hosttemplate
@@ -594,6 +600,12 @@ class HosttemplatesTable extends Table {
         }
 
         $hosttemplate['hosttemplatecommandargumentvalues'] = $filteredCommandArgs;
+        $hosttemplate['hosttemplatecommandargumentvalues'] = Hash::sort(
+            $hosttemplate['hosttemplatecommandargumentvalues'],
+            '{n}.commandargument.name',
+            'asc',
+            'natural'
+        );
 
         return $hosttemplate;
     }

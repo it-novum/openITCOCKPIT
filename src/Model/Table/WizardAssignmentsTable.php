@@ -289,6 +289,55 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('Check everything regarding VMWare. ESX Hosts, virtual machines...'),
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
+            ],
+            'vmware-horizon'    => [
+                'type_id'     => 'vmware-horizon',
+                'title'       => __('VMWare Horizon'),
+                'description' => __('Monitor your VMware Horizon Virtual Desktop Infrastructure'),
+                'image'       => 'vmware-horizon.png',
+                'category'    => ['virtualization', 'cloud'],
+            ],
+            'db2'                    => [
+                'type_id'     => 'db2',
+                'title'       => __('DB2 Monitoring'),
+                'description' => __('Monitor your DB2 server'),
+                'image'       => 'db2.png',
+                'category'    => ['database'],
+            ],  
+            'oracle'                 => [
+                'type_id'     => 'oracle',
+                'title'       => __('Oracle'),
+                'description' => __('Track connection time, connected users, session and process usage, ....'),
+                'image'       => 'Oracle_logo.svg',
+                'category'    => ['linux', 'database'],
+            ],
+            'ups'                    => [
+                'type_id'     => 'ups',
+                'title'       => __('Uninterruptible Power Supply'),
+                'description' => __('Add your UPS for monitoring by specifying the device details'),
+                'image'       => 'ups.jpg',
+                'category'    => ['hardware'],
+            ],
+            'printer'                => [
+                'type_id'     => 'printer',
+                'title'       => __('Printer'),
+                'description' => __('Add your printers for monitoring by specifying the device details'),
+                'image'       => 'printer.jpg',
+                'category'    => ['hardware'],
+            ],
+            'mssql'                  => [
+                'type_id'     => 'mssql',
+                'title'       => __('MSSQL Monitoring'),
+                'description' => __('Monitor your Microsoft SQL Server'),
+                'image'       => 'mssql-server.png',
+                'category'    => ['database'],
+            ],
+            'hp-server-hardware'     => [
+                'type_id'     => 'hp-server-hardware',
+                'title'       => __('HP Server Hardware'),
+                'description' => __('These checks will allow you to monitor your HP server'),
+                'image'       => 'hp.svg',
+                'category'    => ['hardware'],
             ]
         ];
 

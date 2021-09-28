@@ -50,7 +50,8 @@
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
     <a href="javascript:void(0);" data-dismiss="alert" class="close">×</a>
     <h4 class="alert-heading"><i class="fa fa-check-circle"></i> <?php echo __('Command sent successfully'); ?></h4>
-    <?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
+    <?php echo __('Page refresh in'); ?>
+    <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
 
 <div class="row">
@@ -201,8 +202,7 @@
                             </div>
 
                             <div class="row">
-
-                                <div class="col-xs-12 col-lg-3">
+                                <div class="col-xs-12 col-lg-2">
                                     <fieldset>
                                         <h5><?php echo __('Service status'); ?></h5>
                                         <div class="form-group">
@@ -256,9 +256,7 @@
                                         </div>
                                     </fieldset>
                                 </div>
-
-
-                                <div class="col-xs-12 col-lg-3">
+                                <div class="col-xs-12 col-lg-2">
                                     <fieldset>
                                         <h5><?php echo __('Acknowledgements'); ?></h5>
                                         <div class="form-group smart-form">
@@ -289,7 +287,7 @@
                                     </fieldset>
                                 </div>
 
-                                <div class="col-xs-12 col-lg-3">
+                                <div class="col-xs-12 col-lg-2">
                                     <fieldset>
                                         <h5><?php echo __('Downtimes'); ?></h5>
                                         <div class="form-group smart-form">
@@ -320,7 +318,7 @@
                                     </fieldset>
                                 </div>
 
-                                <div class="col-xs-12 col-lg-3">
+                                <div class="col-xs-12 col-lg-2">
                                     <fieldset>
                                         <h5><?php echo __('Check type'); ?></h5>
                                         <div class="custom-control custom-checkbox">
@@ -348,7 +346,37 @@
                                         </div>
                                     </fieldset>
                                 </div>
-                                <div class="col-xs-12 col-lg-3">
+                                <div class="col-xs-12 col-lg-2">
+                                    <fieldset>
+                                        <h5><?php echo __('Notifications'); ?></h5>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="notificationsFilterEnabled"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Servicestatus.notifications_enabled"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="notificationsFilterEnabled"><?php echo __('Enabled'); ?></label>
+                                            </div>
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="notificationsFilterNotEnabled"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Servicestatus.notifications_not_enabled"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="notificationsFilterNotEnabled"><?php echo __('Not enabled'); ?></label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-xs-12 col-lg-2">
                                     <fieldset>
                                         <h5><?php echo __('Priority'); ?></h5>
                                         <div class="form-group smart-form">
@@ -458,7 +486,12 @@
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
-
+                                <th class="no-sort text-center"
+                                    ng-click="orderBy('Servicestatus.notifications_enabled')">
+                                    <i class="fa" ng-class="getSortClass('Servicestatus.notifications_enabled')"></i>
+                                    <i class="fas fa-envelope" title="<?php echo __('Notifications enabled'); ?>">
+                                    </i>
+                                </th>
 
                                 <th class="no-sort text-center">
                                     <i class="fa fa-lg fa-area-chart" title="<?php echo __('Grapher'); ?>"></i>
@@ -564,6 +597,19 @@
                                 <td class="text-center">
                                     <i class="fa fa-power-off"
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="icon-stack margin-right-5"
+                                         ng-show="service.Servicestatus.notifications_enabled">
+                                        <i class="fas fa-envelope opacity-100 "></i>
+                                        <i class="fas fa-check opacity-100 fa-xs text-success cornered cornered-lr"></i>
+                                    </div>
+                                    <div class="icon-stack margin-right-5"
+                                         ng-hide="service.Servicestatus.notifications_enabled">
+                                        <i class="fas fa-envelope opacity-100 "></i>
+                                        <i class="fas fa-times opacity-100 fa-xs text-danger cornered cornered-lr"></i>
+                                    </div>
                                 </td>
 
                                 <td class="text-center">

@@ -122,7 +122,8 @@ class HostMergerForView {
             'active_checks_enabled',
             'host_url',
             'freshness_checks_enabled',
-            'freshness_threshold'
+            'freshness_threshold',
+            'notifications_enabled',
         ];
 
         $data = [];
@@ -295,4 +296,3 @@ class HostMergerForView {
     }
 
 }
-

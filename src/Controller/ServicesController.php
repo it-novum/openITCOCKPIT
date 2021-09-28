@@ -641,9 +641,22 @@ class ServicesController extends AppController {
         }
 
         $service = $ServicesTable->getServiceForEdit($id);
-        $serviceForChangelog = $service;
-
         $host = $HostsTable->getHostForServiceEdit($service['Service']['host_id']);
+
+        $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
+        $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
+
+
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($service['Service']['servicetemplate_id']);
+        $ServiceMergerForView = new ServiceMergerForView(
+            $service,
+            $servicetemplate,
+            $hostContactsAndContactgroups,
+            $hosttemplateContactsAndContactgroups
+        );
+        $mergedService = $ServiceMergerForView->getDataForView();
+        $serviceForChangelog = $mergedService;
+
 
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
@@ -652,19 +665,6 @@ class ServicesController extends AppController {
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return service information
-            $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($service['Service']['servicetemplate_id']);
-
-            $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
-            $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
-
-            $ServiceMergerForView = new ServiceMergerForView(
-                $service,
-                $servicetemplate,
-                $hostContactsAndContactgroups,
-                $hosttemplateContactsAndContactgroups
-            );
-            $mergedService = $ServiceMergerForView->getDataForView();
-
             $typesForView = $ServicesTable->getServiceTypesWithStyles();
             $serviceType = $typesForView[$mergedService['Service']['service_type']];
 
@@ -2533,6 +2533,12 @@ class ServicesController extends AppController {
             }
         }
         $servicecommandargumentvalues = $filteredCommandArgumentsValules;
+        $servicecommandargumentvalues = Hash::sort(
+            $servicecommandargumentvalues,
+            '{n}.commandargument.name',
+            'asc',
+            'natural'
+        );
 
         $this->set('servicecommandargumentvalues', $servicecommandargumentvalues);
         $this->viewBuilder()->setOption('serialize', ['servicecommandargumentvalues']);
@@ -2666,8 +2672,15 @@ class ServicesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->getQuery('selected');
-        $containerId = $this->request->getQuery('containerId');
+        if ($this->request->is('post')) {
+            // ITC-2124
+            $selected = $this->request->getData('selected');
+            $containerId = $this->request->getData('containerId');
+        } else {
+            // Keep the API stable for GET
+            $selected = $this->request->getQuery('selected');
+            $containerId = $this->request->getQuery('containerId');
+        }
 
         $ServiceFilter = new ServiceFilter($this->request);
         $containerIds = [ROOT_CONTAINER, $containerId];

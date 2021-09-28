@@ -697,7 +697,6 @@ class ServicetemplatesController extends AppController {
         if (!$CommandsTable->existsById($commandId)) {
             throw new NotFoundException(__('Invalid command'));
         }
-
         $servicetemplatecommandargumentvalues = [];
 
         if ($servicetemplateId != null) {
@@ -708,7 +707,6 @@ class ServicetemplatesController extends AppController {
             $ServicetemplatecommandargumentvaluesTable = TableRegistry::getTableLocator()->get('Servicetemplatecommandargumentvalues');
 
             $servicetemplateCommandArgumentValues = $ServicetemplatecommandargumentvaluesTable->getByServicetemplateIdAndCommandId($servicetemplateId, $commandId);
-
             foreach ($servicetemplateCommandArgumentValues as $servicetemplateCommandArgumentValue) {
                 $servicetemplatecommandargumentvalues[] = [
                     'commandargument_id' => $servicetemplateCommandArgumentValue['commandargument_id'],
@@ -768,6 +766,12 @@ class ServicetemplatesController extends AppController {
         }
         $servicetemplatecommandargumentvalues = $filteredCommandArgumentsValules;
 
+        $servicetemplatecommandargumentvalues = Hash::sort(
+            $servicetemplatecommandargumentvalues,
+            '{n}.commandargument.name',
+            'asc',
+            'natural'
+        );
 
         $this->set('servicetemplatecommandargumentvalues', $servicetemplatecommandargumentvalues);
         $this->viewBuilder()->setOption('serialize', ['servicetemplatecommandargumentvalues']);

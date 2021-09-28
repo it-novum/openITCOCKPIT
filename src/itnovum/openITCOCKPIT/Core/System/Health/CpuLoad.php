@@ -74,12 +74,28 @@ class CpuLoad {
                     $this->cores++;
                 }
 
+                // x64
                 if (preg_match('/^model name/m', $line)) {
                     $model = explode("model name\t: ", $line);
                     if (isset($model[1])) {
                         $this->model = trim($model[1]);
                     }
                 }
+
+                // Raspberry Pi
+                if (preg_match('/^Model/m', $line)) {
+                    $model = preg_split('/^Model\t+:\s/m', $line);
+                    if (isset($model[1])) {
+                        $this->model = trim($model[1]);
+                    }
+                }
+            }
+        }
+
+        if($this->model === 'Unknown'){
+            if(file_exists('/sys/firmware/devicetree/base/model')){
+                // From: https://github.com/dylanaraps/neofetch/blob/master/neofetch#L1235-L1248
+                $this->model = trim(file_get_contents('/sys/firmware/devicetree/base/model'));
             }
         }
 

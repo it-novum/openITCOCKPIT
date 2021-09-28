@@ -35,6 +35,7 @@ use Cake\Controller\ComponentRegistry;
 use Cake\Controller\Exception\SecurityException;
 use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class RequestPolicy implements RequestPolicyInterface {
 

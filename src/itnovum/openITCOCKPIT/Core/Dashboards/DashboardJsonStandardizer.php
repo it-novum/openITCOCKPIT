@@ -45,7 +45,7 @@ class DashboardJsonStandardizer {
      * @param array $request
      * @return array
      */
-    private function _standardizedData($fields, $request) {
+    protected function _standardizedData($fields, $request) {
         $result = [];
         foreach ($fields as $key => $value) {
             if (is_array($value) && isset($request[$key])) {
@@ -71,4 +71,3 @@ class DashboardJsonStandardizer {
     }
 
 }
-

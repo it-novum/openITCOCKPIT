@@ -53,13 +53,13 @@
     <div class="col-lg-8 margin-bottom-10">
         <div class="input-group">
             <select
-                    id="ServiceListHostSelect"
-                    data-placeholder="<?php echo __('Please select...'); ?>"
-                    class="form-control"
-                    chosen="hosts"
-                    callback="loadHosts"
-                    ng-options="host.key as host.value for host in hosts"
-                    ng-model="data.hostId">
+                id="ServiceListHostSelect"
+                data-placeholder="<?php echo __('Please select...'); ?>"
+                class="form-control"
+                chosen="hosts"
+                callback="loadHosts"
+                ng-options="host.key as host.value for host in hosts"
+                ng-model="data.hostId">
             </select>
 
 
@@ -182,6 +182,13 @@
                                         <i class="fa fa-power-off"
                                            title="<?php echo __('is in downtime'); ?>"></i>
                                     </th>
+                                    <th class="no-sort text-center"
+                                        ng-click="orderBy('Servicestatus.notifications_enabled')">
+                                        <i class="fa"
+                                           ng-class="getSortClass('Servicestatus.notifications_enabled')"></i>
+                                        <i class="fas fa-envelope" title="<?php echo __('Notifications enabled'); ?>">
+                                        </i>
+                                    </th>
 
 
                                     <th class="no-sort text-center">
@@ -256,6 +263,18 @@
                                         <i class="fa fa-power-off"
                                            ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                     </td>
+                                    <td class="text-center">
+                                        <div class="icon-stack margin-right-5"
+                                             ng-show="service.Servicestatus.notifications_enabled">
+                                            <i class="fas fa-envelope opacity-100 "></i>
+                                            <i class="fas fa-check opacity-100 fa-xs text-success cornered cornered-lr"></i>
+                                        </div>
+                                        <div class="icon-stack margin-right-5"
+                                             ng-hide="service.Servicestatus.notifications_enabled">
+                                            <i class="fas fa-envelope opacity-100 "></i>
+                                            <i class="fas fa-times opacity-100 fa-xs text-danger cornered cornered-lr"></i>
+                                        </div>
+                                    </td>
 
                                     <td class="text-center">
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
@@ -269,9 +288,9 @@
                                             </a>
                                         <?php else: ?>
                                             <div
-                                                    ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
-                                                    ng-mouseleave="mouseleave()"
-                                                    ng-if="service.Service.has_graph">
+                                                ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
+                                                ng-mouseleave="mouseleave()"
+                                                ng-if="service.Service.has_graph">
                                                 <i class="fa fa-lg fa-area-chart">
                                                 </i>
                                             </div>
@@ -296,7 +315,8 @@
                                     </td>
 
                                     <td>
-                                        <span class="badge border margin-right-10 {{service.ServiceType.class}} {{service.ServiceType.color}}">
+                                        <span
+                                            class="badge border margin-right-10 {{service.ServiceType.class}} {{service.ServiceType.color}}">
                                             <i class="{{service.ServiceType.icon}}"></i>
                                             {{service.ServiceType.title}}
                                         </span>
@@ -308,7 +328,7 @@
 
                                     <td>
                                         <span
-                                                ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
+                                            ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
                                             service.Servicestatus.lastCheck }}</span>
                                         <span ng-if="service.Service.active_checks_enabled === false">
                                             <?php echo __('n/a'); ?>
@@ -317,17 +337,17 @@
 
                                     <td>
                                         <span
-                                                ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
+                                            ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
                                             service.Servicestatus.nextCheck }}</span>
                                         <span
-                                                ng-if="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
+                                            ng-if="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>
 
                                     <td>
                                         <div class="word-break"
-                                                ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
+                                             ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                     </td>
 
                                     <td class="width-50">

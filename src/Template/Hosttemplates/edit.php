@@ -408,6 +408,23 @@
                                 <i class="fa fa-envelope-open"></i> <?php echo __('Notification configuration'); ?>
                             </div>
                             <div class="card-body">
+                                <div class="card-body">
+                                    <div class="custom-control custom-checkbox"
+                                         ng-class="{'has-error': errors.notifications_enabled}">
+                                        <input type="checkbox"
+                                               id="notificationsEnabled"
+                                               class="custom-control-input"
+                                               name="checkbox"
+                                               checked="checked"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               ng-model="post.Hosttemplate.notifications_enabled">
+                                        <label class="custom-control-label"
+                                               for="notificationsEnabled"><?php echo __('Enable notifications'); ?></label>
+                                        <div class="help-block">
+                                            <?php echo __('This option is used to determine whether or not notifications are enabled for this host.'); ?>
+                                        </div>
+                                    </div>
                                 <div class="form-group required" ng-class="{'has-error': errors.notify_period_id}">
                                     <label class="control-label" for="NotifyPeriodSelect">
                                         <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>

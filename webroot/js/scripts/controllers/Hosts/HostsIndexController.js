@@ -20,6 +20,8 @@ angular.module('openITCOCKPIT')
                     not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) == '1',
                     in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) == '1',
                     not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
+                    notifications_not_enabled: QueryStringService.getStateValue($stateParams, 'notifications_enabled', false) == '1',
+                    notifications_enabled: QueryStringService.getStateValue($stateParams, 'notifications_not_enabled', false) == '1',
                     output: ''
                 },
                 Host: {
@@ -55,13 +57,16 @@ angular.module('openITCOCKPIT')
             lastHostUuid = null;
             var hasBeenAcknowledged = '';
             var inDowntime = '';
+            var notificationsEnabled = '';
             if($scope.filter.Hoststatus.acknowledged ^ $scope.filter.Hoststatus.not_acknowledged){
                 hasBeenAcknowledged = $scope.filter.Hoststatus.acknowledged === true;
             }
             if($scope.filter.Hoststatus.in_downtime ^ $scope.filter.Hoststatus.not_in_downtime){
                 inDowntime = $scope.filter.Hoststatus.in_downtime === true;
             }
-
+            if($scope.filter.Hoststatus.notifications_enabled ^ $scope.filter.Hoststatus.notifications_not_enabled){
+                notificationsEnabled = $scope.filter.Hoststatus.notifications_enabled === true;
+            }
             var priorityFilter = [];
             for(var key in $scope.filter.Host.priority){
                 if($scope.filter.Host.priority[key] === true){
@@ -75,7 +80,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection()
-                // Old GET filters - only here for reference. Delete this block if the year is 2022
+                // Old GET filters - only here for reference. Delete this block if the year is 2023
                 //'filter[Hosts.id][]': $scope.filter.Host.id,
                 //'filter[Hosts.name]': $scope.filter.Host.name,
                 //'filter[hostdescription]': $scope.filter.Host.hostdescription,
@@ -85,6 +90,7 @@ angular.module('openITCOCKPIT')
                 //'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                 //'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 //'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
+                //'filter[Hoststatus.notifications_enabled]': notificationsEnabled,
                 //'filter[Hosts.address]': $scope.filter.Host.address,
                 //'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
                 //'filter[hostpriority][]': priorityFilter
@@ -104,6 +110,7 @@ angular.module('openITCOCKPIT')
                     'Hoststatus.current_state': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                     'Hoststatus.problem_has_been_acknowledged': hasBeenAcknowledged,
                     'Hoststatus.scheduled_downtime_depth': inDowntime,
+                    'Hoststatus.notifications_enabled': notificationsEnabled,
                     'hostpriority': priorityFilter
                 }
             };
