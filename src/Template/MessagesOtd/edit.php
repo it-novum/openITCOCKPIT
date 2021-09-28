@@ -142,10 +142,13 @@
                             <div ng-repeat="error in errors.expiration_duration">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <div class="help-block">
+                                <?= __('Leave this field blank to receive a permanent message of the day. The message will be displayed from the defined date. For temporary messages, set the expiration time in days.'); ?>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="control-label">
-                                <?php echo __('Filter for user groups (optional)'); ?>
+                                <?= __('Filter for user groups (optional)'); ?>
                             </label>
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
@@ -155,7 +158,7 @@
                                     ng-model="post.MessagesOtd.usergroups._ids">
                             </select>
                             <div class="help-block">
-                                <?php echo __('Select user groups for restricted visibility. Leave this field blank to avoid excluding users.'); ?>
+                                <?= __('Select user groups for restricted visibility. Leave this field blank to avoid excluding users.'); ?>
                             </div>
                         </div>
                         <div class="form-group">
