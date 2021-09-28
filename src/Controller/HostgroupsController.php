@@ -730,8 +730,8 @@ class HostgroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $containerId = $this->request->getQuery('containerId');
-        $selected = $this->request->getQuery('selected');
+        $containerId = $this->request->getData('containerId');
+        $selected = $this->request->getData('selected');
 
         $HostFilter = new HostFilter($this->request);
 

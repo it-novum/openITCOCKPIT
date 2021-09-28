@@ -2672,9 +2672,8 @@ class ServicesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->getQuery('selected');
-        $containerId = $this->request->getQuery('containerId');
-
+        $selected = $this->request->getData('selected');
+        $containerId = $this->request->getData('containerId');
         $ServiceFilter = new ServiceFilter($this->request);
         $containerIds = [ROOT_CONTAINER, $containerId];
 
