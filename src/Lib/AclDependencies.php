@@ -135,7 +135,8 @@ class AclDependencies {
             ->allow('Angular', 'colorpicker')
             ->allow('Angular', 'popover_graph')
             ->allow('Angular', 'thresholds')
-            ->allow('Angular', 'mass_delete_acknowledgements');
+            ->allow('Angular', 'mass_delete_acknowledgements')
+            ->allow('Angular', 'message_of_the_day');
 
         $this
             ->allow('Agentconnector', 'register_agent')
@@ -603,6 +604,11 @@ class AclDependencies {
             ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadElementsByContainerId')
             ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadHostsByString')
             ->dependency('Wizards', 'linuxserverssh', 'Wizards', 'loadServicetemplatesByWizardType');
+
+
+        $this
+            ->dependency('MessagesOtd', 'add', 'MessagesOtd', 'notifyUsersViaMail')
+            ->dependency('MessagesOtd', 'edit', 'MessagesOtd', 'notifyUsersViaMail');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {

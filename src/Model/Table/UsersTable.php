@@ -1191,4 +1191,37 @@ class UsersTable extends Table {
         }
         return false;
     }
+
+    /**
+     * @param array $usergroupsIds
+     * @return array
+     */
+    public function getUsersForMailNotifications($usergroupsIds = []) {
+        $query = $this->find()
+            ->select([
+                'Users.id',
+                'Users.email'
+            ])
+            ->where([
+                'Users.is_active' => 1
+            ]);
+        if(!empty($usergroupsIds)){
+            $query->innerJoinWith('Usergroups')
+                ->where([
+                    'Usergroups.id IN ' => $usergroupsIds
+                ]);
+        }
+        $query->group([
+                'Users.id'
+            ])
+            ->disableAutoFields()
+            ->disableHydration()
+            ->all();
+
+        $users = $query->toArray();
+        if ($users === null) {
+            return [];
+        }
+        return $users;
+    }
 }

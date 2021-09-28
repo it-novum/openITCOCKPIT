@@ -477,6 +477,16 @@ class Menu {
                     [],
                     3
                 ))
+                ->addLink(new MenuLink(
+                    __('Message of the day'),
+                    'MessagesOTDIndex',
+                    'messagesOtd',
+                    'index',
+                    '',
+                    'fas fa-bullhorn',
+                    [__('message'), __('news'), __('information')],
+                    4
+                ))
             )
             ->addCategory((new MenuCategory(
                 'container_mgmt_category',
@@ -619,6 +629,7 @@ class Menu {
                     3
                 ))
             );
+
         $Configuration = new MenuHeadline(self::MENU_CONFIGURATION, __('System Configuration'), 4);
         $Configuration
             ->addCategory(new MenuCategory(
