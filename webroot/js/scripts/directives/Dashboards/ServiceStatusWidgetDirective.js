@@ -42,14 +42,19 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     name: ''
                 },
                 Service: {
-                    name: ''
+                    name: '',
+                    keywords: '',
+                    not_keywords: ''
                 }
             };
 
-            var loadWidgetConfig = function(){
+            $scope.loadWidgetConfig = function(){
                 $http.get("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
+                    $('#ServiceTags').tagsinput('add', $scope.filter.Service.keywords);
+                    $('#ServiceExcludedTags').tagsinput('add', $scope.filter.Service.not_keywords);
+
                     $scope.filter.Servicestatus = result.data.config.Servicestatus;
                     $scope.filter.Servicestatus.current_state.ok = result.data.config.Servicestatus.current_state.ok ? 1 : 0;
                     $scope.filter.Servicestatus.current_state.warning = result.data.config.Servicestatus.current_state.warning ? 1 : 0;
@@ -101,6 +106,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     'direction': $scope.direction,
                     'filter[Hosts.name]': $scope.filter.Host.name,
                     'filter[servicename]': $scope.filter.Service.name,
+                    'filter[keywords][]': $scope.filter.Service.keywords.split(','),
+                    'filter[not_keywords][]': $scope.filter.Service.not_keywords.split(','),
                     'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                     'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
                     'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
@@ -208,7 +215,7 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                 settings['direction'] = $scope.direction;
                 $http.post("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
                     $scope.currentPage = 1;
-                    loadWidgetConfig();
+                    $scope.loadWidgetConfig();
                     $scope.hideConfig();
                     if($scope.init === true){
                         return true;
@@ -233,12 +240,16 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
             };
             $scope.showConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_OUT');
-                $scope.load();
+                $scope.loadWidgetConfig();
             };
 
             $scope.limit = getLimit($widget.height());
 
-            loadWidgetConfig();
+            $scope.loadWidgetConfig();
+
+            jQuery(function(){
+                $("input[data-role=tagsinput]").tagsinput();
+            });
 
             $scope.$watch('scroll_interval', function(){
                 $scope.pagingTimeString = getTimeString();

@@ -50,7 +50,9 @@ class ServiceStatusListJson extends DashboardJsonStandardizer {
             'name' => ''
         ],
         'Service'         => [
-            'name' => ''
+            'name'         => '',
+            'keywords'     => '',
+            'not_keywords' => ''
         ],
         'sort'            => 'Servicestatus.current_state',
         'direction'       => 'desc',
