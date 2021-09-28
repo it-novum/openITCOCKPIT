@@ -441,16 +441,6 @@ class Menu {
 
         $Administration = new MenuHeadline(self::MENU_ADMINISTRATION, __('Administration'), 3);
         $Administration
-            ->addLink(new MenuLink(
-                __('Message of the day'),
-                'MessagesOTDIndex',
-                'messagesOtd',
-                'index',
-                '',
-                'fas fa-bullhorn',
-                [__('message'), __('news'), __('information')],
-                1
-            ))
             ->addCategory((new MenuCategory(
                 'user_mgmt_category',
                 __('User management'),
@@ -486,6 +476,16 @@ class Menu {
                     'fa fa-users',
                     [],
                     3
+                ))
+                ->addLink(new MenuLink(
+                    __('Message of the day'),
+                    'MessagesOTDIndex',
+                    'messagesOtd',
+                    'index',
+                    '',
+                    'fas fa-bullhorn',
+                    [__('message'), __('news'), __('information')],
+                    4
                 ))
             )
             ->addCategory((new MenuCategory(
