@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2021-04-22 15:12+0200\n"
+"POT-Creation-Date: 2021-09-30 14:22+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -457,7 +457,7 @@ msgstr ""
 msgid "State ID of the current service state"
 msgstr ""
 
-#: CheckmkModule/src/Command/CheckmkNagiosExportCommand.php:57
+#: CheckmkModule/src/Command/CheckmkNagiosExportCommand.php:95
 msgid "Write initial Checkmk configuration"
 msgstr ""
 
