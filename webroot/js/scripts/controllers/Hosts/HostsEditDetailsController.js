@@ -46,7 +46,8 @@ angular.module('openITCOCKPIT')
             editContacts: false,
             editContactgroups: false,
             editHostUrl: false,
-            editNotes: false
+            editNotes: false,
+            editSatellites: false
         }
         $scope.load = function(){
 
@@ -59,7 +60,7 @@ angular.module('openITCOCKPIT')
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.sharingContainers = result.data.sharingContainers;
-
+                $scope.satellites = result.data.satellites;
 
                 $scope.init = false;
 

@@ -49,7 +49,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HostsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HostsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -64,7 +65,8 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="form-group col-lg-12" ng-class="{'has-error': errors.hosts_to_containers_sharing}">
+                                <div class="form-group col-lg-12"
+                                     ng-class="{'has-error': errors.hosts_to_containers_sharing}">
                                     <label class="control-label" for="HostContainer">
                                         <button class="btn btn-xs btn-icon width-25"
                                                 ng-class="{ 'btn-primary': !post.editSharedContainers, 'btn-success': post.editSharedContainers }"
@@ -172,6 +174,33 @@
                                     </div>
                                 </div>
                             </div>
+                            <?php if (\Cake\Core\Plugin::isLoaded('DistributeModule')): ?>
+                                <hr>
+                                <div class="row">
+                                    <div class="form-group col-lg-12">
+                                        <label class="control-label" for="SatellitesSelect">
+                                            <button class="btn btn-xs btn-icon width-25"
+                                                    ng-class="{ 'btn-primary': !post.editSatellites, 'btn-success': post.editSatellites }"
+                                                    ng-click="post.editSatellites = !post.editSatellites"
+                                                    name="post.editSatellites"
+                                                    title="<?php echo __('Unlock for edit'); ?>">
+                                                <i class="fa fa-lock fa-lock"
+                                                   ng-class="{ 'fa-lock': !post.editSatellites, 'fa-unlock': post.editSatellites }"></i>
+                                            </button>
+                                            <?php echo __('Satellite'); ?>
+                                        </label>
+                                        <select
+                                            id="SatellitesSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="satellites"
+                                            ng-disabled="!post.editSatellites"
+                                            ng-options="satellite.key as satellite.value for satellite in satellites"
+                                            ng-model="post.Host.satellite_id">
+                                        </select>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -230,7 +259,8 @@
                                     <?php echo __('Max. number of check attempts'); ?>
                                 </label>
                                 <div class="row">
-                                    <div class="col-xs-12 col-lg-6" ng-class="{ 'not-edit-area': !post.editMaxNumberOfCheckAttempts}">
+                                    <div class="col-xs-12 col-lg-6"
+                                         ng-class="{ 'not-edit-area': !post.editMaxNumberOfCheckAttempts}">
                                         <div class="btn-group flex-wrap">
                                             <?php for ($i = 1; $i <= 10; $i++): ?>
                                                 <button
@@ -254,7 +284,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-lg-offset-2 col-lg-12" ng-show="post.Host.check_interval && post.Host.max_check_attempts && post.Host.retry_interval">
+                                <div class="col-xs-12 col-lg-offset-2 col-lg-12"
+                                     ng-show="post.Host.check_interval && post.Host.max_check_attempts && post.Host.retry_interval">
                                     <div class="help-block">
                                         <?php echo __('Number of failed attempts before the host will switch into hard state.'); ?>
                                     </div>
@@ -304,7 +335,8 @@
                                     </button>
                                     <?php echo __('Contacts'); ?>
                                 </label>
-                                <div class="input-group" style="width: 100%;"  ng-class="{ 'not-edit-area': !post.editContacts}">
+                                <div class="input-group" style="width: 100%;"
+                                     ng-class="{ 'not-edit-area': !post.editContacts}">
                                     <select
                                         id="ContactsPeriodSelect"
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -346,7 +378,8 @@
                                     </button>
                                     <?php echo __('Contact groups'); ?>
                                 </label>
-                                <div class="input-group" style="width: 100%;"  ng-class="{ 'not-edit-area': !post.editContactgroups}">
+                                <div class="input-group" style="width: 100%;"
+                                     ng-class="{ 'not-edit-area': !post.editContactgroups}">
                                     <select
                                         id="ContactgroupsSelect"
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -434,7 +467,7 @@
                     <div class="card margin-top-10">
                         <div class="card-body">
                             <div class="float-right">
-                                <button class="btn btn-primary"  ng-click="editDetails()">
+                                <button class="btn btn-primary" ng-click="editDetails()">
                                     <?php echo __('Save details'); ?>
                                 </button>
                                 <?php if ($this->Acl->hasPermission('index', 'Hosts')): ?>
