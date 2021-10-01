@@ -1090,15 +1090,14 @@
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ui-sref="ServicesAdd({hostId:  post.Host.id})">
+                                                   ng-click="submit('ServicesAdd')">
                                                     <i class="fa fa fa-gear"></i>
                                                     <?php echo __('Update and create service'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ui-sref="AgentconnectorsWizard({hostId: post.Host.id})"
-                                                   ng-if="!data.createAnother">
+                                                   onclick="return false;" ng-click="submit('AgentconnectorsWizard')">
                                                     <i class="fa fa-user-secret"></i>
                                                     <?php echo __('Update and setup agent'); ?>
                                                 </a>
@@ -1106,8 +1105,7 @@
 
                                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ng-click="submitSaveHostAndAssignMatchingServicetemplateGroups()"
-                                                   ng-if="!data.createAnother">
+                                                   ng-click="submitSaveHostAndAssignMatchingServicetemplateGroups()">
                                                     <i class="fa fa-external-link-alt"></i>
                                                     <?php echo __('Update host and assign matching service template groups'); ?>
                                                 </a>
@@ -1115,7 +1113,7 @@
 
                                             <?php if (\Cake\Core\Plugin::isLoaded('CheckmkModule') && $this->Acl->hasPermission('index', 'scans', 'CheckmkModule')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ui-sref="ScansIndex({hostId: post.Host.id})">
+                                                   ng-click="submit('ScansIndex')">
                                                     <i class="fa fa fa-share-alt"></i>
                                                     <?php echo __('Update and run Checkmk discovery'); ?>
                                                 </a>
