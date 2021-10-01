@@ -22350,217 +22350,217 @@ msgstr "Выберите хотя бы одну службу или интерф
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:29
 msgid "Configuration Wizard: HP Server"
-msgstr ""
+msgstr "Мастер настройки: HP сервер"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:43
 msgid "Configure SNMP for HP Server Hardware Monitoring"
-msgstr ""
+msgstr "Настройка SNMP для мониторинга оборудования сервера HP"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:56
 #: NWCModule/templates/Wizards/networkbasic.php:55
 #: PRINTERModule/templates/Wizards/printer.php:56
 #: UPSModule/templates/Wizards/ups.php:56
 msgid "SNMP Server Settings"
-msgstr ""
+msgstr "Настройки сервера SNMP"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:101
 #: NWCModule/templates/Wizards/networkbasic.php:100
 #: PRINTERModule/templates/Wizards/printer.php:101
 #: UPSModule/templates/Wizards/ups.php:101
 msgid "authPriv"
-msgstr ""
+msgstr "authPriv"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:102
 #: NWCModule/templates/Wizards/networkbasic.php:101
 #: PRINTERModule/templates/Wizards/printer.php:102
 #: UPSModule/templates/Wizards/ups.php:102
 msgid "authNoPriv"
-msgstr ""
+msgstr "authNoPriv"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:103
 #: NWCModule/templates/Wizards/networkbasic.php:102
 #: PRINTERModule/templates/Wizards/printer.php:103
 #: UPSModule/templates/Wizards/ups.php:103
 msgid "noAuthNoPriv"
-msgstr ""
+msgstr "noAuthNoPriv"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:107
 #: NWCModule/templates/Wizards/networkbasic.php:106
 #: PRINTERModule/templates/Wizards/printer.php:107
 #: UPSModule/templates/Wizards/ups.php:107
 msgid "Communication with authentication and privacy. The protocols used for Authentication are MD5 and SHA and for Privacy, DES (Data Encryption Standard) and AES (Advanced Encryption Standard)."
-msgstr ""
+msgstr "Связь с аутентификацией и конфиденциальностью. Протоколы, используемые для аутентификации: MD5 и SHA, а для конфиденциальности - DES (стандарт шифрования данных) и AES (расширенный стандарт шифрования)."
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:112
 #: NWCModule/templates/Wizards/networkbasic.php:111
 #: PRINTERModule/templates/Wizards/printer.php:112
 #: UPSModule/templates/Wizards/ups.php:112
 msgid "Communication with authentication and without privacy. The protocols used for Authentication are MD5 and SHA (Secure Hash Algorithm)."
-msgstr ""
+msgstr "Общение с аутентификацией и без приватности. Для аутентификации используются протоколы MD5 и SHA (алгоритм безопасного хеширования)."
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:117
 #: NWCModule/templates/Wizards/networkbasic.php:116
 #: PRINTERModule/templates/Wizards/printer.php:117
 #: UPSModule/templates/Wizards/ups.php:117
 msgid "Communication without authentication and privacy."
-msgstr ""
+msgstr "Общение без аутентификации и конфиденциальности."
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:124
 #: NWCModule/templates/Wizards/networkbasic.php:123
 #: PRINTERModule/templates/Wizards/printer.php:124
 #: UPSModule/templates/Wizards/ups.php:124
 msgid "Auth Protocol"
-msgstr ""
+msgstr "Протокол аутентификации"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:130
 #: NWCModule/templates/Wizards/networkbasic.php:129
 #: PRINTERModule/templates/Wizards/printer.php:130
 #: UPSModule/templates/Wizards/ups.php:130
 msgid "MD5"
-msgstr ""
+msgstr "MD5"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:131
 #: NWCModule/templates/Wizards/networkbasic.php:130
 #: PRINTERModule/templates/Wizards/printer.php:131
 #: UPSModule/templates/Wizards/ups.php:131
 msgid "SHA"
-msgstr ""
+msgstr "SHA"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:136
 #: NWCModule/templates/Wizards/networkbasic.php:135
 #: PRINTERModule/templates/Wizards/printer.php:136
 #: UPSModule/templates/Wizards/ups.php:136
 msgid "Security name"
-msgstr ""
+msgstr "Имя безопасности"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:149
 #: NWCModule/templates/Wizards/networkbasic.php:148
 #: PRINTERModule/templates/Wizards/printer.php:149
 #: UPSModule/templates/Wizards/ups.php:149
 msgid "Auth Password"
-msgstr ""
+msgstr "Пароль авторизации"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:162
 #: NWCModule/templates/Wizards/networkbasic.php:161
 #: PRINTERModule/templates/Wizards/printer.php:162
 #: UPSModule/templates/Wizards/ups.php:162
 msgid "Privacy Protocol"
-msgstr ""
+msgstr "Протокол конфиденциальности"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:169
 #: NWCModule/templates/Wizards/networkbasic.php:168
 #: PRINTERModule/templates/Wizards/printer.php:169
 #: UPSModule/templates/Wizards/ups.php:169
 msgid "DES"
-msgstr ""
+msgstr "DES"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:170
 #: NWCModule/templates/Wizards/networkbasic.php:169
 #: PRINTERModule/templates/Wizards/printer.php:170
 #: UPSModule/templates/Wizards/ups.php:170
 msgid "AES"
-msgstr ""
+msgstr "AES"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:171
 #: NWCModule/templates/Wizards/networkbasic.php:170
 #: PRINTERModule/templates/Wizards/printer.php:171
 #: UPSModule/templates/Wizards/ups.php:171
 msgid "AES128"
-msgstr ""
+msgstr "AES128"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:172
 #: NWCModule/templates/Wizards/networkbasic.php:171
 #: PRINTERModule/templates/Wizards/printer.php:172
 #: UPSModule/templates/Wizards/ups.php:172
 msgid "3DES"
-msgstr ""
+msgstr "3DES"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:173
 #: NWCModule/templates/Wizards/networkbasic.php:172
 #: PRINTERModule/templates/Wizards/printer.php:173
 #: UPSModule/templates/Wizards/ups.php:173
 msgid "3DESDE"
-msgstr ""
+msgstr "3DESDE"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:178
 #: NWCModule/templates/Wizards/networkbasic.php:177
 #: PRINTERModule/templates/Wizards/printer.php:178
 #: UPSModule/templates/Wizards/ups.php:178
 msgid "Privacy password"
-msgstr ""
+msgstr "Пароль конфиденциальности"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:192
 msgid "HP server hardware services"
-msgstr ""
+msgstr "Службы серверного оборудования HP"
 
 #: ImportModule/src/Command/ImportCommand.php:103
 msgid "Import ID"
-msgstr ""
+msgstr "ID импорта"
 
 #: ImportModule/src/Command/ImportCommand.php:124
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:15
 #: ImportModule/templates/ExternalSystems/index.php:154
 #: ImportModule/templates/ImportedHosts/index.php:73
 msgid "ONLINE"
-msgstr ""
+msgstr "ОНЛАЙН"
 
 #: ImportModule/src/Command/ImportCommand.php:125
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:19
 #: ImportModule/templates/ExternalSystems/index.php:158
 #: ImportModule/templates/ImportedHosts/index.php:77
 msgid "OFFLINE"
-msgstr ""
+msgstr "ОФЛАЙН"
 
 #: ImportModule/src/Command/ImportCommand.php:152
 msgid "Importer not found!"
-msgstr ""
+msgstr "Импортера не найдено!"
 
 #: ImportModule/src/Command/ImportCommand.php:184
 msgid "File not found!"
-msgstr ""
+msgstr "Файл не найден!"
 
 #: ImportModule/src/Command/ImportCommand.php:193
 msgid "Generate preview for csv files - maximal 10 rows will be shown"
-msgstr ""
+msgstr "Создать предварительный просмотр для файлов csv - будет показано не более 10 строк"
 
 #: ImportModule/src/Command/ImportCommand.php:217
 #: ImportModule/src/Command/ImportCommand.php:268
 msgid "⚠️  CSV file works, but the elements are empty. Data preview is not possible!"
-msgstr ""
+msgstr "⚠️  Файл CSV работает, но элементы пустые. Предварительный просмотр данных невозможен!"
 
 #: ImportModule/src/Command/ImportCommand.php:227
 msgid "❗Data to import are invalid!"
-msgstr ""
+msgstr "❗Данные для импорта недействительны!"
 
 #: ImportModule/src/Command/ImportCommand.php:264
 msgid "⚠️  A possible cause for this could be the wrong delimiter or CSV structure is not consistent. Please check your importer configuration.!"
-msgstr ""
+msgstr "⚠️  Возможной причиной этого может быть неправильный разделитель или несогласованная структура CSV. Пожалуйста, проверьте конфигурацию вашего импортера!"
 
 #: ImportModule/src/Command/ImportCommand.php:304
 #: ImportModule/src/Command/ImportCommand.php:339
 msgid "❗Could not save csv file!"
-msgstr ""
+msgstr "❗ Не удалось сохранить файл csv!"
 
 #: ImportModule/src/Command/ImportCommand.php:330
 msgid "Import data from uploaded CSV file successfully finished!"
-msgstr ""
+msgstr "Импорт данных из загруженного файла CSV успешно завершен!"
 
 #: ImportModule/src/Command/ImportCommand.php:334
 #: ImportModule/src/Command/ImportCommand.php:431
 msgid "❗Error while importing host data!"
-msgstr ""
+msgstr "❗Ошибка при импорте данных узла!"
 
 #: ImportModule/src/Command/ImportCommand.php:366
 msgid "❗Error: {0}"
-msgstr ""
+msgstr "❗Ошибка: {0}"
 
 #: ImportModule/src/Command/ImportCommand.php:371
 msgid "Generate preview for i-doit data - maximal 10 rows will be shown"
-msgstr ""
+msgstr "Создать предварительный просмотр для данных i-doit - будет показано не более 10 строк"
 
 #: ImportModule/src/Command/ImportCommand.php:379
 msgid "⚠️  Connect to i-doit works, but the elements are empty. Data preview is not possible!"
-msgstr ""
+msgstr "⚠️ Подключиться к i-doit работает, но элементы пустые. Предварительный просмотр данных невозможен!"
 
 #: ImportModule/src/Command/ImportCommand.php:383
 #: ImportModule/templates/ImportedHosts/index.php:1063
@@ -22569,7 +22569,7 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:210
 #: ImportModule/templates/Importers/edit.php:234
 msgid "UID"
-msgstr ""
+msgstr "UID"
 
 #: ImportModule/src/Command/ImportCommand.php:387
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:96
@@ -22581,12 +22581,12 @@ msgstr "Программного обеспечения"
 
 #: ImportModule/src/Command/ImportCommand.php:427
 msgid "Import data from i-doit successfully finished!"
-msgstr ""
+msgstr "Импорт данных из i-doit успешно завершен!"
 
 #: ImportModule/src/Controller/ExternalSystemsController.php:125
 #: ImportModule/src/Controller/ExternalSystemsController.php:185
 msgid "External system not found"
-msgstr ""
+msgstr "Внешняя система не найдена"
 
 #: ImportModule/src/Controller/HostDefaultsController.php:105
 #: ImportModule/src/Controller/HostDefaultsController.php:155
@@ -22647,7 +22647,7 @@ msgstr "Ошибка при импорте данных узла"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:381
 msgid "Import data from i-doit system successfully finished"
-msgstr ""
+msgstr "Импорт данных из системы i-doit успешно завершен"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:858
 #: ImportModule/src/Controller/ImportedHostsController.php:997
@@ -22666,26 +22666,26 @@ msgstr "Ошибка при удалении загруженного файла
 
 #: ImportModule/src/Controller/ImportedHostsController.php:1041
 msgid "Load data for preview successfully finished"
-msgstr ""
+msgstr "Загрузка данных для предварительного просмотра успешно завершена"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:1050
 msgid "Connection error: {0}!"
-msgstr ""
+msgstr "Ошибка подключения: {0}!"
 
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:149
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:276
 msgid "i-doit system error: Invalid API key"
-msgstr ""
+msgstr "Системная ошибка i-doit: неверный ключ API"
 
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:178
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:299
 msgid "No response from external system."
-msgstr ""
+msgstr "Нет ответа от внешней системы."
 
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:185
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:306
 msgid "Error while connecting to external system."
-msgstr ""
+msgstr "Ошибка при подключении к внешней системе."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:32
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:32
@@ -22705,12 +22705,12 @@ msgstr "Для разделения значений можно использо
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:60
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:60
 msgid "Unique identifier"
-msgstr ""
+msgstr "Уникальный идентификатор"
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:62
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:62
 msgid "Column name of the CSV file which will be used as unique identifier for host. This column must be present in the CSV file."
-msgstr ""
+msgstr "Имя столбца CSV-файла, которое будет использоваться как уникальный идентификатор для узла. Этот столбец должен присутствовать в файле CSV."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:71
 msgid "Column name of the CSV file which will be used as host name. This column must be present in the CSV file."
@@ -22770,7 +22770,7 @@ msgstr "Номер столбца файла CSV, который будет ис
 
 #: ImportModule/src/Lib/ExternalSystemTypes.php:14
 msgid "i-doit System"
-msgstr ""
+msgstr "Система i-doit"
 
 #: ImportModule/src/Lib/ImporterCsvParser.php:199
 #: ImportModule/src/Lib/ImporterCsvParser.php:298
@@ -22815,7 +22815,7 @@ msgstr "CSV без заголовка"
 
 #: ImportModule/src/Lib/ImporterIdoitDataParser.php:164
 msgid "Connect to i-doit works, but the elements are empty. Data preview is not possible."
-msgstr ""
+msgstr "Подключиться к i-doit работает, но элементы пустые. Предварительный просмотр данных невозможен."
 
 #: ImportModule/src/Lib/Menu.php:25
 msgid "Object Import"
@@ -22850,7 +22850,7 @@ msgstr "Импортированные файлы"
 #: ImportModule/templates/ExternalSystems/edit.php:23
 #: ImportModule/templates/ExternalSystems/index.php:30
 msgid "External Systems"
-msgstr ""
+msgstr "Внешние системы"
 
 #: ImportModule/src/Model/Table/ImportedHostsTable.php:534
 msgid "Host template missing"
@@ -22867,7 +22867,7 @@ msgstr "Группы шаблонов служб не определены"
 
 #: ImportModule/src/Model/Table/ImportersTable.php:127
 msgid "External system can not be blank if data source is i-doit."
-msgstr ""
+msgstr "Внешняя система не может быть пустой, если источником данных является i-doit."
 
 #: ImportModule/templates/ExternalSystems/add.php:20
 #: ImportModule/templates/ExternalSystems/edit.php:19
@@ -22887,12 +22887,12 @@ msgstr "Модуль импорта"
 
 #: ImportModule/templates/ExternalSystems/add.php:28
 msgid "Add external system"
-msgstr ""
+msgstr "Добавить внешнюю систему"
 
 #: ImportModule/templates/ExternalSystems/add.php:38
 #: ImportModule/templates/ExternalSystems/edit.php:37
 msgid "Create new external system"
-msgstr ""
+msgstr "Создать новую внешнюю систему"
 
 #: ImportModule/templates/ExternalSystems/add.php:53
 #: ImportModule/templates/ExternalSystems/edit.php:52
@@ -22903,7 +22903,7 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:134
 #: ImportModule/templates/Importers/edit.php:137
 msgid "External system"
-msgstr ""
+msgstr "Внешняя система"
 
 #: ImportModule/templates/ExternalSystems/add.php:99
 #: ImportModule/templates/ExternalSystems/edit.php:97
@@ -22915,182 +22915,182 @@ msgstr "Источник данных"
 #: ImportModule/templates/ExternalSystems/add.php:111
 #: ImportModule/templates/ExternalSystems/edit.php:109
 msgid "i-doit enables external access to the IT documentation via an application programming interface (API)"
-msgstr ""
+msgstr "i-doit обеспечивает внешний доступ к ИТ-документации через интерфейс прикладного программирования (API)"
 
 #: ImportModule/templates/ExternalSystems/add.php:121
 #: ImportModule/templates/ExternalSystems/edit.php:119
 msgid "Connection settings"
-msgstr ""
+msgstr "Настройки соединения"
 
 #: ImportModule/templates/ExternalSystems/add.php:124
 #: ImportModule/templates/ExternalSystems/edit.php:122
 msgid "Predefined connection settings are used to load additional information dynamically"
-msgstr ""
+msgstr "Предустановленные параметры подключения используются для динамической загрузки дополнительной информации."
 
 #: ImportModule/templates/ExternalSystems/add.php:250
 #: ImportModule/templates/ExternalSystems/edit.php:248
 msgid "Object type settings"
-msgstr ""
+msgstr "Настройки типа объектов"
 
 #: ImportModule/templates/ExternalSystems/add.php:253
 #: ImportModule/templates/ExternalSystems/edit.php:251
 msgid "Please select all object types you want to import or leave them blank to include all available object types."
-msgstr ""
+msgstr "Выберите все типы объектов, которые вы хотите импортировать, или оставьте поля пустыми, чтобы включить все доступные типы объектов."
 
 #: ImportModule/templates/ExternalSystems/add.php:268
 #: ImportModule/templates/ExternalSystems/edit.php:266
 msgid "Load i-doit object types for import"
-msgstr ""
+msgstr "Загрузить типы объектов i-doit для импорта"
 
 #: ImportModule/templates/ExternalSystems/add.php:271
 #: ImportModule/templates/ExternalSystems/edit.php:269
 msgid "Selecting the object types can take some time if the number of config items is too large."
-msgstr ""
+msgstr "Выбор типов объектов может занять некоторое время, если количество элементов конфигурации слишком велико."
 
 #: ImportModule/templates/ExternalSystems/add.php:280
 #: ImportModule/templates/ExternalSystems/edit.php:278
 msgid "Check External System Connection and load available object types"
-msgstr ""
+msgstr "Проверьте подключение к внешней системе и загрузите доступные типы объектов."
 
 #: ImportModule/templates/ExternalSystems/add.php:290
 #: ImportModule/templates/ExternalSystems/edit.php:288
 msgid "Detected object types"
-msgstr ""
+msgstr "Обнаруженные типы объектов"
 
 #: ImportModule/templates/ExternalSystems/add.php:299
 #: ImportModule/templates/ExternalSystems/edit.php:295
 msgid "Object types"
-msgstr ""
+msgstr "Типы объектов"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:12
 msgid "i-doit overview"
-msgstr ""
+msgstr "Обзор i-doit"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:41
 msgid "Model"
-msgstr ""
+msgstr "Модель"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:56
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:222
 msgid "Archived"
-msgstr ""
+msgstr "Архивировано"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:66
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:194
 msgid "Sysid"
-msgstr ""
+msgstr "Sysid"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:78
 msgid "Location path"
-msgstr ""
+msgstr "Путь к местоположению"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:108
 msgid "CMDB Status"
-msgstr ""
+msgstr "Статус CMDB"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:114
 msgid "Applications"
-msgstr ""
+msgstr "Приложения"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:146
 msgid "Updated"
-msgstr ""
+msgstr "Обновлено"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:157
 msgid "Hardware Details"
-msgstr ""
+msgstr "Детали оборудования"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:160
 msgid "Memory"
-msgstr ""
+msgstr "Оперативная память"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:175
 msgid "CPU"
-msgstr ""
+msgstr "Процессор"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:189
 msgid "Contract overview"
-msgstr ""
+msgstr "Обзор контракта"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:200
 msgid "Contract period"
-msgstr ""
+msgstr "Контрактный период"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:211
 msgid "until"
-msgstr ""
+msgstr "до"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:232
 msgid "Product"
-msgstr ""
+msgstr "Продукт"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:238
 msgid "Reaction rate"
-msgstr ""
+msgstr "Скорость реакции"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:257
 msgid "Costs"
-msgstr ""
+msgstr "Расходы"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:271
 msgid "Payment period"
-msgstr ""
+msgstr "Период оплаты"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:279
 msgid "CMDB Status "
-msgstr ""
+msgstr "Статус CMDB"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:285
 msgid "Cost calculation"
-msgstr ""
+msgstr "Расчет стоимости"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:307
 msgid "Accounting"
-msgstr ""
+msgstr "Бухгалтерия"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:312
 msgid "Inventory number"
-msgstr ""
+msgstr "Инвентарный номер"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:318
 msgid "Acquirement date"
-msgstr ""
+msgstr "Дата приобретения"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:327
 msgid "Invoice number"
-msgstr ""
+msgstr "Номер счета"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:333
 msgid "Order number"
-msgstr ""
+msgstr "Номер заказа"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:341
 msgid "Guarantee period"
-msgstr ""
+msgstr "Срок гарантии"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:348
 msgid "Guarantee period status / Guarantee period base"
-msgstr ""
+msgstr "Статус гарантийного срока / База гарантийного срока"
 
 #: ImportModule/templates/ExternalSystems/edit.php:27
 msgid "Edit external system"
-msgstr ""
+msgstr "Изменить внешнюю систему"
 
 #: ImportModule/templates/ExternalSystems/index.php:18
 msgid "External Systems Overview"
-msgstr ""
+msgstr "Обзор внешних систем"
 
 #: ImportModule/templates/ExternalSystems/index.php:66
 msgid "Filter by system name"
-msgstr ""
+msgstr "Фильтр по названию системы"
 
 #: ImportModule/templates/ExternalSystems/index.php:79
 msgid "Filter by system description"
-msgstr ""
+msgstr "Фильтр по описанию системы"
 
 #: ImportModule/templates/ExternalSystems/index.php:118
 msgid "Connectivity"
-msgstr ""
+msgstr "Связь"
 
 #: ImportModule/templates/HostDefaults/add.php:23
 #: ImportModule/templates/HostDefaults/add.php:71
@@ -23271,7 +23271,7 @@ msgstr "Размер файла"
 #: ImportModule/templates/ImportedFiles/index.php:210
 #: ImportModule/templates/ImportedFiles/view.php:45
 msgid "Download"
-msgstr ""
+msgstr "Скачать"
 
 #: ImportModule/templates/ImportedFiles/view.php:23
 msgid "Imported file view"
@@ -23417,7 +23417,7 @@ msgstr "Общие контейнеры:"
 
 #: ImportModule/templates/ImportedHosts/index.php:434
 msgid "Satellite:"
-msgstr ""
+msgstr "Спутник:"
 
 #: ImportModule/templates/ImportedHosts/index.php:450
 msgid "Service template groups:"
@@ -23437,7 +23437,7 @@ msgstr "Импортировать CSV-файл с заголовком"
 
 #: ImportModule/templates/ImportedHosts/index.php:635
 msgid "Import CSV File without header"
-msgstr ""
+msgstr "Импортировать CSV-файл без заголовка"
 
 #: ImportModule/templates/ImportedHosts/index.php:648
 #: ImportModule/templates/ImportedHosts/index.php:917
@@ -23468,7 +23468,7 @@ msgstr "Этот предварительный просмотр показыв�
 #: ImportModule/templates/ImportedHosts/index.php:822
 #: ImportModule/templates/ImportedHosts/index.php:1056
 msgid "Lines with duplicate identifiers are automatically ignored"
-msgstr ""
+msgstr "Строки с повторяющимися идентификаторами автоматически игнорируются"
 
 #: ImportModule/templates/ImportedHosts/index.php:837
 msgid "Is missing"
@@ -23486,15 +23486,15 @@ msgstr "Начать импорт данных"
 
 #: ImportModule/templates/ImportedHosts/index.php:904
 msgid "Import data from i-doit system"
-msgstr ""
+msgstr "Импорт данных из системы i-doit"
 
 #: ImportModule/templates/ImportedHosts/index.php:1037
 msgid "i-doit Data preview"
-msgstr ""
+msgstr "i-doit Предварительный просмотр данных"
 
 #: ImportModule/templates/ImportedHosts/index.php:1054
 msgid "This preview shows maximal 10 first valid records from i-doit system."
-msgstr ""
+msgstr "Этот предварительный просмотр показывает максимум 10 первых действительных записей из системы i-doit."
 
 #: ImportModule/templates/Importers/add.php:26
 msgid "Add importer"
@@ -23527,7 +23527,7 @@ msgstr "Импорт данных из файлов JSON"
 #: ImportModule/templates/Importers/add.php:148
 #: ImportModule/templates/Importers/edit.php:150
 msgid "Use external system for showing additional host information"
-msgstr ""
+msgstr "Использовать внешнюю систему для отображения дополнительной информации об узлах"
 
 #: ImportModule/templates/Importers/add.php:164
 #: ImportModule/templates/Importers/edit.php:166
@@ -23557,27 +23557,27 @@ msgstr "Нажмите return, чтобы отделить"
 #: ImportModule/templates/Importers/add.php:357
 #: ImportModule/templates/Importers/edit.php:357
 msgid "Define global filter for import (optional)"
-msgstr ""
+msgstr "Определите глобальный фильтр для импорта (необязательно)"
 
 #: ImportModule/templates/Importers/add.php:370
 #: ImportModule/templates/Importers/edit.php:370
 msgid "Hostname RegEx defined!"
-msgstr ""
+msgstr "Определено имя узла RegEx!"
 
 #: ImportModule/templates/Importers/add.php:371
 #: ImportModule/templates/Importers/edit.php:371
 msgid "The regular expression will be applied to all objects. Leave this field blank if you do not want to apply a filter by hostname."
-msgstr ""
+msgstr "Регулярное выражение будет применяться ко всем объектам. Оставьте это поле пустым, если вы не хотите применять фильтр по имени узла."
 
 #: ImportModule/templates/Importers/add.php:378
 #: ImportModule/templates/Importers/edit.php:378
 msgid "Hostname RegEx"
-msgstr ""
+msgstr "Имя узла RegEx"
 
 #: ImportModule/templates/Importers/add.php:384
 #: ImportModule/templates/Importers/edit.php:384
 msgid "The defined regular expression get applied to all imported hosts."
-msgstr ""
+msgstr "Определенное регулярное выражение применяется ко всем импортированным узлам."
 
 #: ImportModule/templates/Importers/add.php:401
 #: ImportModule/templates/Importers/edit.php:399
@@ -23680,105 +23680,105 @@ msgstr "Фильтр по описанию импортера"
 
 #: MSSQLModule/templates/Wizards/mssql.php:19
 msgid "Microsoft SQL Server"
-msgstr ""
+msgstr "Microsoft SQL Server"
 
 #: MSSQLModule/templates/Wizards/mssql.php:28
 msgid "Configuration Wizard: MSSQL Database"
-msgstr ""
+msgstr "Мастер настройки: база данных MSSQL"
 
 #: MSSQLModule/templates/Wizards/mssql.php:42
 msgid "Configure MSSQL Monitoring"
-msgstr ""
+msgstr "Настроить мониторинг MSSQL"
 
 #: MSSQLModule/templates/Wizards/mssql.php:88
 msgid "MSSQL Database services"
-msgstr ""
+msgstr "Службы базы данных MSSQL"
 
 #: NWCModule/src/Controller/WizardsController.php:235
 msgid "SNMP discovery is not possible. Please check your SNMP credentials"
-msgstr ""
+msgstr "Обнаружение SNMP невозможно. Пожалуйста, проверьте свои учетные данные SNMP"
 
 #: NWCModule/templates/Wizards/networkbasic.php:19
 msgid "Network Basic"
-msgstr ""
+msgstr "Основы сети"
 
 #: NWCModule/templates/Wizards/networkbasic.php:28
 #: PRINTERModule/templates/Wizards/printer.php:29
 #: UPSModule/templates/Wizards/ups.php:29
 msgid "Configuration Wizard: Network Basic"
-msgstr ""
+msgstr "Мастер настройки: Основы сети"
 
 #: NWCModule/templates/Wizards/networkbasic.php:42
 msgid "Configure SNMP for Network Monitoring"
-msgstr ""
+msgstr "Настроить SNMP для мониторинга сети"
 
 #: NWCModule/templates/Wizards/networkbasic.php:191
 msgid "SNMP services"
-msgstr ""
+msgstr "SNMP службы"
 
 #: NWCModule/templates/Wizards/networkbasic.php:236
 msgid "SNNP Interfaces"
-msgstr ""
+msgstr "Интерфейсы SNNP"
 
 #: NWCModule/templates/Wizards/networkbasic.php:238
 msgid "To avoiding duplicate interface service configuration, the existing services with the same name will be automatically deselected"
-msgstr ""
+msgstr "Чтобы избежать дублирования конфигурации служб интерфейса, существующие службы с тем же именем будут автоматически отменены."
 
 #: NWCModule/templates/Wizards/networkbasic.php:260
 msgid "Service template for checking interfaces does not exist"
-msgstr ""
+msgstr "Чтобы избежать дублирования конфигурации сервисов интерфейса, существующие службы с тем же именем будут автоматически отменены."
 
 #: NWCModule/templates/Wizards/networkbasic.php:263
 msgid "Try to execute {0} to resolve the issue"
-msgstr ""
+msgstr "Попробуйте выполнить {0}, чтобы решить проблему"
 
 #: NWCModule/templates/Wizards/networkbasic.php:282
 msgid "Discovering Interfaces for SNMP Services"
-msgstr ""
+msgstr "Обнаружение интерфейсов для служб SNMP"
 
 #: NWCModule/templates/Wizards/networkbasic.php:285
 msgid "Scan this device and locate all of the interfaces that reside on the device. Only possible with valid SNMP configuration"
-msgstr ""
+msgstr "Отсканируйте этот узел и найдите все интерфейсы, которые находятся на устройстве. Возможно только при действующей конфигурации SNMP"
 
 #: NWCModule/templates/Wizards/networkbasic.php:293
 msgid "Start SNMP Interface discovery"
-msgstr ""
+msgstr "Начать обнаружение интерфейса SNMP"
 
 #: ORACLEModule/templates/Wizards/oracle.php:28
 msgid "Configuration Wizard: Oracle Database"
-msgstr ""
+msgstr "Мастер настройки: Oracle Database"
 
 #: ORACLEModule/templates/Wizards/oracle.php:42
 msgid "Configure Oracle Monitoring"
-msgstr ""
+msgstr "Настроить Oracle Monitoring"
 
 #: ORACLEModule/templates/Wizards/oracle.php:66
 msgid "Oracle configuration help"
-msgstr ""
+msgstr "Справка по настройке Oracle"
 
 #: ORACLEModule/templates/Wizards/oracle.php:108
 msgid "Extract files"
-msgstr ""
+msgstr "Извлечь файлы"
 
 #: ORACLEModule/templates/Wizards/oracle.php:145
 msgid "Environment Variables"
-msgstr ""
+msgstr "Переменные среды"
 
 #: ORACLEModule/templates/Wizards/oracle.php:147
 msgid "Add to following to {0}"
-msgstr ""
+msgstr "Добавить в список {0}"
 
 #: ORACLEModule/templates/Wizards/oracle.php:156
 msgid "Perl Module"
-msgstr ""
+msgstr "Модуль Perl"
 
 #: ORACLEModule/templates/Wizards/oracle.php:166
 msgid "Create User within Database"
-msgstr ""
+msgstr "Создать пользователя в базе данных"
 
 #: ORACLEModule/templates/Wizards/oracle.php:219
 msgid "Oracle Database services"
-msgstr ""
+msgstr "Службы Oracle Database"
 
 #: OpenstreetmapModule/src/Controller/OpenstreetmapController.php:183
 msgid "Reset map"
@@ -23909,11 +23909,11 @@ msgstr "Выделите время простоя и подтверждения
 
 #: PRINTERModule/templates/Wizards/printer.php:43
 msgid "Configure SNMP for Printer Monitoring"
-msgstr ""
+msgstr "Настройте SNMP для мониторинга принтера"
 
 #: PRINTERModule/templates/Wizards/printer.php:192
 msgid "Printer services"
-msgstr ""
+msgstr "Службы принтера"
 
 #: PagerdutyModule/src/Controller/AcknowledgeController.php:51
 msgid "Wrong incident type"
@@ -24658,43 +24658,43 @@ msgstr "Использование памяти Windows в процентах"
 
 #: SAPModule/templates/Wizards/sap.php:28
 msgid "Configuration Wizard: SAP"
-msgstr ""
+msgstr "Мастер настройки: SAP"
 
 #: SAPModule/templates/Wizards/sap.php:42
 msgid "Configure SAP Monitoring"
-msgstr ""
+msgstr "Настроить SAP мониторинг"
 
 #: SAPModule/templates/Wizards/sap.php:55
 msgid "SAP Server Settings"
-msgstr ""
+msgstr "Настройки сервера SAP"
 
 #: SAPModule/templates/Wizards/sap.php:60
 msgid "SAP System Instance Numbers"
-msgstr ""
+msgstr "Номера экземпляров системы SAP"
 
 #: SAPModule/templates/Wizards/sap.php:72
 msgid "Client"
-msgstr ""
+msgstr "Клиент"
 
 #: SAPModule/templates/Wizards/sap.php:84
 msgid "RFC User"
-msgstr ""
+msgstr "RFC Пользователь"
 
 #: SAPModule/templates/Wizards/sap.php:96
 msgid "RFC Password"
-msgstr ""
+msgstr "RFC Пароль"
 
 #: SAPModule/templates/Wizards/sap.php:108
 msgid "SID"
-msgstr ""
+msgstr "SID"
 
 #: SAPModule/templates/Wizards/sap.php:120
 msgid "MSGROUP"
-msgstr ""
+msgstr "MSGROUP"
 
 #: SAPModule/templates/Wizards/sap.php:131
 msgid "SAP services"
-msgstr ""
+msgstr "Службы SAP"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:9
 #: ServicenowModule/templates/Elements/service_configuration.php:9
@@ -25043,94 +25043,94 @@ msgstr "Замена идентификаторов"
 
 #: UPSModule/templates/Wizards/ups.php:20
 msgid "UPS"
-msgstr ""
+msgstr "UPS"
 
 #: UPSModule/templates/Wizards/ups.php:43
 msgid "Configure SNMP for UPS Monitoring"
-msgstr ""
+msgstr "Настройте SNMP для мониторинга ИБП"
 
 #: UPSModule/templates/Wizards/ups.php:192
 msgid "UPS services"
-msgstr ""
+msgstr "Службы ИБП"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:29
 msgid "Configuration Wizard: VMWare Horizon"
-msgstr ""
+msgstr "Мастер настройки: VMWare Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:52
 msgid "VMWare Horizon Connection Server"
-msgstr ""
+msgstr "Сервер подключений VMWare Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:62
 msgid "VMWare Horizon configuration help"
-msgstr ""
+msgstr "Справка по настройке VMWare Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:79
 msgid "Please create a User within the Connection-Center with Administrator permission on {0}. Because only these Users will have permission to connect to the REST API."
-msgstr ""
+msgstr "Создайте пользователя в Центре подключений с правами администратора на {0}. Потому что только эти пользователи будут иметь разрешение на подключение к REST API."
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:85
 msgid "Please ensure to have a recent API version installed, because not all functions are included within old versions."
-msgstr ""
+msgstr "Убедитесь, что у вас установлена ​​последняя версия API, потому что не все функции включены в старые версии."
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:121
 msgid "Domain"
-msgstr ""
+msgstr "Доменное имя"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:135
 msgid "VMWare Horizon services"
-msgstr ""
+msgstr "Службы VMWare Horizon"
 
 #: VMWAREModule/src/Lib/Wizards.php:39
 #: VMWAREModule/src/Lib/Wizards.php:50
 msgid "Check everything regarding VMWare. ESX Hosts, vCenter, virtual machines..."
-msgstr ""
+msgstr "Проверьте все, что касается VMWare. Узлы ESX, vCenter, виртуальные машины ..."
 
 #: VMWAREModule/templates/Wizards/vmware.php:38
 #: VMWAREModule/templates/Wizards/vmware.php:65
 msgid "VMWare"
-msgstr ""
+msgstr "VMWare"
 
 #: VMWAREModule/templates/Wizards/vmware.php:47
 msgid "Configuration Wizard: VMWare Server"
-msgstr ""
+msgstr "Мастер настройки: сервер VMWare"
 
 #: VMWAREModule/templates/Wizards/vmware.php:49
 msgid "through vCenter"
-msgstr ""
+msgstr "через vCenter"
 
 #: VMWAREModule/templates/Wizards/vmware.php:52
 msgid "esx directly"
-msgstr ""
+msgstr "esx напрямую"
 
 #: VMWAREModule/templates/Wizards/vmware.php:76
 msgid "VMWare Server"
-msgstr ""
+msgstr "Сервер VMWare"
 
 #: VMWAREModule/templates/Wizards/vmware.php:87
 msgid "VMWare configuration help"
-msgstr ""
+msgstr "Справка по настройке VMWare"
 
 #: VMWAREModule/templates/Wizards/vmware.php:100
 msgid "Check everything regarding VMWare. ESX Hosts, vCenter, virtual machine"
-msgstr ""
+msgstr "Проверьте все, что касается VMWare. Узлы ESX, vCenter, виртуальные машины"
 
 #: VMWAREModule/templates/Wizards/vmware.php:104
 msgid "Download the VMware Perl SDK"
-msgstr ""
+msgstr "Загрузите VMware Perl SDK"
 
 #: VMWAREModule/templates/Wizards/vmware.php:107
 msgid "here."
-msgstr ""
+msgstr "здесь."
 
 #: VMWAREModule/templates/Wizards/vmware.php:113
 msgid "Add an read-only user to your vCenter host."
-msgstr ""
+msgstr "Добавьте пользователя с правами только для чтения в свой узел vCenter."
 
 #: VMWAREModule/templates/Wizards/vmware.php:124
 msgid "vCenter Address"
-msgstr ""
+msgstr "vCenter Адрес"
 
 #: VMWAREModule/templates/Wizards/vmware.php:166
 msgid "VMWare services"
-msgstr ""
+msgstr "Службы VMWare"

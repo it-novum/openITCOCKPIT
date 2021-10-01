@@ -522,13 +522,12 @@ msgstr "выход"
 
 #: PrometheusModule/src/Command/PrometheusBridgeCommand.php:54
 msgid "Run PrometheusBridge as endless loop (Daemon)"
-msgstr ""
+msgstr "Запустите PrometheusBridge как бесконечную петлю (Демон)"
 
 #: PrometheusModule/src/Command/PrometheusBridgeCommand.php:55
 msgid "Loop interval in seconds"
-msgstr ""
+msgstr "Интервал цикла в секундах"
 
 #: ServicenowModule/src/Command/ServicenowNotificationCommand.php:59
 msgid "comment"
 msgstr "комментарий"
-
