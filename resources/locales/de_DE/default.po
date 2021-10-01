@@ -2991,7 +2991,7 @@ msgstr "Hochgeladene Zip-Datei konnte nicht geöffnet werden."
 
 #: plugins/MapModule/src/Controller/MapeditorsController.php:2035
 msgid "Mapeditor settings successfully updated"
-msgstr ""
+msgstr "Map Editor wurde erfolgreich aktualisiert"
 
 #: plugins/MapModule/src/Controller/MapsController.php:145
 msgid "Invalid map"
@@ -3127,16 +3127,16 @@ msgstr "Karte editieren:"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:59
 msgid "Show help lines"
-msgstr ""
+msgstr "Zeige Hilfslinien an"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:66
 msgid "Help lines distance"
-msgstr ""
+msgstr "Abstand zwischen der Hilfslinien"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:84
 #: plugins/MapModule/templates/Mapeditors/edit.php:92
 msgid "Change size automatically"
-msgstr ""
+msgstr "Ändere die Größe automatisch"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:100
 msgid "Enable grid"
@@ -4612,15 +4612,15 @@ msgstr "Aktualisierung der Konfiguration beendet"
 
 #: src/Command/GearmanWorkerCommand.php:1377
 msgid "with an error"
-msgstr ""
+msgstr "mit Fehler"
 
 #: src/Command/GearmanWorkerCommand.php:1379
 msgid "successfully"
-msgstr ""
+msgstr "erfolgreich"
 
 #: src/Command/GearmanWorkerCommand.php:1389
 msgid "Refresh of monitoring configuration finished {0}"
-msgstr ""
+msgstr "Aktualisierung der Monitoring Konfiguration wurde abgeschlossen"
 
 #: src/Command/GearmanWorkerCommand.php:1485
 msgid "Mark Satellite for configuration synchronization through NSTA daemon ["
@@ -4923,7 +4923,7 @@ msgstr "Ungültige Automap"
 
 #: src/Controller/AutomapsController.php:530
 msgid "Auto map not found"
-msgstr ""
+msgstr "Automap wurde nicht gefunden"
 
 #: src/Controller/BrowsersController.php:102
 msgid "root"
@@ -5114,7 +5114,7 @@ msgstr "Aktualisierung der Monitoring-Konfiguration erfolgreich!"
 
 #: src/Controller/ExportsController.php:219
 msgid "Refresh of monitoring configuration started"
-msgstr ""
+msgstr "Aktualisierung der Monitoring Konfiguration wurde gestartet"
 
 #: src/Controller/HostdependenciesController.php:93
 #: src/Controller/HostdependenciesController.php:219
@@ -5281,27 +5281,27 @@ msgstr "Problem beim Löschen des Standort"
 #: src/Controller/MessagesOtdController.php:185
 #: src/Controller/MessagesOtdController.php:214
 msgid "Invalid message of the day"
-msgstr ""
+msgstr "Ungültige Meldung des Tages"
 
 #: src/Controller/MessagesOtdController.php:192
 msgid "Message of the day deleted successfully"
-msgstr ""
+msgstr "Meldung des Tages wurde erfolgreich gelöscht"
 
 #: src/Controller/MessagesOtdController.php:199
 msgid "Issue while deleting message of the days"
-msgstr ""
+msgstr "Während des Löschens der Meldung des Tages ist ein Fehler aufgetreten"
 
 #: src/Controller/MessagesOtdController.php:246
 msgid "Message of the day "
-msgstr ""
+msgstr "Meldung des Tages"
 
 #: src/Controller/MessagesOtdController.php:276
 msgid "Message of the day mail sent successfully"
-msgstr ""
+msgstr "Meldung des Tages wurde erfolgreich versendet"
 
 #: src/Controller/MessagesOtdController.php:281
 msgid "An error occurred while sending test mail: "
-msgstr ""
+msgstr "Ein Fehler ist während des Versandes der Meldung des Tages aufgetreten"
 
 #: src/Controller/ProfileController.php:60
 #: src/Controller/UsersController.php:320
@@ -6416,11 +6416,11 @@ msgstr "Es ist erforderlich, gültige Werte für LONGITUDE und LATITUDE anzugebe
 
 #: src/Model/Table/MessagesOtdTable.php:87
 msgid "Please set content for the message of the day"
-msgstr ""
+msgstr "Bitte geben Sie den Inhalt für die Meldung des Tages ein"
 
 #: src/Model/Table/MessagesOtdTable.php:104
 msgid "Please enter the expiry time in days"
-msgstr ""
+msgstr "Bitte geben Sie die Ablaufdauer in Tagen ein"
 
 #: src/Model/Table/ProxiesTable.php:55
 msgid "This field needs to be numeric."
@@ -6518,7 +6518,7 @@ msgstr "Bitte wählen Sie mindestens ein Objekt aus."
 #: src/Model/Table/SystemdowntimesTable.php:101
 #: src/Model/Table/SystemdowntimesTable.php:136
 msgid "You must select at least one day of the week or one day of the month, or both"
-msgstr ""
+msgstr "Es muss wenigstens ein Tag der Woche oder ein Tag des Monats, oder bedes ausgewählt werden"
 
 #: src/Model/Table/SystemdowntimesTable.php:130
 msgid "Weekdays needs to be in range (1-7)."
@@ -6668,7 +6668,7 @@ msgstr "Hoststatus Übersicht"
 
 #: src/Model/Table/WidgetsTable.php:308
 msgid "Tactical overview for hosts"
-msgstr ""
+msgstr "Taktische Übersicht für Hosts"
 
 #: src/Model/Table/WidgetsTable.php:319
 msgid "Service status list"
@@ -6681,7 +6681,7 @@ msgstr "Servicestatus Übersicht"
 
 #: src/Model/Table/WidgetsTable.php:335
 msgid "Tactical overview for services"
-msgstr ""
+msgstr "Taktische Übersicht der Services"
 
 #: src/Model/Table/WidgetsTable.php:346
 #: src/Template/Automaps/add.php:62
@@ -6769,125 +6769,125 @@ msgstr "Zur Überwachung von unterschiedlichen Netzwerkgeräten wie: Switche, Ro
 #: SAPModule/src/Lib/Wizards.php:38
 #: SAPModule/templates/Wizards/sap.php:19
 msgid "SAP"
-msgstr ""
+msgstr "SAP"
 
 #: src/Model/Table/WizardAssignmentsTable.php:261
 #: SAPModule/src/Lib/Wizards.php:39
 msgid "Monitoring SAP Systems"
-msgstr ""
+msgstr "Monitoring für das SAP System"
 
 #: src/Model/Table/WizardAssignmentsTable.php:267
 #: HANAModule/src/Lib/Wizards.php:38
 msgid "SAP HANA (System)"
-msgstr ""
+msgstr "SAP HANA (System)"
 
 #: src/Model/Table/WizardAssignmentsTable.php:268
 #: HANAModule/src/Lib/Wizards.php:39
 msgid "Monitoring for your SAP Hana System Database"
-msgstr ""
+msgstr "Monitoring für Deine SAP Hana System Datenbank"
 
 #: src/Model/Table/WizardAssignmentsTable.php:274
 #: HANAModule/src/Lib/Wizards.php:50
 msgid "SAP HANA (Tenant)"
-msgstr ""
+msgstr "SAP HANA (Tenant)"
 
 #: src/Model/Table/WizardAssignmentsTable.php:275
 #: HANAModule/src/Lib/Wizards.php:51
 msgid "Monitoring for your SAP Hana Tenant Database"
-msgstr ""
+msgstr "Monitoring für Deine SAP Hana Tenant Datenbank"
 
 #: src/Model/Table/WizardAssignmentsTable.php:281
 #: VMWAREModule/src/Lib/Wizards.php:38
 msgid "VMWare (through vCenter)"
-msgstr ""
+msgstr "VMWare (über vCenter)"
 
 #: src/Model/Table/WizardAssignmentsTable.php:282
 msgid "Check everything regarding VMWare. vCenter, virtual machines..."
-msgstr ""
+msgstr "Überwache alles in Bezug auf VMWare. vCenter, virtuelle Maschinen..."
 
 #: src/Model/Table/WizardAssignmentsTable.php:288
 #: VMWAREModule/src/Lib/Wizards.php:49
 msgid "VMWare (esx directly)"
-msgstr ""
+msgstr "VMWare (direkt mit esx)"
 
 #: src/Model/Table/WizardAssignmentsTable.php:289
 msgid "Check everything regarding VMWare. ESX Hosts, virtual machines..."
-msgstr ""
+msgstr "Überwache alles in Bezug auf VMWare. ESX Hosts, virtuelle Maschinen..."
 
 #: src/Model/Table/WizardAssignmentsTable.php:295
 #: VMWAREHORIZONModule/src/Lib/Wizards.php:39
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:20
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:41
 msgid "VMWare Horizon"
-msgstr ""
+msgstr "VMWare Horizon"
 
 #: src/Model/Table/WizardAssignmentsTable.php:296
 #: VMWAREHORIZONModule/src/Lib/Wizards.php:40
 msgid "Monitor your VMware Horizon Virtual Desktop Infrastructure"
-msgstr ""
+msgstr "Überwache Deine VMware Horizon Virtual Desktop Infrastruktur"
 
 #: src/Model/Table/WizardAssignmentsTable.php:302
 #: DB2Module/src/Lib/Wizards.php:38
 msgid "DB2 Monitoring"
-msgstr ""
+msgstr "DB2 Monitoring"
 
 #: src/Model/Table/WizardAssignmentsTable.php:303
 #: DB2Module/src/Lib/Wizards.php:39
 msgid "Monitor your DB2 server"
-msgstr ""
+msgstr "Überwache Dein DB2 server"
 
 #: src/Model/Table/WizardAssignmentsTable.php:309
 #: ORACLEModule/src/Lib/Wizards.php:38
 #: ORACLEModule/templates/Wizards/oracle.php:19
 msgid "Oracle"
-msgstr ""
+msgstr "Oracle"
 
 #: src/Model/Table/WizardAssignmentsTable.php:310
 #: ORACLEModule/src/Lib/Wizards.php:39
 msgid "Track connection time, connected users, session and process usage, ...."
-msgstr ""
+msgstr "Verfolge Verbindungszeit, verbundene Benutzer, Session und Prozessnutzung, ..."
 
 #: src/Model/Table/WizardAssignmentsTable.php:316
 #: UPSModule/src/Lib/Wizards.php:38
 msgid "Uninterruptible Power Supply"
-msgstr ""
+msgstr "Unterbrechungsfreie Stromversorgung"
 
 #: src/Model/Table/WizardAssignmentsTable.php:317
 #: UPSModule/src/Lib/Wizards.php:39
 msgid "Add your UPS for monitoring by specifying the device details"
-msgstr ""
+msgstr "Fügen Sie Ihre USV zur Überwachung hinzu, indem Sie die Gerätedetails angeben"
 
 #: src/Model/Table/WizardAssignmentsTable.php:323
 #: PRINTERModule/src/Lib/Wizards.php:38
 #: PRINTERModule/templates/Wizards/printer.php:20
 msgid "Printer"
-msgstr ""
+msgstr "Drucker"
 
 #: src/Model/Table/WizardAssignmentsTable.php:324
 #: PRINTERModule/src/Lib/Wizards.php:39
 msgid "Add your printers for monitoring by specifying the device details"
-msgstr ""
+msgstr "Fügen Sie Ihre Drucker zur Überwachung hinzu, indem Sie die Gerätedetails angeben"
 
 #: src/Model/Table/WizardAssignmentsTable.php:330
 #: MSSQLModule/src/Lib/Wizards.php:38
 msgid "MSSQL Monitoring"
-msgstr ""
+msgstr "MSSQL Monitoring"
 
 #: src/Model/Table/WizardAssignmentsTable.php:331
 #: MSSQLModule/src/Lib/Wizards.php:39
 msgid "Monitor your Microsoft SQL Server"
-msgstr ""
+msgstr "Überwache Dein Microsoft SQL Server "
 
 #: src/Model/Table/WizardAssignmentsTable.php:337
 #: HPSERVERHARDWAREModule/src/Lib/Wizards.php:38
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:20
 msgid "HP Server Hardware"
-msgstr ""
+msgstr "HP Server Hardware"
 
 #: src/Model/Table/WizardAssignmentsTable.php:338
 #: HPSERVERHARDWAREModule/src/Lib/Wizards.php:39
 msgid "These checks will allow you to monitor your HP server"
-msgstr ""
+msgstr "Mit diesen Prüfungen können Sie Ihren HP Server überwachen "
 
 #: src/Template/Acknowledgements/host.php:38
 #: src/Template/Acknowledgements/service.php:38
@@ -8567,7 +8567,7 @@ msgstr "Windows-Services"
 
 #: src/Template/Agentconnector/create_services.php:448
 msgid "Windows event logs"
-msgstr ""
+msgstr "Windows Ereignislog"
 
 #: src/Template/Agentconnector/create_services.php:469
 msgid "Launchd services"
@@ -8983,11 +8983,11 @@ msgstr "Sticky-Bestätigungen bleiben so lange bestehen, bis der Host wieder im 
 #: src/Template/Angular/acknowledge_host.php:74
 #: src/Template/Angular/acknowledge_service.php:55
 msgid "Notify"
-msgstr ""
+msgstr "Benachrichtige"
 
 #: src/Template/Angular/acknowledge_host.php:78
 msgid "The system will send a notification to inform contacts that the current host problem has been acknowledged."
-msgstr ""
+msgstr "Das System sendet eine Benachrichtigung, um die Kontakte darüber zu informieren, dass das aktuelle Host-Problem bestätigt wurde."
 
 #: src/Template/Angular/acknowledge_host.php:84
 #: src/Template/Angular/acknowledge_service.php:65
@@ -9015,7 +9015,7 @@ msgstr "Klebrige (Sticky) Bestätigungen bleiben so lange bestehen, bis der Serv
 
 #: src/Template/Angular/acknowledge_service.php:59
 msgid "The system will send a notification to inform contacts that the current service problem has been acknowledged."
-msgstr ""
+msgstr "Das System sendet eine Benachrichtigung, um die Kontakte darüber zu informieren, dass das aktuelle Service-Problem bestätigt wurde."
 
 #: src/Template/Angular/confirm_deactivate.php:6
 #: src/Template/Angular/confirm_delete.php:6
@@ -9592,11 +9592,11 @@ msgstr "Löschen..."
 
 #: src/Template/Angular/mass_delete_acknowledgements.php:15
 msgid "Do you really want to delete the acknowledgements?"
-msgstr ""
+msgstr "Möchstest Du wirklich die Bestätigung löschen?"
 
 #: src/Template/Angular/mass_delete_acknowledgements.php:41
 msgid "Delete acknowledgement"
-msgstr ""
+msgstr "Lösche Bestätigung"
 
 #: src/Template/Angular/mass_delete_host_downtimes.php:15
 msgid "Do you really want to cancel the selected host downtimes?"
@@ -9659,7 +9659,7 @@ msgstr "Nachrichten, bei denen der Filter auf nur Unbekannte eingestellt ist"
 #: src/Template/Angular/message_of_the_day.php:29
 #: src/Template/Angular/message_of_the_day.php:42
 msgid "Message of the day!"
-msgstr ""
+msgstr "Meldung des Tages"
 
 #: src/Template/Angular/not_found.php:56
 msgid "Looks like the object you are looking for has vanished"
@@ -10325,19 +10325,19 @@ msgstr "Starte scrollen"
 
 #: src/Template/Automaps/automap_widget.php:73
 msgid "Refresh interval:"
-msgstr ""
+msgstr "Aktualisierungsintervall"
 
 #: src/Template/Automaps/automap_widget.php:106
 msgid "Automap"
-msgstr ""
+msgstr "Automap"
 
 #: src/Template/Automaps/automap_widget.php:129
 msgid "Limit per page"
-msgstr ""
+msgstr "Limit pro Seite"
 
 #: src/Template/Automaps/automap_widget.php:134
 msgid "This option has only an effect if \"Use pagination\" is enabled."
-msgstr ""
+msgstr "Diese Option hat nur ein Effekt wenn \"Benutzer Pagination\" an ist"
 
 #: src/Template/Automaps/edit.php:48
 msgid "Edit auto map: "
@@ -10863,7 +10863,7 @@ msgstr "Mandanten"
 
 #: src/Template/Changelogs/index.php:139
 msgid "Refresh configuration"
-msgstr ""
+msgstr "Aktualisiere Konfiguration"
 
 #: src/Template/Changelogs/index.php:163
 #: src/Template/Macros/index.php:92
@@ -12743,16 +12743,16 @@ msgstr "Gesamte Hosts"
 
 #: src/Template/Dashboards/tactical_overview_hosts_widget.php:88
 msgid "Unhandled Hosts"
-msgstr ""
+msgstr "Unbehandelte Hosts"
 
 #: src/Template/Dashboards/tactical_overview_hosts_widget.php:122
 #: src/Template/Dashboards/tactical_overview_services_widget.php:148
 msgid "Acknowledgments"
-msgstr ""
+msgstr "Bestätigungungen"
 
 #: src/Template/Dashboards/tactical_overview_hosts_widget.php:259
 msgid "Filter by host groups"
-msgstr ""
+msgstr "Filter nach Hostgruppe"
 
 #: src/Template/Dashboards/tactical_overview_services_widget.php:46
 #: src/Template/Nagiostats/index.php:206
@@ -12761,11 +12761,11 @@ msgstr "Gesamte Services"
 
 #: src/Template/Dashboards/tactical_overview_services_widget.php:101
 msgid "Unhandled Services"
-msgstr ""
+msgstr "Unbehandelte Services"
 
 #: src/Template/Dashboards/tactical_overview_services_widget.php:310
 msgid "Filter by service groups"
-msgstr ""
+msgstr "Filter nach Servicegruppe"
 
 #: src/Template/Dashboards/website_widget.php:52
 msgid "To embed a website the {0} HTML tag is used."
@@ -13834,7 +13834,7 @@ msgstr ". %s Servicetemplategruppen wurden aufgrund fehlender Berechtigungen ent
 
 #: src/Template/Hosts/add.php:107
 msgid "Hosts in /root can't be moved to other containers later"
-msgstr ""
+msgstr "Hosts die im /root Container erstellt werden können später nicht mehr in andere Container verschoben werden"
 
 #: src/Template/Hosts/add.php:117
 #: src/Template/Hosts/browser.php:879
@@ -13870,7 +13870,7 @@ msgstr "Hostname konnte nicht aufgelöst werden."
 #: src/Template/Hosts/edit.php:205
 #: src/Template/Wizards/wizard_host_configuration.php:199
 msgid "A host with the name <strong>{0}</strong> already exists. Duplicate host names could lead to confusion."
-msgstr ""
+msgstr "Ein Host mit dem Namen <strong>{0}</strong> existiert bereits. Doppelte Hostnamen können zu Verwirrung führen."
 
 #: src/Template/Hosts/add.php:203
 #: src/Template/Hosts/edit.php:217
@@ -14163,7 +14163,7 @@ msgstr "Benachrichtigungskonfiguration"
 #: src/Template/Servicetemplates/add.php:464
 #: src/Template/Servicetemplates/edit.php:462
 msgid "This option is used to determine whether or not notifications are enabled for this host."
-msgstr ""
+msgstr "Diese Option wird verwendet, um zu bestimmen, ob Benachrichtigungen für diesen Host aktiviert werden sollen oder nicht."
 
 #: src/Template/Hosts/add.php:645
 #: src/Template/Hosts/add.php:648
@@ -14355,7 +14355,7 @@ msgstr "ServiceNow"
 #: src/Template/Hosts/browser.php:119
 #: ImportModule/src/Lib/ImporterDataTypes.php:16
 msgid "i-doit"
-msgstr ""
+msgstr "i-doit"
 
 #: src/Template/Hosts/browser.php:267
 msgid "This host is currently disabled!"
@@ -14442,7 +14442,7 @@ msgstr "Problem mit übergeordnetem Host erkannt!"
 #: src/Template/Packetmanager/index.php:385
 #: src/Template/Services/browser.php:517
 msgid "Copied"
-msgstr ""
+msgstr "Kopiert"
 
 #: src/Template/Hosts/browser.php:441
 #: src/Template/Hosts/browser.php:841
@@ -14570,7 +14570,7 @@ msgstr "Ausfälle"
 #: src/Template/Hosts/browser.php:965
 #: src/Template/Services/browser.php:1134
 msgid "No data available!"
-msgstr ""
+msgstr "Keine Daten verfügbar!"
 
 #: src/Template/Hosts/browser.php:975
 #: src/Template/Services/browser.php:1144
@@ -14793,7 +14793,7 @@ msgstr "Nach Hostbeschreibung filtern"
 #: src/Template/Hosts/index.php:352
 #: src/Template/Services/index.php:374
 msgid "Not enabled"
-msgstr ""
+msgstr "Nicht aktiviert"
 
 #: src/Template/Hosts/index.php:865
 #: src/Template/Hosts/not_monitored.php:388
@@ -15197,11 +15197,11 @@ msgstr "Wenn Sie den Makronamen ändern, müssen Sie alle Vorkommen des Makros m
 #: src/Template/MessagesOtd/edit.php:34
 #: src/Template/MessagesOtd/index.php:34
 msgid "Messages of the day"
-msgstr ""
+msgstr "Meldung des Tages"
 
 #: src/Template/MessagesOtd/add.php:47
 msgid "Create new message of the day"
-msgstr ""
+msgstr "Erstelle eine neue Meldung des Tages"
 
 #: src/Template/MessagesOtd/add.php:62
 #: src/Template/MessagesOtd/edit.php:62
@@ -15210,62 +15210,62 @@ msgstr ""
 #: src/Template/email/text/message_otd_mail.php:32
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:481
 msgid "Message of the day"
-msgstr ""
+msgstr "Meldung des Tages"
 
 #: src/Template/MessagesOtd/add.php:104
 #: src/Template/MessagesOtd/edit.php:104
 msgid "Expiration"
-msgstr ""
+msgstr "Ablauf"
 
 #: src/Template/MessagesOtd/add.php:113
 #: src/Template/MessagesOtd/add.php:119
 #: src/Template/MessagesOtd/edit.php:113
 #: src/Template/MessagesOtd/edit.php:119
 msgid "expiration duration"
-msgstr ""
+msgstr "Ablaufdauer"
 
 #: src/Template/MessagesOtd/add.php:113
 #: src/Template/MessagesOtd/add.php:125
 #: src/Template/MessagesOtd/edit.php:113
 #: src/Template/MessagesOtd/edit.php:125
 msgid "no expiration"
-msgstr ""
+msgstr "kein Ablauf"
 
 #: src/Template/MessagesOtd/add.php:138
 #: src/Template/MessagesOtd/edit.php:138
 msgid "in days"
-msgstr ""
+msgstr "in Tagen"
 
 #: src/Template/MessagesOtd/add.php:146
 #: src/Template/MessagesOtd/edit.php:146
 msgid "Leave this field blank to receive a permanent message of the day. The message will be displayed from the defined date. For temporary messages, set the expiration time in days."
-msgstr ""
+msgstr "Lassen Sie dieses Feld leer, um eine permanente Nachricht des Tages zu erhalten. Die Meldung wird ab dem definierten Datum angezeigt. Legen Sie für temporäre Nachrichten die Ablaufzeit in Tagen fest."
 
 #: src/Template/MessagesOtd/add.php:151
 #: src/Template/MessagesOtd/edit.php:151
 msgid "Filter for user groups (optional)"
-msgstr ""
+msgstr "Filter für Benutzergruppen (optional)"
 
 #: src/Template/MessagesOtd/add.php:161
 #: src/Template/MessagesOtd/edit.php:161
 msgid "Select user groups for restricted visibility. Leave this field blank to avoid excluding users."
-msgstr ""
+msgstr "Wähle bestimmte Benutzergruppe aus um die Sichtbarkeit zu beschränken. Lasse das Feld leer um keine Benutzer auszuschließen."
 
 #: src/Template/MessagesOtd/add.php:175
 #: src/Template/MessagesOtd/edit.php:174
 #: src/Template/MessagesOtd/index.php:213
 msgid "Notify users"
-msgstr ""
+msgstr "Benachrichtige Benutzer"
 
 #: src/Template/MessagesOtd/add.php:183
 #: src/Template/MessagesOtd/edit.php:182
 msgid "If activated, the system sends notifications via email with the current content of the \"Message of the day\" to affected users"
-msgstr ""
+msgstr "Wenn aktiv, wird das System eine Nachricht, mit dem aktuellen Inhalt der Meldung des Tages, an die betroffene Benutzer verschicken"
 
 #: src/Template/MessagesOtd/add.php:189
 #: src/Template/MessagesOtd/edit.php:187
 msgid "Style"
-msgstr ""
+msgstr "Stil"
 
 #: src/Template/MessagesOtd/add.php:196
 #: src/Template/MessagesOtd/edit.php:194
@@ -15277,54 +15277,54 @@ msgstr "Info"
 #: src/Template/MessagesOtd/add.php:197
 #: src/Template/MessagesOtd/edit.php:195
 msgid "Primary"
-msgstr ""
+msgstr "Primär"
 
 #: src/Template/MessagesOtd/add.php:200
 #: src/Template/MessagesOtd/edit.php:198
 msgid "Danger"
-msgstr ""
+msgstr "Gefahr"
 
 #: src/Template/MessagesOtd/add.php:206
 #: src/Template/MessagesOtd/edit.php:204
 msgid "Text"
-msgstr ""
+msgstr "Text"
 
 #: src/Template/MessagesOtd/add.php:337
 #: src/Template/MessagesOtd/edit.php:335
 msgid "Preview"
-msgstr ""
+msgstr "Vorschau"
 
 #: src/Template/MessagesOtd/add.php:387
 msgid "Create message of the day and notify users"
-msgstr ""
+msgstr "Erstelle Meldung des Tages und benachrichtige Benutzer"
 
 #: src/Template/MessagesOtd/add.php:391
 msgid "Create message of the day"
-msgstr ""
+msgstr "Erstelle Meldung des Tages"
 
 #: src/Template/MessagesOtd/edit.php:47
 msgid "Edit new message of the day"
-msgstr ""
+msgstr "Editiere Meldung des Tages"
 
 #: src/Template/MessagesOtd/edit.php:381
 msgid "Update message of the day and notify users"
-msgstr ""
+msgstr "Aktualisiere Meldung des Tages und benachrichtige Benutzer"
 
 #: src/Template/MessagesOtd/edit.php:385
 msgid "Update message of the day"
-msgstr ""
+msgstr "Aktualisiere Meldung des Tages"
 
 #: src/Template/MessagesOtd/index.php:87
 msgid "Filter by title"
-msgstr ""
+msgstr "Filter nach Titel"
 
 #: src/Template/MessagesOtd/index.php:117
 msgid "Filter by date"
-msgstr ""
+msgstr "Filter nach Datum"
 
 #: src/Template/MessagesOtd/index.php:155
 msgid "Expiration duration (in days)"
-msgstr ""
+msgstr "Ablaufdauer (in Tagen)"
 
 #: src/Template/Nagiostats/index.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:565
@@ -16017,7 +16017,7 @@ msgstr "Bitte wähle eine Servicevorlage."
 #: src/Template/Services/add.php:155
 #: src/Template/Services/edit.php:210
 msgid "A service with the name <strong>{0}</strong> already exists on this host. Duplicate service names could lead to confusion."
-msgstr ""
+msgstr "Auf diesem Host ist bereits ein Service mit dem Namen <strong>{0}</strong> vorhanden. Doppelte Servicenamen können zu Verwirrung führen."
 
 #: src/Template/Services/add.php:483
 #: src/Template/Services/edit.php:538
@@ -16748,19 +16748,19 @@ msgstr "Kommerzielle Unterstützung"
 
 #: src/Template/Supports/issue.php:78
 msgid "Get Professional Support"
-msgstr ""
+msgstr "Holen Sie sich professionellen Support"
 
 #: src/Template/Supports/issue.php:81
 msgid "Access to a large variety of extensions for your openITCOCKPIT"
-msgstr ""
+msgstr "Zugriff auf eine Vielzahl von Erweiterungen für Ihr openITCOCKPIT"
 
 #: src/Template/Supports/issue.php:84
 msgid "Report system issues"
-msgstr ""
+msgstr "Systemprobleme melden"
 
 #: src/Template/Supports/issue.php:87
 msgid "Report system crashes"
-msgstr ""
+msgstr "Systemabstürze melden"
 
 #: src/Template/Supports/issue.php:90
 #: src/Template/Supports/issue.php:150
@@ -16769,7 +16769,7 @@ msgstr "Unerwünschtes Verhalten oder Fehler"
 
 #: src/Template/Supports/issue.php:93
 msgid "Get in Touch with us!"
-msgstr ""
+msgstr "Nehmen Sie Kontakt mit uns auf!"
 
 #: src/Template/Supports/issue.php:110
 msgid "Create a Ticket"
@@ -16777,7 +16777,7 @@ msgstr "Erstelle ein Ticket"
 
 #: src/Template/Supports/issue.php:134
 msgid "Social Networks"
-msgstr ""
+msgstr "Soziale Netzwerke"
 
 #: src/Template/Supports/issue.php:145
 msgid "General questions about openITCOCKPIT"
@@ -16797,23 +16797,23 @@ msgstr "Fehler mit Paketen für Ihre\n                                        Di
 
 #: src/Template/Supports/issue.php:161
 msgid "Subscribe to get the very latest news about openITCOCKPIT"
-msgstr ""
+msgstr "Abonnieren Sie die neuesten Nachrichten über openITCOCKPIT"
 
 #: src/Template/Supports/issue.php:168
 msgid "News"
-msgstr ""
+msgstr "Neuigkeiten"
 
 #: src/Template/Supports/issue.php:169
 msgid "Group discussions"
-msgstr ""
+msgstr "Gruppendiskussione"
 
 #: src/Template/Supports/issue.php:172
 msgid "Ask other openITCOCKPIT users"
-msgstr ""
+msgstr "Fragen Sie andere openITCOCKPIT-Benutzer"
 
 #: src/Template/Supports/issue.php:183
 msgid "Twitter"
-msgstr ""
+msgstr "Twitter"
 
 #: src/Template/Supports/issue.php:189
 msgid "GitHub"
@@ -16821,7 +16821,7 @@ msgstr "GitHub"
 
 #: src/Template/Supports/issue.php:195
 msgid "Reddit"
-msgstr ""
+msgstr "Reddit"
 
 #: src/Template/Systemdowntimes/add.php:32
 msgid "create"
@@ -17068,15 +17068,15 @@ msgstr "OpenLDAP"
 
 #: src/Template/Systemsettings/index.php:159
 msgid "Plain"
-msgstr ""
+msgstr "Einfach"
 
 #: src/Template/Systemsettings/index.php:160
 msgid "StartTLS"
-msgstr ""
+msgstr "StartTLS"
 
 #: src/Template/Systemsettings/index.php:161
 msgid "TLS (ldaps)"
-msgstr ""
+msgstr "TLS (ldaps)"
 
 #: src/Template/Systemsettings/index.php:189
 msgid "Click for more information."
@@ -17165,7 +17165,7 @@ msgstr "Bearbeite Zeitraum"
 #: src/Template/Timeperiods/index.php:193
 #: src/Template/Timeperiods/view_details.php:39
 msgid "View details"
-msgstr ""
+msgstr "Zeige Details"
 
 #: src/Template/Timeperiods/edit.php:252
 msgid "Update time period"
@@ -17185,7 +17185,7 @@ msgstr "Dieser Zeitraum wird von keinem Objekt verwendet."
 
 #: src/Template/Timeperiods/view_details.php:49
 msgid "Time period:"
-msgstr ""
+msgstr "Zeitraum:"
 
 #: src/Template/Usercontainerroles/add.php:35
 #: src/Template/Usercontainerroles/edit.php:35
@@ -17416,25 +17416,25 @@ msgstr "Manuelles Abmelden und erneutes Anmelden erforderlich, damit die Änderu
 #: src/Template/Users/add_from_ldap.php:445
 #: src/Template/Users/edit.php:495
 msgid "Api keys"
-msgstr ""
+msgstr "API-Schlüssel"
 
 #: src/Template/Users/add.php:470
 #: src/Template/Users/add_from_ldap.php:451
 #: src/Template/Users/edit.php:501
 msgid "Api key"
-msgstr ""
+msgstr "API-Schlüssel"
 
 #: src/Template/Users/add.php:490
 #: src/Template/Users/add_from_ldap.php:471
 #: src/Template/Users/edit.php:521
 msgid "Generate new API key"
-msgstr ""
+msgstr "Neuen API-Schlüssel generieren"
 
 #: src/Template/Users/add.php:503
 #: src/Template/Users/add_from_ldap.php:484
 #: src/Template/Users/edit.php:534
 msgid "Add ApiKey"
-msgstr ""
+msgstr "API-Schlüssel hinzufügen"
 
 #: src/Template/Users/add.php:516
 msgid "Create user"
@@ -17889,7 +17889,7 @@ msgstr "openITCOCKPIT"
 
 #: src/Template/email/html/message_otd_mail.php:76
 msgid "(Duration in days: {0})"
-msgstr ""
+msgstr "(Dauer in Tagen: {0})"
 
 #: src/Template/email/html/notification_host.php:61
 #: src/Template/email/html/notification_service.php:65
@@ -17965,19 +17965,19 @@ msgstr "Im Anhang finden Sie den automatisch generierten Bericht:"
 
 #: src/Template/email/text/message_otd_mail.php:37
 msgid "Title : {0}"
-msgstr ""
+msgstr "Titel : {0}"
 
 #: src/Template/email/text/message_otd_mail.php:40
 msgid "Description : {0}"
-msgstr ""
+msgstr "Beschreibung : {0}"
 
 #: src/Template/email/text/message_otd_mail.php:44
 msgid "Expiration (Duration in days: {0})"
-msgstr ""
+msgstr "Ablauf (Dauer in Tagen: {0})"
 
 #: src/Template/email/text/message_otd_mail.php:49
 msgid "Content: {0}"
-msgstr ""
+msgstr "Inhalt: {0}"
 
 #: src/Template/email/text/reset_password.php:3
 msgid "Your {0} password got reset!"
@@ -18096,7 +18096,7 @@ msgstr "Dienst: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:649
 msgid "Event log: {0}"
-msgstr ""
+msgstr "Ereignislog: {0}"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServices.php:678
 msgid "Custom check: {0}"
@@ -18717,11 +18717,11 @@ msgstr "Benutzercontainerrollen"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:487
 msgid "message"
-msgstr ""
+msgstr "Nachricht"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:487
 msgid "news"
-msgstr ""
+msgstr "Neuigkeiten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:493
 msgid "Container management"
@@ -20974,7 +20974,7 @@ msgstr "MkLogfile ist leer oder existiert nicht."
 
 #: CheckmkModule/src/Controller/ScansController.php:87
 msgid "Checkmk Agent"
-msgstr ""
+msgstr "Checkmk Agent"
 
 #: CheckmkModule/src/Controller/ScansController.php:99
 msgid "No MKChecks defined! Checkmk will not work."
@@ -21032,34 +21032,34 @@ msgstr "Checkmk Agent"
 
 #: CheckmkModule/templates/Mkagents/download.php:38
 msgid "Checkmk agents"
-msgstr ""
+msgstr "Checkmk Agenten"
 
 #: CheckmkModule/templates/Mkagents/download.php:42
 msgid "Downloads"
-msgstr ""
+msgstr "Downloads"
 
 #: CheckmkModule/templates/Mkagents/download.php:53
 msgid "Agent Downloads"
-msgstr ""
+msgstr "Agent Downloads"
 
 #: CheckmkModule/templates/Mkagents/download.php:60
 #: CheckmkModule/templates/Mkagents/download.php:119
 #: CheckmkModule/templates/Mkagents/index.php:60
 msgid "Special agents"
-msgstr ""
+msgstr "Spezialagenten"
 
 #: CheckmkModule/templates/Mkagents/download.php:67
 #: CheckmkModule/templates/Mkagents/index.php:66
 msgid "Agent downloads"
-msgstr ""
+msgstr "Agent-Downloads"
 
 #: CheckmkModule/templates/Mkagents/download.php:83
 msgid "All files are located at {0} on the file system."
-msgstr ""
+msgstr "Alle Dateien befinden sich unter {0} im Dateisystem."
 
 #: CheckmkModule/templates/Mkagents/download.php:99
 msgid "Linux, Unix, macOS and other"
-msgstr ""
+msgstr "Linux, Unix, macOS und andere"
 
 #: CheckmkModule/templates/Mkagents/download.php:105
 #: CheckmkModule/templates/Mkagents/download.php:198
@@ -21070,22 +21070,22 @@ msgstr "Agenten"
 #: CheckmkModule/templates/Mkagents/download.php:133
 #: CheckmkModule/templates/Mkagents/download.php:212
 msgid "Example configurations"
-msgstr ""
+msgstr "Beispielkonfiguration"
 
 #: CheckmkModule/templates/Mkagents/download.php:147
 #: CheckmkModule/templates/Mkagents/download.php:226
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: CheckmkModule/templates/Mkagents/download.php:161
 #: CheckmkModule/templates/Mkagents/download.php:240
 #: CheckmkModule/templates/Mkagents/download.php:291
 msgid "Other files"
-msgstr ""
+msgstr "Andere Dateien"
 
 #: CheckmkModule/templates/Mkagents/download.php:271
 msgid "z/OS"
-msgstr ""
+msgstr "z/OS"
 
 #: CheckmkModule/templates/Mkagents/edit.php:70
 msgid "Edit Checkmk agent"
@@ -21098,11 +21098,11 @@ msgstr "erfolgreich bearbeitet"
 
 #: CheckmkModule/templates/Mkagents/index.php:38
 msgid "Checkmk special agents"
-msgstr ""
+msgstr "Checkmk-Spezialagenten"
 
 #: CheckmkModule/templates/Mkagents/index.php:54
 msgid "Agent"
-msgstr ""
+msgstr "Agent"
 
 #: CheckmkModule/templates/Mkagents/index.php:102
 msgid "Filter by agent name"
@@ -21166,35 +21166,35 @@ msgstr "Warten auf Ergebnis vom Satelliten abbrechen"
 
 #: CheckmkModule/templates/Scans/index.php:85
 msgid "Download and install the Checkmk Agent."
-msgstr ""
+msgstr "Laden Sie den Checkmk-Agenten herunter und installieren Sie ihn."
 
 #: CheckmkModule/templates/Scans/index.php:88
 msgid "If not already done, please {0} the Checkmk Agent now."
-msgstr ""
+msgstr "Falls noch nicht geschehen, {0} bitte jetzt den Checkmk-Agenten."
 
 #: CheckmkModule/templates/Scans/index.php:119
 msgid "Enable Checkmk agent"
-msgstr ""
+msgstr "Checkmk-Agent aktivieren"
 
 #: CheckmkModule/templates/Scans/index.php:122
 msgid "If enabled, openITCOCKPIT will query the Checkmk agent on the remote host."
-msgstr ""
+msgstr "Wenn aktiviert, fragt openITCOCKPIT den Checkmk-Agenten auf dem entfernten Host ab."
 
 #: CheckmkModule/templates/Scans/index.php:130
 msgid "Datasource"
-msgstr ""
+msgstr "Datenquelle"
 
 #: CheckmkModule/templates/Scans/index.php:160
 msgid "SNMP"
-msgstr ""
+msgstr "SNMP"
 
 #: CheckmkModule/templates/Scans/index.php:172
 msgid "Enable SNMP"
-msgstr ""
+msgstr "Aktiviere SNMP"
 
 #: CheckmkModule/templates/Scans/index.php:175
 msgid "If enabled, openITCOCKPIT will query the remote host through SNMP."
-msgstr ""
+msgstr "Wenn aktiviert, fragt openITCOCKPIT den Remote-Host über SNMP ab."
 
 #: CheckmkModule/templates/Scans/index.php:185
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:62
@@ -21314,83 +21314,83 @@ msgstr "Parameter"
 
 #: DB2Module/templates/Wizards/db2.php:19
 msgid "DB2"
-msgstr ""
+msgstr "DB2"
 
 #: DB2Module/templates/Wizards/db2.php:28
 msgid "Configuration Wizard: DB2 Database"
-msgstr ""
+msgstr "Konfigurationsassistent: DB2-Datenbank"
 
 #: DB2Module/templates/Wizards/db2.php:42
 msgid "Configure DB2 Monitoring"
-msgstr ""
+msgstr "Konfigurieren von DB2-Überwachung"
 
 #: DB2Module/templates/Wizards/db2.php:56
 #: HANAModule/templates/Wizards/saphana.php:66
 #: MSSQLModule/templates/Wizards/mssql.php:56
 #: ORACLEModule/templates/Wizards/oracle.php:56
 msgid "Administration Settings"
-msgstr ""
+msgstr "Administrationseinstellungen"
 
 #: DB2Module/templates/Wizards/db2.php:66
 msgid "DB2 configuration help"
-msgstr ""
+msgstr "Hilfe zur DB2-Konfiguration"
 
 #: DB2Module/templates/Wizards/db2.php:79
 #: ORACLEModule/templates/Wizards/oracle.php:80
 msgid "Please replace XXXXX with your version."
-msgstr ""
+msgstr "Bitte ersetzen Sie XXXXX durch Ihre Version."
 
 #: DB2Module/templates/Wizards/db2.php:84
 #: ORACLEModule/templates/Wizards/oracle.php:85
 msgid "Please download a recent version of the following packages from here"
-msgstr ""
+msgstr "Bitte laden Sie hier eine aktuelle Version der folgenden Pakete herunter"
 
 #: DB2Module/templates/Wizards/db2.php:101
 msgid "Environment"
-msgstr ""
+msgstr "Umgebung"
 
 #: DB2Module/templates/Wizards/db2.php:103
 msgid "Add the following to {0}"
-msgstr ""
+msgstr "Fügen Sie Folgendes zu {0} hinzu"
 
 #: DB2Module/templates/Wizards/db2.php:113
 msgid "Installation"
-msgstr ""
+msgstr "Installation"
 
 #: DB2Module/templates/Wizards/db2.php:133
 msgid "Create User within Databas"
-msgstr ""
+msgstr "Benutzer in der Datenbank erstellen"
 
 #: DB2Module/templates/Wizards/db2.php:135
 msgid "To ensure, that openITCOCKPIT is able to query information from the database, you need to add a operationsystem user called \"nagios\" (with same group name)."
-msgstr ""
+msgstr "Um sicherzustellen, dass openITCOCKPIT Informationen aus der Datenbank abfragen kann, müssen Sie einen Betriebssystembenutzer namens \"nagios\" (mit demselben Gruppennamen) hinzufügen."
 
 #: DB2Module/templates/Wizards/db2.php:138
 msgid "Maybe there is already a user {0}, wich is beeing used to monitore the operatingsystem."
-msgstr ""
+msgstr "Möglicherweise gibt es bereits einen Benutzer {0}, der zur Überwachung des Betriebssystems verwendet wird."
 
 #: DB2Module/templates/Wizards/db2.php:141
 msgid "Afterwords you need to enable the monitoring switches:"
-msgstr ""
+msgstr "Anschließend müssen Sie die Überwachungsschalter aktivieren:"
 
 #: DB2Module/templates/Wizards/db2.php:147
 msgid "The nagios user (resp. the nagios group) is going to get the needed privileges and after a restart of the database, everything is prepared."
-msgstr ""
+msgstr "Der Nagios-Benutzer (bzw. die Nagios-Gruppe) bekommt die nötigen Privilegien und nach einem Neustart der Datenbank ist alles vorbereitet."
 
 #: DB2Module/templates/Wizards/db2.php:157
 msgid "Restart the DB2 server to apply the changes."
-msgstr ""
+msgstr "Starten Sie den DB2-Server erneut, um die Änderungen zu übernehmen."
 
 #: DB2Module/templates/Wizards/db2.php:168
 #: HANAModule/templates/Wizards/saphana.php:71
 #: MSSQLModule/templates/Wizards/mssql.php:61
 #: ORACLEModule/templates/Wizards/oracle.php:192
 msgid "Database user"
-msgstr ""
+msgstr "Datenbank Benutzer"
 
 #: DB2Module/templates/Wizards/db2.php:195
 msgid "DB2 Database services"
-msgstr ""
+msgstr "DB2-Datenbankservices"
 
 #: DB2Module/templates/Wizards/db2.php:198
 #: HANAModule/templates/Wizards/saphana.php:130
@@ -21963,7 +21963,7 @@ msgstr "Ereigniskorrelation Globals"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:59
 msgid "Out of range (0-15)"
-msgstr ""
+msgstr "Außerhalb des Bereichs (0-15)"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:66
 msgid "Supported options are \"naemon\", \"nagios\" or \"statusengine\""
@@ -21987,11 +21987,11 @@ msgstr "Monitoring System"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:113
 msgid "Use this status as status for disabled services in an event correlation"
-msgstr ""
+msgstr "Verwenden Sie diesen Status als Status für deaktivierte Dienste in einer Ereigniskorrelation"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:117
 msgid "If enabled, shows note if event correlation contains disabled services"
-msgstr ""
+msgstr "Falls aktiviert, wird ein Hinweis angezeigt, wenn die Ereigniskorrelation deaktivierte Dienste enthält"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:15
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:14
@@ -22059,19 +22059,19 @@ msgstr "Wenn Statusengine Event Broker oder Naemons Query Handler zum Übermitte
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:102
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:117
 msgid "Status for disabled service"
-msgstr ""
+msgstr "Status für deaktivierten Service"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:156
 msgid "This status will be used for disabled services."
-msgstr ""
+msgstr "Dieser Status wird für deaktivierte Services verwendet."
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:170
 msgid "Show note for disabled services"
-msgstr ""
+msgstr "Hinweis für deaktivierte Dienste anzeigen"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:175
 msgid "If enabled, shows note if event correlation contains disabled services."
-msgstr ""
+msgstr "Falls aktiviert, wird ein Hinweis angezeigt, wenn die Ereigniskorrelation deaktivierte Dienste enthält."
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:19
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:22
@@ -22123,12 +22123,12 @@ msgstr "Neuer virtueller Service"
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:99
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:114
 msgid "Event correlation includes disabled services!"
-msgstr ""
+msgstr "Ereigniskorrelation enthält deaktivierte Services!"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:120
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:136
 msgid "Go to \"Event Correlation Globals\""
-msgstr ""
+msgstr "Gehen Sie zu \"Globalen Ereigniskorrelation Einstellungen\""
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:132
 msgid "Event Correlation "
@@ -22310,35 +22310,35 @@ msgstr "Ereigniskorrelation:"
 
 #: HANAModule/templates/Wizards/saphana.php:19
 msgid "SAP HANA"
-msgstr ""
+msgstr "SAP HANA"
 
 #: HANAModule/templates/Wizards/saphana.php:28
 msgid "Configuration Wizard: SAP HANA Database"
-msgstr ""
+msgstr "Konfigurationsassistent: SAP HANA-Datenbank"
 
 #: HANAModule/templates/Wizards/saphana.php:49
 msgid "Configure SAP HANA System Database Monitoring"
-msgstr ""
+msgstr "Konfiguriere die Überwachung der SAP-HANA-Systemdatenbank"
 
 #: HANAModule/templates/Wizards/saphana.php:52
 msgid "Configure SAP HANA Tenant Database Monitoring"
-msgstr ""
+msgstr "Konfiguriere die Überwachung der SAP-HANA-Tenantdatenbank"
 
 #: HANAModule/templates/Wizards/saphana.php:96
 msgid "HANA System port"
-msgstr ""
+msgstr "HANA System Port"
 
 #: HANAModule/templates/Wizards/saphana.php:109
 msgid "HANA Tenant port"
-msgstr ""
+msgstr "HANA Tenant Port"
 
 #: HANAModule/templates/Wizards/saphana.php:124
 msgid "SAP HANA System Database services"
-msgstr ""
+msgstr "SAP HANA System Datenbank Services"
 
 #: HANAModule/templates/Wizards/saphana.php:127
 msgid "SAP HANA Tenant Database services"
-msgstr ""
+msgstr "SAP HANA Tenant Datenbank Services"
 
 #: HPSERVERHARDWAREModule/src/Form/HpServerHardwareForm.php:73
 #: NWCModule/src/Form/NetworkBasicForm.php:74
@@ -22350,11 +22350,11 @@ msgstr "Bitte wählen Sie mindestens einen Service oder ein Interface"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:29
 msgid "Configuration Wizard: HP Server"
-msgstr ""
+msgstr "Konfigurationsassistent: HP Server"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:43
 msgid "Configure SNMP for HP Server Hardware Monitoring"
-msgstr ""
+msgstr "Konfigurieren von SNMP für die HP Server-Hardwareüberwachung"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:56
 #: NWCModule/templates/Wizards/networkbasic.php:55
@@ -22491,7 +22491,7 @@ msgstr "Datenschutzpasswort"
 
 #: HPSERVERHARDWAREModule/templates/Wizards/hpserverhardware.php:192
 msgid "HP server hardware services"
-msgstr ""
+msgstr "HP Serverhardware Services"
 
 #: ImportModule/src/Command/ImportCommand.php:103
 msgid "Import ID"
@@ -22502,14 +22502,14 @@ msgstr "Import ID"
 #: ImportModule/templates/ExternalSystems/index.php:154
 #: ImportModule/templates/ImportedHosts/index.php:73
 msgid "ONLINE"
-msgstr ""
+msgstr "ONLINE"
 
 #: ImportModule/src/Command/ImportCommand.php:125
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:19
 #: ImportModule/templates/ExternalSystems/index.php:158
 #: ImportModule/templates/ImportedHosts/index.php:77
 msgid "OFFLINE"
-msgstr ""
+msgstr "OFFLINE"
 
 #: ImportModule/src/Command/ImportCommand.php:152
 msgid "Importer not found!"
@@ -22552,15 +22552,15 @@ msgstr "❗Fehler beim importieren der Hostdaten"
 
 #: ImportModule/src/Command/ImportCommand.php:366
 msgid "❗Error: {0}"
-msgstr ""
+msgstr "❗Fehler: {0}"
 
 #: ImportModule/src/Command/ImportCommand.php:371
 msgid "Generate preview for i-doit data - maximal 10 rows will be shown"
-msgstr ""
+msgstr "Vorschau für i-doit-Daten generieren - es werden maximal 10 Zeilen angezeigt"
 
 #: ImportModule/src/Command/ImportCommand.php:379
 msgid "⚠️  Connect to i-doit works, but the elements are empty. Data preview is not possible!"
-msgstr ""
+msgstr "⚠️ Verbindung mit i-doit funktioniert, aber es sind keine Ergebnisse vorhanden. Datenvorschau ist nicht möglich!"
 
 #: ImportModule/src/Command/ImportCommand.php:383
 #: ImportModule/templates/ImportedHosts/index.php:1063
@@ -22581,12 +22581,12 @@ msgstr "Software"
 
 #: ImportModule/src/Command/ImportCommand.php:427
 msgid "Import data from i-doit successfully finished!"
-msgstr ""
+msgstr "Datenimport aus i-doit erfolgreich abgeschlossen!"
 
 #: ImportModule/src/Controller/ExternalSystemsController.php:125
 #: ImportModule/src/Controller/ExternalSystemsController.php:185
 msgid "External system not found"
-msgstr ""
+msgstr "Externes System nicht gefunden"
 
 #: ImportModule/src/Controller/HostDefaultsController.php:105
 #: ImportModule/src/Controller/HostDefaultsController.php:155
@@ -22647,7 +22647,7 @@ msgstr "Fehler beim Importieren der Hostdaten"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:381
 msgid "Import data from i-doit system successfully finished"
-msgstr ""
+msgstr "Datenimport aus i-doit System erfolgreich abgeschlossen"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:858
 #: ImportModule/src/Controller/ImportedHostsController.php:997
@@ -22666,26 +22666,26 @@ msgstr "Fehler beim Löschen der hochgeladenen CSV-Datei."
 
 #: ImportModule/src/Controller/ImportedHostsController.php:1041
 msgid "Load data for preview successfully finished"
-msgstr ""
+msgstr "Laden der Daten für die Vorschau erfolgreich abgeschlossen"
 
 #: ImportModule/src/Controller/ImportedHostsController.php:1050
 msgid "Connection error: {0}!"
-msgstr ""
+msgstr "Verbindungsfehler: {0}!"
 
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:149
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:276
 msgid "i-doit system error: Invalid API key"
-msgstr ""
+msgstr "i-doit-Systemfehler: Ungültiger API-Schlüssel"
 
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:178
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:299
 msgid "No response from external system."
-msgstr ""
+msgstr "Keine Antwort vom externen System."
 
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:185
 #: ImportModule/src/Lib/APIConnectors/IDoitConnector.php:306
 msgid "Error while connecting to external system."
-msgstr ""
+msgstr "Fehler beim Verbinden mit dem externen System."
 
 #: ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:32
 #: ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:32
@@ -22770,7 +22770,7 @@ msgstr "Spaltennummer der CSV-Datei, die als Softwarezuweisung verwendet wird."
 
 #: ImportModule/src/Lib/ExternalSystemTypes.php:14
 msgid "i-doit System"
-msgstr ""
+msgstr "i-doit System"
 
 #: ImportModule/src/Lib/ImporterCsvParser.php:199
 #: ImportModule/src/Lib/ImporterCsvParser.php:298
@@ -22815,7 +22815,7 @@ msgstr "CSV ohne Header"
 
 #: ImportModule/src/Lib/ImporterIdoitDataParser.php:164
 msgid "Connect to i-doit works, but the elements are empty. Data preview is not possible."
-msgstr ""
+msgstr "Die Verbindung zu i-doit funktioniert, aber es sind keine Ergebnisse vorhanden. Datenvorschau ist nicht möglich."
 
 #: ImportModule/src/Lib/Menu.php:25
 msgid "Object Import"
@@ -22850,7 +22850,7 @@ msgstr "Importierte Dateien"
 #: ImportModule/templates/ExternalSystems/edit.php:23
 #: ImportModule/templates/ExternalSystems/index.php:30
 msgid "External Systems"
-msgstr ""
+msgstr "Externe Systeme"
 
 #: ImportModule/src/Model/Table/ImportedHostsTable.php:534
 msgid "Host template missing"
@@ -22867,7 +22867,7 @@ msgstr "Keine Servicevorlagengruppen definiert"
 
 #: ImportModule/src/Model/Table/ImportersTable.php:127
 msgid "External system can not be blank if data source is i-doit."
-msgstr ""
+msgstr "Das Feld \"Externes System\" darf nicht leer sein, wenn die Datenquelle i-doit ist."
 
 #: ImportModule/templates/ExternalSystems/add.php:20
 #: ImportModule/templates/ExternalSystems/edit.php:19
@@ -22887,12 +22887,12 @@ msgstr "Import-Modul"
 
 #: ImportModule/templates/ExternalSystems/add.php:28
 msgid "Add external system"
-msgstr ""
+msgstr "Externes System hinzufügen"
 
 #: ImportModule/templates/ExternalSystems/add.php:38
 #: ImportModule/templates/ExternalSystems/edit.php:37
 msgid "Create new external system"
-msgstr ""
+msgstr "Neues externes System erstellen"
 
 #: ImportModule/templates/ExternalSystems/add.php:53
 #: ImportModule/templates/ExternalSystems/edit.php:52
@@ -22903,7 +22903,7 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:134
 #: ImportModule/templates/Importers/edit.php:137
 msgid "External system"
-msgstr ""
+msgstr "Externes System"
 
 #: ImportModule/templates/ExternalSystems/add.php:99
 #: ImportModule/templates/ExternalSystems/edit.php:97
@@ -22915,182 +22915,182 @@ msgstr "Datenquelle"
 #: ImportModule/templates/ExternalSystems/add.php:111
 #: ImportModule/templates/ExternalSystems/edit.php:109
 msgid "i-doit enables external access to the IT documentation via an application programming interface (API)"
-msgstr ""
+msgstr "i-doit ermöglicht externen Zugriff auf die IT-Dokumentation über eine Anwendungsprogrammierschnittstelle (API)"
 
 #: ImportModule/templates/ExternalSystems/add.php:121
 #: ImportModule/templates/ExternalSystems/edit.php:119
 msgid "Connection settings"
-msgstr ""
+msgstr "Verbindungseinstellungen"
 
 #: ImportModule/templates/ExternalSystems/add.php:124
 #: ImportModule/templates/ExternalSystems/edit.php:122
 msgid "Predefined connection settings are used to load additional information dynamically"
-msgstr ""
+msgstr "Vordefinierte Verbindungseinstellungen werden verwendet, um zusätzliche Informationen dynamisch zu laden"
 
 #: ImportModule/templates/ExternalSystems/add.php:250
 #: ImportModule/templates/ExternalSystems/edit.php:248
 msgid "Object type settings"
-msgstr ""
+msgstr "Objekttypeinstellungen"
 
 #: ImportModule/templates/ExternalSystems/add.php:253
 #: ImportModule/templates/ExternalSystems/edit.php:251
 msgid "Please select all object types you want to import or leave them blank to include all available object types."
-msgstr ""
+msgstr "Bitte wählen Sie alle Objekttypen aus, die Sie importieren möchten, oder lassen Sie sie leer, um alle verfügbaren Objekttypen einzuschließen."
 
 #: ImportModule/templates/ExternalSystems/add.php:268
 #: ImportModule/templates/ExternalSystems/edit.php:266
 msgid "Load i-doit object types for import"
-msgstr ""
+msgstr "i-doit-Objekttypen für den Import laden"
 
 #: ImportModule/templates/ExternalSystems/add.php:271
 #: ImportModule/templates/ExternalSystems/edit.php:269
 msgid "Selecting the object types can take some time if the number of config items is too large."
-msgstr ""
+msgstr "Die Auswahl der Objekttypen kann einige Zeit in Anspruch nehmen, wenn die Anzahl der Konfigurationselemente zu groß ist."
 
 #: ImportModule/templates/ExternalSystems/add.php:280
 #: ImportModule/templates/ExternalSystems/edit.php:278
 msgid "Check External System Connection and load available object types"
-msgstr ""
+msgstr "Externe Systemverbindung prüfen und verfügbare Objekttypen laden"
 
 #: ImportModule/templates/ExternalSystems/add.php:290
 #: ImportModule/templates/ExternalSystems/edit.php:288
 msgid "Detected object types"
-msgstr ""
+msgstr "Erkannte Objekttypen"
 
 #: ImportModule/templates/ExternalSystems/add.php:299
 #: ImportModule/templates/ExternalSystems/edit.php:295
 msgid "Object types"
-msgstr ""
+msgstr "Objekttypen"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:12
 msgid "i-doit overview"
-msgstr ""
+msgstr "i-doit-Übersicht"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:41
 msgid "Model"
-msgstr ""
+msgstr "Modell"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:56
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:222
 msgid "Archived"
-msgstr ""
+msgstr "Archiviert"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:66
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:194
 msgid "Sysid"
-msgstr ""
+msgstr "Sysid"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:78
 msgid "Location path"
-msgstr ""
+msgstr "Standortpfad"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:108
 msgid "CMDB Status"
-msgstr ""
+msgstr "CMDB Status"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:114
 msgid "Applications"
-msgstr ""
+msgstr "Anwendungen"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:146
 msgid "Updated"
-msgstr ""
+msgstr "Aktualisiert"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:157
 msgid "Hardware Details"
-msgstr ""
+msgstr "Hardware-Details"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:160
 msgid "Memory"
-msgstr ""
+msgstr "Speicher"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:175
 msgid "CPU"
-msgstr ""
+msgstr "CPU"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:189
 msgid "Contract overview"
-msgstr ""
+msgstr "Vertragsübersicht"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:200
 msgid "Contract period"
-msgstr ""
+msgstr "Vertragslaufzeit"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:211
 msgid "until"
-msgstr ""
+msgstr "bis"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:232
 msgid "Product"
-msgstr ""
+msgstr "Produkt"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:238
 msgid "Reaction rate"
-msgstr ""
+msgstr "Reaktionsrate"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:257
 msgid "Costs"
-msgstr ""
+msgstr "Kosten"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:271
 msgid "Payment period"
-msgstr ""
+msgstr "Zahlungsfrist"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:279
 msgid "CMDB Status "
-msgstr ""
+msgstr "CMDB Status "
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:285
 msgid "Cost calculation"
-msgstr ""
+msgstr "Kostenkalkulation"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:307
 msgid "Accounting"
-msgstr ""
+msgstr "Buchhaltung"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:312
 msgid "Inventory number"
-msgstr ""
+msgstr "Inventarnummer"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:318
 msgid "Acquirement date"
-msgstr ""
+msgstr "Erwerbsdatum"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:327
 msgid "Invoice number"
-msgstr ""
+msgstr "Rechnungsnummer"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:333
 msgid "Order number"
-msgstr ""
+msgstr "Bestellnummer"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:341
 msgid "Guarantee period"
-msgstr ""
+msgstr "Garantiezeit"
 
 #: ImportModule/templates/ExternalSystems/additional_host_information.php:348
 msgid "Guarantee period status / Guarantee period base"
-msgstr ""
+msgstr "Status der Garantiezeit / Basis der Garantiezeit"
 
 #: ImportModule/templates/ExternalSystems/edit.php:27
 msgid "Edit external system"
-msgstr ""
+msgstr "Externes System bearbeiten"
 
 #: ImportModule/templates/ExternalSystems/index.php:18
 msgid "External Systems Overview"
-msgstr ""
+msgstr "Übersicht über externe Systeme"
 
 #: ImportModule/templates/ExternalSystems/index.php:66
 msgid "Filter by system name"
-msgstr ""
+msgstr "Nach Systemname filtern"
 
 #: ImportModule/templates/ExternalSystems/index.php:79
 msgid "Filter by system description"
-msgstr ""
+msgstr "Nach Systembeschreibung filtern"
 
 #: ImportModule/templates/ExternalSystems/index.php:118
 msgid "Connectivity"
-msgstr ""
+msgstr "Konnektivität"
 
 #: ImportModule/templates/HostDefaults/add.php:23
 #: ImportModule/templates/HostDefaults/add.php:71
@@ -23437,7 +23437,7 @@ msgstr "CSV-Datei mit Header importiere"
 
 #: ImportModule/templates/ImportedHosts/index.php:635
 msgid "Import CSV File without header"
-msgstr ""
+msgstr "CSV-Datei ohne Header importieren"
 
 #: ImportModule/templates/ImportedHosts/index.php:648
 #: ImportModule/templates/ImportedHosts/index.php:917
@@ -23486,15 +23486,15 @@ msgstr "Starte Datenimport"
 
 #: ImportModule/templates/ImportedHosts/index.php:904
 msgid "Import data from i-doit system"
-msgstr ""
+msgstr "Daten aus dem i-doit-System importieren"
 
 #: ImportModule/templates/ImportedHosts/index.php:1037
 msgid "i-doit Data preview"
-msgstr ""
+msgstr "i-doit Datenvorschau"
 
 #: ImportModule/templates/ImportedHosts/index.php:1054
 msgid "This preview shows maximal 10 first valid records from i-doit system."
-msgstr ""
+msgstr "Diese Vorschau zeigt maximal 10 erste gültige Datensätze aus dem i-doit-System."
 
 #: ImportModule/templates/Importers/add.php:26
 msgid "Add importer"
@@ -23527,7 +23527,7 @@ msgstr "Daten aus JSON-Dateien importieren"
 #: ImportModule/templates/Importers/add.php:148
 #: ImportModule/templates/Importers/edit.php:150
 msgid "Use external system for showing additional host information"
-msgstr ""
+msgstr "Externes System verwenden, um zusätzliche Host-Informationen anzuzeigen"
 
 #: ImportModule/templates/Importers/add.php:164
 #: ImportModule/templates/Importers/edit.php:166
@@ -23557,27 +23557,27 @@ msgstr "Drücken Sie die Eingabetaste, um zu trennen"
 #: ImportModule/templates/Importers/add.php:357
 #: ImportModule/templates/Importers/edit.php:357
 msgid "Define global filter for import (optional)"
-msgstr ""
+msgstr "Globalen Filter für den Import definieren (optional)"
 
 #: ImportModule/templates/Importers/add.php:370
 #: ImportModule/templates/Importers/edit.php:370
 msgid "Hostname RegEx defined!"
-msgstr ""
+msgstr "Hostname RegEx definiert!"
 
 #: ImportModule/templates/Importers/add.php:371
 #: ImportModule/templates/Importers/edit.php:371
 msgid "The regular expression will be applied to all objects. Leave this field blank if you do not want to apply a filter by hostname."
-msgstr ""
+msgstr "Der reguläre Ausdruck wird auf alle Objekte angewendet. Lassen Sie dieses Feld leer, wenn Sie keinen Filter nach Hostnamen anwenden möchten."
 
 #: ImportModule/templates/Importers/add.php:378
 #: ImportModule/templates/Importers/edit.php:378
 msgid "Hostname RegEx"
-msgstr ""
+msgstr "Hostname RegEx"
 
 #: ImportModule/templates/Importers/add.php:384
 #: ImportModule/templates/Importers/edit.php:384
 msgid "The defined regular expression get applied to all imported hosts."
-msgstr ""
+msgstr "Der definierte reguläre Ausdruck wird auf alle importierten Hosts angewendet."
 
 #: ImportModule/templates/Importers/add.php:401
 #: ImportModule/templates/Importers/edit.php:399
@@ -23680,19 +23680,19 @@ msgstr "Filtern nach Importerbeschreibung"
 
 #: MSSQLModule/templates/Wizards/mssql.php:19
 msgid "Microsoft SQL Server"
-msgstr ""
+msgstr "Microsoft SQL Server"
 
 #: MSSQLModule/templates/Wizards/mssql.php:28
 msgid "Configuration Wizard: MSSQL Database"
-msgstr ""
+msgstr "Konfigurationsassistent: MSSQL-Datenbank"
 
 #: MSSQLModule/templates/Wizards/mssql.php:42
 msgid "Configure MSSQL Monitoring"
-msgstr ""
+msgstr "Konfigurieren Sie die MSSQL-Überwachung"
 
 #: MSSQLModule/templates/Wizards/mssql.php:88
 msgid "MSSQL Database services"
-msgstr ""
+msgstr "MSSQL-Datenbank Services"
 
 #: NWCModule/src/Controller/WizardsController.php:235
 msgid "SNMP discovery is not possible. Please check your SNMP credentials"
@@ -23746,39 +23746,39 @@ msgstr "Starte SNMP Schnittstellen Erkennung"
 
 #: ORACLEModule/templates/Wizards/oracle.php:28
 msgid "Configuration Wizard: Oracle Database"
-msgstr ""
+msgstr "Konfigurationsassistent: Oracle-Datenbank"
 
 #: ORACLEModule/templates/Wizards/oracle.php:42
 msgid "Configure Oracle Monitoring"
-msgstr ""
+msgstr "Oracle-Überwachung konfigurieren"
 
 #: ORACLEModule/templates/Wizards/oracle.php:66
 msgid "Oracle configuration help"
-msgstr ""
+msgstr "Hilfe zur Oracle-Konfiguration"
 
 #: ORACLEModule/templates/Wizards/oracle.php:108
 msgid "Extract files"
-msgstr ""
+msgstr "Dateien extrahieren"
 
 #: ORACLEModule/templates/Wizards/oracle.php:145
 msgid "Environment Variables"
-msgstr ""
+msgstr "Umgebungsvariablen"
 
 #: ORACLEModule/templates/Wizards/oracle.php:147
 msgid "Add to following to {0}"
-msgstr ""
+msgstr "Zu den folgenden hinzufügen {0}"
 
 #: ORACLEModule/templates/Wizards/oracle.php:156
 msgid "Perl Module"
-msgstr ""
+msgstr "Perl-Modul"
 
 #: ORACLEModule/templates/Wizards/oracle.php:166
 msgid "Create User within Database"
-msgstr ""
+msgstr "Benutzer in der Datenbank erstellen"
 
 #: ORACLEModule/templates/Wizards/oracle.php:219
 msgid "Oracle Database services"
-msgstr ""
+msgstr "Oracle-Datenbank Services"
 
 #: OpenstreetmapModule/src/Controller/OpenstreetmapController.php:183
 msgid "Reset map"
@@ -23909,11 +23909,11 @@ msgstr "Markiere Wartungszeiten und Bestätigungen"
 
 #: PRINTERModule/templates/Wizards/printer.php:43
 msgid "Configure SNMP for Printer Monitoring"
-msgstr ""
+msgstr "SNMP für die Druckerüberwachung konfigurieren"
 
 #: PRINTERModule/templates/Wizards/printer.php:192
 msgid "Printer services"
-msgstr ""
+msgstr "Drucker Services"
 
 #: PagerdutyModule/src/Controller/AcknowledgeController.php:51
 msgid "Wrong incident type"
@@ -24658,43 +24658,43 @@ msgstr "Windows-Speichernutzung in Prozent"
 
 #: SAPModule/templates/Wizards/sap.php:28
 msgid "Configuration Wizard: SAP"
-msgstr ""
+msgstr "Konfigurationsassistent: SAP"
 
 #: SAPModule/templates/Wizards/sap.php:42
 msgid "Configure SAP Monitoring"
-msgstr ""
+msgstr "SAP-Monitoring konfigurieren"
 
 #: SAPModule/templates/Wizards/sap.php:55
 msgid "SAP Server Settings"
-msgstr ""
+msgstr "SAP-Servereinstellungen"
 
 #: SAPModule/templates/Wizards/sap.php:60
 msgid "SAP System Instance Numbers"
-msgstr ""
+msgstr "SAP-Systeminstanznummern"
 
 #: SAPModule/templates/Wizards/sap.php:72
 msgid "Client"
-msgstr ""
+msgstr "Klient"
 
 #: SAPModule/templates/Wizards/sap.php:84
 msgid "RFC User"
-msgstr ""
+msgstr "RFC-Benutzer"
 
 #: SAPModule/templates/Wizards/sap.php:96
 msgid "RFC Password"
-msgstr ""
+msgstr "RFC-Passwort"
 
 #: SAPModule/templates/Wizards/sap.php:108
 msgid "SID"
-msgstr ""
+msgstr "SID"
 
 #: SAPModule/templates/Wizards/sap.php:120
 msgid "MSGROUP"
-msgstr ""
+msgstr "MSGROUP"
 
 #: SAPModule/templates/Wizards/sap.php:131
 msgid "SAP services"
-msgstr ""
+msgstr "SAP Services"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:9
 #: ServicenowModule/templates/Elements/service_configuration.php:9
@@ -25043,43 +25043,43 @@ msgstr "IDs ersetzen"
 
 #: UPSModule/templates/Wizards/ups.php:20
 msgid "UPS"
-msgstr ""
+msgstr "USV"
 
 #: UPSModule/templates/Wizards/ups.php:43
 msgid "Configure SNMP for UPS Monitoring"
-msgstr ""
+msgstr "SNMP für die USV-Überwachung konfigurieren"
 
 #: UPSModule/templates/Wizards/ups.php:192
 msgid "UPS services"
-msgstr ""
+msgstr "USV Services"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:29
 msgid "Configuration Wizard: VMWare Horizon"
-msgstr ""
+msgstr "Konfigurationsassistent: VMWare Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:52
 msgid "VMWare Horizon Connection Server"
-msgstr ""
+msgstr "VMware Horizon-Verbindungsserver"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:62
 msgid "VMWare Horizon configuration help"
-msgstr ""
+msgstr "VMWare Horizon-Konfigurationshilfe"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:79
 msgid "Please create a User within the Connection-Center with Administrator permission on {0}. Because only these Users will have permission to connect to the REST API."
-msgstr ""
+msgstr "Bitte erstellen Sie im Connection-Center auf {0} einen Benutzer mit Administratorrechten. Denn nur diese Benutzer haben die Berechtigung, sich mit der REST-API zu verbinden."
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:85
 msgid "Please ensure to have a recent API version installed, because not all functions are included within old versions."
-msgstr ""
+msgstr "Bitte stellen Sie sicher, dass eine aktuelle API-Version installiert ist, da nicht alle Funktionen in alten Versionen enthalten sind."
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:121
 msgid "Domain"
-msgstr ""
+msgstr "Domäne"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:135
 msgid "VMWare Horizon services"
-msgstr ""
+msgstr "VMWare Horizon Services"
 
 #: VMWAREModule/src/Lib/Wizards.php:39
 #: VMWAREModule/src/Lib/Wizards.php:50
@@ -25089,49 +25089,48 @@ msgstr "Überprüfen Sie alles in Bezug auf VMWare. ESX-Hosts, vCenter, virtuell
 #: VMWAREModule/templates/Wizards/vmware.php:38
 #: VMWAREModule/templates/Wizards/vmware.php:65
 msgid "VMWare"
-msgstr ""
+msgstr "VMWare"
 
 #: VMWAREModule/templates/Wizards/vmware.php:47
 msgid "Configuration Wizard: VMWare Server"
-msgstr ""
+msgstr "Konfigurationsassistent: VMWare Server"
 
 #: VMWAREModule/templates/Wizards/vmware.php:49
 msgid "through vCenter"
-msgstr ""
+msgstr "über vCenter"
 
 #: VMWAREModule/templates/Wizards/vmware.php:52
 msgid "esx directly"
-msgstr ""
+msgstr "direkt mit esx"
 
 #: VMWAREModule/templates/Wizards/vmware.php:76
 msgid "VMWare Server"
-msgstr ""
+msgstr "VMWare Server"
 
 #: VMWAREModule/templates/Wizards/vmware.php:87
 msgid "VMWare configuration help"
-msgstr ""
+msgstr "Hilfe zur VMware-Konfiguration"
 
 #: VMWAREModule/templates/Wizards/vmware.php:100
 msgid "Check everything regarding VMWare. ESX Hosts, vCenter, virtual machine"
-msgstr ""
+msgstr "Überprüfen Sie alles in Bezug auf VMWare. ESX-Hosts, vCenter, virtuelle Maschinen"
 
 #: VMWAREModule/templates/Wizards/vmware.php:104
 msgid "Download the VMware Perl SDK"
-msgstr ""
+msgstr "Laden Sie das VMware Perl-SDK herunter"
 
 #: VMWAREModule/templates/Wizards/vmware.php:107
 msgid "here."
-msgstr ""
+msgstr "hier."
 
 #: VMWAREModule/templates/Wizards/vmware.php:113
 msgid "Add an read-only user to your vCenter host."
-msgstr ""
+msgstr "Fügen Sie Ihrem vCenter-Host einen schreibgeschützten Benutzer hinzu."
 
 #: VMWAREModule/templates/Wizards/vmware.php:124
 msgid "vCenter Address"
-msgstr ""
+msgstr "vCenter-Adresse"
 
 #: VMWAREModule/templates/Wizards/vmware.php:166
 msgid "VMWare services"
-msgstr ""
-
+msgstr "VMWare Services"
