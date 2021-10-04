@@ -4361,4 +4361,32 @@ class HostsTable extends Table {
 
         return $result->toArray();
     }
+
+    /**
+     * @param string $hostUuid
+     * @return Host|null
+     */
+    public function getHostForRescheduling(string $hostUuid) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.hosttemplate_id',
+                'Hosts.active_checks_enabled',
+            ])
+            ->where([
+                'Hosts.uuid' => $hostUuid
+            ])
+            ->contain([
+                'Hosttemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Hosttemplates.id',
+                            'Hosttemplates.active_checks_enabled',
+                        ]);
+                    return $query;
+                }
+            ]);
+        return $query->first();
+    }
 }

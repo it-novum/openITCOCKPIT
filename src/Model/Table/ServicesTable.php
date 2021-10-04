@@ -20,7 +20,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -4395,5 +4394,66 @@ class ServicesTable extends Table {
         }
 
         return $result->toArray();
+    }
+
+    /**
+     * @param string $hostUuid
+     * @return array[Service]
+     */
+    public function getServicesForRescheduling(string $hostUuid) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.servicetemplate_id',
+                'Services.active_checks_enabled',
+            ])
+            ->innerJoinWith('Hosts', function (Query $query) use ($hostUuid) {
+                $query->where([
+                    'Hosts.uuid' => $hostUuid
+                ]);
+                return $query;
+            })
+            ->contain([
+                'Servicetemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Servicetemplates.id',
+                            'Servicetemplates.active_checks_enabled',
+                        ]);
+                    return $query;
+                }
+            ]);
+        $query->all();
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param string $serviceUuid
+     * @return Service|null
+     */
+    public function getServiceForRescheduling(string $serviceUuid) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.servicetemplate_id',
+                'Services.active_checks_enabled',
+            ])
+            ->where([
+                'Services.uuid' => $serviceUuid
+            ])
+            ->contain([
+                'Servicetemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Servicetemplates.id',
+                            'Servicetemplates.active_checks_enabled',
+                        ]);
+                    return $query;
+                }
+            ]);
+        return $query->first();
     }
 }
