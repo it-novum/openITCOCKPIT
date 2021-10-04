@@ -59,7 +59,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
 use ImportModule\Model\Table\ImportedHostsTable;
-use ImportModule\Model\Table\ImportersTable;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
@@ -923,7 +922,6 @@ class HostsController extends AppController {
             //Only ship HTML Template
             return;
         }
-
         $User = new User($this->getUser());
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -945,16 +943,32 @@ class HostsController extends AppController {
             //get sharing containers
             $sharingContainers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 
+            $satellites = [];
+            if (Plugin::isLoaded('DistributeModule')) {
+                /** @var SystemsettingsTable $SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+                /** @var $SatellitesTable SatellitesTable */
+                $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+                $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+                $satellites[0] = $masterInstanceName;
+            }
+            $satellites = Api::makeItJavaScriptAble($satellites);
+
             $this->set('hosts', $hosts);
             $this->set('contacts', Api::makeItJavaScriptAble($contacts));
             $this->set('contactgroups', Api::makeItJavaScriptAble($contactgroups));
+            $this->set('satellites', $satellites);
 
             $this->set('sharingContainers', Api::makeItJavaScriptAble($sharingContainers));
             $this->viewBuilder()->setOption('serialize', [
                     'hosts',
                     'contacts',
                     'contactgroups',
-                    'sharingContainers'
+                    'sharingContainers',
+                    'satellites'
                 ]
             );
             return;
@@ -963,13 +977,16 @@ class HostsController extends AppController {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
+        /** @var HosttemplatesTable $HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
         if ($this->request->is('post') || $this->request->is('put')) {
             $hostIds = $this->request->getData('data.hosts', []);
             $detailsToEdit = $this->request->getData('data.details', []);
             foreach ($hostIds as $hostId) {
                 $dataToSave = [];
                 $sharedContainers = [];
-                $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
+                $hostObject = $HostsTable->getHostByIdForEditDetails($hostId);
                 $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
                 $containerIdsForChangelog = [];
                 $primaryContainerId = $hostObject->get('container_id');
@@ -991,7 +1008,9 @@ class HostsController extends AppController {
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
                     $hostData = $hostObject->toArray();
-                    $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hostObject->get('hosttemplate'));
+                    $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']);
+                    $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hosttemplate);
+
                     $mergedHost = $HostMergerForView->getDataForView();
                     $mergedHost['Host']['contacts'] = $hostData['contacts'];
                     $mergedHost['Host']['contactgroups'] = $hostData['contactgroups'];
@@ -1176,6 +1195,14 @@ class HostsController extends AppController {
                         $newNotes = $detailsToEdit['Host']['notes'];
                         if (!empty($newNotes) && $newNotes != $mergedHost['Host']['notes']) {
                             $dataToSave['notes'] = $newNotes;
+                        }
+                    }
+                    if ($detailsToEdit['editSatellites'] == 1) {
+                        if ($mergedHost['Host']['host_type'] !== EVK_HOST) {
+                            $newSatelliteId = $detailsToEdit['Host']['satellite_id'];
+                            if (is_numeric($newSatelliteId) && $newSatelliteId != $mergedHost['Host']['satellite_id']) {
+                                $dataToSave['satellite_id'] = $newSatelliteId;
+                            }
                         }
                     }
 
