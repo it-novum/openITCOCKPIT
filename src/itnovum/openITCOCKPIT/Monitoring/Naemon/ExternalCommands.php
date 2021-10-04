@@ -15,7 +15,6 @@ use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
 
@@ -47,33 +46,60 @@ class ExternalCommands {
             $timestamp = time();
         }
 
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $host = $HostsTable->getHostForRescheduling($options['uuid']);
+
+        if (empty($host)) {
+            // Host not found
+            return;
+        }
+
         if ($options['type'] == 'hostOnly') {
             //SCHEDULE_FORCED_HOST_CHECK
-            $payload = [
-                'Command' => 'schedule_check',
-                'Data'    => [
-                    'host_name'     => $options['uuid'],
-                    'schedule_time' => $timestamp
-                ]
-            ];
-            $this->toQueue($payload, $options['satellite_id']);
+            // ITC-2525
+            if ($host->getValueOf('active_checks_enabled')) {
+                $payload = [
+                    'Command' => 'schedule_check',
+                    'Data'    => [
+                        'host_name'     => $options['uuid'],
+                        'schedule_time' => $timestamp
+                    ]
+                ];
+                $this->toQueue($payload, $options['satellite_id']);
+            }
         } else {
             //SCHEDULE_FORCED_HOST_CHECK
-            $payload = [
-                'Command' => 'schedule_check',
-                'Data'    => [
-                    'host_name'     => $options['uuid'],
-                    'schedule_time' => $timestamp
-                ]
-            ];
-            $this->toQueue($payload, $options['satellite_id']);
+            // ITC-2525
+            if ($host->getValueOf('active_checks_enabled')) {
+                $payload = [
+                    'Command' => 'schedule_check',
+                    'Data'    => [
+                        'host_name'     => $options['uuid'],
+                        'schedule_time' => $timestamp
+                    ]
+                ];
+                $this->toQueue($payload, $options['satellite_id']);
+            }
 
             //SCHEDULE_FORCED_HOST_SVC_CHECKS
-            $payload = [
-                'Command' => 'raw',
-                'Data'    => sprintf('SCHEDULE_FORCED_HOST_SVC_CHECKS;%s;%s', $options['uuid'], $timestamp)
-            ];
-            $this->toQueue($payload, $options['satellite_id']);
+            // ITC-2525
+            // The issue with SCHEDULE_FORCED_HOST_SVC_CHECKS is, that it will also reschedule passive services
+            // this will lead to unknown service status
+
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $services = $ServicesTable->getServicesForRescheduling($options['uuid']);
+            foreach ($services as $service) {
+                /** @var Service $service */
+                if ($service->getValueOf('active_checks_enabled')) {
+                    $payload = [
+                        'Command' => 'raw',
+                        'Data'    => sprintf('SCHEDULE_FORCED_SVC_CHECK;%s;%s;%s', $options['uuid'], $service->get('uuid'), $timestamp)
+                    ];
+                    $this->toQueue($payload, $options['satellite_id']);
+                }
+            }
         }
 
     }
@@ -328,15 +354,26 @@ class ExternalCommands {
         }
 
         //SCHEDULE_FORCED_SVC_CHECK
-        $payload = [
-            'Command' => 'schedule_check',
-            'Data'    => [
-                'host_name'           => $options['hostUuid'],
-                'service_description' => $options['serviceUuid'],
-                'schedule_time'       => $timestamp,
-            ]
-        ];
-        $this->toQueue($payload, $options['satellite_id']);
+        // ITC-2525
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $service = $ServicesTable->getServiceForRescheduling($options['serviceUuid']);
+        if (empty($service)) {
+            // Service not found
+            return;
+        }
+
+        if ($service->getValueOf('active_checks_enabled')) {
+            $payload = [
+                'Command' => 'schedule_check',
+                'Data'    => [
+                    'host_name'           => $options['hostUuid'],
+                    'service_description' => $options['serviceUuid'],
+                    'schedule_time'       => $timestamp,
+                ]
+            ];
+            $this->toQueue($payload, $options['satellite_id']);
+        }
     }
 
     /**
@@ -1250,36 +1287,67 @@ class ExternalCommands {
 
             //Execute commands on the Master or the Satellite System
             case 'SCHEDULE_FORCED_HOST_CHECK':
-                $payload = [
-                    'Command' => 'schedule_check',
-                    'Data'    => [
-                        'host_name'     => $command['parameters']['hostUuid'],
-                        'schedule_time' => $command['parameters']['check_time'] ?? time()
-                    ]
-                ];
-                $this->toQueue($payload, $satelliteId);
+
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $host = $HostsTable->getHostForRescheduling($command['parameters']['hostUuid']);
+                if (empty($host)) {
+                    //Host not found
+                    break;
+                }
+
+                if ($host->getValueOf('active_checks_enabled')) {
+                    $payload = [
+                        'Command' => 'schedule_check',
+                        'Data'    => [
+                            'host_name'     => $command['parameters']['hostUuid'],
+                            'schedule_time' => $command['parameters']['check_time'] ?? time()
+                        ]
+                    ];
+                    $this->toQueue($payload, $satelliteId);
+                }
                 break;
 
             //Execute commands on the Master or the Satellite System
             case 'SCHEDULE_FORCED_SVC_CHECK':
-                $payload = [
-                    'Command' => 'schedule_check',
-                    'Data'    => [
-                        'host_name'           => $command['parameters']['hostUuid'],
-                        'service_description' => $command['parameters']['serviceUuid'],
-                        'schedule_time'       => $command['parameters']['check_time'] ?? time()
-                    ]
-                ];
-                $this->toQueue($payload, $satelliteId);
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $service = $ServicesTable->getServiceForRescheduling($command['parameters']['serviceUuid']);
+                if (empty($service)) {
+                    // Service not found
+                    break;
+                }
+
+                if ($service->getValueOf('active_checks_enabled')) {
+                    $payload = [
+                        'Command' => 'schedule_check',
+                        'Data'    => [
+                            'host_name'           => $command['parameters']['hostUuid'],
+                            'service_description' => $command['parameters']['serviceUuid'],
+                            'schedule_time'       => $command['parameters']['check_time'] ?? time()
+                        ]
+                    ];
+                    $this->toQueue($payload, $satelliteId);
+                }
                 break;
 
             //Execute commands on the Master or the Satellite System
             case 'SCHEDULE_FORCED_HOST_SVC_CHECKS':
-                $payload = [
-                    'Command' => 'raw',
-                    'Data'    => sprintf('SCHEDULE_FORCED_HOST_SVC_CHECKS;%s;%s', $command['parameters']['hostUuid'], $command['parameters']['check_time'])
-                ];
-                $this->toQueue($payload, $satelliteId);
+                $checktime = $command['parameters']['check_time'] ?? time();
+
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $services = $ServicesTable->getServicesForRescheduling($command['parameters']['hostUuid']);
+                foreach ($services as $service) {
+                    /** @var Service $service */
+                    if ($service->getValueOf('active_checks_enabled')) {
+                        $payload = [
+                            'Command' => 'raw',
+                            'Data'    => sprintf('SCHEDULE_FORCED_SVC_CHECK;%s;%s;%s', $command['parameters']['hostUuid'], $service->get('uuid'), $checktime)
+                        ];
+                        $this->toQueue($payload, $satelliteId);
+                    }
+                }
 
                 break;
 

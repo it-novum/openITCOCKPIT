@@ -390,4 +390,18 @@ class Service extends Entity {
         return $usedBy;
     }
 
+    /**
+     * @param string $field
+     * @return mixed
+     */
+    public function getValueOf(string $field) {
+        if ($this->{$field} !== null && $this->{$field} !== '') {
+            // Use the value of the Service
+            return $this->{$field};
+        }
+
+        // Use the value of the servicetemplate
+        return $this->servicetemplate->{$field};
+    }
+
 }
