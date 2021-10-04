@@ -432,7 +432,7 @@
                                 </label>
                                 <input
                                     id="HostDetailURL"
-                                    ng-class="{ 'not-edit-area': !post.editDescription}"
+                                    ng-class="{ 'not-edit-area': !post.editHostUrl}"
                                     class="form-control"
                                     placeholder="https://issues.example.org?host=$HOSTNAME$"
                                     ng-disabled="!post.editHostUrl"

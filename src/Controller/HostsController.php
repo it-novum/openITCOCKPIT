@@ -66,7 +66,6 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -923,7 +922,6 @@ class HostsController extends AppController {
             //Only ship HTML Template
             return;
         }
-
         $User = new User($this->getUser());
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -979,13 +977,16 @@ class HostsController extends AppController {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
+        /** @var HosttemplatesTable $HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
         if ($this->request->is('post') || $this->request->is('put')) {
             $hostIds = $this->request->getData('data.hosts', []);
             $detailsToEdit = $this->request->getData('data.details', []);
             foreach ($hostIds as $hostId) {
                 $dataToSave = [];
                 $sharedContainers = [];
-                $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
+                $hostObject = $HostsTable->getHostByIdForEditDetails($hostId);
                 $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
                 $containerIdsForChangelog = [];
                 $primaryContainerId = $hostObject->get('container_id');
@@ -1007,7 +1008,9 @@ class HostsController extends AppController {
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
                     $hostData = $hostObject->toArray();
-                    $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hostObject->get('hosttemplate'));
+                    $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']);
+                    $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hosttemplate);
+
                     $mergedHost = $HostMergerForView->getDataForView();
                     $mergedHost['Host']['contacts'] = $hostData['contacts'];
                     $mergedHost['Host']['contactgroups'] = $hostData['contactgroups'];
@@ -1194,7 +1197,6 @@ class HostsController extends AppController {
                             $dataToSave['notes'] = $newNotes;
                         }
                     }
-
                     if ($detailsToEdit['editSatellites'] == 1) {
                         if ($mergedHost['Host']['host_type'] !== EVK_HOST) {
                             $newSatelliteId = $detailsToEdit['Host']['satellite_id'];
