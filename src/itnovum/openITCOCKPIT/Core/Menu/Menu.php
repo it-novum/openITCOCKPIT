@@ -685,14 +685,24 @@ class Menu {
                     3
                 ))
                 ->addLink(new MenuLink(
-                    __('Report an issue'),
+                    __('Support'),
                     'SupportsIssue',
                     'supports',
                     'issue',
                     '',
-                    'fa fa-bug',
+                    'fa fa-life-ring',
                     [],
                     4
+                ))
+                ->addLink(new MenuLink(
+                    __('Documentation'),
+                    'DocumentationsWiki',
+                    'documentations',
+                    'wiki',
+                    '',
+                    'fa fa-book',
+                    [],
+                    5
                 ))
                 ->addLink(new MenuLink(
                     __('Wizard assignments'),
@@ -702,7 +712,7 @@ class Menu {
                     '',
                     'fas fa-magic',
                     [],
-                    4
+                    6
                 ))
             );
 

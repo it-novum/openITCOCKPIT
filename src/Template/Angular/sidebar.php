@@ -33,7 +33,8 @@ $logo = new Logo();
 ?>
 <aside id="pageSidebar" class="page-sidebar">
     <div class="page-logo pointer" ui-sref="DashboardsIndex">
-        <img src="<?= $logo->getHeaderLogoForHtml(); ?>" class="header-logo" alt="logo" aria-roledescription="logo" style="width: 28px;">
+        <img src="<?= $logo->getHeaderLogoForHtml(); ?>" class="header-logo" alt="logo" aria-roledescription="logo"
+             style="width: 28px;">
         <span class="page-logo-text mr-1">{{systemname}}</span>
         <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2"></span>
     </div>
@@ -103,12 +104,6 @@ $logo = new Logo();
             </li>
             <li>
                 <a ui-sref="SupportsIssue" data-toggle="tooltip" data-placement="top"
-                   title="<?php echo __('Report a Bug'); ?>">
-                    <i class="fas fa-bug"></i>
-                </a>
-            </li>
-            <li>
-                <a href="https://openitcockpit.io/#Subscription" data-toggle="tooltip" data-placement="top"
                    title="<?php echo __('Support'); ?>">
                     <i class="fa fa-life-ring"></i>
                 </a>
