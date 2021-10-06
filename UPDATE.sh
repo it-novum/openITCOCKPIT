@@ -348,6 +348,10 @@ chown nagios:nagios /opt/openitc/logs/frontend/nagios
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
 
+mkdir -p /opt/openitc/logs/nagios/archives
+chown nagios:www-data /opt/openitc/logs/nagios /opt/openitc/logs/nagios/archives
+chmod 775 /opt/openitc/logs/nagios /opt/openitc/logs/nagios/archives
+
 mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
