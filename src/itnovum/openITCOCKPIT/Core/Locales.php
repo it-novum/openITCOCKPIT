@@ -135,8 +135,16 @@ class Locales {
                 'locales' => [
                     'ru_RU'
                 ]
-            ]
+            ],
 
+            'Ukraine' => [
+                'label'   => 'Українська / ' . __('Ukrainian'),
+                'flag'    => 'flag-icon flag-icon-ua',
+                'i18n'    => 'uk_UA',
+                'locales' => [
+                    'uk_UA'
+                ]
+            ]
         ];
 
         foreach ($languages as $language) {
