@@ -6797,27 +6797,27 @@ msgstr ""
 
 #: src/Model/Table/WizardAssignmentsTable.php:281
 #: VMWAREModule/src/Lib/Wizards.php:38
-msgid "VMWare (through vCenter)"
+msgid "VMware (through vCenter)"
 msgstr ""
 
 #: src/Model/Table/WizardAssignmentsTable.php:282
-msgid "Check everything regarding VMWare. vCenter, virtual machines..."
+msgid "Check everything regarding VMware. vCenter, virtual machines..."
 msgstr ""
 
 #: src/Model/Table/WizardAssignmentsTable.php:288
 #: VMWAREModule/src/Lib/Wizards.php:49
-msgid "VMWare (esx directly)"
+msgid "VMware (esx directly)"
 msgstr ""
 
 #: src/Model/Table/WizardAssignmentsTable.php:289
-msgid "Check everything regarding VMWare. ESX Hosts, virtual machines..."
+msgid "Check everything regarding VMware. ESX Hosts, virtual machines..."
 msgstr ""
 
 #: src/Model/Table/WizardAssignmentsTable.php:295
 #: VMWAREHORIZONModule/src/Lib/Wizards.php:39
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:20
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:41
-msgid "VMWare Horizon"
+msgid "VMware Horizon"
 msgstr ""
 
 #: src/Model/Table/WizardAssignmentsTable.php:296
@@ -25057,15 +25057,15 @@ msgid "UPS services"
 msgstr ""
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:29
-msgid "Configuration Wizard: VMWare Horizon"
+msgid "Configuration Wizard: VMware Horizon"
 msgstr ""
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:52
-msgid "VMWare Horizon Connection Server"
+msgid "VMware Horizon Connection Server"
 msgstr ""
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:62
-msgid "VMWare Horizon configuration help"
+msgid "VMware Horizon configuration help"
 msgstr ""
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:79
@@ -25081,21 +25081,21 @@ msgid "Domain"
 msgstr ""
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:135
-msgid "VMWare Horizon services"
+msgid "VMware Horizon services"
 msgstr ""
 
 #: VMWAREModule/src/Lib/Wizards.php:39
 #: VMWAREModule/src/Lib/Wizards.php:50
-msgid "Check everything regarding VMWare. ESX Hosts, vCenter, virtual machines..."
+msgid "Check everything regarding VMware. ESX Hosts, vCenter, virtual machines..."
 msgstr ""
 
 #: VMWAREModule/templates/Wizards/vmware.php:38
 #: VMWAREModule/templates/Wizards/vmware.php:65
-msgid "VMWare"
+msgid "VMware"
 msgstr ""
 
 #: VMWAREModule/templates/Wizards/vmware.php:47
-msgid "Configuration Wizard: VMWare Server"
+msgid "Configuration Wizard: VMware Server"
 msgstr ""
 
 #: VMWAREModule/templates/Wizards/vmware.php:49
@@ -25107,15 +25107,15 @@ msgid "esx directly"
 msgstr ""
 
 #: VMWAREModule/templates/Wizards/vmware.php:76
-msgid "VMWare Server"
+msgid "VMware Server"
 msgstr ""
 
 #: VMWAREModule/templates/Wizards/vmware.php:87
-msgid "VMWare configuration help"
+msgid "VMware configuration help"
 msgstr ""
 
 #: VMWAREModule/templates/Wizards/vmware.php:100
-msgid "Check everything regarding VMWare. ESX Hosts, vCenter, virtual machine"
+msgid "Check everything regarding VMware. ESX Hosts, vCenter, virtual machine"
 msgstr ""
 
 #: VMWAREModule/templates/Wizards/vmware.php:104
@@ -25135,6 +25135,5 @@ msgid "vCenter Address"
 msgstr ""
 
 #: VMWAREModule/templates/Wizards/vmware.php:166
-msgid "VMWare services"
+msgid "VMware services"
 msgstr ""
-

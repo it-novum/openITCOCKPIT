@@ -6798,28 +6798,28 @@ msgstr "Мониторинг вашей SAP Hana Арендатор базы д�
 
 #: src/Model/Table/WizardAssignmentsTable.php:281
 #: VMWAREModule/src/Lib/Wizards.php:38
-msgid "VMWare (through vCenter)"
-msgstr "VMWare (через vCenter)"
+msgid "VMware (through vCenter)"
+msgstr "VMware (через vCenter)"
 
 #: src/Model/Table/WizardAssignmentsTable.php:282
-msgid "Check everything regarding VMWare. vCenter, virtual machines..."
-msgstr "Проверьте все, что касается VMWare. vCenter, виртуальные машины ..."
+msgid "Check everything regarding VMware. vCenter, virtual machines..."
+msgstr "Проверьте все, что касается VMware. vCenter, виртуальные машины ..."
 
 #: src/Model/Table/WizardAssignmentsTable.php:288
 #: VMWAREModule/src/Lib/Wizards.php:49
-msgid "VMWare (esx directly)"
-msgstr "VMWare (напрямую от esx)"
+msgid "VMware (esx directly)"
+msgstr "VMware (напрямую от esx)"
 
 #: src/Model/Table/WizardAssignmentsTable.php:289
-msgid "Check everything regarding VMWare. ESX Hosts, virtual machines..."
-msgstr "Проверьте все, что касается VMWare. Узлы ESX, виртуальные машины ..."
+msgid "Check everything regarding VMware. ESX Hosts, virtual machines..."
+msgstr "Проверьте все, что касается VMware. Узлы ESX, виртуальные машины ..."
 
 #: src/Model/Table/WizardAssignmentsTable.php:295
 #: VMWAREHORIZONModule/src/Lib/Wizards.php:39
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:20
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:41
-msgid "VMWare Horizon"
-msgstr "VMWare Horizon"
+msgid "VMware Horizon"
+msgstr "VMware Horizon"
 
 #: src/Model/Table/WizardAssignmentsTable.php:296
 #: VMWAREHORIZONModule/src/Lib/Wizards.php:40
@@ -25054,16 +25054,16 @@ msgid "UPS services"
 msgstr "Службы ИБП"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:29
-msgid "Configuration Wizard: VMWare Horizon"
-msgstr "Мастер настройки: VMWare Horizon"
+msgid "Configuration Wizard: VMware Horizon"
+msgstr "Мастер настройки: VMware Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:52
-msgid "VMWare Horizon Connection Server"
-msgstr "Сервер подключений VMWare Horizon"
+msgid "VMware Horizon Connection Server"
+msgstr "Сервер подключений VMware Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:62
-msgid "VMWare Horizon configuration help"
-msgstr "Справка по настройке VMWare Horizon"
+msgid "VMware Horizon configuration help"
+msgstr "Справка по настройке VMware Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:79
 msgid "Please create a User within the Connection-Center with Administrator permission on {0}. Because only these Users will have permission to connect to the REST API."
@@ -25078,22 +25078,22 @@ msgid "Domain"
 msgstr "Доменное имя"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:135
-msgid "VMWare Horizon services"
-msgstr "Службы VMWare Horizon"
+msgid "VMware Horizon services"
+msgstr "Службы VMware Horizon"
 
 #: VMWAREModule/src/Lib/Wizards.php:39
 #: VMWAREModule/src/Lib/Wizards.php:50
-msgid "Check everything regarding VMWare. ESX Hosts, vCenter, virtual machines..."
-msgstr "Проверьте все, что касается VMWare. Узлы ESX, vCenter, виртуальные машины ..."
+msgid "Check everything regarding VMware. ESX Hosts, vCenter, virtual machines..."
+msgstr "Проверьте все, что касается VMware. Узлы ESX, vCenter, виртуальные машины ..."
 
 #: VMWAREModule/templates/Wizards/vmware.php:38
 #: VMWAREModule/templates/Wizards/vmware.php:65
-msgid "VMWare"
-msgstr "VMWare"
+msgid "VMware"
+msgstr "VMware"
 
 #: VMWAREModule/templates/Wizards/vmware.php:47
-msgid "Configuration Wizard: VMWare Server"
-msgstr "Мастер настройки: сервер VMWare"
+msgid "Configuration Wizard: VMware Server"
+msgstr "Мастер настройки: сервер VMware"
 
 #: VMWAREModule/templates/Wizards/vmware.php:49
 msgid "through vCenter"
@@ -25104,16 +25104,16 @@ msgid "esx directly"
 msgstr "esx напрямую"
 
 #: VMWAREModule/templates/Wizards/vmware.php:76
-msgid "VMWare Server"
-msgstr "Сервер VMWare"
+msgid "VMware Server"
+msgstr "Сервер VMware"
 
 #: VMWAREModule/templates/Wizards/vmware.php:87
-msgid "VMWare configuration help"
-msgstr "Справка по настройке VMWare"
+msgid "VMware configuration help"
+msgstr "Справка по настройке VMware"
 
 #: VMWAREModule/templates/Wizards/vmware.php:100
-msgid "Check everything regarding VMWare. ESX Hosts, vCenter, virtual machine"
-msgstr "Проверьте все, что касается VMWare. Узлы ESX, vCenter, виртуальные машины"
+msgid "Check everything regarding VMware. ESX Hosts, vCenter, virtual machine"
+msgstr "Проверьте все, что касается VMware. Узлы ESX, vCenter, виртуальные машины"
 
 #: VMWAREModule/templates/Wizards/vmware.php:104
 msgid "Download the VMware Perl SDK"
@@ -25132,5 +25132,5 @@ msgid "vCenter Address"
 msgstr "vCenter Адрес"
 
 #: VMWAREModule/templates/Wizards/vmware.php:166
-msgid "VMWare services"
-msgstr "Службы VMWare"
+msgid "VMware services"
+msgstr "Службы VMware"
