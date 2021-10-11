@@ -120,3 +120,4 @@ plugins/DB2Module
 plugins/MSSQLModule
 plugins/PRINTERModule
 plugins/ORACLEModule
+plugins/UPSModule
