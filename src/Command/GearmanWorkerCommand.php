@@ -51,7 +51,7 @@ use DistributeModule\Model\Entity\Satellite;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
-use NWCModule\itnovum\openITCOCKPIT\SNMP\SNMPScan;
+use NWCModule\itnovum\openITCOCKPIT\SNMP\SNMPScanNwc;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -948,7 +948,7 @@ class GearmanWorkerCommand extends Command {
                 */
                 break;
             case 'WizardNwcInterfaceList':
-                $SnmpScan = new SNMPScan($payload['data']);
+                $SnmpScan = new SNMPScanNwc($payload['data']);
                 try {
                     $interfaces = $SnmpScan->executeSnmpDiscovery($payload['host_address']);
                     $return = [
