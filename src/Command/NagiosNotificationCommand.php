@@ -288,6 +288,8 @@ class NagiosNotificationCommand extends Command {
         $Mailer->setEmailFormat($this->format);
 
         $charts = [];
+        $evcTree = null;
+
         if ($this->noAttachments === false && $this->format !== 'text') {
             $charts = $this->getServiceCharts($Host, $Service);
 
@@ -300,7 +302,6 @@ class NagiosNotificationCommand extends Command {
             ];
             $Mailer->setAttachments($attachments);
 
-            $evcTree = null;
             if ($Service->getServiceType() === EVK_SERVICE) {
                 if (Plugin::isLoaded('EventcorrelationModule')) {
                     $DbBackend = new DbBackend();
