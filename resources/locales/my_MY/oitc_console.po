@@ -1,0 +1,525 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2021-09-30 14:22+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
+#: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/NagiosXmlNotificationCommand.php:150
+#: src/Command/PushoverNotificationCommand.php:98
+#: src/Command/SendPushNotificationCommand.php:66
+#: src/Command/SmsNotificationCommand.php:69
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:33
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:52
+#: SlackModule/src/Command/SlackNotificationCommand.php:41
+msgid "Type of the notification host or service"
+msgstr ""
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:138
+#: src/Command/PushoverNotificationCommand.php:99
+#: src/Command/SendPushNotificationCommand.php:67
+msgid "Notification type of monitoring engine => $NOTIFICATIONTYPE$ "
+msgstr ""
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:139
+#: src/Command/PushoverNotificationCommand.php:100
+#: src/Command/SendPushNotificationCommand.php:68
+msgid "Host uuid you want to send a notification => $HOSTNAME$"
+msgstr ""
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:140
+#: src/Command/PushoverNotificationCommand.php:101
+#: src/Command/SendPushNotificationCommand.php:69
+msgid "Service uuid you want to send a notification => $SERVICEDESC$"
+msgstr ""
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:141
+#: src/Command/PushoverNotificationCommand.php:102
+#: src/Command/SendPushNotificationCommand.php:70
+msgid "current host state => $HOSTSTATEID$/$SERVICESTATEID$"
+msgstr ""
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:142
+#: src/Command/PushoverNotificationCommand.php:103
+#: src/Command/SendPushNotificationCommand.php:71
+msgid "host output => $HOSTOUTPUT$/$SERVICEOUTPUT$"
+msgstr ""
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:143
+#: src/Command/PushoverNotificationCommand.php:104
+#: src/Command/SendPushNotificationCommand.php:72
+msgid "host acknowledgement author => $NOTIFICATIONAUTHOR$"
+msgstr ""
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:144
+#: src/Command/PushoverNotificationCommand.php:105
+#: src/Command/SendPushNotificationCommand.php:73
+msgid "host acknowledgement comment => $NOTIFICATIONCOMMENT$"
+msgstr ""
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:145
+#: src/Command/NagiosNotificationCommand.php:170
+#: src/Command/NagiosXmlNotificationCommand.php:169
+msgid "Disable emojis in subject"
+msgstr ""
+
+#: src/Command/CronjobsCommand.php:67
+msgid "All cronjobs will be forced to execute!"
+msgstr ""
+
+#: src/Command/DebugCommand.php:67
+msgid "Tail and parse monitoring logfile"
+msgstr ""
+
+#: src/Command/DebugCommand.php:68
+msgid "Tailf and parse monitoring logfile"
+msgstr ""
+
+#: src/Command/DebugCommand.php:69
+msgid "Read and translate from stdin. Example: cat file.cfg | oitc debug -s"
+msgstr ""
+
+#: src/Command/DebugCommand.php:113
+msgid "[T]ail and parse monitoring log file"
+msgstr ""
+
+#: src/Command/DebugCommand.php:114
+msgid "[TF] Tail -f and parse monitoring log file"
+msgstr ""
+
+#: src/Command/DebugCommand.php:115
+msgid "[H] Debug host configuratgion files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:116
+msgid "[HT] Debug host template configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:117
+msgid "[S] Debug service configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:118
+msgid "[ST] Debug service template configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:119
+msgid "[TP] Debug timeperiod configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:120
+msgid "[CM] Debug command configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:121
+msgid "[C] Debug contact configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:122
+msgid "[CG] Debug contact group configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:123
+msgid "[HE] Debug host escalation configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:124
+msgid "[UUID] Search object by UUID"
+msgstr ""
+
+#: src/Command/DebugCommand.php:125
+msgid "[Q]uit"
+msgstr ""
+
+#: src/Command/DebugCommand.php:127
+msgid "What would you like to do?"
+msgstr ""
+
+#: src/Command/DebugCommand.php:169
+msgid "You have made an invalid selection. Please choose by entering T or B."
+msgstr ""
+
+#: src/Command/DebugCommand.php:177
+msgid "Hopefully i was helpful"
+msgstr ""
+
+#: src/Command/DebugCommand.php:178
+msgid "Thanks for using me, bye"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:151
+#: src/Command/NagiosXmlNotificationCommand.php:151
+#: src/Command/SmsNotificationCommand.php:70
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:34
+#: SlackModule/src/Command/SlackNotificationCommand.php:42
+msgid "Notification type of monitoring engine"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:152
+#: src/Command/NagiosXmlNotificationCommand.php:152
+#: src/Command/SmsNotificationCommand.php:72
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:35
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:53
+#: SlackModule/src/Command/SlackNotificationCommand.php:43
+msgid "Host uuid you want to send a notification"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:153
+#: src/Command/NagiosXmlNotificationCommand.php:153
+msgid "Host description you want to send a notification"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:154
+#: src/Command/NagiosXmlNotificationCommand.php:154
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:36
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:54
+#: SlackModule/src/Command/SlackNotificationCommand.php:44
+msgid "current host state"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:155
+#: src/Command/NagiosXmlNotificationCommand.php:155
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:55
+#: SlackModule/src/Command/SlackNotificationCommand.php:45
+msgid "host address"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:156
+#: src/Command/NagiosXmlNotificationCommand.php:156
+msgid "host output"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:157
+#: src/Command/NagiosXmlNotificationCommand.php:157
+msgid "host long output"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:158
+#: src/Command/NagiosXmlNotificationCommand.php:158
+msgid "host acknowledgement author"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:159
+#: src/Command/NagiosXmlNotificationCommand.php:159
+msgid "host acknowledgement comment"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:160
+#: src/Command/NagiosXmlNotificationCommand.php:160
+#: src/Command/SmsNotificationCommand.php:73
+msgid "recivers mail address"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:161
+#: src/Command/NagiosXmlNotificationCommand.php:161
+msgid "human name of the contact"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:162
+#: src/Command/NagiosXmlNotificationCommand.php:162
+#: src/Command/SmsNotificationCommand.php:74
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:38
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:57
+#: SlackModule/src/Command/SlackNotificationCommand.php:47
+msgid "Service uuid you want to notify"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:163
+#: src/Command/NagiosXmlNotificationCommand.php:163
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:39
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:58
+#: SlackModule/src/Command/SlackNotificationCommand.php:48
+msgid "service state"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:164
+#: src/Command/NagiosXmlNotificationCommand.php:164
+msgid "service output"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:165
+#: src/Command/NagiosXmlNotificationCommand.php:165
+msgid "service long output"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:166
+#: src/Command/NagiosXmlNotificationCommand.php:166
+msgid "service acknowledgement author"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:167
+#: src/Command/NagiosXmlNotificationCommand.php:167
+msgid "service acknowledgement comment"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:168
+msgid "Email type for notifications [text, html, both]"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:169
+#: src/Command/NagiosXmlNotificationCommand.php:168
+msgid "disable email attachments"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:171
+#: src/Command/NagiosXmlNotificationCommand.php:170
+msgid "E-Mail layout/template that should be used"
+msgstr ""
+
+#: src/Command/PushoverNotificationCommand.php:106
+msgid "API Token of your Pushover Application => $_CONTACTPUSHOVERAPP$"
+msgstr ""
+
+#: src/Command/PushoverNotificationCommand.php:107
+msgid "Your Pushover User Key => $_CONTACTPUSHOVERUSER$"
+msgstr ""
+
+#: src/Command/PushoverNotificationCommand.php:108
+msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface."
+msgstr ""
+
+#: src/Command/QueryLogCommand.php:81
+msgid "Pretty print sql queries"
+msgstr ""
+
+#: src/Command/QueryLogCommand.php:82
+msgid "Hide (ARO/ACO) permission queries"
+msgstr ""
+
+#: src/Command/QueryLogCommand.php:83
+msgid "Start a WebSocket server to make the query log accessible from openITCOCKPIT web interface"
+msgstr ""
+
+#: src/Command/SendPushNotificationCommand.php:74
+msgid "openITCOCKPIT User Id"
+msgstr ""
+
+#: src/Command/SetupCommand.php:147
+msgid "[Y]es I want to continue the setup of openITCOCKPIT"
+msgstr ""
+
+#: src/Command/SetupCommand.php:148
+msgid "[N]o and exit shell"
+msgstr ""
+
+#: src/Command/SetupCommand.php:150
+msgid "Are you sure you want to continue?"
+msgstr ""
+
+#: src/Command/SetupCommand.php:156
+msgid "Setup aborted!"
+msgstr ""
+
+#: src/Command/SetupCommand.php:159
+msgid "You have made an invalid selection. Please choose by entering Y or N."
+msgstr ""
+
+#: src/Command/SetupCommand.php:274
+msgid "Please enter your first name"
+msgstr ""
+
+#: src/Command/SetupCommand.php:286
+msgid "Please enter your last name"
+msgstr ""
+
+#: src/Command/SetupCommand.php:298
+msgid "Please enter your email address. This will be the username for the login."
+msgstr ""
+
+#: src/Command/SetupCommand.php:313
+msgid "Please enter a password for the login."
+msgstr ""
+
+#: src/Command/SetupCommand.php:316
+msgid "Please confirm your password"
+msgstr ""
+
+#: src/Command/SetupCommand.php:340
+msgid "System Address or FQDN?"
+msgstr ""
+
+#: src/Command/SetupCommand.php:374
+msgid "Please enter a sender email address"
+msgstr ""
+
+#: src/Command/SetupCommand.php:388
+msgid "Please enter the address of your mail server (e.g. mail.example.org)"
+msgstr ""
+
+#: src/Command/SetupCommand.php:400
+msgid "Please enter the port of your mail server"
+msgstr ""
+
+#: src/Command/SetupCommand.php:414
+msgid "If required, set a username, or leave it blank if you don't need a user"
+msgstr ""
+
+#: src/Command/SetupCommand.php:424
+msgid "Please enter your password, or leave it blank if you don't need a password"
+msgstr ""
+
+#: src/Command/SmsNotificationCommand.php:68
+msgid "IP address of the SMS gateway"
+msgstr ""
+
+#: src/Command/SmsNotificationCommand.php:71
+msgid "Transport method for example NRPE"
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:273
+#: src/Lib/DebugConfigNagiosTask.php:278
+msgid "Please enter the name of the "
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:284
+msgid "No name field for "
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:294
+msgid "I found "
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:296
+msgid "Please select one "
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:307
+msgid "Your choice please"
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:315
+msgid " not found"
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:333
+msgid "Please enter your UUID"
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:340
+msgid "No result for given UUID"
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:441
+#: src/Lib/DebugConfigNagiosTask.php:523
+msgid "Notice: This is not the real nagios configuration file. This is a human readable version of the config."
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:446
+msgid "<error>File not found! ("
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:534
+msgid "<error>Folder %s is empty!</error>"
+msgstr ""
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:106
+msgid "Host or Service"
+msgstr ""
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:107
+msgid "PROBLEM"
+msgstr ""
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:108
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:63
+msgid "The Host UUID"
+msgstr ""
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:109
+msgid "The Host output"
+msgstr ""
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:110
+msgid "State ID of the current host state"
+msgstr ""
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:111
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:65
+msgid "The Service UUID"
+msgstr ""
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:112
+msgid "The Service output"
+msgstr ""
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:113
+msgid "State ID of the current service state"
+msgstr ""
+
+#: CheckmkModule/src/Command/CheckmkNagiosExportCommand.php:95
+msgid "Write initial Checkmk configuration"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:53
+msgid "The Receiver of the message in international format eg. 0049123456789"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:54
+msgid "The Sender of the message"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:56
+msgid "The ID of your massenversand.de account"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:57
+msgid "The Password of your massenversand.de account"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:58
+msgid "The time to send the Message 0 = now or hhmmddmmyyyy"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:59
+msgid "t = text sms, c = oversize sms, f = flash sms, utf8 = utf8 sms 70 digits per sms "
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:60
+msgid "1 = no SMS will be created but the server will respond like it would be"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:61
+msgid "host or service"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:62
+msgid "The date and time the problem occoured"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:64
+msgid "State of the Host"
+msgstr ""
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:66
+msgid "State of the Service"
+msgstr ""
+
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:37
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:56
+#: SlackModule/src/Command/SlackNotificationCommand.php:46
+msgid "output"
+msgstr ""
+
+#: PrometheusModule/src/Command/PrometheusBridgeCommand.php:54
+msgid "Run PrometheusBridge as endless loop (Daemon)"
+msgstr ""
+
+#: PrometheusModule/src/Command/PrometheusBridgeCommand.php:55
+msgid "Loop interval in seconds"
+msgstr ""
+
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:59
+msgid "comment"
+msgstr ""
+
