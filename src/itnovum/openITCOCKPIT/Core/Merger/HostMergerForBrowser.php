@@ -116,7 +116,8 @@ class HostMergerForBrowser {
             'notify_period_id',
             'tags',
             'active_checks_enabled',
-            'host_url'
+            'host_url',
+            'notifications_enabled'
         ];
 
         $data = [];
@@ -248,4 +249,3 @@ class HostMergerForBrowser {
     }
 
 }
-

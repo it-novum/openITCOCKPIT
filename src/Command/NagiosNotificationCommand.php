@@ -288,6 +288,8 @@ class NagiosNotificationCommand extends Command {
         $Mailer->setEmailFormat($this->format);
 
         $charts = [];
+        $evcTree = null;
+
         if ($this->noAttachments === false && $this->format !== 'text') {
             $charts = $this->getServiceCharts($Host, $Service);
 
@@ -300,7 +302,6 @@ class NagiosNotificationCommand extends Command {
             ];
             $Mailer->setAttachments($attachments);
 
-            $evcTree = null;
             if ($Service->getServiceType() === EVK_SERVICE) {
                 if (Plugin::isLoaded('EventcorrelationModule')) {
                     $DbBackend = new DbBackend();
@@ -827,7 +828,7 @@ class NagiosNotificationCommand extends Command {
                 $textTemplateExists = true;
             }
 
-            if ($this->layout === 'both') {
+            if ($this->format === 'both') {
                 if ($htmlTemplateExists && $textTemplateExists) {
                     $this->layout = $layout;
                 } else {
@@ -835,7 +836,7 @@ class NagiosNotificationCommand extends Command {
                 }
             }
 
-            if ($this->layout === 'text') {
+            if ($this->format === 'text') {
                 if ($textTemplateExists) {
                     $this->layout = $layout;
                 } else {
@@ -843,7 +844,7 @@ class NagiosNotificationCommand extends Command {
                 }
             }
 
-            if ($this->layout === 'html') {
+            if ($this->format === 'html') {
                 if ($htmlTemplateExists) {
                     $this->layout = $layout;
                 } else {

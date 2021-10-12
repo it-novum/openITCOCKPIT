@@ -765,6 +765,22 @@ class Systemsetting extends Importer {
                 'created'  => '2020-07-12 16:09:17',
                 'modified' => '2020-07-12 16:09:17'
             ],
+            (int)89 => [
+                'key'      => 'CHECK_MK.DOCKERIZED',
+                'value'    => '1',
+                'info'     => 'Determine if Checkmk is running locally or inside of a Docker container',
+                'section'  => 'CHECK_MK',
+                'created'  => '2021-08-13 13:07:17',
+                'modified' => '2021-08-13 13:07:17'
+            ],
+            (int)90 => [
+                'key'      => 'CHECK_MK.DOCKER_API',
+                'value'    => 'http://127.0.0.1:1234',
+                'info'     => 'Base URL of the Checkmk API endpoint inside of Docker',
+                'section'  => 'CHECK_MK',
+                'created'  => '2021-08-13 13:07:17',
+                'modified' => '2021-08-13 13:07:17'
+            ],
         ];
 
         return $data;

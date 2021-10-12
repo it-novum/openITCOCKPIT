@@ -424,7 +424,7 @@ class NagiosConfigGenerator {
 
             $content .= PHP_EOL;
             $content .= $this->addContent(';Notification settings:', 1);
-            $content .= $this->addContent('notifications_enabled', 1, 1);
+            $content .= $this->addContent('notifications_enabled', 1, $hosttemplate->get('notifications_enabled'));
 
             if ($hosttemplate->hasContacts()) {
                 $content .= $this->addContent('contacts', 1, $hosttemplate->getContactsForCfg());
@@ -620,7 +620,7 @@ class NagiosConfigGenerator {
                 //Host is on a Satellite - so it's passive on the master instance
                 $content .= $this->addContent('active_checks_enabled', 1, 0);
             } else {
-                if ($host->get('active_checks_enabled')) {
+                if ($host->get('active_checks_enabled') !== null && $host->get('active_checks_enabled') !== '') {
                     $content .= $this->addContent('active_checks_enabled', 1, $host->get('active_checks_enabled'));
                 }
             }
@@ -862,8 +862,9 @@ class NagiosConfigGenerator {
             $content .= $this->addContent('max_check_attempts', 1, $host->get('max_check_attempts'));
         }
 
-        if ($host->get('active_checks_enabled') !== null && $host->get('active_checks_enabled') !== '')
+        if ($host->get('active_checks_enabled') !== null && $host->get('active_checks_enabled') !== '') {
             $content .= $this->addContent('active_checks_enabled', 1, $host->get('active_checks_enabled'));
+        }
 
         /* Freshness checks starts */
         $freshnessChecksEnabled = $host->get('freshness_checks_enabled');
@@ -1041,7 +1042,7 @@ class NagiosConfigGenerator {
 
             $content .= PHP_EOL;
             $content .= $this->addContent(';Notification settings:', 1);
-            $content .= $this->addContent('notifications_enabled', 1, 1);
+            $content .= $this->addContent('notifications_enabled', 1, $servicetemplate->get('notifications_enabled'));
 
             if ($servicetemplate->hasContacts()) {
                 $content .= $this->addContent('contacts', 1, $servicetemplate->getContactsForCfg());

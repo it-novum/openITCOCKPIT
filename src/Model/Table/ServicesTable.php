@@ -566,6 +566,7 @@ class ServicesTable extends Table {
             }
         }
 
+
         $where = $ServiceConditions->getConditions();
 
         if (!empty($selected)) {
@@ -612,6 +613,7 @@ class ServicesTable extends Table {
         $servicesWithLimit = [];
         $selectedServices = [];
         $results = $this->emptyArrayIfNull($query->toArray());
+
         foreach ($results as $result) {
             $servicesWithLimit[$result['id']] = $result;
         }
@@ -637,7 +639,6 @@ class ServicesTable extends Table {
                 ->order([
                     'servicename' => 'asc'
                 ])
-                ->limit(ITN_AJAX_LIMIT)
                 ->disableHydration()
                 ->all();
             $results = $this->emptyArrayIfNull($query->toArray());
@@ -1796,6 +1797,7 @@ class ServicesTable extends Table {
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
                 'Servicestatus.perfdata',
+                'Servicestatus.notifications_enabled',
 
                 'Hosts.name',
                 'Hosts.id',
@@ -1959,6 +1961,7 @@ class ServicesTable extends Table {
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
                 'Servicestatus.perfdata',
+                'Servicestatus.notifications_enabled',
 
                 'Hosts.name',
                 'Hosts.id',
@@ -4002,8 +4005,8 @@ class ServicesTable extends Table {
      * @param int[] $excludedServiceIds
      * @return array
      */
-    public function getListOfServiceNamesForUniqueCheck($hostId, $excludedServiceIds = []){
-        if(!is_array($excludedServiceIds)){
+    public function getListOfServiceNamesForUniqueCheck($hostId, $excludedServiceIds = []) {
+        if (!is_array($excludedServiceIds)) {
             $excludedServiceIds = [$excludedServiceIds];
         }
 
@@ -4011,7 +4014,7 @@ class ServicesTable extends Table {
             'Services.host_id' => $hostId
         ];
 
-        if(!empty($excludedServiceIds)){
+        if (!empty($excludedServiceIds)) {
             $where['Services.id NOT in'] = $excludedServiceIds;
         }
 
@@ -4028,11 +4031,429 @@ class ServicesTable extends Table {
             ->innerJoinWith('Servicetemplates')
             ->disableHydration();
 
-       $result = [];
-       foreach($query->all() as $item){
-           $result[$item['id']] = $item['servicename'];
-       }
+        $result = [];
+        foreach ($query->all() as $item) {
+            $result[$item['id']] = $item['servicename'];
+        }
+        return $result;
+    }
 
-       return $result;
+    /**
+     * @param $servicestatus
+     * @param bool $extended show details ('acknowledged', 'in downtime', ...)
+     * @return array
+     */
+    public function getServiceStateSummary($servicestatus, $extended = true) {
+        $serviceStateSummary = [
+            'state' => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0
+            ],
+            'total' => 0
+        ];
+        if ($extended === true) {
+            $serviceStateSummary = [
+                'state'        => [
+                    0            => 0,
+                    1            => 0,
+                    2            => 0,
+                    3            => 0,
+                    'serviceIds' => [
+                        0 => [],
+                        1 => [],
+                        2 => [],
+                        3 => []
+                    ]
+                ],
+                'acknowledged' => [
+                    0            => 0,
+                    1            => 0,
+                    2            => 0,
+                    3            => 0,
+                    'serviceIds' => [
+                        0 => [],
+                        1 => [],
+                        2 => [],
+                        3 => []
+                    ]
+                ],
+                'in_downtime'  => [
+                    0            => 0,
+                    1            => 0,
+                    2            => 0,
+                    3            => 0,
+                    'serviceIds' => [
+                        0 => [],
+                        1 => [],
+                        2 => [],
+                        3 => []
+                    ]
+                ],
+                'not_handled'  => [
+                    0            => 0,
+                    1            => 0,
+                    2            => 0,
+                    3            => 0,
+                    'serviceIds' => [
+                        0 => [],
+                        1 => [],
+                        2 => [],
+                        3 => []
+                    ]
+                ],
+                'passive'      => [
+                    0            => 0,
+                    1            => 0,
+                    2            => 0,
+                    3            => 0,
+                    'serviceIds' => [
+                        0 => [],
+                        1 => [],
+                        3 => [],
+                        2 => []
+                    ]
+                ],
+                'total'        => 0
+            ];
+        }
+        if (empty($servicestatus)) {
+            return $serviceStateSummary;
+        }
+        foreach ($servicestatus as $service) {
+            //Check for random exit codes like 255...
+            if ($service['Servicestatus']['current_state'] > 2) {
+                $service['Servicestatus']['current_state'] = 3;
+            }
+            $serviceStateSummary['state'][$service['Servicestatus']['current_state']]++;
+            $serviceStateSummary['state']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
+            if ($extended === true) {
+                if ($service['Servicestatus']['current_state'] > 0) {
+                    if ($service['Servicestatus']['problem_has_been_acknowledged'] > 0) {
+                        $serviceStateSummary['acknowledged'][$service['Servicestatus']['current_state']]++;
+                        $serviceStateSummary['acknowledged']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
+                    } else {
+                        $serviceStateSummary['not_handled'][$service['Servicestatus']['current_state']]++;
+                        $serviceStateSummary['not_handled']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
+                    }
+                }
+
+                if ($service['Servicestatus']['scheduled_downtime_depth'] > 0) {
+                    $serviceStateSummary['in_downtime'][$service['Servicestatus']['current_state']]++;
+                    $serviceStateSummary['in_downtime']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
+                }
+                if ($service['Servicestatus']['active_checks_enabled'] == 0) {
+                    $serviceStateSummary['passive'][$service['Servicestatus']['current_state']]++;
+                    $serviceStateSummary['passive']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
+                }
+            }
+            $serviceStateSummary['total']++;
+        }
+        return $serviceStateSummary;
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getServicesWithStatusByConditions($MY_RIGHTS, $conditions) {
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.uuid'
+            ])
+            ->where([
+                'Services.disabled' => 0
+            ])
+            ->join([
+                'a'                => [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'ServiceObject.name2 = Services.uuid',
+                ],
+                'b'                => [
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                ],
+                'servicetemplates' => [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplates',
+                    'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
+                ]
+            ])->contain([
+                'Hosts'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            });
+        }
+
+        if (!empty($conditions['Servicegroup']['_ids'])) {
+            $servicegroupIds = explode(',', $conditions['Servicegroup']['_ids']);
+            $query->select([
+                'servicegroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
+                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                    GROUP_CONCAT(ServiceToServicegroups.servicegroup_id))'),
+                'count'            => $query->newExpr(
+                    'SELECT COUNT(servicegroups.id)
+                                FROM servicegroups
+                                WHERE FIND_IN_SET (servicegroups.id,IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
+                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                                GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
+                                AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
+            ]);
+            $query->join([
+                'services_to_servicegroups'         => [
+                    'table'      => 'services_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServiceToServicegroups',
+                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
+                ],
+                'servicetemplates_to_servicegroups' => [
+                    'table'      => 'servicetemplates_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServicetemplatesToServicegroups',
+                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
+                ]
+            ]);
+            $query->having([
+                'servicegroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+            $query->group('Services.id');
+        }
+
+        if (isset($where['Services.keywords rlike'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['Services.keywords rlike'],
+                'string',
+                'RLIKE'
+            );
+            unset($where['Services.keywords rlike']);
+        }
+
+        if (isset($where['Services.not_keywords not rlike'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['Services.not_keywords not rlike'],
+                'string',
+                'NOT RLIKE'
+            );
+            unset($where['Services.not_keywords not rlike']);
+        }
+
+        $where = [];
+        if (!empty($conditions['Service']['servicename'])) {
+            $query->having([
+                'servicename LIKE' => $conditions['Service']['servicename']
+            ]);
+        }
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        $query->andWhere($where);
+        $query->disableHydration();
+        $result = $query->all();
+        if ($result === null) {
+            return [];
+        }
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getServicesWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.id',
+                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                'Servicestatus.current_state',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.problem_has_been_acknowledged'
+            ]);
+        $query->where([
+            'Services.disabled' => 0
+        ])
+            ->join([
+                'b'                => [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_description = Services.uuid',
+                ],
+                'servicetemplates' => [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplates',
+                    'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
+                ]
+            ])->contain([
+                'Hosts'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            });
+        }
+
+        if (!empty($conditions['Servicegroup']['_ids'])) {
+            $servicegroupIds = explode(',', $conditions['Servicegroup']['_ids']);
+            $query->select([
+                'servicegroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
+                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                    GROUP_CONCAT(ServiceToServicegroups.servicegroup_id))'),
+                'count'            => $query->newExpr(
+                    'SELECT COUNT(servicegroups.id)
+                                FROM servicegroups
+                                WHERE FIND_IN_SET (servicegroups.id,IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
+                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                                GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
+                                AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
+            ]);
+            $query->join([
+                'services_to_servicegroups'         => [
+                    'table'      => 'services_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServiceToServicegroups',
+                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
+                ],
+                'servicetemplates_to_servicegroups' => [
+                    'table'      => 'servicetemplates_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServicetemplatesToServicegroups',
+                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
+                ]
+            ]);
+            $query->having([
+                'servicegroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+            $query->group('Services.id');
+        }
+
+        if (isset($where['Services.keywords rlike'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['Services.keywords rlike'],
+                'string',
+                'RLIKE'
+            );
+            unset($where['Services.keywords rlike']);
+        }
+
+        if (isset($where['Services.not_keywords not rlike'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['Services.not_keywords not rlike'],
+                'string',
+                'NOT RLIKE'
+            );
+            unset($where['Services.not_keywords not rlike']);
+        }
+
+        $where = [];
+        if (!empty($conditions['Service']['servicename'])) {
+            $query->having([
+                'servicename LIKE' => $conditions['Service']['servicename']
+            ]);
+        }
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        $query->andWhere($where);
+        $query->disableHydration();
+        $result = $query->all();
+        if ($result === null) {
+            return [];
+        }
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param string $hostUuid
+     * @return array[Service]
+     */
+    public function getServicesForRescheduling(string $hostUuid) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.servicetemplate_id',
+                'Services.active_checks_enabled',
+            ])
+            ->innerJoinWith('Hosts', function (Query $query) use ($hostUuid) {
+                $query->where([
+                    'Hosts.uuid' => $hostUuid
+                ]);
+                return $query;
+            })
+            ->contain([
+                'Servicetemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Servicetemplates.id',
+                            'Servicetemplates.active_checks_enabled',
+                        ]);
+                    return $query;
+                }
+            ]);
+        $query->all();
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param string $serviceUuid
+     * @return Service|null
+     */
+    public function getServiceForRescheduling(string $serviceUuid) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.servicetemplate_id',
+                'Services.active_checks_enabled',
+            ])
+            ->where([
+                'Services.uuid' => $serviceUuid
+            ])
+            ->contain([
+                'Servicetemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Servicetemplates.id',
+                            'Servicetemplates.active_checks_enabled',
+                        ]);
+                    return $query;
+                }
+            ]);
+        return $query->first();
     }
 }

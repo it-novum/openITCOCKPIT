@@ -127,6 +127,38 @@ class TimeperiodsController extends AppController {
     }
 
     /**
+     * @param null $id
+     * @throws \Exception
+     */
+    public function viewDetails($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var TimeperiodsTable $TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        if (!$TimeperiodsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid timeperiod'));
+        }
+        $timeperiod = $TimeperiodsTable->get($id, [
+            'contain' => 'TimeperiodTimeranges'
+        ]);
+        $timeperiod = $timeperiod->toArray();
+
+
+        if (!$this->allowedByContainerId(Hash::extract($timeperiod, 'container_id'))) {
+            $this->render403();
+            return;
+        }
+        $timeperiod['events'] = $TimeperiodsTable->parseTimerangesForCalendar($timeperiod['timeperiod_timeranges']);
+        
+        $this->set('timeperiod', $timeperiod);
+        $this->viewBuilder()->setOption('serialize', ['timeperiod']);
+    }
+
+    /**
      * @throws \Exception
      */
     public function add() {

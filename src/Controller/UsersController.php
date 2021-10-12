@@ -193,6 +193,7 @@ class UsersController extends AppController {
         $Session = $this->request->getSession();
         $isOAuthLogin = $Session->read('is_oauth_login') === true;
         $Session->delete('is_oauth_login');
+        $Session->delete('MessageOtd.showMessage');
 
         $this->Authentication->logout();
 

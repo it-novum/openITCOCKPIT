@@ -43,7 +43,12 @@ angular.module('openITCOCKPIT')
                     args.push($scope.args[i])
                 }
             }
-            $scope.args = _.sortBy(args, 'id');
+            $scope.args = args.sort(function(a, b){
+                return a.name.localeCompare(b.name, undefined, {
+                    numeric: true,
+                    sensitivity: 'base'
+                });
+            });
         };
 
         $scope.addArg = function(){
@@ -67,7 +72,12 @@ angular.module('openITCOCKPIT')
                 human_name: '',
                 count: count
             });
-            $scope.args = _.sortBy($scope.args, 'name');
+            $scope.args = $scope.args.sort(function(a, b){
+                return a.name.localeCompare(b.name, undefined, {
+                    numeric: true,
+                    sensitivity: 'base'
+                });
+            });
         };
 
         $scope.checkForMisingArguments = function(){

@@ -247,6 +247,10 @@ if [ "$CURRENT_LOGENTRY_COLUMN_TYPE" = "varchar(1024)" ]; then
     mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE statusengine_servicestatus CHANGE long_output long_output VARCHAR(8192) DEFAULT NULL, CHANGE perfdata perfdata VARCHAR(2084) DEFAULT NULL"
 fi
 
+# Upgrade to Checkmk 2 in Docker Container
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = '\$USER1\$/checkmk_http_client -H \$HOSTNAME\$' WHERE name = 'check_mk_active' AND command_line LIKE 'PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk%';"
+
+
 #Check and create missing cronjobs
 #oitc api --model Cronjob --action create_missing_cronjobs --data ""
 
@@ -343,6 +347,10 @@ chown www-data:www-data /opt/openitc/logs/frontend
 chown nagios:nagios /opt/openitc/logs/frontend/nagios
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
+
+mkdir -p /opt/openitc/logs/nagios/archives
+chown nagios:www-data /opt/openitc/logs/nagios /opt/openitc/logs/nagios/archives
+chmod 775 /opt/openitc/logs/nagios /opt/openitc/logs/nagios/archives
 
 mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp

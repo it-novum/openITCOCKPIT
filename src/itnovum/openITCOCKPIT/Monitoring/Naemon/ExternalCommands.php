@@ -15,7 +15,6 @@ use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
 
@@ -47,97 +46,62 @@ class ExternalCommands {
             $timestamp = time();
         }
 
-        if ($options['type'] == 'hostOnly') {
-            //SCHEDULE_FORCED_HOST_CHECK
-            $payload = [
-                'Command' => 'schedule_check',
-                'Data'    => [
-                    'host_name'     => $options['uuid'],
-                    'schedule_time' => $timestamp
-                ]
-            ];
-            $this->toQueue($payload, $options['satellite_id']);
-        } else {
-            //SCHEDULE_FORCED_HOST_CHECK
-            $payload = [
-                'Command' => 'schedule_check',
-                'Data'    => [
-                    'host_name'     => $options['uuid'],
-                    'schedule_time' => $timestamp
-                ]
-            ];
-            $this->toQueue($payload, $options['satellite_id']);
-
-            //SCHEDULE_FORCED_HOST_SVC_CHECKS
-            $payload = [
-                'Command' => 'raw',
-                'Data'    => sprintf('SCHEDULE_FORCED_HOST_SVC_CHECKS;%s;%s', $options['uuid'], $timestamp)
-            ];
-            $this->toQueue($payload, $options['satellite_id']);
-        }
-
-    }
-
-    /**
-     * Create an external command to reschedule a host or the host with all Services and select the satellite_id out of
-     * the database
-     * ### Options
-     * - `uuid`            The UUID of the host you want to reschedule
-     * - `type`            The type of the external command ('hostOnly' or 'hostAndServices')
-     *
-     * @param array $options with the options
-     */
-    public function rescheduleHostWithQuery(array $options = []) {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $host = $HostsTable->getHostForRescheduling($options['uuid']);
 
-        try {
-            $host = $HostsTable->getHostByUuid($options['uuid']);
-
-            $this->rescheduleHost([
-                'uuid'         => $options['uuid'],
-                'type'         => $options['type'],
-                'satellite_id' => $host->get('satellite_id')
-            ]);
-
-        } catch (RecordNotFoundException $e) {
-            Log::error(sprintf('SudoServer: No host with uuid "%s" found!', $options['uuid']));
+        if (empty($host)) {
+            // Host not found
+            return;
         }
-    }
 
-    /**
-     * Create an external command to reschedule a host group or hostgroup with all Services
-     * ### Options
-     * - `hostgroupUuid`       The UUID of the host you want to reschedule
-     * - `type`                The type of the external command ('hostOnly' or 'hostAndServices')
-     *
-     * @param array $options with the options
-     * @param int $timestamp when Naemon should reschedule the host
-     */
-    public function rescheduleHostgroup(array $options, $timestamp = null) {
-        /** @var HostgroupsTable $HostgroupsTable */
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommandsIncludeingHosttemplateHosts(
-            $options['hostgroupUuid']
-        );
+        if ($options['type'] == 'hostOnly') {
+            //SCHEDULE_FORCED_HOST_CHECK
+            // ITC-2525
+            if ($host->getValueOf('active_checks_enabled')) {
+                $payload = [
+                    'Command' => 'schedule_check',
+                    'Data'    => [
+                        'host_name'     => $options['uuid'],
+                        'schedule_time' => $timestamp
+                    ]
+                ];
+                $this->toQueue($payload, $options['satellite_id']);
+            }
+        } else {
+            //SCHEDULE_FORCED_HOST_CHECK
+            // ITC-2525
+            if ($host->getValueOf('active_checks_enabled')) {
+                $payload = [
+                    'Command' => 'schedule_check',
+                    'Data'    => [
+                        'host_name'     => $options['uuid'],
+                        'schedule_time' => $timestamp
+                    ]
+                ];
+                $this->toQueue($payload, $options['satellite_id']);
+            }
 
-        if (isset($hostgroup['hosts'])) {
-            foreach ($hostgroup['hosts'] as $host) {
-                $activeChecksEnabled = $host['active_checks_enabled'];
-                if ($activeChecksEnabled === null || $activeChecksEnabled === '') {
-                    $activeChecksEnabled = $host['Hosttemplates']['active_checks_enabled'];
-                }
-                $activeChecksEnabled = (int)$activeChecksEnabled;
+            //SCHEDULE_FORCED_HOST_SVC_CHECKS
+            // ITC-2525
+            // The issue with SCHEDULE_FORCED_HOST_SVC_CHECKS is, that it will also reschedule passive services
+            // this will lead to unknown service status
 
-                if ($activeChecksEnabled === 1) {
-                    $this->rescheduleHost([
-                        'uuid'         => $host['uuid'],
-                        'type'         => $options['type'],
-                        'satellite_id' => $host['satellite_id']
-                    ], $timestamp);
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $services = $ServicesTable->getServicesForRescheduling($options['uuid']);
+            foreach ($services as $service) {
+                /** @var Service $service */
+                if ($service->getValueOf('active_checks_enabled')) {
+                    $payload = [
+                        'Command' => 'raw',
+                        'Data'    => sprintf('SCHEDULE_FORCED_SVC_CHECK;%s;%s;%s', $options['uuid'], $service->get('uuid'), $timestamp)
+                    ];
+                    $this->toQueue($payload, $options['satellite_id']);
                 }
             }
         }
+
     }
 
     /**
@@ -390,44 +354,27 @@ class ExternalCommands {
         }
 
         //SCHEDULE_FORCED_SVC_CHECK
-        $payload = [
-            'Command' => 'schedule_check',
-            'Data'    => [
-                'host_name'           => $options['hostUuid'],
-                'service_description' => $options['serviceUuid'],
-                'schedule_time'       => $timestamp,
-            ]
-        ];
-        $this->toQueue($payload, $options['satellite_id']);
-    }
-
-    /**
-     * Create an external command to reschedule a service of an host by given service uuid
-     * Will query the satellite_id out of the database
-     * ### Options
-     * - `uuid`        The UUID of the service you want to reschedule
-     *
-     * @param array $options with the options
-     * @param int $timestamp when Naemon should reschedule the host
-     */
-    public function rescheduleServiceWithQuery(array $options = [], $timestamp = null) {
+        // ITC-2525
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $service = $ServicesTable->getServiceForRescheduling($options['serviceUuid']);
+        if (empty($service)) {
+            // Service not found
+            return;
+        }
 
-        try {
-            $service = $ServicesTable->getServiceByUuidForExternalCommand($options['uuid']);
-
-            $this->rescheduleService([
-                'hostUuid'     => $service->get('host')->get('uuid'),
-                'serviceUuid'  => $service->get('uuid'),
-                'satellite_id' => $service->get('host')->get('satellite_id')
-            ], $timestamp);
-
-        } catch (RecordNotFoundException $e) {
-            Log::error(sprintf('SudoServer: No service with uuid "%s" found!', $options['uuid']));
+        if ($service->getValueOf('active_checks_enabled')) {
+            $payload = [
+                'Command' => 'schedule_check',
+                'Data'    => [
+                    'host_name'           => $options['hostUuid'],
+                    'service_description' => $options['serviceUuid'],
+                    'schedule_time'       => $timestamp,
+                ]
+            ];
+            $this->toQueue($payload, $options['satellite_id']);
         }
     }
-
 
     /**
      * Send a custom host notification
@@ -597,179 +544,6 @@ class ExternalCommands {
     }
 
     /**
-     * Set an acknowledgment for the given host and services
-     * Only set service acks if the host is ok
-     * ### Options
-     * - `hostUuid`        The UUID of the host
-     * - `author`          The author of the ack
-     * - `comment`         The comment of the ack
-     * - `sticky`          Integer if sticky or not (0 or 2)
-     * - `type`            The type of the external command ('hostOnly' or 'hostAndServices')
-     *
-     * @param array $options with the options
-     * @return bool
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
-     */
-    public function setHostAckWithQuery(array $options) {
-        $_options = [
-            'type'   => 'hostOnly',
-            'notify' => true,
-        ];
-
-        $options = Hash::merge($_options, $options);
-
-        if (!isset($options['satellite_id'])) {
-            if (Plugin::isLoaded('DistributeModule')) {
-                /** @var HostsTable $HostsTable */
-                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
-                if ($satelliteId === null) {
-                    //Host not found
-                    return false;
-                }
-                $options['satellite_id'] = $satelliteId;
-            } else {
-                $options['satellite_id'] = 0;
-            }
-        }
-
-        $notify = 1;
-        if (!$options['notify']) {
-            $notify = 0;
-        }
-
-        $DbBackend = new DbBackend();
-        $HoststatusTable = $DbBackend->getHoststatusTable();
-
-        $HoststatusFields = new HoststatusFields($DbBackend);
-        $HoststatusFields->currentState();
-        $hoststatus = $HoststatusTable->byUuid($options['hostUuid'], $HoststatusFields);
-
-
-        if (isset($hoststatus['Hoststatus']['current_state'])) {
-            if ($hoststatus['Hoststatus']['current_state'] > 0) {
-                // ACKNOWLEDGE_HOST_PROBLEM
-                $payload = [
-                    'Command' => 'raw',
-                    'Data'    => sprintf(
-                        'ACKNOWLEDGE_HOST_PROBLEM;%s;%s;%s;1;%s;%s',
-                        $options['hostUuid'],
-                        $options['sticky'],
-                        $notify,
-                        $options['author'],
-                        $options['comment']
-                    )
-                ];
-
-                //Set Host Ack on the Mastersystem
-                $this->toQueue($payload, 0);
-                if ($options['satellite_id'] > 0) {
-                    //Also set Host Ack on the Satellite system
-                    $this->toQueue($payload, $options['satellite_id']);
-                }
-            }
-        }
-
-
-        if ($options['type'] == 'hostAndServices') {
-            //Set ACK for host + services
-
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            try {
-                $host = $HostsTable->getHostWithServicesByUuid($options['hostUuid']);
-            } catch (RecordNotFoundException $e) {
-                Log::error(sprintf('SudoServer: No host with uuid "%s" found!', $options['uuid']));
-                return false;
-            }
-
-            $ServicestatusTable = $DbBackend->getServicestatusTable();
-            $ServicestatusFields = new ServicestatusFields($DbBackend);
-            $ServicestatusFields->currentState();
-
-            $serviceUuids = [];
-            foreach ($host->get('services') as $service) {
-                /** @var Service $service */
-                $serviceUuids[] = $service->get('uuid');
-            }
-
-            if (!empty($serviceUuids)) {
-                $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
-
-                foreach ($serviceUuids as $serviceUuid) {
-                    if (isset($servicestatus[$serviceUuid]['Servicestatus']['current_state'])) {
-                        if ($servicestatus[$serviceUuid]['Servicestatus']['current_state'] > 0) {
-                            $this->setServiceAck([
-                                'hostUuid'     => $options['hostUuid'],
-                                'serviceUuid'  => $serviceUuid,
-                                'author'       => $options['author'],
-                                'comment'      => $options['comment'],
-                                'sticky'       => $options['sticky'],
-                                'notify'       => (bool)$notify,
-                                'satellite_id' => $options['satellite_id']
-                            ]);
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Set an acknowledgment for the given host group
-     * ### Options
-     * - `hostgroupUuid`     The UUID of the host
-     * - `author`            The author of the ack
-     * - `comment`           The comment of the ack
-     * - `sticky`            Integer if sticky or not (0 or 2)
-     * - `type`              The type of the external command ('hostOnly' or 'hostAndServices')
-     *
-     * @param array $options with the options
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
-     */
-    public function setHostgroupAck(array $options) {
-        /** @var HostgroupsTable $HostgroupsTable */
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommandsIncludeingHosttemplateHosts(
-            $options['hostgroupUuid']
-        );
-
-        if (isset($hostgroup['hosts'])) {
-
-            $DbBackend = new DbBackend();
-            $HoststatusTable = $DbBackend->getHoststatusTable();
-            $HoststatusFields = new HoststatusFields($DbBackend);
-            $HoststatusFields->currentState();
-
-
-            $hostUuids = [];
-            foreach ($hostgroup['hosts'] as $host) {
-                $hostUuids[] = $host['uuid'];
-            }
-            if (!empty($hostUuids)) {
-                $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
-                foreach ($hostUuids as $uuid) {
-                    if (isset($hoststatus[$uuid]['Hoststatus']['current_state'])) {
-                        if ($hoststatus[$uuid]['Hoststatus']['current_state'] > 0) {
-                            $this->setHostAck([
-                                'hostUuid'     => $host['uuid'],
-                                'author'       => $options['author'],
-                                'comment'      => $options['comment'],
-                                'sticky'       => $options['sticky'],
-                                'notify'       => ($options['notify'] ?? true),
-                                'type'         => $options['type'],
-                                'satellite_id' => $host['satellite_id']
-                            ]);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Set an acknowledgment for the given service
      * ### Options
      * - `hostUuid`        The UUID of the host
@@ -823,60 +597,6 @@ class ExternalCommands {
         if ($options['satellite_id'] > 0) {
             //Also set Service Ack on the Satellite system
             $this->toQueue($payload, $options['satellite_id']);
-        }
-
-        return true;
-    }
-
-    /**
-     * Set an acknowledgment for the given service
-     * Query service status from DB and only set ack if current_state > 0
-     * ### Options
-     * - `hostUuid`        The UUID of the host
-     * - `serviceUuid`     The UUID of the service you want to acknowledge
-     * - `author`          The author of the ack
-     * - `comment`         The comment of the ack
-     * - `sticky`          Integer if sticky or not (0 or 2)
-     *
-     * @param array $options with the options
-     * @return bool
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
-     */
-    public function setServiceAckWithQuery(array $options) {
-        if (!isset($options['satellite_id'])) {
-            if (Plugin::isLoaded('DistributeModule')) {
-                /** @var HostsTable $HostsTable */
-                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
-                if ($satelliteId === null) {
-                    //Host not found
-                    return false;
-                }
-                $options['satellite_id'] = $satelliteId;
-            } else {
-                $options['satellite_id'] = 0;
-            }
-        }
-
-        $DbBackend = new DbBackend();
-        $ServicestatusTable = $DbBackend->getServicestatusTable();
-
-        $ServicestatusFields = new ServicestatusFields($DbBackend);
-        $ServicestatusFields->currentState();
-
-        $servicestatus = $ServicestatusTable->byUuid($options['serviceUuid'], $ServicestatusFields);
-
-        if (isset($servicestatus['Servicestatus']['current_state'])) {
-            if ($servicestatus['Servicestatus']['current_state'] > 0) {
-                $this->setServiceAck([
-                    'hostUuid'     => $options['hostUuid'],
-                    'serviceUuid'  => $options['serviceUuid'],
-                    'author'       => $options['author'],
-                    'comment'      => $options['comment'],
-                    'sticky'       => $options['sticky'],
-                    'satellite_id' => $options['satellite_id']
-                ]);
-            }
         }
 
         return true;
@@ -1263,56 +983,6 @@ class ExternalCommands {
     }
 
     /**
-     * Create an external command to disable host or host + services notifications for a hostgroup
-     * ### Options
-     * - `hostgroupUuid`       The UUID of the host
-     * - `type`                The type of the external command ('hostOnly' or 'hostAndServices')
-     *
-     * @param array $options with the options
-     */
-    public function disableHostgroupNotifications(array $options = []) {
-        /** @var HostgroupsTable $HostgroupsTable */
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommandsIncludeingHosttemplateHosts(
-            $options['hostgroupUuid']
-        );
-
-        if (isset($hostgroup['hosts'])) {
-            foreach ($hostgroup['hosts'] as $host) {
-                $this->disableHostNotifications([
-                    'uuid' => $host['uuid'],
-                    'type' => $options['type']
-                ]);
-            }
-        }
-    }
-
-    /**
-     * Create an external command to enable host or host + services notifications for a hostgroup
-     * ### Options
-     * - `hostgroupUuid`       The UUID of the host
-     * - `type`                The type of the external command ('hostOnly' or 'hostAndServices')
-     *
-     * @param array $options with the options
-     */
-    public function enableHostgroupNotifications($options = []) {
-        /** @var HostgroupsTable $HostgroupsTable */
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommandsIncludeingHosttemplateHosts(
-            $options['hostgroupUuid']
-        );
-
-        if (isset($hostgroup['hosts'])) {
-            foreach ($hostgroup['hosts'] as $host) {
-                $this->enableHostNotifications([
-                    'uuid' => $host['uuid'],
-                    'type' => $options['type']
-                ]);
-            }
-        }
-    }
-
-    /**
      * Create an external command to disable service notifications of given service
      * ### Options
      * - `hostUuid`        The UUID of the host
@@ -1617,36 +1287,67 @@ class ExternalCommands {
 
             //Execute commands on the Master or the Satellite System
             case 'SCHEDULE_FORCED_HOST_CHECK':
-                $payload = [
-                    'Command' => 'schedule_check',
-                    'Data'    => [
-                        'host_name'     => $command['parameters']['hostUuid'],
-                        'schedule_time' => $command['parameters']['check_time'] ?? time()
-                    ]
-                ];
-                $this->toQueue($payload, $satelliteId);
+
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $host = $HostsTable->getHostForRescheduling($command['parameters']['hostUuid']);
+                if (empty($host)) {
+                    //Host not found
+                    break;
+                }
+
+                if ($host->getValueOf('active_checks_enabled')) {
+                    $payload = [
+                        'Command' => 'schedule_check',
+                        'Data'    => [
+                            'host_name'     => $command['parameters']['hostUuid'],
+                            'schedule_time' => $command['parameters']['check_time'] ?? time()
+                        ]
+                    ];
+                    $this->toQueue($payload, $satelliteId);
+                }
                 break;
 
             //Execute commands on the Master or the Satellite System
             case 'SCHEDULE_FORCED_SVC_CHECK':
-                $payload = [
-                    'Command' => 'schedule_check',
-                    'Data'    => [
-                        'host_name'           => $command['parameters']['hostUuid'],
-                        'service_description' => $command['parameters']['serviceUuid'],
-                        'schedule_time'       => $command['parameters']['check_time'] ?? time()
-                    ]
-                ];
-                $this->toQueue($payload, $satelliteId);
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $service = $ServicesTable->getServiceForRescheduling($command['parameters']['serviceUuid']);
+                if (empty($service)) {
+                    // Service not found
+                    break;
+                }
+
+                if ($service->getValueOf('active_checks_enabled')) {
+                    $payload = [
+                        'Command' => 'schedule_check',
+                        'Data'    => [
+                            'host_name'           => $command['parameters']['hostUuid'],
+                            'service_description' => $command['parameters']['serviceUuid'],
+                            'schedule_time'       => $command['parameters']['check_time'] ?? time()
+                        ]
+                    ];
+                    $this->toQueue($payload, $satelliteId);
+                }
                 break;
 
             //Execute commands on the Master or the Satellite System
             case 'SCHEDULE_FORCED_HOST_SVC_CHECKS':
-                $payload = [
-                    'Command' => 'raw',
-                    'Data'    => sprintf('SCHEDULE_FORCED_HOST_SVC_CHECKS;%s;%s', $command['parameters']['hostUuid'], $command['parameters']['check_time'])
-                ];
-                $this->toQueue($payload, $satelliteId);
+                $checktime = $command['parameters']['check_time'] ?? time();
+
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $services = $ServicesTable->getServicesForRescheduling($command['parameters']['hostUuid']);
+                foreach ($services as $service) {
+                    /** @var Service $service */
+                    if ($service->getValueOf('active_checks_enabled')) {
+                        $payload = [
+                            'Command' => 'raw',
+                            'Data'    => sprintf('SCHEDULE_FORCED_SVC_CHECK;%s;%s;%s', $command['parameters']['hostUuid'], $service->get('uuid'), $checktime)
+                        ];
+                        $this->toQueue($payload, $satelliteId);
+                    }
+                }
 
                 break;
 

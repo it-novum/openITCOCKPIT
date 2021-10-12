@@ -57,7 +57,8 @@ use Cake\Core\Plugin;
 <disable-host-flap-detection callback="showFlashMsg"></disable-host-flap-detection>
 <send-host-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-host-notification>
 <mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>
-<mass-delete-acknowledgements delete-url="/acknowledgements/delete/" callback="showFlashMsg"></mass-delete-acknowledgements>
+<mass-delete-acknowledgements delete-url="/acknowledgements/delete/"
+                              callback="showFlashMsg"></mass-delete-acknowledgements>
 <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
     <add-services-to-servicegroup></add-services-to-servicegroup>
 <?php endif; ?>
@@ -107,7 +108,15 @@ use Cake\Core\Plugin;
                             <li class="nav-item pointer" ng-show="GrafanaDashboardExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
                                    role="tab">
-                                    <i class="fa fa-lg fa-area-chart">&nbsp;</i> <?php echo __('Grafana'); ?>
+                                    <i class="fas fa-info">&nbsp;</i> <?php echo __('Grafana'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
+                            <li class="nav-item pointer" ng-show="AdditionalInformationExists">
+                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab6'; hideTimeline()"
+                                   role="tab">
+                                    <i class="fas fa-database">&nbsp;</i> <?php echo __('i-doit'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
@@ -320,8 +329,10 @@ use Cake\Core\Plugin;
                                                 <div class="col-12">
                                                     <div>
                                                         <h4 class="no-padding">
-                                                            <i class="far fa-user" ng-show="!acknowledgement.is_sticky"></i>
-                                                            <i class="fas fa-user" ng-show="acknowledgement.is_sticky"></i>
+                                                            <i class="far fa-user"
+                                                               ng-show="!acknowledgement.is_sticky"></i>
+                                                            <i class="fas fa-user"
+                                                               ng-show="acknowledgement.is_sticky"></i>
                                                             <?php echo __('State of host is acknowledged'); ?>
                                                             <span ng-show="acknowledgement.is_sticky">
                                                         (<?php echo __('Sticky'); ?>)
@@ -949,11 +960,12 @@ use Cake\Core\Plugin;
                                             <span ng-hide="failureDurationInPercent">
                                                 <i class="fa fa-refresh fa-spin txt-primary"></i>
                                             </span>
-                                            <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ?
-                                                    failureDurationInPercent + ' %' :
-                                                    '<?php echo __('No data available!'); ?>'}}
+                                            <span ng-show="failureDurationInPercent">
+                                                {{(failureDurationInPercent) ? failureDurationInPercent + ' %' :
+                                                    '<?= __('No data available!'); ?>'}}
                                             </span>
-                                        </h3></div>
+                                        </h3>
+                                    </div>
                                     <div class="col-12">
                                         <div id="visualization"></div>
                                     </div>
@@ -1050,7 +1062,19 @@ use Cake\Core\Plugin;
                                           ng-if="GrafanaDashboardExists && selectedTab == 'tab5'"></iframe-directive>
                     </div>
                     <!-- Grafana Module end -->
+                    <!-- Import Module start -->
+                    <div ng-show="selectedTab == 'tab6'" ng-if="AdditionalInformationExists && selectedTab == 'tab6'">
+                        <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
+                            <idoit-additional-information-element host-id="{{mergedHost.id}}">
 
+                            </idoit-additional-information-element>
+                        <?php else: ?>
+                            <label class="text-danger">
+                                <?php echo __('No permissions'); ?>
+                            </label>
+                        <?php endif; ?>
+                    </div>
+                    <!-- Import Module end -->
                 </div>
             </div>
         </div>
@@ -1116,6 +1140,13 @@ use Cake\Core\Plugin;
                                 <th class="no-sort text-center">
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('in Downtime'); ?>"></i>
+                                </th>
+
+                                <th class="no-sort text-center"
+                                    ng-click="orderBy('Servicestatus.notifications_enabled')">
+                                    <i class="fa" ng-class="getSortClass('Servicestatus.notifications_enabled')"></i>
+                                    <i class="fas fa-envelope" title="<?php echo __('Notifications enabled'); ?>">
+                                    </i>
                                 </th>
 
                                 <th class="no-sort text-center">
@@ -1212,6 +1243,7 @@ use Cake\Core\Plugin;
                                 <th></th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
 
                                 <th>
                                     <div class="form-group">
@@ -1273,6 +1305,19 @@ use Cake\Core\Plugin;
                                 <td class="text-center">
                                     <i class="fa fa-power-off"
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="icon-stack margin-right-5"
+                                         ng-show="service.Servicestatus.notifications_enabled">
+                                        <i class="fas fa-envelope opacity-100 "></i>
+                                        <i class="fas fa-check opacity-100 fa-xs text-success cornered cornered-lr"></i>
+                                    </div>
+                                    <div class="icon-stack margin-right-5"
+                                         ng-hide="service.Servicestatus.notifications_enabled">
+                                        <i class="fas fa-envelope opacity-100 "></i>
+                                        <i class="fas fa-times opacity-100 fa-xs text-danger cornered cornered-lr"></i>
+                                    </div>
                                 </td>
 
                                 <td class="text-center">

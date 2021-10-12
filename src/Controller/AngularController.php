@@ -33,6 +33,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\MessagesOtdTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
@@ -186,9 +187,43 @@ class AngularController extends AppController {
         if (version_compare($availableVersion, OPENITCOCKPIT_VERSION) > 0 && $this->hasRootPrivileges) {
             $newVersionAvailable = true;
         }
-
         $this->set('newVersionAvailable', $newVersionAvailable);
         $this->viewBuilder()->setOption('serialize', ['newVersionAvailable']);
+    }
+
+    public function message_of_the_day() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $messageOtdAvailable = false;
+        $User = new User($this->getUser());
+
+        /** @var MessagesOtdTable $MessagesOtdTable */
+        $MessagesOtdTable = TableRegistry::getTableLocator()->get('MessagesOtd');
+        $messageOtd = $MessagesOtdTable->getMessageOtdForToday(
+            $User->getTimezone(),
+            $this->getUser()->get('usergroup_id')
+        );
+        $showMessageAfterLogin = false;
+
+        if (!empty($messageOtd)) {
+            $messageOtdAvailable = true;
+            $session = $this->request->getSession();
+            if (!$session->check('MessageOtd.showMessage')) {
+                $session->write('MessageOtd.showMessage', true);
+                $showMessageAfterLogin = true;
+            }
+        }
+
+        $this->set('messageOtdAvailable', $messageOtdAvailable);
+        $this->set('messageOtd', $messageOtd);
+        $this->set('showMessageAfterLogin', $showMessageAfterLogin);
+        $this->viewBuilder()->setOption('serialize', [
+            'messageOtdAvailable',
+            'messageOtd',
+            'showMessageAfterLogin'
+        ]);
     }
 
     public function menustats() {

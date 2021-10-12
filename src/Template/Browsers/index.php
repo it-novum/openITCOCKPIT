@@ -33,8 +33,8 @@
             {{container.value}}
         </a>
 
-        <a ng-click="changeContainerId(container.key)"
-           class="pointer text-primary" href="javascript:void(0);"
+        <a ui-sref="BrowsersIndex({containerId: container.key})"
+           class="pointer text-primary"
            ng-show="container.key != containerId">
             {{container.value}}
         </a>
@@ -77,9 +77,9 @@
                                     <i class="fa fa-home" ng-show="container.value.containertype_id === 2"></i>
                                     <i class="fa fa-location-arrow" ng-show="container.value.containertype_id === 3"></i>
                                     <i class="fa fa-link" ng-show="container.value.containertype_id === 5"></i>
-                                    <span ng-click="changeContainerId(container.value.id)" class="pointer">
+                                    <a ui-sref="BrowsersIndex({containerId: container.value.id})">
                                         {{container.value.name}}
-                                    </span>
+                                    </a>
                                 </div>
                             </div>
                         </div>

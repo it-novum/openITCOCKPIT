@@ -98,10 +98,10 @@ class SystemdowntimesTable extends Table {
         $validator
             ->scalar('weekdays')
             ->maxLength('weekdays', 255)
-            ->notEmptyString('weekdays', __('You have to select at least one weekday'), function ($context) {
+            ->notEmptyString('weekdays', __('You must select at least one day of the week or one day of the month, or both'), function ($context) {
                 if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
                     //Only required for recurring downtimes
-                    return true;
+                    return empty($context['data']['day_of_month']);
                 }
                 return false;
             })
@@ -133,7 +133,13 @@ class SystemdowntimesTable extends Table {
         $validator
             ->scalar('day_of_month')
             ->maxLength('day_of_month', 255)
-            ->allowEmptyString('day_of_month')
+            ->notEmptyString('day_of_month', __('You must select at least one day of the week or one day of the month, or both'), function ($context) {
+            if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                //Only required for recurring downtimes
+                return empty($context['data']['weekdays']);
+            }
+            return false;
+        })
             ->add('day_of_month', 'custom', [
                 'rule'    => function ($value, $context) {
                     if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {

@@ -8,7 +8,7 @@ angular.module('openITCOCKPIT')
 
         $scope.useScroll = true;
 
-        var defaultServicetemplatetypeIds = ['1'];
+        var defaultServicetemplatetypeIds = [];
         if($stateParams.servicetemplateTypes !== null){
             defaultServicetemplatetypeIds = [];
             for(var i in $stateParams.servicetemplateTypes){
@@ -24,7 +24,7 @@ angular.module('openITCOCKPIT')
                     name: '',
                     template_name: '',
                     description: '',
-                    servicetemplatetype_id: ['1']
+                    servicetemplatetype_id: defaultServicetemplatetypeIds
                 }
             };
         };

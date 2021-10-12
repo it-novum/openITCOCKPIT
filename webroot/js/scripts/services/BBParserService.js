@@ -4,7 +4,13 @@ angular.module('openITCOCKPIT')
         return {
             parse: function(bbCode){
                 //ITC-732 This is not default bb code!
+                bbCode = bbCode
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;");
+
                 var resString = bbCode;
+
                 resString = resString.replace(/(?:\r\n|\r|\n)/g, '<br />');
                 resString = resString.replace(/\[b\]/gi, '<strong>');
                 resString = resString.replace(/\[\/b\]/gi, '</strong>');
@@ -31,6 +37,10 @@ angular.module('openITCOCKPIT')
                 resString = resString.replace(/\[url ?= ?'([\w\-:\/\[\]\.\#\! ]+)' ?tab ?\]/gi, '<a href="$1" target="_blank">');
                 resString = resString.replace(/\[url ?= ?'([\w\-:\/\[\]\.\#\! ]+)' ?\]/gi, '<a href="$1">');
                 resString = resString.replace(/\[\/url\]/gi, '</a>');
+
+                // replace javascript <script> tags
+                //resString = resString.replace(/<script[^>]*>([\s\S]*?)<\/script([\s\S]*?)>/gi, '$1');
+
                 return resString;
             }
         }

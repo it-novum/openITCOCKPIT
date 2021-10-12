@@ -342,7 +342,7 @@ angular.module('openITCOCKPIT')
             $('#HostTagsInput').tagsinput('add', $scope.hosttemplate.Hosttemplate.tags);
         };
 
-        $scope.submit = function(){
+        $scope.submit = function(redirectState){
             $http.post("/hosts/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -384,6 +384,15 @@ angular.module('openITCOCKPIT')
                         message: message,
                         timeout: timeout
                     });
+                }
+
+                if(typeof redirectState !== "undefined"){
+                    $state.go(redirectState, {
+                        hostId: $scope.id
+                    }).then(function(){
+                        NotyService.scrollTop();
+                    });
+                    return;
                 }
 
                 if($state.hasOwnProperty('previous') && $state.previous !== null && $state.previous.name !== "" && $state.previous.url !== "^"){
@@ -494,6 +503,4 @@ angular.module('openITCOCKPIT')
                 }
             }
         });
-
-
     });

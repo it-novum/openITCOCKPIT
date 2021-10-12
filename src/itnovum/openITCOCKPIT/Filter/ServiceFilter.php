@@ -34,6 +34,7 @@ class ServiceFilter extends Filter {
         $filters = [
             'bool'     => [
                 'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.notifications_enabled',
                 'Servicestatus.active_checks_enabled'
             ],
             'like'     => [

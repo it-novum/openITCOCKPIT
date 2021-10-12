@@ -102,6 +102,10 @@
                                     <div ng-show="post.Host.container_id < 1" class="warning-glow">
                                         <?php echo __('Please select a container.'); ?>
                                     </div>
+                                    <div ng-show="post.Host.container_id === 1" class="help-block text-warning">
+                                        <i class="fas fa-exclamation"></i>
+                                        <?php echo __('Hosts in /root can\'t be moved to other containers later'); ?>
+                                    </div>
                                     <div ng-repeat="error in errors.container_id">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -610,9 +614,29 @@
                         <!-- NOTIFICATION CONFIGURATION START -->
                         <div class="card margin-bottom-10" ng-show="post.Host.hosttemplate_id">
                             <div class="card-header">
-                                <i class="fa fa-envelope"></i> <?php echo __('Notification configuration'); ?>
+                                <i class="fa fa-envelope-open"></i> <?php echo __('Notification configuration'); ?>
                             </div>
                             <div class="card-body">
+                                <div class="custom-control custom-checkbox"
+                                     ng-class="{'has-error': errors.notifications_enabled}">
+                                    <input type="checkbox"
+                                           id="notificationsEnabled"
+                                           class="custom-control-input"
+                                           name="checkbox"
+                                           checked="checked"
+                                           ng-true-value="1"
+                                           ng-false-value="0"
+                                           ng-model="post.Host.notifications_enabled">
+                                    <label class="custom-control-label"
+                                           for="notificationsEnabled"><?php echo __('Enable notifications'); ?></label>
+                                    <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                          value="post.Host.notifications_enabled"
+                                                          template-value="hosttemplate.Hosttemplate.notifications_enabled">
+                                    </template-diff-button>
+                                    <div class="help-block">
+                                        <?php echo __('This option is used to determine whether or not notifications are enabled for this host.'); ?>
+                                    </div>
+                                </div>
                                 <div class="form-group required"
                                      ng-class="{'has-error': errors.notify_period_id}">
                                     <label class="control-label">

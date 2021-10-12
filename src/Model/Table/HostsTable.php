@@ -649,10 +649,10 @@ class HostsTable extends Table {
     }
 
     /**
-     * @param int $id
-     * @return array|Host|null
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getHostByIdWithHosttemplateForEditDetails($id) {
+    public function getHostByIdForEditDetails($id) {
         $query = $this->find()
             ->where([
                 'Hosts.id' => $id
@@ -682,30 +682,8 @@ class HostsTable extends Table {
                         'Contactgroups.id'
                     ]
                 ],
-                'Hosttemplates' => [
-                    'Contacts'      => [
-                        'Containers' => [
-                            'fields' => [
-                                'ContactsToContainers.contact_id',
-                                'Containers.id'
-                            ]
-                        ],
-                        'fields'     => [
-                            'ContactsToHosttemplates.hosttemplate_id',
-                            'Contacts.id'
-                        ]
-                    ],
-                    'Contactgroups' => [
-                        'Containers' => [
-                            'fields' => [
-                                'Containers.parent_id'
-                            ]
-                        ],
-                        'fields'     => [
-                            'ContactgroupsToHosttemplates.hosttemplate_id',
-                            'Contactgroups.id'
-                        ]
-                    ]
+                'Hostcommandargumentvalues' => [
+                    'Commandarguments'
                 ]
             ])
             ->first();
@@ -839,8 +817,6 @@ class HostsTable extends Table {
             'Hosts.container_id',
             'Hosts.tags',
             'Hosts.priority',
-            //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-            //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
 
             'Hoststatus.current_state',
             'Hoststatus.last_check',
@@ -853,7 +829,8 @@ class HostsTable extends Table {
             'Hoststatus.state_type',
             'Hoststatus.is_flapping',
             'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.acknowledgement_type'
+            'Hoststatus.acknowledgement_type',
+            'Hoststatus.notifications_enabled'
         ]);
 
         $query->join([
@@ -1001,7 +978,8 @@ class HostsTable extends Table {
             'Hoststatus.is_hardstate',
             'Hoststatus.is_flapping',
             'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.acknowledgement_type'
+            'Hoststatus.acknowledgement_type',
+            'Hoststatus.notifications_enabled'
         ]);
 
         $query->join([
@@ -1840,7 +1818,6 @@ class HostsTable extends Table {
             'HostsToContainersSharing'
         ]);
         $where = $HostConditions->getWhereForFind();
-
         if (is_array($selected)) {
             $selected = array_filter($selected);
         }
@@ -1912,7 +1889,6 @@ class HostsTable extends Table {
                     'OR' => $where['NOT']
                 ];
             }
-
 
             if (!empty($where)) {
                 $query->where($where);
@@ -3219,29 +3195,54 @@ class HostsTable extends Table {
         if ($extended === true) {
             $hostStateSummary = [
                 'state'        => [
-                    0 => 0,
-                    1 => 0,
-                    2 => 0
+                    0         => 0,
+                    1         => 0,
+                    2         => 0,
+                    'hostIds' => [
+                        0 => [],
+                        1 => [],
+                        2 => []
+                    ]
                 ],
                 'acknowledged' => [
-                    0 => 0,
-                    1 => 0,
-                    2 => 0
+                    0         => 0,
+                    1         => 0,
+                    2         => 0,
+                    'hostIds' => [
+                        0 => [],
+                        1 => [],
+                        2 => []
+                    ]
                 ],
                 'in_downtime'  => [
-                    0 => 0,
-                    1 => 0,
-                    2 => 0
+                    0         => 0,
+                    1         => 0,
+                    2         => 0,
+                    'hostIds' => [
+                        0 => [],
+                        1 => [],
+                        2 => []
+                    ]
                 ],
                 'not_handled'  => [
-                    0 => 0,
-                    1 => 0,
-                    2 => 0
+                    0         => 0,
+                    1         => 0,
+                    2         => 0,
+                    'hostIds' => [
+                        0 => [],
+                        1 => [],
+                        2 => []
+                    ]
                 ],
                 'passive'      => [
-                    0 => 0,
-                    1 => 0,
-                    2 => 0
+                    0         => 0,
+                    1         => 0,
+                    2         => 0,
+                    'hostIds' => [
+                        0 => [],
+                        1 => [],
+                        2 => []
+                    ]
                 ],
                 'total'        => 0
             ];
@@ -3254,22 +3255,26 @@ class HostsTable extends Table {
             if ($host['Hoststatus']['current_state'] > 2) {
                 $host['Hoststatus']['current_state'] = 2;
             }
-
             $hostStateSummary['state'][$host['Hoststatus']['current_state']]++;
+            $hostStateSummary['state']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
             if ($extended === true) {
                 if ($host['Hoststatus']['current_state'] > 0) {
                     if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
                         $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
+                        $hostStateSummary['acknowledged']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
                     } else {
                         $hostStateSummary['not_handled'][$host['Hoststatus']['current_state']]++;
+                        $hostStateSummary['not_handled']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
                     }
                 }
 
                 if ($host['Hoststatus']['scheduled_downtime_depth'] > 0) {
                     $hostStateSummary['in_downtime'][$host['Hoststatus']['current_state']]++;
+                    $hostStateSummary['in_downtime']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
                 }
                 if ($host['Hoststatus']['active_checks_enabled'] == 0) {
                     $hostStateSummary['passive'][$host['Hoststatus']['current_state']]++;
+                    $hostStateSummary['passive']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
                 }
             }
             $hostStateSummary['total']++;
@@ -3365,6 +3370,7 @@ class HostsTable extends Table {
         if ($offset !== null) {
             $query->offset($offset);
         }
+        $query->group('Hosts.id');
         $query->disableHydration()->all();
 
         if ($count === true) {
@@ -4121,5 +4127,266 @@ class HostsTable extends Table {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHostsWithStatusByConditions($MY_RIGHTS, $conditions) {
+        $query = $this->find();
+        $query
+            ->select([
+                'Hosts.uuid'
+            ])
+            ->where([
+                'Hosts.disabled' => 0
+            ])
+            ->join([
+                'a'             => [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Hosts.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+                ],
+                'b'             => [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ],
+                'hosttemplates' => [
+                    'table'      => 'hosttemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hosttemplates',
+                    'conditions' => 'Hosttemplates.id = Hosts.hosttemplate_id',
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+        if (!empty($conditions['Hostgroup']['_ids'])) {
+            $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
+            $query->select([
+                'hostgroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
+                'count'         => $query->newExpr(
+                    'SELECT COUNT(hostgroups.id)
+                                FROM hostgroups
+                                WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
+                                AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
+            ]);
+            $query->join([
+                'hosts_to_hostgroups'         => [
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HostToHostgroups',
+                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
+                ],
+                'hosttemplates_to_hostgroups' => [
+                    'table'      => 'hosttemplates_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HosttemplatesToHostgroups',
+                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
+                ]
+            ]);
+            $query->having([
+                'hostgroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+            $query->group('Hosts.id');
+        }
+
+        if (isset($where['Hosts.keywords rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.keywords rlike'],
+                'string',
+                'RLIKE'
+            );
+            unset($where['Hosts.keywords rlike']);
+        }
+
+        if (isset($where['Hosts.not_keywords not rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.not_keywords not rlike'],
+                'string',
+                'NOT RLIKE'
+            );
+            unset($where['Hosts.not_keywords not rlike']);
+        }
+
+        $query->disableHydration();
+
+        $where = [];
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        $query->andWhere($where);
+        $query->disableHydration();
+        $result = $query->all();
+        if ($result === null) {
+            return [];
+        }
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
+        $query = $this->find();
+        $query
+            ->select([
+                'Hosts.id',
+                'Hoststatus.current_state',
+                'Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.problem_has_been_acknowledged'
+            ]);
+        $query->where([
+            'Hosts.disabled' => 0
+        ])
+            ->join([
+                'b'             => [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Hosts.uuid',
+                ],
+                'hosttemplates' => [
+                    'table'      => 'hosttemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hosttemplates',
+                    'conditions' => 'Hosttemplates.id = Hosts.hosttemplate_id',
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+        if (!empty($conditions['Hostgroup']['_ids'])) {
+            $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
+            $query->select([
+                'hostgroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
+                'count'         => $query->newExpr(
+                    'SELECT COUNT(hostgroups.id)
+                                FROM hostgroups
+                                WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
+                                AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
+            ]);
+            $query->join([
+                'hosts_to_hostgroups'         => [
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HostToHostgroups',
+                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
+                ],
+                'hosttemplates_to_hostgroups' => [
+                    'table'      => 'hosttemplates_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HosttemplatesToHostgroups',
+                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
+                ]
+            ]);
+            $query->having([
+                'hostgroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+            $query->group('Hosts.id');
+        }
+
+        $where = [];
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+        if (!empty($conditions['Host']['keywords'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $conditions['Host']['keywords'],
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($conditions['Host']['not_keywords'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $conditions['Host']['not_keywords'],
+                'string',
+                'NOT RLIKE'
+            );
+        }
+        $query->andWhere($where);
+        $query->disableHydration();
+        $result = $query->all();
+        if ($result === null) {
+            return [];
+        }
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param string $hostUuid
+     * @return Host|null
+     */
+    public function getHostForRescheduling(string $hostUuid) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.hosttemplate_id',
+                'Hosts.active_checks_enabled',
+            ])
+            ->where([
+                'Hosts.uuid' => $hostUuid
+            ])
+            ->contain([
+                'Hosttemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Hosttemplates.id',
+                            'Hosttemplates.active_checks_enabled',
+                        ]);
+                    return $query;
+                }
+            ]);
+        return $query->first();
     }
 }

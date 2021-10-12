@@ -102,7 +102,8 @@
                                     <div ng-show="post.Host.container_id < 1" class="warning-glow">
                                         <?php echo __('Please select a container.'); ?>
                                     </div>
-                                    <div ng-show="post.Host.container_id === 1" class="help-block">
+                                    <div ng-show="post.Host.container_id === 1" class="help-block text-warning">
+                                        <i class="fas fa-exclamation"></i>
                                         <?php echo __('Objects in /root can\'t be moved to other containers'); ?>
                                     </div>
                                     <div ng-repeat="error in errors.container_id">
@@ -629,9 +630,28 @@
                         <!-- NOTIFICATION CONFIGURATION START -->
                         <div class="card margin-bottom-10" ng-show="post.Host.hosttemplate_id">
                             <div class="card-header">
-                                <i class="fa fa-envelope"></i> <?php echo __('Notification configuration'); ?>
+                                <i class="fa fa-envelope-open"></i> <?php echo __('Notification configuration'); ?>
                             </div>
                             <div class="card-body">
+                                <div class="custom-control custom-checkbox"
+                                     ng-class="{'has-error': errors.notifications_enabled}">
+                                    <input type="checkbox"
+                                           class="custom-control-input"
+                                           id="notificationsEnabled"
+                                           ng-true-value="1"
+                                           ng-false-value="0"
+                                           ng-model="post.Host.notifications_enabled">
+                                    <label class="custom-control-label" for="notificationsEnabled">
+                                        <?php echo __('Enable notifications'); ?>
+                                    </label>
+                                    <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                          value="post.Host.notifications_enabled"
+                                                          template-value="hosttemplate.Hosttemplate.notifications_enabled">
+                                    </template-diff-button>
+                                    <div class="help-block">
+                                        <?php echo __('This option is used to determine whether or not notifications are enabled for this host.'); ?>
+                                    </div>
+                                </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.notify_period_id}">
                                     <label class="control-label">
@@ -1070,15 +1090,14 @@
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ui-sref="ServicesAdd({hostId:  post.Host.id})">
+                                                   ng-click="submit('ServicesAdd')">
                                                     <i class="fa fa fa-gear"></i>
                                                     <?php echo __('Update and create service'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ui-sref="AgentconnectorsWizard({hostId: post.Host.id})"
-                                                   ng-if="!data.createAnother">
+                                                   onclick="return false;" ng-click="submit('AgentconnectorsWizard')">
                                                     <i class="fa fa-user-secret"></i>
                                                     <?php echo __('Update and setup agent'); ?>
                                                 </a>
@@ -1086,8 +1105,7 @@
 
                                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ng-click="submitSaveHostAndAssignMatchingServicetemplateGroups()"
-                                                   ng-if="!data.createAnother">
+                                                   ng-click="submitSaveHostAndAssignMatchingServicetemplateGroups()">
                                                     <i class="fa fa-external-link-alt"></i>
                                                     <?php echo __('Update host and assign matching service template groups'); ?>
                                                 </a>
@@ -1095,7 +1113,7 @@
 
                                             <?php if (\Cake\Core\Plugin::isLoaded('CheckmkModule') && $this->Acl->hasPermission('index', 'scans', 'CheckmkModule')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ui-sref="ScansIndex({hostId: post.Host.id})">
+                                                   ng-click="submit('ScansIndex')">
                                                     <i class="fa fa fa-share-alt"></i>
                                                     <?php echo __('Update and run Checkmk discovery'); ?>
                                                 </a>

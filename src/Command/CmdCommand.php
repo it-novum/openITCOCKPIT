@@ -33,11 +33,11 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
-use Cake\Core\Configure;
 use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * Cmd command.
@@ -74,6 +74,11 @@ class CmdCommand extends Command {
     private $nagiosCmd = '/opt/openitc/nagios/var/rw/nagios.cmd';
 
     /**
+     * @var ConsoleIo
+     */
+    private $io;
+
+    /**
      * Hook method for defining this command's option parser.
      *
      * @see https://book.cakephp.org/3.0/en/console-and-shells/commands.html#defining-arguments-and-options
@@ -101,6 +106,8 @@ class CmdCommand extends Command {
      * @return null|void|int The exit code or null for success
      */
     public function execute(Arguments $args, ConsoleIo $io) {
+        $this->io = $io;
+
         $pipeFile = $args->getOption('pipe');
         if ($pipeFile !== $this->externalCommandFile) {
             $this->externalCommandFile = $args->getOption('pipe');
@@ -251,7 +258,7 @@ class CmdCommand extends Command {
                 }
             ])
             ->where([
-                'Hosts.uuid' => $hostUuid,
+                'Hosts.uuid'        => $hostUuid,
                 'Services.disabled' => 0
             ])
             ->having([
@@ -286,10 +293,10 @@ class CmdCommand extends Command {
             //Try to map human service description to service UUID
             $NagCommandAsString = $this->buildCmdCommand($commandAsArray);
 
-            //Log::debug('CmdCommand: '.$NagCommandAsString);
+            //Log::debug('CmdCommand: ' . $NagCommandAsString);
 
             //Pass the command to nagios.cmd
-            if($NagCommandAsString) {
+            if ($NagCommandAsString) {
                 $this->writeToMonitoringCmd($NagCommandAsString);
             }
         } else {
@@ -587,7 +594,30 @@ class CmdCommand extends Command {
     public function writeToMonitoringCmd(string $commandAsString = '') {
         if (file_exists($this->nagiosCmd)) {
             $cmd = fopen($this->nagiosCmd, 'a+');
-            fwrite($cmd, $commandAsString);
+
+            if (strpos($commandAsString, 'PROCESS_SERVICE_CHECK_RESULT') > 0 && strpos($commandAsString, '\n') > 0) {
+                //Log::debug('Send to query handler');
+
+                $commandAsString = str_replace('\n', "\n", $commandAsString); // YES replace fake \n with real \n
+
+                // Passive Service check which contains longoutput (Checkmk 2.x)
+                // https://github.com/naemon/naemon-core/issues/144
+                // https://github.com/NagiosEnterprises/nagioscore/issues/141
+
+                $query = '#command run ';
+                $query .= $commandAsString;
+
+                $QueryHandler = new QueryHandler('/opt/openitc/nagios/var/rw/nagios.qh');
+                if ($QueryHandler->exists()) {
+                    $QueryHandler->connect();
+                    $QueryHandler->send($query, false);
+                }
+                unset($QueryHandler);
+            } else {
+                fwrite($cmd, $commandAsString);
+                //Write command to nagios.cmd
+            }
+
             if (!empty($this->externalCommandsQueue)) {
                 //Process cache, becasue nagios.cmd was not there for a while...
                 foreach ($this->externalCommandsQueue as $command) {

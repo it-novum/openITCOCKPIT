@@ -38,13 +38,17 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     output: ''
                 },
                 Host: {
-                    name: ''
+                    name: '',
+                    keywords: '',
+                    not_keywords: ''
                 }
             };
 
-            var loadWidgetConfig = function(){
+            $scope.loadWidgetConfig = function(){
                 $http.get("/dashboards/hostsStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
+                    $('#HostTags').tagsinput('add', $scope.filter.Host.keywords);
+                    $('#HostExcludedTags').tagsinput('add', $scope.filter.Host.not_keywords);
                     $scope.filter.Hoststatus = result.data.config.Hoststatus;
                     $scope.filter.Hoststatus.current_state.up = result.data.config.Hoststatus.current_state.up ? 1 : 0;
                     $scope.filter.Hoststatus.current_state.down = result.data.config.Hoststatus.current_state.down ? 1 : 0;
@@ -56,6 +60,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
+
                     var scrollInterval = parseInt(result.data.config.scroll_interval);
                     if(scrollInterval < 5000){
                         scrollInterval = 5000;
@@ -94,6 +99,8 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     'page': $scope.currentPage,
                     'direction': $scope.direction,
                     'filter[Hosts.name]': $scope.filter.Host.name,
+                    'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
+                    'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                     'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                     'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                     'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
@@ -201,7 +208,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                 settings['direction'] = $scope.direction;
                 $http.post("/dashboards/hostsStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
                     $scope.currentPage = 1;
-                    loadWidgetConfig();
+                    $scope.loadWidgetConfig();
                     $scope.hideConfig();
                     if($scope.init === true){
                         return true;
@@ -226,12 +233,16 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             };
             $scope.showConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_OUT');
-                $scope.load();
+                $scope.loadWidgetConfig();
             };
 
             $scope.limit = getLimit($widget.height());
 
-            loadWidgetConfig();
+            $scope.loadWidgetConfig();
+
+            jQuery(function(){
+                $("input[data-role=tagsinput]").tagsinput();
+            });
 
             $scope.$watch('scroll_interval', function(){
                 $scope.pagingTimeString = getTimeString();

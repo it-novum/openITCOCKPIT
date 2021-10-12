@@ -66,8 +66,18 @@ class WizardsController extends AppController {
         $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
         $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
         $possibleWizards = $WizardAssignmentsTable->getPossibleWizardsOfModules($wizards);
-        ksort($wizards);
-        ksort($possibleWizards);
+        $sortBy = [];
+        foreach ($wizards as $key => $row) {
+            $sortBy[$key] = $row['title'];
+        }
+        array_multisort($sortBy, SORT_ASC, SORT_NATURAL | SORT_FLAG_CASE, $wizards);
+
+        $sortBy = [];
+        foreach ($possibleWizards as $key => $row) {
+            $sortBy[$key] = $row['title'];
+        }
+        array_multisort($sortBy, SORT_ASC, SORT_NATURAL | SORT_FLAG_CASE, $possibleWizards);
+
         $this->set('wizards', $wizards);
         $this->set('possibleWizards', $possibleWizards);
         $this->viewBuilder()->setOption('serialize', ['wizards', 'possibleWizards']);

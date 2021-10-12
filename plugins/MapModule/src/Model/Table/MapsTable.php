@@ -622,7 +622,7 @@ class MapsTable extends Table {
         if ($hoststatus->currentState() > 0) {
             return [
                 'icon'           => $icon,
-                'icon_property'  => $this->errorIcon,
+                'icon_property'  => $iconProperty,
                 'isAcknowledged' => $hoststatus->isAcknowledged(),
                 'isInDowntime'   => $hoststatus->isInDowntime(),
                 'color'          => $color,

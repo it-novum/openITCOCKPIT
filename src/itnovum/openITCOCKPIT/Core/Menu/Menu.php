@@ -477,6 +477,16 @@ class Menu {
                     [],
                     3
                 ))
+                ->addLink(new MenuLink(
+                    __('Message of the day'),
+                    'MessagesOTDIndex',
+                    'messagesOtd',
+                    'index',
+                    '',
+                    'fas fa-bullhorn',
+                    [__('message'), __('news'), __('information')],
+                    4
+                ))
             )
             ->addCategory((new MenuCategory(
                 'container_mgmt_category',
@@ -619,6 +629,7 @@ class Menu {
                     3
                 ))
             );
+
         $Configuration = new MenuHeadline(self::MENU_CONFIGURATION, __('System Configuration'), 4);
         $Configuration
             ->addCategory(new MenuCategory(
@@ -674,14 +685,24 @@ class Menu {
                     3
                 ))
                 ->addLink(new MenuLink(
-                    __('Report an issue'),
+                    __('Support'),
                     'SupportsIssue',
                     'supports',
                     'issue',
                     '',
-                    'fa fa-bug',
+                    'fa fa-life-ring',
                     [],
                     4
+                ))
+                ->addLink(new MenuLink(
+                    __('Documentation'),
+                    'DocumentationsWiki',
+                    'documentations',
+                    'wiki',
+                    '',
+                    'fa fa-book',
+                    [],
+                    5
                 ))
                 ->addLink(new MenuLink(
                     __('Wizard assignments'),
@@ -691,7 +712,7 @@ class Menu {
                     '',
                     'fas fa-magic',
                     [],
-                    4
+                    6
                 ))
             );
 

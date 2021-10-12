@@ -150,6 +150,8 @@ angular.module('openITCOCKPIT')
 
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
+                $scope.loadAdditionalInformation();
+
 
                 if(typeof $scope.hostBrowserMenuConfig === "undefined"){
                     $scope.hostBrowserMenuConfig = {
@@ -386,7 +388,10 @@ angular.module('openITCOCKPIT')
                     xss: {
                         disabled: false,
                         filterOptions: {
-                            whiteList: {i: ['class', 'not-xss-filtered-html']},
+                            whiteList: {
+                                i: ['class', 'not-xss-filtered-html'],
+                                b: ['class', 'not-xss-filtered-html']
+                            },
                         },
                     },
                     //showCurrentTime: true,
@@ -584,6 +589,18 @@ angular.module('openITCOCKPIT')
                 $scope.loadHost();
             }
         };
+
+        $scope.loadAdditionalInformation = function(){
+            $http.get("/hosts/loadAdditionalInformation/.json", {
+                params: {
+                    'id': $scope.mergedHost.id,
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.AdditionalInformationExists = result.data.AdditionalInformationExists;
+            });
+        };
+
 
         /*** Service mass change methods ***/
         $scope.selectAll = function(){

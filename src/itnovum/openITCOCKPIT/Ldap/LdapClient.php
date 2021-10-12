@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Ldap;
 
 
+use Cake\Log\Log;
 use Cake\Utility\Hash;
 
 class LdapClient {
@@ -54,6 +55,12 @@ class LdapClient {
      */
     private $isOpenLdap = false;
 
+    const ENCRYPTION_PLAIN = 0;
+
+    const ENCRYPTION_STARTTLS = 1;
+
+    const ENCRYPTION_TLS = 2;
+
     /**
      * LdapClient constructor.
      * @param string $username
@@ -71,7 +78,7 @@ class LdapClient {
             'port'                  => 389,
             'ssl_allow_self_signed' => true,
             'ssl_validate_cert'     => false,
-            'use_tls'               => false,
+            'tls_level'             => 0,
             'base_dn'               => 'DC=example,DC=org'
         ];
 
@@ -79,8 +86,16 @@ class LdapClient {
         $this->isOpenLdap = $isOpenLdap;
 
 
+        if ($options['tls_level'] == self::ENCRYPTION_TLS) {
+            // Connect through an TLS encrypted connection (ldaps)
+            // https://github.com/FreeDSx/LDAP/blob/master/docs/Client/Configuration.md#ssl-and-tls-options
+            $options['use_ssl'] = true;
+        }
+
+
         $this->ldap = new \FreeDSx\Ldap\LdapClient($options);
-        if ($options['use_tls']) {
+        if ($options['tls_level'] == self::ENCRYPTION_STARTTLS) {
+            // Connection was established as plain text connection - send StartTLS package to upgrade it to an encrypted connection
             $this->ldap->startTls();
         }
 
@@ -108,7 +123,7 @@ class LdapClient {
                 'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
                 'ssl_allow_self_signed' => true,
                 'ssl_validate_cert'     => false,
-                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'tls_level'             => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
                 'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
             ],
             ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap')
@@ -143,8 +158,12 @@ class LdapClient {
 
         $result = [];
         $paging = $this->ldap->paging($search, 100);
+
+        $droppedUsers = 0;
+        $resultCount = 0;
         while ($paging->hasEntries()) {
             foreach ($paging->getEntries() as $entry) {
+                $resultCount++;
                 $userDn = (string)$entry->getDn();
                 if (empty($userDn)) {
                     continue;
@@ -154,6 +173,7 @@ class LdapClient {
                 $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
                 foreach ($requiredFields as $requiredField) {
                     if (!isset($entry[$requiredField])) {
+                        $droppedUsers++;
                         continue 2;
                     }
                 }
@@ -177,6 +197,16 @@ class LdapClient {
                 ];
             }
             $paging->end();
+        }
+
+        if ($droppedUsers > 0) {
+            Log::warning(
+                sprintf(
+                    'Dropped %s/%s AD/LDAP users due to missing required fields. [%s]',
+                    $droppedUsers,
+                    $resultCount,
+                    implode(', ', $requiredFields)
+                ));
         }
 
         return $result;

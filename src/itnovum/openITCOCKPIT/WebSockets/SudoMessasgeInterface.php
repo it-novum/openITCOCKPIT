@@ -174,14 +174,6 @@ class SudoMessasgeInterface implements MessageComponentInterface {
                 $this->ExternalCommands->rescheduleHost(['uuid' => $msg->data[0], 'type' => $msg->data[1], 'satellite_id' => $msg->data[2]]);
                 break;
 
-            case 'rescheduleHostWithQuery':
-                $this->ExternalCommands->rescheduleHostWithQuery(['uuid' => $msg->data[0], 'type' => $msg->data[1]]);
-                break;
-
-            case 'rescheduleHostgroup':
-                $this->ExternalCommands->rescheduleHostgroup(['hostgroupUuid' => $msg->data[0], 'type' => $msg->data[1]]);
-                break;
-
             case 'commitPassiveResult':
                 $this->ExternalCommands->passiveTransferHostCheckresult(['uuid' => $msg->data[0], 'comment' => $msg->data[1], 'state' => $msg->data[2], 'forceHardstate' => $msg->data[3], 'repetitions' => $msg->data[4]]);
                 break;
@@ -200,10 +192,6 @@ class SudoMessasgeInterface implements MessageComponentInterface {
 
             case 'rescheduleService':
                 $this->ExternalCommands->rescheduleService(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'satellite_id' => $msg->data[2]]);
-                break;
-
-            case 'rescheduleServiceWithQuery':
-                $this->ExternalCommands->rescheduleServiceWithQuery(['uuid' => $msg->data[0]]);
                 break;
 
             case 'sendCustomHostNotification':

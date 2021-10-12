@@ -138,7 +138,16 @@
                                                ng-show="timeperiod.Timeperiod.allow_edit">
                                     <?php endif; ?>
                                 </td>
-                                <td>{{timeperiod.Timeperiod.name}}</td>
+
+                                <td class="word-break">
+                                    <?php if ($this->Acl->hasPermission('viewDetails', 'timeperiods')): ?>
+                                        <a ui-sref="TimeperiodsViewDetails({id:timeperiod.Timeperiod.id})">
+                                            {{timeperiod.Timeperiod.name}}
+                                        </a>
+                                    <?php else: ?>
+                                        {{timeperiod.Timeperiod.name}}
+                                    <?php endif; ?>
+                                </td>
                                 <td>{{timeperiod.Timeperiod.description}}</td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
@@ -152,6 +161,11 @@
                                                ng-if="!timeperiod.Timeperiod.allow_edit"
                                                class="btn btn-default btn-lower-padding disabled">
                                                 <i class="fa fa-cog"></i>
+                                            </a>
+                                        <?php elseif ($this->Acl->hasPermission('viewDetails', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsViewDetails({id: timeperiod.Timeperiod.id})"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fas fa-calendar-week"></i>
                                             </a>
                                         <?php else: ?>
                                             <a href="javascript:void(0);"
@@ -170,6 +184,13 @@
                                                    class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('viewDetails', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsViewDetails({id: timeperiod.Timeperiod.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-calendar-week"></i>
+                                                    <?php echo __('View details'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'timeperiods')): ?>
