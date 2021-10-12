@@ -54,6 +54,12 @@
                     <?php echo __('Agent checks overview'); ?>
                 </h2>
                 <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'servicetemplates', '')): ?>
+                        <a class="btn btn-xs btn-default mr-1 shadow-0"
+                           ui-sref="ServicetemplatesIndex({servicetemplateTypes:['<?= OITC_AGENT_SERVICE ?>']})">
+                            <i class="fas fa-pencil-square-o"></i> <?php echo __('Go to Servicetemplates'); ?>
+                        </a>
+                    <?php endif; ?>
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
