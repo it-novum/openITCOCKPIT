@@ -1,2 +1,16 @@
 [mysqld]
 sql_mode=''
+
+# MySQL Binary Log settings
+# See: https://dev.mysql.com/doc/refman/8.0/en/binary-log.html
+#
+# Purge bin logs to get free disk space
+# PURGE BINARY LOGS TO 'binlog.000007';
+#
+
+# Bin logs are disabled by default, comment this line to enable MySQL binary logs
+disable_log_bin
+
+# Keep bin logs for 7 days
+binlog_expire_logs_seconds      = 604800
+max_binlog_size   = 100M
