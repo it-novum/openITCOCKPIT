@@ -17722,10 +17722,6 @@ msgstr "Інформація про хоста"
 msgid "Use existing host"
 msgstr "Використовуйте існуючий хост"
 
-#: src/Template/Wizards/wizard_host_configuration.php:100
-msgid ""
-msgstr ""
-
 #: src/Template/element/apikey_help.php:32
 msgid "API Keys Overview"
 msgstr "Огляд ключів API"
