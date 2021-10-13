@@ -80,6 +80,9 @@ systemctl enable\
 if [[ ! -f "$INIFILE" ]]; then
     echo "Create local MySQL configuration and database"
 
+    # Restart MySQL to load openitcockpit.cnf to disable MySQL Binary Logs on Ubuntu Focal
+    systemctl restart mysql.service
+
     if [[ -f "$DEBIANCNF" ]]; then
         echo "Detected Debian based distribution"
 
