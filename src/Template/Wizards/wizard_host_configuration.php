@@ -96,9 +96,6 @@ use Cake\Core\Plugin;
                                                        for="useExistingHost">
                                                     <?php echo __('Use existing host'); ?></label>
                                             </div>
-                                            <span class="help-block text-info">
-                                                <?= __(''); ?>
-                                            </span>
                                         </div>
                                     </div>
                                     <div class="form-group required" ng-class="{'has-error': errors.Host}"
@@ -290,4 +287,3 @@ use Cake\Core\Plugin;
         </div>
     </div>
 </div>
-
