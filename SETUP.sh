@@ -82,6 +82,8 @@ if [[ ! -f "$INIFILE" ]]; then
 
     # Restart MySQL to load openitcockpit.cnf to disable MySQL Binary Logs on Ubuntu Focal
     systemctl restart mysql.service
+    echo "Waiting 3 seconds for MySQL / MariaDB..."
+    sleep 3
 
     if [[ -f "$DEBIANCNF" ]]; then
         echo "Detected Debian based distribution"
