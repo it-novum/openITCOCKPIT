@@ -11,6 +11,10 @@ sql_mode=''
 # Bin logs are disabled by default, comment this line to enable MySQL binary logs
 disable_log_bin
 
-# Keep bin logs for 7 days
-binlog_expire_logs_seconds      = 604800
-max_binlog_size   = 100M
+# Keep bin logs for 7 days (MySQL 8)
+#binlog_expire_logs_seconds = 604800
+
+# Keep bin logs for 7 days (MySQL 5.x / MariaDB 10.x)
+#expire_logs_days = 7
+
+#max_binlog_size = 100M
