@@ -29,17 +29,18 @@
              style="box-shadow:inset 0 0 12px 12px #dbdeed, inset 0 0 3px 2px #312727,2px 0 3px -2px #888;">
             <div class="card-header bg-primary text-white font-md h-25 align-items-center d-flex justify-content-center"
                  style="border-radius:10px 8px 0px 0px;">
-                October
+                {{dateDetails.monthName}}
             </div>
             <div id="day-{{widget.id}}"
                  class="card-body align-items-center d-flex justify-content-center no-padding"
                  style="font-size: {{fontSize}}px;">
-                14
+                {{dateDetails.dayNumber}}
+
             </div>
             <div
                 class="card-footer bg-primary text-center text-white font-sm h-25 align-items-center d-flex justify-content-center"
                 style="border-radius:0px 0px 10px 10px">
-                Friday
+                {{dateDetails.weekday}}
             </div>
         </div>
     </div>

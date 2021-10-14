@@ -21,7 +21,6 @@ angular.module('openITCOCKPIT').directive('calendarWidget', function($http){
                         'recursive': true
                     }
                 }).then(function(result){
-                    console.log($('#day-'+$scope.widget.id).height());
                     $scope.init = false;
                 });
             };
