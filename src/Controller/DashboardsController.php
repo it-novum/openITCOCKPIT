@@ -1469,7 +1469,7 @@ class DashboardsController extends AppController {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-                $count = $HostsTable->getHostsWithStatusByConditionsStatusengine3($this->MY_RIGHTS, $config);
+                $count = $HostsTable->getHoststatusCountBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
             }
             $this->set('config', $config);
             $this->set('statusCount', $count);
