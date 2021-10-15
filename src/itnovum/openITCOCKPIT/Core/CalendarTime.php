@@ -90,13 +90,48 @@ class CalendarTime {
     }
 
     public function getDateDetailsByTimestamp(int $timestamp, bool $extended = false) {
-        if(!$extended){
-            return [
-                'dayNumber' => date('j', $timestamp),
-                'weekday' => $this->weekdays[date('N', $timestamp)],
-                'monthName' => $this->months[date('n', $timestamp)]
-            ];
+        $dateDetails = [
+            'dayNumber' => (int)date('j', $timestamp),
+            'weekday'   => $this->weekdays[date('N', $timestamp)],
+            'monthName' => $this->months[date('n', $timestamp)]
+        ];
+        if (!$extended) {
+            return $dateDetails;
         }
-    }
 
+        $currentDay = new \DateTime(date('Y-m-d', $timestamp));
+
+        $totalDays = (int)date('t', $timestamp);
+        $days = [];
+        for($i = 1; $i <= $totalDays; $i++){
+            $weekDay = (int)date('N', $currentDay->getTimestamp());
+            $weekNumber = date('W',$currentDay->getTimestamp());
+            if($i === 1 && $weekDay > 1){ //autofill weekdays at start of the week if first day is not monday
+                for($j = 1; $j < $weekDay; $j++){
+                    $days[$weekNumber][] = [
+                        'day' => null,
+                        'weekday' => null
+                    ];
+                }
+            }
+            $days[$weekNumber][] = [
+                'day' => $i,
+                'weekday' => $weekDay
+            ];
+            $currentDay = $currentDay->modify('+1 day');
+
+            if($i === $totalDays && $weekDay < 7){ //autofill weekdays at end of the week if last day is not sunday
+                for($j = $weekDay; $j < 7; $j++){
+                    $days[$weekNumber][] = [
+                        'day' => null,
+                        'weekday' => null
+                    ];
+                }
+            }
+        }
+        $dateDetails['days'] = $days;
+        $dateDetails['weekdayNames'] = $this->getWeekDaysShort();
+
+        return $dateDetails;
+    }
 }

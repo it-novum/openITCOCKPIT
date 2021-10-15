@@ -25,10 +25,8 @@
 
 <div class="row h-100">
     <div class="col-12 align-items-top d-flex justify-content-center padding-right-25 padding-left-25">
-        <div class="card rounded-plus text-center h-100 w-75"
-             style="box-shadow:inset 0 0 12px 12px #dbdeed, inset 0 0 3px 2px #312727,2px 0 3px -2px #888;">
-            <div class="card-header bg-primary text-white font-md h-25 align-items-center d-flex justify-content-center"
-                 style="border-radius:10px 8px 0px 0px;">
+        <div class="card rounded-plus text-center h-100 w-75 calendar-card-shadow">
+            <div class="card-header bg-primary text-white font-md h-25 align-items-center d-flex justify-content-center day-card-header-radius">
                 {{dateDetails.monthName}}
             </div>
             <div id="day-{{widget.id}}"
@@ -38,8 +36,7 @@
 
             </div>
             <div
-                class="card-footer bg-primary text-center text-white font-sm h-25 align-items-center d-flex justify-content-center"
-                style="border-radius:0px 0px 10px 10px">
+                class="card-footer bg-primary text-center text-white font-sm h-25 align-items-center d-flex justify-content-center day-card-footer-radius">
                 {{dateDetails.weekday}}
             </div>
         </div>

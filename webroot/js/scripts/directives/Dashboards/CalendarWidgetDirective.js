@@ -15,13 +15,14 @@ angular.module('openITCOCKPIT').directive('calendarWidget', function($http){
             $scope.calendarTimeout = null;
 
             $scope.load = function(){
-                $http.get("/angular/statuscount.json", {
+                $http.get("/dashboards/calendarWidget.json", {
                     params: {
                         'angular': true,
-                        'recursive': true
+                        'widgetId': $scope.widget.id
                     }
                 }).then(function(result){
                     $scope.init = false;
+                    $scope.dateDetails = result.data.dateDetails;
                 });
             };
 

@@ -248,7 +248,7 @@ class WidgetsTable extends Table {
                 'title'     => __('Today'),
                 'icon'      => 'fas fa-calendar-day',
                 'directive' => 'today-widget', //AngularJS directive,
-                'width'     => 3,
+                'width'     => 2,
                 'height'    => 9,
                 'default'   => [
                     'row' => 0,
