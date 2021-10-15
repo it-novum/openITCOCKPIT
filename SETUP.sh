@@ -21,10 +21,62 @@ PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
 OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
 
+OS_BASE="debian"
+
+if [[ -f "/etc/redhat-release" ]]; then
+    echo "Detected RedHat based operating system."
+    OS_BASE="RHEL"
+    OSVERSION=$(source /etc/os-release && echo $VERSION_ID) # e.g. "8.4"
+fi
+
+if [[ "$OS_BASE" == "RHEL" ]]; then
+    echo "Make RedHat look more like it's Debian ;)"
+
+    systemctl enable\
+     nginx.service\
+     gearmand.service\
+     mysqld.service\
+     redis.service\
+     docker.service\
+     php-fpm.service
+
+    systemctl start\
+     nginx.service\
+     gearmand.service\
+     mysqld.service\
+     redis.service\
+     docker.service\
+     php-fpm.service
+
+    # sudo - allow root to use sudo
+    usermod -aG wheel root
+    echo "root    ALL=(ALL:ALL) ALL" > /etc/sudoers.d/openitcockpit
+    chmod 0440 /etc/sudoers.d/openitcockpit
+
+    # php-fpm
+    mkdir -p "/etc/php/${PHPVersion}/fpm"
+    mkdir -p /run/php
+    # Link RedHad config to where they are on Debian
+    ln -s /etc/php-fpm.conf "/etc/php/${PHPVersion}/fpm/php-fpm.conf"
+    ln -s /etc/php.d "/etc/php/${PHPVersion}/fpm/conf.d"
+    ln -s /etc/php-fpm.d "/etc/php/${PHPVersion}/fpm/pool.d"
+
+    # myqsl
+    mkdir -p /etc/mysql
+    ln -s /etc/my.cnf.d /etc/mysql/conf.d
+    ln -s /usr/lib/systemd/system/mysqld.service /usr/lib/systemd/system/mysql.service
+
+    # create snakeoil ssl certificate
+    mkdir -p /etc/ssl/private
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost"
+    openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+    cat /etc/ssl/certs/dhparam.pem | tee -a /etc/ssl/certs/ssl-cert-snakeoil.pem
+fi # End RHEL section
+
 echo "Copy required system files"
 cp -r ${APPDIR}/system/etc/. /etc/
 cp -r ${APPDIR}/system/lib/. /lib/
-cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
+rsync -K -a ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/ # we use rsync because the destination can be a symlink on RHEL
 cp -r ${APPDIR}/system/usr/. /usr/
 cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
 cp ${APPDIR}/system/nginx/ssl_cert.conf /etc/nginx/openitc/ssl_cert.conf
