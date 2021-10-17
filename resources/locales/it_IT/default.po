@@ -3575,11 +3575,11 @@ msgstr "Pagina ufficiale per openITCOCKPIT"
 #: src/Template/MessagesOtd/add.php:461
 #: src/Template/MessagesOtd/edit.php:455
 msgid "Open in new tab"
-msgstr ""
+msgstr "Apri in nuova scheda"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1195
 msgid "Insert link"
-msgstr ""
+msgstr "Inserisci link"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1255
 #: src/Template/Automaps/add.php:330
@@ -3588,7 +3588,7 @@ msgstr ""
 #: src/Template/MessagesOtd/add.php:272
 #: src/Template/MessagesOtd/edit.php:270
 msgid "Smallest"
-msgstr ""
+msgstr "Piccolissimo"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1257
 #: src/Template/Automaps/add.php:331
@@ -3597,7 +3597,7 @@ msgstr ""
 #: src/Template/MessagesOtd/add.php:275
 #: src/Template/MessagesOtd/edit.php:273
 msgid "Smaller"
-msgstr ""
+msgstr "Più piccolo"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1259
 #: src/Template/Automaps/add.php:332
@@ -3606,7 +3606,7 @@ msgstr ""
 #: src/Template/MessagesOtd/add.php:278
 #: src/Template/MessagesOtd/edit.php:276
 msgid "Small"
-msgstr ""
+msgstr "Piccolo"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1261
 #: src/Template/Automaps/add.php:334
@@ -3615,7 +3615,7 @@ msgstr ""
 #: src/Template/MessagesOtd/add.php:281
 #: src/Template/MessagesOtd/edit.php:279
 msgid "Big"
-msgstr ""
+msgstr "Grande"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1263
 #: src/Template/Automaps/add.php:335
@@ -3624,7 +3624,7 @@ msgstr ""
 #: src/Template/MessagesOtd/add.php:284
 #: src/Template/MessagesOtd/edit.php:282
 msgid "Bigger"
-msgstr ""
+msgstr "Più grande"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1265
 #: src/Template/Automaps/add.php:336
@@ -3633,38 +3633,38 @@ msgstr ""
 #: src/Template/MessagesOtd/add.php:287
 #: src/Template/MessagesOtd/edit.php:285
 msgid "Biggest"
-msgstr ""
+msgstr "Grandissimo"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1394
 msgid "Add or edit stateless icon"
-msgstr ""
+msgstr "Aggiungi o modifica icona senza stato"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1500
 msgid "Upload new icon"
-msgstr ""
+msgstr "Carica nuova icona"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1542
 msgid "Add or edit summary state item"
-msgstr ""
+msgstr "Aggiungi o modifica oggetto di stato sommario"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1645
 msgid "Radius"
-msgstr ""
+msgstr "Raggio"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1664
 msgid "Keep blank for default radius"
-msgstr ""
+msgstr "Lascia bianco per raggio default"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:38
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:216
 #: EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:20
 msgid " (DISABLED)"
-msgstr ""
+msgstr " (DISABILITATO)"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:48
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:226
 msgid "Hostname"
-msgstr ""
+msgstr "Nome host"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:58
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:263
@@ -3782,7 +3782,7 @@ msgstr ""
 #: ImportModule/templates/Importers/edit.php:91
 #: ImportModule/templates/Importers/index.php:142
 msgid "Description"
-msgstr ""
+msgstr "Descrizione"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:66
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:173
@@ -3819,7 +3819,7 @@ msgstr ""
 #: ServicenowModule/templates/Elements/host_configuration.php:19
 #: ServicenowModule/templates/Elements/service_configuration.php:19
 msgid "State"
-msgstr ""
+msgstr "Stato"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:77
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:197
@@ -3832,7 +3832,7 @@ msgstr ""
 #: EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:96
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:115
 msgid "Not in monitoring"
-msgstr ""
+msgstr "Non in monitoraggio"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:84
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:176
@@ -3858,20 +3858,20 @@ msgstr ""
 #: src/Template/email/html/notification_service.php:167
 #: EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:103
 msgid "Output"
-msgstr ""
+msgstr "Output"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:93
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:299
 #: src/Template/Services/details.php:134
 #: EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:111
 msgid "Perfdata"
-msgstr ""
+msgstr "Perfdata"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:101
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:307
 #: EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:119
 msgid "Current attempt"
-msgstr ""
+msgstr "Tentativo corrente"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:109
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:315
@@ -3895,7 +3895,7 @@ msgstr ""
 #: src/Template/Services/service_list.php:219
 #: EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:127
 msgid "Last check"
-msgstr ""
+msgstr "Ultimo controllo"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:117
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:323
@@ -3913,15 +3913,15 @@ msgstr ""
 #: src/Template/Services/service_list.php:224
 #: EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:135
 msgid "Next check"
-msgstr ""
+msgstr "Prossimo controllo"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:126
 msgid "Summary State"
-msgstr ""
+msgstr "Stato riassuntivo"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:136
 msgid "Summary Output"
-msgstr ""
+msgstr "Output riassuntivo"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:141
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:390
@@ -3929,13 +3929,13 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:659
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:60
 msgid "Services: "
-msgstr ""
+msgstr "Servizio"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:236
 #: src/Template/Services/browser.php:615
 #: EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:45
 msgid "Host state"
-msgstr ""
+msgstr "Stato dell'host"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:331
 #: src/Template/Browsers/index.php:451
@@ -3949,7 +3949,7 @@ msgstr ""
 #: src/Template/Services/service_list.php:214
 #: EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:143
 msgid "Last state change"
-msgstr ""
+msgstr "Ultimo cambio di stato"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:346
 #: src/Template/Hostgroups/add.php:34
@@ -3968,13 +3968,13 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:91
 #: src/Template/element/Systemdowntimes/tabs.php:46
 msgid "Host group"
-msgstr ""
+msgstr "Gruppo host"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:355
 #: src/Template/Hostgroups/index.php:124
 #: src/Template/Systemdowntimes/hostgroup.php:216
 msgid "Host group name"
-msgstr ""
+msgstr "Nome gruppo host"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:373
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:516
@@ -3982,33 +3982,33 @@ msgstr ""
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:37
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:112
 msgid "Summary state"
-msgstr ""
+msgstr "Stato sommario"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:384
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:532
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:653
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:54
 msgid "Summary output"
-msgstr ""
+msgstr "output sommario"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:387
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:656
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:57
 msgid "Hosts: "
-msgstr ""
+msgstr "Hosts: "
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:396
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:664
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:65
 msgid "Hosts overview"
-msgstr ""
+msgstr "Vista totale hosts"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:418
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:540
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:687
 #: OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:86
 msgid "Services overview"
-msgstr ""
+msgstr "Riassunto servizi"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:489
 #: src/Template/Servicegroups/add.php:34
@@ -4020,48 +4020,48 @@ msgstr ""
 #: src/Template/Servicegroups/extended.php:34
 #: src/Template/Servicegroups/extended.php:91
 msgid "Service group"
-msgstr ""
+msgstr "Gruppo servizi"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:498
 #: src/Template/Servicegroups/index.php:124
 msgid "Service group name"
-msgstr ""
+msgstr "Nome gruppo servizi"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:617
 #: plugins/MapModule/templates/Maps/copy.php:70
 #: plugins/MapModule/templates/Maps/index.php:127
 msgid "Map name"
-msgstr ""
+msgstr "Nome mappa"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:627
 #: plugins/MapModule/templates/Maps/copy.php:86
 #: plugins/MapModule/templates/Maps/index.php:131
 msgid "Map title"
-msgstr ""
+msgstr "Titolo mappa"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:714
 msgid "Host and services are not in state UP/OK"
-msgstr ""
+msgstr "L'host e i servizi non sono UP/OK"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:718
 msgid " maximum 20"
-msgstr ""
+msgstr " massimo 20"
 
 #: plugins/MapModule/templates/Mapeditors/view.php:50
 msgid "View map:"
-msgstr ""
+msgstr "Vedi mappa:"
 
 #: plugins/MapModule/templates/Mapeditors/view.php:68
 msgid "Fullscreen"
-msgstr ""
+msgstr "Schermo intero"
 
 #: plugins/MapModule/templates/Mapeditors/view.php:73
 msgid "Leave fullscreen"
-msgstr ""
+msgstr "Esci schermo intero"
 
 #: plugins/MapModule/templates/Maps/add.php:51
 msgid "Create new map"
-msgstr ""
+msgstr "Crea nuova mappa"
 
 #: plugins/MapModule/templates/Maps/add.php:89
 #: plugins/MapModule/templates/Maps/edit.php:89
@@ -4091,22 +4091,22 @@ msgstr ""
 #: ImportModule/templates/ImportedHosts/edit.php:156
 #: ImportModule/templates/ImportedHosts/edit.php:159
 msgid "Satellite"
-msgstr ""
+msgstr "Satellite"
 
 #: plugins/MapModule/templates/Maps/add.php:108
 #: plugins/MapModule/templates/Maps/edit.php:107
 msgid "Map Name"
-msgstr ""
+msgstr "Nome mappa"
 
 #: plugins/MapModule/templates/Maps/add.php:121
 #: plugins/MapModule/templates/Maps/edit.php:120
 msgid "Map Title"
-msgstr ""
+msgstr "Titolo mappa"
 
 #: plugins/MapModule/templates/Maps/add.php:134
 #: plugins/MapModule/templates/Maps/edit.php:133
 msgid "Refresh interval"
-msgstr ""
+msgstr "Intervallo di aggiornamento"
 
 #: plugins/MapModule/templates/Maps/add.php:151
 #: src/Template/Agentchecks/add.php:129
@@ -4141,11 +4141,11 @@ msgstr ""
 #: ImportModule/templates/HostDefaults/add.php:363
 #: PrometheusModule/templates/PrometheusExporters/add.php:223
 msgid "Create another"
-msgstr ""
+msgstr "Crea altro"
 
 #: plugins/MapModule/templates/Maps/add.php:154
 msgid "Create map"
-msgstr ""
+msgstr "Crea mappa"
 
 #: plugins/MapModule/templates/Maps/copy.php:41
 #: plugins/MapModule/templates/Maps/copy.php:122
@@ -4192,31 +4192,31 @@ msgstr ""
 #: src/Template/element/servicetemplate_mass_changes.php:37
 #: src/Template/element/timeperiod_mass_changes.php:37
 msgid "Copy"
-msgstr ""
+msgstr "Copia"
 
 #: plugins/MapModule/templates/Maps/copy.php:49
 msgid "Copy map/s"
-msgstr ""
+msgstr "Copia mappa/e"
 
 #: plugins/MapModule/templates/Maps/copy.php:64
 msgid "Source map:"
-msgstr ""
+msgstr "Mappa origine:"
 
 #: plugins/MapModule/templates/Maps/copy.php:78
 msgid "Name of the new map"
-msgstr ""
+msgstr "Nome nuova mappa"
 
 #: plugins/MapModule/templates/Maps/copy.php:94
 msgid "Title of the new map"
-msgstr ""
+msgstr "Titolo nuova mappa"
 
 #: plugins/MapModule/templates/Maps/copy.php:102
 msgid "Refresh Interval"
-msgstr ""
+msgstr "Intervallo di aggiornamento"
 
 #: plugins/MapModule/templates/Maps/copy.php:110
 msgid "Automatic maps update interval in seconds"
-msgstr ""
+msgstr "Intervallo di aggiornamento automatico mappa in secondi"
 
 #: plugins/MapModule/templates/Maps/edit.php:64
 #: src/Template/Agentchecks/edit.php:67
@@ -4235,56 +4235,56 @@ msgstr ""
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:132
 #: PrometheusModule/templates/PrometheusExporters/edit.php:49
 msgid "saved successfully"
-msgstr ""
+msgstr "salvato con successo"
 
 #: plugins/MapModule/templates/Maps/edit.php:149
 msgid "Update map"
-msgstr ""
+msgstr "Aggiorna mappa"
 
 #: plugins/MapModule/templates/Maps/index.php:88
 msgid "Filter by Map name"
-msgstr ""
+msgstr "Filtra con nome mappa"
 
 #: plugins/MapModule/templates/Maps/index.php:101
 msgid "Filter by Map title"
-msgstr ""
+msgstr "Filtra con titolo mappa"
 
 #: plugins/MapModule/templates/Maps/index.php:175
 msgid "Edit in Map editor"
-msgstr ""
+msgstr "Modifica in editor mappa"
 
 #: plugins/MapModule/templates/Maps/index.php:202
 #: plugins/MapModule/templates/Rotations/index.php:196
 msgid "View in fullscreen"
-msgstr ""
+msgstr "Vista schermo intero"
 
 #: plugins/MapModule/templates/Rotations/add.php:51
 msgid "Create new map rotation"
-msgstr ""
+msgstr "Crea nuova rotazione mappa"
 
 #: plugins/MapModule/templates/Rotations/add.php:64
 #: plugins/MapModule/templates/Rotations/edit.php:65
 msgid "Rotation"
-msgstr ""
+msgstr "Rotazione"
 
 #: plugins/MapModule/templates/Rotations/add.php:88
 #: plugins/MapModule/templates/Rotations/edit.php:89
 msgid "Rotation Name"
-msgstr ""
+msgstr "Nome rotazione"
 
 #: plugins/MapModule/templates/Rotations/add.php:101
 #: plugins/MapModule/templates/Rotations/edit.php:102
 #: plugins/MapModule/templates/Rotations/index.php:131
 msgid "Rotation interval"
-msgstr ""
+msgstr "Intervallo rotazione"
 
 #: plugins/MapModule/templates/Rotations/add.php:135
 msgid "Create rotation"
-msgstr ""
+msgstr "crea rotazione"
 
 #: plugins/MapModule/templates/Rotations/edit.php:51
 msgid "Edit map rotation:"
-msgstr ""
+msgstr "Modifica rotazione mappa"
 
 #: plugins/MapModule/templates/Rotations/edit.php:65
 #: src/Template/Automaps/edit.php:64
@@ -4301,11 +4301,11 @@ msgstr ""
 #: ImportModule/templates/ImportedHosts/edit.php:50
 #: ImportModule/templates/Importers/edit.php:54
 msgid "updated successfully"
-msgstr ""
+msgstr "aggiornato con succeso"
 
 #: plugins/MapModule/templates/Rotations/edit.php:136
 msgid "Update map rotation"
-msgstr ""
+msgstr "Aggiorna rotazione mappa"
 
 #: plugins/MapModule/templates/Rotations/index.php:88
 msgid "Filter by Rotation name"
@@ -4829,7 +4829,7 @@ msgstr ""
 #: NWCModule/src/Controller/WizardsController.php:204
 #: PrometheusModule/src/Controller/PrometheusQueryController.php:65
 msgid "Invalid host"
-msgstr ""
+msgstr "Host non valido"
 
 #: src/Controller/AcknowledgementsController.php:141
 #: src/Controller/AcknowledgementsController.php:208
@@ -4865,7 +4865,7 @@ msgstr ""
 
 #: src/Controller/AdministratorsController.php:345
 msgid "System test mail from "
-msgstr ""
+msgstr "Mail di test sistema da"
 
 #: src/Controller/AdministratorsController.php:361
 msgid "Test mail send to: "
@@ -6658,12 +6658,12 @@ msgstr ""
 
 #: src/Model/Table/WidgetsTable.php:292
 msgid "Host status list"
-msgstr ""
+msgstr "Lista stato host"
 
 #: src/Model/Table/WidgetsTable.php:300
 #: src/Template/Browsers/index.php:98
 msgid "Host status overview"
-msgstr ""
+msgstr "Riassunto stato host"
 
 #: src/Model/Table/WidgetsTable.php:308
 msgid "Tactical overview for hosts"
@@ -8952,7 +8952,7 @@ msgstr ""
 #: src/Template/Hosts/index.php:879
 #: src/Template/element/host_mass_changes.php:87
 msgid "Acknowledge host status"
-msgstr ""
+msgstr "Riconosci stato host"
 
 #: src/Template/Angular/acknowledge_host.php:19
 #: src/Template/Angular/disable_host_notifications.php:19
@@ -12297,7 +12297,7 @@ msgstr ""
 #: src/Template/Statehistories/host.php:207
 #: src/Template/Statehistories/service.php:220
 msgid "State type"
-msgstr ""
+msgstr "Tipo stato"
 
 #: src/Template/Currentstatereports/index.php:293
 #: src/Template/Currentstatereports/index.php:393
@@ -12320,7 +12320,7 @@ msgstr ""
 #: src/Template/Services/service_list.php:334
 #: src/Template/Services/service_list.php:344
 msgid "n/a"
-msgstr ""
+msgstr "n/a"
 
 #: src/Template/Currentstatereports/index.php:299
 #: src/Template/Currentstatereports/index.php:406
@@ -12330,7 +12330,7 @@ msgstr ""
 #: src/Template/Services/browser.php:852
 #: src/Template/Services/details.php:108
 msgid "Hard state"
-msgstr ""
+msgstr "Stato hard"
 
 #: src/Template/Currentstatereports/index.php:304
 #: src/Template/Currentstatereports/index.php:410
@@ -12340,7 +12340,7 @@ msgstr ""
 #: src/Template/Services/browser.php:857
 #: src/Template/Services/details.php:117
 msgid "Soft state"
-msgstr ""
+msgstr "Stato soft"
 
 #: src/Template/Currentstatereports/index.php:319
 #: src/Template/Currentstatereports/index.php:372
@@ -12357,7 +12357,7 @@ msgstr ""
 #: src/Template/Services/service_list.php:199
 #: src/Template/Services/service_list.php:301
 msgid "Passively transferred service"
-msgstr ""
+msgstr "Servizio trasferiti passivamente"
 
 #: src/Template/Currentstatereports/index.php:338
 #: src/Template/Dashboards/hosts_status_list_widget.php:72
@@ -12372,36 +12372,36 @@ msgstr ""
 #: src/Template/Services/details.php:81
 #: src/Template/Services/index.php:570
 msgid "State since"
-msgstr ""
+msgstr "Stato da"
 
 #: src/Template/Currentstatereports/index.php:343
 #: src/Template/Servicechecks/index.php:227
 #: src/Template/Services/browser.php:538
 msgid "Performance data"
-msgstr ""
+msgstr "Dati di performance"
 
 #: src/Template/Currentstatereports/index.php:449
 msgid "No performance data available"
-msgstr ""
+msgstr "Nessuno dato di performance disponibile"
 
 #: src/Template/Currentstatereports/index.php:471
 msgid "Create current state report"
-msgstr ""
+msgstr "Crea report di stato corrente"
 
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:51
 msgid "Current state report "
-msgstr ""
+msgstr "Report di stato corrente"
 
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:52
 #: EventcorrelationModule/templates/Eventcorrelations/pdf/summary_view_table.php:47
 msgid "Date: "
-msgstr ""
+msgstr "Data: "
 
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:101
 #: src/Template/Hostgroups/pdf/list_to_pdf.php:86
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:92
 msgid "Status since"
-msgstr ""
+msgstr "Stato da"
 
 #: src/Template/Dashboards/host_status_overview_widget.php:76
 #: src/Template/Dashboards/hosts_status_list_widget.php:195
@@ -12409,26 +12409,26 @@ msgstr ""
 #: src/Template/Hosts/index.php:223
 #: src/Template/Hosts/not_monitored.php:180
 msgid "Host status"
-msgstr ""
+msgstr "Stato dell'host"
 
 #: src/Template/Dashboards/host_status_overview_widget.php:116
 #: src/Template/Dashboards/service_status_overview_widget.php:141
 msgid "Properties"
-msgstr ""
+msgstr "Proprietà"
 
 #: src/Template/Dashboards/host_status_overview_widget.php:128
 #: src/Template/Dashboards/hosts_status_list_widget.php:264
 #: src/Template/Dashboards/service_status_overview_widget.php:153
 #: src/Template/Dashboards/services_status_list_widget.php:304
 msgid "Not Acknowledged"
-msgstr ""
+msgstr "Non riconosciuto"
 
 #: src/Template/Dashboards/host_status_overview_widget.php:141
 #: src/Template/Dashboards/hosts_status_list_widget.php:293
 #: src/Template/Dashboards/service_status_overview_widget.php:166
 #: src/Template/Dashboards/services_status_list_widget.php:333
 msgid "Not in Downtime"
-msgstr ""
+msgstr "Non in downtime"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:34
 #: src/Template/Dashboards/hosts_status_list_widget.php:34
@@ -25116,20 +25116,20 @@ msgstr ""
 
 #: VMWAREModule/templates/Wizards/vmware.php:104
 msgid "Download the VMware Perl SDK"
-msgstr ""
+msgstr "Scarica il VMware Perl SDK"
 
 #: VMWAREModule/templates/Wizards/vmware.php:107
 msgid "here."
-msgstr ""
+msgstr "qui."
 
 #: VMWAREModule/templates/Wizards/vmware.php:113
 msgid "Add an read-only user to your vCenter host."
-msgstr ""
+msgstr "Aggiungi un utente a sola lettura al tuo host vCenter"
 
 #: VMWAREModule/templates/Wizards/vmware.php:124
 msgid "vCenter Address"
-msgstr ""
+msgstr "Indirizzo vCenter"
 
 #: VMWAREModule/templates/Wizards/vmware.php:166
 msgid "VMware services"
-msgstr ""
+msgstr "Servizi VMware"
