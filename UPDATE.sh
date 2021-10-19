@@ -324,11 +324,19 @@ if [[ "$NORESTART" == "true" ]]; then
 fi
 
 OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+OS_BASE="debian"
+
+if [[ -f "/etc/redhat-release" ]]; then
+    echo "Detected RedHat based operating system."
+    OS_BASE="RHEL"
+    OSVERSION=$(source /etc/os-release && echo $VERSION_ID | cut -d. -f1) # e.g. 8
+fi
+
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
 if [[ "$NOSYSTEMFILES" == "false" ]]; then
   echo "Copy required system files"
-  cp -r ${APPDIR}/system/etc/. /etc/
+  rsync -K -a ${APPDIR}/system/etc/. /etc/
   cp -r ${APPDIR}/system/lib/. /lib/
   cp -r ${APPDIR}/system/usr/. /usr/
   cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf

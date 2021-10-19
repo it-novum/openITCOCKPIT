@@ -20,13 +20,12 @@ MYSQL_PASSWORD=$(pwgen -s -1 16)
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
 OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
-
 OS_BASE="debian"
 
 if [[ -f "/etc/redhat-release" ]]; then
     echo "Detected RedHat based operating system."
     OS_BASE="RHEL"
-    OSVERSION=$(source /etc/os-release && echo $VERSION_ID) # e.g. "8.4"
+    OSVERSION=$(source /etc/os-release && echo $VERSION_ID | cut -d. -f1) # e.g. 8
 fi
 
 if [[ "$OS_BASE" == "RHEL" ]]; then
@@ -56,7 +55,7 @@ if [[ "$OS_BASE" == "RHEL" ]]; then
     # php-fpm
     mkdir -p "/etc/php/${PHPVersion}/fpm"
     mkdir -p /run/php
-    # Link RedHad config to where they are on Debian
+    # Link RedHat config to where they are on Debian
     ln -s /etc/php-fpm.conf "/etc/php/${PHPVersion}/fpm/php-fpm.conf"
     ln -s /etc/php.d "/etc/php/${PHPVersion}/fpm/conf.d"
     ln -s /etc/php-fpm.d "/etc/php/${PHPVersion}/fpm/pool.d"
@@ -66,17 +65,19 @@ if [[ "$OS_BASE" == "RHEL" ]]; then
     ln -s /etc/my.cnf.d /etc/mysql/conf.d
     ln -s /usr/lib/systemd/system/mysqld.service /usr/lib/systemd/system/mysql.service
 
-    # create snakeoil ssl certificate
+    # create snakeoil ssl certificate if no exists
     mkdir -p /etc/ssl/private
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost"
-    openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-    cat /etc/ssl/certs/dhparam.pem | tee -a /etc/ssl/certs/ssl-cert-snakeoil.pem
+    if [[ ! -f "/etc/ssl/private/ssl-cert-snakeoil.key" ]]; then
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost"
+        openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+        cat /etc/ssl/certs/dhparam.pem | tee -a /etc/ssl/certs/ssl-cert-snakeoil.pem
+    fi
 fi # End RHEL section
 
 echo "Copy required system files"
-cp -r ${APPDIR}/system/etc/. /etc/
+rsync -K -a ${APPDIR}/system/etc/. /etc/ # we use rsync because the destination can be a symlink on RHEL
 cp -r ${APPDIR}/system/lib/. /lib/
-rsync -K -a ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/ # we use rsync because the destination can be a symlink on RHEL
+rsync -K -a ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
 cp -r ${APPDIR}/system/usr/. /usr/
 cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
 cp ${APPDIR}/system/nginx/ssl_cert.conf /etc/nginx/openitc/ssl_cert.conf
