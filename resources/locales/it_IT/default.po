@@ -4309,57 +4309,57 @@ msgstr "Aggiorna rotazione mappa"
 
 #: plugins/MapModule/templates/Rotations/index.php:88
 msgid "Filter by Rotation name"
-msgstr ""
+msgstr "Filtra per nome rotazione"
 
 #: plugins/MapModule/templates/Rotations/index.php:101
 msgid "Filter by Rotation Interval"
-msgstr ""
+msgstr "Filtra per intervallo rotazione"
 
 #: plugins/MapModule/templates/Rotations/index.php:127
 msgid "Rotation name"
-msgstr ""
+msgstr "Nome rotazione"
 
 #: plugins/MattermostModule/src/Controller/AcknowledgeController.php:76
 #: plugins/MattermostModule/src/Controller/AcknowledgeController.php:136
 msgid "Issue got acknowledged by {0} via Mattermost."
-msgstr ""
+msgstr "Il problema è stato riconosciuto da {0} tramite Mattermost."
 
 #: plugins/MattermostModule/src/Controller/AcknowledgeController.php:83
 #: plugins/MattermostModule/src/Controller/AcknowledgeController.php:143
 msgid "Issue got acknowledged by **@{0}** via Mattermost."
-msgstr ""
+msgstr "Il problema è stato riconosciuto da **@{0}** tramite Mattermost."
 
 #: plugins/MattermostModule/src/Lib/Menu.php:47
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:50
 msgid "Mattermost"
-msgstr ""
+msgstr "Mattermost"
 
 #: plugins/MattermostModule/src/Model/Table/MattermostSettingsTable.php:89
 msgid "For Two-way integration an API key is required."
-msgstr ""
+msgstr "Per un integrazione a due fattori una chiave API è richiesta."
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:33
 msgid "Mattermost Module"
-msgstr ""
+msgstr "Modulo Mattermost"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:59
 #: PagerdutyModule/templates/Settings/edit.php:118
 #: SlackModule/templates/SlackSettings/index.php:44
 msgid "Webhook URL"
-msgstr ""
+msgstr "URL Webhook"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:70
 msgid "Mattermost Webhook URL."
-msgstr ""
+msgstr "URL Mattermost Webhook"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:83
 msgid "Enable Two-way integration"
-msgstr ""
+msgstr "Abilita integrazione a due fattori"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:90
 #: src/Template/Agentconnector/config.php:306
 msgid "openITCOCKPIT API Key"
-msgstr ""
+msgstr "Chiave API openITCOCKPIT"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:102
 #: DistributeModule/templates/Satellites/add.php:320
@@ -4369,76 +4369,76 @@ msgstr ""
 #: ImportModule/templates/ExternalSystems/add.php:186
 #: ImportModule/templates/ExternalSystems/edit.php:184
 msgid "API Key"
-msgstr ""
+msgstr "Chiave API"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:104
 msgid "used by Mattermost for authentication against openITCOCKPIT."
-msgstr ""
+msgstr "usata da Mattermost per l'autenticazione su openITCOCKPIT."
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:133
 #: src/Template/Proxy/index.php:110
 msgid "Save configuration"
-msgstr ""
+msgstr "Salva configurazione"
 
 #: plugins/NagiosModule/src/Controller/CmdController.php:95
 #: plugins/NagiosModule/src/Controller/CmdController.php:206
 #: PagerdutyModule/src/Controller/AcknowledgeController.php:98
 #: PagerdutyModule/src/Controller/AcknowledgeController.php:127
 msgid "Command added successfully to queue"
-msgstr ""
+msgstr "Comando aggiunto con successo alla coda"
 
 #: plugins/NagiosModule/src/Lib/Menu.php:44
 msgid "API"
-msgstr ""
+msgstr "API"
 
 #: plugins/NagiosModule/src/Lib/Menu.php:49
 #: plugins/NagiosModule/templates/Cmd/index.php:53
 msgid "External commands"
-msgstr ""
+msgstr "Comandi esterni"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:40
 #: src/Template/Administrators/debug.php:130
 msgid "Monitoring Engine"
-msgstr ""
+msgstr "Motore di monitoraggio"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:44
 msgid "External Command"
-msgstr ""
+msgstr "Comando esterno"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:64
 msgid "What is this API for?"
-msgstr ""
+msgstr "A cosa serve questa API?"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:65
 msgid "This API can be used by third party application to send commands to the monitoring backend."
-msgstr ""
+msgstr "Questa API può essere usata da un'applicazione di terze parti per mandare comandi al backend di monitoraggio."
 
 #: plugins/NagiosModule/templates/Cmd/index.php:67
 msgid "This could be useful to transfer passive check results or to acknowledge host or service states."
-msgstr ""
+msgstr "Questo potrebbe essere utile a trasferire risultati di analisi passivi o per riconoscere host o stati di servizio."
 
 #: plugins/NagiosModule/templates/Cmd/index.php:74
 #: src/Template/Commands/add.php:96
 #: src/Template/Commands/edit.php:97
 #: src/Template/Commands/index.php:166
 msgid "Command type"
-msgstr ""
+msgstr "Tipo comando"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:98
 msgid "Parameter"
-msgstr ""
+msgstr "Parametri"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:99
 msgid "Default value"
-msgstr ""
+msgstr "Valore di default"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:110
 msgid "required"
-msgstr ""
+msgstr "richiesto"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:121
 msgid "No parameters"
-msgstr ""
+msgstr "Nessun parametro"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:162
 #: plugins/NagiosModule/templates/Cmd/index.php:170
@@ -4446,265 +4446,265 @@ msgstr ""
 #: PagerdutyModule/templates/Settings/edit.php:127
 #: SlackModule/templates/SlackSettings/index.php:109
 msgid "YOUR_API_KEY_HERE"
-msgstr ""
+msgstr "LA_TUA_CHIAVE_API_QUI"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:221
 #: src/Template/Agentconnector/config.php:317
 msgid "You need to create an openITCOCKPIT user defined API key first."
-msgstr ""
+msgstr "Devi creare una chiave API per openITCOCKPIT definita dall'utente per prima cosa."
 
 #: plugins/NagiosModule/templates/Cmd/index.php:222
 #: src/Template/Agentconnector/config.php:321
 #: PagerdutyModule/templates/Settings/edit.php:132
 #: SlackModule/templates/SlackSettings/index.php:114
 msgid "Click here for help"
-msgstr ""
+msgstr "Clicca qui per aiuto"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:227
 msgid "is not required in the URL and can be removed."
-msgstr ""
+msgstr "non è richiesto nell'URL e può essere rimosso."
 
 #: plugins/NagiosModule/templates/Cmd/index.php:234
 msgid "External documentation"
-msgstr ""
+msgstr "Documentazione esterna"
 
 #: src/Command/AcknowledgePerMailCommand.php:169
 #: src/Command/AcknowledgePerMailCommand.php:185
 msgid "Acknowledged per mail"
-msgstr ""
+msgstr "Riconosciuto per email"
 
 #: src/Command/GearmanWorkerCommand.php:154
 msgid "GearmanWorker: Fork new worker child"
-msgstr ""
+msgstr "GearmanWorker: fai un fork del nuovo figlio lavoratore"
 
 #: src/Command/GearmanWorkerCommand.php:983
 msgid "Started refresh of monitoring configuration"
-msgstr ""
+msgstr "Iniziato aggiornamento della configurazione di monitoraggio"
 
 #: src/Command/GearmanWorkerCommand.php:990
 msgid "Create Backup of current configuration"
-msgstr ""
+msgstr "Crea backup della configurazione corrente"
 
 #: src/Command/GearmanWorkerCommand.php:1022
 msgid "Create Backup of current Prometheus configuration"
-msgstr ""
+msgstr "Crea backup della configurazione Prometheus corrente"
 
 #: src/Command/GearmanWorkerCommand.php:1065
 msgid "Delete old configuration"
-msgstr ""
+msgstr "Cancella configurazione precedente"
 
 #: src/Command/GearmanWorkerCommand.php:1076
 msgid "Execute pre export tasks"
-msgstr ""
+msgstr "Esegui tasks di pre esportazione"
 
 #: src/Command/GearmanWorkerCommand.php:1088
 msgid "Create default configuration"
-msgstr ""
+msgstr "Crea configurazione default"
 
 #: src/Command/GearmanWorkerCommand.php:1091
 msgid "Create hosttemplate configuration"
-msgstr ""
+msgstr "Crea una configurazione hosttemplate"
 
 #: src/Command/GearmanWorkerCommand.php:1094
 msgid "Create host configuration"
-msgstr ""
+msgstr "Crea oonfigurazione host"
 
 #: src/Command/GearmanWorkerCommand.php:1097
 msgid "Create command configuration"
-msgstr ""
+msgstr "Crea configurazione comando"
 
 #: src/Command/GearmanWorkerCommand.php:1100
 msgid "Create contact configuration"
-msgstr ""
+msgstr "Crea configurazione contatto"
 
 #: src/Command/GearmanWorkerCommand.php:1103
 msgid "Create contact group configuration"
-msgstr ""
+msgstr "Crea configurazione gruppo contatti"
 
 #: src/Command/GearmanWorkerCommand.php:1106
 msgid "Create timeperiod configuration"
-msgstr ""
+msgstr "Crea configurazione periodo di tempo"
 
 #: src/Command/GearmanWorkerCommand.php:1109
 msgid "Create host group configuration"
-msgstr ""
+msgstr "Crea configurazione del gruppo host"
 
 #: src/Command/GearmanWorkerCommand.php:1112
 msgid "Create host escalation configuration"
-msgstr ""
+msgstr "Crea configurazione scala host"
 
 #: src/Command/GearmanWorkerCommand.php:1115
 msgid "Create servicetemplate configuration"
-msgstr ""
+msgstr "Crea configurazione servicetemplate"
 
 #: src/Command/GearmanWorkerCommand.php:1118
 msgid "Create service configuration"
-msgstr ""
+msgstr "Crea configurazione servizio"
 
 #: src/Command/GearmanWorkerCommand.php:1121
 msgid "Create service escalation configuration"
-msgstr ""
+msgstr "Crea configurazione servizio scala"
 
 #: src/Command/GearmanWorkerCommand.php:1124
 msgid "Create service group configuration"
-msgstr ""
+msgstr "Crea configurazione gruppo servizi"
 
 #: src/Command/GearmanWorkerCommand.php:1127
 msgid "Create host dependency configuration"
-msgstr ""
+msgstr "Crea configurazione dipendenza host"
 
 #: src/Command/GearmanWorkerCommand.php:1130
 msgid "Create service dependency configuration"
-msgstr ""
+msgstr "Crea configurazione dipendenze di servizio"
 
 #: src/Command/GearmanWorkerCommand.php:1133
 msgid "Export user defined macros"
-msgstr ""
+msgstr "Esporta macro definite dall'utente"
 
 #: src/Command/GearmanWorkerCommand.php:1139
 msgid "Create main Prometheus configuration file"
-msgstr ""
+msgstr "Crea file configurazione principale Prometheus"
 
 #: src/Command/GearmanWorkerCommand.php:1142
 msgid "Create Prometheus targets"
-msgstr ""
+msgstr "Crea i target Prometheys"
 
 #: src/Command/GearmanWorkerCommand.php:1145
 msgid "Create Prometheus alert rules"
-msgstr ""
+msgstr "Crea regole di notifica Prometheus"
 
 #: src/Command/GearmanWorkerCommand.php:1177
 msgid "Execute post export tasks"
-msgstr ""
+msgstr "Esegui tasks di post esportazione"
 
 #: src/Command/GearmanWorkerCommand.php:1189
 msgid "Verifying new configuration"
-msgstr ""
+msgstr "Verifica della nuova configurazione"
 
 #: src/Command/GearmanWorkerCommand.php:1219
 msgid "Check if monitoring engine is running"
-msgstr ""
+msgstr "Controllo se il motore di monitoraggio sta eseguendo"
 
 #: src/Command/GearmanWorkerCommand.php:1233
 msgid "Reloading monitoring engine"
-msgstr ""
+msgstr "Ricaricamento del motore di monitoraggio"
 
 #: src/Command/GearmanWorkerCommand.php:1249
 msgid "Restarting monitoring engine"
-msgstr ""
+msgstr "Riavvio del motore di monitoraggio"
 
 #: src/Command/GearmanWorkerCommand.php:1268
 msgid "Execute after export command"
-msgstr ""
+msgstr "Esegui comando post esportazione"
 
 #: src/Command/GearmanWorkerCommand.php:1304
 msgid "Verifying new Prometheus configuration"
-msgstr ""
+msgstr "Verifica della nuov configurazione Prometheus"
 
 #: src/Command/GearmanWorkerCommand.php:1324
 msgid "Restarting Prometheus monitoring engine"
-msgstr ""
+msgstr "Riavvio del motore di monitoraggio Prometheus"
 
 #: src/Command/GearmanWorkerCommand.php:1346
 msgid "Refresh of configuration finished"
-msgstr ""
+msgstr "Aggiornamento configurazione terminato"
 
 #: src/Command/GearmanWorkerCommand.php:1377
 msgid "with an error"
-msgstr ""
+msgstr "con un errore"
 
 #: src/Command/GearmanWorkerCommand.php:1379
 msgid "successfully"
-msgstr ""
+msgstr "con successo"
 
 #: src/Command/GearmanWorkerCommand.php:1389
 msgid "Refresh of monitoring configuration finished {0}"
-msgstr ""
+msgstr "Aggiornamento della configurazione monitoraggio terminato {0}"
 
 #: src/Command/GearmanWorkerCommand.php:1485
 msgid "Mark Satellite for configuration synchronization through NSTA daemon ["
-msgstr ""
+msgstr "Marka Satellite per sincronizzazione configurazione con demone NSTA ["
 
 #: src/Command/GearmanWorkerCommand.php:1501
 msgid "Check if NSTA daemon is running"
-msgstr ""
+msgstr "Controlla se demone NSTA sta eseguendo"
 
 #: src/Command/GearmanWorkerCommand.php:1515
 msgid "Reloading NSTA daemon"
-msgstr ""
+msgstr "Ricaricamento demone NSTA"
 
 #: src/Command/GearmanWorkerCommand.php:1531
 msgid "Restarting NSTA daemon"
-msgstr ""
+msgstr "Riavvio demone NSTA"
 
 #: src/Command/InstantReportCommand.php:103
 msgid "Never"
-msgstr ""
+msgstr "Mai"
 
 #: src/Command/InstantReportCommand.php:104
 msgid "Daily"
-msgstr ""
+msgstr "Quotidianamente"
 
 #: src/Command/InstantReportCommand.php:105
 msgid "Weekly"
-msgstr ""
+msgstr "Settimanalmente"
 
 #: src/Command/InstantReportCommand.php:106
 msgid "Monthly"
-msgstr ""
+msgstr "Mensilmente"
 
 #: src/Command/InstantReportCommand.php:107
 msgid "Yearly"
-msgstr ""
+msgstr "Annualmente"
 
 #: src/Command/InstantReportCommand.php:199
 msgid "An error occured while sending instant report mail: "
-msgstr ""
+msgstr "Si è verificato un errore mandando una mail di report istantaneo"
 
 #: src/Command/NagiosExportCommand.php:74
 msgid "Verifying monitoring configuration files, please standby..."
-msgstr ""
+msgstr "Verifica dei file di configurazione monitoraggio, attend..."
 
 #: src/Command/ResetPasswordCommand.php:39
 msgid "If set the new password will get print to the CLI"
-msgstr ""
+msgstr "Se settata la nuova password sarà stampata sulla CLI"
 
 #: src/Command/ResetPasswordCommand.php:45
 msgid "Do not send the new password per mail"
-msgstr ""
+msgstr "Non mandare la nuova password per mail"
 
 #: src/Command/ResetPasswordCommand.php:51
 msgid "If set the user will also be marked as enabled in the database. If not set the is_active field will be left untouched."
-msgstr ""
+msgstr "Se settato l'utente sarà anche marcato come abilitato nel database. Altrimenti il campo is_active sarà lasciato vuoto."
 
 #: src/Command/ResetPasswordCommand.php:136
 msgid "New password is: {0}"
-msgstr ""
+msgstr "La nuova password è: {0}"
 
 #: src/Command/ResetPasswordCommand.php:145
 #: src/Command/Update3To4Command.php:313
 #: src/Controller/UsersController.php:520
 msgid "Your "
-msgstr ""
+msgstr "La tua"
 
 #: src/Command/ResetPasswordCommand.php:145
 #: src/Command/Update3To4Command.php:313
 #: src/Controller/UsersController.php:520
 msgid " got reset!"
-msgstr ""
+msgstr " è stata resettata!"
 
 #: src/Command/ResetPasswordCommand.php:161
 #: src/Command/Update3To4Command.php:336
 msgid "New password was send to {0}"
-msgstr ""
+msgstr "La nuova password è stata inviata a {0}"
 
 #: src/Command/RolesCommand.php:105
 msgid "Checking permissions for user group \"{0}\"..."
-msgstr ""
+msgstr "Controllo permessi per gruppo utente \"{0}\"..."
 
 #: src/Command/RolesCommand.php:332
 msgid "Restore default permissions for user group \"Administrator\""
-msgstr ""
+msgstr "Ristora i permessi di default per il gruppo utente \"Administrator\""
 
 #: src/Command/RolesCommand.php:412
 msgid "Re-Enable default permissions for user group \"{0}\" but keep custom changes."
@@ -13926,7 +13926,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:201
 #: src/Template/Servicetemplates/edit.php:206
 msgid "Press return to separate tags"
-msgstr ""
+msgstr "Premi invio per separare i tag"
 
 #: src/Template/Hosts/add.php:322
 #: src/Template/Hosts/browser.php:825
@@ -13945,7 +13945,7 @@ msgstr ""
 #: src/Template/Servicetemplates/edit.php:213
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:154
 msgid "Priority"
-msgstr ""
+msgstr "Priorità"
 
 #: src/Template/Hosts/add.php:369
 #: src/Template/Hosts/edit.php:385
@@ -13958,7 +13958,7 @@ msgstr ""
 #: src/Template/Servicetemplates/edit.php:227
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:173
 msgid "Check configuration"
-msgstr ""
+msgstr "Controllo configurazione"
 
 #: src/Template/Hosts/add.php:377
 #: src/Template/Hosts/add.php:380
@@ -13984,7 +13984,7 @@ msgstr ""
 #: src/Template/Servicetemplates/edit.php:238
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:179
 msgid "Check period"
-msgstr ""
+msgstr "Controlla periodo"
 
 #: src/Template/Hosts/add.php:397
 #: src/Template/Hosts/add.php:447
@@ -20431,21 +20431,21 @@ msgstr ""
 
 #: AutoreportModule/templates/AutoreportSettings/index.php:47
 msgid "Autoreport Settings"
-msgstr ""
+msgstr "Opzioni Autoreport"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:19
 #: AutoreportModule/templates/Autoreports/add_step_two.php:19
 msgid "Create auto report"
-msgstr ""
+msgstr "Crea auto report"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:22
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:23
 msgid "Step 1"
-msgstr ""
+msgstr "Passo 1"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:31
 msgid "Create new autoreport"
-msgstr ""
+msgstr "Crea nuovo autoreport"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:42
 #: AutoreportModule/templates/Autoreports/add_step_two.php:44
@@ -20453,7 +20453,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:44
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:44
 msgid "Report configuration"
-msgstr ""
+msgstr "Configurazione Report"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:46
 #: AutoreportModule/templates/Autoreports/add_step_two.php:48
@@ -20461,7 +20461,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:48
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:48
 msgid "Host and services configuration"
-msgstr ""
+msgstr "Configurazione host e servizi"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:50
 #: AutoreportModule/templates/Autoreports/add_step_two.php:52
@@ -20494,72 +20494,72 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/add_step_one.php:174
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:176
 msgid "Evaluation period"
-msgstr ""
+msgstr "Periodo di valutazione"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:180
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:182
 msgid "Year"
-msgstr ""
+msgstr "Anno"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:181
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:183
 msgid "Quarter"
-msgstr ""
+msgstr "Quadrimestre"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:182
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:184
 msgid "Month"
-msgstr ""
+msgstr "Mese"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:183
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:185
 msgid "Week"
-msgstr ""
+msgstr "Settimana"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:200
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:202
 msgid "never"
-msgstr ""
+msgstr "mai"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:201
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:203
 msgid "yearly"
-msgstr ""
+msgstr "annualmente"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:202
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:204
 msgid "quarterly"
-msgstr ""
+msgstr "quadrimestralmente"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:203
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:205
 msgid "monthly"
-msgstr ""
+msgstr "mensilmente"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:204
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:206
 msgid "weekly"
-msgstr ""
+msgstr "settimanalmente"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:205
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:207
 msgid "daily"
-msgstr ""
+msgstr "quotidianamente"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:219
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:221
 msgid "Guaranteed availability"
-msgstr ""
+msgstr "Disponibilità garantita"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:243
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:245
 msgid "in percent"
-msgstr ""
+msgstr "in percentuale"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:249
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:251
 msgid "in minutes"
-msgstr ""
+msgstr "in minuti"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:265
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:267
@@ -20570,7 +20570,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:276
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:144
 msgid "Max. number of outages"
-msgstr ""
+msgstr "Massimo numero di outage"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:300
 #: AutoreportModule/templates/Autoreports/add_step_two.php:130
@@ -20578,7 +20578,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:259
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:130
 msgid "Graph"
-msgstr ""
+msgstr "Grafico"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:306
 #: AutoreportModule/templates/Autoreports/add_step_two.php:126
@@ -20586,7 +20586,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:255
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:126
 msgid "in %"
-msgstr ""
+msgstr "in %"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:307
 #: AutoreportModule/templates/Autoreports/add_step_two.php:127
@@ -20594,18 +20594,18 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:256
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:127
 msgid "in h"
-msgstr ""
+msgstr "in h"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:352
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:354
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:201
 msgid "Consider holidays"
-msgstr ""
+msgstr "Considera feste"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:22
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:22
 msgid "Step 2"
-msgstr ""
+msgstr "Passo 2"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:32
 msgid "Create new auto report:"
