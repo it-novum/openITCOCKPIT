@@ -251,6 +251,7 @@ class AdministratorsController extends AppController {
         else if (strstr($agent, "Mac OS X 10.13")) $os = "macOS High Sierra";
         else if (strstr($agent, "Mac OS X 10.14")) $os = "macOS Mojave";
         else if (strstr($agent, "Mac OS X 10.15")) $os = "macOS Catalina";
+        else if (strstr($agent, "Mac OS X 11.6")) $os = "macOS Big Sur";
 
         //Chrome
         else if (strstr($agent, "Mac OS X 10_5")) $os = "Mac OS X - Leopard";
@@ -265,6 +266,7 @@ class AdministratorsController extends AppController {
         else if (strstr($agent, "Mac OS X 10_13")) $os = "macOS High Sierra";
         else if (strstr($agent, "Mac OS X 10_14")) $os = "macOS Mojave";
         else if (strstr($agent, "Mac OS X 10_15")) $os = "macOS Catalina";
+        else if (strstr($agent, "Mac OS X 11_6")) $os = "macOS Big Sur";
 
         else if (strstr($agent, "Mac OS")) $os = "Mac OS X";
         else if (strstr($agent, "Linux")) $os = "Linux";
