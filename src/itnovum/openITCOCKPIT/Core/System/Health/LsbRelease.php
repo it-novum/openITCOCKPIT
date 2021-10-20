@@ -42,7 +42,16 @@ class LsbRelease {
      */
     private $codename = null;
 
+    private $isDebianBased = true;
+
+    private $isRhelBased = false;
+
     public function __construct() {
+        if(file_exists('/etc/redhat-release')){
+            $this->isDebianBased = false;
+            $this->isRhelBased = true;
+        }
+
 
         if (file_exists('/etc/lsb-release')) {
             foreach (file('/etc/lsb-release') as $line) {
@@ -65,7 +74,32 @@ class LsbRelease {
             return;
         }
 
-        if (file_exists('/etc/os-release')) {
+        if (file_exists('/etc/os-release') && file_exists('/etc/redhat-release')) {
+            // RedHat / CentOS / Rocky Linux / AlmaLinux
+            foreach (file('/etc/os-release') as $line) {
+                $line = trim($line);
+                if(preg_match('/^NAME\=/', $line)) {
+                    $res = explode('NAME=', $line);
+                    if (isset($res[1])) {
+                        $this->vendor = ucfirst($res[1]); //Rocky Linux
+                    }
+                }
+
+                $res = explode('VERSION_ID=', $line);
+                if (isset($res[1])) {
+                    $res[1] = str_replace(['"', "'"], '', $res[1]);
+                    $this->version = $res[1]; //8.4
+                }
+
+                $res = explode('PRETTY_NAME=', $line);
+                if (isset($res[1])) {
+                    $res[1] = str_replace(['"', "'"], '', $res[1]);
+                    $this->codename = $res[1]; //Rocky Linux 8.4 (Green Obsidian)
+                }
+            }
+
+        } else if (file_exists('/etc/os-release')) {
+            // Debian
             foreach (file('/etc/os-release') as $line) {
                 $line = trim($line);
                 $res = explode('ID=', $line);
@@ -95,7 +129,6 @@ class LsbRelease {
                     $this->codename = $codename; //stretch
                 }
             }
-            return;
         }
     }
 
@@ -120,4 +153,17 @@ class LsbRelease {
         return $this->codename;
     }
 
+    /**
+     * @return bool
+     */
+    public function isDebianBased(): bool {
+        return $this->isDebianBased;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRhelBased(): bool {
+        return $this->isRhelBased;
+    }
 }

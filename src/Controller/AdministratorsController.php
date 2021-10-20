@@ -136,13 +136,19 @@ class AdministratorsController extends AppController {
 
         //Collect server information
         $LsbRelease = new LsbRelease();
+        if($LsbRelease->isDebianBased()){
+            $osVersion = sprintf('%s %s (%s)', $LsbRelease->getVendor(), $LsbRelease->getVersion(), $LsbRelease->getCodename());
+        }else{
+            $osVersion = $LsbRelease->getCodename();
+        }
+
         $CpuLoad = new CpuLoad();
 
         $serverInformation = [
             'address'                => $_SERVER['SERVER_ADDR'],
             'webserver'              => $_SERVER['SERVER_SOFTWARE'],
             'tls'                    => $_SERVER['HTTPS'],
-            'os_version'             => sprintf('%s %s (%s)', $LsbRelease->getVendor(), $LsbRelease->getVersion(), $LsbRelease->getCodename()),
+            'os_version'             => $osVersion,
             'kernel'                 => php_uname('r'),
             'architecture'           => php_uname('m'),
             'cpu_processor'          => $CpuLoad->getModel(),

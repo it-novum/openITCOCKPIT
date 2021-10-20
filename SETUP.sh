@@ -48,6 +48,7 @@ if [[ "$OS_BASE" == "RHEL" ]]; then
      php-fpm.service
 
     # sudo - allow root to use sudo
+    # sudo is needed by the "oitc" command
     usermod -aG wheel root
     echo "root    ALL=(ALL:ALL) ALL" > /etc/sudoers.d/openitcockpit
     chmod 0440 /etc/sudoers.d/openitcockpit

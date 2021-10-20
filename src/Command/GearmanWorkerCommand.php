@@ -469,6 +469,10 @@ class GearmanWorkerCommand extends Command {
 
             case 'create_apt_config':
                 $LsbRelease = new LsbRelease();
+                if($LsbRelease->isDebianBased() === false){
+                    // Do not creat apt config on RedHat systems
+                    break;
+                }
 
                 /*
                 $repo = '';
