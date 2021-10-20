@@ -81,6 +81,7 @@ class LsbRelease {
                 if(preg_match('/^NAME\=/', $line)) {
                     $res = explode('NAME=', $line);
                     if (isset($res[1])) {
+                        $res[1] = str_replace(['"', "'"], '', $res[1]);
                         $this->vendor = ucfirst($res[1]); //Rocky Linux
                     }
                 }
