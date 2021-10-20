@@ -4,6 +4,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use Cake\Utility\Hash;
+
 class Locales {
 
     /**
@@ -95,11 +97,10 @@ class Locales {
     }
 
     /**
-     * @param string $localCode
-     * @return array
+     * @return array[]
      */
-    public static function getLanguageByLocalCode(string $localCode) {
-        $languages = [
+    private static function getAllDefinedLanguages() {
+        return [
             'German' => [
                 'label'   => 'Deutsch / ' . __('German'),
                 'flag'    => 'flag-icon flag-icon-de',
@@ -146,6 +147,21 @@ class Locales {
                 ]
             ]
         ];
+    }
+
+    /**
+     * @return array|array[]|\ArrayAccess|\ArrayAccess[]
+     */
+    public static function getLocalCodesFromDefinedLanguages(){
+        return Hash::extract(self::getAllDefinedLanguages(), '{s}.i18n');
+    }
+
+    /**
+     * @param string $localCode
+     * @return array
+     */
+    public static function getLanguageByLocalCode(string $localCode): array {
+        $languages = self::getAllDefinedLanguages();
 
         foreach ($languages as $language) {
             if (in_array($localCode, $language['locales'], true)) {
