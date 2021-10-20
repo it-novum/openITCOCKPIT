@@ -472,7 +472,8 @@ for srv in openitcockpit-graphing.service nginx.service nsta.service; do
   fi
 done
 
-systemctl is-enabled --quiet php${PHPVersion}-fpm.service
+set +e
+systemctl is-enabled --quiet php${PHPVersion}-fpm.service &>/dev/null
 RC=$?
 if [ $RC -eq 0 ]; then
   #Is it php7.3-fpm-service ?
@@ -487,6 +488,7 @@ else
     echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
   fi
 fi
+set -e
 
 echo "Cleanup old Docker images"
 if systemctl is-active --quiet docker.service; then

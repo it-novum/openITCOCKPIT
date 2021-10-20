@@ -61,6 +61,17 @@ if [[ "$OS_BASE" == "RHEL" ]]; then
     ln -s /etc/php.d "/etc/php/${PHPVersion}/fpm/conf.d"
     ln -s /etc/php-fpm.d "/etc/php/${PHPVersion}/fpm/pool.d"
 
+    # nginx
+    if [[ -f "/etc/nginx/nginx.conf" ]]; then
+        echo "Move /etc/nginx/nginx.conf to /etc/nginx/nginx.conf.orig"
+        mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
+    fi
+    mkdir -p /etc/nginx/sites-enabled
+    mkdir -p /var/lib/nginx/tmp
+    chown www-data:root /var/lib/nginx -R
+    chown www-data:root /var/lib/nginx/tmp -R
+    cp ${APPDIR}/system/nginx/nginx.rhel${OSVERSION}.conf /etc/nginx/nginx.conf
+
     # myqsl
     mkdir -p /etc/mysql
     ln -s /etc/my.cnf.d /etc/mysql/conf.d
@@ -381,7 +392,8 @@ done
 
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
-systemctl is-enabled --quiet php${PHPVersion}-fpm.service
+set +e
+systemctl is-enabled --quiet php${PHPVersion}-fpm.service &>/dev/null
 RC=$?
 if [ $RC -eq 0 ]; then
     #Is it php7.3-fpm-service ?
@@ -396,6 +408,7 @@ else
         echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
     fi
 fi
+set -e
 
 #Set default permissions, check for always allowed permissions and dependencies
 oitc roles --enable-defaults --admin
