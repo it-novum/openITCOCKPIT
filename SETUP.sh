@@ -75,7 +75,6 @@ if [[ "$OS_BASE" == "RHEL" ]]; then
     # myqsl
     mkdir -p /etc/mysql
     ln -s /etc/my.cnf.d /etc/mysql/conf.d
-    ln -s /usr/lib/systemd/system/mysqld.service /usr/lib/systemd/system/mysql.service
 
     # create snakeoil ssl certificate if no exists
     mkdir -p /etc/ssl/private
@@ -145,8 +144,12 @@ systemctl enable\
 if [[ ! -f "$INIFILE" ]]; then
     echo "Create local MySQL configuration and database"
 
-    # Restart MySQL to load openitcockpit.cnf to disable MySQL Binary Logs on Ubuntu Focal
-    systemctl restart mysql.service
+    if [[ "$OS_BASE" == "RHEL" ]]; then
+        systemctl restart mysqld.service
+    else
+        # Restart MySQL to load openitcockpit.cnf to disable MySQL Binary Logs on Ubuntu Focal
+        systemctl restart mysql.service
+    fi
     echo "Waiting 3 seconds for MySQL / MariaDB..."
     sleep 3
 
@@ -155,6 +158,12 @@ if [[ ! -f "$INIFILE" ]]; then
 
         # set sql_mode to enable group by like it was in the good old times :)
         mysql --defaults-extra-file=${DEBIANCNF} -e "SET GLOBAL sql_mode = '';"
+
+        if [[ "$OS_BASE" == "RHEL" ]]; then
+            # Set Password policy to LOW on RHEL systems with MySQL 8
+            # https://dev.mysql.com/doc/refman/8.0/en/validate-password-options-variables.html#sysvar_validate_password.policy
+            mysql --defaults-extra-file=${DEBIANCNF} -e "SET GLOBAL validate_password.policy=LOW;" -B
+        fi
 
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE USER '${MYSQL_DATABASE}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;" -B
