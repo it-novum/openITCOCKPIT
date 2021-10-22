@@ -3,6 +3,8 @@
  * @var $RepositoryChecker \itnovum\openITCOCKPIT\Core\RepositoryChecker
  */
 
+$LsbRelease = new \itnovum\openITCOCKPIT\Core\System\Health\LsbRelease();
+
 $isOldRepositoryInUse = false;
 $hasError = false;
 
@@ -12,7 +14,7 @@ try {
     $hasError = true;
 }
 
-if ($isOldRepositoryInUse === true || $hasError === true): ?>
+if (($isOldRepositoryInUse === true || $hasError === true) && $LsbRelease->isDebianBased()): ?>
     <div>
         <div class="alert alert-danger alert-block">
             <a href="javascript:void(0);" data-dismiss="alert" class="close">×</a>
