@@ -31,22 +31,6 @@ fi
 if [[ "$OS_BASE" == "RHEL" ]]; then
     echo "Make RedHat look more like it's Debian ;)"
 
-    systemctl enable\
-     nginx.service\
-     gearmand.service\
-     mysqld.service\
-     redis.service\
-     docker.service\
-     php-fpm.service
-
-    systemctl start\
-     nginx.service\
-     gearmand.service\
-     mysqld.service\
-     redis.service\
-     docker.service\
-     php-fpm.service
-
     # sudo - allow root to use sudo
     # sudo is needed by the "oitc" command
     usermod -aG wheel root
@@ -56,6 +40,13 @@ if [[ "$OS_BASE" == "RHEL" ]]; then
     # php-fpm
     mkdir -p "/etc/php/${PHPVersion}/fpm"
     mkdir -p /run/php
+
+    mkdir -p /etc/systemd/system/php-fpm.service.d/
+    echo "[Service]" > /etc/systemd/system/php-fpm.service.d/override.conf
+    echo "# Create folder for openITCOCKPIT default php-fpm socket path" >> /etc/systemd/system/php-fpm.service.d/override.conf
+    echo "ExecStartPre=-mkdir -p /run/php" >> /etc/systemd/system/php-fpm.service.d/override.conf
+
+
     # Link RedHat config to where they are on Debian
     ln -s /etc/php-fpm.conf "/etc/php/${PHPVersion}/fpm/php-fpm.conf"
     ln -s /etc/php.d "/etc/php/${PHPVersion}/fpm/conf.d"
@@ -83,6 +74,25 @@ if [[ "$OS_BASE" == "RHEL" ]]; then
         openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
         cat /etc/ssl/certs/dhparam.pem | tee -a /etc/ssl/certs/ssl-cert-snakeoil.pem
     fi
+
+    systemctl daemon-reload
+
+    systemctl enable\
+     nginx.service\
+     gearmand.service\
+     mysqld.service\
+     redis.service\
+     docker.service\
+     php-fpm.service
+
+    systemctl start\
+    nginx.service\
+     gearmand.service\
+     mysqld.service\
+     redis.service\
+     docker.service\
+     php-fpm.service
+
 fi # End RHEL section
 
 echo "Copy required system files"
