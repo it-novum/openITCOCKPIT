@@ -34,6 +34,7 @@ use Cake\Core\Configure;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\DnfRepositoryChecker;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
@@ -54,8 +55,10 @@ class AdministratorsController extends AppController {
             //Only ship HTML template
 
             $RepositoryChecker = new RepositoryChecker();
+            $DnfRepositoryChecker = new DnfRepositoryChecker();
             $LsbRelease = new LsbRelease();
             $this->set('RepositoryChecker', $RepositoryChecker);
+            $this->set('DnfRepositoryChecker', $DnfRepositoryChecker);
             $this->set('LsbRelease', $LsbRelease);
             return;
         }
