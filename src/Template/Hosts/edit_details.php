@@ -89,19 +89,17 @@
                                         ng-model="post.Host.hosts_to_containers_sharing._ids">
                                     </select>
                                     <div class="form-group">
-                                        <div class="col-xs-12 col-lg-10">
-                                            <label
-                                                class="checkbox small-checkbox-label display-inline margin-right-5 padding-top-0">
-                                                <input type="checkbox" name="checkbox"
-                                                       id="keepExistingSharedContainers"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0"
-                                                       ng-disabled="!post.editSharedContainers"
-                                                       ng-model="post.keepSharedContainers">
-                                                <i class="checkbox-primary disabled"></i>
-                                                <?php echo __('Keep existing'); ?>
-                                            </label>
-                                        </div>
+                                        <label
+                                            class="checkbox small-checkbox-label display-inline margin-right-5 padding-top-0">
+                                            <input type="checkbox" name="checkbox"
+                                                   id="keepExistingSharedContainers"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0"
+                                                   ng-disabled="!post.editSharedContainers"
+                                                   ng-model="post.keepSharedContainers">
+                                            <i class="checkbox-primary disabled"></i>
+                                            <?php echo __('Keep existing'); ?>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -211,7 +209,7 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label class="col-xs-12 col-lg-2 control-label">
+                                <label class="control-label">
                                     <button class="btn btn-xs btn-icon"
                                             name="editCheckInterval"
                                             ng-class="{ 'btn-primary': !post.editCheckInterval, 'btn-success': post.editCheckInterval }"
@@ -229,7 +227,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-12 col-lg-2 control-label">
+                                <label class="control-label">
                                     <button class="btn btn-xs btn-icon"
                                             name="post.editRetryInterval"
                                             ng-class="{ 'btn-primary': !post.editRetryInterval, 'btn-success': post.editRetryInterval }"
@@ -247,7 +245,7 @@
                             </div>
 
                             <div class="form-group required">
-                                <label class="col-xs-12 col-lg-2 control-label">
+                                <label class="control-label">
                                     <button class="btn btn-xs btn-icon"
                                             name="editMaxNumberOfCheckAttempts"
                                             ng-class="{ 'btn-primary': !post.editMaxNumberOfCheckAttempts, 'btn-success': post.editMaxNumberOfCheckAttempts }"
@@ -307,7 +305,7 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label class="col-xs-12 col-lg-2 control-label">
+                                <label class="control-label">
                                     <button class="btn btn-xs btn-icon"
                                             name="editNotificationInterval"
                                             ng-class="{ 'btn-primary': !post.editNotificationInterval, 'btn-success': post.editNotificationInterval }"
@@ -350,19 +348,17 @@
                                 </div>
                                 <div class="help-block">
                                     <div class="form-group">
-                                        <div class="col-xs-12 col-lg-10">
-                                            <label
-                                                class="checkbox small-checkbox-label display-inline margin-right-5 padding-top-0">
-                                                <input type="checkbox" name="checkbox"
-                                                       id="keepExistingContacts"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0"
-                                                       ng-disabled="!post.editContacts"
-                                                       ng-model="post.keepContacts">
-                                                <i class="checkbox-primary disabled"></i>
-                                                <?php echo __('Keep existing'); ?>
-                                            </label>
-                                        </div>
+                                        <label
+                                            class="checkbox small-checkbox-label display-inline margin-right-5 padding-top-0">
+                                            <input type="checkbox" name="checkbox"
+                                                   id="keepExistingContacts"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0"
+                                                   ng-disabled="!post.editContacts"
+                                                   ng-model="post.keepContacts">
+                                            <i class="checkbox-primary disabled"></i>
+                                            <?php echo __('Keep existing'); ?>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -394,19 +390,17 @@
                                 </div>
                                 <div class="help-block">
                                     <div class="form-group">
-                                        <div class="col-xs-12 col-lg-10">
-                                            <label
-                                                class="checkbox small-checkbox-label display-inline margin-right-5 padding-top-0">
-                                                <input type="checkbox" name="checkbox"
-                                                       id="keepExistingContactgroups"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0"
-                                                       ng-disabled="!post.editContactgroups"
-                                                       ng-model="post.keepContactgroups">
-                                                <i class="checkbox-primary disabled"></i>
-                                                <?php echo __('Keep existing'); ?>
-                                            </label>
-                                        </div>
+                                        <label
+                                            class="checkbox small-checkbox-label display-inline margin-right-5 padding-top-0">
+                                            <input type="checkbox" name="checkbox"
+                                                   id="keepExistingContactgroups"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0"
+                                                   ng-disabled="!post.editContactgroups"
+                                                   ng-model="post.keepContactgroups">
+                                            <i class="checkbox-primary disabled"></i>
+                                            <?php echo __('Keep existing'); ?>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
