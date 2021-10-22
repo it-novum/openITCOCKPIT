@@ -470,7 +470,7 @@ class GearmanWorkerCommand extends Command {
             case 'create_apt_config':
                 $LsbRelease = new LsbRelease();
                 if ($LsbRelease->isDebianBased() === false) {
-                    // Do not creat apt config on RedHat systemscreate_apt_config
+                    // Do not create apt config on RedHat systemscreate_apt_config
                     break;
                 }
 
@@ -528,7 +528,7 @@ class GearmanWorkerCommand extends Command {
             case 'create_dnf_config':
                 $LsbRelease = new LsbRelease();
                 if ($LsbRelease->isRhelBased() === false) {
-                    // Do not creat dnf config on Debian / Ubuntu
+                    // Do not create dnf config on Debian / Ubuntu
                     break;
                 }
 
