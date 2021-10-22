@@ -31,6 +31,7 @@ use App\Lib\Environments;
 use App\Model\Table\RegistersTable;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
+use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
 
 class RegistersController extends AppController {
@@ -97,7 +98,14 @@ class RegistersController extends AppController {
                     $licenseEntity = $RegistersTable->patchEntity($licenseEntity, ['license' => $license]);
 
                     $GearmanClient = new Gearman();
-                    $GearmanClient->sendBackground('create_apt_config', ['key' => $license]);
+                    $LsbRelease = new LsbRelease();
+                    if ($LsbRelease->isDebianBased()) {
+                        $GearmanClient->sendBackground('create_apt_config', ['key' => $license]);
+                    }
+
+                    if ($LsbRelease->isRhelBased()) {
+                        $GearmanClient->sendBackground('create_dnf_config', ['key' => $license]);
+                    }
 
                     $licenseEntity->set('apt', 1);
                     $licenseEntity->set('accepted', 1);

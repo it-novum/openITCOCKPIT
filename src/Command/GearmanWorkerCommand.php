@@ -469,8 +469,8 @@ class GearmanWorkerCommand extends Command {
 
             case 'create_apt_config':
                 $LsbRelease = new LsbRelease();
-                if($LsbRelease->isDebianBased() === false){
-                    // Do not creat apt config on RedHat systems
+                if ($LsbRelease->isDebianBased() === false) {
+                    // Do not creat apt config on RedHat systemscreate_apt_config
                     break;
                 }
 
@@ -523,6 +523,33 @@ class GearmanWorkerCommand extends Command {
 
                 unset($payload);
                 exec('apt-get update');
+                break;
+
+            case 'create_dnf_config':
+                $LsbRelease = new LsbRelease();
+                if ($LsbRelease->isRhelBased() === false) {
+                    // Do not creat dnf config on Debian / Ubuntu
+                    break;
+                }
+
+                if (!is_dir('/etc/yum.repos.d')) {
+                    mkdir('/etc/yum.repos.d');
+                }
+
+                $file = fopen('/etc/yum.repos.d/openitcockpit.repo', 'w+');
+                fwrite($file, '[openitcockpit]' . PHP_EOL);
+                fwrite($file, 'name=openITCOCKPIT System Monitoring' . PHP_EOL);
+                fwrite($file, 'baseurl=https://packages.openitcockpit.io/openitcockpit/RHEL8/stable/$basearch/' . PHP_EOL);
+                fwrite($file, 'enabled=1' . PHP_EOL);
+                fwrite($file, 'gpgcheck=1' . PHP_EOL);
+                fwrite($file, 'gpgkey=https://packages.openitcockpit.io/repokey.txt' . PHP_EOL);
+                fwrite($file, 'username=secret' . PHP_EOL);
+                fwrite($file, 'password=' . $payload['key'] . PHP_EOL);
+                fclose($file);
+
+                unset($payload);
+                exec('yum-config-manager -y --enable openitcockpit');
+                exec('dnf check-update');
                 break;
 
             case 'createHostDowntime':
