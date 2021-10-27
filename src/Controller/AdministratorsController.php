@@ -34,6 +34,7 @@ use Cake\Core\Configure;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\DnfRepositoryChecker;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
@@ -54,8 +55,10 @@ class AdministratorsController extends AppController {
             //Only ship HTML template
 
             $RepositoryChecker = new RepositoryChecker();
+            $DnfRepositoryChecker = new DnfRepositoryChecker();
             $LsbRelease = new LsbRelease();
             $this->set('RepositoryChecker', $RepositoryChecker);
+            $this->set('DnfRepositoryChecker', $DnfRepositoryChecker);
             $this->set('LsbRelease', $LsbRelease);
             return;
         }
@@ -136,13 +139,19 @@ class AdministratorsController extends AppController {
 
         //Collect server information
         $LsbRelease = new LsbRelease();
+        if($LsbRelease->isDebianBased()){
+            $osVersion = sprintf('%s %s (%s)', $LsbRelease->getVendor(), $LsbRelease->getVersion(), $LsbRelease->getCodename());
+        }else{
+            $osVersion = $LsbRelease->getCodename();
+        }
+
         $CpuLoad = new CpuLoad();
 
         $serverInformation = [
             'address'                => $_SERVER['SERVER_ADDR'],
             'webserver'              => $_SERVER['SERVER_SOFTWARE'],
             'tls'                    => $_SERVER['HTTPS'],
-            'os_version'             => sprintf('%s %s (%s)', $LsbRelease->getVendor(), $LsbRelease->getVersion(), $LsbRelease->getCodename()),
+            'os_version'             => $osVersion,
             'kernel'                 => php_uname('r'),
             'architecture'           => php_uname('m'),
             'cpu_processor'          => $CpuLoad->getModel(),
@@ -245,6 +254,7 @@ class AdministratorsController extends AppController {
         else if (strstr($agent, "Mac OS X 10.13")) $os = "macOS High Sierra";
         else if (strstr($agent, "Mac OS X 10.14")) $os = "macOS Mojave";
         else if (strstr($agent, "Mac OS X 10.15")) $os = "macOS Catalina";
+        else if (strstr($agent, "Mac OS X 11.6")) $os = "macOS Big Sur";
 
         //Chrome
         else if (strstr($agent, "Mac OS X 10_5")) $os = "Mac OS X - Leopard";
@@ -259,6 +269,7 @@ class AdministratorsController extends AppController {
         else if (strstr($agent, "Mac OS X 10_13")) $os = "macOS High Sierra";
         else if (strstr($agent, "Mac OS X 10_14")) $os = "macOS Mojave";
         else if (strstr($agent, "Mac OS X 10_15")) $os = "macOS Catalina";
+        else if (strstr($agent, "Mac OS X 11_6")) $os = "macOS Big Sur";
 
         else if (strstr($agent, "Mac OS")) $os = "Mac OS X";
         else if (strstr($agent, "Linux")) $os = "Linux";
