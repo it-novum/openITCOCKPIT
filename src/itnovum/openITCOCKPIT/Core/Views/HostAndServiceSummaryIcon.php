@@ -122,7 +122,8 @@ class HostAndServiceSummaryIcon {
      * @throws Exception
      */
     public function getImage() {
-        if (!is_resource($this->image)) {
+        // resource with php5 and php7, GdImage Object with php8
+        if (!is_resource($this->image) && gettype($this->image) !== 'object') {
             throw new Exception('Image not created yet');
         }
         return $this->image;
