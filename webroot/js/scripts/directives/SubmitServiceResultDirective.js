@@ -80,7 +80,6 @@ angular.module('openITCOCKPIT').directive('submitServiceResult', function($http,
                     $scope.setServiceResultCallback(attr.callback);
                 }
 
-                $(".page-inner").append($('#angularSubmitServiceResultModal'));
                 $('#angularSubmitServiceResultModal').modal('show');
                 $scope.setServiceResultObjects(objects);
 
