@@ -349,7 +349,7 @@ class GearmanWorkerCommand extends Command {
 
                         $MkCheckList = $MkParser->parseMkListChecks($CheckMKListChecksResult);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
-                        $scanResult = $MkParser->compareDumpWithList($scanResult, $MkCheckList, '{(tcp|agent)}', ['ps', 'service']);
+                        $scanResult = $MkParser->compareDumpWithList($scanResult, $MkCheckList, '{(tcp|agent|snmp)}', ['ps', 'service']);
 
                         $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($scanResult)]);
                         $MkSatTasksTable->save($MkSatTask);
