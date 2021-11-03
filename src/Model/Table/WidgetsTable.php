@@ -243,6 +243,30 @@ class WidgetsTable extends Table {
                 'width'     => 6,
                 'height'    => 13
             ],
+            [
+                'type_id'   => 23,
+                'title'     => __('Today'),
+                'icon'      => 'fas fa-calendar-day',
+                'directive' => 'today-widget', //AngularJS directive,
+                'width'     => 2,
+                'height'    => 9,
+                'default'   => [
+                    'row' => 0,
+                    'col' => 0
+                ]
+            ],
+            [
+                'type_id'   => 24,
+                'title'     => __('Calendar'),
+                'icon'      => 'fas fa-calendar-alt',
+                'directive' => 'calendar-widget', //AngularJS directive,
+                'width'     => 4,
+                'height'    => 9,
+                'default'   => [
+                    'row' => 0,
+                    'col' => 0
+                ]
+            ],
             /*
             [
                 'type_id'   => 15,

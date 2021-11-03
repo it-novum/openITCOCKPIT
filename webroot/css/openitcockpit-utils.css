@@ -134,7 +134,7 @@ openITCOCKPIT v4 Utilities
 }
 
 .padding-left-15 {
-    padding-left: 15px!important;
+    padding-left: 15px !important;
 }
 
 .padding-bottom-20 {
@@ -142,7 +142,7 @@ openITCOCKPIT v4 Utilities
 }
 
 .padding-top-20 {
-    padding-top: 20px;
+    padding-top: 20px!important;
 }
 
 .padding-left-20 {
@@ -159,6 +159,10 @@ openITCOCKPIT v4 Utilities
 
 .padding-right-23 {
     padding-right: 23px;
+}
+
+.padding-right-25 {
+    padding-right: 25px;
 }
 
 .padding-right-30 {
@@ -864,6 +868,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
         -webkit-box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
     }
 }
+
 @keyframes pulse-primary {
     0% {
         -moz-box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.4);
@@ -901,6 +906,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
         -webkit-box-shadow: 0 0 0 0 rgba(51, 181, 229, 0);
     }
 }
+
 @keyframes pulse-info {
     0% {
         -moz-box-shadow: 0 0 0 0 rgba(51, 181, 229, 0.4);
@@ -938,6 +944,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
         -webkit-box-shadow: 0 0 0 0 rgba(0, 200, 81, 0);
     }
 }
+
 @keyframes pulse-success {
     0% {
         -moz-box-shadow: 0 0 0 0 rgba(0, 200, 81, 0.4);
@@ -952,6 +959,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
         box-shadow: 0 0 0 0 rgba(0, 200, 81, 0);
     }
 }
+
 /* pulse effect for warning button*/
 .pulse-warning {
     box-shadow: 0 0 0 rgba(255, 187, 51, 0.4);
@@ -974,6 +982,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
         -webkit-box-shadow: 0 0 0 0 rgba(255, 187, 51, 0);
     }
 }
+
 @keyframes pulse-warning {
     0% {
         -moz-box-shadow: 0 0 0 0 rgba(255, 187, 51, 0.4);
@@ -1011,6 +1020,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
         -webkit-box-shadow: 0 0 0 0 rgba(204, 0, 0, 0);
     }
 }
+
 @keyframes pulse-danger {
     0% {
         -moz-box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.4);
@@ -1025,6 +1035,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
         box-shadow: 0 0 0 0 rgba(204, 0, 0, 0);
     }
 }
+
 .tactical-overview-first-flex-item {
     flex: 0 0 20px;
     display: flex;
@@ -1041,6 +1052,19 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     flex-direction: column;
     justify-content: space-around;
     font-size: 2.0vw;
+}
+
+
+.h-100 {
+    height: 100%;
+}
+
+.day-card-header-radius{
+    border-radius:10px 8px 0px 0px!important;
+}
+
+.day-card-footer-radius{
+    border-radius:0px 0px 10px 10px!important;
 }
 
 .z-index-2500{
