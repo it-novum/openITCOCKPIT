@@ -367,14 +367,32 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                     -->
 
                     <div class="col-lg-12 copy-to-clipboard-container" style="display: block; position: relative;">
-                        <div class="bg-color-black txt-color-white code-font padding-7 packetmanager-selection">
-                            sudo apt-get update && apt-get dist-upgrade
-                            <br>
-                            sudo apt-get install <span ng-bind-html="getCliCommand() | trustAsHtml"></span>
-                            \ <br>
-                            && echo "#########################################" \ <br>
-                            && echo "<?= __('Installation done. Please reload your {0} web interface.', $systemname) ?>"
-                        </div>
+                        <?php if ($LsbRelease->isDebianBased()): ?>
+                            <div class="bg-color-black txt-color-white code-font padding-7 packetmanager-selection">
+                                sudo apt-get update && apt-get dist-upgrade
+                                <br>
+                                sudo apt-get install <span ng-bind-html="getCliCommand() | trustAsHtml"></span>
+                                \ <br>
+                                && echo "#########################################" \ <br>
+                                && echo
+                                "<?= __('Installation done. Please reload your {0} web interface.', $systemname) ?>"
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($LsbRelease->isRhelBased()): ?>
+                            <div class="bg-color-black txt-color-white code-font padding-7 packetmanager-selection">
+                                sudo dnf check-update
+                                <br>
+                                sudo dnf upgrade
+                                <br>
+                                sudo dnf install <span ng-bind-html="getCliCommand() | trustAsHtml"></span>
+                                \ <br>
+                                && echo "#########################################" \ <br>
+                                && echo
+                                "<?= __('Installation done. Please reload your {0} web interface.', $systemname) ?>"
+                            </div>
+                        <?php endif; ?>
+
                         <div
                             class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
                             style="right: 20px;"

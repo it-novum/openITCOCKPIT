@@ -31,6 +31,7 @@ use App\Model\Table\ProxiesTable;
 use App\Model\Table\RegistersTable;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\DnfRepositoryChecker;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
@@ -43,6 +44,7 @@ class PacketmanagerController extends AppController {
         if ($this->isHtmlRequest()) {
             $this->set('systemname', $this->getSystemname());
             $this->set('RepositoryChecker', new RepositoryChecker());
+            $this->set('DnfRepositoryChecker', new DnfRepositoryChecker());
             $this->set('LsbRelease', new LsbRelease());
             //Only ship HTML Template
             return;

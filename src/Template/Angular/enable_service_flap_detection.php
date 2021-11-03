@@ -1,4 +1,4 @@
-<div id="angularEnableServiceFalpDetectionModal" class="modal" role="dialog">
+<div id="angularEnableServiceFalpDetectionModal" class="modal z-index-2500" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">

@@ -462,11 +462,14 @@ class ProfileController extends AppController {
 
 
         $localesPath = Configure::read('App.paths.locales')[0];
+        $definedLocalCodes = Locales::getLocalCodesFromDefinedLanguages();
         $locales = [];
         $localeDirs = array_filter(glob($localesPath . '*'), 'is_dir');
-        array_walk($localeDirs, function ($value, $key) use (&$locales, $localesPath) {
+        array_walk($localeDirs, function ($value, $key) use (&$locales, $localesPath, $definedLocalCodes) {
             $i18n = substr($value, strlen($localesPath));
-            $locales[] = $i18n;
+            if (in_array($i18n, $definedLocalCodes, true)) {
+                $locales[] = $i18n;
+            }
         });
 
         $i18n = $this->request->getData('i18n', 'en_US');

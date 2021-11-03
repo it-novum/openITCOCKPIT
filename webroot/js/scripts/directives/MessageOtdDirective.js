@@ -29,7 +29,6 @@ angular.module('openITCOCKPIT').directive('messageOtd', function($http, BBParser
             $scope.load();
 
             $scope.openMessageOtdModal = function(){
-                $(".page-inner").append($('#angularMessageOtdModal'));
                 $('#angularMessageOtdModal').modal('show');
             };
 

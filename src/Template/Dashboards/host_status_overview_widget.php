@@ -71,7 +71,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row padding-top-10">
+                <div class="row">
                     <div class="col-xs-12 col-lg-6">
                         <h4><?php echo __('Host status'); ?></h4>
                         <div class="custom-control custom-radio custom-control-left margin-right-10">
@@ -113,31 +113,50 @@
                     </div>
 
                     <div class="col-xs-12 col-sm-6" ng-show="filter.Hoststatus.current_state > 0">
-                        <h4><?php echo __('Properties'); ?></h4>
-
+                        <h5><?php echo __('Acknowledgements'); ?></h5>
                         <div class="form-group">
-                            <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                            <div class="custom-control custom-checkbox">
                                 <input type="checkbox"
                                        class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="not_acknowledged_{{widget.id}}"
-                                       ng-model="filter.Hoststatus.not_acknowledged"
+                                       id="isAck_{{widget.id}}"
+                                       ng-model="filter.Hoststatus.acknowledged"
                                        ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label" for="not_acknowledged_{{widget.id}}">
-                                    <?php echo __('Not Acknowledged'); ?>
+                                <label class="custom-control-label" for="isAck_{{widget.id}}">
+                                    <?php echo __('Acknowledged'); ?>
                                 </label>
                             </div>
 
-                            <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                            <div class="custom-control custom-checkbox">
                                 <input type="checkbox"
                                        class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="not_in_downtime_{{widget.id}}"
+                                       id="isNotAck_{{widget.id}}"
+                                       ng-model="filter.Hoststatus.not_acknowledged"
+                                       ng-model-options="{debounce: 500}">
+                                <label class="custom-control-label" for="isNotAck_{{widget.id}}">
+                                    <?php echo __('Not Acknowledged'); ?>
+                                </label>
+                            </div>
+                        </div>
+                        <h5><?php echo __('Downtimes'); ?></h5>
+                        <div class="form-group smart-form">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="inDowntime_{{widget.id}}"
+                                       ng-model="filter.Hoststatus.in_downtime"
+                                       ng-model-options="{debounce: 500}">
+                                <label class="custom-control-label" for="inDowntime_{{widget.id}}">
+                                    <?php echo __('In Downtime'); ?>
+                                </label>
+                            </div>
+
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="notInDowntime_{{widget.id}}"
                                        ng-model="filter.Hoststatus.not_in_downtime"
                                        ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label" for="not_in_downtime_{{widget.id}}">
+                                <label class="custom-control-label" for="notInDowntime_{{widget.id}}">
                                     <?php echo __('Not in Downtime'); ?>
                                 </label>
                             </div>

@@ -265,11 +265,13 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="icon-stack margin-right-5"
+                                             title="<?= __('Notifications enabled'); ?>"
                                              ng-show="service.Servicestatus.notifications_enabled">
                                             <i class="fas fa-envelope opacity-100 "></i>
                                             <i class="fas fa-check opacity-100 fa-xs text-success cornered cornered-lr"></i>
                                         </div>
                                         <div class="icon-stack margin-right-5"
+                                             title="<?= __('Notifications disabled'); ?>"
                                              ng-hide="service.Servicestatus.notifications_enabled">
                                             <i class="fas fa-envelope opacity-100 "></i>
                                             <i class="fas fa-times opacity-100 fa-xs text-danger cornered cornered-lr"></i>

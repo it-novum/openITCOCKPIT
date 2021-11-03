@@ -22,8 +22,10 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
             $scope.filter = {
                 Servicestatus: {
                     current_state: null,
-                    not_acknowledged: true,
-                    not_in_downtime: true
+                    acknowledged: false,
+                    not_acknowledged: false,
+                    in_downtime: false,
+                    not_in_downtime: false,
                 },
                 Host: {
                     name: ''
@@ -38,9 +40,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                 $http.get("/dashboards/serviceStatusOverviewWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
-                    $scope.filter.Servicestatus.current_state = result.data.config.Servicestatus.current_state;
-                    $scope.filter.Servicestatus.not_acknowledged = !result.data.config.Servicestatus.problem_has_been_acknowledged;
-                    $scope.filter.Servicestatus.not_in_downtime = !result.data.config.Servicestatus.scheduled_downtime_depth;
+                    $scope.filter.Servicestatus = result.data.config.Servicestatus
                     $scope.statusCount = result.data.statusCount;
                     $scope.init = false;
                 });
@@ -82,11 +82,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                         Widget: {
                             id: $scope.widget.id
                         },
-                        Servicestatus: {
-                            current_state: $scope.filter.Servicestatus.current_state,
-                            problem_has_been_acknowledged: !$scope.filter.Servicestatus.not_acknowledged,
-                            scheduled_downtime_depth: !$scope.filter.Servicestatus.not_in_downtime
-                        },
+                        Servicestatus: $scope.filter.Servicestatus,
                         Host: {
                             name: $scope.filter.Host.name
                         },
@@ -108,12 +104,23 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                     servicestate: [$scope.filter.Servicestatus.current_state]
                 };
 
-                if($scope.filter.Servicestatus.not_acknowledged && $scope.filter.Servicestatus.current_state > 0){
-                    params.has_not_been_acknowledged = 1;
-                    'not_in_downtime'
-                }
-                if($scope.filter.Servicestatus.not_in_downtime && $scope.filter.Servicestatus.current_state > 0){
-                    params.not_in_downtime = 1;
+
+                if($scope.filter.Servicestatus.current_state > 0){
+                    if($scope.filter.Servicestatus.acknowledged){
+                        params.has_been_acknowledged = 1;
+                    }
+
+                    if($scope.filter.Servicestatus.not_acknowledged){
+                        params.has_not_been_acknowledged = 1;
+                    }
+
+                    if($scope.filter.Servicestatus.in_downtime){
+                        params.in_downtime = 1;
+                    }
+
+                    if($scope.filter.Servicestatus.not_in_downtime){
+                        params.not_in_downtime = 1;
+                    }
                 }
                 $state.go('ServicesIndex', params);
             };

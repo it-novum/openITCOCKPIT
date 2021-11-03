@@ -20,11 +20,85 @@ MYSQL_PASSWORD=$(pwgen -s -1 16)
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
 OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+OS_BASE="debian"
+
+if [[ -f "/etc/redhat-release" ]]; then
+    echo "Detected RedHat based operating system."
+    OS_BASE="RHEL"
+    OSVERSION=$(source /etc/os-release && echo $VERSION_ID | cut -d. -f1) # e.g. 8
+fi
+
+if [[ "$OS_BASE" == "RHEL" ]]; then
+    echo "Make RedHat look more like it's Debian ;)"
+
+    # sudo - allow root to use sudo
+    # sudo is needed by the "oitc" command
+    usermod -aG wheel root
+    echo "root    ALL=(ALL:ALL) ALL" > /etc/sudoers.d/openitcockpit
+    chmod 0440 /etc/sudoers.d/openitcockpit
+
+    # php-fpm
+    mkdir -p "/etc/php/${PHPVersion}/fpm"
+    mkdir -p /run/php
+
+    mkdir -p /etc/systemd/system/php-fpm.service.d/
+    echo "[Service]" > /etc/systemd/system/php-fpm.service.d/override.conf
+    echo "# Create folder for openITCOCKPIT default php-fpm socket path" >> /etc/systemd/system/php-fpm.service.d/override.conf
+    echo "ExecStartPre=-mkdir -p /run/php" >> /etc/systemd/system/php-fpm.service.d/override.conf
+
+
+    # Link RedHat config to where they are on Debian
+    ln -s /etc/php-fpm.conf "/etc/php/${PHPVersion}/fpm/php-fpm.conf"
+    ln -s /etc/php.d "/etc/php/${PHPVersion}/fpm/conf.d"
+    ln -s /etc/php-fpm.d "/etc/php/${PHPVersion}/fpm/pool.d"
+
+    # nginx
+    if [[ -f "/etc/nginx/nginx.conf" ]]; then
+        echo "Move /etc/nginx/nginx.conf to /etc/nginx/nginx.conf.orig"
+        mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
+    fi
+    mkdir -p /etc/nginx/sites-enabled
+    mkdir -p /var/lib/nginx/tmp
+    chown www-data:root /var/lib/nginx -R
+    chown www-data:root /var/lib/nginx/tmp -R
+    cp ${APPDIR}/system/nginx/nginx.rhel${OSVERSION}.conf /etc/nginx/nginx.conf
+
+    # myqsl
+    mkdir -p /etc/mysql
+    ln -s /etc/my.cnf.d /etc/mysql/conf.d
+
+    # create snakeoil ssl certificate if no exists
+    mkdir -p /etc/ssl/private
+    if [[ ! -f "/etc/ssl/private/ssl-cert-snakeoil.key" ]]; then
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost"
+        openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+        cat /etc/ssl/certs/dhparam.pem | tee -a /etc/ssl/certs/ssl-cert-snakeoil.pem
+    fi
+
+    systemctl daemon-reload
+
+    systemctl enable\
+     nginx.service\
+     gearmand.service\
+     mysqld.service\
+     redis.service\
+     docker.service\
+     php-fpm.service
+
+    systemctl start\
+    nginx.service\
+     gearmand.service\
+     mysqld.service\
+     redis.service\
+     docker.service\
+     php-fpm.service
+
+fi # End RHEL section
 
 echo "Copy required system files"
-cp -r ${APPDIR}/system/etc/. /etc/
+rsync -K -a ${APPDIR}/system/etc/. /etc/ # we use rsync because the destination can be a symlink on RHEL
 cp -r ${APPDIR}/system/lib/. /lib/
-cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
+rsync -K -a ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
 cp -r ${APPDIR}/system/usr/. /usr/
 cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
 cp ${APPDIR}/system/nginx/ssl_cert.conf /etc/nginx/openitc/ssl_cert.conf
@@ -80,8 +154,12 @@ systemctl enable\
 if [[ ! -f "$INIFILE" ]]; then
     echo "Create local MySQL configuration and database"
 
-    # Restart MySQL to load openitcockpit.cnf to disable MySQL Binary Logs on Ubuntu Focal
-    systemctl restart mysql.service
+    if [[ "$OS_BASE" == "RHEL" ]]; then
+        systemctl restart mysqld.service
+    else
+        # Restart MySQL to load openitcockpit.cnf to disable MySQL Binary Logs on Ubuntu Focal
+        systemctl restart mysql.service
+    fi
     echo "Waiting 3 seconds for MySQL / MariaDB..."
     sleep 3
 
@@ -90,6 +168,12 @@ if [[ ! -f "$INIFILE" ]]; then
 
         # set sql_mode to enable group by like it was in the good old times :)
         mysql --defaults-extra-file=${DEBIANCNF} -e "SET GLOBAL sql_mode = '';"
+
+        if [[ "$OS_BASE" == "RHEL" ]]; then
+            # Set Password policy to LOW on RHEL systems with MySQL 8
+            # https://dev.mysql.com/doc/refman/8.0/en/validate-password-options-variables.html#sysvar_validate_password.policy
+            mysql --defaults-extra-file=${DEBIANCNF} -e "SET GLOBAL validate_password.policy=LOW;" -B
+        fi
 
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE USER '${MYSQL_DATABASE}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;" -B
@@ -327,7 +411,8 @@ done
 
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
-systemctl is-enabled --quiet php${PHPVersion}-fpm.service
+set +e
+systemctl is-enabled --quiet php${PHPVersion}-fpm.service &>/dev/null
 RC=$?
 if [ $RC -eq 0 ]; then
     #Is it php7.3-fpm-service ?
@@ -342,6 +427,7 @@ else
         echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
     fi
 fi
+set -e
 
 #Set default permissions, check for always allowed permissions and dependencies
 oitc roles --enable-defaults --admin

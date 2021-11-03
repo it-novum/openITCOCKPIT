@@ -363,7 +363,7 @@
                                                             {{post.MessagesOtd.description}}
                                                         </div>
                                                         <br>
-                                                        <div style="word-wrap: break-word;"
+                                                        <div class="text-break"
                                                              ng-bind-html="motdcontentPreview | trustAsHtml">
                                                             {{motdcontentPreview}}
                                                         </div>
