@@ -90,8 +90,9 @@ class CalendarTime {
     }
 
     public function getDateDetailsByTimestamp(int $timestamp, bool $extended = false) {
+        $dayNumber = (int)date('j', $timestamp);
         $dateDetails = [
-            'dayNumber' => (int)date('j', $timestamp),
+            'dayNumber' => $dayNumber,
             'weekday'   => $this->weekdays[date('N', $timestamp)],
             'monthName' => $this->months[date('n', $timestamp)]
         ];
@@ -100,30 +101,34 @@ class CalendarTime {
         }
 
         $currentDay = new \DateTime(date('Y-m-d', $timestamp));
+        if ($dayNumber > 1) {
+            $dayDifference = $dayNumber - 1;
+            $currentDay = $currentDay->modify('-' . $dayDifference . ' day');
+        }
 
         $totalDays = (int)date('t', $timestamp);
         $days = [];
-        for($i = 1; $i <= $totalDays; $i++){
+        for ($i = 1; $i <= $totalDays; $i++) {
             $weekDay = (int)date('N', $currentDay->getTimestamp());
-            $weekNumber = date('W',$currentDay->getTimestamp());
-            if($i === 1 && $weekDay > 1){ //autofill weekdays at start of the week if first day is not monday
-                for($j = 1; $j < $weekDay; $j++){
+            $weekNumber = date('W', $currentDay->getTimestamp());
+            if ($i === 1 && $weekDay > 1) { //autofill weekdays at start of the week if first day is not monday
+                for ($j = 1; $j < $weekDay; $j++) {
                     $days[$weekNumber][] = [
-                        'day' => null,
+                        'day'     => null,
                         'weekday' => null
                     ];
                 }
             }
             $days[$weekNumber][] = [
-                'day' => $i,
+                'day'     => $i,
                 'weekday' => $weekDay
             ];
             $currentDay = $currentDay->modify('+1 day');
 
-            if($i === $totalDays && $weekDay < 7){ //autofill weekdays at end of the week if last day is not sunday
-                for($j = $weekDay; $j < 7; $j++){
+            if ($i === $totalDays && $weekDay < 7) { //autofill weekdays at end of the week if last day is not sunday
+                for ($j = $weekDay; $j < 7; $j++) {
                     $days[$weekNumber][] = [
-                        'day' => null,
+                        'day'     => null,
                         'weekday' => null
                     ];
                 }
