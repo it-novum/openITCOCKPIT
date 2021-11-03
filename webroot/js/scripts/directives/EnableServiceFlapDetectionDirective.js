@@ -60,7 +60,6 @@ angular.module('openITCOCKPIT').directive('enableServiceFlapDetection', function
                     $scope.setEnableServiceFlapDetectionCallback(attr.callback);
                 }
 
-                $(".page-inner").append($('#angularEnableServiceFalpDetectionModal'));
                 $('#angularEnableServiceFalpDetectionModal').modal('show');
                 $scope.setEnableServiceFlapDetectionObjects(objects);
             };
