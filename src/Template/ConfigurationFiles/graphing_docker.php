@@ -239,6 +239,26 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </div>
     </div>
 
+    <div class="form-group" ng-class="{'has-error': errors.Configfile.enable_docker_userland_proxy}">
+        <div class="custom-control custom-checkbox  margin-bottom-10"
+             ng-class="{'has-error': errors.Configfile.enable_docker_userland_proxy}">
+
+            <input type="checkbox"
+                   class="custom-control-input"
+                   ng-true-value="1"
+                   ng-false-value="0"
+                   id="enable_docker_userland_proxy"
+                   ng-model="post.bool.enable_docker_userland_proxy">
+            <label class="custom-control-label" for="enable_docker_userland_proxy">
+                <?php echo __('Enable Docker userland proxy'); ?>
+            </label>
+        </div>
+
+        <div class="col col-xs-12 col-md-offset-2 help-block">
+            <?php echo h($GraphingDocker->getHelpText('enable_docker_userland_proxy')); ?>
+        </div>
+    </div>
+
     <div class="form-group required" ng-class="{'has-error': errors.Configfile.USE_AUTO_NETWORKING}">
         <label class="control-label" for="USE_AUTO_NETWORKING">
             <?php echo __('Network configuration'); ?>
