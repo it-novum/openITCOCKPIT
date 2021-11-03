@@ -216,6 +216,7 @@ class HostsController extends AppController {
                 ->where([
                     'Services.host_id' => $host['Host']['id']
                 ])
+                ->all()
                 ->toList();
 
             $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
