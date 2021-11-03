@@ -75,7 +75,6 @@ class UserTime {
             $t_time = 0;
         }
 
-        //$Time = new Time($t_time);
         $Time = new FrozenTime($t_time);
         $Time->setTimezone(new \DateTimeZone($this->timezone));
 
@@ -95,7 +94,6 @@ class UserTime {
             $t_time = 0;
         }
 
-        //$Time = new Time($t_time);
         $Time = new FrozenTime($t_time);
         $Time->setTimezone(new \DateTimeZone($this->timezone));
 
@@ -193,7 +191,6 @@ class UserTime {
             $t_time = 0;
         }
 
-        //$Time = new Time($t_time);
         $Time = new FrozenTime($t_time);
         $Time->setTimezone(new \DateTimeZone($this->timezone));
 
