@@ -38,6 +38,7 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Apikey;
+use itnovum\openITCOCKPIT\Core\Locales;
 
 /**
  * Class ProfileController
