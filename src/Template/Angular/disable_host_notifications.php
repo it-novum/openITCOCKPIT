@@ -23,7 +23,7 @@
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="{}"
-                                ng-model="hostAckType">
+                                ng-model="disableHostNotificationsType">
                                 <option value="hostOnly"><?php echo __('Individual hosts'); ?></option>
                                 <option value="hostAndServices"><?php echo __('Hosts including services'); ?></option>
                             </select>
