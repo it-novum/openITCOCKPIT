@@ -104,4 +104,12 @@ class Gearman {
         return $result;
     }
 
+    /**
+     * @param array $payload
+     * @return string
+     */
+    public function toStatusnginCmdBackground(array $payload) {
+        return $this->client->doBackground('statusngin_cmd', json_encode($payload));
+    }
+
 }
