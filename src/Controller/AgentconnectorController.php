@@ -1121,6 +1121,10 @@ class AgentconnectorController extends AppController {
             try {
                 $config = $CheckConfig->getConfigByHostName($hostUuid);
 
+                $results = [
+                    'Messages' => []
+                ];
+
                 foreach ($config['checks'] as $pluginConfig) {
                     $pluginName = $pluginConfig['plugin'];
 
@@ -1138,20 +1142,31 @@ class AgentconnectorController extends AppController {
                         $pluginOutput .= '|' . $Plugin->getPerfdataSerialized();
                     }
 
-                    $GearmanClient->sendBackground('cmd_external_command', [
-                        'command'     => 'PROCESS_SERVICE_CHECK_RESULT',
-                        'parameters'  => [
-                            'hostUuid'      => $hostUuid,
-                            'serviceUuid'   => $pluginConfig['uuid'],
-                            'status_code'   => $Plugin->getStatuscode(),
-                            'plugin_output' => $pluginOutput,
-                            'long_output'   => $Plugin->getLongOutput()
-                        ],
-                        'satelliteId' => 0 // Agent check results are always Master system!,
-                    ]);
+                    // Create bulk message for Statusengine Broker
+                    $results['messages'][] = [
+                        'Command' => 'check_result',
+                        'Data'    => [
+                            'host_name'           => $hostUuid,
+                            'service_description' => $pluginConfig['uuid'],
+                            'output'              => $pluginOutput,
+                            'long_output'         => ($Plugin->getLongOutput() === '' ? null : $Plugin->getLongOutput()),
+                            'check_type'          => 1, //https://github.com/naemon/naemon-core/blob/cec6e10cbee9478de04b4cf5af29e83d47b5cfd9/src/naemon/common.h#L330-L334
+                            'return_code'         => $Plugin->getStatuscode(),
+                            'start_time'          => time(),
+                            'end_time'            => time(),
+                            'early_timeout'       => 0,
+                            'latency'             => 0,
+                            'exited_ok'           => 1
+                        ]
+                    ];
 
                     $receivedChecks++;
                 }
+
+                if (!empty($results['messages'])) {
+                    $GearmanClient->toStatusnginCmdBackground($results);
+                }
+
             } catch (\RuntimeException $e) {
                 // Host was not exported yet to Monitoring Engine and check receiver - just save the check result to the database
                 // and ignore the error
