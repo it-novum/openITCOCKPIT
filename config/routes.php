@@ -54,9 +54,28 @@ $routes->setExtensions(['json', 'html', 'pdf', 'png', 'zip']);
 
 $routes->scope('/', function (RouteBuilder $builder) {
     // Register scoped middleware for in scopes.
-    $builder->registerMiddleware('csrf', new CsrfProtectionMiddleware([
+    $csrf = new CsrfProtectionMiddleware([
         'httponly' => true,
-    ]));
+    ]);
+
+    // Token check will be skipped when callback returns `true`.
+    $csrf->skipCheckCallback(function ($request) {
+        // Skip token check for API URLs.
+        if (get_class($request) !== 'Cake\\Http\\ServerRequest') {
+            // I'm not sure if $request can be something else because the docs is not clear about this
+            return false;
+        }
+
+        if (strtolower($request->getParam('controller')) === 'hosts' && $request->getParam('action') === 'index') {
+            // Disable CSRF check for /hosts/index ITC-2640
+            return true;
+        }
+
+        // Keep CSRF checks enabled
+        return false;
+    });
+
+    $builder->registerMiddleware('csrf', $csrf);
 
     /*
      * Apply a middleware to the current route scope.

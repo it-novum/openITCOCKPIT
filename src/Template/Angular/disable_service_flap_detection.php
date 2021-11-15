@@ -1,4 +1,4 @@
-<div id="angularDisableServiceFlapDetectionModal" class="modal" role="dialog">
+<div id="angularDisableServiceFlapDetectionModal" class="modal z-index-2500" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">

@@ -701,16 +701,18 @@ class UsersController extends AppController {
         }
 
         $localesPath = Configure::read('App.paths.locales')[0];
+        $definedLocalCodes = Locales::getLocalCodesFromDefinedLanguages();
         $localeOptions = [];
         $localeDirs = array_filter(glob($localesPath . '*'), 'is_dir');
-        array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath) {
+        array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath, $definedLocalCodes) {
             $i18n = substr($value, strlen($localesPath));
-            $language = Locales::getLanguageByLocalCode($i18n);
-
-            $localeOptions[] = [
-                'i18n' => $i18n,
-                'name' => $language['label']
-            ];
+            if (in_array($i18n, $definedLocalCodes, true)) {
+                $language = Locales::getLanguageByLocalCode($i18n);
+                $localeOptions[] = [
+                    'i18n' => $i18n,
+                    'name' => $language['label']
+                ];
+            }
         });
         $this->set('localeOptions', $localeOptions);
         $this->viewBuilder()->setOption('serialize', ['localeOptions']);

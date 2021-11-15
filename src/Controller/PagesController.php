@@ -96,11 +96,14 @@ class PagesController extends AppController {
             $language = Locales::getLanguageByLocalCode($user->get('i18n'));
             $localesPath = Configure::read('App.paths.locales')[0];
             $localeOptions = [];
+            $definedLocalCodes = Locales::getLocalCodesFromDefinedLanguages();
             $localeDirs = array_filter(glob($localesPath . '*'), 'is_dir');
-            array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath) {
+            array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath, $definedLocalCodes) {
                 $i18n = substr($value, strlen($localesPath));
-                $language = Locales::getLanguageByLocalCode($i18n);
-                $localeOptions[] = $language;
+                if (in_array($i18n, $definedLocalCodes, true)) {
+                    $language = Locales::getLanguageByLocalCode($i18n);
+                    $localeOptions[] = $language;
+                }
             });
 
             $userFullName = sprintf('%s %s', $user->get('firstname'), $user->get('lastname'));
