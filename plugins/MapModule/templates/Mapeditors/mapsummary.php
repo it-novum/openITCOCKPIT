@@ -770,7 +770,7 @@
                             <div class="col-lg-4 cropText"
                                  title="{{notOkService.Service.hostname}}/{{notOkService.Service.hostname}}">
                                 <a ui-sref="ServicesBrowser({id: notOkService.Service.id})">
-                                    {{notOkService.Service.hostname}}/{{notOkService.Service.servicename}}
+                                    {{notOkService.Service.servicename}}
                                 </a>
                             </div>
                             <div ng-show="notOkService.Servicestatus.isInMonitoring"

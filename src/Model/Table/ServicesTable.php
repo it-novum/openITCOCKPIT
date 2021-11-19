@@ -3057,9 +3057,9 @@ class ServicesTable extends Table {
 
             if ($conditions['Servicestatus']['in_downtime'] ^ $conditions['Servicestatus']['not_in_downtime']) {
                 $inDowntime = $conditions['Servicestatus']['in_downtime'] === true;
-                if($inDowntime === false){
+                if ($inDowntime === false) {
                     $where['Servicestatus.scheduled_downtime_depth'] = 0;
-                }else{
+                } else {
                     $where['Servicestatus.scheduled_downtime_depth > '] = 0;
                 }
             }
@@ -3131,9 +3131,9 @@ class ServicesTable extends Table {
 
             if ($conditions['Servicestatus']['in_downtime'] ^ $conditions['Servicestatus']['not_in_downtime']) {
                 $inDowntime = $conditions['Servicestatus']['in_downtime'] === true;
-                if($inDowntime === false){
+                if ($inDowntime === false) {
                     $where['Servicestatus.scheduled_downtime_depth'] = 0;
-                }else{
+                } else {
                     $where['Servicestatus.scheduled_downtime_depth > '] = 0;
                 }
             }
@@ -3339,20 +3339,21 @@ class ServicesTable extends Table {
                     'alias'      => 'Servicetemplates',
                     'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
                 ],
-            ])
-            ->select([
-                'Services.id',
-                'Services.uuid',
-                'Services.name',
-                'Servicetemplates.name',
-                'Hosts.id',
-                'Hosts.uuid',
-                'Hosts.name',
-                'HostsToContainers.container_id'
-            ])->where([
-                'Services.id IN'    => $ids,
-                'Services.disabled' => 0
-            ])->enableHydration($enableHydration);
+            ]);
+        $query->select([
+            'Services.id',
+            'Services.uuid',
+            'Services.name',
+            'Servicetemplates.name',
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+            'HostsToContainers.container_id',
+            'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+        ])->where([
+            'Services.id IN'    => $ids,
+            'Services.disabled' => 0
+        ])->enableHydration($enableHydration);
 
         $result = $query->toArray();
         if (empty($result)) {
