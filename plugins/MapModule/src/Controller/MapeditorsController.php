@@ -331,7 +331,6 @@ class MapeditorsController extends AppController {
 
                     //fetch all dependent map items after permissions check
                     $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map['id'], $mapId);
-
                     if (empty($mapItemToResolve)) {
                         //Empty map
                         $allowView = true;
@@ -368,7 +367,6 @@ class MapeditorsController extends AppController {
                             $ServicegroupsTable,
                             $this->hasRootPrivileges ? [] : $this->MY_RIGHTS
                         );
-
                         $hosts = [];
                         $services = [];
                         if (!empty($allDependentMapElements['hostIds'])) {
@@ -706,7 +704,11 @@ class MapeditorsController extends AppController {
                             }
                         }
                     }
+
                     if (!empty($serviceIds)) {
+                        $serviceIds = array_unique($serviceIds);
+
+
                         $dependentServices = $ServicesTable->getServicesByIdsForMapeditor($serviceIds);
 
                         if (!empty($dependentServices)) {
@@ -725,6 +727,7 @@ class MapeditorsController extends AppController {
                         }
                     }
                     $allowView = true;
+
                     $properties = $MapsTable->getMapInformationForSummaryIcon(
                         $HoststatusTable,
                         $ServicestatusTable,
@@ -1051,6 +1054,7 @@ class MapeditorsController extends AppController {
 
                     $hosts = [];
                     $services = [];
+
                     if (!empty($hostIds)) {
                         $hosts = $HostsTable->getHostsWithServicesByIdsForMapsumary($hostIds, false);
 
@@ -1084,10 +1088,10 @@ class MapeditorsController extends AppController {
                             }
                             foreach ($servicesToMerge as $service) {
                                 $hosts[$service['Hosts']['id']] = $service['Hosts'];
+                                $services[$service['id']]['Service'] = $service;
                             }
                         }
                     }
-
                     $summary = $MapsTable->getMapSummary(
                         $HostsTable,
                         $HoststatusTable,
