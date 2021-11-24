@@ -956,7 +956,6 @@ class MapsTable extends Table {
         if (!is_array($dependentMapsIds)) {
             $dependentMapsIds = [$dependentMapsIds];
         }
-
         $allDependentMapElements = $this->find()
             ->contain([
                 'Mapitems'        => function (Query $query) {
@@ -1001,7 +1000,9 @@ class MapsTable extends Table {
             ->where([
                 'Maps.id IN' => $dependentMapsIds
             ])
-            ->all()->toArray();
+            ->disableHydration()
+            ->all()
+            ->toArray();
 
         $mapElementsByCategory = [
             'host'         => [],
@@ -1012,20 +1013,15 @@ class MapsTable extends Table {
         $allDependentMapElements = Hash::filter($allDependentMapElements);
 
         foreach ($allDependentMapElements as $allDependentMapElementArray) {
-            foreach ($allDependentMapElementArray->toArray() as $mapElementKey => $mapElementData) {
-                if ($mapElementKey === 'Map') {
-                    continue;
-                }
+            foreach ($allDependentMapElementArray as $mapElementKey => $mapElementData) {
                 if (is_array($mapElementData)) {
                     foreach ($mapElementData as $mapElement) {
                         $mapElementsByCategory[$mapElement['type']][$mapElement['object_id']] = $mapElement['object_id'];
                     }
                 }
             }
-
         }
 
-        $hostIds = $mapElementsByCategory['host'];
         if (!empty($mapElementsByCategory['hostgroup'])) {
             $query = $HostgroupsTable->find()
                 ->join([
@@ -1042,37 +1038,19 @@ class MapsTable extends Table {
                 ->where([
                     'Hostgroups.id IN' => $mapElementsByCategory['hostgroup']
                 ]);
-            /*
-            $query = [
-                'recursive'  => -1,
-                'joins'      => [
-                    [
-                        'table'      => 'hosts_to_hostgroups',
-                        'type'       => 'INNER',
-                        'alias'      => 'HostsToHostgroups',
-                        'conditions' => 'HostsToHostgroups.hostgroup_id = Hostgroup.id',
-                    ],
-                ],
-                'fields'     => [
-                    'HostsToHostgroups.host_id'
-                ],
-                'conditions' => [
-                    'Hostgroup.id' => $mapElementsByCategory['hostgroup']
-                ]
-            ];
-            */
             if (!empty($MY_RIGHTS)) {
                 $query->where([
                     'Hostgroups.container_id IN' => $MY_RIGHTS
                 ]);
             }
-
-            $hostIdsByHostgroup = $query->all()->toArray();
+            $query->disableHydration()
+                ->all()
+                ->toArray();
+            $hostIdsByHostgroup = $query;
             foreach ($hostIdsByHostgroup as $hostIdByHostgroup) {
                 $hostIds[$hostIdByHostgroup['HostsToHostgroups']['host_id']] = $hostIdByHostgroup['HostsToHostgroups']['host_id'];
             }
         }
-        $serviceIds = $mapElementsByCategory['service'];
         if (!empty($mapElementsByCategory['servicegroup'])) {
             $query = $ServicegroupsTable->find()
                 ->join([
@@ -1089,26 +1067,7 @@ class MapsTable extends Table {
                 ->where([
                     'Servicegroups.id IN' => $mapElementsByCategory['servicegroup']
                 ]);
-            /*
-            $query = [
-                'recursive'  => -1,
-                'joins'      => [
-                    [
-                        'table'      => 'services_to_servicegroups',
-                        'type'       => 'INNER',
-                        'alias'      => 'ServicesToServicegroups',
-                        'conditions' => 'ServicesToServicegroups.servicegroup_id = Servicegroup.id',
-                    ],
-                ],
-                'fields'     => [
-                    'ServicesToServicegroups.service_id'
 
-                ],
-                'conditions' => [
-                    'Servicegroup.id' => $mapElementsByCategory['servicegroup']
-                ]
-            ];
-            */
             if (!empty($MY_RIGHTS)) {
                 $query->where([
                     'Servicegroups.container_id IN' => $MY_RIGHTS
@@ -1120,6 +1079,11 @@ class MapsTable extends Table {
                 $serviceIds[$serviceIdByServicegroup['ServicesToServicegroups']['service_id']] = $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
             }
         }
+
+
+        $hostIds = $mapElementsByCategory['host'];
+        $serviceIds = $mapElementsByCategory['service'];
+
         return [
             'hostIds'    => $hostIds,
             'serviceIds' => $serviceIds
@@ -1197,12 +1161,10 @@ class MapsTable extends Table {
         }
 
         $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
-        $ServicestatusFieds = new ServicestatusFields(new DbBackend());
-        $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $ServicestatusFields = new ServicestatusFields(new DbBackend());
+        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
         $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
-        $ServicestatusConditions->servicesWarningCriticalAndUnknown();
-        $servicestatus = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
-
+        $servicestatus = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFields, $ServicestatusConditions);
         if (!empty($servicestatus)) {
             $worstServiceState = array_values(
                 Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
@@ -1438,10 +1400,11 @@ class MapsTable extends Table {
         $HoststatusFields->currentState();
         $ServicestatusFields = new ServicestatusFields(new DbBackend());
         $ServicestatusFields->currentState();
-        $hostsUuids = Hash::extract($hosts, '{n}.uuid');
+        $hostsUuids = Hash::extract($hosts, '{n}.Host.uuid');
         $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
         $hoststatus = $HoststatusTable->byUuid($hostsUuids, $HoststatusFields);
         $servicestatus = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFields);
+
 
         if (empty($hoststatus) && empty($servicestatus)) {
             return [
@@ -1913,6 +1876,7 @@ class MapsTable extends Table {
             ->isHardstate()
             ->scheduledDowntimeDepth()
             ->problemHasBeenAcknowledged()
+            ->activeChecksEnabled()
             ->output();
 
         $hostUuids = Hash::extract($hosts, '{n}.uuid');
@@ -1920,22 +1884,21 @@ class MapsTable extends Table {
         $hoststatusByUuids = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
         $hostStateSummary = $HostsTable->getHostStateSummary($hoststatusByUuids, false);
 
-        $ServicestatusFieds = new ServicestatusFields(new DbBackend());
-        $ServicestatusFieds
+        $ServicestatusFields = new ServicestatusFields(new DbBackend());
+        $ServicestatusFields
             ->currentState()
             ->lastCheck()
             ->isHardstate()
             ->scheduledDowntimeDepth()
             ->problemHasBeenAcknowledged()
+            ->activeChecksEnabled()
             ->output();
         $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
 
         $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
-
-        $servicestatusResults = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
+        $servicestatusResults = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFields, $ServicestatusConditions);
         $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatusResults);
         $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
-
         if (!empty($hoststatusByUuids)) {
             $worstHostState = array_values(
                 $hoststatusByUuids = Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
@@ -1957,7 +1920,6 @@ class MapsTable extends Table {
                 }
             }
         }
-
         if (!empty($servicestatusResults)) {
             $worstServiceState = array_values(
                 $servicestatusResults = Hash::sort($servicestatusResults, '{s}.Servicestatus.current_state', 'desc')

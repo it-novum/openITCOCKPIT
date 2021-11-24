@@ -249,11 +249,7 @@ class WidgetsTable extends Table {
                 'icon'      => 'fas fa-calendar-day',
                 'directive' => 'today-widget', //AngularJS directive,
                 'width'     => 2,
-                'height'    => 9,
-                'default'   => [
-                    'row' => 0,
-                    'col' => 0
-                ]
+                'height'    => 9
             ],
             [
                 'type_id'   => 24,
@@ -261,11 +257,7 @@ class WidgetsTable extends Table {
                 'icon'      => 'fas fa-calendar-alt',
                 'directive' => 'calendar-widget', //AngularJS directive,
                 'width'     => 4,
-                'height'    => 9,
-                'default'   => [
-                    'row' => 0,
-                    'col' => 0
-                ]
+                'height'    => 9
             ],
             /*
             [
