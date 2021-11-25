@@ -26,7 +26,7 @@ namespace itnovum\openITCOCKPIT\Core\Views;
 
 
 use Cake\I18n\FrozenTime;
-//use Cake\I18n\Time;
+use Cake\I18n\Time;
 use DateTime;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
@@ -74,11 +74,8 @@ class UserTime {
         if (!is_numeric($t_time)) {
             $t_time = 0;
         }
-
-        $Time = new FrozenTime($t_time);
-        $Time->setTimezone(new \DateTimeZone($this->timezone));
-
-        return $Time->format($this->format);
+        $time = FrozenTime::createFromTimestamp($t_time, new \DateTimeZone($this->timezone));
+        return $time->format($this->format);
     }
 
     /**
@@ -93,11 +90,8 @@ class UserTime {
         if (!is_numeric($t_time)) {
             $t_time = 0;
         }
-
-        $Time = new FrozenTime($t_time);
-        $Time->setTimezone(new \DateTimeZone($this->timezone));
-
-        return $Time->format($format);
+        $time = FrozenTime::createFromTimestamp($t_time, new \DateTimeZone($this->timezone));
+        return $time->format($format);
     }
 
     /**
@@ -190,11 +184,8 @@ class UserTime {
         if (!is_numeric($t_time)) {
             $t_time = 0;
         }
-
-        $Time = new FrozenTime($t_time);
-        $Time->setTimezone(new \DateTimeZone($this->timezone));
-
-        return $Time->timeAgoInWords($options);
+        $time = FrozenTime::createFromTimestamp($t_time, new \DateTimeZone($this->timezone));
+        return $time->timeAgoInWords($options);
     }
 
     /**
