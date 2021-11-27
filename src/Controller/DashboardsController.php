@@ -44,6 +44,7 @@ use Cake\I18n\FrozenTime;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\CalendarTime;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
@@ -59,6 +60,7 @@ use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -1786,4 +1788,69 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    public function todayWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+        $widgetId = (int)$this->request->getQuery('widgetId');
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        $widget = $WidgetsTable->get($widgetId);
+
+        if ($this->request->is('get')) {
+
+            $user = $this->getUser();
+            $userTimezone = $user->get('timezone');
+            if (strlen($userTimezone) < 2) {
+                $userTimezone = 'Europe/Berlin';
+            }
+            $UserTime = new \DateTime($userTimezone);
+            $CalendarTime = new CalendarTime();
+            $dateDetails = $CalendarTime->getDateDetailsByTimestamp($UserTime->getTimestamp());
+
+            $this->set('dateDetails', $dateDetails);
+            $this->viewBuilder()->setOption('serialize', ['dateDetails']);
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
+
+    public function calendarWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+        $widgetId = (int)$this->request->getQuery('widgetId');
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        $widget = $WidgetsTable->get($widgetId);
+
+        if ($this->request->is('get')) {
+
+            $user = $this->getUser();
+            $userTimezone = $user->get('timezone');
+            if (strlen($userTimezone) < 2) {
+                $userTimezone = 'Europe/Berlin';
+            }
+            $UserTime = new \DateTime($userTimezone);
+            $CalendarTime = new CalendarTime();
+            $dateDetails = $CalendarTime->getDateDetailsByTimestamp($UserTime->getTimestamp(), true);
+
+            $this->set('dateDetails', $dateDetails);
+            $this->viewBuilder()->setOption('serialize', ['dateDetails']);
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
 }

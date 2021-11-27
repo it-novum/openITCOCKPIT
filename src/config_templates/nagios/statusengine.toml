@@ -100,7 +100,10 @@ LogData = "statusngin_logentries"
 
 [Bulk]
 ## Maximum number of messages in one bulk message
-Maximum = 200
+# For Gearman this value is at best from 20 to 70. Larger bulk messages are are much slower.
+# RabbitMQ has no issues with this, but has also a pretty solid overall performance.
+# More Info: https://wiki.it-novum.com/de/openITCOCKPIT-v4/Entwicklung/Gearman-vs-RabbitMQ
+Maximum = 30
 ## Flush Bulk messages every X seconds dispite number of cached messages
 FlushInterval = 1
 ## List of queue identifier which should be created as bulk message. This is a global option for all connections

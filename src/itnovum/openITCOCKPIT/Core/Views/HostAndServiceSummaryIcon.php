@@ -122,7 +122,8 @@ class HostAndServiceSummaryIcon {
      * @throws Exception
      */
     public function getImage() {
-        if (!is_resource($this->image)) {
+        // resource with php5 and php7, GdImage Object with php8
+        if (!is_resource($this->image) && gettype($this->image) !== 'object') {
             throw new Exception('Image not created yet');
         }
         return $this->image;
@@ -152,7 +153,6 @@ class HostAndServiceSummaryIcon {
         $statusHostUp = 1 << 0;
         $statusHostDown = 1 << 1;
         $statusHostUnreachable = 1 << 2;
-
         if ($bitMaskHostState & $statusHostUnreachable) {
             $hostStateColorArray[] = $colors['default'];
         }
@@ -162,6 +162,7 @@ class HostAndServiceSummaryIcon {
         if ($bitMaskHostState & $statusHostUp) {
             $hostStateColorArray[] = $colors['success'];
         }
+
         if (empty($hostStateColorArray)) {
             $hostStateColorArray[] = $colors['primary'];
         }

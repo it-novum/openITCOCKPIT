@@ -21,27 +21,24 @@
 //  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //  License agreement and license key will be shipped with the order
 //  confirmation.
+?>
 
-namespace itnovum\openITCOCKPIT\Core\Dashboards;
+<div class="row h-100">
+    <div class="col-12 align-items-top d-flex justify-content-center padding-right-25 padding-left-25">
+        <div class="card rounded-plus text-center h-100 w-75 calendar-card-shadow">
+            <div class="card-header bg-primary text-white font-md h-25 align-items-center d-flex justify-content-center day-card-header-radius">
+                {{dateDetails.monthName}}
+            </div>
+            <div id="day-{{widget.id}}"
+                 class="card-body align-items-center d-flex justify-content-center no-padding"
+                 style="font-size: {{fontSize}}px;">
+                {{dateDetails.dayNumber}}
 
-
-class HostStatusOverviewJson extends DashboardJsonStandardizer {
-
-    /**
-     * @var array
-     * Add new fields to this list
-     * oITC will take care of the rest of the work
-     */
-    protected $fields = [
-        'Hoststatus' => [
-            'current_state'    => 0,
-            'acknowledged'     => false,
-            'not_acknowledged' => false,
-            'in_downtime'      => false,
-            'not_in_downtime'  => false,
-        ],
-        'Host'       => [
-            'name' => ''
-        ]
-    ];
-}
+            </div>
+            <div
+                class="card-footer bg-primary text-center text-white font-sm h-25 align-items-center d-flex justify-content-center day-card-footer-radius">
+                {{dateDetails.weekday}}
+            </div>
+        </div>
+    </div>
+</div>

@@ -2875,13 +2875,20 @@ class HostsTable extends Table {
         $where['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
 
         if ($where['Hoststatus.current_state'] > 0) {
-            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
-                $where['Hoststatus.problem_has_been_acknowledged'] = false;
+            if ($conditions['Hoststatus']['acknowledged'] ^ $conditions['Hoststatus']['not_acknowledged']) {
+                $hasBeenAcknowledged = (int)($conditions['Hoststatus']['acknowledged'] === true);
+                $where['Hoststatus.problem_has_been_acknowledged'] = $hasBeenAcknowledged;
             }
-            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
-                $where['Hoststatus.scheduled_downtime_depth'] = false;
+
+            if ($conditions['Hoststatus']['in_downtime'] ^ $conditions['Hoststatus']['not_in_downtime']) {
+                $inDowntime = $conditions['Hoststatus']['in_downtime'] === true;
+                if($inDowntime === false){
+                    $where['Hoststatus.scheduled_downtime_depth'] = 0;
+                }else{
+                    $where['Hoststatus.scheduled_downtime_depth > '] = 0;
+                }
             }
-        }
+        };
 
         $query->andWhere($where);
         $result = $query->first();
@@ -2938,11 +2945,18 @@ class HostsTable extends Table {
         $where['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
 
         if ($where['Hoststatus.current_state'] > 0) {
-            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
-                $where['Hoststatus.problem_has_been_acknowledged'] = false;
+            if ($conditions['Hoststatus']['acknowledged'] ^ $conditions['Hoststatus']['not_acknowledged']) {
+                $hasBeenAcknowledged = (int)($conditions['Hoststatus']['acknowledged'] === true);
+                $where['Hoststatus.problem_has_been_acknowledged'] = $hasBeenAcknowledged;
             }
-            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
-                $where['Hoststatus.scheduled_downtime_depth'] = false;
+
+            if ($conditions['Hoststatus']['in_downtime'] ^ $conditions['Hoststatus']['not_in_downtime']) {
+                $inDowntime = $conditions['Hoststatus']['in_downtime'] === true;
+                if($inDowntime === false){
+                    $where['Hoststatus.scheduled_downtime_depth'] = 0;
+                }else{
+                    $where['Hoststatus.scheduled_downtime_depth > '] = 0;
+                }
             }
         }
 
@@ -3256,8 +3270,8 @@ class HostsTable extends Table {
                 $host['Hoststatus']['current_state'] = 2;
             }
             $hostStateSummary['state'][$host['Hoststatus']['current_state']]++;
-            $hostStateSummary['state']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
             if ($extended === true) {
+                $hostStateSummary['state']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
                 if ($host['Hoststatus']['current_state'] > 0) {
                     if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
                         $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
@@ -3275,6 +3289,21 @@ class HostsTable extends Table {
                 if ($host['Hoststatus']['active_checks_enabled'] == 0) {
                     $hostStateSummary['passive'][$host['Hoststatus']['current_state']]++;
                     $hostStateSummary['passive']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
+                }
+            }else{
+                if ($host['Hoststatus']['current_state'] > 0) {
+                    if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
+                        $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
+                    } else {
+                        $hostStateSummary['not_handled'][$host['Hoststatus']['current_state']]++;
+                    }
+                }
+
+                if ($host['Hoststatus']['scheduled_downtime_depth'] > 0) {
+                    $hostStateSummary['in_downtime'][$host['Hoststatus']['current_state']]++;
+                }
+                if ($host['Hoststatus']['active_checks_enabled'] == 0) {
+                    $hostStateSummary['passive'][$host['Hoststatus']['current_state']]++;
                 }
             }
             $hostStateSummary['total']++;

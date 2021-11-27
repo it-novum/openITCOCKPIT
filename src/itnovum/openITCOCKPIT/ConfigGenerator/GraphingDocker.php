@@ -65,7 +65,8 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'local_victoria_metrics_http_port'  => 8428
         ],
         'bool'   => [
-            'WHISPER_FALLOCATE_CREATE' => 1
+            'WHISPER_FALLOCATE_CREATE' => 1,
+            'enable_docker_userland_proxy' => 0
         ],
     ];
 
@@ -267,7 +268,8 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'docker_compose_subnet'             => __('Subnet used by Docker Compose in CIDR notation. For Example  192.168.1.0/24. Needs to be a different subnet than used for Fixed CIDR!'),
             'victoria_metrics_storage_path'     => __('Path used by VictoriaMetrics to store data.'),
             'victoria_metrics_retention_period' => __('Period in month how long VictoriaMetrics will keep stored metrics.'),
-            'local_victoria_metrics_http_port'  => __('Local HTTP port used by VictoriaMetrics.')
+            'local_victoria_metrics_http_port'  => __('Local HTTP port used by VictoriaMetrics.'),
+            'enable_docker_userland_proxy'      => __('Enable the Docker userland proxy. Warning: This could lead to very high CPU usage.')
         ];
 
         if (isset($help[$key])) {
@@ -400,6 +402,22 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         $ConfigSymlink->link();
 
         ///etc/docker/daemon.json
+
+        $json = [];
+
+        //Load contents of /etc/docker/daemon.json if file exists
+        if (file_exists('/etc/docker/daemon.json') && is_file('/etc/docker/daemon.json')) {
+            $json = json_decode(file_get_contents('/etc/docker/daemon.json'), true);
+        }
+
+        $json['userland-proxy'] = (int)$config['bool']['enable_docker_userland_proxy'] === 1;
+
+        $file = fopen('/etc/docker/daemon.json', 'w+');
+        if (is_resource($file)) {
+            fwrite($file, json_encode($json, JSON_PRETTY_PRINT));
+            fclose($file);
+        }
+
         /*
         if ($config['string']['USE_AUTO_NETWORKING'] === '0') {
             $json = [];
@@ -463,6 +481,16 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
         ///etc/docker/daemon.json
+
+        if (file_exists('/etc/docker/daemon.json') && is_file('/etc/docker/daemon.json')) {
+            $json = json_decode(file_get_contents('/etc/docker/daemon.json'), true);
+
+            if (array_key_exists('userland-proxy', $json)) {
+                $config['bool']['enable_docker_userland_proxy'] = $json['userland-proxy'] === true;
+            }
+
+        }
+
         /*
         if (file_exists('/etc/docker/daemon.json') && is_file('/etc/docker/daemon.json')) {
             $json = json_decode(file_get_contents('/etc/docker/daemon.json'), true);

@@ -3050,11 +3050,18 @@ class ServicesTable extends Table {
         $where['Servicestatus.current_state'] = $conditions['Servicestatus']['current_state'];
 
         if ($where['Servicestatus.current_state'] > 0) {
-            if ($conditions['Servicestatus']['problem_has_been_acknowledged'] === false) {
-                $where['Servicestatus.problem_has_been_acknowledged'] = false;
+            if ($conditions['Servicestatus']['acknowledged'] ^ $conditions['Servicestatus']['not_acknowledged']) {
+                $hasBeenAcknowledged = (int)($conditions['Servicestatus']['acknowledged'] === true);
+                $where['Servicestatus.problem_has_been_acknowledged'] = $hasBeenAcknowledged;
             }
-            if ($conditions['Servicestatus']['scheduled_downtime_depth'] === false) {
-                $where['Servicestatus.scheduled_downtime_depth'] = false;
+
+            if ($conditions['Servicestatus']['in_downtime'] ^ $conditions['Servicestatus']['not_in_downtime']) {
+                $inDowntime = $conditions['Servicestatus']['in_downtime'] === true;
+                if ($inDowntime === false) {
+                    $where['Servicestatus.scheduled_downtime_depth'] = 0;
+                } else {
+                    $where['Servicestatus.scheduled_downtime_depth > '] = 0;
+                }
             }
         }
 
@@ -3117,11 +3124,18 @@ class ServicesTable extends Table {
         $where['Servicestatus.current_state'] = $conditions['Servicestatus']['current_state'];
 
         if ($where['Servicestatus.current_state'] > 0) {
-            if ($conditions['Servicestatus']['problem_has_been_acknowledged'] === false) {
-                $where['Servicestatus.problem_has_been_acknowledged'] = false;
+            if ($conditions['Servicestatus']['acknowledged'] ^ $conditions['Servicestatus']['not_acknowledged']) {
+                $hasBeenAcknowledged = (int)($conditions['Servicestatus']['acknowledged'] === true);
+                $where['Servicestatus.problem_has_been_acknowledged'] = $hasBeenAcknowledged;
             }
-            if ($conditions['Servicestatus']['scheduled_downtime_depth'] === false) {
-                $where['Servicestatus.scheduled_downtime_depth'] = false;
+
+            if ($conditions['Servicestatus']['in_downtime'] ^ $conditions['Servicestatus']['not_in_downtime']) {
+                $inDowntime = $conditions['Servicestatus']['in_downtime'] === true;
+                if ($inDowntime === false) {
+                    $where['Servicestatus.scheduled_downtime_depth'] = 0;
+                } else {
+                    $where['Servicestatus.scheduled_downtime_depth > '] = 0;
+                }
             }
         }
 
@@ -3325,20 +3339,21 @@ class ServicesTable extends Table {
                     'alias'      => 'Servicetemplates',
                     'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
                 ],
-            ])
-            ->select([
-                'Services.id',
-                'Services.uuid',
-                'Services.name',
-                'Servicetemplates.name',
-                'Hosts.id',
-                'Hosts.uuid',
-                'Hosts.name',
-                'HostsToContainers.container_id'
-            ])->where([
-                'Services.id IN'    => $ids,
-                'Services.disabled' => 0
-            ])->enableHydration($enableHydration);
+            ]);
+        $query->select([
+            'Services.id',
+            'Services.uuid',
+            'Services.name',
+            'Servicetemplates.name',
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+            'HostsToContainers.container_id',
+            'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+        ])->where([
+            'Services.id IN'    => $ids,
+            'Services.disabled' => 0
+        ])->enableHydration($enableHydration);
 
         $result = $query->toArray();
         if (empty($result)) {
