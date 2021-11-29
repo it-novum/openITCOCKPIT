@@ -2,14 +2,15 @@ angular.module('openITCOCKPIT').directive('regexHelperTooltip', function($interv
     return {
         restrict: 'E',
         templateUrl: '/angular/regexHelperTooltip.html',
-        scope: {
-        },
+        scope: {},
         controller: function($scope){
 
-            $('.infoButton').popover({
+            $('.regexHelper').popover({
                 boundary: 'window',
                 trigger: 'hover',
-                placement: 'left'
+                placement: 'left',
+                container: 'body',
+                template: '<div class="popover" style="min-width: 500px;" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
             });
         },
 

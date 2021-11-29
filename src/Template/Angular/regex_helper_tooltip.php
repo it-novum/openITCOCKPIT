@@ -23,4 +23,26 @@
 //  confirmation.
 ?>
 
-<i class="far fa-lightbulb"></i>
+<i class="far fa-lightbulb light-on regexHelper" data-toggle="popover" data-html="true" title="<?= __('RegEx Examples'); ?>"
+   data-content='<div class="container">
+        <div class="row bordered font-xs border-bottom padding-bottom-5">
+           <div class="col col-lg-1 bg-primary bold text-white rounded">.</div>
+           <div class="col col-lg-3 text-nowrap">local<span class="bold text-primary">.</span>ost</div>
+           <div class="col-md-auto"><?= __('Match any character'); ?></div>
+        </div>
+        <div class="row bordered font-xs border-bottom padding-bottom-5">
+           <div class="col col-lg-1 bg-primary bold text-white rounded">^</div>
+           <div class="col col-lg-3 text-nowrap"><span class="bold text-primary">^</span>ocalhost</div>
+           <div class="col-md-auto"><?= __('Match the beginning of a string'); ?></div>
+        </div>
+        <div class="row bordered font-xs border-bottom padding-bottom-5">
+           <div class="col col-lg-1 bg-primary bold text-white rounded">$</div>
+           <div class="col col-lg-3 text-nowrap">localhos<span class="bold text-primary">$</span></div>
+           <div class="col-md-auto"><?= __('Match the end of a string'); ?></div>
+        </div>
+        <div class="row bordered font-xs padding-bottom-5">
+           <div class="col col-lg-1 bg-primary bold text-white rounded">|</div>
+           <div class="col col-lg-3 text-nowrap">wan<span class="bold text-primary">|</span>lan</div>
+           <div class="col-md-auto"><?= __('Match either of the sequences'); ?></div>
+        </div>
+</div>'></i>
