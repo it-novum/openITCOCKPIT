@@ -2432,6 +2432,10 @@ class NagiosConfigGenerator {
         $file->close();
     }
 
+    /**
+     * This method runs after the old Nagios/Naemon config files where deleted and the backup was created
+     * and BEFORE any new configuration file was written
+     */
     public function beforeExportExternalTasks() {
         $this->createMissingOitcAgentActiveChecks();
 
@@ -2442,6 +2446,11 @@ class NagiosConfigGenerator {
         }
     }
 
+    /**
+     * This methods run after all Nagios/Naemon configuration files where generated
+     * but BEFORE the sync on satellite systems
+     *
+     */
     public function afterExportExternalTasks() {
         $this->createOitcAgentJsonConfig();
 
@@ -2806,7 +2815,10 @@ class NagiosConfigGenerator {
         }
     }
 
-    private function createOitcAgentJsonConfig() {
+    /**
+     * @param null $satelliteId
+     */
+    private function createOitcAgentJsonConfig($satelliteId = null) {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicetemplatesTable ServicetemplatesTable */
