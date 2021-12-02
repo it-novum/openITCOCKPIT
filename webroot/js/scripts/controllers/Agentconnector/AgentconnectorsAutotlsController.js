@@ -116,15 +116,20 @@ angular.module('openITCOCKPIT')
                     'reExchangeAutoTLS': 'true'
                 }
             }).then(function(result){
-                $scope.runningCheck = false;
-                $scope.config = result.data.config;
-                $scope.host = result.data.host;
-                $scope.connection_test = result.data.connection_test;
+                if(result.data.satellite_task_id === null){
+                    // Request was handled by the Master System
+                    $scope.runningCheck = false;
+                    $scope.config = result.data.config;
+                    $scope.host = result.data.host;
+                    $scope.connection_test = result.data.connection_test;
+                    $scope.disableNext = $scope.connection_test.status !== 'success';
+                }else{
+                    $scope.isSatellite = true;
+                    $scope.satellite_task_id = result.data.satellite_task_id;
+                    // Request is running on a Satellite - Wait for response data...
+                    $scope.cancelInterval();
 
-                $scope.disableNext = $scope.connection_test.status !== 'success';
-
-                if($scope.connection_test.status === 'success'){
-                    $scope.disableNext = false;
+                    refreshInterval = $interval(checkForSatelliteResponse, 5000);
                 }
             });
         };
