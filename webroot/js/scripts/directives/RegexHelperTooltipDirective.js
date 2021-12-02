@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT').directive('regexHelperTooltip', function($interv
                 trigger: 'hover',
                 placement: 'left',
                 container: 'body',
-                template: '<div class="popover" style="min-width: 500px;" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
+                template: '<div class="popover bg-white-transparent" style="min-width: 500px;" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
             });
         },
 
