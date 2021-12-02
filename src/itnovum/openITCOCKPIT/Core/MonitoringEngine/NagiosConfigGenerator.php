@@ -2452,7 +2452,16 @@ class NagiosConfigGenerator {
      *
      */
     public function afterExportExternalTasks() {
-        $this->createOitcAgentJsonConfig();
+        // Create Agent config for the Master System
+        $this->createOitcAgentJsonConfig(0);
+        // Create Agent config for all Satellite Systems
+        if ($this->dm === true) {
+            foreach ($this->Satellites as $satellite) {
+                $satelliteId = $satellite->get('id');
+
+                $this->createOitcAgentJsonConfig($satelliteId);
+            }
+        }
 
         //Restart oitc CMD to wipe old cached information
         exec('systemctl restart oitc_cmd');
@@ -2816,9 +2825,9 @@ class NagiosConfigGenerator {
     }
 
     /**
-     * @param null $satelliteId
+     * @param int $satelliteId
      */
-    private function createOitcAgentJsonConfig($satelliteId = null) {
+    private function createOitcAgentJsonConfig(int $satelliteId) {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicetemplatesTable ServicetemplatesTable */
@@ -2838,7 +2847,7 @@ class NagiosConfigGenerator {
             $isSystemsettingsProxyEnabled = true;
         }
 
-        $hosts = $HostsTable->getHostsThatUseOitcAgentForExport();
+        $hosts = $HostsTable->getHostsThatUseOitcAgentForExport($satelliteId);
         if (empty($hosts)) {
             return;
         }
@@ -2846,9 +2855,17 @@ class NagiosConfigGenerator {
         $servicetemplate = $ServicetemplatesTable->getServicetemplateByName('OITC_AGENT_ACTIVE', OITC_AGENT_SERVICE);
         $servicetemplateId = $servicetemplate->get('id');
 
-        $configDir = '/opt/openitc/receiver/etc/';
-        $configFile = sprintf('/opt/openitc/receiver/etc/production_%s.json', date('Y-m-d-H-i-s'));
-        $outfile = '/opt/openitc/receiver/etc/production.json';
+        if ($satelliteId === 0) {
+            // Generate config file for the Master System
+            $configDir = '/opt/openitc/receiver/etc/';
+            $configFile = sprintf('/opt/openitc/receiver/etc/production_%s.json', date('Y-m-d-H-i-s'));
+            $outfile = '/opt/openitc/receiver/etc/production.json';
+        } else {
+            //Generate config file for a satellite
+            $configDir = '/opt/openitc/nagios/satellites/' . $satelliteId;
+            $configFile = '/opt/openitc/nagios/satellites/' . $satelliteId . '/agent_production.json';
+            $outfile = $configFile;
+        }
         $jsonConfig = [];
         foreach ($hosts as $host) {
             $hostUuid = $host['uuid'];
@@ -2942,20 +2959,24 @@ class NagiosConfigGenerator {
         // Store new openitcockpit-receiver json configuration
         file_put_contents($configFile, json_encode($jsonConfig, JSON_PRETTY_PRINT));
 
-        if (file_exists($outfile)) {
-            unlink($outfile);
+        if ($configFile !== $outfile) {
+            if (file_exists($outfile)) {
+                unlink($outfile);
+            }
+
+            symlink($configFile, $outfile);
         }
 
-        symlink($configFile, $outfile);
-
-        // Delete old files
-        $Finder = new Finder();
-        $Finder
-            ->name('*.json')
-            ->date('until 10 days ago');
-        foreach ($Finder->in($configDir) as $file) {
-            /** @var SplFileInfo $file */
-            unlink($file->getRealPath());
+        // Delete old files (Only on the Master System)
+        if ($satelliteId > 0) {
+            $Finder = new Finder();
+            $Finder
+                ->name('*.json')
+                ->date('until 10 days ago');
+            foreach ($Finder->in($configDir) as $file) {
+                /** @var SplFileInfo $file */
+                unlink($file->getRealPath());
+            }
         }
 
     }

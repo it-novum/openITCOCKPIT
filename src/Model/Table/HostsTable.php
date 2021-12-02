@@ -659,7 +659,7 @@ class HostsTable extends Table {
             ])
             ->contain([
                 'HostsToContainersSharing',
-                'Contacts'      => [
+                'Contacts'                  => [
                     'Containers' => [
                         'fields' => [
                             'ContactsToContainers.contact_id',
@@ -671,7 +671,7 @@ class HostsTable extends Table {
                         'Contacts.id'
                     ]
                 ],
-                'Contactgroups' => [
+                'Contactgroups'             => [
                     'Containers' => [
                         'fields' => [
                             'Containers.parent_id'
@@ -2411,9 +2411,10 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param int $satelliteId
      * @return array
      */
-    public function getHostsThatUseOitcAgentForExport() {
+    public function getHostsThatUseOitcAgentForExport(int $satelliteId = 0) {
         $query = $this->find()
             ->disableHydration()
             ->select([
@@ -2425,7 +2426,10 @@ class HostsTable extends Table {
                 'Agentconfigs.host_id',
                 'Agentconfigs.config',
             ])
-            ->innerJoinWith('Agentconfigs');
+            ->innerJoinWith('Agentconfigs')
+            ->where([
+                'Hosts.satellite_id' => $satelliteId
+            ]);
         $query->all();
 
         return $this->emptyArrayIfNull($query->toArray());
@@ -2882,9 +2886,9 @@ class HostsTable extends Table {
 
             if ($conditions['Hoststatus']['in_downtime'] ^ $conditions['Hoststatus']['not_in_downtime']) {
                 $inDowntime = $conditions['Hoststatus']['in_downtime'] === true;
-                if($inDowntime === false){
+                if ($inDowntime === false) {
                     $where['Hoststatus.scheduled_downtime_depth'] = 0;
-                }else{
+                } else {
                     $where['Hoststatus.scheduled_downtime_depth > '] = 0;
                 }
             }
@@ -2952,9 +2956,9 @@ class HostsTable extends Table {
 
             if ($conditions['Hoststatus']['in_downtime'] ^ $conditions['Hoststatus']['not_in_downtime']) {
                 $inDowntime = $conditions['Hoststatus']['in_downtime'] === true;
-                if($inDowntime === false){
+                if ($inDowntime === false) {
                     $where['Hoststatus.scheduled_downtime_depth'] = 0;
-                }else{
+                } else {
                     $where['Hoststatus.scheduled_downtime_depth > '] = 0;
                 }
             }
@@ -3290,7 +3294,7 @@ class HostsTable extends Table {
                     $hostStateSummary['passive'][$host['Hoststatus']['current_state']]++;
                     $hostStateSummary['passive']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
                 }
-            }else{
+            } else {
                 if ($host['Hoststatus']['current_state'] > 0) {
                     if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
                         $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
