@@ -987,6 +987,7 @@ class AgentconnectorController extends AppController {
                 $GearmanClient->doBackground('oitc_agent_sattx', json_encode($NSTAOptions));
 
                 // Wait until the response is in the database
+                // @todo Can we move this into the gearman_worker some how due to php's max_execution_time ?
                 while (true) {
                     $responseTask = $SatelliteTasksTable->find()
                         ->where([

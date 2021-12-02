@@ -823,11 +823,6 @@ class GearmanWorkerCommand extends Command {
             //    $return = ['task' => $payload['task']];
             //    break;
 
-            case 'idoit_sync':
-                //@todo implement me
-                //$this->Synchronisation->runImport($payload['isCron'], $payload['authUser']);
-                break;
-
             case 'make_sql_backup':
                 $filename = Configure::read('nagios.export.backupTarget') . '/' . $payload['filename'];
                 if (file_exists($filename)) {
