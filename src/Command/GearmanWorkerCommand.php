@@ -31,6 +31,7 @@ namespace App\Command;
 use App\itnovum\openITCOCKPIT\Database\Backup;
 use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
 use App\Model\Entity\Changelog;
+use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ExportsTable;
 use App\Model\Table\SystemsettingsTable;
@@ -993,13 +994,18 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'OitcAgentSatResult':
-                // Got openITCOCKPOT Agent Query Result from Satellite
+                // Got openITCOCKPIT Agent Query Result from Satellite
                 $hasError = !empty($payload['Error']);
 
                 /** @var SatelliteTasksTable $SatelliteTasksTable */
                 $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
 
                 try {
+                    /** @var AgentconfigsTable $AgentconfigsTable */
+                    $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+                    $record = $AgentconfigsTable->getConfigById($payload['AgentConfigId']);
+
                     $task = $SatelliteTasksTable->find()
                         ->where([
                             'id'           => $payload['TaskID'],
@@ -1013,8 +1019,12 @@ class GearmanWorkerCommand extends Command {
                         'status' => $hasError ? SatelliteTask::SatelliteTaskFinishedError : SatelliteTask::SatelliteTaskFinishedSuccessfully
                     ]);
 
+                    if ($hasError === false && $record->use_autossl) {
+                        $record->set('autossl_successful', true);
+                        $AgentconfigsTable->save($record);
+                    }
+
                     $SatelliteTasksTable->save($task);
-                    debug($task);
                 } catch (RecordNotFoundException $e) {
                     Log::error('Could not find any satellite task for: ' . json_encode($payload));
                 }

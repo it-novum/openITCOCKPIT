@@ -637,6 +637,7 @@ class AgentconnectorController extends AppController {
                 'Command'     => 'agent',
                 'Data'        => [
                     'TaskID'             => $task->id,
+                    'AgentConfigId'      => $record->id,
                     'Task'               => 'query',
                     'Address'            => $host->address,
                     'Port'               => $config['int']['bind_port'],
@@ -970,6 +971,7 @@ class AgentconnectorController extends AppController {
                     'Command'     => 'agent',
                     'Data'        => [
                         'TaskID'             => $task->id,
+                        'AgentConfigId'      => $record->id,
                         'Task'               => 'query',
                         'Address'            => $host->address,
                         'Port'               => $config['int']['bind_port'],

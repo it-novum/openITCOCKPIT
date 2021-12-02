@@ -32,14 +32,14 @@ angular.module('openITCOCKPIT')
                     $scope.cancelInterval();
                     if(result.data.task.status === SatelliteTaskFinishedError){
                         try{
-                            var errorJson = JSON.parse(result.data.task.result);
+                            $scope.connection_test = JSON.parse(result.data.task.result);
                         }catch(e){
                             // Error is no json
                             $scope.hasSatelliteError = true;
                             $scope.satelliteErrorMsg = result.data.task.result;
-                            console.log('error is no json!');
                         }
 
+                        $scope.runningCheck = false;
                         return;
                     }
 
