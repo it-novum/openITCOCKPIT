@@ -188,9 +188,10 @@ class AgentchecksTable extends Table {
     /**
      * @param array $containerIds
      * @param string $type
+     * @param null $activeChecksEnabled | false => passive or true => active
      * @return array
      */
-    public function getAgentchecksByContainerId($containerIds = [], $type = 'all') {
+    public function getAgentchecksByContainerId($containerIds = [], $type = 'all', $activeChecksEnabled = null) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -234,10 +235,14 @@ class AgentchecksTable extends Table {
             $where['Servicetemplates.container_id IN'] = $containerIds;
         }
 
+        if(!is_null($activeChecksEnabled)) {
+            $where['Servicetemplates.active_checks_enabled'] = (int)$activeChecksEnabled;
+        }
 
         $query = $this->find()
             ->contain(['Servicetemplates'])
             ->where($where)
+            ->order('Agentchecks.name')
             ->disableHydration()
             ->all();
 
