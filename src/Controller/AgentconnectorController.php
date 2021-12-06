@@ -1134,7 +1134,7 @@ class AgentconnectorController extends AppController {
      * The Agent send it's UUID and an empty Password to the openITCOCKPIT Server. If no password was generated for the given UUID
      * openITCOCKPIT will generate a new Password and respond this password to the Agent. Respond with 201
      *
-     * If an Agent sends an password which is not found in the database, openITCOCKPIT will respond with an 403 Forbidden
+     * If an Agent sends a password which is not found in the database, openITCOCKPIT will respond with a 403 Forbidden
      */
     public function register_agent() {
         $agentUuid = $this->request->getData('agentuuid', null);
