@@ -1135,6 +1135,8 @@ class AgentconnectorController extends AppController {
      * openITCOCKPIT will generate a new Password and respond this password to the Agent. Respond with 201
      *
      * If an Agent sends a password which is not found in the database, openITCOCKPIT will respond with a 403 Forbidden
+     *
+     * IF you change this method PLEASE MAKE SURE TO CHANGE IT ON THE SATELLITE IN THE SAME WAY!
      */
     public function register_agent() {
         $agentUuid = $this->request->getData('agentuuid', null);
