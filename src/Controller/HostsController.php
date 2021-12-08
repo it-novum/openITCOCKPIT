@@ -1139,23 +1139,29 @@ class HostsController extends AppController {
                         $contactgroupsFromHost = [];
                         $allContactGroupsAreVisibleForUser = false;
                         if (!empty($newContactgroups)) {
+
                             //Check user permissions for already exists contacts. Are all existing contact groups are visible for user
-                            if (!empty($mergedHost['Host']['contactgroups']) || !empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
-                                $contactgroupsFromHost = $mergedHost['Host']['contactgroups'];
-                                if (empty($contactgroupsFromHost)) {
+                            if (empty($mergedHost['Host']['contactgroups'])) {
+                                if (!empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
                                     $contactgroupsFromHost = $mergedHost['Host']['hosttemplate']['contactgroups'];
                                 }
-                                if (!empty($contactgroupsFromHost)) {
-                                    foreach ($contactgroupsFromHost as $contactgroup) {
-                                        $contactgroupContainerIds = Hash::extract($contactgroup['container'], '{n}.parent_id');
-                                        if (empty(array_intersect($contactgroupContainerIds, $this->MY_RIGHTS))) {
-                                            break;
-                                        }
+                            } else {
+                                $contactgroupsFromHost = $mergedHost['Host']['contactgroups'];
+                            }
+                            if (!empty($contactgroupsFromHost)) {
+                                foreach ($contactgroupsFromHost as $contactgroup) {
+                                    $contactgroupContainerId = $contactgroup['container']['parent_id'];
+                                    //$contactgroupContainerIds = Hash::extract($contactgroup['container'], 'parent_id');
+                                    if (empty(array_intersect([$contactgroupContainerId], $this->MY_RIGHTS))) {
+                                        //contactgroup not visible for user!
+                                        $allContactGroupsAreVisibleForUser = false;
+                                        break;
+                                    }else{
+                                        $allContactGroupsAreVisibleForUser = true;
                                     }
-                                    $allContactGroupsAreVisibleForUser = true;
-                                } else {
-                                    $allContactGroupsAreVisibleForUser = true; //nothing to do
                                 }
+                            } else {
+                                $allContactGroupsAreVisibleForUser = true; //nothing to do
                             }
                             if ($allContactGroupsAreVisibleForUser === true) {
                                 // Container permissions check for contact groups
