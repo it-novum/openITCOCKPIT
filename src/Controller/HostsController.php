@@ -1115,17 +1115,18 @@ class HostsController extends AppController {
                                 );
                                 if (empty(array_diff($newContacts, $contactsAfterContainerCheck))) {
                                     if ($detailsToEdit['keepContacts']) {
+                                        //we need the contact ids here not the whole contact array for merging existing contacts
+                                        $contactIdsFromHost = Hash::extract($contactsFromHost, '{n}.id');
                                         $dataToSave['contacts'] = [
                                             '_ids' => array_unique(
                                                 array_merge(
-                                                    $contactsFromHost, $newContacts
+                                                    $contactIdsFromHost, $newContacts
                                                 )
                                             )
                                         ];
                                     } else {
                                         $dataToSave['contacts'] = [
                                             '_ids' => $newContacts
-
                                         ];
                                     }
                                     $dataToSave['own_contacts'] = 1;
@@ -1137,7 +1138,7 @@ class HostsController extends AppController {
                         $newContactgroups = $detailsToEdit['Host']['contactgroups']['_ids'];
                         $contactgroupsFromHost = [];
                         $allContactGroupsAreVisibleForUser = false;
-                        if (!empty($newContacts)) {
+                        if (!empty($newContactgroups)) {
                             //Check user permissions for already exists contacts. Are all existing contact groups are visible for user
                             if (!empty($mergedHost['Host']['contactgroups']) || !empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
                                 $contactgroupsFromHost = $mergedHost['Host']['contactgroups'];
@@ -1166,10 +1167,12 @@ class HostsController extends AppController {
                                 );
                                 if (empty(array_diff($newContactgroups, $contactgroupssAfterContainerCheck))) {
                                     if ($detailsToEdit['keepContactgroups']) {
+                                        //we need the contactgroup ids here not the whole contactgroup array for merging existing contactgroups
+                                        $contactgroupIdsFromHost = Hash::extract($contactgroupsFromHost, '{n}.id');
                                         $dataToSave['contactgroups'] = [
                                             '_ids' => array_unique(
                                                 array_merge(
-                                                    $contactgroupsFromHost, $newContactgroups
+                                                    $contactgroupIdsFromHost, $newContactgroups
                                                 )
                                             )
                                         ];
