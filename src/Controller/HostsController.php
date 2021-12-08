@@ -1154,7 +1154,6 @@ class HostsController extends AppController {
                             if (!empty($contactgroupsFromHost)) {
                                 foreach ($contactgroupsFromHost as $contactgroup) {
                                     $contactgroupContainerId = $contactgroup['container']['parent_id'];
-                                    //$contactgroupContainerIds = Hash::extract($contactgroup['container'], 'parent_id');
                                     if (empty(array_intersect([$contactgroupContainerId], $this->MY_RIGHTS))) {
                                         //contactgroup not visible for user!
                                         $allContactGroupsAreVisibleForUser = false;
@@ -1189,7 +1188,6 @@ class HostsController extends AppController {
                                     } else {
                                         $dataToSave['contactgroups'] = [
                                             '_ids' => $newContactgroups
-
                                         ];
                                     }
                                     $dataToSave['own_contactgroups'] = 1;
