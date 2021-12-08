@@ -1088,22 +1088,25 @@ class HostsController extends AppController {
                         $contactsFromHost = [];
                         if (!empty($newContacts)) {
                             //Check user permissions for already exists contacts. Are all existing contacts are visible for user
-                            if (!empty($mergedHost['Host']['contacts']) || !empty($mergedHost['Host']['hosttemplate']['contacts'])) {
-                                $contactsFromHost = $mergedHost['Host']['contacts'];
-                                if (empty($contactsFromHost)) {
+                            if (empty($mergedHost['Host']['contacts'])) {
+                                if (!empty($mergedHost['Host']['hosttemplate']['contacts'])) {
                                     $contactsFromHost = $mergedHost['Host']['hosttemplate']['contacts'];
                                 }
-                                if (!empty($contactsFromHost)) {
-                                    foreach ($contactsFromHost as $contact) {
-                                        $contactContainerIds = Hash::extract($contact['containers'], '{n}.id');
-                                        if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
-                                            break;
-                                        }
+                            } else {
+                                $contactsFromHost = $mergedHost['Host']['contacts'];
+                            }
+                            if (!empty($contactsFromHost)) {
+                                foreach ($contactsFromHost as $contact) {
+                                    $contactContainerIds = Hash::extract($contact['containers'], '{n}.id');
+                                    if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
+                                        $allContactsAreVisibleForUser = false;
+                                        break;
+                                    } else {
+                                        $allContactsAreVisibleForUser = true;
                                     }
-                                    $allContactsAreVisibleForUser = true;
-                                } else {
-                                    $allContactsAreVisibleForUser = true; //nothing to do
                                 }
+                            } else {
+                                $allContactsAreVisibleForUser = true; //nothing to do
                             }
                             if ($allContactsAreVisibleForUser === true) {
                                 //Container permissions check for contacts
@@ -1156,7 +1159,7 @@ class HostsController extends AppController {
                                         //contactgroup not visible for user!
                                         $allContactGroupsAreVisibleForUser = false;
                                         break;
-                                    }else{
+                                    } else {
                                         $allContactGroupsAreVisibleForUser = true;
                                     }
                                 }
