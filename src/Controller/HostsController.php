@@ -984,10 +984,11 @@ class HostsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $hostIds = $this->request->getData('data.hosts', []);
             $detailsToEdit = $this->request->getData('data.details', []);
+            $HosttemplateCache = new KeyValueStore();
             foreach ($hostIds as $hostId) {
                 $dataToSave = [];
                 $sharedContainers = [];
-                $hostObject = $HostsTable->getHostByIdForEditDetails($hostId);
+                $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
                 $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
                 $containerIdsForChangelog = [];
                 $primaryContainerId = $hostObject->get('container_id');
@@ -1009,10 +1010,18 @@ class HostsController extends AppController {
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
                     $hostData = $hostObject->toArray();
-                    $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']);
+
+                    if (!$HosttemplateCache->has($hostData['hosttemplate_id'])) {
+                        $HosttemplateCache->set($hostData['hosttemplate_id'], $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']));
+                    }
+                    $hosttemplate = $HosttemplateCache->get($hostData['hosttemplate_id']);
                     $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hosttemplate);
 
+                    // Merge the Host with the host template to be able to compare description, tags, etc
                     $mergedHost = $HostMergerForView->getDataForView();
+
+                    // Keep the contact and contact groups of the host - the comparison will be done later in this code
+                    // to check if the host is able to "use/see" the given contact/s due to container permissions
                     $mergedHost['Host']['contacts'] = $hostData['contacts'];
                     $mergedHost['Host']['contactgroups'] = $hostData['contactgroups'];
 
@@ -1087,26 +1096,29 @@ class HostsController extends AppController {
                         $allContactsAreVisibleForUser = false;
                         $contactsFromHost = [];
                         if (!empty($newContacts)) {
-                            //Check user permissions for already exists contacts. Are all existing contacts are visible for user
-                            if (empty($mergedHost['Host']['contacts'])) {
-                                if (!empty($mergedHost['Host']['hosttemplate']['contacts'])) {
+                            //Check user permissions for already exists contacts. Are all existing contacts visible for the user
+                            if (!empty($mergedHost['Host']['contacts']) || !empty($mergedHost['Host']['hosttemplate']['contacts'])) {
+                                $contactsFromHost = $mergedHost['Host']['contacts'];
+                                if (empty($contactsFromHost)) {
+                                    // Host has no own contacts, use the contacts of the host template
                                     $contactsFromHost = $mergedHost['Host']['hosttemplate']['contacts'];
                                 }
-                            } else {
-                                $contactsFromHost = $mergedHost['Host']['contacts'];
-                            }
-                            if (!empty($contactsFromHost)) {
-                                foreach ($contactsFromHost as $contact) {
-                                    $contactContainerIds = Hash::extract($contact['containers'], '{n}.id');
-                                    if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
-                                        $allContactsAreVisibleForUser = false;
-                                        break;
-                                    } else {
+                                if (!empty($contactsFromHost)) {
+                                    foreach ($contactsFromHost as $contact) {
+                                        $contactContainerIds = Hash::extract($contact['containers'], '{n}.id');
+                                        if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
+                                            // No permissions for this contact
+                                            // Leave foreach loop
+                                            $allContactsAreVisibleForUser = false;
+                                            break;
+                                        }
+
+                                        // User can see the current contact
                                         $allContactsAreVisibleForUser = true;
                                     }
+                                } else {
+                                    $allContactsAreVisibleForUser = true; //nothing to do
                                 }
-                            } else {
-                                $allContactsAreVisibleForUser = true; //nothing to do
                             }
                             if ($allContactsAreVisibleForUser === true) {
                                 //Container permissions check for contacts
@@ -1116,20 +1128,20 @@ class HostsController extends AppController {
                                     $newContacts,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContacts, $contactsAfterContainerCheck))) {
+                                if (!empty($contactsAfterContainerCheck)) { // Only save the contacts the host can "see"
+                                    $contactsIdsFromHost = Hash::extract($contactsFromHost, '{n}._joinData.contact_id');
                                     if ($detailsToEdit['keepContacts']) {
-                                        //we need the contact ids here not the whole contact array for merging existing contacts
-                                        $contactIdsFromHost = Hash::extract($contactsFromHost, '{n}.id');
                                         $dataToSave['contacts'] = [
                                             '_ids' => array_unique(
                                                 array_merge(
-                                                    $contactIdsFromHost, $newContacts
+                                                    $contactsIdsFromHost, $contactsAfterContainerCheck
                                                 )
                                             )
                                         ];
                                     } else {
                                         $dataToSave['contacts'] = [
-                                            '_ids' => $newContacts
+                                            '_ids' => $contactsAfterContainerCheck
+
                                         ];
                                     }
                                     $dataToSave['own_contacts'] = 1;
@@ -1142,28 +1154,28 @@ class HostsController extends AppController {
                         $contactgroupsFromHost = [];
                         $allContactGroupsAreVisibleForUser = false;
                         if (!empty($newContactgroups)) {
-
-                            //Check user permissions for already exists contacts. Are all existing contact groups are visible for user
-                            if (empty($mergedHost['Host']['contactgroups'])) {
-                                if (!empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
+                            //Check user permissions for already exists contacts. Are all existing contact groups are visible for the user
+                            if (!empty($mergedHost['Host']['contactgroups']) || !empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
+                                $contactgroupsFromHost = $mergedHost['Host']['contactgroups'];
+                                if (empty($contactgroupsFromHost)) {
+                                    // Host has no own contact groups, use the contact groups of the host template
                                     $contactgroupsFromHost = $mergedHost['Host']['hosttemplate']['contactgroups'];
                                 }
-                            } else {
-                                $contactgroupsFromHost = $mergedHost['Host']['contactgroups'];
-                            }
-                            if (!empty($contactgroupsFromHost)) {
-                                foreach ($contactgroupsFromHost as $contactgroup) {
-                                    $contactgroupContainerId = $contactgroup['container']['parent_id'];
-                                    if (empty(array_intersect([$contactgroupContainerId], $this->MY_RIGHTS))) {
-                                        //contactgroup not visible for user!
-                                        $allContactGroupsAreVisibleForUser = false;
-                                        break;
-                                    } else {
+                                if (!empty($contactgroupsFromHost)) {
+                                    foreach ($contactgroupsFromHost as $contactgroup) {
+                                        if (!in_array($contactgroup['container']['parent_id'], $this->MY_RIGHTS, true)) {
+                                            // No permissions for this contact group
+                                            // Leave foreach loop
+                                            $allContactGroupsAreVisibleForUser = false;
+                                            break;
+                                        }
+
+                                        // User can see the current contact group
                                         $allContactGroupsAreVisibleForUser = true;
                                     }
+                                } else {
+                                    $allContactGroupsAreVisibleForUser = true; //nothing to do
                                 }
-                            } else {
-                                $allContactGroupsAreVisibleForUser = true; //nothing to do
                             }
                             if ($allContactGroupsAreVisibleForUser === true) {
                                 // Container permissions check for contact groups
@@ -1173,21 +1185,22 @@ class HostsController extends AppController {
                                     $newContactgroups,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContactgroups, $contactgroupssAfterContainerCheck))) {
+
+                                if (!empty($contactgroupssAfterContainerCheck)) { // Only save the contact groups the host can "see"
+                                    $contactgroupsIdsFromHost = Hash::extract($contactgroupsFromHost, '{n}._joinData.contactgroup_id');
                                     if ($detailsToEdit['keepContactgroups']) {
-                                        //we need the contactgroup ids here not the whole contactgroup array for merging existing contactgroups
-                                        $contactgroupIdsFromHost = Hash::extract($contactgroupsFromHost, '{n}.id');
                                         $dataToSave['contactgroups'] = [
                                             '_ids' => array_unique(
                                                 array_merge(
-                                                    $contactgroupIdsFromHost, $newContactgroups
+                                                    $contactgroupsIdsFromHost, $contactgroupssAfterContainerCheck
                                                 )
                                             )
                                         ];
 
                                     } else {
                                         $dataToSave['contactgroups'] = [
-                                            '_ids' => $newContactgroups
+                                            '_ids' => $contactgroupssAfterContainerCheck
+
                                         ];
                                     }
                                     $dataToSave['own_contactgroups'] = 1;
