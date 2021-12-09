@@ -652,7 +652,7 @@ class HostsTable extends Table {
      * @param $id
      * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getHostByIdForEditDetails($id) {
+    public function getHostByIdWithHosttemplateForEditDetails($id) {
         $query = $this->find()
             ->where([
                 'Hosts.id' => $id
