@@ -712,7 +712,7 @@ class HostsController extends AppController {
             $dataForSave['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
             $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
-            //Update contact data
+            //Update host data
 
             $hostEntity = $HostsTable->get($id);
             $hostEntity = $HostsTable->patchEntity($hostEntity, $dataForSave);
@@ -986,9 +986,16 @@ class HostsController extends AppController {
             $detailsToEdit = $this->request->getData('data.details', []);
             $HosttemplateCache = new KeyValueStore();
             foreach ($hostIds as $hostId) {
-                $dataToSave = [];
-                $sharedContainers = [];
                 $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
+
+                $dataToSave = [
+                    // Add required fields for HostComparisonForSave class
+                    'name'            => $hostObject->name,
+                    'hosttemplate_id' => $hostObject->hosttemplate_id,
+                    'address'         => $hostObject->address,
+                    'container_id'    => $hostObject->container_id
+                ];
+                $sharedContainers = [];
                 $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
                 $containerIdsForChangelog = [];
                 $primaryContainerId = $hostObject->get('container_id');
@@ -1006,15 +1013,14 @@ class HostsController extends AppController {
                     $this->MY_RIGHTS
                 );
 
+                $hostData = $hostObject->toArray();
+                if (!$HosttemplateCache->has($hostData['hosttemplate_id'])) {
+                    $HosttemplateCache->set($hostData['hosttemplate_id'], $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']));
+                }
+                $hosttemplate = $HosttemplateCache->get($hostData['hosttemplate_id']);
 
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
-                    $hostData = $hostObject->toArray();
-
-                    if (!$HosttemplateCache->has($hostData['hosttemplate_id'])) {
-                        $HosttemplateCache->set($hostData['hosttemplate_id'], $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']));
-                    }
-                    $hosttemplate = $HosttemplateCache->get($hostData['hosttemplate_id']);
                     $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hosttemplate);
 
                     // Merge the Host with the host template to be able to compare description, tags, etc
@@ -1144,7 +1150,6 @@ class HostsController extends AppController {
 
                                         ];
                                     }
-                                    $dataToSave['own_contacts'] = 1;
                                 }
                             }
                         }
@@ -1203,7 +1208,6 @@ class HostsController extends AppController {
 
                                         ];
                                     }
-                                    $dataToSave['own_contactgroups'] = 1;
                                 }
                             }
                         }
@@ -1231,6 +1235,15 @@ class HostsController extends AppController {
                     }
 
                     if (!empty($dataToSave)) {
+                        $HostComparisonForSave = new HostComparisonForSave(['Host' => $dataToSave], $hosttemplate);
+
+                        $dataToSave = $HostComparisonForSave->getDataForSaveForAllFields();
+                        //Add required fields for validation
+                        $dataToSave['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
+                        $dataToSave['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
+                        $dataToSave['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
+                        $dataToSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
+
                         $hostObject = $HostsTable->patchEntity($hostObject, $dataToSave);
                         $HostsTable->save($hostObject);
                         if (!$hostObject->hasErrors()) {
