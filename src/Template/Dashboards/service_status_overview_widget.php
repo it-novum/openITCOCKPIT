@@ -79,7 +79,7 @@
                             </div>
                             <input type="text" class="form-control"
                                    placeholder="<?php echo __('Filter by service name'); ?>"
-                                   g-model="filter.Service.name"
+                                   ng-model="filter.Service.name"
                                    ng-model-options="{debounce: 500}">
                         </div>
                     </div>
