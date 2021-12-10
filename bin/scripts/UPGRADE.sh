@@ -425,6 +425,7 @@ mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TA
     mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4;"
 done
 
+oitc usage_flag
 
 oitc nagios_export
 
