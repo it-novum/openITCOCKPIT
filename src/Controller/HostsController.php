@@ -1093,7 +1093,7 @@ class HostsController extends AppController {
                     }
                     if ($detailsToEdit['editContacts'] == 1) {
                         $newContacts = $detailsToEdit['Host']['contacts']['_ids'];
-                        $allContactsAreVisibleForUser = false;
+                        $allContactsAreVisibleForUser = empty($mergedHost['Host']['contacts']) && empty($mergedHost['Host']['hosttemplate']['contacts']);
                         $contactsFromHost = [];
                         if (!empty($newContacts)) {
                             //Check user permissions for already exists contacts. Are all existing contacts visible for the user
@@ -1152,7 +1152,7 @@ class HostsController extends AppController {
                     if ($detailsToEdit['editContactgroups'] == 1) {
                         $newContactgroups = $detailsToEdit['Host']['contactgroups']['_ids'];
                         $contactgroupsFromHost = [];
-                        $allContactGroupsAreVisibleForUser = false;
+                        $allContactGroupsAreVisibleForUser = empty($mergedHost['Host']['contactgroups']) && empty($mergedHost['Host']['hosttemplate']['contactgroups']);
                         if (!empty($newContactgroups)) {
                             //Check user permissions for already exists contacts. Are all existing contact groups are visible for the user
                             if (!empty($mergedHost['Host']['contactgroups']) || !empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
