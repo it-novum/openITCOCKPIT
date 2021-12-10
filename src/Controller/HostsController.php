@@ -712,7 +712,7 @@ class HostsController extends AppController {
             $dataForSave['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
             $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
-            //Update contact data
+            //Update host data
 
             $hostEntity = $HostsTable->get($id);
             $hostEntity = $HostsTable->patchEntity($hostEntity, $dataForSave);
@@ -984,10 +984,18 @@ class HostsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $hostIds = $this->request->getData('data.hosts', []);
             $detailsToEdit = $this->request->getData('data.details', []);
+            $HosttemplateCache = new KeyValueStore();
             foreach ($hostIds as $hostId) {
-                $dataToSave = [];
+                $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
+
+                $dataToSave = [
+                    // Add required fields for HostComparisonForSave class
+                    'name'            => $hostObject->name,
+                    'hosttemplate_id' => $hostObject->hosttemplate_id,
+                    'address'         => $hostObject->address,
+                    'container_id'    => $hostObject->container_id
+                ];
                 $sharedContainers = [];
-                $hostObject = $HostsTable->getHostByIdForEditDetails($hostId);
                 $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
                 $containerIdsForChangelog = [];
                 $primaryContainerId = $hostObject->get('container_id');
@@ -1005,14 +1013,21 @@ class HostsController extends AppController {
                     $this->MY_RIGHTS
                 );
 
+                $hostData = $hostObject->toArray();
+                if (!$HosttemplateCache->has($hostData['hosttemplate_id'])) {
+                    $HosttemplateCache->set($hostData['hosttemplate_id'], $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']));
+                }
+                $hosttemplate = $HosttemplateCache->get($hostData['hosttemplate_id']);
 
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
-                    $hostData = $hostObject->toArray();
-                    $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']);
                     $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hosttemplate);
 
+                    // Merge the Host with the host template to be able to compare description, tags, etc
                     $mergedHost = $HostMergerForView->getDataForView();
+
+                    // Keep the contact and contact groups of the host - the comparison will be done later in this code
+                    // to check if the host is able to "use/see" the given contact/s due to container permissions
                     $mergedHost['Host']['contacts'] = $hostData['contacts'];
                     $mergedHost['Host']['contactgroups'] = $hostData['contactgroups'];
 
@@ -1084,23 +1099,29 @@ class HostsController extends AppController {
                     }
                     if ($detailsToEdit['editContacts'] == 1) {
                         $newContacts = $detailsToEdit['Host']['contacts']['_ids'];
-                        $allContactsAreVisibleForUser = false;
+                        $allContactsAreVisibleForUser = empty($mergedHost['Host']['contacts']) && empty($mergedHost['Host']['hosttemplate']['contacts']);
                         $contactsFromHost = [];
                         if (!empty($newContacts)) {
-                            //Check user permissions for already exists contacts. Are all existing contacts are visible for user
+                            //Check user permissions for already exists contacts. Are all existing contacts visible for the user
                             if (!empty($mergedHost['Host']['contacts']) || !empty($mergedHost['Host']['hosttemplate']['contacts'])) {
                                 $contactsFromHost = $mergedHost['Host']['contacts'];
                                 if (empty($contactsFromHost)) {
+                                    // Host has no own contacts, use the contacts of the host template
                                     $contactsFromHost = $mergedHost['Host']['hosttemplate']['contacts'];
                                 }
                                 if (!empty($contactsFromHost)) {
                                     foreach ($contactsFromHost as $contact) {
                                         $contactContainerIds = Hash::extract($contact['containers'], '{n}.id');
                                         if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
+                                            // No permissions for this contact
+                                            // Leave foreach loop
+                                            $allContactsAreVisibleForUser = false;
                                             break;
                                         }
+
+                                        // User can see the current contact
+                                        $allContactsAreVisibleForUser = true;
                                     }
-                                    $allContactsAreVisibleForUser = true;
                                 } else {
                                     $allContactsAreVisibleForUser = true; //nothing to do
                                 }
@@ -1113,22 +1134,22 @@ class HostsController extends AppController {
                                     $newContacts,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContacts, $contactsAfterContainerCheck))) {
+                                if (!empty($contactsAfterContainerCheck)) { // Only save the contacts the host can "see"
+                                    $contactsIdsFromHost = Hash::extract($contactsFromHost, '{n}._joinData.contact_id');
                                     if ($detailsToEdit['keepContacts']) {
                                         $dataToSave['contacts'] = [
                                             '_ids' => array_unique(
                                                 array_merge(
-                                                    $contactsFromHost, $newContacts
+                                                    $contactsIdsFromHost, $contactsAfterContainerCheck
                                                 )
                                             )
                                         ];
                                     } else {
                                         $dataToSave['contacts'] = [
-                                            '_ids' => $newContacts
+                                            '_ids' => $contactsAfterContainerCheck
 
                                         ];
                                     }
-                                    $dataToSave['own_contacts'] = 1;
                                 }
                             }
                         }
@@ -1136,22 +1157,27 @@ class HostsController extends AppController {
                     if ($detailsToEdit['editContactgroups'] == 1) {
                         $newContactgroups = $detailsToEdit['Host']['contactgroups']['_ids'];
                         $contactgroupsFromHost = [];
-                        $allContactGroupsAreVisibleForUser = false;
-                        if (!empty($newContacts)) {
-                            //Check user permissions for already exists contacts. Are all existing contact groups are visible for user
+                        $allContactGroupsAreVisibleForUser = empty($mergedHost['Host']['contactgroups']) && empty($mergedHost['Host']['hosttemplate']['contactgroups']);
+                        if (!empty($newContactgroups)) {
+                            //Check user permissions for already exists contacts. Are all existing contact groups are visible for the user
                             if (!empty($mergedHost['Host']['contactgroups']) || !empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
                                 $contactgroupsFromHost = $mergedHost['Host']['contactgroups'];
                                 if (empty($contactgroupsFromHost)) {
+                                    // Host has no own contact groups, use the contact groups of the host template
                                     $contactgroupsFromHost = $mergedHost['Host']['hosttemplate']['contactgroups'];
                                 }
                                 if (!empty($contactgroupsFromHost)) {
                                     foreach ($contactgroupsFromHost as $contactgroup) {
-                                        $contactgroupContainerIds = Hash::extract($contactgroup['container'], '{n}.parent_id');
-                                        if (empty(array_intersect($contactgroupContainerIds, $this->MY_RIGHTS))) {
+                                        if (!in_array($contactgroup['container']['parent_id'], $this->MY_RIGHTS, true)) {
+                                            // No permissions for this contact group
+                                            // Leave foreach loop
+                                            $allContactGroupsAreVisibleForUser = false;
                                             break;
                                         }
+
+                                        // User can see the current contact group
+                                        $allContactGroupsAreVisibleForUser = true;
                                     }
-                                    $allContactGroupsAreVisibleForUser = true;
                                 } else {
                                     $allContactGroupsAreVisibleForUser = true; //nothing to do
                                 }
@@ -1164,23 +1190,24 @@ class HostsController extends AppController {
                                     $newContactgroups,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContactgroups, $contactgroupssAfterContainerCheck))) {
+
+                                if (!empty($contactgroupssAfterContainerCheck)) { // Only save the contact groups the host can "see"
+                                    $contactgroupsIdsFromHost = Hash::extract($contactgroupsFromHost, '{n}._joinData.contactgroup_id');
                                     if ($detailsToEdit['keepContactgroups']) {
                                         $dataToSave['contactgroups'] = [
                                             '_ids' => array_unique(
                                                 array_merge(
-                                                    $contactgroupsFromHost, $newContactgroups
+                                                    $contactgroupsIdsFromHost, $contactgroupssAfterContainerCheck
                                                 )
                                             )
                                         ];
 
                                     } else {
                                         $dataToSave['contactgroups'] = [
-                                            '_ids' => $newContactgroups
+                                            '_ids' => $contactgroupssAfterContainerCheck
 
                                         ];
                                     }
-                                    $dataToSave['own_contactgroups'] = 1;
                                 }
                             }
                         }
@@ -1208,6 +1235,15 @@ class HostsController extends AppController {
                     }
 
                     if (!empty($dataToSave)) {
+                        $HostComparisonForSave = new HostComparisonForSave(['Host' => $dataToSave], $hosttemplate);
+
+                        $dataToSave = $HostComparisonForSave->getDataForSaveForAllFields();
+                        //Add required fields for validation
+                        $dataToSave['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
+                        $dataToSave['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
+                        $dataToSave['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
+                        $dataToSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
+
                         $hostObject = $HostsTable->patchEntity($hostObject, $dataToSave);
                         $HostsTable->save($hostObject);
                         if (!$hostObject->hasErrors()) {

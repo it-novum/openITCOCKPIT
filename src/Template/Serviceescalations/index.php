@@ -342,10 +342,10 @@
                                                         {{service.servicename}}
                                                     </span>
                                                 <?php endif; ?>
+                                                <i ng-if="service.disabled == 1"
+                                                   class="fa fa-power-off text-danger"
+                                                   title="disabled" aria-hidden="true"></i>
                                             </div>
-                                            <i ng-if="service.disabled == 1"
-                                               class="fa fa-power-off text-danger"
-                                               title="disabled" aria-hidden="true"></i>
                                         </li>
                                     </ul>
                                 </td>
@@ -367,10 +367,10 @@
                                                         {{service.servicename}}
                                                     </span>
                                                 <?php endif; ?>
+                                                <i ng-if="service.disabled == 1"
+                                                   class="fa fa-power-off text-danger"
+                                                   title="disabled" aria-hidden="true"></i>
                                             </div>
-                                            <i ng-if="service.disabled == 1"
-                                               class="fa fa-power-off text-danger"
-                                               title="disabled" aria-hidden="true"></i>
                                         </li>
                                     </ul>
                                 </td>
