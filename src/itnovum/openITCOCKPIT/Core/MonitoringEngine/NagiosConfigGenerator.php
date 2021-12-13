@@ -1806,7 +1806,7 @@ class NagiosConfigGenerator {
             }
             $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
             $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
-            $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval') * 60);
+            $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval'));
 
             $escalationTimeperiod = $hostescalation->get('timeperiod');
             if (!is_null($escalationTimeperiod)) {
@@ -1917,7 +1917,7 @@ class NagiosConfigGenerator {
                     }
                     $content .= $this->addContent('first_notification', 1, $serviceescalation->get('first_notification'));
                     $content .= $this->addContent('last_notification', 1, $serviceescalation->get('last_notification'));
-                    $content .= $this->addContent('notification_interval', 1, (int)$serviceescalation->get('notification_interval') * 60);
+                    $content .= $this->addContent('notification_interval', 1, (int)$serviceescalation->get('notification_interval'));
 
                     $escalationTimeperiod = $serviceescalation->get('timeperiod');
                     if (!is_null($escalationTimeperiod)) {
