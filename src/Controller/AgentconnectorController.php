@@ -37,6 +37,7 @@ use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\PushAgentsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -44,6 +45,8 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use DistributeModule\Model\Entity\SatelliteTask;
+use DistributeModule\Model\Table\SatelliteTasksTable;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
@@ -608,15 +611,61 @@ class AgentconnectorController extends AppController {
             throw new BadRequestException('AutoTLS is only available in Pull mode');
         }
 
-        $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+        $connection_test = null;
+        $satellite_task_id = null;
+        if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
+            // Run Auto TLS on the Satellite System
 
-        $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
+            /** @var SatelliteTasksTable $SatelliteTasksTable */
+            $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
+
+            $task = $SatelliteTasksTable->newEntity([
+                'satellite_id' => $host->satellite_id,
+                'task'         => 'oitc_agent_autotls',
+                'status'       => SatelliteTask::SatelliteTaskQueued
+            ]);
+            $SatelliteTasksTable->save($task);
+
+            /** @var Gearman $GearmanClient */
+            $GearmanClient = new Gearman();
+
+            //Send a background job to the NSTA to run query the oITC Agent from the Satellite
+            //The NSTA will put the result into the oitc_gearman queue, handled by the gearman_worker
+            //The frontend will ask frequently if the result has arrived
+            $NSTAOptions = [
+                'SatelliteID' => $host->satellite_id,
+                'Command'     => 'agent',
+                'Data'        => [
+                    'TaskID'             => $task->id,
+                    'AgentConfigId'      => $record->id,
+                    'Task'               => 'query',
+                    'Address'            => $host->address,
+                    'Port'               => $config['int']['bind_port'],
+                    'UseAutossl'         => $config['bool']['use_autossl'],
+                    'TestConnectionOnly' => true, //Only test the connection do not query the output from the Agent
+                    'AutosslSuccessful'  => $record->autossl_successful,
+                    'UseHttps'           => $config['bool']['use_https'],
+                    'Insecure'           => !$config['bool']['use_https_verify'],
+                    'BasicAuth'          => $config['bool']['use_http_basic_auth'],
+                    'Username'           => $config['string']['username'],
+                    'Password'           => $config['string']['password'],
+                ]
+            ];
+            $GearmanClient->doBackground('oitc_agent_sattx', json_encode($NSTAOptions));
+            $satellite_task_id = $task->id;
+        } else {
+            // Master System
+            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+            $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
+        }
 
         $this->set('config', $config);
         $this->set('host', $host);
         $this->set('connection_test', $connection_test);
+        $this->set('satellite_task_id', $satellite_task_id);
 
-        $this->viewBuilder()->setOption('serialize', ['config', 'host', 'connection_test']);
+
+        $this->viewBuilder()->setOption('serialize', ['config', 'host', 'connection_test', 'satellite_task_id']);
     }
 
     // Step 4 (In Push mode)
@@ -898,8 +947,70 @@ class AgentconnectorController extends AppController {
             $agentresponse = $PushAgentsTable->getAgentOutputByAgentconfigId($record->id);
         } else {
             // Pull Mode
-            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
-            $agentresponse = $AgentHttpClient->getResults();
+            if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
+                // Run request on Satellite System and wait for response
+
+                /** @var SatelliteTasksTable $SatelliteTasksTable */
+                $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
+
+                $task = $SatelliteTasksTable->newEntity([
+                    'satellite_id' => $host->satellite_id,
+                    'task'         => 'oitc_agent_query',
+                    'status'       => SatelliteTask::SatelliteTaskQueued
+                ]);
+                $SatelliteTasksTable->save($task);
+
+                /** @var Gearman $GearmanClient */
+                $GearmanClient = new Gearman();
+
+                //Send a background job to the NSTA to run query the oITC Agent from the Satellite
+                //The NSTA will put the result into the oitc_gearman queue, handled by the gearman_worker
+                //The frontend will ask frequently if the result has arrived
+                $NSTAOptions = [
+                    'SatelliteID' => $host->satellite_id,
+                    'Command'     => 'agent',
+                    'Data'        => [
+                        'TaskID'             => $task->id,
+                        'AgentConfigId'      => $record->id,
+                        'Task'               => 'query',
+                        'Address'            => $host->address,
+                        'Port'               => $config['int']['bind_port'],
+                        'UseAutossl'         => $config['bool']['use_autossl'],
+                        'TestConnectionOnly' => false, //Get the JSON output from the Agent
+                        'AutosslSuccessful'  => $record->autossl_successful,
+                        'UseHttps'           => $config['bool']['use_https'],
+                        'Insecure'           => !$config['bool']['use_https_verify'],
+                        'BasicAuth'          => $config['bool']['use_http_basic_auth'],
+                        'Username'           => $config['string']['username'],
+                        'Password'           => $config['string']['password'],
+                    ]
+                ];
+
+                $GearmanClient->doBackground('oitc_agent_sattx', json_encode($NSTAOptions));
+
+                // Wait until the response is in the database
+                // @todo Can we move this into the gearman_worker some how due to php's max_execution_time ?
+                while (true) {
+                    $responseTask = $SatelliteTasksTable->find()
+                        ->where([
+                            'id' => $task->id
+                        ])
+                        ->firstOrFail();
+
+                    if ($responseTask->status == SatelliteTask::SatelliteTaskFinishedSuccessfully || $responseTask->status == SatelliteTask::SatelliteTaskFinishedError) {
+                        $agentresponse = json_decode($responseTask->result, true);
+                        break;
+                    }
+
+
+                    sleep(5);
+                }
+
+            } else {
+                // Run on Master System
+                $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+                $agentresponse = $AgentHttpClient->getResults();
+            }
         }
 
 
@@ -915,7 +1026,7 @@ class AgentconnectorController extends AppController {
         $services = $AgentResponseToServices->getAllServices();
 
         $connection_test = null;
-        if ($config['bool']['enable_push_mode'] === false && $testConnection) {
+        if ($config['bool']['enable_push_mode'] === false && $testConnection && $host->satellite_id == 0) {
             // Agent is running in PULL Mode and the user clicked on the First Wizard Page on "Create new services"
             $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
             $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
@@ -987,6 +1098,27 @@ class AgentconnectorController extends AppController {
 
         $this->set('hosts', $hosts);
         $this->viewBuilder()->setOption('serialize', ['hosts']);
+    }
+
+    public function satellite_response() {
+        $taskId = $this->request->getQuery('task_id', 0);
+
+        /** @var SatelliteTasksTable $SatelliteTasksTable */
+        $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
+
+        try {
+            $task = $SatelliteTasksTable->find()
+                ->where([
+                    'id' => $taskId
+                ])
+                ->firstOrFail();
+        } catch (RecordNotFoundException $e) {
+            $this->response = $this->response->withStatus(404);
+            return;
+        }
+
+        $this->set('task', $task);
+        $this->viewBuilder()->setOption('serialize', ['task']);
     }
 
 
