@@ -5,8 +5,7 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
 
         $scope.activeTab = 'active';
-        SortService.setSort('Servicestatus.current_state');
-        SortService.setDirection('desc');
+
         $scope.currentPage = 1;
         $scope.selectedTab = 'tab1';
 
@@ -26,6 +25,9 @@ angular.module('openITCOCKPIT')
         $scope.tags = [];
 
         $scope.pingResult = [];
+
+        SortService.setSort('servicename');
+        SortService.setDirection('asc');
 
         $scope.priorityClasses = {
             1: 'ok-soft',
@@ -188,9 +190,6 @@ angular.module('openITCOCKPIT')
             if(tab !== $scope.activeTab){
                 $scope.services = [];
                 $scope.activeTab = tab;
-
-                SortService.setSort('servicename');
-                SortService.setDirection('asc');
                 $scope.currentPage = 1;
 
                 $scope.load();
@@ -215,6 +214,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadActiveServices = function(){
+            $scope.resetSortServiceForServiceLists();
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -238,6 +238,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadNotMonitoredServices = function(){
+            $scope.resetSortServiceForServiceLists();
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -257,6 +258,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadDisabledServices = function(){
+            $scope.resetSortServiceForServiceLists();
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -325,6 +327,13 @@ angular.module('openITCOCKPIT')
 
         $scope.stateIsNotInMonitoring = function(){
             return !$scope.hoststatus.isInMonitoring;
+        };
+
+        $scope.resetSortServiceForServiceLists = function(){
+            if(SortService.getSort().includes('Hosts')){
+                SortService.setSort('servicename');
+                SortService.setDirection('asc');
+            }
         };
 
 
