@@ -46,6 +46,7 @@ use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Entity\SatelliteTask;
+use DistributeModule\Model\Table\SatellitesTable;
 use DistributeModule\Model\Table\SatelliteTasksTable;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
@@ -410,6 +411,14 @@ class AgentconnectorController extends AppController {
 
             $host = $HostsTable->get($hostId);
 
+            $satellite = null;
+            if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
+                /** @var SatellitesTable $SatellitesTable */
+                $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+                $satellite = $SatellitesTable->getSatelliteByIdForAgent($host->satellite_id);
+            }
+
+
             $agentConfigAsJsonFromDatabase = '';
             $isOldAgent1Config = false;
             $isNewConfig = true;
@@ -444,7 +453,8 @@ class AgentconnectorController extends AppController {
             $this->set('config', $config);
             $this->set('isNewConfig', $isNewConfig);
             $this->set('host', $host);
-            $this->viewBuilder()->setOption('serialize', ['config', 'host', 'isNewConfig']);
+            $this->set('satellite', $satellite);
+            $this->viewBuilder()->setOption('serialize', ['config', 'host', 'isNewConfig', 'satellite']);
         }
 
         if ($this->request->is('post')) {
