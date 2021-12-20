@@ -652,7 +652,7 @@ class HostsTable extends Table {
      * @param $id
      * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getHostByIdForEditDetails($id) {
+    public function getHostByIdWithHosttemplateForEditDetails($id) {
         $query = $this->find()
             ->where([
                 'Hosts.id' => $id
@@ -680,6 +680,31 @@ class HostsTable extends Table {
                     'fields'     => [
                         'ContactgroupsToHosts.host_id',
                         'Contactgroups.id'
+                    ]
+                ],
+                'Hosttemplates'             => [
+                    'Contacts'      => [
+                        'Containers' => [
+                            'fields' => [
+                                'ContactsToContainers.contact_id',
+                                'Containers.id'
+                            ]
+                        ],
+                        'fields'     => [
+                            'ContactsToHosttemplates.hosttemplate_id',
+                            'Contacts.id'
+                        ]
+                    ],
+                    'Contactgroups' => [
+                        'Containers' => [
+                            'fields' => [
+                                'Containers.parent_id'
+                            ]
+                        ],
+                        'fields'     => [
+                            'ContactgroupsToHosttemplates.hosttemplate_id',
+                            'Contactgroups.id'
+                        ]
                     ]
                 ],
                 'Hostcommandargumentvalues' => [
