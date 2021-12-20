@@ -717,7 +717,7 @@ class AgentconnectorController extends AppController {
                 if (empty($ip)) {
                     $ip = $pushAgent['http_x_forwarded_for']; // Agent used a proxy server?
                     if (empty($ip)) {
-                        $ip = $pushAgent['remote_address']; // This is the IP we recived data from the agent
+                        $ip = $pushAgent['remote_address']; // This is the IP we received data from the agent
                     }
                 }
 
@@ -754,7 +754,7 @@ class AgentconnectorController extends AppController {
                 if (empty($ip)) {
                     $ip = $pushAgent['http_x_forwarded_for']; // Agent used a proxy server?
                     if (empty($ip)) {
-                        $ip = $pushAgent['remote_address']; // This is the IP we recived data from the agent
+                        $ip = $pushAgent['remote_address']; // This is the IP we received data from the agent
                     }
                 }
 
