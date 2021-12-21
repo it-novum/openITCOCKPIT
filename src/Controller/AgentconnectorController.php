@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Form\AgentConfigurationForm;
+use App\itnovum\openITCOCKPIT\Agent\AgentSatelliteTasks;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Host;
 use App\Model\Table\AgentconfigsTable;
@@ -45,7 +46,6 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use DistributeModule\Model\Entity\SatelliteTask;
 use DistributeModule\Model\Table\SatellitesTable;
 use DistributeModule\Model\Table\SatelliteTasksTable;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
@@ -53,7 +53,6 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -627,19 +626,7 @@ class AgentconnectorController extends AppController {
         if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
             // Run Auto TLS on the Satellite System
 
-            /** @var SatelliteTasksTable $SatelliteTasksTable */
-            $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
-
-            $task = $SatelliteTasksTable->newEntity([
-                'satellite_id' => $host->satellite_id,
-                'task'         => 'oitc_agent_autotls',
-                'status'       => SatelliteTask::SatelliteTaskQueued
-            ]);
-            $SatelliteTasksTable->save($task);
-
-            // @todo refactor me
-            /** @var Gearman $GearmanClient */
-            $GearmanClient = new Gearman();
+            $AgentSatelliteTasks = new AgentSatelliteTasks();
 
             //Send a background job to the NSTA to run query the oITC Agent from the Satellite
             //The NSTA will put the result into the oitc_gearman queue, handled by the gearman_worker
@@ -648,7 +635,7 @@ class AgentconnectorController extends AppController {
                 'SatelliteID' => $host->satellite_id,
                 'Command'     => 'agent',
                 'Data'        => [
-                    'TaskID'             => $task->id,
+                    //'TaskID'           => $task->id, //This will be added by the AgentSatelliteTasks class
                     'AgentConfigId'      => $record->id,
                     'Task'               => 'query',
                     'Address'            => $host->address,
@@ -663,8 +650,11 @@ class AgentconnectorController extends AppController {
                     'Password'           => $config['string']['password'],
                 ]
             ];
-            $GearmanClient->doBackground('oitc_agent_sattx', json_encode($NSTAOptions));
-            $satellite_task_id = $task->id;
+            $satellite_task_id = $AgentSatelliteTasks->sendRequestToSatelliteNonBlocking(
+                'oitc_agent_autotls',
+                $host->satellite_id,
+                $NSTAOptions
+            );
         } else {
             // Master System
             $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
@@ -718,56 +708,26 @@ class AgentconnectorController extends AppController {
                 // Query the available push agents from the Satellite System
                 // Run request on Satellite System and wait for response
 
-                $pushAgents = [];
-                /** @var SatelliteTasksTable $SatelliteTasksTable */
-                $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
+                // Long-running request so we release the session
+                $session = $this->request->getSession();
+                $session->close();
 
-                $task = $SatelliteTasksTable->newEntity([
-                    'satellite_id' => $host->satellite_id,
-                    'task'         => 'get_available_push_agents',
-                    'status'       => SatelliteTask::SatelliteTaskQueued
-                ]);
-                $SatelliteTasksTable->save($task);
+                $AgentSatelliteTasks = new AgentSatelliteTasks();
 
-                // @todo refactor me
-                /** @var Gearman $GearmanClient */
-                $GearmanClient = new Gearman();
-
-                //Send a background job to the NSTA to get a list of Push Agents from the Satellite
-                //The NSTA will put the result into the oitc_gearman queue, handled by the gearman_worker
                 $NSTAOptions = [
                     'SatelliteID' => $host->satellite_id,
                     'Command'     => 'agent',
                     'Data'        => [
-                        'TaskID'        => $task->id,
+                        //'TaskID'        => $task->id, //This will be added by the AgentSatelliteTasks class
                         'AgentConfigId' => $config->id,
                         'Task'          => 'get_push_agents'
                     ]
                 ];
-
-                $GearmanClient->doBackground('oitc_agent_sattx', json_encode($NSTAOptions));
-
-                // Wait until the response is in the database
-                // @todo Can we move this into the gearman_worker some how due to php's max_execution_time ?
-                $session = $this->request->getSession();
-                $session->close();
-                while (true) {
-                    $responseTask = $SatelliteTasksTable->find()
-                        ->where([
-                            'id' => $task->id
-                        ])
-                        ->firstOrFail();
-
-                    if ($responseTask->status == SatelliteTask::SatelliteTaskFinishedSuccessfully || $responseTask->status == SatelliteTask::SatelliteTaskFinishedError) {
-                        $pushAgents = json_decode($responseTask->result, true);
-                        FileDebugger::dump($pushAgents);
-                        break;
-                    }
-
-
-                    sleep(5);
-                }
-
+                $pushAgents = $AgentSatelliteTasks->sendRequestToSatelliteBlocking(
+                    'get_available_push_agents',
+                    $host->satellite_id,
+                    $NSTAOptions
+                );
             } else {
                 // Host/Agent on the Master System
                 $pushAgents = $PushAgentsTable->getPushAgentsForAssignments($config->id);
@@ -855,53 +815,28 @@ class AgentconnectorController extends AppController {
                 // Send corresponding HostUuid to the Satellite so the satellite
                 // knows which Agent monitors which host.
 
-                /** @var SatelliteTasksTable $SatelliteTasksTable */
-                $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
+                // Long-running request so we release the session
+                $session = $this->request->getSession();
+                $session->close();
 
-                $task = $SatelliteTasksTable->newEntity([
-                    'satellite_id' => $host->satellite_id,
-                    'task'         => 'oitc_agent_assign_host',
-                    'status'       => SatelliteTask::SatelliteTaskQueued
-                ]);
-                $SatelliteTasksTable->save($task);
-
-                // @todo refactor me
-                /** @var Gearman $GearmanClient */
-                $GearmanClient = new Gearman();
+                $AgentSatelliteTasks = new AgentSatelliteTasks();
 
                 $NSTAOptions = [
                     'SatelliteID' => $host->satellite_id,
                     'Command'     => 'agent',
                     'Data'        => [
-                        'TaskID'        => $task->id,
+                        //'TaskID'      => $task->id, //This will be added by the AgentSatelliteTasks class
                         'AgentConfigId' => $config->id,
                         'Task'          => 'assign_host',
                         'PushAgentId'   => $pushAgentId,
                         'HostUuid'      => $host->uuid
                     ]
                 ];
+                $AgentSatelliteTasks->sendRequestToSatelliteBlocking(
+                    'oitc_agent_assign_host',
+                    $host->satellite_id,
+                    $NSTAOptions);
 
-                $GearmanClient->doBackground('oitc_agent_sattx', json_encode($NSTAOptions));
-
-                // Wait until the response is in the database
-                // @todo Can we move this into the gearman_worker some how due to php's max_execution_time ?
-                $session = $this->request->getSession();
-                $session->close();
-                while (true) {
-                    $responseTask = $SatelliteTasksTable->find()
-                        ->where([
-                            'id' => $task->id
-                        ])
-                        ->firstOrFail();
-
-                    if ($responseTask->status == SatelliteTask::SatelliteTaskFinishedSuccessfully || $responseTask->status == SatelliteTask::SatelliteTaskFinishedError) {
-                        $agentresponse = json_decode($responseTask->result, true);
-                        break;
-                    }
-
-
-                    sleep(5);
-                }
                 $this->set('success', true);
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
@@ -1070,58 +1005,31 @@ class AgentconnectorController extends AppController {
             // Push Mode
 
             if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
-                // Satellite
-                /** @var SatelliteTasksTable $SatelliteTasksTable */
-                $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
+                // Satellite (Push Mode)
+                // Long-running request so we release the session
+                $session = $this->request->getSession();
+                $session->close();
 
-                $task = $SatelliteTasksTable->newEntity([
-                    'satellite_id' => $host->satellite_id,
-                    'task'         => 'oitc_agent_query',
-                    'status'       => SatelliteTask::SatelliteTaskQueued
-                ]);
-                $SatelliteTasksTable->save($task);
+                $AgentSatelliteTasks = new AgentSatelliteTasks();
 
-                // @todo refactor me
-                /** @var Gearman $GearmanClient */
-                $GearmanClient = new Gearman();
-
-                //Send a background job to the NSTA to run query the oITC Agent from the Satellite
-                //The NSTA will put the result into the oitc_gearman queue, handled by the gearman_worker
-                //The frontend will ask frequently if the result has arrived
                 $NSTAOptions = [
                     'SatelliteID' => $host->satellite_id,
                     'Command'     => 'agent',
                     'Data'        => [
-                        'TaskID'        => $task->id,
+                        //'TaskID'      => $task->id, //This will be added by the AgentSatelliteTasks class
                         'AgentConfigId' => $record->id,
                         'Task'          => 'query_push',
                         'HostUuid'      => $host->uuid
                     ]
                 ];
 
-                $GearmanClient->doBackground('oitc_agent_sattx', json_encode($NSTAOptions));
-
-                // Wait until the response is in the database
-                // @todo Can we move this into the gearman_worker some how due to php's max_execution_time ?
-                $session = $this->request->getSession();
-                $session->close();
-                while (true) {
-                    $responseTask = $SatelliteTasksTable->find()
-                        ->where([
-                            'id' => $task->id
-                        ])
-                        ->firstOrFail();
-
-                    if ($responseTask->status == SatelliteTask::SatelliteTaskFinishedSuccessfully || $responseTask->status == SatelliteTask::SatelliteTaskFinishedError) {
-                        $agentresponse = json_decode($responseTask->result, true);
-                        break;
-                    }
-
-
-                    sleep(5);
-                }
+                $agentresponse = $AgentSatelliteTasks->sendRequestToSatelliteBlocking(
+                    'oitc_agent_query',
+                    $host->satellite_id,
+                    $NSTAOptions
+                );
             } else {
-                // Master Server
+                // Master Server (Push Mode)
                 /** @var PushAgentsTable $PushAgentsTable */
                 $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
                 $agentresponse = $PushAgentsTable->getAgentOutputByAgentconfigId($record->id);
@@ -1129,30 +1037,19 @@ class AgentconnectorController extends AppController {
         } else {
             // Pull Mode
             if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
-                // Run request on Satellite System and wait for response
+                // Run request on Satellite System and wait for response (Pull Mode)
 
-                /** @var SatelliteTasksTable $SatelliteTasksTable */
-                $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
+                // Long-running request so we release the session
+                $session = $this->request->getSession();
+                $session->close();
 
-                $task = $SatelliteTasksTable->newEntity([
-                    'satellite_id' => $host->satellite_id,
-                    'task'         => 'oitc_agent_query',
-                    'status'       => SatelliteTask::SatelliteTaskQueued
-                ]);
-                $SatelliteTasksTable->save($task);
+                $AgentSatelliteTasks = new AgentSatelliteTasks();
 
-                // @todo refactor me
-                /** @var Gearman $GearmanClient */
-                $GearmanClient = new Gearman();
-
-                //Send a background job to the NSTA to run query the oITC Agent from the Satellite
-                //The NSTA will put the result into the oitc_gearman queue, handled by the gearman_worker
-                //The frontend will ask frequently if the result has arrived
                 $NSTAOptions = [
                     'SatelliteID' => $host->satellite_id,
                     'Command'     => 'agent',
                     'Data'        => [
-                        'TaskID'             => $task->id,
+                        //'TaskID'           => $task->id, //This will be added by the AgentSatelliteTasks class
                         'AgentConfigId'      => $record->id,
                         'Task'               => 'query',
                         'Address'            => $host->address,
@@ -1168,30 +1065,14 @@ class AgentconnectorController extends AppController {
                     ]
                 ];
 
-                $GearmanClient->doBackground('oitc_agent_sattx', json_encode($NSTAOptions));
-
-                // Wait until the response is in the database
-                // @todo Can we move this into the gearman_worker some how due to php's max_execution_time ?
-                $session = $this->request->getSession();
-                $session->close();
-                while (true) {
-                    $responseTask = $SatelliteTasksTable->find()
-                        ->where([
-                            'id' => $task->id
-                        ])
-                        ->firstOrFail();
-
-                    if ($responseTask->status == SatelliteTask::SatelliteTaskFinishedSuccessfully || $responseTask->status == SatelliteTask::SatelliteTaskFinishedError) {
-                        $agentresponse = json_decode($responseTask->result, true);
-                        break;
-                    }
-
-
-                    sleep(5);
-                }
+                $agentresponse = $AgentSatelliteTasks->sendRequestToSatelliteBlocking(
+                    'oitc_agent_query',
+                    $host->satellite_id,
+                    $NSTAOptions
+                );
 
             } else {
-                // Run on Master System
+                // Run on Master System (Pull Mode)
                 $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
                 $agentresponse = $AgentHttpClient->getResults();
             }
