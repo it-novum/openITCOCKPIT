@@ -720,7 +720,8 @@ class AgentconnectorController extends AppController {
                     'Data'        => [
                         //'TaskID'        => $task->id, //This will be added by the AgentSatelliteTasks class
                         'AgentConfigId' => $config->id,
-                        'Task'          => 'get_push_agents'
+                        'Task'          => 'get_push_agents',
+                        'HostUuid'      => $host->uuid
                     ]
                 ];
                 $pushAgents = $AgentSatelliteTasks->sendRequestToSatelliteBlocking(
