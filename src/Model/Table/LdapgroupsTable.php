@@ -76,13 +76,14 @@ class LdapgroupsTable extends Table {
         return $validator;
     }
 
+
     /**
      * @param bool $enableHydration
      * @return \Cake\Datasource\ResultSetInterface
      */
-    public function getGroups(bool $enableHydration = true){
+    public function getGroups(bool $enableHydration = true) {
         $result = $this->find()
-                ->enableHydration($enableHydration)
+            ->enableHydration($enableHydration)
             ->all();
 
         return $result;
@@ -91,7 +92,7 @@ class LdapgroupsTable extends Table {
     /**
      * @return Ldapgroup[]
      */
-    public function getGroupsForSync(){
+    public function getGroupsForSync() {
         $result = $this->find()
             ->select([
                 'id',
@@ -100,11 +101,35 @@ class LdapgroupsTable extends Table {
             ->all();
 
         $resultHash = [];
-        foreach($result as $record){
+        foreach ($result as $record) {
             /** @var Ldapgroup $record */
             $resultHash[$record->dn] = $record;
         }
 
         return $resultHash;
+    }
+
+    /**
+     * @param $type
+     * @return array
+     */
+    public function getLdapgrous($type = 'all') {
+        $query = $this->find()
+            ->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row['id']] = $row['cn'];
+        }
+        return $list;
     }
 }

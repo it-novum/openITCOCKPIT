@@ -82,10 +82,10 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 id="ldapGroups"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
-                                chosen="ldapGroups"
+                                chosen="ldapgroups"
                                 multiple
-                                ng-options="ldapGroup.dn as ldapGroup.cn for ldapGroup in ldapGroups"
-                                ng-model="selectedLdapGroups">
+                                ng-options="ldapgroup.key as ldapgroup.value for ldapgroup in ldapgroups"
+                                ng-model="post.Usercontainerrole.ldapgroups._ids">
                             </select>
                             <div ng-repeat="error in errors.ldap_groups">
                                 <div class="help-block text-danger">{{ error }}</div>

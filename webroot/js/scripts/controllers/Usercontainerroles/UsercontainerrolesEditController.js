@@ -58,7 +58,7 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.loadContainer = function(){
+        $scope.loadContainers = function(){
             $http.get("/containers/loadContainersForAngular.json", {
                 params: {
                     'angular': true
@@ -66,6 +66,16 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.containers = result.data.containers;
                 $scope.load();
+            });
+        };
+
+        $scope.loadLdapGroups = function(){
+            $http.get("/usercontainerroles/loadLdapgroupsForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.ldapgroups = result.data.ldapgroups;
             });
         };
 
@@ -140,5 +150,6 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
-        $scope.loadContainer();
+        $scope.loadContainers();
+        $scope.loadLdapGroups();
     });

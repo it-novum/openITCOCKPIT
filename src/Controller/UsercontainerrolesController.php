@@ -27,11 +27,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\LdapgroupsTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
 use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
@@ -213,6 +215,21 @@ class UsercontainerrolesController extends AppController {
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;
+    }
+
+    public function loadLdapgroupsForAngular() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $LdapgroupsTable LdapgroupsTable */
+        $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
+        $ldapgroups = $LdapgroupsTable->getLdapgrous('list');
+
+
+        $ldapgroups = Api::makeItJavaScriptAble($ldapgroups);
+        $this->set('ldapgroups', $ldapgroups);
+        $this->viewBuilder()->setOption('serialize', ['ldapgroups']);
     }
 
 }
