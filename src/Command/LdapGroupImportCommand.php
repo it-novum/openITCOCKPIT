@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Model\Entity\Ldapgroup;
 use App\Model\Table\LdapgroupsTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Console\Arguments;
@@ -75,49 +76,54 @@ class LdapGroupImportCommand extends Command implements CronjobInterface {
 
             $LdapClient = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
 
-            $i = 0;
-            foreach($LdapClient->getGroups() as $group){
-                $entity = $LdapgroupsTable->newEntity([
-                    'cn' => $group['cn'],
-                    'dn' => $group['dn'],
-                    'description' => $group['description']
-                ]);
+            $ldapGroupsFromDb = $LdapgroupsTable->getGroupsForSync();
+            $ldapGroupsFromLdap = $LdapClient->getGroups();
 
-                $io->out(sprintf('Created LDAP group: <success>%s</success>', $group['dn']));
-                $LdapgroupsTable->save($entity);
+            // Check which groups only exists in our database but not in LDAP anymore and needs to be removed
+            $ldapGroupsFromLdapHash = [];
+            foreach ($ldapGroupsFromLdap as $ldapGroup) {
+                $ldapGroupsFromLdapHash[$ldapGroup['dn']] = $ldapGroup;
+            }
 
-
-                $i++;
-                if($i > 3){
-                    die();
+            $removed = 0;
+            $ldapGroupsToRemove = [];
+            foreach ($ldapGroupsFromDb as $dn => $ldapGroupFromDb) {
+                /** @var Ldapgroup $ldapGroup */
+                if (!isset($ldapGroupsFromLdapHash[$ldapGroupFromDb->dn])) {
+                    // This group was removed from LDAP
+                    $ldapGroupsToRemove[] = $ldapGroupFromDb;
+                    $removed++;
                 }
             }
-            die();
 
-            $load = file('/proc/loadavg');
-            $records = [];
-            //do not use TMP constant because CLI uses tmp_cli not tmp folder!
-            if (file_exists(ROOT . DS . 'tmp' . DS . 'loadavg')) {
-                $records = file(ROOT . DS . 'tmp' . DS . 'loadavg');
+
+            $LdapgroupsTable->deleteMany($ldapGroupsToRemove);
+            foreach ($ldapGroupsToRemove as $groupToRemove) {
+                $io->out(sprintf('Deleted LDAP group: <warning>%s</warning> from database', $groupToRemove->dn));
             }
-            $newLoad = [];
-            if (sizeof($records) > 15) {
-                //Truncate file if more that 15 entries
-                $records = array_reverse($records);
-                for ($i = 0; $i < 15; $i++) {
-                    $newLoad[] = $records[$i];
+
+
+            // Add new LDAP Groups to database
+            $created = 0;
+            foreach ($ldapGroupsFromLdap as $ldapGroup) {
+                if (!isset($ldapGroupsFromDb[$ldapGroup['dn']])) {
+                    // This LDAP group does not exists in database
+                    $entity = $LdapgroupsTable->newEntity([
+                        'cn'          => $ldapGroup['cn'],
+                        'dn'          => $ldapGroup['dn'],
+                        'description' => $ldapGroup['description']
+                    ]);
+
+                    if ($entity->hasErrors() === false) {
+                        $LdapgroupsTable->save($entity);
+                        $created++;
+                        $io->out(sprintf('Created LDAP group: <success>%s</success>', $ldapGroup['dn']));
+                    }
                 }
-                $newLoad = array_reverse($newLoad);
-            } else {
-                $newLoad = $records;
             }
-            $newLoad[] = time() . ' ' . $load[0];
-            unset($records);
-            $file = fopen(ROOT . DS . 'tmp' . DS . 'loadavg', 'w+');
-            foreach ($newLoad as $line) {
-                fwrite($file, $line);
-            }
-            fclose($file);
+
+            $io->out(sprintf('Imported %s groups, removed %s groups from database.', $created, $removed));
+
             $io->success('   Ok');
             $io->hr();
         }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Model\Entity\Ldapgroup;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -73,5 +74,37 @@ class LdapgroupsTable extends Table {
             ->allowEmptyString('description');
 
         return $validator;
+    }
+
+    /**
+     * @param bool $enableHydration
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getGroups(bool $enableHydration = true){
+        $result = $this->find()
+                ->enableHydration($enableHydration)
+            ->all();
+
+        return $result;
+    }
+
+    /**
+     * @return Ldapgroup[]
+     */
+    public function getGroupsForSync(){
+        $result = $this->find()
+            ->select([
+                'id',
+                'dn'
+            ])
+            ->all();
+
+        $resultHash = [];
+        foreach($result as $record){
+            /** @var Ldapgroup $record */
+            $resultHash[$record->dn] = $record;
+        }
+
+        return $resultHash;
     }
 }
