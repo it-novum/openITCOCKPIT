@@ -11,10 +11,10 @@ angular.module('openITCOCKPIT')
             $scope.post = {
                 Usercontainerrole: {
                     name: '',
-                    ContainersUsercontainerrolesMemberships: {}
-                },
-                ldapgroups: {
-                    _ids: []
+                    ContainersUsercontainerrolesMemberships: {},
+                    ldapgroups: {
+                        _ids: []
+                    }
                 }
             };
         };
@@ -41,12 +41,15 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadLdapGroups = function(){
+        $scope.loadLdapGroups = function(searchString){
             $http.get("/usercontainerroles/loadLdapgroupsForAngular.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Ldapgroups.cn]': searchString,
+                    'selected[]': $scope.post.Usercontainerrole.ldapgroups._ids
                 }
             }).then(function(result){
+                $scope.isLdapAuth = result.data.isLdapAuth;
                 $scope.ldapgroups = result.data.ldapgroups;
             });
         };

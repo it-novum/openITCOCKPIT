@@ -35,8 +35,8 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\LdapgroupFilter;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
-use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 /**
  * Class UsercontainerrolesController
@@ -88,20 +88,6 @@ class UsercontainerrolesController extends AppController {
 
         /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-
-        if ($this->request->is('get')) {
-            /** @var SystemsettingsTable $SystemsettingsTable */
-            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-            $isLdapAuth = $SystemsettingsTable->isLdapAuth();
-            $ldapGroups = [];
-            if ($isLdapAuth === true) {
-                $LdapClient = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
-                $ldapGroups = $LdapClient->getGroups();
-            }
-            $this->set('isLdapAuth', $isLdapAuth);
-            $this->set('ldapGroups', $ldapGroups);
-            $this->viewBuilder()->setOption('serialize', ['isLdapAuth', 'ldapGroups']);
-        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
@@ -217,19 +203,35 @@ class UsercontainerrolesController extends AppController {
         return;
     }
 
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
     public function loadLdapgroupsForAngular() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $LdapgroupsTable LdapgroupsTable */
-        $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
-        $ldapgroups = $LdapgroupsTable->getLdapgrous('list');
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $isLdapAuth = $SystemsettingsTable->isLdapAuth();
+        $ldapgroups = [];
 
+        if ($isLdapAuth === true) {
+            $selected = $this->request->getQuery('selected', []);
+            $LdapgroupFilter = new LdapgroupFilter($this->request);
+            $where = $LdapgroupFilter->ajaxFilter();
 
-        $ldapgroups = Api::makeItJavaScriptAble($ldapgroups);
+            /** @var $LdapgroupsTable LdapgroupsTable */
+            $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
+            $ldapgroups = $LdapgroupsTable->getLdapgroupsForAngular($where, $selected);
+
+            $ldapgroups = Api::makeItJavaScriptAble($ldapgroups);
+        }
+
+        $this->set('isLdapAuth', $isLdapAuth);
         $this->set('ldapgroups', $ldapgroups);
-        $this->viewBuilder()->setOption('serialize', ['ldapgroups']);
+        $this->viewBuilder()->setOption('serialize', ['ldapgroups', 'isLdapAuth']);
     }
 
 }

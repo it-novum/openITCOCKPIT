@@ -37,7 +37,7 @@ class LdapgroupsTable extends Table {
         parent::initialize($config);
 
         $this->setTable('ldapgroups');
-        $this->setDisplayField('id');
+        $this->setDisplayField('cn');
         $this->setPrimaryKey('id');
 
         $this->hasMany('Usercontainerroles', [
@@ -110,26 +110,70 @@ class LdapgroupsTable extends Table {
     }
 
     /**
-     * @param $type
+     * @param array $where
+     * @param $selected
      * @return array
      */
-    public function getLdapgrous($type = 'all') {
-        $query = $this->find()
-            ->disableHydration();
-
-        $result = $query->toArray();
-        if (empty($result)) {
-            return [];
+    public function getLdapgroupsForAngular(array $where, $selected = []) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
         }
 
-        if ($type === 'all') {
-            return $result;
+        $query = $this->find('list');
+
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $where['NOT'] = [
+                'Ldapgroups.id IN' => $selected
+            ];
         }
 
-        $list = [];
-        foreach ($result as $row) {
-            $list[$row['id']] = $row['cn'];
+        if (!empty($where['NOT'])) {
+            // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+            $where['NOT'] = [
+                'OR' => $where['NOT']
+            ];
         }
-        return $list;
+        if (!empty($where)) {
+            $query->where($where);
+        }
+        $query->order([
+            'Ldapgroups.cn' => 'asc'
+        ]);
+        $query->limit(ITN_AJAX_LIMIT);
+
+        $ldapgroupsWithLimit = $query->toArray();
+
+        $selectedLdapgroups = [];
+        if (!empty($selected)) {
+            $query = $this->find('list');
+            $where = [
+                'Ldapgroups.id IN' => $selected
+            ];
+
+            if (!empty($where['NOT'])) {
+                // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+                $where['NOT'] = [
+                    'OR' => $where['NOT']
+                ];
+            }
+
+            if (!empty($where)) {
+                $query->where($where);
+            }
+            $query->order([
+                'Ldapgroups.cn' => 'asc'
+            ]);
+
+            $selectedLdapgroups = $query->toArray();
+
+        }
+
+        $ldapgroups = $ldapgroupsWithLimit + $selectedLdapgroups;
+        asort($ldapgroups, SORT_FLAG_CASE | SORT_NATURAL);
+        return $ldapgroups;
     }
+
 }
