@@ -74,4 +74,24 @@ class LdapgroupsTable extends Table {
 
         return $validator;
     }
+
+    public function getLdapgrous($type = 'all') {
+        $query = $this->find()
+            ->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row['id']] = $row['cn'];
+        }
+        return $list;
+    }
 }

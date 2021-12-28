@@ -252,6 +252,9 @@ class AclDependencies {
             ->allow('Users', 'logout')
             ->allow('Users', 'getLocaleOptions');
 
+        $this
+            ->allow('Usercontainerroles', 'loadLdapgroupsForAngular');
+
         ///////////////////////////////
         //    Add dependencies       //
         //////////////////////////////

@@ -55,6 +55,15 @@ class UsercontainerrolesTable extends Table {
             'targetForeignKey' => 'container_id',
             'joinTable'        => 'usercontainerroles_to_containers'
         ]);
+
+        $this->belongsToMany('Ldapgroups', [
+            'className'        => 'Ldapgroups',
+            'joinTable'        => 'ldapgroups_to_usercontainerroles',
+            'foreignKey'       => 'usercontainerrole_id',
+            'targetForeignKey' => 'ldapgroup_id',
+            'saveStrategy'     => 'replace'
+        ]);
+
     }
 
     /**
@@ -209,6 +218,11 @@ class UsercontainerrolesTable extends Table {
             ])
             ->contain([
                 'Containers',
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
+                ]
             ])
             ->disableHydration()
             ->first();
@@ -219,7 +233,9 @@ class UsercontainerrolesTable extends Table {
         $usercontainerrole['containers'] = [
             '_ids' => Hash::extract($query, 'containers.{n}.id')
         ];
-
+        $usercontainerrole['ldapgroups'] = [
+            '_ids' => Hash::extract($query, 'ldapgroups.{n}.id')
+        ];
 
         //Build up data struct for radio inputs
         $usercontainerrole['ContainersUsercontainerrolesMemberships'] = [];
