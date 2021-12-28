@@ -115,6 +115,7 @@ class LdapgroupsTable extends Table {
      */
     public function getLdapgrous($type = 'all') {
         $query = $this->find()
+            ->orderAsc('Ldapgroups.cn')
             ->disableHydration();
 
         $result = $query->toArray();
