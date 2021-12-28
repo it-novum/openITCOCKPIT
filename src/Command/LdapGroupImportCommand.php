@@ -65,67 +65,70 @@ class LdapGroupImportCommand extends Command implements CronjobInterface {
      * @return null|void|int The exit code or null for success
      */
     public function execute(Arguments $args, ConsoleIo $io) {
-        if (file_exists('/proc/loadavg')) {
-            $io->out('Scan for new LDAP groups. This will take a while...');
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
-            /** @var SystemsettingsTable $SystemsettingsTable */
-            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-
-            /** @var LdapgroupsTable $LdapgroupsTable */
-            $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
-
-            $LdapClient = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
-
-            $ldapGroupsFromDb = $LdapgroupsTable->getGroupsForSync();
-            $ldapGroupsFromLdap = $LdapClient->getGroups();
-
-            // Check which groups only exists in our database but not in LDAP anymore and needs to be removed
-            $ldapGroupsFromLdapHash = [];
-            foreach ($ldapGroupsFromLdap as $ldapGroup) {
-                $ldapGroupsFromLdapHash[$ldapGroup['dn']] = $ldapGroup;
-            }
-
-            $removed = 0;
-            $ldapGroupsToRemove = [];
-            foreach ($ldapGroupsFromDb as $dn => $ldapGroupFromDb) {
-                /** @var Ldapgroup $ldapGroup */
-                if (!isset($ldapGroupsFromLdapHash[$ldapGroupFromDb->dn])) {
-                    // This group was removed from LDAP
-                    $ldapGroupsToRemove[] = $ldapGroupFromDb;
-                    $removed++;
-                }
-            }
-
-
-            $LdapgroupsTable->deleteMany($ldapGroupsToRemove);
-            foreach ($ldapGroupsToRemove as $groupToRemove) {
-                $io->out(sprintf('Deleted LDAP group: <warning>%s</warning> from database', $groupToRemove->dn));
-            }
-
-
-            // Add new LDAP Groups to database
-            $created = 0;
-            foreach ($ldapGroupsFromLdap as $ldapGroup) {
-                if (!isset($ldapGroupsFromDb[$ldapGroup['dn']])) {
-                    // This LDAP group does not exists in database
-                    $entity = $LdapgroupsTable->newEntity([
-                        'cn'          => $ldapGroup['cn'],
-                        'dn'          => $ldapGroup['dn'],
-                        'description' => $ldapGroup['description']
-                    ]);
-
-                    if ($entity->hasErrors() === false) {
-                        $LdapgroupsTable->save($entity);
-                        $created++;
-                        $io->out(sprintf('Created LDAP group: <success>%s</success>', $ldapGroup['dn']));
-                    }
-                }
-            }
-
-            $io->out(sprintf('Imported %s groups, removed %s groups from database.', $created, $removed));
-
-            $io->success('   Ok');
-            $io->hr();
+        if ($SystemsettingsTable->isLdapAuth() === false) {
+            // No LDAP no LDAP sync :)
+            return;
         }
+
+        $io->out('Scan for new LDAP groups. This will take a while...');
+
+        /** @var LdapgroupsTable $LdapgroupsTable */
+        $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
+
+        $LdapClient = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+
+        $ldapGroupsFromDb = $LdapgroupsTable->getGroupsForSync();
+        $ldapGroupsFromLdap = $LdapClient->getGroups();
+
+        // Check which groups only exists in our database but not in LDAP anymore and needs to be removed
+        $ldapGroupsFromLdapHash = [];
+        foreach ($ldapGroupsFromLdap as $ldapGroup) {
+            $ldapGroupsFromLdapHash[$ldapGroup['dn']] = $ldapGroup;
+        }
+
+        $removed = 0;
+        $ldapGroupsToRemove = [];
+        foreach ($ldapGroupsFromDb as $dn => $ldapGroupFromDb) {
+            /** @var Ldapgroup $ldapGroup */
+            if (!isset($ldapGroupsFromLdapHash[$ldapGroupFromDb->dn])) {
+                // This group was removed from LDAP
+                $ldapGroupsToRemove[] = $ldapGroupFromDb;
+                $removed++;
+            }
+        }
+
+
+        $LdapgroupsTable->deleteMany($ldapGroupsToRemove);
+        foreach ($ldapGroupsToRemove as $groupToRemove) {
+            $io->out(sprintf('Deleted LDAP group: <warning>%s</warning> from database', $groupToRemove->dn));
+        }
+
+
+        // Add new LDAP Groups to database
+        $created = 0;
+        foreach ($ldapGroupsFromLdap as $ldapGroup) {
+            if (!isset($ldapGroupsFromDb[$ldapGroup['dn']])) {
+                // This LDAP group does not exists in database
+                $entity = $LdapgroupsTable->newEntity([
+                    'cn'          => $ldapGroup['cn'],
+                    'dn'          => $ldapGroup['dn'],
+                    'description' => $ldapGroup['description']
+                ]);
+
+                if ($entity->hasErrors() === false) {
+                    $LdapgroupsTable->save($entity);
+                    $created++;
+                    $io->out(sprintf('Created LDAP group: <success>%s</success>', $ldapGroup['dn']));
+                }
+            }
+        }
+
+        $io->out(sprintf('Imported %s groups, removed %s groups from database.', $created, $removed));
+
+        $io->success('   Ok');
+        $io->hr();
     }
 }
