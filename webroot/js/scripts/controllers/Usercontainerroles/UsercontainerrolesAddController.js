@@ -38,6 +38,17 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadLdapGroups = function(){
+            $http.get("/usercontainerroles/add.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.isLdapAuth = result.data.isLdapAuth;
+                $scope.ldapGroups = result.data.ldapGroups;
+            });
+        };
+
 
         $scope.submit = function(){
             //Define $scope.post.Usercontainerrole.ContainersUsercontainerrolesMemberships
@@ -115,6 +126,7 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         $scope.loadContainer();
+        $scope.loadLdapGroups();
 
     });
 

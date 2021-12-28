@@ -74,6 +74,27 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
+                        <div class="form-group" ng-class="{'has-error': errors.ldap_groups}">
+                            <label class="control-label" for="ldapGroups">
+                                <?php echo __('LDAP groups'); ?>
+                            </label>
+                            <select
+                                id="ldapGroups"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="ldapGroups"
+                                multiple
+                                ng-options="ldapGroup.dn as ldapGroup.cn for ldapGroup in ldapGroups"
+                                ng-model="selectedLdapGroups">
+                            </select>
+                            <div ng-repeat="error in errors.ldap_groups">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <?= __('LDAP users which are member of the selected LDAP groups will be assigned automatically to the user container role.'); ?>
+                            </div>
+                        </div>
+
                         <div class="form-group required" ng-class="{'has-error': errors.containers}">
                             <label class="control-label" for="Container">
                                 <?php echo __('Container'); ?>

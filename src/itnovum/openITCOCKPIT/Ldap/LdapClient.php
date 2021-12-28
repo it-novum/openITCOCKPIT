@@ -196,6 +196,8 @@ class LdapClient {
                     )
                 ];
             }
+            // Only load the first 100 users.
+            // Pass $sAMAccountName to search for a user
             $paging->end();
         }
 
@@ -256,6 +258,51 @@ class LdapClient {
         }
 
         return $filter;
+    }
+
+    public function getGroups($includeMember = false) {
+        // @todo add dynamic filter query to systemsettings
+        $filter = \FreeDSx\Ldap\Search\Filters::raw('ObjectClass=Group');
+        $search = \FreeDSx\Ldap\Operations::search($filter);
+
+        $result = [];
+        $paging = $this->ldap->paging($search, 100);
+
+        while ($paging->hasEntries()) {
+            foreach ($paging->getEntries() as $entry) {
+                /** @var \FreeDSx\Ldap\Entry\Entry $entry */
+
+                $dn = (string)$entry->getDn();
+                if (empty($dn)) {
+                    continue;
+                }
+
+                $entry = $entry->toArray();
+                $name = $entry['cn'][0];
+                if (isset($entry['sAMAccountName'][0])) {
+                    $name = $entry['sAMAccountName'][0];
+                }
+
+                $description = $entry['description'][0] ?? '';
+                $member = [];
+                if ($includeMember) {
+                    $member = $entry['member'] ?? [];
+                }
+
+                $result[] = [
+                    'cn'          => $name,
+                    'dn'          => $dn,
+                    'description' => $description,
+                    'member'      => $member
+                ];
+            }
+
+            //Do load all LDAP groups for database import and sync
+            //$paging->end();
+        }
+
+
+        return $result;
     }
 
 }

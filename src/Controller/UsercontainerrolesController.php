@@ -27,13 +27,14 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
 use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
+use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 /**
  * Class UsercontainerrolesController
@@ -85,6 +86,20 @@ class UsercontainerrolesController extends AppController {
 
         /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        if ($this->request->is('get')) {
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $isLdapAuth = $SystemsettingsTable->isLdapAuth();
+            $ldapGroups = [];
+            if ($isLdapAuth === true) {
+                $LdapClient = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+                $ldapGroups = $LdapClient->getGroups();
+            }
+            $this->set('isLdapAuth', $isLdapAuth);
+            $this->set('ldapGroups', $ldapGroups);
+            $this->viewBuilder()->setOption('serialize', ['isLdapAuth', 'ldapGroups']);
+        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
