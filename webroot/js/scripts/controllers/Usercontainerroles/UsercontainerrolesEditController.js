@@ -46,6 +46,9 @@ angular.module('openITCOCKPIT')
                     Usercontainerrole: data
                 };
 
+                // Load ldap groups
+                $scope.loadLdapGroups();
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -69,12 +72,15 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadLdapGroups = function(){
+        $scope.loadLdapGroups = function(searchString){
             $http.get("/usercontainerroles/loadLdapgroupsForAngular.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Ldapgroups.cn]': searchString,
+                    'selected[]': $scope.post.Usercontainerrole.ldapgroups._ids
                 }
             }).then(function(result){
+                $scope.isLdapAuth = result.data.isLdapAuth;
                 $scope.ldapgroups = result.data.ldapgroups;
             });
         };
@@ -151,5 +157,4 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.loadContainers();
-        $scope.loadLdapGroups();
     });
