@@ -562,7 +562,10 @@ class AclDependencies {
 
 
         $this
-            ->dependency('Usergroups', 'index', 'Usergroups', 'view');
+            ->dependency('Usergroups', 'index', 'Usergroups', 'view')
+            ->dependency('Usergroups', 'add', 'Usergroups', 'loadLdapgroupsForAngular')
+            ->dependency('Usergroups', 'edit', 'Usergroups', 'loadLdapgroupsForAngular');
+
 
         $this
             ->dependency('Usercontainerroles', 'add', 'Usercontainerroles', 'loadLdapgroupsForAngular')
