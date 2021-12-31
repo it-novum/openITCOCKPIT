@@ -153,8 +153,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div ng-repeat="error in errors.usercontainerroles">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
-                            <div class="help-block">
-                                <?php echo __('Container Roles LDAP are handy to grant the same permissions to multiple users.'); ?>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Automatically assigned container roles based on the LDAP groups of the current user.'); ?>
                             </div>
                         </div>
 
@@ -196,8 +197,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div ng-repeat="error in errors.usercontainerroles">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
-                            <div class="help-block">
-                                <?php echo __('Container Roles are handy to grant the same permissions to multiple users.'); ?>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Container Roles are handy to grant the same permissions to multiple users. Container Roles will overwrite automatically assignments via LDAP groups.'); ?>
                             </div>
                         </div>
 
