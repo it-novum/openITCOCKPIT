@@ -43,6 +43,10 @@ class LdapgroupsTable extends Table {
         $this->hasMany('Usercontainerroles', [
             'foreignKey' => 'ldapgroup_id',
         ]);
+
+        $this->hasMany('Usergroups', [
+            'foreignKey' => 'ldapgroup_id',
+        ]);
     }
 
     /**

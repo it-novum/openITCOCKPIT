@@ -31,14 +31,20 @@ use Acl\Model\Table\AcosTable;
 use Acl\Model\Table\ArosTable;
 use App\Lib\AclDependencies;
 use App\Model\Table\ArosAcosTable;
+use App\Model\Table\LdapgroupsTable;
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsergroupsTable;
 use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\Filter;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
+use itnovum\openITCOCKPIT\Filter\LdapgroupFilter;
 
 /**
  * Class UsergroupsController
@@ -197,14 +203,23 @@ class UsergroupsController extends AppController {
 
         $usergroup = $UsergroupsTable->find()
             ->contain([
-                'Aros' => [
+                'Aros'       => [
                     'Acos'
+                ],
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
                 ]
             ])
             ->where([
                 'Usergroups.id' => $id
             ])
             ->firstOrFail();
+
+        $usergroup['ldapgroups'] = [
+            '_ids' => Hash::extract($usergroup, 'ldapgroups.{n}.id')
+        ];
 
         /** @var AcosTable $AcosTable */
         $AcosTable = TableRegistry::getTableLocator()->get('Acl.Acos');
@@ -228,7 +243,7 @@ class UsergroupsController extends AppController {
                 //An 'Administrator' is required!
                 $usergroup->setAccess('name', false);
             }
-            
+
             $usergroup = $UsergroupsTable->patchEntity($usergroup, $this->request->getData('Usergroup'));
             $UsergroupsTable->save($usergroup);
 
@@ -313,5 +328,36 @@ class UsergroupsController extends AppController {
         $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    public function loadLdapgroupsForAngular() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $isLdapAuth = $SystemsettingsTable->isLdapAuth();
+        $ldapgroups = [];
+
+        if ($isLdapAuth === true) {
+            $selected = $this->request->getQuery('selected', []);
+            $LdapgroupFilter = new LdapgroupFilter($this->request);
+            $where = $LdapgroupFilter->ajaxFilter();
+
+            /** @var $LdapgroupsTable LdapgroupsTable */
+            $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
+            $ldapgroups = $LdapgroupsTable->getLdapgroupsForAngular($where, $selected);
+
+            $ldapgroups = Api::makeItJavaScriptAble($ldapgroups);
+        }
+
+        $this->set('isLdapAuth', $isLdapAuth);
+        $this->set('ldapgroups', $ldapgroups);
+        $this->viewBuilder()->setOption('serialize', ['ldapgroups', 'isLdapAuth']);
     }
 }

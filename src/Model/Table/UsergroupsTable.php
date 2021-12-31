@@ -57,6 +57,14 @@ class UsergroupsTable extends Table {
             'className'  => 'Acl.Aros',
             'foreignKey' => 'foreign_key',
         ]);
+
+        $this->belongsToMany('Ldapgroups', [
+            'className'        => 'Ldapgroups',
+            'joinTable'        => 'ldapgroups_to_usergroups',
+            'foreignKey'       => 'usergroup_id',
+            'targetForeignKey' => 'ldapgroup_id',
+            'saveStrategy'     => 'replace'
+        ]);
     }
 
     /**
