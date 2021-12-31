@@ -51,7 +51,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'users')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -62,6 +63,78 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
             {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+
+                        <div class="form-group required" ng-class="{'has-error': errors.samaccountname}">
+                            <label class="control-label" for="ContactContainers">
+                                <?php echo __('SAM-Account-Name'); ?>
+                            </label>
+                            <select
+                                id="ContactContainers"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="ldapUsers"
+                                callback="loadLdapUsersByString"
+                                ng-options="key as ldapUser.display_name for (key, ldapUser) in ldapUsers"
+                                ng-model="data.selectedSamAccountNameIndex">
+                            </select>
+                            <div ng-repeat="error in errors.samaccountname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': errors.ldap_dn}">
+                            <label class="control-label">
+                                <?php echo __('DN'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                disabled="disabled"
+                                readonly="readonly"
+                                ng-model="post.User.ldap_dn">
+                            <div ng-repeat="error in errors.ldap_dn">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <?php echo __('Value imported from LDAP Server'); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label" for="LdapGroupsOfUser">
+                                <?php echo __('LDAP groups'); ?>
+                            </label>
+                            <select
+                                id="LdapGroupsOfUser"
+                                class="form-control"
+                                disabled="disabled"
+                                readonly="readonly"
+                                multiple
+                                ng-options="ldapgroup.dn as ldapgroup.cn for ldapgroup in ldapUser.ldapgroups"
+                                ng-model="WeNeedAModelToMakeAngularHappy">
+                            </select>
+                        </div>
+
+                        <div class="alert border-info bg-transparent text-info" role="alert">
+                            <div class="d-flex align-items-center">
+                                <div class="alert-icon">
+                                    <i class="fa fa-info-circle"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="m-0">
+                                        <?php echo __('Connected LDAP server'); ?>:
+                                        <strong>{{ldapConfig.host}}</strong>
+                                        <br/>
+                                        <?php echo __('Used filter query'); ?>:
+                                        <strong>{{ldapConfig.query}}</strong>
+                                        <br/>
+                                        <?php echo __('Base DN'); ?>:
+                                        <strong>{{ldapConfig.base_dn}}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
                             <label class="control-label" for="UserContainerroles">
                                 <?php echo __('Container Roles'); ?>
@@ -183,57 +256,6 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 </label>
                             </div>
                         </div>
-
-                        <div class="form-group required" ng-class="{'has-error': errors.samaccountname}">
-                            <label class="control-label" for="ContactContainers">
-                                <?php echo __('SAM-Account-Name'); ?>
-                            </label>
-                            <select
-                                id="ContactContainers"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="ldapUsers"
-                                callback="loadLdapUsersByString"
-                                ng-options="key as ldapUser.display_name for (key, ldapUser) in ldapUsers"
-                                ng-model="data.selectedSamAccountNameIndex">
-                            </select>
-                            <div ng-repeat="error in errors.samaccountname">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-
-                        <div class="form-group required" ng-class="{'has-error': errors.ldap_dn}">
-                            <label class="control-label">
-                                <?php echo __('DN'); ?>
-                            </label>
-                            <input
-                                class="form-control"
-                                type="text"
-                                disabled="disabled"
-                                readonly="readonly"
-                                ng-model="post.User.ldap_dn">
-                            <div ng-repeat="error in errors.ldap_dn">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                            <div class="help-block text-info">
-                                <?php echo __('Value imported from LDAP Server'); ?>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col col-md-2 text-right"><i class="fa fa-info-circle text-info"></i></div>
-                            <div class="col col-xs-10 text-info">
-                                <?php echo __('Connected LDAP server'); ?>:
-                                <strong>{{ldapConfig.host}}</strong>
-                                <br/>
-                                <?php echo __('Used filter query'); ?>:
-                                <strong>{{ldapConfig.query}}</strong>
-                                <br/>
-                                <?php echo __('Base DN'); ?>:
-                                <strong>{{ldapConfig.base_dn}}</strong>
-                            </div>
-                        </div>
-
 
                         <div class="form-group required" ng-class="{'has-error': errors.email}">
                             <label class="control-label">

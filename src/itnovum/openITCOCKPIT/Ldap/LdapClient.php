@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Ldap;
 
 
 use App\Model\Table\LdapgroupsTable;
+use App\Model\Table\UsersTable;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -272,7 +273,7 @@ class LdapClient {
      * @param string $sAMAccountName
      * @return array|null
      */
-    public function getUser(string $sAMAccountName, bool $includeMember = false) {
+    public function getUser(string $sAMAccountName, bool $includeMember = true) {
         if ($this->isOpenLdap === false) {
             //MS AD
             $filter = $this->getUsersFilter($sAMAccountName);
@@ -320,7 +321,7 @@ class LdapClient {
             // Load LDAP groups  from database
             $user['ldapgroups'] = [];
             if(!empty($memberOf)) {
-                /** @var $LdapgroupsTable LdapgroupsTable */
+                /** @var LdapgroupsTable $LdapgroupsTable  */
                 $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
                 $user['ldapgroups'] = $LdapgroupsTable->getGroupsByDn($memberOf);
             }

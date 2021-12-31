@@ -714,4 +714,22 @@ class UsersController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['localeOptions']);
     }
 
+    public function loadLdapUserDetails() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+
+        $samaccountname = (string)$this->request->getQuery('samaccountname', '');
+        $ldapUser = null;
+        if (!empty($samaccountname)) {
+            $ldapUser = $Ldap->getUser($samaccountname, true);
+        }
+        $this->set('ldapUser', $ldapUser);
+        $this->viewBuilder()->setOption('serialize', ['ldapUser']);
+    }
+
 }

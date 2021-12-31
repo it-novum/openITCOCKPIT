@@ -518,6 +518,7 @@ class AclDependencies {
             ->dependency('Users', 'index', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'addFromLdap')
             ->dependency('Users', 'add', 'Users', 'loadLdapUserByString')
+            ->dependency('Users', 'add', 'Users', 'loadLdapUserDetails')
             ->dependency('Users', 'add', 'Users', 'loadDateformats')
             ->dependency('Users', 'add', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'loadContainerRoles')
@@ -526,6 +527,7 @@ class AclDependencies {
             ->dependency('Users', 'edit', 'Users', 'loadDateformats')
             ->dependency('Users', 'edit', 'Users', 'loadUsergroups')
             ->dependency('Users', 'edit', 'Users', 'loadContainerRoles')
+            ->dependency('Users', 'edit', 'Users', 'loadLdapUserDetails')
             ->dependency('Users', 'edit', 'Users', 'loadContainerPermissions');
 
 

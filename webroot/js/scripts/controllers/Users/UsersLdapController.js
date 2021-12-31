@@ -81,6 +81,18 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadLdapUserDetailsBySamAccountName = function(samAccountName){
+            $scope.data.selectedSamAccountNameIndex = null;
+            $http.get("/users/loadLdapUserDetails.json", {
+                params: {
+                    'angular': true,
+                    'samaccountname': samAccountName
+                }
+            }).then(function(result){
+                $scope.ldapUser = result.data.ldapUser;
+            });
+        };
+
         $scope.createApiKey = function(index){
             $http.get("/profile/create_apikey.json?angular=true")
                 .then(function(result){
@@ -280,6 +292,9 @@ angular.module('openITCOCKPIT')
                 $scope.post.User.email = $scope.ldapUsers[index].email;
                 $scope.post.User.samaccountname = $scope.ldapUsers[index].samaccountname;
                 $scope.post.User.ldap_dn = $scope.ldapUsers[index].dn;
+
+                // Load LDAP groups of selected user
+                $scope.loadLdapUserDetailsBySamAccountName($scope.ldapUsers[index].samaccountname);
             }
         });
 
