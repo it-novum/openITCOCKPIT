@@ -176,4 +176,28 @@ class LdapgroupsTable extends Table {
         return $ldapgroups;
     }
 
+    /**
+     * @param $dn
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getGroupsByDn($dn, bool $enableHydration = false) {
+        if (!is_array($dn)) {
+            $dn = [$dn];
+        }
+
+        $query = $this->find()
+            ->where([
+                'dn IN' => $dn
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+
+        return $query->toArray();
+    }
+
 }

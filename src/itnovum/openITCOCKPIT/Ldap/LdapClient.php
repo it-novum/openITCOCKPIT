@@ -25,7 +25,9 @@
 namespace itnovum\openITCOCKPIT\Ldap;
 
 
+use App\Model\Table\LdapgroupsTable;
 use Cake\Log\Log;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 
 class LdapClient {
@@ -141,19 +143,19 @@ class LdapClient {
      * @param string $sAMAccountName
      * @return array
      */
-    public function getUsers($sAMAccountName = '') {
+    public function getUsers($sAMAccountName = '', $includeMember = false) {
 
 
         if ($this->isOpenLdap === false) {
             //MS AD
             $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
             $filter = $this->getUsersFilter($sAMAccountName);
-            $search = \FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            $search = \FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf');
         } else {
             //OpenLDAP
             $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
             $filter = $this->getUsersFilter($sAMAccountName);
-            $search = \FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            $search = \FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf');
         }
 
         $result = [];
@@ -182,12 +184,18 @@ class LdapClient {
                     $entry['samaccountname'] = $entry['uid'];
                 }
 
+                $memberOf = [];
+                if ($includeMember) {
+                    $memberOf = $entry['memberof'] ?? [];
+                }
+
                 $result[] = [
                     'givenname'      => $entry['givenname'][0],
                     'sn'             => $entry['sn'][0],
                     'samaccountname' => $entry['samaccountname'][0],
                     'email'          => $entry['mail'][0],
                     'dn'             => $userDn,
+                    'memberof'         => $memberOf,
                     'display_name'   => sprintf(
                         '%s, %s (%s)',
                         $entry['givenname'][0],
@@ -258,6 +266,76 @@ class LdapClient {
         }
 
         return $filter;
+    }
+
+    /**
+     * @param string $sAMAccountName
+     * @return array|null
+     */
+    public function getUser(string $sAMAccountName, bool $includeMember = false) {
+        if ($this->isOpenLdap === false) {
+            //MS AD
+            $filter = $this->getUsersFilter($sAMAccountName);
+            $search = \FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf');
+        } else {
+            //OpenLDAP
+            $filter = $this->getUsersFilter($sAMAccountName);
+            $search = \FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf');
+        }
+
+        $paging = $this->ldap->paging($search, 1);
+
+        foreach ($paging->getEntries() as $entry) {
+            $userDn = (string)$entry->getDn();
+            if (empty($userDn)) {
+                continue;
+            }
+
+            $entry = $entry->toArray();
+            $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
+            if (isset($entry['uid'])) {
+                $entry['samaccountname'] = $entry['uid'];
+            }
+
+            $memberOf = [];
+            if ($includeMember) {
+                $memberOf = $entry['memberof'] ?? [];
+            }
+
+            $user = [
+                'givenname'      => $entry['givenname'][0],
+                'sn'             => $entry['sn'][0],
+                'samaccountname' => $entry['samaccountname'][0],
+                'email'          => $entry['mail'][0],
+                'dn'             => $userDn,
+                'memberof'         => $memberOf,
+                'display_name'   => sprintf(
+                    '%s, %s (%s)',
+                    $entry['givenname'][0],
+                    $entry['sn'][0],
+                    $entry['samaccountname'][0]
+                )
+            ];
+
+            // Load LDAP groups  from database
+            $user['ldapgroups'] = [];
+            if(!empty($memberOf)) {
+                /** @var $LdapgroupsTable LdapgroupsTable */
+                $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
+                $user['ldapgroups'] = $LdapgroupsTable->getGroupsByDn($memberOf);
+            }
+
+            // Only load the first user.
+            $paging->end();
+            break;
+        }
+
+
+        if (isset($user)) {
+            return $user;
+        }
+
+        return null;
     }
 
     public function getGroups($includeMember = false) {
