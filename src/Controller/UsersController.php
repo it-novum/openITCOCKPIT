@@ -727,6 +727,31 @@ class UsersController extends AppController {
         $ldapUser = null;
         if (!empty($samaccountname)) {
             $ldapUser = $Ldap->getUser($samaccountname, true);
+            if($ldapUser){
+                /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+                $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+                $ldapUser['userContainerRoleContainerPermissionsLdap'] = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                    $ldapUser['memberof']
+                );
+
+                $permissions = [];
+                foreach ( $ldapUser['userContainerRoleContainerPermissionsLdap'] as $userContainerRole) {
+                    foreach ($userContainerRole['containers'] as $container) {
+                        if (isset($permissions[$container['id']])) {
+                            //Container permission is already set.
+                            //Only overwrite it, if it is a WRITE_RIGHT
+                            if ($container['_joinData']['permission_level'] === WRITE_RIGHT) {
+                                $permissions[$container['id']] = $container;
+                            }
+                        } else {
+                            //Container is not yet in permissions - add it
+                            $permissions[$container['id']] = $container;
+                        }
+                    }
+                }
+                $ldapUser['userContainerRoleContainerPermissionsLdap'] = $permissions;
+            }
         }
         $this->set('ldapUser', $ldapUser);
         $this->viewBuilder()->setOption('serialize', ['ldapUser']);

@@ -136,6 +136,51 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
+                            <label class="control-label" for="UserContainerrolesLdap">
+                                <?php echo __('Container Roles through LDAP'); ?>
+                            </label>
+                            <select
+                                id="UserContainerrolesLdap"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="usercontainerroles"
+                                readonly="readonly"
+                                disabled="disabled"
+                                multiple
+                                ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
+                                ng-model="selectedUserContainerRolesLdapReadOnly"> <!-- ng-model is just for view, we do not save this to the database. LDAP groups are getting pulled on the login -->
+                            </select>
+                            <div ng-repeat="error in errors.usercontainerroles">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <?php echo __('Container Roles LDAP are handy to grant the same permissions to multiple users.'); ?>
+                            </div>
+                        </div>
+
+                        <!-- User Container Roles permissions read/write -->
+                        <div class="row" ng-repeat="userContainerRole in ldapUser.userContainerRoleContainerPermissionsLdap">
+                            <div class="col col-md-1"></div>
+                            <div class="col col-md-11">
+                                <legend class="no-padding font-sm text-success">
+                                    {{userContainerRole.path}}
+                                </legend>
+                                <input name="group-{{userContainerRole.id}}"
+                                       type="radio"
+                                       disabled="disabled"
+                                       ng-checked="userContainerRole._joinData.permission_level === 1">
+                                <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+
+                                <input name="group-{{userContainerRole.id}}"
+                                       type="radio"
+                                       disabled="disabled"
+                                       ng-checked="userContainerRole._joinData.permission_level === 2">
+                                <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
                             <label class="control-label" for="UserContainerroles">
                                 <?php echo __('Container Roles'); ?>
                             </label>
@@ -201,8 +246,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <!-- Container permissions read/write -->
                         <div class="row" ng-repeat="userContainer in selectedUserContainerWithPermission">
-                            <div class="col col-md-1"></div>
-                            <div class="col col-md-10">
+                            <div class="col col-md-3"></div>
+                            <div class="col col-md-9">
                                 <legend class="no-padding font-sm text-primary">
                                     {{userContainer.name}}
                                 </legend>

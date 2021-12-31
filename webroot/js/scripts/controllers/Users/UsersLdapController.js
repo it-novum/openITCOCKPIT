@@ -90,6 +90,12 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.ldapUser = result.data.ldapUser;
+                $scope.selectedUserContainerRolesLdapReadOnly = [];
+                for(var i in $scope.ldapUser.userContainerRoleContainerPermissionsLdap){
+                    $scope.selectedUserContainerRolesLdapReadOnly.push(
+                        $scope.ldapUser.userContainerRoleContainerPermissionsLdap[i]._joinData.usercontainerrole_id
+                    );
+                }
             });
         };
 
@@ -108,7 +114,7 @@ angular.module('openITCOCKPIT')
 
             // Query new API Key from Server
             var index = $scope.post.User.apikeys.length;
-            if( index > 0 ) {
+            if(index > 0){
                 // Array is not empty so current array index is lenght - 1, arrays start at 0
                 index = index - 1;
             }

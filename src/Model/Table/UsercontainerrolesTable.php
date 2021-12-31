@@ -275,4 +275,40 @@ class UsercontainerrolesTable extends Table {
 
         return $result;
     }
+
+    /**
+     * @param array $memberOfGroups
+     * @return array
+     */
+    public function getContainerPermissionsByLdapUserMemberOf($memberOfGroups = []) {
+        if(empty($memberOfGroups)){
+            return [];
+        }
+        if(!is_array($memberOfGroups)){
+            $memberOfGroups = [$memberOfGroups];
+        }
+        $query = $this->find()
+            ->contain([
+                'Containers'
+            ])
+            ->innerJoinWith('Ldapgroups')
+            ->where([
+                'Ldapgroups.dn IN' => $memberOfGroups
+            ])
+            ->disableHydration()
+            ->all();
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $result = [];
+        foreach ($query->toArray() as $record) {
+            foreach ($record['containers'] as $index => $container) {
+                $record['containers'][$index]['path'] = $ContainersTable->getPathByIdAsString($container['id']);
+            }
+            $result[$record['id']] = $record;
+        }
+
+        return $result;
+    }
 }
