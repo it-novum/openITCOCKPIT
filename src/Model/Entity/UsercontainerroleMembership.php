@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -11,9 +13,11 @@ use Cake\ORM\Entity;
  * @property int $user_id
  * @property int $usercontainerrole_id
  * @property bool $through_ldap
+ *
+ * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\Usercontainerrole $usercontainerrole
  */
 class UsercontainerroleMembership extends Entity {
-
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -26,6 +30,8 @@ class UsercontainerroleMembership extends Entity {
     protected $_accessible = [
         'user_id'              => true,
         'usercontainerrole_id' => true,
-        'through_ldap'         => true
+        'through_ldap'         => true,
+        'user'                 => true,
+        'usercontainerrole'    => true,
     ];
 }

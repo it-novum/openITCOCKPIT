@@ -24,7 +24,9 @@
 //	confirmation.
 namespace App\Model\Table;
 
+use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Validation\Validator;
 
 class UsercontainerrolesMembershipsTable extends Table {
 
@@ -37,10 +39,51 @@ class UsercontainerrolesMembershipsTable extends Table {
     public function initialize(array $config): void {
         parent::initialize($config);
 
-        $this->setEntityClass('UsercontainerroleMembership');
         $this->setTable('users_to_usercontainerroles');
+        $this->setEntityClass('UsercontainerroleMembership');
 
-        $this->belongsTo('Users');
-        $this->belongsTo('Usercontainerroles');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
+
+        $this->belongsTo('Users', [
+            'foreignKey' => 'user_id',
+            'joinType'   => 'INNER',
+        ]);
+        $this->belongsTo('Usercontainerroles', [
+            'foreignKey' => 'usercontainerrole_id',
+            'joinType'   => 'INNER',
+        ]);
+    }
+
+    /**
+     * Default validation rules.
+     *
+     * @param \Cake\Validation\Validator $validator Validator instance.
+     * @return \Cake\Validation\Validator
+     */
+    public function validationDefault(Validator $validator): Validator {
+        $validator
+            ->integer('id')
+            ->allowEmptyString('id', null, 'create');
+
+        $validator
+            ->boolean('through_ldap')
+            ->notEmptyString('through_ldap');
+
+        return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules): RulesChecker {
+        $rules->add($rules->existsIn('user_id', 'Users'), ['errorField' => 'user_id']);
+        $rules->add($rules->existsIn('usercontainerrole_id', 'Usercontainerroles'), ['errorField' => 'usercontainerrole_id']);
+
+        return $rules;
     }
 }
