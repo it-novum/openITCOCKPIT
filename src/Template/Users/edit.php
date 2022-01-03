@@ -54,6 +54,10 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <span class="badge border margin-right-10 {{UserType.class}} {{UserType.color}}">
+                        {{UserType.title}}
+                    </span>
+
                     <?php if ($this->Acl->hasPermission('index', 'users')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='UsersIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">

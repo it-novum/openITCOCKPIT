@@ -345,11 +345,21 @@ class UsersController extends AppController {
 
         $isLdapUser = !empty($user['User']['samaccountname']);
 
+        $types = $UsersTable->getUserTypesWithStyles();
+        if ($isLdapUser) {
+            $UserType = $types['LDAP_USER'];
+        } else if ($user['User']['is_oauth'] === true) {
+            $UserType = $types['OAUTH_USER'];
+        } else {
+            $UserType = $types['LOCAL_USER'];
+        }
+
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return user information
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser']);
+            $this->set('UserType', $UserType);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserType']);
             return;
         }
 
