@@ -223,7 +223,7 @@ class UsersController extends AppController {
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsersFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
-        if($this->hasRootPrivileges){
+        if ($this->hasRootPrivileges) {
             // root users can see all users
             $MY_RIGHTS = [];
         }
@@ -689,10 +689,12 @@ class UsersController extends AppController {
                     //Container is not yet in permissions - add it
                     $permissions[$container['id']] = $container;
                 }
-                $permissions[$container['id']]['user_roles'][$userContainerRole['id']] = $userContainerRole['name'];
+                $permissions[$container['id']]['user_roles'][$userContainerRole['id']] = [
+                    'id'   => $userContainerRole['id'],
+                    'name' => $userContainerRole['name']
+                ];
             }
         }
-
 
         $this->set('userContainerRoleContainerPermissions', $permissions);
         $this->viewBuilder()->setOption('serialize', ['userContainerRoleContainerPermissions']);
@@ -735,7 +737,7 @@ class UsersController extends AppController {
         $ldapUser = null;
         if (!empty($samaccountname)) {
             $ldapUser = $Ldap->getUser($samaccountname, true);
-            if($ldapUser){
+            if ($ldapUser) {
                 /** @var UsercontainerrolesTable $UsercontainerrolesTable */
                 $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
@@ -744,7 +746,7 @@ class UsersController extends AppController {
                 );
 
                 $permissions = [];
-                foreach ( $ldapUser['userContainerRoleContainerPermissionsLdap'] as $userContainerRole) {
+                foreach ($ldapUser['userContainerRoleContainerPermissionsLdap'] as $userContainerRole) {
                     foreach ($userContainerRole['containers'] as $container) {
                         if (isset($permissions[$container['id']])) {
                             //Container permission is already set.
