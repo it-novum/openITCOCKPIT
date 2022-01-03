@@ -221,7 +221,13 @@ class UsersController extends AppController {
 
         $UsersFilter = new UsersFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsersFilter->getPage());
-        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $this->MY_RIGHTS);
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if($this->hasRootPrivileges){
+            // root users can see all users
+            $MY_RIGHTS = [];
+        }
+        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $MY_RIGHTS);
 
         $all_users = [];
         foreach ($all_tmp_users as $index => $_user) {
