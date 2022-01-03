@@ -683,8 +683,10 @@ class UsersController extends AppController {
                     //Container is not yet in permissions - add it
                     $permissions[$container['id']] = $container;
                 }
+                $permissions[$container['id']]['user_roles'][$userContainerRole['id']] = $userContainerRole['name'];
             }
         }
+
 
         $this->set('userContainerRoleContainerPermissions', $permissions);
         $this->viewBuilder()->setOption('serialize', ['userContainerRoleContainerPermissions']);
