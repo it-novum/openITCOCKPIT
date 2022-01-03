@@ -230,10 +230,20 @@ class UsersController extends AppController {
         $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $MY_RIGHTS);
 
         $all_users = [];
+
+        $types = $UsersTable->getUserTypesWithStyles();
+
         foreach ($all_tmp_users as $index => $_user) {
             /** @var User $_user */
             $user = $_user->toArray();
             $user['allow_edit'] = $this->hasRootPrivileges;
+            if (!empty($user['samaccountname'])) {
+                $user['UserType'] = $types['LDAP_USER'];
+            } else if ($user['is_oauth'] === true) {
+                $user['UserType'] = $types['OAUTH_USER'];
+            } else {
+                $user['UserType'] = $types['LOCAL_USER'];
+            }
 
             if ($this->hasRootPrivileges === false) {
                 //Check permissions for non ROOT Users
@@ -335,11 +345,21 @@ class UsersController extends AppController {
 
         $isLdapUser = !empty($user['User']['samaccountname']);
 
+        $types = $UsersTable->getUserTypesWithStyles();
+        if ($isLdapUser) {
+            $UserType = $types['LDAP_USER'];
+        } else if ($user['User']['is_oauth'] === true) {
+            $UserType = $types['OAUTH_USER'];
+        } else {
+            $UserType = $types['LOCAL_USER'];
+        }
+
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return user information
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser']);
+            $this->set('UserType', $UserType);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserType']);
             return;
         }
 

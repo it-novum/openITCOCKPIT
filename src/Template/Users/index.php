@@ -194,6 +194,9 @@
                                     <i class="fa" ng-class="getSortClass('Users.is_active')"></i>
                                     <?php echo __('Is active'); ?>
                                 </th>
+                                <th class="no-sort">
+                                    <?php echo __('Type'); ?>
+                                </th>
                                 <th class="no-sort" ng-click="orderBy('Users.usergroup_id')">
                                     <i class="fa" ng-class="getSortClass('Users.usergroup_id')"></i>
                                     <?php echo __('User role'); ?>
@@ -216,13 +219,19 @@
                                 <td>{{user.phone}}</td>
                                 <td>{{user.company}}</td>
                                 <td>
-                                    <span class="label-forced badge-danger"
+                                    <span class="badge border border-danger text-danger"
                                           ng-hide="user.is_active">
                                         <?php echo __('Disabled'); ?>
                                     </span>
-                                    <span class="label-forced badge-success"
+                                    <span class="badge border border-success text-success"
                                           ng-show="user.is_active">
                                         <?php echo __('Active'); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge border margin-right-10 {{user.UserType.class}} {{user.UserType.color}}">
+                                        {{user.UserType.title}}
                                     </span>
                                 </td>
                                 <td>{{user.usergroup.name}}</td>

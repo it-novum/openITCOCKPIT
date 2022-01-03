@@ -65,6 +65,8 @@ angular.module('openITCOCKPIT')
                     User: data
                 };
 
+                $scope.UserType = result.data.UserType;
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
