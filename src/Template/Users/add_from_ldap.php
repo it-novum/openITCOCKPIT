@@ -148,7 +148,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 disabled="disabled"
                                 multiple
                                 ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
-                                ng-model="selectedUserContainerRolesLdapReadOnly"> <!-- ng-model is just for view, we do not save this to the database. LDAP groups are getting pulled on the login -->
+                                ng-model="selectedUserContainerRolesLdapReadOnly">
+                                <!-- ng-model is just for view, we do not save this to the database. LDAP groups are getting pulled on the login -->
                             </select>
                             <div ng-repeat="error in errors.usercontainerroles">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -160,7 +161,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <!-- User Container Roles permissions read/write -->
-                        <div class="row" ng-repeat="userContainerRole in ldapUser.userContainerRoleContainerPermissionsLdap">
+                        <div class="row"
+                             ng-repeat="userContainerRole in ldapUser.userContainerRoleContainerPermissionsLdap">
                             <div class="col col-md-1"></div>
                             <div class="col col-md-11">
                                 <legend class="no-padding font-sm text-success">
@@ -221,6 +223,19 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        disabled="disabled"
                                        ng-checked="userContainerRole._joinData.permission_level === 2">
                                 <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+
+
+                                <span ng-repeat="userRole in userContainerRole.user_roles">
+                                    <span class="badge border-info border text-primary">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
+                                            <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
+                                                    {{userRole.name}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{userRole.name}}
+                                        <?php endif; ?>
+                                    </span>
+                                </span>
                             </div>
                         </div>
 

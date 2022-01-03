@@ -739,6 +739,10 @@ class UsersController extends AppController {
                     //Container is not yet in permissions - add it
                     $permissions[$container['id']] = $container;
                 }
+                $permissions[$container['id']]['user_roles'][$userContainerRole['id']] = [
+                    'id'   => $userContainerRole['id'],
+                    'name' => $userContainerRole['name']
+                ];
             }
         }
 
