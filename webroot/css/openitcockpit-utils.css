@@ -1070,3 +1070,26 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 .z-index-2500{
     z-index: 2500;
 }
+
+
+@keyframes strike{
+    0%   { width : 0; }
+    100% { width: 100%; }
+}
+.strike {
+    position: relative;
+}
+.strike::after {
+    content: ' ';
+    position: absolute;
+    top: 42%;
+    left: 0;
+    width: auto;
+    height: 1px;
+    background: #CC0000;
+    animation-name: strike;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
