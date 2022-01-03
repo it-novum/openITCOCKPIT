@@ -45,6 +45,7 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -476,9 +477,30 @@ class UsersController extends AppController {
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
 
+            // Get User Container Roles from LDAP groups
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+            $ldapUser = $Ldap->getUser($data['samaccountname'], true);
+
+            /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+            $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+            $userContainerRoleContainerPermissionsLdap = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                $ldapUser['memberof']
+            );
+
             //remove password validation when user is imported from ldap
             $UsersTable->getValidator()->remove('password');
             $UsersTable->getValidator()->remove('confirm_password');
+
+            if (!empty($userContainerRoleContainerPermissionsLdap)) {
+                // The user has at least one User container Role via LDAP groups
+                // We can disable the validation
+                $UsersTable->getValidator()->remove('containers');
+                $UsersTable->getValidator()->remove('usercontainerroles');
+            }
 
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
