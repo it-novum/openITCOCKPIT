@@ -289,7 +289,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
                             <label class="control-label" for="Usergroups">
-                                <?php echo __('User role'); ?>
+                                <?php echo __('User role through LDAP'); ?>
                             </label>
                             <select
                                 id="Usergroups"
@@ -301,6 +301,27 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </select>
                             <div ng-repeat="error in errors.usergroup_id">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
+                            <label class="control-label" for="Usergroups">
+                                <?php echo __('Fallback User role'); ?>
+                            </label>
+                            <select
+                                id="Usergroups"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="usergroups"
+                                ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                ng-model="post.User.usergroup_id">
+                            </select>
+                            <div ng-repeat="error in errors.usergroup_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Fall back user role that is used by the system, when no user role assignment through LDAP is possible.'); ?>
                             </div>
                         </div>
 

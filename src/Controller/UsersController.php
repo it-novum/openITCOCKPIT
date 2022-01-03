@@ -45,6 +45,7 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -218,7 +219,6 @@ class UsersController extends AppController {
 
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
-
         $UsersFilter = new UsersFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsersFilter->getPage());
 
@@ -475,6 +475,36 @@ class UsersController extends AppController {
                 $data['ContainersUsersMemberships'] = [];
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+
+            // Get User Container Roles from LDAP groups
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+            $ldapUser = $Ldap->getUser($data['samaccountname'], true);
+
+            /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+            $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+            $userContainerRoleContainerPermissionsLdap = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                $ldapUser['memberof']
+            );
+
+            // Convert old belongsToMany request into through join Membership data.
+            $usercontainerroles = $data['usercontainerroles']['_ids'] ?? [];
+            $data['usercontainerroles'] = [];
+            foreach ($usercontainerroles as $usercontainerroleId) {
+                $data['usercontainerroles'][] = [
+                    'id'        => $usercontainerroleId,
+                    '_joinData' => [
+                        'usercontainerrole_id' => $usercontainerroleId,
+                        'through_ldap'         => false // This user container role got selected by the user
+                    ]
+                ];
+            }
+
+
+            FileDebugger::dump($data);
 
             //remove password validation when user is imported from ldap
             $UsersTable->getValidator()->remove('password');
