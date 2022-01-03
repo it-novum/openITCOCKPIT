@@ -377,6 +377,7 @@ class UsersTable extends Table {
             'Users.phone',
             'Users.is_active',
             'Users.samaccountname',
+            'Users.is_oauth',
             'Usergroups.id',
             'Usergroups.name',
             'full_name' => $query->func()->concat([
@@ -1205,15 +1206,15 @@ class UsersTable extends Table {
             ->where([
                 'Users.is_active' => 1
             ]);
-        if(!empty($usergroupsIds)){
+        if (!empty($usergroupsIds)) {
             $query->innerJoinWith('Usergroups')
                 ->where([
                     'Usergroups.id IN ' => $usergroupsIds
                 ]);
         }
         $query->group([
-                'Users.id'
-            ])
+            'Users.id'
+        ])
             ->disableAutoFields()
             ->disableHydration()
             ->all();
@@ -1223,5 +1224,33 @@ class UsersTable extends Table {
             return [];
         }
         return $users;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUserTypesWithStyles() {
+        $types = [
+            'LOCAL_USER' => [
+                'title' => __('Local user'),
+                'color' => 'text-generic',
+                'class' => 'border-generic'
+            ],
+
+            'LDAP_USER' => [
+                'title' => __('LDAP user'),
+                'color' => 'text-prometheus',
+                'class' => 'border-prometheus'
+            ],
+
+            'OAUTH_USER' => [
+                'title' => __('OAuth user'),
+                'color' => 'text-evc',
+                'class' => 'border-evc'
+            ]
+
+        ];
+
+        return $types;
     }
 }

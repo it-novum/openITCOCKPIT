@@ -223,17 +223,27 @@ class UsersController extends AppController {
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsersFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
-        if($this->hasRootPrivileges){
+        if ($this->hasRootPrivileges) {
             // root users can see all users
             $MY_RIGHTS = [];
         }
         $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $MY_RIGHTS);
 
         $all_users = [];
+
+        $types = $UsersTable->getUserTypesWithStyles();
+
         foreach ($all_tmp_users as $index => $_user) {
             /** @var User $_user */
             $user = $_user->toArray();
             $user['allow_edit'] = $this->hasRootPrivileges;
+            if (!empty($user['samaccountname'])) {
+                $user['UserType'] = $types['LDAP_USER'];
+            } else if ($user['is_oauth'] === true) {
+                $user['UserType'] = $types['OAUTH_USER'];
+            } else {
+                $user['UserType'] = $types['LOCAL_USER'];
+            }
 
             if ($this->hasRootPrivileges === false) {
                 //Check permissions for non ROOT Users
@@ -733,7 +743,7 @@ class UsersController extends AppController {
         $ldapUser = null;
         if (!empty($samaccountname)) {
             $ldapUser = $Ldap->getUser($samaccountname, true);
-            if($ldapUser){
+            if ($ldapUser) {
                 /** @var UsercontainerrolesTable $UsercontainerrolesTable */
                 $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
@@ -742,7 +752,7 @@ class UsersController extends AppController {
                 );
 
                 $permissions = [];
-                foreach ( $ldapUser['userContainerRoleContainerPermissionsLdap'] as $userContainerRole) {
+                foreach ($ldapUser['userContainerRoleContainerPermissionsLdap'] as $userContainerRole) {
                     foreach ($userContainerRole['containers'] as $container) {
                         if (isset($permissions[$container['id']])) {
                             //Container permission is already set.
