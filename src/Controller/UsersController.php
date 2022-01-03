@@ -497,8 +497,7 @@ class UsersController extends AppController {
                 $data['usercontainerroles'][] = [
                     'id'        => $usercontainerroleId,
                     '_joinData' => [
-                        'usercontainerrole_id' => $usercontainerroleId,
-                        'through_ldap'         => false // This user container role got selected by the user
+                        'through_ldap' => false // This user container role got selected by the user
                     ]
                 ];
             }
