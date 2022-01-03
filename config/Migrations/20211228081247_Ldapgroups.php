@@ -85,5 +85,14 @@ class Ldapgroups extends AbstractMigration {
             ])
             ->create();
 
+        $this->table('users_to_usercontainerroles')
+            ->addColumn('through_ldap', 'boolean', [
+                'default' => 0,
+                'limit'   => 1,
+                'null'    => false,
+                'after'   => 'usercontainerrole_id'
+            ])
+            ->update();
+
     }
 }

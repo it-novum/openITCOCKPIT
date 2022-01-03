@@ -219,7 +219,6 @@ class UsersController extends AppController {
 
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
-
         $UsersFilter = new UsersFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsersFilter->getPage());
 
@@ -491,16 +490,24 @@ class UsersController extends AppController {
                 $ldapUser['memberof']
             );
 
+            // Convert old belongsToMany request into through join Membership data.
+            $usercontainerroles = $data['usercontainerroles']['_ids'] ?? [];
+            $data['usercontainerroles'] = [];
+            foreach ($usercontainerroles as $usercontainerroleId) {
+                $data['usercontainerroles'][] = [
+                    'id'        => $usercontainerroleId,
+                    '_joinData' => [
+                        'through_ldap' => false // This user container role got selected by the user
+                    ]
+                ];
+            }
+
+
+            FileDebugger::dump($data);
+
             //remove password validation when user is imported from ldap
             $UsersTable->getValidator()->remove('password');
             $UsersTable->getValidator()->remove('confirm_password');
-
-            if (!empty($userContainerRoleContainerPermissionsLdap)) {
-                // The user has at least one User container Role via LDAP groups
-                // We can disable the validation
-                $UsersTable->getValidator()->remove('containers');
-                $UsersTable->getValidator()->remove('usercontainerroles');
-            }
 
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);

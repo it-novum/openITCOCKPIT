@@ -13,6 +13,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
@@ -82,6 +83,7 @@ class UsersTable extends Table {
         ]);
 
         $this->belongsToMany('Usercontainerroles', [
+            'through'          => 'UsercontainerrolesMemberships',
             'className'        => 'Usercontainerroles',
             'joinTable'        => 'users_to_usercontainerroles',
             'foreignKey'       => 'user_id',
@@ -268,9 +270,9 @@ class UsersTable extends Table {
         }
 
         //Has the user an user container role assignment?
-        if (isset($context['data']['usercontainerroles']['_ids']) && is_array($context['data']['usercontainerroles']['_ids'])) {
-            if (!empty($context['data']['usercontainerroles']['_ids']) && sizeof($context['data']['usercontainerroles']['_ids']) > 0) {
-
+        FileDebugger::dump($context['data']);
+        if (isset($context['data']['usercontainerroles']) && is_array($context['data']['usercontainerroles'])) {
+            if (sizeof(Hash::extract($context['data']['usercontainerroles'], '{n}.id')) > 0) {
                 //User has a user container role assignment
                 return true;
             }
