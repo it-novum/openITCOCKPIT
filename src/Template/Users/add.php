@@ -94,7 +94,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div class="col col-md-10">
                                 <legend class="no-padding font-sm txt-ack">
                                     {{userContainerRole.path}}
-                                    <i class="fas fa-minus-square text-danger" ng-if="selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1"></i>
+                                    <i class="fas fa-minus-square text-danger"
+                                       ng-if="selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1"></i>
                                 </legend>
                                 <div class="d-inline-block"
                                      ng-class="{'strike' : selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1}">
@@ -110,6 +111,17 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                            ng-checked="userContainerRole._joinData.permission_level === 2">
                                     <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                                 </div>
+                                <span ng-repeat="userRole in userContainerRole.user_roles">
+                                    <span class="badge border-info border text-primary">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
+                                            <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
+                                                    {{userRole.name}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{userRole.name}}
+                                        <?php endif; ?>
+                                    </span>
+                                </span>
                             </div>
                         </div>
 
