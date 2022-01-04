@@ -97,6 +97,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div class="col col-12 padding-left-30">
                                 <legend class="no-padding font-sm txt-ack">
                                     {{userContainerRole.path}}
+                                    <i class="fas fa-minus-square text-danger" ng-if="selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1"></i>
                                 </legend>
                                 <div class="d-inline-block" ng-class="{'strike' : selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1}">
                                     <input name="group-{{userContainerRole.id}}"
