@@ -39,6 +39,7 @@ use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
+use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 /**
  * Users Model

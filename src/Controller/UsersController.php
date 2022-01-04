@@ -45,7 +45,6 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -490,20 +489,31 @@ class UsersController extends AppController {
                 $ldapUser['memberof']
             );
 
+
             // Convert old belongsToMany request into through join Membership data.
             $usercontainerroles = $data['usercontainerroles']['_ids'] ?? [];
             $data['usercontainerroles'] = [];
+
+            // Add user container roles that are assigned via LDAP
+            foreach ($userContainerRoleContainerPermissionsLdap as $usercontainerrole) {
+                $usercontainerroleId = $usercontainerrole['id'];
+                $data['usercontainerroles'][$usercontainerroleId] = [
+                    'id'        => $usercontainerroleId,
+                    '_joinData' => [
+                        'through_ldap' => true // This got assigned automatically via LDAP
+                    ]
+                ];
+            }
+
             foreach ($usercontainerroles as $usercontainerroleId) {
-                $data['usercontainerroles'][] = [
+                // Use the ID to be able to overwrite automatically assignments done by LDAP
+                $data['usercontainerroles'][$usercontainerroleId] = [
                     'id'        => $usercontainerroleId,
                     '_joinData' => [
                         'through_ldap' => false // This user container role got selected by the user
                     ]
                 ];
             }
-
-
-            FileDebugger::dump($data);
 
             //remove password validation when user is imported from ldap
             $UsersTable->getValidator()->remove('password');
@@ -807,6 +817,10 @@ class UsersController extends AppController {
                             //Container is not yet in permissions - add it
                             $permissions[$container['id']] = $container;
                         }
+                        $permissions[$container['id']]['user_roles'][$userContainerRole['id']] = [
+                            'id'   => $userContainerRole['id'],
+                            'name' => $userContainerRole['name']
+                        ];
                     }
                 }
                 $ldapUser['userContainerRoleContainerPermissionsLdap'] = $permissions;

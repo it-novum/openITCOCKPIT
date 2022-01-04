@@ -136,6 +136,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
+                            <!-- We do not submit this data, the UsersController will ask the LDAP server again so no manipulations could occur -->
                             <label class="control-label" for="UserContainerrolesLdap">
                                 <?php echo __('Container Roles through LDAP'); ?>
                             </label>
