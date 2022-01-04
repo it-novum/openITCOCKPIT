@@ -161,7 +161,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <!-- User Container Roles permissions read/write -->
+                        <!-- User Container Roles permissions read/write (LDAP) -->
                         <div class="row"
                              ng-repeat="userContainerRole in ldapUser.userContainerRoleContainerPermissionsLdap">
                             <div class="col col-md-1"></div>
@@ -169,13 +169,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <legend class="no-padding font-sm text-success">
                                     {{userContainerRole.path}}
                                 </legend>
-                                <input name="group-{{userContainerRole.id}}"
+                                <input name="group-ldap-{{userContainerRole.id}}"
                                        type="radio"
                                        disabled="disabled"
                                        ng-checked="userContainerRole._joinData.permission_level === 1">
                                 <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
-                                <input name="group-{{userContainerRole.id}}"
+                                <input name="group-ldap-{{userContainerRole.id}}"
                                        type="radio"
                                        disabled="disabled"
                                        ng-checked="userContainerRole._joinData.permission_level === 2">
