@@ -98,17 +98,19 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <legend class="no-padding font-sm txt-ack">
                                     {{userContainerRole.path}}
                                 </legend>
-                                <input name="group-{{userContainerRole.id}}"
-                                       type="radio"
-                                       disabled="disabled"
-                                       ng-checked="userContainerRole._joinData.permission_level === 1">
-                                <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+                                <div class="d-inline-block" ng-class="{'strike' : selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1}">
+                                    <input name="group-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 1">
+                                    <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
-                                <input name="group-{{userContainerRole.id}}"
-                                       type="radio"
-                                       disabled="disabled"
-                                       ng-checked="userContainerRole._joinData.permission_level === 2">
-                                <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                    <input name="group-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 2">
+                                    <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                </div>
                             </div>
                         </div>
 
@@ -557,5 +559,3 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </div>
     </div>
 </div>
-
-

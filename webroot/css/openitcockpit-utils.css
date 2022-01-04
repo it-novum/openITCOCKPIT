@@ -142,7 +142,7 @@ openITCOCKPIT v4 Utilities
 }
 
 .padding-top-20 {
-    padding-top: 20px!important;
+    padding-top: 20px !important;
 }
 
 .padding-left-20 {
@@ -1059,36 +1059,42 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     height: 100%;
 }
 
-.day-card-header-radius{
-    border-radius:10px 8px 0px 0px!important;
+.day-card-header-radius {
+    border-radius: 10px 8px 0px 0px !important;
 }
 
-.day-card-footer-radius{
-    border-radius:0px 0px 10px 10px!important;
+.day-card-footer-radius {
+    border-radius: 0px 0px 10px 10px !important;
 }
 
-.z-index-2500{
+.z-index-2500 {
     z-index: 2500;
 }
 
 
-@keyframes strike{
-    0%   { width : 0; }
-    100% { width: 100%; }
+@keyframes strike {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 100%;
+    }
 }
+
 .strike {
     position: relative;
 }
+
 .strike::after {
     content: ' ';
     position: absolute;
-    top: 42%;
+    top: 42.5%;
     left: 0;
     width: auto;
     height: 1px;
     background: #CC0000;
     animation-name: strike;
-    animation-duration: 1s;
+    animation-duration: 250ms;
     animation-timing-function: linear;
     animation-iteration-count: 1;
     animation-fill-mode: forwards;
