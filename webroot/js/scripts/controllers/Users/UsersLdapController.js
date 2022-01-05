@@ -10,6 +10,7 @@ angular.module('openITCOCKPIT')
         var clearForm = function(){
             $scope.selectedUserContainers = [];
             $scope.selectedUserContainerWithPermission = {};
+            $scope.userContainerRoleContainerIds = [];
             $scope.data.selectedSamAccountNameIndex = null;
 
             $scope.post = {
@@ -179,6 +180,12 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.userContainerRoleContainerPermissions = result.data.userContainerRoleContainerPermissions;
+                $scope.userContainerRoleContainerIds = Object.keys($scope.userContainerRoleContainerPermissions).map(function(item) {
+                    return parseInt(item, 10);
+                });
+                /*.map(function(key){
+                    return [Number(key), $scope.userContainerRoleContainerPermissions[key]];
+                });*/
             });
         };
 
