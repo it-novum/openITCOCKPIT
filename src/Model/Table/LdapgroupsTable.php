@@ -40,13 +40,22 @@ class LdapgroupsTable extends Table {
         $this->setDisplayField('cn');
         $this->setPrimaryKey('id');
 
-        $this->hasMany('Usercontainerroles', [
-            'foreignKey' => 'ldapgroup_id',
+        $this->belongsToMany('Usercontainerroles', [
+            'className'        => 'Usercontainerroles',
+            'joinTable'        => 'ldapgroups_to_usercontainerroles',
+            'foreignKey'       => 'ldapgroup_id',
+            'targetForeignKey' => 'usercontainerrole_id',
+            'saveStrategy'     => 'replace'
         ]);
 
-        $this->hasMany('Usergroups', [
-            'foreignKey' => 'ldapgroup_id',
+        $this->belongsToMany('Usergroups', [
+            'className'        => 'Usergroups',
+            'joinTable'        => 'ldapgroups_to_usergroups',
+            'foreignKey'       => 'ldapgroup_id',
+            'targetForeignKey' => 'usergroup_id',
+            'saveStrategy'     => 'replace'
         ]);
+
     }
 
     /**

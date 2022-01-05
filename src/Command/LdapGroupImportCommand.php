@@ -73,6 +73,18 @@ class LdapGroupImportCommand extends Command implements CronjobInterface {
             return;
         }
 
+        $this->syncLdapGroupsWithDatabase($io);
+    }
+
+    /**
+     * @param ConsoleIo $io
+     * @return void
+     * @throws \FreeDSx\Ldap\Exception\BindException
+     */
+    private function syncLdapGroupsWithDatabase(ConsoleIo $io) {
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
         $io->out('Scan for new LDAP groups. This will take a while...');
 
         /** @var LdapgroupsTable $LdapgroupsTable */
