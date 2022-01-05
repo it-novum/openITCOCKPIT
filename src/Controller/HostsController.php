@@ -987,20 +987,27 @@ class HostsController extends AppController {
             $HosttemplateCache = new KeyValueStore();
             foreach ($hostIds as $hostId) {
                 $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
+                $currentContainerIds = [];
+                foreach ($hostObject->get('hosts_to_containers_sharing') as $container) {
+                    $currentContainerIds[] = $container->get('id');
+                }
 
                 $dataToSave = [
                     // Add required fields for HostComparisonForSave class
-                    'name'            => $hostObject->name,
-                    'hosttemplate_id' => $hostObject->hosttemplate_id,
-                    'address'         => $hostObject->address,
-                    'container_id'    => $hostObject->container_id
+                    'name'                        => $hostObject->name,
+                    'hosttemplate_id'             => $hostObject->hosttemplate_id,
+                    'address'                     => $hostObject->address,
+                    'container_id'                => $hostObject->container_id,
+                    'hosts_to_containers_sharing' => [
+                        '_ids' => $currentContainerIds
+                    ]
                 ];
+
                 $sharedContainers = [];
                 $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
                 $containerIdsForChangelog = [];
                 $primaryContainerId = $hostObject->get('container_id');
-                foreach ($hostObject->get('hosts_to_containers_sharing') as $container) {
-                    $containerId = $container->get('id');
+                foreach ($currentContainerIds as $containerId) {
                     $containerIdsForChangelog[] = $containerId;
                     if ($primaryContainerId !== $containerId) {
                         $sharedContainers[] = $containerId;

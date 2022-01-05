@@ -1128,7 +1128,6 @@ class ExternalCommands {
             case 'SCHEDULE_HOST_SVC_DOWNTIME':
             case 'SCHEDULE_AND_PROPAGATE_HOST_DOWNTIME':
             case 'SCHEDULE_AND_PROPAGATE_TRIGGERED_HOST_DOWNTIME':
-            case 'SCHEDULE_SVC_DOWNTIME':
                 $payload = [
                     'Command' => 'raw',
                     'Data'    => sprintf(
@@ -1145,9 +1144,31 @@ class ExternalCommands {
                     )
                 ];
 
-                if ($command['command'] === 'SCHEDULE_SVC_DOWNTIME') {
-                    $payload['Data']['service_description'] = $command['parameters']['serviceUuid'];
+                // Create downtime on the master system
+                $this->toQueue($payload, 0);
+                if ($satelliteId > 0) {
+                    //Also create downtime on the satellite system
+                    $this->toQueue($payload, $satelliteId);
                 }
+                break;
+
+            case 'SCHEDULE_SVC_DOWNTIME':
+                $payload = [
+                    'Command' => 'raw',
+                    'Data'    => sprintf(
+                        '%s;%s;%s;%s;%s;%s;%s;%s;%s;%s',
+                        $command['command'],
+                        $command['parameters']['hostUuid'],
+                        $command['parameters']['serviceUuid'],
+                        $command['parameters']['start_time'],
+                        $command['parameters']['end_time'],
+                        $command['parameters']['fixed'],
+                        $command['parameters']['trigger_id'],
+                        $command['parameters']['duration'],
+                        $command['parameters']['author'],
+                        $command['parameters']['comment']
+                    )
+                ];
 
                 // Create downtime on the master system
                 $this->toQueue($payload, 0);
