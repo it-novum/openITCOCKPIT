@@ -180,9 +180,19 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        disabled="disabled"
                                        ng-checked="userContainerRole._joinData.permission_level === 2">
                                 <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                <span ng-repeat="userRole in userContainerRole.user_roles| orderObjectBy:'name':order_revers">
+                                    <span class="badge border-info border text-primary">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
+                                            <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
+                                                    {{userRole.name}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{userRole.name}}
+                                        <?php endif; ?>
+                                    </span>
+                                </span>
                             </div>
                         </div>
-
 
                         <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
                             <label class="control-label" for="UserContainerroles">
