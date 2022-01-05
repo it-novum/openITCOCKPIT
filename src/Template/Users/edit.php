@@ -71,6 +71,68 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
             {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+
+                        <div class="form-group" ng-class="{'has-error': errors.usercontainerroles}" ng-if="isLdapUser">
+                            <label class="control-label hintmark" for="UserContainerrolesLdap">
+                                <?php echo __('Container Roles through LDAP'); ?>
+                            </label>
+                            <select
+                                id="UserContainerrolesLdap"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="usercontainerroles"
+                                readonly="readonly"
+                                disabled="disabled"
+                                multiple
+                                ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
+                                ng-model="post.User.usercontainerroles_ldap._ids">
+                            </select>
+                            <div ng-repeat="error in errors.usercontainerroles">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Automatically assigned container roles based on the LDAP groups of the current user.'); ?>
+                            </div>
+                        </div>
+
+                        <!-- User Container Roles permissions read/write (LDAP) -->
+                        <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissionsLdap" ng-if="isLdapUser">
+                            <div class="col col-md-1"></div>
+                            <div class="col col-md-11">
+                                <legend class="no-padding font-sm txt-ack">
+                                    {{userContainerRole.path}}
+                                    <i class="fas fa-minus-square text-danger"
+                                       ng-if="selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1"></i>
+                                </legend>
+                                <div class="d-inline-block"
+                                     ng-class="{'strike' : selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1}">
+                                    <input name="group-ldap-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 1">
+                                    <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+
+                                    <input name="group-ldap-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 2">
+                                    <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                </div>
+                                <span ng-repeat="userRole in userContainerRole.user_roles">
+                                    <span class="badge border-info border text-primary">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
+                                            <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
+                                                    {{userRole.name}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{userRole.name}}
+                                        <?php endif; ?>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+
                         <div class="form-group" ng-class="{'has-error': errors.usercontainerroles}">
                             <label class="control-label hintmark" for="UserContainerroles">
                                 <?php echo __('Container Roles'); ?>
@@ -87,14 +149,20 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div ng-repeat="error in errors.usercontainerroles">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
-                            <div class="help-block">
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Container Roles are handy to grant the same permissions to multiple users. Container Roles will overwrite automatically assignments via LDAP groups.'); ?>
+                            </div>
+                            <div class="help-block text-info" ng-hide="isLdapUser">
+                                <i class="fa fa-info-circle"></i>
                                 <?php echo __('Container Roles are handy to grant the same permissions to multiple users.'); ?>
                             </div>
                         </div>
 
                         <!-- User Container Roles permissions read/write -->
                         <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissions">
-                            <div class="col col-12 padding-left-30">
+                            <div class="col col-md-2"></div>
+                            <div class="col col-md-10">
                                 <legend class="no-padding font-sm txt-ack">
                                     {{userContainerRole.path}}
                                     <i class="fas fa-minus-square text-danger"
@@ -152,7 +220,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <!-- Container permissions read/write -->
                         <div class="row" ng-repeat="userContainer in selectedUserContainerWithPermission">
-                            <div class="col col-12 padding-left-30">
+                            <div class="col col-md-3"></div>
+                            <div class="col col-md-9">
                                 <legend class="no-padding font-sm text-primary">
                                     {{userContainer.name}}
                                 </legend>

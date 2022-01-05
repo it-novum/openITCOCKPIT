@@ -380,6 +380,44 @@ class UsersController extends AppController {
                 $user->setAccess('password', false);
                 $user->setAccess('samaccountname', false);
                 $user->setAccess('ldap_dn', false);
+
+                // Get User Container Roles from LDAP groups
+                /** @var SystemsettingsTable $SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+                $ldapUser = $Ldap->getUser($data['samaccountname'], true);
+
+                /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+                $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+                $userContainerRoleContainerPermissionsLdap = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                    $ldapUser['memberof']
+                );
+
+                // Convert old belongsToMany request into through join Membership data. (Only required for LDAP users to set through_ldap field in users_to_usercontainerroles join talbe)
+                $usercontainerroles = $data['usercontainerroles']['_ids'] ?? [];
+                $data['usercontainerroles'] = [];
+
+                // Add user container roles that are assigned via LDAP
+                foreach ($userContainerRoleContainerPermissionsLdap as $usercontainerrole) {
+                    $usercontainerroleId = $usercontainerrole['id'];
+                    $data['usercontainerroles'][$usercontainerroleId] = [
+                        'id'        => $usercontainerroleId,
+                        '_joinData' => [
+                            'through_ldap' => true // This got assigned automatically via LDAP
+                        ]
+                    ];
+                }
+
+                foreach ($usercontainerroles as $usercontainerroleId) {
+                    // Use the ID to be able to overwrite automatically assignments done by LDAP
+                    $data['usercontainerroles'][$usercontainerroleId] = [
+                        'id'        => $usercontainerroleId,
+                        '_joinData' => [
+                            'through_ldap' => false // This user container role got selected by the user
+                        ]
+                    ];
+                }
             }
 
             if ($user->is_oauth === true) {
@@ -432,10 +470,10 @@ class UsersController extends AppController {
             throw new NotFoundException(__('User not found'));
         }
 
-        $user = $UsersTable->getUserForEdit($id);
+        $user = $UsersTable->getUserForPermissionCheck($id);
         $containersToCheck = array_unique(array_merge(
-            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
-            $user['User']['containers']['_ids']) //Containers defined by the user itself
+            $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['containers']['_ids']) //Containers defined by the user itself
         );
 
         if (!$this->allowedByContainerId($containersToCheck)) {
@@ -553,10 +591,10 @@ class UsersController extends AppController {
             throw new NotFoundException(__('User not found'));
         }
 
-        $user = $UsersTable->getUserForEdit($id);
+        $user = $UsersTable->getUserForPermissionCheck($id);
         $containersToCheck = array_unique(array_merge(
-            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
-            $user['User']['containers']['_ids']) //Containers defined by the user itself
+            $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['containers']['_ids']) //Containers defined by the user itself
         );
 
         if (!$this->allowedByContainerId($containersToCheck)) {

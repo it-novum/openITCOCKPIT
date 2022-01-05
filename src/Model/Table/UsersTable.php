@@ -39,7 +39,6 @@ use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
-use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 /**
  * Users Model
@@ -508,10 +507,13 @@ class UsersTable extends Table {
         $user['containers'] = [
             '_ids' => Hash::extract($query, 'containers.{n}.id')
         ];
-        $user['usercontainerroles'] = [
-            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.id')
-        ];
 
+        $user['usercontainerroles'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}._joinData[through_ldap=false].usercontainerrole_id')
+        ];
+        $user['usercontainerroles_ldap'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}._joinData[through_ldap=true].usercontainerrole_id')
+        ];
         $user['usercontainerroles_containerids'] = [
             '_ids' => Hash::extract($query, 'usercontainerroles.{n}.containers.{n}.id')
         ];
@@ -533,6 +535,43 @@ class UsersTable extends Table {
         ];
     }
 
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getUserForPermissionCheck($id) {
+        $query = $this->find()
+            ->select([
+                'Users.id',
+                'Users.usergroup_id'
+            ])
+            ->where([
+                'Users.id' => $id
+            ])
+            ->contain([
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ],
+            ])
+            ->disableHydration()
+            ->first();
+
+        $user = $query;
+
+        $user['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $user['usercontainerroles'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.id')
+        ];
+
+        $user['usercontainerroles_containerids'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.containers.{n}.id')
+        ];
+
+        return $user;
+    }
 
     /**
      * @param array $containerPermissions
