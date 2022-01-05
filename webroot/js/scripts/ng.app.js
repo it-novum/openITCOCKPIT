@@ -1625,6 +1625,20 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         };
     })
 
+    .filter('orderObjectBy', function(){
+        return function(items, field, reverse){
+            var filtered = [];
+            angular.forEach(items, function(item){
+                filtered.push(item);
+            });
+            filtered.sort(function(a, b){
+                return (a[field] > b[field] ? 1 : -1);
+            });
+            if(reverse) filtered.reverse();
+            return filtered;
+        };
+    })
+
     .run(function($rootScope, SortService, $state){
 
         $rootScope.$on('$stateChangeStart', function(event, to, toParams, from, fromParams){

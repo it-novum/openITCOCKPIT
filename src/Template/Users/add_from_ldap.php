@@ -227,7 +227,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                     <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                                 </div>
 
-                                <span ng-repeat="userRole in userContainerRole.user_roles">
+                                <span
+                                    ng-repeat="userRole in userContainerRole.user_roles | orderObjectBy:'name':order_revers">
                                     <span class="badge border-info border text-primary">
                                         <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
                                             <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
