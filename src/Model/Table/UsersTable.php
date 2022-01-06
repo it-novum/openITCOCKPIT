@@ -29,6 +29,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\User;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
+use Cake\Database\Query;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
@@ -1315,5 +1316,28 @@ class UsersTable extends Table {
         ];
 
         return $types;
+    }
+
+    /**
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getLdapUsersForSync(bool $enableHydration = true) {
+        $query = $this->find()
+            ->contain([
+                'Usercontainerroles' => function(Query $q){
+                $q->where([
+                    'UsercontainerrolesMemberships.through_ldap' => 0
+                ]);
+                return $q;
+                },
+            ])
+            ->whereNotNull([
+                'samaccountname'
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $query->toArray();
     }
 }

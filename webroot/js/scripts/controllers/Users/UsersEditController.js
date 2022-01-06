@@ -193,6 +193,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.userContainerRoleContainerPermissionsLdap = result.data.ldapUser.userContainerRoleContainerPermissionsLdap;
+                $scope.ldapUser = result.data.ldapUser;
             });
         };
 

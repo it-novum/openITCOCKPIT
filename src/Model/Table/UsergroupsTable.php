@@ -5,7 +5,6 @@ namespace App\Model\Table;
 use Acl\Model\Table\AcosTable;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\Core\Configure;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
@@ -201,5 +200,28 @@ class UsergroupsTable extends Table {
         }
 
         return $acosAsList;
+    }
+
+    /**
+     * @param array $memberOfGroups
+     * @return array
+     */
+    public function getUsergroupByLdapUserMemberOf($memberOfGroups = []) {
+        if (empty($memberOfGroups)) {
+            return [];
+        }
+        if (!is_array($memberOfGroups)) {
+            $memberOfGroups = [$memberOfGroups];
+        }
+        $query = $this->find()
+            ->innerJoinWith('Ldapgroups')
+            ->where([
+                'Ldapgroups.dn IN' => $memberOfGroups
+            ])
+            ->order(['Usergroups.name' => 'asc'])
+            ->disableHydration()
+            ->first();
+
+        return $this->emptyArrayIfNull($query);
     }
 }

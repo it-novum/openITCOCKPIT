@@ -28,8 +28,12 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Model\Entity\Ldapgroup;
+use App\Model\Entity\User;
+use App\Model\Entity\Usercontainerrole;
 use App\Model\Table\LdapgroupsTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\UsercontainerrolesTable;
+use App\Model\Table\UsersTable;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
@@ -74,6 +78,7 @@ class LdapGroupImportCommand extends Command implements CronjobInterface {
         }
 
         $this->syncLdapGroupsWithDatabase($io);
+        $this->assignUserContainerRolesToUsers($io);
     }
 
     /**
@@ -139,6 +144,64 @@ class LdapGroupImportCommand extends Command implements CronjobInterface {
         }
 
         $io->out(sprintf('Imported %s groups, removed %s groups from database.', $created, $removed));
+
+        $io->success('   Ok');
+        $io->hr();
+    }
+
+    private function assignUserContainerRolesToUsers(ConsoleIo $io) {
+        $io->out('Assign User Container Roles that have LDAP associations to users');
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $LdapClient = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        foreach ($UsersTable->getLdapUsersForSync() as $user) {
+            /** @var User $user */
+            $io->out(sprintf('Query LDAP groups from LDAP for user <success>%s</success>', $user->samaccountname));
+
+            $ldapUser = $LdapClient->getUser($user->samaccountname, true);
+            if ($ldapUser) {
+                $userContainerRoleContainerPermissionsLdap = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                    $ldapUser['memberof']
+                );
+
+                // Keep manually assigned user container roles
+                $data = [
+                    'usercontainerroles' => []
+                ];
+                foreach ($user->usercontainerroles as $usercontainerrole) {
+                    /** @var Usercontainerrole $usercontainerrole */
+                    $data['usercontainerroles'][$usercontainerrole->id] = [
+                        'id'        => $usercontainerrole->id,
+                        '_joinData' => [
+                            'through_ldap' => false // This got assigned manually
+                        ]
+                    ];
+                }
+
+                foreach ($userContainerRoleContainerPermissionsLdap as $usercontainerroleId => $usercontainerrole) {
+                    // Do not overwrite any manually user assignments
+                    if (!isset($data['usercontainerroles'][$usercontainerroleId])) {
+                        $data['usercontainerroles'][$usercontainerroleId] = [
+                            'id'        => $usercontainerroleId,
+                            '_joinData' => [
+                                'through_ldap' => true // This got assigned automatically via LDAP
+                            ]
+                        ];
+                    }
+                }
+
+                $UsersTable->patchEntity($user, $data);
+                $UsersTable->save($user);
+            }
+
+        }
 
         $io->success('   Ok');
         $io->hr();

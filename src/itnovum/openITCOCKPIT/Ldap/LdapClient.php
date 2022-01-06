@@ -26,7 +26,6 @@ namespace itnovum\openITCOCKPIT\Ldap;
 
 
 use App\Model\Table\LdapgroupsTable;
-use App\Model\Table\UsersTable;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -52,6 +51,11 @@ class LdapClient {
      * @var null|string
      */
     private $rawFilter = null;
+
+    /**
+     * @var null|string
+     */
+    private $rawGroupFilter = null;
 
     /**
      * @var bool
@@ -133,11 +137,16 @@ class LdapClient {
         );
 
         $self->setRawFilter($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']);
+        $self->setRawGroupFilter($systemsettings['FRONTEND']['FRONTEND.LDAP.GROUP_QUERY']);
         return $self;
     }
 
     public function setRawFilter($rawFilter) {
         $this->rawFilter = $rawFilter;
+    }
+
+    public function setRawGroupFilter($rawGroupFilter) {
+        $this->rawGroupFilter = $rawGroupFilter;
     }
 
     /**
@@ -196,7 +205,7 @@ class LdapClient {
                     'samaccountname' => $entry['samaccountname'][0],
                     'email'          => $entry['mail'][0],
                     'dn'             => $userDn,
-                    'memberof'         => $memberOf,
+                    'memberof'       => $memberOf,
                     'display_name'   => sprintf(
                         '%s, %s (%s)',
                         $entry['givenname'][0],
@@ -309,7 +318,7 @@ class LdapClient {
                 'samaccountname' => $entry['samaccountname'][0],
                 'email'          => $entry['mail'][0],
                 'dn'             => $userDn,
-                'memberof'         => $memberOf,
+                'memberof'       => $memberOf,
                 'display_name'   => sprintf(
                     '%s, %s (%s)',
                     $entry['givenname'][0],
@@ -320,8 +329,8 @@ class LdapClient {
 
             // Load LDAP groups  from database
             $user['ldapgroups'] = [];
-            if(!empty($memberOf)) {
-                /** @var LdapgroupsTable $LdapgroupsTable  */
+            if (!empty($memberOf)) {
+                /** @var LdapgroupsTable $LdapgroupsTable */
                 $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
                 $user['ldapgroups'] = $LdapgroupsTable->getGroupsByDn($memberOf);
             }
@@ -340,8 +349,13 @@ class LdapClient {
     }
 
     public function getGroups($includeMember = false) {
-        // @todo add dynamic filter query to systemsettings
-        $filter = \FreeDSx\Ldap\Search\Filters::raw('ObjectClass=Group');
+        if ($this->rawGroupFilter) {
+            // Use filter string from Systemsettings
+            $filter = \FreeDSx\Ldap\Search\Filters::raw($this->rawGroupFilter);
+        } else {
+            // Use hardcoded fallback filter
+            $filter = \FreeDSx\Ldap\Search\Filters::raw('ObjectClass=Group');
+        }
         $search = \FreeDSx\Ldap\Operations::search($filter);
 
         $result = [];
