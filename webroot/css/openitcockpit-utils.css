@@ -1099,3 +1099,14 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     animation-iteration-count: 1;
     animation-fill-mode: forwards;
 }
+
+.div-bottom-arrow::after {
+    font-family: "FontAwesome";
+    padding-left: 0px;
+    padding-bottom: 0px;
+    content: "\f175";
+    color: #4285F4;
+    font-size: 140%;
+    margin-right: -14px;
+    font-style: normal;
+}
