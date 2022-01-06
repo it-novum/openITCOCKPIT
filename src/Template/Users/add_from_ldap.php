@@ -202,7 +202,12 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 </span>
                             </div>
                         </div>
+                        <div class="col col-md-4 text-right div-bottom-arrow font-xs text-primary italic"
+                             ng-show="selectedUserContainerRolesLdapReadOnly.length > 0 &&
+                             (post.User.usercontainerroles._ids.length > 0 || selectedUserContainers.length > 0)">
+                            <?= __('The user permissions will be extended or adapted with additional user roles or containers'); ?>
 
+                        </div>
                         <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
                             <label class="control-label" for="UserContainerroles">
                                 <?php echo __('Container Roles'); ?>
@@ -262,6 +267,10 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                     </span>
                                 </span>
                             </div>
+                        </div>
+                        <div class="col col-md-4 text-right div-bottom-arrow font-xs text-primary italic"
+                             ng-show="post.User.usercontainerroles._ids.length > 0 && selectedUserContainers.length > 0">
+                            <?= __('The user permissions will be extended or adapted with additional containers'); ?>
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.containers}">
