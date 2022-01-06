@@ -247,7 +247,7 @@ class LdapClient {
             }
 
             //Use filters for OpenLDAP
-            $filter = \FreeDSx\Ldap\Search\Filters::contains('uid', $sAMAccountName);
+           //$filter = \FreeDSx\Ldap\Search\Filters::contains('uid', $sAMAccountName);
 
             if ($this->rawFilter != '' && $sAMAccountName != '') {
                 $filter = \FreeDSx\Ldap\Search\Filters::and(
