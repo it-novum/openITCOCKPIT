@@ -862,6 +862,11 @@ class UsersController extends AppController {
                     }
                 }
                 $ldapUser['userContainerRoleContainerPermissionsLdap'] = $permissions;
+
+                // Load matching user role (Adminisgtrator, Viewer, etc...)
+                /** @var UsergroupsTable $UsergroupsTable */
+                $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+                $ldapUser['usergroupLdap'] = $UsergroupsTable->getUsergroupByLdapUserMemberOf($ldapUser['memberof']);
             }
         }
         $this->set('ldapUser', $ldapUser);

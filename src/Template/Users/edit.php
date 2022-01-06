@@ -78,7 +78,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <select
                                 id="UserContainerrolesLdap"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                data-placeholder="<?php echo __('No matches'); ?>"
                                 class="form-control"
                                 chosen="usercontainerroles"
                                 readonly="readonly"
@@ -97,7 +97,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <!-- User Container Roles permissions read/write (LDAP) -->
-                        <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissionsLdap" ng-if="isLdapUser">
+                        <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissionsLdap"
+                             ng-if="isLdapUser">
                             <div class="col col-md-1"></div>
                             <div class="col col-md-11">
                                 <legend class="no-padding font-sm txt-ack">
@@ -182,7 +183,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                            ng-checked="userContainerRole._joinData.permission_level === 2">
                                     <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                                 </div>
-                                <span ng-repeat="userRole in userContainerRole.user_roles| orderObjectBy:'name':order_revers">
+                                <span
+                                    ng-repeat="userRole in userContainerRole.user_roles| orderObjectBy:'name':order_revers">
                                     <span class="badge border-info border text-primary">
                                         <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
                                             <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
@@ -243,8 +245,36 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
+                        <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}"
+                             ng-if="isLdapUser">
+                            <label class="control-label" for="UsergroupsLdap">
+                                <?php echo __('User role through LDAP'); ?>
+                            </label>
+                            <select
+                                id="UsergroupsLdap"
+                                data-placeholder="<?php echo __('No matches'); ?>"
+                                class="form-control"
+                                chosen="usergroups"
+                                readonly="readonly"
+                                disabled="disabled"
+                                ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                ng-model="ldapUser.usergroupLdap.id">
+                                <!-- ng-model is just for AngularJS. The data get's pull from the LDAP server on login -->
+                            </select>
+                            <div ng-repeat="error in errors.usergroup_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Fall back user role that is used by the system, when no user role assignment through LDAP is possible.'); ?>
+                            </div>
+                        </div>
+
                         <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
-                            <label class="control-label" for="Usergroups">
+                            <label class="control-label" for="Usergroups" ng-if="isLdapUser === true">
+                                <?php echo __('Fallback User role'); ?>
+                            </label>
+                            <label class="control-label" for="Usergroups" ng-if="isLdapUser === false">
                                 <?php echo __('User role'); ?>
                             </label>
                             <select

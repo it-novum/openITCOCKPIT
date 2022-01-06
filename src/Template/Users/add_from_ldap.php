@@ -142,7 +142,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </label>
                             <select
                                 id="UserContainerrolesLdap"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                data-placeholder="<?php echo __('No matches'); ?>"
                                 class="form-control"
                                 chosen="usercontainerroles"
                                 readonly="readonly"
@@ -150,7 +150,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 multiple
                                 ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
                                 ng-model="selectedUserContainerRolesLdapReadOnly">
-                                <!-- ng-model is just for view, we do not save this to the database. LDAP groups are getting pulled on the login -->
+                                <!-- ng-model is just for AngularJS. The UsersController will pull the data from the LDAP server on save -->
                             </select>
                             <div ng-repeat="error in errors.usercontainerroles">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -312,16 +312,19 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
-                            <label class="control-label" for="Usergroups">
+                            <label class="control-label" for="UsergroupsLdap">
                                 <?php echo __('User role through LDAP'); ?>
                             </label>
                             <select
-                                id="Usergroups"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                id="UsergroupsLdap"
+                                data-placeholder="<?php echo __('No matches'); ?>"
                                 class="form-control"
                                 chosen="usergroups"
+                                readonly="readonly"
+                                disabled="disabled"
                                 ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
-                                ng-model="post.User.usergroup_id">
+                                ng-model="ldapUser.usergroupLdap.id">
+                                <!-- ng-model is just for AngularJS. The data get's pull from the LDAP server on login -->
                             </select>
                             <div ng-repeat="error in errors.usergroup_id">
                                 <div class="help-block text-danger">{{ error }}</div>
