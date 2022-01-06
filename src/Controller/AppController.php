@@ -30,6 +30,7 @@ namespace App\Controller;
 use App\itnovum\openITCOCKPIT\Core\Permissions\MyRightsFactory;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\UsergroupsTable;
 use Authentication\Controller\Component\AuthenticationComponent;
 use Authentication\IdentityInterface;
 use Authorization\Identity;
@@ -45,6 +46,7 @@ use Cake\Utility\Inflector;
 use Exception;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
+use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 /**
  * Class AppController
@@ -406,6 +408,31 @@ class AppController extends Controller {
     private function getUserPermissions(Identity $identity) {
         $userId = $identity->get('id');
         $usergroupId = $identity->get('usergroup_id');
+
+        //ITC-2693
+        $samaccountname = $identity->get('samaccountname');
+        if (!empty($samaccountname)) {
+            // Query LDAP Server to get current LDAP Groups
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            /** @var UsergroupsTable $UsergroupsTable */
+            $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+
+            $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+
+            $ldapUser = $Ldap->getUser($samaccountname, true);
+            if ($ldapUser) {
+                $usergroupLdap = $UsergroupsTable->getUsergroupByLdapUserMemberOf($ldapUser['memberof']);
+                if (isset($usergroupLdap['id'])) {
+                    // Use the usergroup_id (user role) via LDAP group matching
+                    $usergroupId = $usergroupLdap['id'];
+                }
+            }
+
+        }
+
+        //FileDebugger::dump(sprintf('user_id %s uses usergroup_id: %s', $userId, $usergroupId));
         $userPermissions = MyRightsFactory::getUserPermissions($userId, $usergroupId);
         $this->hasRootPrivileges = $userPermissions['hasRootPrivileges'];
         return $userPermissions;
