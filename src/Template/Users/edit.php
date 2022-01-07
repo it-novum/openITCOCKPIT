@@ -332,6 +332,21 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
+                        <div class="form-group" ng-if="isLdapUser">
+                            <label class="control-label" for="LdapGroupsOfUser">
+                                <?php echo __('LDAP groups'); ?>
+                            </label>
+                            <select
+                                id="LdapGroupsOfUser"
+                                class="form-control"
+                                disabled="disabled"
+                                readonly="readonly"
+                                multiple
+                                ng-options="ldapgroup.dn as ldapgroup.cn for ldapgroup in ldapUser.ldapgroups"
+                                ng-model="WeNeedAModelToMakeAngularHappy">
+                            </select>
+                        </div>
+
                         <div class="form-group required" ng-class="{'has-error': errors.email}">
                             <label class="control-label">
                                 <?php echo __('Email address'); ?>
