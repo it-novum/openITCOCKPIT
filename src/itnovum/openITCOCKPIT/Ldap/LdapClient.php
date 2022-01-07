@@ -327,14 +327,6 @@ class LdapClient {
                 )
             ];
 
-            // Load LDAP groups  from database
-            $user['ldapgroups'] = [];
-            if (!empty($memberOf)) {
-                /** @var LdapgroupsTable $LdapgroupsTable */
-                $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
-                $user['ldapgroups'] = $LdapgroupsTable->getGroupsByDn($memberOf);
-            }
-
             // Only load the first user.
             $paging->end();
             break;
@@ -344,6 +336,14 @@ class LdapClient {
         if (isset($user)) {
             if ($this->isOpenLdap === true && $includeMember === true) {
                 $user['memberof'] = $this->getGroupsFromUserOpenLdap($user);
+            }
+
+            // Load LDAP groups  from database
+            $user['ldapgroups'] = [];
+            if (!empty($user['memberof'])) {
+                /** @var LdapgroupsTable $LdapgroupsTable */
+                $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
+                $user['ldapgroups'] = $LdapgroupsTable->getGroupsByDn($user['memberof']);
             }
 
             return $user;
