@@ -71,11 +71,10 @@ class CmdController extends AppController {
         }
 
         if ($data['command'] === 'ACKNOWLEDGE_OTRS_HOST_SVC_PROBLEM') {
-            throw new NotFoundException('Unsupported command. Plase use /nagios_module/cmd/ack');
+            throw new NotFoundException('Unsupported command. Please use /nagios_module/cmd/ack');
         }
 
         $args = Hash::merge($externalCommand[$data['command']], $data);
-
 
         if (isset($args['apikey'])) {
             unset($args['apikey']);
@@ -97,6 +96,81 @@ class CmdController extends AppController {
         $this->set('message', __('Command added successfully to queue'));
         $this->set('command', $command);
         $this->set('args', $args);
+        $this->viewBuilder()->setOption('serialize', [
+            'message',
+            'command',
+            'args'
+        ]);
+    }
+
+    public function submit_bulk() {
+        if (!$this->request->is('post') && !$this->request->is('get')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->request->is('get')) {
+            $data = $this->request->getQueryParams();
+        }
+
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+        }
+        print_r($data);
+        die('ende');
+        if (!isset($data) || !is_array($data)) {
+            throw new BadRequestException();
+        }
+
+        if (!isset($data['command'])) {
+            throw new BadRequestException();
+        }
+
+        $externalCommand = $this->getExternalCommandsList();
+
+        if (!isset($externalCommand[$data['command']])) {
+            throw new NotFoundException('Command not found');
+        }
+
+        if ($data['command'] === 'ACKNOWLEDGE_OTRS_HOST_SVC_PROBLEM') {
+            throw new NotFoundException('Unsupported command. Please use /nagios_module/cmd/ack');
+        }
+
+        if (isset($data['apikey'])) {
+            unset($data['apikey']);
+        }
+
+        $command = $data['command'];
+        unset($data['command']);
+
+        //if true there is some stuff in there which should not (eg. single command instead of a bulk command)
+        $nonNumericArray = false;
+        $argsForResponse = [];
+        foreach ($data as $key => $value){
+            if(!is_numeric($key)){
+                $nonNumericArray = true;
+                break;
+            }
+            $args = Hash::merge($externalCommand[$value['command']], $value);
+
+            // Command is now ready to submit to sudo_server
+            // Auto-Lookup if Master System or SAT system (satelliteId=null)
+            $GearmanClient = new Gearman();
+            $GearmanClient->sendBackground('cmd_external_command', [
+                'command'     => $command,
+                'parameters'  => $args,
+                'satelliteId' => null
+            ]);
+
+            $argsForResponse[] = $args;
+        }
+
+        if($nonNumericArray == true){
+            throw new BadRequestException();
+        }
+
+        $this->set('message', __('Command added successfully to queue'));
+        $this->set('command', $command);
+        $this->set('args', $argsForResponse);
         $this->viewBuilder()->setOption('serialize', [
             'message',
             'command',
