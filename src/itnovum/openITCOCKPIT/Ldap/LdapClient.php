@@ -247,7 +247,7 @@ class LdapClient {
             }
 
             //Use filters for OpenLDAP
-           //$filter = \FreeDSx\Ldap\Search\Filters::contains('uid', $sAMAccountName);
+            //$filter = \FreeDSx\Ldap\Search\Filters::contains('uid', $sAMAccountName);
 
             if ($this->rawFilter != '' && $sAMAccountName != '') {
                 $filter = \FreeDSx\Ldap\Search\Filters::and(
@@ -342,10 +342,49 @@ class LdapClient {
 
 
         if (isset($user)) {
+            if ($this->isOpenLdap === true && $includeMember === true) {
+                $user['memberof'] = $this->getGroupsFromUserOpenLdap($user);
+            }
+
             return $user;
         }
 
         return null;
+    }
+
+    /**
+     * @param array $user
+     * @return array
+     */
+    private function getGroupsFromUserOpenLdap(array $ldapUser) {
+        // By default, Open LDAP has no memberOf in the user entity. So you have to query all groups and filter by memberUid(=sAMAccountName)
+        // LDAP ist ein Quell unendlicher Freude! (LDAP is a source of endless joy! )
+        $memberUid = $ldapUser['samaccountname'];
+
+        $filter = \FreeDSx\Ldap\Search\Filters::and(
+            \FreeDSx\Ldap\Search\Filters::raw($this->rawGroupFilter),
+            \FreeDSx\Ldap\Search\Filters::equal('memberUid', $memberUid)
+        );
+
+        $search = \FreeDSx\Ldap\Operations::search($filter);
+
+        $paging = $this->ldap->paging($search, 100);
+
+        $memberOf = [];
+
+        while ($paging->hasEntries()) {
+            foreach ($paging->getEntries() as $entry) {
+                /** @var \FreeDSx\Ldap\Entry\Entry $entry */
+
+                // Make the result look like it is from MS AD
+                $memberOf[] = $entry->getDn()->toString();
+            }
+
+            //Do load all LDAP groups from user
+            $paging->end();
+        }
+
+        return $memberOf;
     }
 
     public function getGroups($includeMember = false) {
