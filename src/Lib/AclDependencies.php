@@ -231,6 +231,10 @@ class AclDependencies {
             ->allow('Dashboards', 'serviceStatusOverviewWidget')
             ->allow('Dashboards', 'websiteWidget')
             ->allow('Dashboards', 'todayWidget')
+            ->allow('Dashboards', 'getPerformanceDataMetrics')
+            ->allow('Dashboards', 'tacticalOverviewWidget')
+            ->allow('Dashboards', 'tacticalOverviewHostsWidget')
+            ->allow('Dashboards', 'tacticalOverviewServicesWidget')
             ->allow('Dashboards', 'calendarWidget');
 
         $this
