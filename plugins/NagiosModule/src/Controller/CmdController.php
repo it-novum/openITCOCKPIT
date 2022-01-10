@@ -115,42 +115,42 @@ class CmdController extends AppController {
         if ($this->request->is('post')) {
             $data = $this->request->getData();
         }
-        print_r($data);
-        die('ende');
+
         if (!isset($data) || !is_array($data)) {
             throw new BadRequestException();
-        }
-
-        if (!isset($data['command'])) {
-            throw new BadRequestException();
-        }
-
-        $externalCommand = $this->getExternalCommandsList();
-
-        if (!isset($externalCommand[$data['command']])) {
-            throw new NotFoundException('Command not found');
-        }
-
-        if ($data['command'] === 'ACKNOWLEDGE_OTRS_HOST_SVC_PROBLEM') {
-            throw new NotFoundException('Unsupported command. Please use /nagios_module/cmd/ack');
         }
 
         if (isset($data['apikey'])) {
             unset($data['apikey']);
         }
 
-        $command = $data['command'];
-        unset($data['command']);
-
+        $externalCommand = $this->getExternalCommandsList();
         //if true there is some stuff in there which should not (eg. single command instead of a bulk command)
         $nonNumericArray = false;
         $argsForResponse = [];
-        foreach ($data as $key => $value){
-            if(!is_numeric($key)){
+        foreach ($data as $key => $value) {
+
+            if (!isset($externalCommand[$value['command']])) {
+                throw new NotFoundException('Command not found');
+            }
+
+            if (!isset($value['command'])) {
+                throw new BadRequestException();
+            }
+
+            if ($value['command'] === 'ACKNOWLEDGE_OTRS_HOST_SVC_PROBLEM') {
+                throw new NotFoundException('Unsupported command. Please use /nagios_module/cmd/ack');
+            }
+
+            if (!is_numeric($key)) {
                 $nonNumericArray = true;
                 break;
             }
-            $args = Hash::merge($externalCommand[$value['command']], $value);
+
+            $command = $value['command'];
+            unset($value['command']);
+
+            $args = Hash::merge($externalCommand[$command], $value);
 
             // Command is now ready to submit to sudo_server
             // Auto-Lookup if Master System or SAT system (satelliteId=null)
@@ -164,16 +164,16 @@ class CmdController extends AppController {
             $argsForResponse[] = $args;
         }
 
-        if($nonNumericArray == true){
+        if ($nonNumericArray == true) {
             throw new BadRequestException();
         }
 
-        $this->set('message', __('Command added successfully to queue'));
-        $this->set('command', $command);
+        $this->set('message', __('Commands added successfully to queue'));
+        //$this->set('command', $command);
         $this->set('args', $argsForResponse);
         $this->viewBuilder()->setOption('serialize', [
             'message',
-            'command',
+           // 'command',
             'args'
         ]);
     }
