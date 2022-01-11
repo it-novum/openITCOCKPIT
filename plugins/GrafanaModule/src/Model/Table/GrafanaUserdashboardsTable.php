@@ -353,11 +353,15 @@ class GrafanaUserdashboardsTable extends Table {
             ->innerJoin(['GrafanaUserdashboardMetrics' => 'grafana_userdashboard_metrics'], [
                 'GrafanaUserdashboardMetrics.panel_id = GrafanaUserdashboardPanels.id',
             ])
+            ->innerJoin(['Services' => 'services'], [
+                'Services.id = GrafanaUserdashboardMetrics.service_id',
+            ])
             ->where([
-                    'GrafanaUserdashboards.id' => $id
+                    'GrafanaUserdashboards.id' => $id,
+                    'Services.disabled'        => 0
                 ]
             );
-        
+
         return $query->first();
     }
 }
