@@ -43,6 +43,7 @@ use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Filesystem\Folder;
+use Cake\I18n\FrozenDate;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use CheckmkModule\Command\CheckmkNagiosExportCommand;
@@ -52,6 +53,7 @@ use CheckmkModule\Model\Table\MkSatTasksTable;
 use DistributeModule\Model\Entity\Satellite;
 use DistributeModule\Model\Entity\SatelliteTask;
 use DistributeModule\Model\Table\SatelliteTasksTable;
+use ImportModule\Model\Table\SatellitePushAgentsTable;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
@@ -1025,6 +1027,36 @@ class GearmanWorkerCommand extends Command {
                         'status' => $hasError ? SatelliteTask::SatelliteTaskFinishedError : SatelliteTask::SatelliteTaskFinishedSuccessfully
                     ]);
                     $SatelliteTasksTable->save($task);
+
+                    /** @var SatellitePushAgentsTable $SatellitePushAgentsTable */
+                    $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+                    if (!empty($payload['RawResult'])) {
+                        $jsonResults = json_decode($payload['RawResult'], true);
+                        foreach ($jsonResults as $result) {
+                            $result['satellite_id'] = $payload['SatelliteID'];
+                            $result['last_update'] = new FrozenDate($result['last_update']);
+                            $result['last_update'] = $result['last_update']->format('Y-m-d H:i:s');
+                            $result['created'] = new FrozenDate($result['created']);
+                            $result['created'] = $result['created']->format('Y-m-d H:i:s');
+                            $result['modified'] = new FrozenDate($result['modified']);
+                            $result['modified'] = $result['modified']->format('Y-m-d H:i:s');
+                            if ($SatellitePushAgentsTable->exists([
+                                'SatellitePushAgents.uuid' => $result['uuid']
+                            ])) {
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->find()
+                                    ->where([
+                                            'SatellitePushAgents.uuid' => $result['uuid']
+                                        ]
+                                    )->first();
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->patchEntity($satellitePushAgentEntity, $result);
+
+                            } else {
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->newEntity($result);
+
+                            }
+                            $SatellitePushAgentsTable->save($satellitePushAgentEntity);
+                        }
+                    }
                 }
 
                 if ($IsGetAllPushAgentsRequest === false) {
