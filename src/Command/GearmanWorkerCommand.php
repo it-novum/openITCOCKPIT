@@ -997,14 +997,20 @@ class GearmanWorkerCommand extends Command {
                 // Got openITCOCKPIT Agent Query Result from Satellite
                 $hasError = !empty($payload['Error']);
 
+                if (!Plugin::isLoaded('DistributeModule')) {
+                    break;
+                }
+
                 /** @var SatelliteTasksTable $SatelliteTasksTable */
                 $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
 
-                try {
-                    /** @var AgentconfigsTable $AgentconfigsTable */
-                    $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+                $IsGetAllPushAgentsRequest = $payload['IsGetAllPushAgentsRequest'] ?? false;
 
-                    $record = $AgentconfigsTable->getConfigById($payload['AgentConfigId']);
+                if ($IsGetAllPushAgentsRequest === true) {
+                    // Import Module wants to query all Push agents
+                    if (!Plugin::isLoaded('ImportModule')) {
+                        break;
+                    }
 
                     $task = $SatelliteTasksTable->find()
                         ->where([
@@ -1014,19 +1020,42 @@ class GearmanWorkerCommand extends Command {
                         ->firstOrFail();
 
                     $task = $SatelliteTasksTable->patchEntity($task, [
-                        'result' => $payload['RawResult'] ?? null,
+                        'result' => 'Result gets stored to satellite_push_agents table',
                         'error'  => $payload['Error'] ?? null,
                         'status' => $hasError ? SatelliteTask::SatelliteTaskFinishedError : SatelliteTask::SatelliteTaskFinishedSuccessfully
                     ]);
-
-                    if ($hasError === false && $record->use_autossl) {
-                        $record->set('autossl_successful', true);
-                        $AgentconfigsTable->save($record);
-                    }
-
                     $SatelliteTasksTable->save($task);
-                } catch (RecordNotFoundException $e) {
-                    Log::error('Could not find any satellite task for: ' . json_encode($payload));
+                }
+
+                if ($IsGetAllPushAgentsRequest === false) {
+                    try {
+                        /** @var AgentconfigsTable $AgentconfigsTable */
+                        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+                        $record = $AgentconfigsTable->getConfigById($payload['AgentConfigId']);
+
+                        $task = $SatelliteTasksTable->find()
+                            ->where([
+                                'id'           => $payload['TaskID'],
+                                'satellite_id' => $payload['SatelliteID']
+                            ])
+                            ->firstOrFail();
+
+                        $task = $SatelliteTasksTable->patchEntity($task, [
+                            'result' => $payload['RawResult'] ?? null,
+                            'error'  => $payload['Error'] ?? null,
+                            'status' => $hasError ? SatelliteTask::SatelliteTaskFinishedError : SatelliteTask::SatelliteTaskFinishedSuccessfully
+                        ]);
+
+                        if ($hasError === false && $record->use_autossl) {
+                            $record->set('autossl_successful', true);
+                            $AgentconfigsTable->save($record);
+                        }
+
+                        $SatelliteTasksTable->save($task);
+                    } catch (RecordNotFoundException $e) {
+                        Log::error('Could not find any satellite task for: ' . json_encode($payload));
+                    }
                 }
 
                 break;
