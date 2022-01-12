@@ -183,7 +183,7 @@ class AgentCommand extends Command {
 
         if (empty($uuid)) {
             $rc = self::RC_UNREACHABLE;
-            if ($isHostcheck) {
+            if (!$isHostcheck) {
                 $rc = self::RC_UNKNOWN;
             }
 
@@ -196,7 +196,7 @@ class AgentCommand extends Command {
         $record = $HostsTable->getPushAgentRecordByHostUuidForFreshnessCheck($uuid, false);
         if (empty($record)) {
             $rc = self::RC_UNREACHABLE;
-            if ($isHostcheck) {
+            if (!$isHostcheck) {
                 $rc = self::RC_UNKNOWN;
             }
 
@@ -210,7 +210,10 @@ class AgentCommand extends Command {
 
         if ($lastUpdate === null) {
             if (empty($record)) {
-                $this->nagOutput('No last update timestamp found in database', self::RC_UNREACHABLE);
+                if ($isHostcheck) {
+                    $this->nagOutput('No last update timestamp found in database', self::RC_UNREACHABLE);
+                }
+                $this->nagOutput('No last update timestamp found in database', self::RC_UNKNOWN);
             }
         }
 
