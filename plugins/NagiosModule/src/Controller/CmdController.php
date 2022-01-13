@@ -151,7 +151,6 @@ class CmdController extends AppController {
             unset($value['command']);
 
             $args = Hash::merge($externalCommand[$command], $value);
-
             // Command is now ready to submit to sudo_server
             // Auto-Lookup if Master System or SAT system (satelliteId=null)
             $GearmanClient = new Gearman();
@@ -161,7 +160,9 @@ class CmdController extends AppController {
                 'satelliteId' => null
             ]);
 
-            $argsForResponse[] = $args;
+            //just response related
+            $response = array_merge($args, ['command' => $command]);
+            $argsForResponse[] = $response;
         }
 
         if ($nonNumericArray == true) {
@@ -169,11 +170,9 @@ class CmdController extends AppController {
         }
 
         $this->set('message', __('Commands added successfully to queue'));
-        //$this->set('command', $command);
         $this->set('args', $argsForResponse);
         $this->viewBuilder()->setOption('serialize', [
             'message',
-           // 'command',
             'args'
         ]);
     }
