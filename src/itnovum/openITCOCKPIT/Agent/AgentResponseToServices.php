@@ -71,10 +71,10 @@ class AgentResponseToServices {
 
     /**
      * AgentResponseToServices constructor.
-     * @param int $hostId
+     * @param int|null $hostId
      * @param array $agentResponse
      */
-    public function __construct($hostId, $agentResponse = [], $onlyMissingServices = false) {
+    public function __construct($hostId = null, $agentResponse = [], $onlyMissingServices = false) {
         $this->hostId = $hostId;
         $this->agentResponse = $agentResponse;
         $this->AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
@@ -88,7 +88,7 @@ class AgentResponseToServices {
         $this->maxLengthServiceName = $ServicesTable->getSchema()->getColumn('name')['length'];
 
         $this->onlyMissingServices = $onlyMissingServices;
-        if ($onlyMissingServices) {
+        if ($onlyMissingServices && is_numeric($hostId)) {
             $this->existingServicesCache = $ServicesTable->getAgentServicesByHostId($hostId);
         }
     }
@@ -228,12 +228,15 @@ class AgentResponseToServices {
      * @return array
      */
     private function getServiceStruct($servicetemplateId, $servicename, $commandargumentvalues = []) {
-        return [
-            'host_id'                      => $this->hostId,
+        $struct = [
             'servicetemplate_id'           => $servicetemplateId,
             'name'                         => $this->shortServiceName($servicename),
             'servicecommandargumentvalues' => $commandargumentvalues
         ];
+        if (is_numeric($this->hostId)) {
+            $struct['host_id'] = $this->hostId;
+        }
+        return $struct;
     }
 
     /**

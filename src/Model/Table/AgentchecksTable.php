@@ -235,7 +235,7 @@ class AgentchecksTable extends Table {
             $where['Servicetemplates.container_id IN'] = $containerIds;
         }
 
-        if(!is_null($activeChecksEnabled)) {
+        if (!is_null($activeChecksEnabled)) {
             $where['Servicetemplates.active_checks_enabled'] = (int)$activeChecksEnabled;
         }
 
@@ -261,6 +261,14 @@ class AgentchecksTable extends Table {
             $list[$record['id']] = $record['name'];
         }
         return $list;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAgentchecksAsList() {
+        return $this->find('list')
+            ->toArray();
     }
 
 }
