@@ -384,4 +384,38 @@ class PushAgentsTable extends Table {
         return [];
     }
 
+    /**
+     * @return array
+     */
+    public function getAllPushAgents() {
+        // Yes - this query is from hell!
+
+        $query = $this->find();
+        $query->select([
+            'PushAgents.id',
+            'PushAgents.uuid',
+            'PushAgents.hostname',
+            'Hosts.name',
+            'Hosts.id',
+            'Agentconfigs.host_id',
+            'PushAgents.ipaddress',
+            'PushAgents.remote_address',
+            'PushAgents.http_x_forwarded_for',
+            'PushAgents.checkresults',
+            'PushAgents.last_update'
+        ])
+            ->leftJoin(
+                ['Agentconfigs' => 'agentconfigs'],
+                ['PushAgents.agentconfig_id = Agentconfigs.id']
+            )
+            ->leftJoin(
+                ['Hosts' => 'hosts'],
+                ['Agentconfigs.host_id = Hosts.id']
+            );
+
+        $query->disableHydration();
+        $query->order('PushAgents.ipaddress', 'asc');
+
+        return $this->emptyArrayIfNull($query->toArray());;
+    }
 }
