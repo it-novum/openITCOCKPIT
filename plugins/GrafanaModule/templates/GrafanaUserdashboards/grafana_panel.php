@@ -38,14 +38,18 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
             style="padding-top: 0px; padding-bottom: 0px; margin-bottom: 0px;">
             <li class="breadcrumb-item">
                 <?php if ($this->Acl->hasPermission('browser', 'hosts', '')): ?>
-                    <a href="/hosts/browser/{{metric.Host.id}}">{{metric.Host.hostname}}</a>
+                    <a ui-sref="HostsBrowser({id:metric.Host.id})">
+                        {{ metric.Host.hostname }}
+                    </a>
                 <?php else: ?>
                     {{metric.Host.hostname}}
                 <?php endif; ?>
             </li>
             <li class="breadcrumb-item">
                 <?php if ($this->Acl->hasPermission('browser', 'services', '')): ?>
-                    <a href="/services/browser/{{metric.Service.id}}">{{metric.Service.servicename}}</a>
+                    <a ui-sref="ServicesBrowser({id: metric.Service.id})">
+                        {{metric.Service.servicename}}
+                    </a>
                 <?php else: ?>
                     {{metric.Service.servicename}}
                 <?php endif; ?>
