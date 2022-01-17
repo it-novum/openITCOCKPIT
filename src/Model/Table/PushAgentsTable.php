@@ -418,4 +418,16 @@ class PushAgentsTable extends Table {
 
         return $this->emptyArrayIfNull($query->toArray());;
     }
+
+    /**
+     * @param $pushAgentUuid
+     * @return array|EntityInterface|null
+     */
+    public function getByPushAgentByUuid($pushAgentUuid) {
+        return $this->find()
+            ->where([
+                'PushAgents.uuid' => $pushAgentUuid
+            ])
+            ->first();
+    }
 }
