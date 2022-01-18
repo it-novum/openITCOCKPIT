@@ -3187,7 +3187,8 @@ class ServicesTable extends Table {
                 'Services.id',
                 'Services.name',
                 'Services.usage_flag',
-                'Services.servicetemplate_id'
+                'Services.servicetemplate_id',
+                'Services.service_type'
             ])->where([
                 'Services.host_id IN' => $hostIds
             ])->enableHydration($enableHydration);
