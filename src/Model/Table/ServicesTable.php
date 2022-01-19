@@ -4472,4 +4472,33 @@ class ServicesTable extends Table {
             ]);
         return $query->first();
     }
+
+    /**
+     * @param $hostId
+     * @param $serviceTypes
+     * @param false $enableHydration
+     * @return array
+     */
+    public function getServicesByHostIdAndServiceTypeForAllocation($hostId, $serviceTypes, $enableHydration = false) {
+        if (!is_array($serviceTypes)) {
+            $serviceTypes = [$serviceTypes];
+        }
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.host_id',
+                'Services.disabled',
+                'Services.servicetemplate_id'
+            ])
+            ->where([
+                'Services.host_id'         => $hostId,
+                'Services.service_type IN' => $serviceTypes
+            ])
+            ->enableAutoFields()
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $query->toArray();
+
+    }
 }

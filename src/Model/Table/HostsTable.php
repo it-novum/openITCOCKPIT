@@ -4448,38 +4448,4 @@ class HostsTable extends Table {
             ]);
         return $query->first();
     }
-
-    /**
-     * @param $hostId
-     * @param array $serviceTypes
-     * @return array|\Cake\Datasource\EntityInterface|null
-     */
-    public function getServicesByHostIdAndServiceTypeForAllocation($hostId, array $serviceTypes) {
-        if (!is_array($serviceTypes)) {
-            $serviceTypes = [$serviceTypes];
-        }
-        $query = $this->find()
-            ->contain([
-                'Services' => function (Query $query) use ($serviceTypes) {
-                    return $query
-                        ->select([
-                            'Services.id',
-                            'Services.host_id',
-                            'Services.disabled',
-                            'Services.servicetemplate_id'
-                        ])
-                        ->where([
-                            'Services.service_type IN' => $serviceTypes
-                        ]);
-                }
-            ])
-            ->where([
-                'Hosts.id' => $hostId
-            ])
-            ->disableHydration()
-            ->first();
-
-        return $query;
-    }
-
 }
