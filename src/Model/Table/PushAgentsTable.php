@@ -34,7 +34,9 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
@@ -429,5 +431,54 @@ class PushAgentsTable extends Table {
                 'PushAgents.uuid' => $pushAgentUuid
             ])
             ->first();
+    }
+
+    /**
+     * @param string $agentUuid
+     * @param int $hostId
+     */
+    public function assignHostToAgent(string $agentUuid, int $hostId) {
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        if ($AgentconfigsTable->existsByHostId($hostId)) {
+            $configEntity = $AgentconfigsTable->getConfigByHostId($hostId);
+        } else {
+            // Create nw dummy/default config
+            $AgentConfiguration = new AgentConfiguration();
+            $config = $AgentConfiguration->unmarshal('');
+            $config['bool']['enable_push_mode'] = true;
+
+            // Legacy configuration for Agent version < 3.x
+            $AgentConfiguration->setConfigForJson($config);
+            $data = [
+                'host_id'       => $hostId,
+                'port'          => $config['int']['bind_port'],
+                'basic_auth'    => $config['bool']['use_http_basic_auth'],
+                'username'      => $config['bool']['use_http_basic_auth'] ? $config['string']['username'] : '',
+                'password'      => $config['bool']['use_http_basic_auth'] ? $config['string']['password'] : '',
+                'proxy'         => $config['bool']['use_proxy'],
+                'insecure'      => !$config['bool']['use_https_verify'], // Validate TLS certificate in PULL mode
+                'use_https'     => $config['bool']['use_https'], // Use own TLS certificate for the agent like Let's Encrypt
+                'use_autossl'   => $config['bool']['use_autossl'], // New field with agent 3.x
+                'use_push_mode' => $config['bool']['enable_push_mode'], // New field with agent 3.x
+                'config'        => $AgentConfiguration->marshal(), // New field with agent 3.x
+            ];
+
+            $configEntity = $AgentconfigsTable->newEmptyEntity();
+            $configEntity = $AgentconfigsTable->patchEntity($configEntity, $data);
+            $AgentconfigsTable->save($configEntity);
+        }
+        try {
+            $entity = $this->find()
+                ->where([
+                    'uuid' => $agentUuid
+                ])
+                ->firstOrFail();
+
+            $entity->set('agentconfig_id', $configEntity->get('id'));
+            return $this->save($entity);
+        } catch (RecordNotFoundException $e) {
+        }
+        return false;
     }
 }
