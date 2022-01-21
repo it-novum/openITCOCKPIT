@@ -436,6 +436,7 @@ class PushAgentsTable extends Table {
     /**
      * @param string $agentUuid
      * @param int $hostId
+     * Method used by ImportModule
      */
     public function assignHostToAgent(string $agentUuid, int $hostId) {
         /** @var AgentconfigsTable $AgentconfigsTable */
@@ -443,7 +444,7 @@ class PushAgentsTable extends Table {
         if ($AgentconfigsTable->existsByHostId($hostId)) {
             $configEntity = $AgentconfigsTable->getConfigByHostId($hostId);
         } else {
-            // Create nw dummy/default config
+            // Create new dummy/default config
             $AgentConfiguration = new AgentConfiguration();
             $config = $AgentConfiguration->unmarshal('');
             $config['bool']['enable_push_mode'] = true;

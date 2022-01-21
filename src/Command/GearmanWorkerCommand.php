@@ -1010,6 +1010,7 @@ class GearmanWorkerCommand extends Command {
 
                 if ($IsGetAllPushAgentsRequest === true) {
                     // Import Module wants to query all Push agents
+                    // Process get_all_push_agents result
                     if (!Plugin::isLoaded('ImportModule')) {
                         break;
                     }
@@ -1033,13 +1034,21 @@ class GearmanWorkerCommand extends Command {
                     if (!empty($payload['RawResult'])) {
                         $jsonResults = json_decode($payload['RawResult'], true);
                         foreach ($jsonResults as $result) {
-                            $result['satellite_id'] = $payload['SatelliteID'];
-                            $result['last_update'] = new FrozenDate($result['last_update']);
-                            $result['last_update'] = $result['last_update']->format('Y-m-d H:i:s');
-                            $result['created'] = new FrozenDate($result['created']);
-                            $result['created'] = $result['created']->format('Y-m-d H:i:s');
-                            $result['modified'] = new FrozenDate($result['modified']);
-                            $result['modified'] = $result['modified']->format('Y-m-d H:i:s');
+                            $lastUpdate = new FrozenDate($result['last_update']);
+                            $created = new FrozenDate($result['created']);
+                            $modified = new FrozenDate($result['modified']);
+                            $data = [
+                                'uuid'                 => $result['uuid'], // Agent UUID
+                                'satellite_id'         => $payload['SatelliteID'],
+                                'hostname'             => $result['hostname'],
+                                'ipaddress'            => $result['ipaddress'],
+                                'remote_address'       => $result['remote_address'],
+                                'http_x_forwarded_for' => $result['http_x_forwarded_for'],
+                                'checkresults'         => $result['checkresults'],
+                                'last_update'          => $lastUpdate->format('Y-m-d H:i:s'),
+                                'created'              => $created->format('Y-m-d H:i:s'),
+                                'modified'             => $modified->format('Y-m-d H:i:s'),
+                            ];
                             if ($SatellitePushAgentsTable->exists([
                                 'SatellitePushAgents.uuid' => $result['uuid']
                             ])) {
@@ -1048,10 +1057,10 @@ class GearmanWorkerCommand extends Command {
                                             'SatellitePushAgents.uuid' => $result['uuid']
                                         ]
                                     )->first();
-                                $satellitePushAgentEntity = $SatellitePushAgentsTable->patchEntity($satellitePushAgentEntity, $result);
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->patchEntity($satellitePushAgentEntity, $data);
 
                             } else {
-                                $satellitePushAgentEntity = $SatellitePushAgentsTable->newEntity($result);
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->newEntity($data);
 
                             }
                             $SatellitePushAgentsTable->save($satellitePushAgentEntity);
@@ -1060,6 +1069,7 @@ class GearmanWorkerCommand extends Command {
                 }
 
                 if ($IsGetAllPushAgentsRequest === false) {
+                    // Process Satellite Response for oITC Agent triggered by Wizard
                     try {
                         /** @var AgentconfigsTable $AgentconfigsTable */
                         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
