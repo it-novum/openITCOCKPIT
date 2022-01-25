@@ -677,10 +677,19 @@ class NagiosConfigGenerator {
             if ($host->get('notifications_enabled') !== null && $host->get('notifications_enabled') !== '')
                 $content .= $this->addContent('notifications_enabled', 1, $host->get('notifications_enabled'));
 
-            if (!empty($host->get('contacts')))
+            if (!empty($host->get('contacts'))) {
+                //ITC-2710 Inheritance of contacts and contact groups
                 $content .= $this->addContent('contacts', 1, $host->getContactsforCfg());
+                if (empty($host->get('contactgroups'))) {
+                    $content .= $this->addContent('contact_groups', 1, 'null');
+                }
+            }
 
             if (!empty($host->get('contactgroups'))) {
+                //ITC-2710 Inheritance of contacts and contact groups
+                if (empty($host->get('contacts'))) {
+                    $content .= $this->addContent('contacts', 1, 'null');
+                }
                 $content .= $this->addContent('contact_groups', 1, $host->getContactgroupsforCfg());
             }
 
@@ -893,10 +902,19 @@ class NagiosConfigGenerator {
         if ($host->get('notifications_enabled') !== null && $host->get('notifications_enabled') !== '')
             $content .= $this->addContent('notifications_enabled', 1, $host->get('notifications_enabled'));
 
-        if (!empty($host->get('contacts')))
+        if (!empty($host->get('contacts'))) {
+            //ITC-2710 Inheritance of contacts and contact groups
             $content .= $this->addContent('contacts', 1, $host->getContactsforCfg());
+            if (empty($host->get('contactgroups'))) {
+                $content .= $this->addContent('contact_groups', 1, 'null');
+            }
+        }
 
         if (!empty($host->get('contactgroups'))) {
+            //ITC-2710 Inheritance of contacts and contact groups
+            if (empty($host->get('contacts'))) {
+                $content .= $this->addContent('contacts', 1, 'null');
+            }
             $content .= $this->addContent('contact_groups', 1, $host->getContactgroupsforCfg());
         }
 
@@ -1324,9 +1342,17 @@ class NagiosConfigGenerator {
 
                 if (!empty($service->get('contacts'))) {
                     $content .= $this->addContent('contacts', 1, $service->getContactsforCfg());
+                    // ITC-2710 Inheritance of contacts and contact groups
+                    if (empty($service->get('contactgroups'))) {
+                        $content .= $this->addContent('contact_groups', 1, 'null');
+                    }
                 }
 
                 if (!empty($service->get('contactgroups'))) {
+                    // ITC-2710 Inheritance of contacts and contact groups
+                    if (empty($service->get('contacts'))) {
+                        $content .= $this->addContent('contacts', 1, 'null');
+                    }
                     $content .= $this->addContent('contact_groups', 1, $service->getContactgroupsforCfg());
                 }
 
@@ -1564,9 +1590,17 @@ class NagiosConfigGenerator {
 
         if (!empty($service->get('contacts'))) {
             $content .= $this->addContent('contacts', 1, $service->getContactsforCfg());
+            // ITC-2710 Inheritance of contacts and contact groups
+            if(empty($service->get('contactgroups'))){
+                $content .= $this->addContent('contact_groups', 1, 'null');
+            }
         }
 
         if (!empty($service->get('contactgroups'))) {
+            // ITC-2710 Inheritance of contacts and contact groups
+            if(empty($service->get('contacts'))){
+                $content .= $this->addContent('contacts', 1, 'null');
+            }
             $content .= $this->addContent('contact_groups', 1, $service->getContactgroupsforCfg());
         }
 
