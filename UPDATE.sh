@@ -290,6 +290,8 @@ for i in "$@"; do
     rm -rf /opt/openitc/frontend/tmp/cache/models/*
     echo "Clear out CLI Model Cache /opt/openitc/frontend/tmp/cli/cache/cli/models/"
     rm -rf /opt/openitc/frontend/tmp/cli/cache/cli/models/*
+    echo "Clear out Nagios Model Cache /opt/openitc/frontend/tmp/nagios/cache/nagios/models/"
+    rm -rf /opt/openitc/frontend/tmp/nagios/cache/nagios/models/*
     ;;
 
   --rights)
@@ -404,16 +406,15 @@ if [ -f /opt/openitc/etc/grafana/api_key ]; then
     while [ "$COUNTER" -lt 30 ]; do
         echo "Try to connect to Grafana API..."
         #Is Grafana Server Online?
-        STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+        STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 
         if [ "$STATUSCODE" == "200" ]; then
           echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
-          DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+          DS_STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 
           if [ "$DS_STATUSCODE" == "404" ]; then
             echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
-            export NO_PROXY="127.0.0.1"
-            RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+            RESPONSE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
               "name":"Prometheus",
               "type":"prometheus",
               "url":"http://victoriametrics:8428",

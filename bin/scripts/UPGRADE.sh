@@ -268,10 +268,10 @@ if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
     while [ "$COUNTER" -lt 30 ]; do
         echo "Try to connect to Grafana API..."
         #Is Grafana Server Online?
-        STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+        STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 
         if [ "$STATUSCODE" == "200" ]; then
-            API_KEY=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/auth/keys' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{"role":"Editor","name":"openITCOCKPIT"}' | jq -r '.key')
+            API_KEY=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/auth/keys' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{"role":"Editor","name":"openITCOCKPIT"}' | jq -r '.key')
             echo "$API_KEY" >/opt/openitc/etc/grafana/api_key
             break
         fi
@@ -287,11 +287,10 @@ if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
 fi
 
 echo "Check if Graphite Datasource exists in Grafana"
-DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Graphite' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+DS_STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources/name/Graphite' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 if [ "$DS_STATUSCODE" == "404" ]; then
     echo "Create Graphite as default Datasource for Grafana"
-    export NO_PROXY="127.0.0.1"
-    RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+    RESPONSE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
       "name":"Graphite",
       "type":"graphite",
       "url":"http://graphite-web:8080",
@@ -307,11 +306,10 @@ fi
 echo "Ok: Graphite datasource exists."
 
 echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
-DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+DS_STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 if [ "$DS_STATUSCODE" == "404" ]; then
     echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
-    export NO_PROXY="127.0.0.1"
-    RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+    RESPONSE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
       "name":"Prometheus",
       "type":"prometheus",
       "url":"http://victoriametrics:8428",

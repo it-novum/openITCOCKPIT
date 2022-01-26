@@ -112,4 +112,34 @@ class Gearman {
         return $this->client->doBackground('statusngin_cmd', json_encode($payload));
     }
 
+    /**
+     * Runs a single task and returns a string representation of the
+     * result. It is up to the GearmanClient and GearmanWorker to agree on the format
+     * of the result. Normal and high priority tasks will get precedence over low
+     * priority tasks in the job queue.
+     *
+     * @link https://php.net/manual/en/gearmanclient.dolow.php
+     * @param string $function_name
+     * @param string $workload
+     * @param string $unique
+     * @return string A string representing the results of running a task
+     */
+    public function doNormal($function_name, $workload, $unique = null) {
+        return $this->client->doNormal($function_name, $workload, $unique);
+    }
+
+    /**
+     * Runs a task in the background, returning a job handle which can be used to get
+     * the status of the running task.
+     *
+     * @link https://php.net/manual/en/gearmanclient.dobackground.php
+     * @param string $function_name
+     * @param string $workload
+     * @param string $unique
+     * @return string The job handle for the submitted task
+     */
+    public function doBackground($function_name, $workload, $unique = null) {
+        return $this->client->doBackground($function_name, $workload, $unique);
+    }
+
 }

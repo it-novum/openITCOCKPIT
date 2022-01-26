@@ -848,8 +848,7 @@ class GrafanaUserdashboardsController extends AppController {
             }
 
             if (!empty($grafanaDashboardId)) {
-                $dashboard = $GrafanaUserdashboardsTable->get($grafanaDashboardId);
-
+                $dashboard = $GrafanaUserdashboardsTable->getGrafanaUserdashboardsWithPanelsAndMetricsById($grafanaDashboardId);
                 if (!empty($dashboard)) {
                     $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
                     /** @var ProxiesTable $ProxiesTable */
