@@ -6,6 +6,7 @@ angular.module('openITCOCKPIT')
 
         $scope.deleteUrl = '/hosts/delete/';
         $scope.deactivateUrl = '/hosts/deactivate/';
+        $scope.interval = null;
 
         $scope.post = {
             Hostgroup: {
@@ -115,7 +116,7 @@ angular.module('openITCOCKPIT')
         $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $interval.cancel(interval);
@@ -132,6 +133,13 @@ angular.module('openITCOCKPIT')
                 $scope.showServices[hostId] = false;
             }
         };
+
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
 
         //Fire on page load
         $scope.loadTimezone();

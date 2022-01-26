@@ -26,6 +26,8 @@ angular.module('openITCOCKPIT')
 
         $scope.pingResult = [];
 
+        $scope.interval = null;
+
         SortService.setSort('servicename');
         SortService.setDirection('asc');
 
@@ -88,11 +90,11 @@ angular.module('openITCOCKPIT')
 
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $scope.loadHost();
-                    $interval.cancel(interval);
+                    $interval.cancel($scope.interval);
                     $scope.showFlashSuccess = false;
                 }
             }, 1000);
@@ -335,7 +337,6 @@ angular.module('openITCOCKPIT')
                 SortService.setDirection('asc');
             }
         };
-
 
         var getHoststatusTextColor = function(){
             return StatusHelperService.getHoststatusTextColor($scope.hoststatus.currentState);
@@ -667,6 +668,13 @@ angular.module('openITCOCKPIT')
         $scope.clipboardCommand = function(){
             navigator.clipboard.writeText($scope.mergedHost.hostCommandLine);
         };
+
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
 
         //Fire on page load
         $scope.loadIdOrUuid();
