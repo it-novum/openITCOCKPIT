@@ -2206,7 +2206,8 @@ class HostsTable extends Table {
                             'Services.name',
                             'Services.host_id',
                             'Services.servicetemplate_id',
-                            'Services.disabled'
+                            'Services.disabled',
+                            'Services.service_type'
                         ])
                         ->contain([
                             'Servicetemplates' => function (Query $query) {
@@ -2436,9 +2437,10 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param int $satelliteId
      * @return array
      */
-    public function getHostsThatUseOitcAgentForExport() {
+    public function getHostsThatUseOitcAgentForExport(int $satelliteId = 0) {
         $query = $this->find()
             ->disableHydration()
             ->select([
@@ -2450,7 +2452,10 @@ class HostsTable extends Table {
                 'Agentconfigs.host_id',
                 'Agentconfigs.config',
             ])
-            ->innerJoinWith('Agentconfigs');
+            ->innerJoinWith('Agentconfigs')
+            ->where([
+                'Hosts.satellite_id' => $satelliteId
+            ]);
         $query->all();
 
         return $this->emptyArrayIfNull($query->toArray());

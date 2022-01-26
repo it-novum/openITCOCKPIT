@@ -110,7 +110,8 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
 
                                             <div class="row">
                                                 <div class="col-12" ng-show="runningCheck">
-                                                    <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                    <div
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                         <div class="d-flex align-items-center">
                                                             <div class="alert-icon">
                                                                 <span class="icon-stack icon-stack-md">
@@ -122,11 +123,19 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                                 <span class="h5 color-info-600">
                                                                     <?= __('Executing TLS certificate exchange'); ?>
                                                                 </span>
+                                                                <span
+                                                                    ng-show="isSatellite"><?= __('(via remote satellite system)') ?></span>
+                                                                <button class="btn btn-xs btn-danger pull-right"
+                                                                        ng-show="isSatellite"
+                                                                        ng-click="cancelSatRequest();">
+                                                                    <?= __('Cancel') ?>
+                                                                </button>
                                                                 <div class="progress mt-1 progress-xs">
-                                                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info-600"
-                                                                         role="progressbar" style="width: 100%"
-                                                                         aria-valuenow="100"
-                                                                         aria-valuemin="0" aria-valuemax="100"></div>
+                                                                    <div
+                                                                        class="progress-bar progress-bar-striped progress-bar-animated bg-info-600"
+                                                                        role="progressbar" style="width: 100%"
+                                                                        aria-valuenow="100"
+                                                                        aria-valuemin="0" aria-valuemax="100"></div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -134,7 +143,8 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                 </div>
 
                                                 <div class="col-12" ng-show="connection_test.status === 'success'">
-                                                    <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                    <div
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                         <div class="d-flex align-items-center">
                                                             <div class="alert-icon">
                                                                 <span class="icon-stack icon-stack-md">
@@ -152,9 +162,10 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                                     {{connection_test.guzzle_error}}
                                                                 </div>
                                                             </div>
-                                                            <button class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
-                                                                    ng-click="submit()"
-                                                                    ng-disabled="disableNext">
+                                                            <button
+                                                                class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
+                                                                ng-click="submit()"
+                                                                ng-disabled="disableNext">
                                                                 <?= __('Next'); ?>
                                                                 <i class="fa fa-arrow-right"></i>
                                                             </button>
@@ -163,7 +174,8 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                 </div>
 
                                                 <div class="col-12" ng-show="connection_test.status === 'error'">
-                                                    <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                    <div
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                         <div class="d-flex align-items-center">
                                                             <div class="alert-icon">
                                                                 <span class="icon-stack icon-stack-md">
@@ -181,10 +193,11 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                                 </div>
                                                             </div>
 
-                                                            <button class="btn btn-outline-danger btn-sm btn-w-m waves-effect waves-themed"
-                                                                    type="button"
-                                                                    ng-show="connection_test.oitc_errno === <?php echo AgentHttpClientErrors::ERRNO_HTTPS_COMPROMISED ?>"
-                                                                    ng-click="reExchangeAutoTLS()">
+                                                            <button
+                                                                class="btn btn-outline-danger btn-sm btn-w-m waves-effect waves-themed"
+                                                                type="button"
+                                                                ng-show="connection_test.oitc_errno === <?php echo AgentHttpClientErrors::ERRNO_HTTPS_COMPROMISED ?>"
+                                                                ng-click="reExchangeAutoTLS()">
                                                                 <i class="fas fa-certificate"></i>
                                                                 <?= __('Reset AutoTLS certificate'); ?>
                                                             </button>
@@ -194,7 +207,8 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                 </div>
 
                                                 <div class="col-12" ng-show="connection_test.status === 'warning'">
-                                                    <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                    <div
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                         <div class="d-flex align-items-center">
                                                             <div class="alert-icon">
                                                                 <span class="icon-stack icon-stack-md">
@@ -211,10 +225,11 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                                     {{connection_test.guzzle_error}}
                                                                 </div>
                                                             </div>
-                                                            <button class="btn btn-outline-warning btn-sm btn-w-m waves-effect waves-themed"
-                                                                    type="button"
-                                                                    ng-show="connection_test.oitc_errno === <?php echo AgentHttpClientErrors::ERRNO_AGENT_RESPONSES_TO_HTTP ?>"
-                                                                    ng-click="reExchangeAutoTLS()">
+                                                            <button
+                                                                class="btn btn-outline-warning btn-sm btn-w-m waves-effect waves-themed"
+                                                                type="button"
+                                                                ng-show="connection_test.oitc_errno === <?php echo AgentHttpClientErrors::ERRNO_AGENT_RESPONSES_TO_HTTP ?>"
+                                                                ng-click="reExchangeAutoTLS()">
                                                                 <i class="fas fa-user-secret"></i>
                                                                 <?= __('Trust this Agent and generate a new certificate.'); ?>
                                                             </button>
@@ -223,7 +238,8 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                 </div>
 
                                                 <div class="col-12" ng-show="connection_test.status === 'unknown'">
-                                                    <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                    <div
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                         <div class="d-flex align-items-center">
                                                             <div class="alert-icon">
                                                                 <span class="icon-stack icon-stack-md">
@@ -239,6 +255,27 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                                 <div ng-show="connection_test.guzzle_error">
                                                                     {{connection_test.guzzle_error}}
                                                                 </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-12" ng-show="hasSatelliteError">
+                                                    <div
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="alert-icon">
+                                                                <span class="icon-stack icon-stack-md">
+                                                                    <i class="base-7 icon-stack-3x color-danger-600"></i>
+                                                                    <i class="fas fa-exclamation-triangle icon-stack-1x text-white"></i>
+                                                            </div>
+                                                            <div class="flex-1">
+                                                                <span class="h5 color-danger-600">
+                                                                    <?= __('Error'); ?>
+                                                                </span>
+                                                                <br>
+                                                                {{satelliteErrorMsg}}
                                                             </div>
                                                         </div>
                                                     </div>

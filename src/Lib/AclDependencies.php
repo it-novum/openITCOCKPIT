@@ -136,7 +136,8 @@ class AclDependencies {
             ->allow('Angular', 'popover_graph')
             ->allow('Angular', 'thresholds')
             ->allow('Angular', 'mass_delete_acknowledgements')
-            ->allow('Angular', 'message_of_the_day');
+            ->allow('Angular', 'message_of_the_day')
+            ->allow('Angular', 'regexHelpTooltip');
 
         $this
             ->allow('Agentconnector', 'register_agent')
@@ -264,6 +265,7 @@ class AclDependencies {
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'loadHostsByString')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'install')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'autotls')
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'satellite_response')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'select_agent')
             ->dependency('Agentconnector', 'overview', 'Agentconnector', 'pull')
             ->dependency('Agentconnector', 'overview', 'Agentconnector', 'push')

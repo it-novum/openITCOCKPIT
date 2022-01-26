@@ -185,4 +185,90 @@ class AgentchecksTable extends Table {
         return $this->exists(['Agentchecks.name' => $name, 'Agentchecks.servicetemplate_id' => $servicetemplateId]);
     }
 
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param null $activeChecksEnabled | false => passive or true => active
+     * @return array
+     */
+    public function getAgentchecksByContainerId($containerIds = [], $type = 'all', $activeChecksEnabled = null) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        //Lookup for the tenant container of $container_id
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $containerId) {
+            if ($containerId != ROOT_CONTAINER) {
+
+                // Get container id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load service templates
+                $path = $ContainersTable->getPathByIdAndCacheResult($containerId, 'ServicetemplatesByContainerId');
+
+                // Tenant service templates are available for all users of a tenant (oITC V2 legacy)
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        $where = [
+            'Servicetemplates.container_id IN' => $containerIds,
+        ];
+
+
+        $query = $this->find('all');
+        if (!empty($containerIds)) {
+            $where['Servicetemplates.container_id IN'] = $containerIds;
+        }
+
+        if (!is_null($activeChecksEnabled)) {
+            $where['Servicetemplates.active_checks_enabled'] = (int)$activeChecksEnabled;
+        }
+
+        $query = $this->find()
+            ->contain(['Servicetemplates'])
+            ->where($where)
+            ->order('Agentchecks.name')
+            ->disableHydration()
+            ->all();
+
+
+        $records = $query->toArray();
+        if (empty($records) || is_null($records)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $records;
+        }
+
+        $list = [];
+        foreach ($records as $record) {
+            $list[$record['id']] = $record['name'];
+        }
+        return $list;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAgentchecksAsList() {
+        return $this->find('list')
+            ->toArray();
+    }
+
 }
