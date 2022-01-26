@@ -466,6 +466,10 @@ class Hoststatus {
             $arr['last_time_up'] = $this->UserTime->format($this->getLastTimeUp());
             $arr['lastCheck'] = $this->UserTime->format($this->getLastCheck());
             $arr['nextCheck'] = $this->UserTime->format($this->getNextCheck());
+            $arr['lastHardStateChangeInWords'] = $this->UserTime->secondsInHumanShort(time() - $this->getLastHardStateChange());
+            $arr['last_state_change_in_words'] = $this->UserTime->secondsInHumanShort(time() - $this->getLastStateChange());
+            $arr['lastCheckInWords'] = $this->UserTime->timeAgoInWords($this->getLastCheck());
+            $arr['nextCheckInWords'] = $this->UserTime->timeAgoInWords($this->getNextCheck());
         } else {
             $arr['lastHardStateChange'] = $this->getLastHardStateChange();
             $arr['last_state_change'] = $this->getLastStateChange();
