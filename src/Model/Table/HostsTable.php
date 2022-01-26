@@ -2206,7 +2206,8 @@ class HostsTable extends Table {
                             'Services.name',
                             'Services.host_id',
                             'Services.servicetemplate_id',
-                            'Services.disabled'
+                            'Services.disabled',
+                            'Services.service_type'
                         ])
                         ->contain([
                             'Servicetemplates' => function (Query $query) {
