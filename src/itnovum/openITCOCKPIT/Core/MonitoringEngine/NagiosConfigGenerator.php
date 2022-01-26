@@ -2711,14 +2711,18 @@ class NagiosConfigGenerator {
         //Delete all SAT Configs
         if (is_array($this->Satellites) && !empty($this->Satellites)) {
             foreach ($this->Satellites as $satellite) {
-                if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config')) {
-                    $result = scandir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config');
-                    foreach ($result as $dirname) {
-                        if (!in_array($dirname, ['.', '..'], true)) {
-                            if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config' . DS . $dirname)) {
-                                $folder = new Folder($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config' . DS . $dirname);
-                                $folder->delete();
-                                unset($folder);
+                foreach (['config', 'check_mk'] as $baseDir) {
+                    if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . $baseDir)) {
+                        $result = scandir($this->conf['satellite_path'] . $satellite->get('id') . DS . $baseDir);
+                        foreach ($result as $dirname) {
+                            if (!in_array($dirname, ['.', '..'], true)) {
+                                if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . $baseDir . DS . $dirname)) {
+                                    $folder = new Folder($this->conf['satellite_path'] . $satellite->get('id') . DS . $baseDir . DS . $dirname);
+                                    $folder->delete();
+                                    unset($folder);
+                                } else if (is_file($this->conf['satellite_path'] . $satellite->get('id') . DS . $baseDir . DS . $dirname)) {
+                                    unlink($this->conf['satellite_path'] . $satellite->get('id') . DS . $baseDir . DS . $dirname);
+                                }
                             }
                         }
                     }
