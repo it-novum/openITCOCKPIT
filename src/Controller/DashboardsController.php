@@ -1368,7 +1368,7 @@ class DashboardsController extends AppController {
 
         $service = $ServicesTable->getServiceById($id);
         if ($service) {
-            if ($this->allowedByContainerId($service->get('host')->getContainerIds())) {
+            if ($this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
 
                 $ServicestatusFields = new ServicestatusFields($this->DbBackend);
                 $ServicestatusFields->currentState()->isFlapping()->perfdata();
@@ -1597,7 +1597,7 @@ class DashboardsController extends AppController {
 
         $service = $ServicesTable->getServiceById($serviceId);
         if ($service) {
-            if ($this->allowedByContainerId($service->get('host')->getContainerIds())) {
+            if ($this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
                 $ServicestatusFields = new ServicestatusFields($this->DbBackend);
                 $ServicestatusFields->perfdata();
                 $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
