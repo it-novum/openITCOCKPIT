@@ -165,11 +165,11 @@
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                            id="enable_push_mode"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            chosen="{}"
-                                                            ng-model="config.bool.enable_push_mode">
+                                                        id="enable_push_mode"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="config.bool.enable_push_mode">
                                                         <option ng-value="false"><?= __('Pull mode'); ?></option>
                                                         <option ng-value="true"><?= __('Push mode'); ?></option>
                                                     </select>
@@ -186,11 +186,11 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="bind_address"
-                                                            class="form-control"
-                                                            type="text"
-                                                            placeholder="<?php echo __('0.0.0.0'); ?>"
-                                                            ng-model="config.string.bind_address">
+                                                        id="bind_address"
+                                                        class="form-control"
+                                                        type="text"
+                                                        placeholder="<?php echo __('0.0.0.0'); ?>"
+                                                        ng-model="config.string.bind_address">
 
                                                     <div class="help-block">
                                                         <?= __('IP address that openITCOCKPIT Agent should bind to.'); ?>
@@ -211,13 +211,13 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="bind_port"
-                                                            class="form-control"
-                                                            type="number"
-                                                            min="1"
-                                                            max="65536"
-                                                            placeholder="3333"
-                                                            ng-model="config.int.bind_port">
+                                                        id="bind_port"
+                                                        class="form-control"
+                                                        type="number"
+                                                        min="1"
+                                                        max="65536"
+                                                        placeholder="3333"
+                                                        ng-model="config.int.bind_port">
 
                                                     <div class="help-block">
                                                         <?= __('Port number that openITCOCKPIT Agent should bind to.'); ?>
@@ -238,13 +238,13 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="check_interval"
-                                                            class="form-control"
-                                                            type="number"
-                                                            min="1"
-                                                            max="7200"
-                                                            placeholder="30"
-                                                            ng-model="config.int.check_interval">
+                                                        id="check_interval"
+                                                        class="form-control"
+                                                        type="number"
+                                                        min="1"
+                                                        max="7200"
+                                                        placeholder="30"
+                                                        ng-model="config.int.check_interval">
 
                                                     <div class="help-block">
                                                         <?= __('Determines in seconds how often the openITCOCKPIT Agent will execute all checks.'); ?>
@@ -277,7 +277,9 @@
                                         </legend>
                                         <div>
                                             <div class="form-group col-12 padding-left-0 required"
+                                                 ng-if="host.satellite_id == 0"
                                                  ng-class="{'has-error': errors.push_oitc_server_url}">
+                                                <!-- Host is on the master -->
                                                 <label class="col-12 control-label"
                                                        for="push_oitc_server_url">
                                                     <?php echo __('openITCOCKPIT Server Address'); ?>
@@ -285,13 +287,38 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="push_oitc_server_url"
-                                                            class="form-control"
-                                                            type="text"
-                                                            placeholder="https://<?= $_SERVER['SERVER_ADDR']; ?>"
-                                                            ng-model="config.string.push_oitc_server_url">
+                                                        id="push_oitc_server_url"
+                                                        class="form-control"
+                                                        type="text"
+                                                        placeholder="https://<?= $_SERVER['SERVER_ADDR']; ?>"
+                                                        ng-model="config.string.push_oitc_server_url">
                                                     <div class="help-block">
                                                         <?= __('External address of your openITCOCKPIT Server.'); ?>
+                                                    </div>
+                                                    <div ng-repeat="error in errors.push_oitc_server_url">
+                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-12 padding-left-0 required"
+                                                 ng-if="host.satellite_id > 0"
+                                                 ng-class="{'has-error': errors.push_oitc_server_url}">
+                                                <!-- Host is on a Satellite -->
+                                                <label class="col-12 control-label"
+                                                       for="push_oitc_server_url">
+                                                    <?php echo __('openITCOCKPIT Satellite Server Address'); ?>
+                                                </label>
+
+                                                <div class="col-12">
+                                                    <input
+                                                        id="push_oitc_server_url"
+                                                        class="form-control"
+                                                        type="text"
+                                                        placeholder="https://{{satellite.address}}"
+                                                        ng-model="config.string.push_oitc_server_url">
+                                                    <div class="help-block">
+                                                        <?= __('External address of your openITCOCKPIT Satellite Server.'); ?>
                                                     </div>
                                                     <div ng-repeat="error in errors.push_oitc_server_url">
                                                         <div class="help-block text-danger">{{ error }}</div>
@@ -308,11 +335,11 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="push_oitc_api_key"
-                                                            class="form-control"
-                                                            type="text"
-                                                            placeholder="b803b7fb76524e1514bed81cf3a936845cc160511a1c0d51672c..."
-                                                            ng-model="config.string.push_oitc_api_key">
+                                                        id="push_oitc_api_key"
+                                                        class="form-control"
+                                                        type="text"
+                                                        placeholder="b803b7fb76524e1514bed81cf3a936845cc160511a1c0d51672c..."
+                                                        ng-model="config.string.push_oitc_api_key">
                                                     <div class="help-block">
                                                         <?php echo __('You need to create an openITCOCKPIT user defined API key first.'); ?>
                                                         <a href="javascript:void(0);"
@@ -334,11 +361,11 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="push_proxy_address"
-                                                            class="form-control"
-                                                            type="text"
-                                                            placeholder="http://proxy.example.org:3128"
-                                                            ng-model="config.string.push_proxy_address">
+                                                        id="push_proxy_address"
+                                                        class="form-control"
+                                                        type="text"
+                                                        placeholder="http://proxy.example.org:3128"
+                                                        ng-model="config.string.push_proxy_address">
                                                     <div class="help-block">
                                                         <?= __('HTTP Proxy that should be used by the agent. Leave blank for no proxy.'); ?>
                                                     </div>
@@ -369,13 +396,13 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="push_timeout"
-                                                            class="form-control"
-                                                            type="number"
-                                                            min="1"
-                                                            max="40"
-                                                            placeholder="1"
-                                                            ng-model="config.int.push_timeout">
+                                                        id="push_timeout"
+                                                        class="form-control"
+                                                        type="number"
+                                                        min="1"
+                                                        max="40"
+                                                        placeholder="1"
+                                                        ng-model="config.int.push_timeout">
                                                     <div class="help-block">
                                                         <?php echo __('HTTP timeout in seconds'); ?>
                                                     </div>
@@ -457,11 +484,11 @@
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                            id="connection_type"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            chosen="{}"
-                                                            ng-model="connection_type">
+                                                        id="connection_type"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="{}"
+                                                        ng-model="connection_type">
                                                         <option value="autotls"><?= __('Auto-TLS'); ?></option>
                                                         <option value="https"><?= __('HTTPS'); ?></option>
                                                         <option value="http"><?= __('HTTP (plaintext)'); ?></option>
@@ -513,12 +540,12 @@
                                                 </label>
                                                 <div class="col-12">
                                                     <select
-                                                            id="webserver_type"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            ng-disabled="!config.bool.push_enable_webserver"
-                                                            chosen="{}"
-                                                            ng-model="webserver_type">
+                                                        id="webserver_type"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        ng-disabled="!config.bool.push_enable_webserver"
+                                                        chosen="{}"
+                                                        ng-model="webserver_type">
                                                         <option value="https"><?= __('HTTPS'); ?></option>
                                                         <option value="http"><?= __('HTTP (plaintext)'); ?></option>
                                                     </select>
@@ -552,12 +579,12 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            ng-disabled="(config.bool.enable_push_mode === true && config.bool.push_enable_webserver === false )"
-                                                            id="ssl_certfile"
-                                                            class="form-control"
-                                                            type="text"
-                                                            placeholder="<?= __('/etc/ssl/acme.sh/example.org/cert.pem'); ?>"
-                                                            ng-model="config.string.ssl_certfile">
+                                                        ng-disabled="(config.bool.enable_push_mode === true && config.bool.push_enable_webserver === false )"
+                                                        id="ssl_certfile"
+                                                        class="form-control"
+                                                        type="text"
+                                                        placeholder="<?= __('/etc/ssl/acme.sh/example.org/cert.pem'); ?>"
+                                                        ng-model="config.string.ssl_certfile">
                                                     <div ng-repeat="error in errors.ssl_certfile">
                                                         <div class="help-block text-danger">{{ error }}</div>
                                                     </div>
@@ -577,12 +604,12 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            ng-disabled="(config.bool.enable_push_mode === true && config.bool.push_enable_webserver === false )"
-                                                            id="ssl_keyfile"
-                                                            class="form-control"
-                                                            type="text"
-                                                            placeholder="<?= __('/etc/ssl/acme.sh/example.org/privkey.pem'); ?>"
-                                                            ng-model="config.string.ssl_keyfile">
+                                                        ng-disabled="(config.bool.enable_push_mode === true && config.bool.push_enable_webserver === false )"
+                                                        id="ssl_keyfile"
+                                                        class="form-control"
+                                                        type="text"
+                                                        placeholder="<?= __('/etc/ssl/acme.sh/example.org/privkey.pem'); ?>"
+                                                        ng-model="config.string.ssl_keyfile">
                                                     <div ng-repeat="error in errors.ssl_keyfile">
                                                         <div class="help-block text-danger">{{ error }}</div>
                                                     </div>
@@ -614,12 +641,12 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="username"
-                                                            class="form-control"
-                                                            ng-disabled="!config.bool.use_http_basic_auth"
-                                                            type="text"
-                                                            placeholder="<?= __('Username'); ?>"
-                                                            ng-model="config.string.username">
+                                                        id="username"
+                                                        class="form-control"
+                                                        ng-disabled="!config.bool.use_http_basic_auth"
+                                                        type="text"
+                                                        placeholder="<?= __('Username'); ?>"
+                                                        ng-model="config.string.username">
                                                     <div ng-repeat="error in errors.username">
                                                         <div class="help-block text-danger">{{ error }}</div>
                                                     </div>
@@ -635,12 +662,12 @@
 
                                                 <div class="col-12">
                                                     <input
-                                                            id="password"
-                                                            class="form-control"
-                                                            ng-disabled="!config.bool.use_http_basic_auth"
-                                                            type="password"
-                                                            placeholder="<?= __('Password'); ?>"
-                                                            ng-model="config.string.password">
+                                                        id="password"
+                                                        class="form-control"
+                                                        ng-disabled="!config.bool.use_http_basic_auth"
+                                                        type="password"
+                                                        placeholder="<?= __('Password'); ?>"
+                                                        ng-model="config.string.password">
                                                     <div ng-repeat="error in errors.password">
                                                         <div class="help-block text-danger">{{ error }}</div>
                                                     </div>
