@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';
         $scope.mouseout = true;
+        $scope.interval = null;
 
         $scope.filter = {
             servicename: ''
@@ -135,7 +136,7 @@ angular.module('openITCOCKPIT')
         $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $scope.loadServicesWithStatus('');
@@ -144,6 +145,13 @@ angular.module('openITCOCKPIT')
                 }
             }, 1000);
         };
+
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
 
         //Fire on page load
         $scope.loadTimezone();

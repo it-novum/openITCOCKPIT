@@ -4,7 +4,7 @@ angular.module('openITCOCKPIT')
         SortService.setSort(QueryStringService.getValue('sort', 'DowntimeHosts.scheduled_start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
-
+        $scope.interval = null;
 
         var now = new Date();
 
@@ -123,7 +123,7 @@ angular.module('openITCOCKPIT')
         $scope.showHostDowntimeFlashMsg = function(){
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $scope.load();
@@ -138,6 +138,12 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
 
         //Fire on page load
         defaultFilter();

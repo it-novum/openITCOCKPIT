@@ -5,8 +5,7 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
 
         $scope.activeTab = 'active';
-        SortService.setSort('Servicestatus.current_state');
-        SortService.setDirection('desc');
+
         $scope.currentPage = 1;
         $scope.selectedTab = 'tab1';
 
@@ -26,6 +25,11 @@ angular.module('openITCOCKPIT')
         $scope.tags = [];
 
         $scope.pingResult = [];
+
+        $scope.interval = null;
+
+        SortService.setSort('servicename');
+        SortService.setDirection('asc');
 
         $scope.priorityClasses = {
             1: 'ok-soft',
@@ -86,11 +90,11 @@ angular.module('openITCOCKPIT')
 
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $scope.loadHost();
-                    $interval.cancel(interval);
+                    $interval.cancel($scope.interval);
                     $scope.showFlashSuccess = false;
                 }
             }, 1000);
@@ -188,9 +192,6 @@ angular.module('openITCOCKPIT')
             if(tab !== $scope.activeTab){
                 $scope.services = [];
                 $scope.activeTab = tab;
-
-                SortService.setSort('servicename');
-                SortService.setDirection('asc');
                 $scope.currentPage = 1;
 
                 $scope.load();
@@ -215,6 +216,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadActiveServices = function(){
+            $scope.resetSortServiceForServiceLists();
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -238,6 +240,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadNotMonitoredServices = function(){
+            $scope.resetSortServiceForServiceLists();
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -257,6 +260,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadDisabledServices = function(){
+            $scope.resetSortServiceForServiceLists();
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -327,6 +331,12 @@ angular.module('openITCOCKPIT')
             return !$scope.hoststatus.isInMonitoring;
         };
 
+        $scope.resetSortServiceForServiceLists = function(){
+            if(SortService.getSort().includes('Hosts')){
+                SortService.setSort('servicename');
+                SortService.setDirection('asc');
+            }
+        };
 
         var getHoststatusTextColor = function(){
             return StatusHelperService.getHoststatusTextColor($scope.hoststatus.currentState);
@@ -658,6 +668,13 @@ angular.module('openITCOCKPIT')
         $scope.clipboardCommand = function(){
             navigator.clipboard.writeText($scope.mergedHost.hostCommandLine);
         };
+
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
 
         //Fire on page load
         $scope.loadIdOrUuid();
