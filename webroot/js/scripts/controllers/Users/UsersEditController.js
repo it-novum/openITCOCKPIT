@@ -65,6 +65,13 @@ angular.module('openITCOCKPIT')
                     User: data
                 };
 
+                $scope.UserType = result.data.UserType;
+
+                if($scope.isLdapUser){
+                    // Load container permissions based on LDAP groups
+                    $scope.loadContainerPermissionsLdap();
+                }
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -91,7 +98,7 @@ angular.module('openITCOCKPIT')
 
             // Query new API Key from Server
             var index = $scope.post.User.apikeys.length;
-            if( index > 0 ) {
+            if(index > 0){
                 // Array is not empty so current array index is lenght - 1, arrays start at 0
                 index = index - 1;
             }
@@ -168,6 +175,25 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.userContainerRoleContainerPermissions = result.data.userContainerRoleContainerPermissions;
+            });
+        };
+
+        $scope.loadContainerPermissionsLdap = function(){
+            if(typeof $scope.post.User.usercontainerroles_ldap !== "undefined"){ //is undefined on initial page load
+                if($scope.post.User.usercontainerroles_ldap._ids.length === 0){
+                    $scope.userContainerRoleContainerPermissionsLdap = {};
+                    return;
+                }
+            }
+
+            $http.get("/users/loadLdapUserDetails.json", {
+                params: {
+                    'angular': true,
+                    'samaccountname': $scope.post.User.samaccountname
+                }
+            }).then(function(result){
+                $scope.userContainerRoleContainerPermissionsLdap = result.data.ldapUser.userContainerRoleContainerPermissionsLdap;
+                $scope.ldapUser = result.data.ldapUser;
             });
         };
 

@@ -12,6 +12,9 @@ angular.module('openITCOCKPIT')
                 Usergroup: {
                     name: '',
                     description: '',
+                    ldapgroups: {
+                        _ids: []
+                    }
                 },
                 Acos: {}
             };
@@ -45,6 +48,19 @@ angular.module('openITCOCKPIT')
                         }
                     }
                 }
+            });
+        };
+
+        $scope.loadLdapGroups = function(searchString){
+            $http.get("/usergroups/loadLdapgroupsForAngular.json", {
+                params: {
+                    'angular': true,
+                    'filter[Ldapgroups.cn]': searchString,
+                    'selected[]': $scope.post.Usergroup.ldapgroups._ids
+                }
+            }).then(function(result){
+                $scope.isLdapAuth = result.data.isLdapAuth;
+                $scope.ldapgroups = result.data.ldapgroups;
             });
         };
 
@@ -189,6 +205,6 @@ angular.module('openITCOCKPIT')
 
         // Fire on page load
         $scope.loadAcos();
-
+        $scope.loadLdapGroups();
 
     });

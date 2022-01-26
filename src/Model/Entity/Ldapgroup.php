@@ -1,22 +1,22 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 
 /**
- * Usergroup Entity
+ * Ldapgroup Entity
  *
  * @property int $id
- * @property string $name
- * @property string|null $description
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property string $cn
+ * @property string $dn
+ * @property string $description
  *
- * @property \App\Model\Entity\User[] $users
+ * @property \App\Model\Entity\LdapgroupsToUsercontainerrole[] $ldapgroups_to_usercontainerroles
  */
-class Usergroup extends Entity {
-
+class Ldapgroup extends Entity
+{
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -27,15 +27,9 @@ class Usergroup extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'name'        => true,
+        'cn' => true,
+        'dn' => true,
         'description' => true,
-        'created'     => true,
-        'modified'    => true,
-        'users'       => true,
-        'ldapgroups'  => true
+        'ldapgroups_to_usercontainerroles' => true,
     ];
-
-    public function parentNode() {
-        return null;
-    }
 }

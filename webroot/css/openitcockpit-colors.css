@@ -11,6 +11,10 @@ $color-danger:                      #CC0000; red            rgb(204, 0, 0)
 SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
  */
 
+.not-monitored {
+    color: #4285F4 !important;
+}
+
 .ok, .up {
     color: #00C851 !important;
 }

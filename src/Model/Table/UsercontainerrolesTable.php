@@ -1,4 +1,27 @@
 <?php
+// Copyright (C) <2019>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
 
 namespace App\Model\Table;
 
@@ -44,9 +67,9 @@ class UsercontainerrolesTable extends Table {
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->hasMany('UsersToUsercontainerroles', [
+        /*$this->hasMany('UsersToUsercontainerroles', [
             'foreignKey' => 'usercontainerrole_id'
-        ]);
+        ]);*/
 
         $this->belongsToMany('Containers', [
             'through'          => 'ContainersUsercontainerrolesMemberships',
@@ -55,6 +78,15 @@ class UsercontainerrolesTable extends Table {
             'targetForeignKey' => 'container_id',
             'joinTable'        => 'usercontainerroles_to_containers'
         ]);
+
+        $this->belongsToMany('Ldapgroups', [
+            'className'        => 'Ldapgroups',
+            'joinTable'        => 'ldapgroups_to_usercontainerroles',
+            'foreignKey'       => 'usercontainerrole_id',
+            'targetForeignKey' => 'ldapgroup_id',
+            'saveStrategy'     => 'replace'
+        ]);
+
     }
 
     /**
@@ -75,7 +107,7 @@ class UsercontainerrolesTable extends Table {
             ->allowEmptyString('name', null, false);
 
         $validator
-            ->requirePresence('containers', true, __('You have to choose at least one container.'))
+            ->requirePresence('containers', 'create', __('You have to choose at least one container.'))
             ->allowEmptyString('containers', null, false)
             ->multipleOptions('containers', [
                 'min' => 1
@@ -209,6 +241,11 @@ class UsercontainerrolesTable extends Table {
             ])
             ->contain([
                 'Containers',
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
+                ]
             ])
             ->disableHydration()
             ->first();
@@ -219,7 +256,9 @@ class UsercontainerrolesTable extends Table {
         $usercontainerrole['containers'] = [
             '_ids' => Hash::extract($query, 'containers.{n}.id')
         ];
-
+        $usercontainerrole['ldapgroups'] = [
+            '_ids' => Hash::extract($query, 'ldapgroups.{n}.id')
+        ];
 
         //Build up data struct for radio inputs
         $usercontainerrole['ContainersUsercontainerrolesMemberships'] = [];
@@ -242,6 +281,42 @@ class UsercontainerrolesTable extends Table {
             ->contain('Containers')
             ->where([
                 'Usercontainerroles.id IN' => $ids
+            ])
+            ->disableHydration()
+            ->all();
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $result = [];
+        foreach ($query->toArray() as $record) {
+            foreach ($record['containers'] as $index => $container) {
+                $record['containers'][$index]['path'] = $ContainersTable->getPathByIdAsString($container['id']);
+            }
+            $result[$record['id']] = $record;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $memberOfGroups
+     * @return array
+     */
+    public function getContainerPermissionsByLdapUserMemberOf($memberOfGroups = []) {
+        if(empty($memberOfGroups)){
+            return [];
+        }
+        if(!is_array($memberOfGroups)){
+            $memberOfGroups = [$memberOfGroups];
+        }
+        $query = $this->find()
+            ->contain([
+                'Containers'
+            ])
+            ->innerJoinWith('Ldapgroups')
+            ->where([
+                'Ldapgroups.dn IN' => $memberOfGroups
             ])
             ->disableHydration()
             ->all();

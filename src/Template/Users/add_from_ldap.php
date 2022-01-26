@@ -51,7 +51,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'users')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='UsersIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -62,127 +63,6 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
             {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
-                        <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
-                            <label class="control-label" for="UserContainerroles">
-                                <?php echo __('Container Roles'); ?>
-                            </label>
-                            <select
-                                id="UserContainerroles"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="usercontainerroles"
-                                multiple
-                                ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
-                                ng-model="post.User.usercontainerroles._ids">
-                            </select>
-                            <div ng-repeat="error in errors.usercontainerroles">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                            <div class="help-block">
-                                <?php echo __('Container Roles are handy to grant the same permissions to multiple users.'); ?>
-                            </div>
-                        </div>
-
-                        <!-- User Container Roles permissions read/write -->
-                        <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissions">
-                            <div class="col col-md-2"></div>
-                            <div class="col col-md-10">
-                                <legend class="no-padding font-sm txt-ack">
-                                    {{userContainerRole.path}}
-                                </legend>
-                                <input name="group-{{userContainerRole.id}}"
-                                       type="radio"
-                                       disabled="disabled"
-                                       ng-checked="userContainerRole._joinData.permission_level === 1">
-                                <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
-
-                                <input name="group-{{userContainerRole.id}}"
-                                       type="radio"
-                                       disabled="disabled"
-                                       ng-checked="userContainerRole._joinData.permission_level === 2">
-                                <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
-                            </div>
-                        </div>
-
-                        <div class="form-group required" ng-class="{'has-error': errors.containers}">
-                            <label class="control-label" for="UserContainers">
-                                <?php echo __('Container'); ?>
-                            </label>
-                            <select
-                                id="UserContainers"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                multiple
-                                ng-options="container.key as container.value for container in containers"
-                                ng-model="selectedUserContainers">
-                            </select>
-                            <div ng-repeat="error in errors.containers">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                            <div class="help-block text-info">
-                                <i class="fa fa-info-circle"></i>
-                                <?php echo __('Container assignments defined in the user will overwrite permissions inherited from Container Roles!'); ?>
-                            </div>
-                        </div>
-
-                        <!-- Container permissions read/write -->
-                        <div class="row" ng-repeat="userContainer in selectedUserContainerWithPermission">
-                            <div class="col col-md-1"></div>
-                            <div class="col col-md-10">
-                                <legend class="no-padding font-sm text-primary">
-                                    {{userContainer.name}}
-                                </legend>
-                                <input name="ucgroup-{{userContainer.container_id}}"
-                                       type="radio"
-                                       value="1"
-                                       ng-model="userContainer.permission_level"
-                                       ng-disabled="userContainer.container_id === 1"
-                                       ng-checked="userContainer.permission_level == 1">
-                                <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
-
-                                <input name="ucgroup-{{userContainer.container_id}}"
-                                       type="radio"
-                                       value="2"
-                                       ng-model="userContainer.permission_level"
-                                       ng-disabled="userContainer.container_id === 1"
-                                       ng-checked="userContainer.permission_level == 2">
-                                <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
-                            </div>
-                        </div>
-
-                        <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
-                            <label class="control-label" for="Usergroups">
-                                <?php echo __('User role'); ?>
-                            </label>
-                            <select
-                                id="Usergroups"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="usergroups"
-                                ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
-                                ng-model="post.User.usergroup_id">
-                            </select>
-                            <div ng-repeat="error in errors.usergroup_id">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-
-                        <div class="form-group" ng-class="{'has-error': errors.is_active}">
-                            <div class="custom-control custom-checkbox  margin-bottom-10"
-                                 ng-class="{'has-error': errors.is_active}">
-
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       id="userIsActive"
-                                       ng-model="post.User.is_active">
-                                <label class="custom-control-label" for="userIsActive">
-                                    <?php echo __('Is active'); ?>
-                                </label>
-                            </div>
-                        </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.samaccountname}">
                             <label class="control-label" for="ContactContainers">
@@ -221,19 +101,281 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <div class="form-group">
-                            <div class="col col-md-2 text-right"><i class="fa fa-info-circle text-info"></i></div>
-                            <div class="col col-xs-10 text-info">
-                                <?php echo __('Connected LDAP server'); ?>:
-                                <strong>{{ldapConfig.host}}</strong>
-                                <br/>
-                                <?php echo __('Used filter query'); ?>:
-                                <strong>{{ldapConfig.query}}</strong>
-                                <br/>
-                                <?php echo __('Base DN'); ?>:
-                                <strong>{{ldapConfig.base_dn}}</strong>
+                            <label class="control-label" for="LdapGroupsOfUser">
+                                <?php echo __('LDAP groups'); ?>
+                            </label>
+                            <select
+                                id="LdapGroupsOfUser"
+                                class="form-control"
+                                disabled="disabled"
+                                readonly="readonly"
+                                multiple
+                                ng-options="ldapgroup.dn as ldapgroup.cn for ldapgroup in ldapUser.ldapgroups"
+                                ng-model="WeNeedAModelToMakeAngularHappy">
+                            </select>
+                        </div>
+
+                        <div class="alert border-info bg-transparent text-info" role="alert">
+                            <div class="d-flex align-items-center">
+                                <div class="alert-icon">
+                                    <i class="fa fa-info-circle"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="m-0">
+                                        <?php echo __('Connected LDAP server'); ?>:
+                                        <strong>{{ldapConfig.host}}</strong>
+                                        <br/>
+                                        <?php echo __('Used filter query'); ?>:
+                                        <strong>{{ldapConfig.query}}</strong>
+                                        <br/>
+                                        <?php echo __('Base DN'); ?>:
+                                        <strong>{{ldapConfig.base_dn}}</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
+                        <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
+                            <!-- We do not submit this data, the UsersController will ask the LDAP server again so no manipulations could occur -->
+                            <label class="control-label" for="UserContainerrolesLdap">
+                                <?php echo __('Container Roles through LDAP'); ?>
+                            </label>
+                            <select
+                                id="UserContainerrolesLdap"
+                                data-placeholder="<?php echo __('No matches'); ?>"
+                                class="form-control"
+                                chosen="usercontainerroles"
+                                readonly="readonly"
+                                disabled="disabled"
+                                multiple
+                                ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
+                                ng-model="selectedUserContainerRolesLdapReadOnly">
+                                <!-- ng-model is just for AngularJS. The UsersController will pull the data from the LDAP server on save -->
+                            </select>
+                            <div ng-repeat="error in errors.usercontainerroles">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Automatically assigned container roles based on the LDAP groups of the current user.'); ?>
+                            </div>
+                        </div>
+
+                        <!-- User Container Roles permissions read/write (LDAP) -->
+                        <div class="row"
+                             ng-repeat="userContainerRole in ldapUser.userContainerRoleContainerPermissionsLdap">
+                            <div class="col col-md-1"></div>
+                            <div class="col col-md-11">
+                                <legend class="no-padding font-sm text-success">
+                                    {{userContainerRole.path}}
+                                    <i class="fas fa-minus-square text-danger"
+                                       ng-if="selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1 ||
+                                       userContainerRoleContainerIds.indexOf(userContainerRole._joinData.container_id) !== -1"></i>
+                                </legend>
+                                <div class="d-inline-block"
+                                     ng-class="{'strike' : selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1 ||
+                                       userContainerRoleContainerIds.indexOf(userContainerRole._joinData.container_id) !== -1}">
+
+                                    <input name="group-ldap-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 1">
+                                    <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+
+                                    <input name="group-ldap-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 2">
+                                    <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                </div>
+                                <span
+                                    ng-repeat="userRole in userContainerRole.user_roles| orderObjectBy:'name':order_revers">
+                                    <span class="badge border-primary border text-primary">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
+                                            <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
+                                                    {{userRole.name}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{userRole.name}}
+                                        <?php endif; ?>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col col-md-4 text-right div-bottom-arrow font-xs text-primary italic"
+                             ng-show="selectedUserContainerRolesLdapReadOnly.length > 0 &&
+                             (post.User.usercontainerroles._ids.length > 0 || selectedUserContainers.length > 0)">
+                            <?= __('The user permissions will be extended or adapted with additional user roles or containers'); ?>
+
+                        </div>
+                        <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
+                            <label class="control-label" for="UserContainerroles">
+                                <?php echo __('Container Roles'); ?>
+                            </label>
+                            <select
+                                id="UserContainerroles"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="usercontainerroles"
+                                multiple
+                                ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
+                                ng-model="post.User.usercontainerroles._ids">
+                            </select>
+                            <div ng-repeat="error in errors.usercontainerroles">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Container Roles are handy to grant the same permissions to multiple users. Container Roles will overwrite automatically assignments via LDAP groups.'); ?>
+                            </div>
+                        </div>
+
+                        <!-- User Container Roles permissions read/write -->
+                        <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissions">
+                            <div class="col col-md-2"></div>
+                            <div class="col col-md-10">
+                                <legend class="no-padding font-sm txt-ack">
+                                    {{userContainerRole.path}}
+                                    <i class="fas fa-minus-square text-danger"
+                                       ng-if="selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1"></i>
+                                </legend>
+                                <div class="d-inline-block"
+                                     ng-class="{'strike' : selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1}">
+                                    <input name="group-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 1">
+                                    <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+
+                                    <input name="group-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 2">
+                                    <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                </div>
+
+                                <span
+                                    ng-repeat="userRole in userContainerRole.user_roles | orderObjectBy:'name':order_revers">
+                                    <span class="badge border-info border text-primary">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
+                                            <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
+                                                    {{userRole.name}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{userRole.name}}
+                                        <?php endif; ?>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col col-md-4 text-right div-bottom-arrow font-xs text-primary italic"
+                             ng-show="post.User.usercontainerroles._ids.length > 0 && selectedUserContainers.length > 0">
+                            <?= __('The user permissions will be extended or adapted with additional containers'); ?>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': errors.containers}">
+                            <label class="control-label" for="UserContainers">
+                                <?php echo __('Container'); ?>
+                            </label>
+                            <select
+                                id="UserContainers"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                multiple
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="selectedUserContainers">
+                            </select>
+                            <div ng-repeat="error in errors.containers">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Container assignments defined in the user will overwrite permissions inherited from Container Roles!'); ?>
+                            </div>
+                        </div>
+
+                        <!-- Container permissions read/write -->
+                        <div class="row" ng-repeat="userContainer in selectedUserContainerWithPermission">
+                            <div class="col col-md-3"></div>
+                            <div class="col col-md-9">
+                                <legend class="no-padding font-sm text-primary">
+                                    {{userContainer.name}}
+                                </legend>
+                                <input name="ucgroup-{{userContainer.container_id}}"
+                                       type="radio"
+                                       value="1"
+                                       ng-model="userContainer.permission_level"
+                                       ng-disabled="userContainer.container_id === 1"
+                                       ng-checked="userContainer.permission_level == 1">
+                                <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+
+                                <input name="ucgroup-{{userContainer.container_id}}"
+                                       type="radio"
+                                       value="2"
+                                       ng-model="userContainer.permission_level"
+                                       ng-disabled="userContainer.container_id === 1"
+                                       ng-checked="userContainer.permission_level == 2">
+                                <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
+                            <label class="control-label" for="UsergroupsLdap">
+                                <?php echo __('User role through LDAP'); ?>
+                            </label>
+                            <select
+                                id="UsergroupsLdap"
+                                data-placeholder="<?php echo __('No matches'); ?>"
+                                class="form-control"
+                                chosen="usergroups"
+                                readonly="readonly"
+                                disabled="disabled"
+                                ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                ng-model="ldapUser.usergroupLdap.id">
+                                <!-- ng-model is just for AngularJS. The data get's pull from the LDAP server on login -->
+                            </select>
+                            <div ng-repeat="error in errors.usergroup_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
+                            <label class="control-label" for="Usergroups">
+                                <?php echo __('Fallback User role'); ?>
+                            </label>
+                            <select
+                                id="Usergroups"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="usergroups"
+                                ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                ng-model="post.User.usergroup_id">
+                            </select>
+                            <div ng-repeat="error in errors.usergroup_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Fall back user role that is used by the system, when no user role assignment through LDAP is possible.'); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.is_active}">
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
+                                 ng-class="{'has-error': errors.is_active}">
+
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="userIsActive"
+                                       ng-model="post.User.is_active">
+                                <label class="custom-control-label" for="userIsActive">
+                                    <?php echo __('Is active'); ?>
+                                </label>
+                            </div>
+                        </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.email}">
                             <label class="control-label">

@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Entity\User;
-use App\Model\Table\ApikeysTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
@@ -40,17 +39,14 @@ use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Event\EventInterface;
-use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
-use itnovum\openITCOCKPIT\Core\Views\Apikey;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -222,16 +218,31 @@ class UsersController extends AppController {
 
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
-
         $UsersFilter = new UsersFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsersFilter->getPage());
-        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $this->MY_RIGHTS);
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            // root users can see all users
+            $MY_RIGHTS = [];
+        }
+        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $MY_RIGHTS);
 
         $all_users = [];
+
+        $types = $UsersTable->getUserTypesWithStyles();
+
         foreach ($all_tmp_users as $index => $_user) {
             /** @var User $_user */
             $user = $_user->toArray();
             $user['allow_edit'] = $this->hasRootPrivileges;
+            if (!empty($user['samaccountname'])) {
+                $user['UserType'] = $types['LDAP_USER'];
+            } else if ($user['is_oauth'] === true) {
+                $user['UserType'] = $types['OAUTH_USER'];
+            } else {
+                $user['UserType'] = $types['LOCAL_USER'];
+            }
 
             if ($this->hasRootPrivileges === false) {
                 //Check permissions for non ROOT Users
@@ -333,11 +344,21 @@ class UsersController extends AppController {
 
         $isLdapUser = !empty($user['User']['samaccountname']);
 
+        $types = $UsersTable->getUserTypesWithStyles();
+        if ($isLdapUser) {
+            $UserType = $types['LDAP_USER'];
+        } else if ($user['User']['is_oauth'] === true) {
+            $UserType = $types['OAUTH_USER'];
+        } else {
+            $UserType = $types['LOCAL_USER'];
+        }
+
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return user information
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser']);
+            $this->set('UserType', $UserType);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserType']);
             return;
         }
 
@@ -359,6 +380,44 @@ class UsersController extends AppController {
                 $user->setAccess('password', false);
                 $user->setAccess('samaccountname', false);
                 $user->setAccess('ldap_dn', false);
+
+                // Get User Container Roles from LDAP groups
+                /** @var SystemsettingsTable $SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+                $ldapUser = $Ldap->getUser($data['samaccountname'], true);
+
+                /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+                $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+                $userContainerRoleContainerPermissionsLdap = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                    $ldapUser['memberof']
+                );
+
+                // Convert old belongsToMany request into through join Membership data. (Only required for LDAP users to set through_ldap field in users_to_usercontainerroles join talbe)
+                $usercontainerroles = $data['usercontainerroles']['_ids'] ?? [];
+                $data['usercontainerroles'] = [];
+
+                // Add user container roles that are assigned via LDAP
+                foreach ($userContainerRoleContainerPermissionsLdap as $usercontainerrole) {
+                    $usercontainerroleId = $usercontainerrole['id'];
+                    $data['usercontainerroles'][$usercontainerroleId] = [
+                        'id'        => $usercontainerroleId,
+                        '_joinData' => [
+                            'through_ldap' => true // This got assigned automatically via LDAP
+                        ]
+                    ];
+                }
+
+                foreach ($usercontainerroles as $usercontainerroleId) {
+                    // Use the ID to be able to overwrite automatically assignments done by LDAP
+                    $data['usercontainerroles'][$usercontainerroleId] = [
+                        'id'        => $usercontainerroleId,
+                        '_joinData' => [
+                            'through_ldap' => false // This user container role got selected by the user
+                        ]
+                    ];
+                }
             }
 
             if ($user->is_oauth === true) {
@@ -411,10 +470,10 @@ class UsersController extends AppController {
             throw new NotFoundException(__('User not found'));
         }
 
-        $user = $UsersTable->getUserForEdit($id);
+        $user = $UsersTable->getUserForPermissionCheck($id);
         $containersToCheck = array_unique(array_merge(
-            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
-            $user['User']['containers']['_ids']) //Containers defined by the user itself
+            $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['containers']['_ids']) //Containers defined by the user itself
         );
 
         if (!$this->allowedByContainerId($containersToCheck)) {
@@ -454,6 +513,46 @@ class UsersController extends AppController {
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
 
+            // Get User Container Roles from LDAP groups
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+            $ldapUser = $Ldap->getUser($data['samaccountname'], true);
+
+            /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+            $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+            $userContainerRoleContainerPermissionsLdap = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                $ldapUser['memberof']
+            );
+
+
+            // Convert old belongsToMany request into through join Membership data.
+            $usercontainerroles = $data['usercontainerroles']['_ids'] ?? [];
+            $data['usercontainerroles'] = [];
+
+            // Add user container roles that are assigned via LDAP
+            foreach ($userContainerRoleContainerPermissionsLdap as $usercontainerrole) {
+                $usercontainerroleId = $usercontainerrole['id'];
+                $data['usercontainerroles'][$usercontainerroleId] = [
+                    'id'        => $usercontainerroleId,
+                    '_joinData' => [
+                        'through_ldap' => true // This got assigned automatically via LDAP
+                    ]
+                ];
+            }
+
+            foreach ($usercontainerroles as $usercontainerroleId) {
+                // Use the ID to be able to overwrite automatically assignments done by LDAP
+                $data['usercontainerroles'][$usercontainerroleId] = [
+                    'id'        => $usercontainerroleId,
+                    '_joinData' => [
+                        'through_ldap' => false // This user container role got selected by the user
+                    ]
+                ];
+            }
+
             //remove password validation when user is imported from ldap
             $UsersTable->getValidator()->remove('password');
             $UsersTable->getValidator()->remove('confirm_password');
@@ -492,10 +591,10 @@ class UsersController extends AppController {
             throw new NotFoundException(__('User not found'));
         }
 
-        $user = $UsersTable->getUserForEdit($id);
+        $user = $UsersTable->getUserForPermissionCheck($id);
         $containersToCheck = array_unique(array_merge(
-            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
-            $user['User']['containers']['_ids']) //Containers defined by the user itself
+            $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['containers']['_ids']) //Containers defined by the user itself
         );
 
         if (!$this->allowedByContainerId($containersToCheck)) {
@@ -687,6 +786,10 @@ class UsersController extends AppController {
                     //Container is not yet in permissions - add it
                     $permissions[$container['id']] = $container;
                 }
+                $permissions[$container['id']]['user_roles'][$userContainerRole['id']] = [
+                    'id'   => $userContainerRole['id'],
+                    'name' => $userContainerRole['name']
+                ];
             }
         }
 
@@ -716,6 +819,58 @@ class UsersController extends AppController {
         });
         $this->set('localeOptions', $localeOptions);
         $this->viewBuilder()->setOption('serialize', ['localeOptions']);
+    }
+
+    public function loadLdapUserDetails() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+
+        $samaccountname = (string)$this->request->getQuery('samaccountname', '');
+        $ldapUser = null;
+        if (!empty($samaccountname)) {
+            $ldapUser = $Ldap->getUser($samaccountname, true);
+            if ($ldapUser) {
+                /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+                $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+                $ldapUser['userContainerRoleContainerPermissionsLdap'] = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                    $ldapUser['memberof']
+                );
+
+                $permissions = [];
+                foreach ($ldapUser['userContainerRoleContainerPermissionsLdap'] as $userContainerRole) {
+                    foreach ($userContainerRole['containers'] as $container) {
+                        if (isset($permissions[$container['id']])) {
+                            //Container permission is already set.
+                            //Only overwrite it, if it is a WRITE_RIGHT
+                            if ($container['_joinData']['permission_level'] === WRITE_RIGHT) {
+                                $permissions[$container['id']] = $container;
+                            }
+                        } else {
+                            //Container is not yet in permissions - add it
+                            $permissions[$container['id']] = $container;
+                        }
+                        $permissions[$container['id']]['user_roles'][$userContainerRole['id']] = [
+                            'id'   => $userContainerRole['id'],
+                            'name' => $userContainerRole['name']
+                        ];
+                    }
+                }
+                $ldapUser['userContainerRoleContainerPermissionsLdap'] = $permissions;
+
+                // Load matching user role (Adminisgtrator, Viewer, etc...)
+                /** @var UsergroupsTable $UsergroupsTable */
+                $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+                $ldapUser['usergroupLdap'] = $UsergroupsTable->getUsergroupByLdapUserMemberOf($ldapUser['memberof']);
+            }
+        }
+        $this->set('ldapUser', $ldapUser);
+        $this->viewBuilder()->setOption('serialize', ['ldapUser']);
     }
 
 }

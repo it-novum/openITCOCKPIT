@@ -37,6 +37,7 @@ angular.module('openITCOCKPIT')
                         $scope.post.Acos[usergroupAcoId] = 1;
                     }
                 }
+                $scope.loadLdapGroups();
             });
         };
 
@@ -62,6 +63,19 @@ angular.module('openITCOCKPIT')
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
+            });
+        };
+
+        $scope.loadLdapGroups = function(searchString){
+            $http.get("/usergroups/loadLdapgroupsForAngular.json", {
+                params: {
+                    'angular': true,
+                    'filter[Ldapgroups.cn]': searchString,
+                    'selected[]': $scope.post.Usergroup.ldapgroups._ids
+                }
+            }).then(function(result){
+                $scope.isLdapAuth = result.data.isLdapAuth;
+                $scope.ldapgroups = result.data.ldapgroups;
             });
         };
 
@@ -174,6 +188,4 @@ angular.module('openITCOCKPIT')
 
         //Reset form on page load
         $scope.load();
-
     });
-

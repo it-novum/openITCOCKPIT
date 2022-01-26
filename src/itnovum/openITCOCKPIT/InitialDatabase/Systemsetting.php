@@ -781,6 +781,14 @@ class Systemsetting extends Importer {
                 'created'  => '2021-08-13 13:07:17',
                 'modified' => '2021-08-13 13:07:17'
             ],
+            (int)91 => [
+                'key'      => 'FRONTEND.LDAP.GROUP_QUERY',
+                'value'    => 'ObjectClass=Group',
+                'info'     => 'This query filter is used by openITCOCKPIT to import LDAP groups into the database',
+                'section'  => 'FRONTEND',
+                'created'  => '2022-01-06 08:52:17',
+                'modified' => '2022-01-06 08:52:17'
+            ]
         ];
 
         return $data;
