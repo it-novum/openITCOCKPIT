@@ -43,6 +43,7 @@ use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Filesystem\Folder;
+use Cake\I18n\FrozenDate;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use CheckmkModule\Command\CheckmkNagiosExportCommand;
@@ -52,6 +53,7 @@ use CheckmkModule\Model\Table\MkSatTasksTable;
 use DistributeModule\Model\Entity\Satellite;
 use DistributeModule\Model\Entity\SatelliteTask;
 use DistributeModule\Model\Table\SatelliteTasksTable;
+use ImportModule\Model\Table\SatellitePushAgentsTable;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
@@ -997,14 +999,21 @@ class GearmanWorkerCommand extends Command {
                 // Got openITCOCKPIT Agent Query Result from Satellite
                 $hasError = !empty($payload['Error']);
 
+                if (!Plugin::isLoaded('DistributeModule')) {
+                    break;
+                }
+
                 /** @var SatelliteTasksTable $SatelliteTasksTable */
                 $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
 
-                try {
-                    /** @var AgentconfigsTable $AgentconfigsTable */
-                    $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+                $IsGetAllPushAgentsRequest = $payload['IsGetAllPushAgentsRequest'] ?? false;
 
-                    $record = $AgentconfigsTable->getConfigById($payload['AgentConfigId']);
+                if ($IsGetAllPushAgentsRequest === true) {
+                    // Import Module wants to query all Push agents
+                    // Process get_all_push_agents result
+                    if (!Plugin::isLoaded('ImportModule')) {
+                        break;
+                    }
 
                     $task = $SatelliteTasksTable->find()
                         ->where([
@@ -1014,19 +1023,81 @@ class GearmanWorkerCommand extends Command {
                         ->firstOrFail();
 
                     $task = $SatelliteTasksTable->patchEntity($task, [
-                        'result' => $payload['RawResult'] ?? null,
+                        'result' => 'Result gets stored to satellite_push_agents table',
                         'error'  => $payload['Error'] ?? null,
                         'status' => $hasError ? SatelliteTask::SatelliteTaskFinishedError : SatelliteTask::SatelliteTaskFinishedSuccessfully
                     ]);
-
-                    if ($hasError === false && $record->use_autossl) {
-                        $record->set('autossl_successful', true);
-                        $AgentconfigsTable->save($record);
-                    }
-
                     $SatelliteTasksTable->save($task);
-                } catch (RecordNotFoundException $e) {
-                    Log::error('Could not find any satellite task for: ' . json_encode($payload));
+
+                    /** @var SatellitePushAgentsTable $SatellitePushAgentsTable */
+                    $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+                    if (!empty($payload['RawResult'])) {
+                        $jsonResults = json_decode($payload['RawResult'], true);
+                        foreach ($jsonResults as $result) {
+                            $lastUpdate = new FrozenDate($result['last_update']);
+                            $created = new FrozenDate($result['created']);
+                            $modified = new FrozenDate($result['modified']);
+                            $data = [
+                                'uuid'                 => $result['uuid'], // Agent UUID
+                                'satellite_id'         => $payload['SatelliteID'],
+                                'hostname'             => $result['hostname'],
+                                'ipaddress'            => $result['ipaddress'],
+                                'remote_address'       => $result['remote_address'],
+                                'http_x_forwarded_for' => $result['http_x_forwarded_for'],
+                                'checkresults'         => $result['checkresults'],
+                                'last_update'          => $lastUpdate->format('Y-m-d H:i:s'),
+                                'created'              => $created->format('Y-m-d H:i:s'),
+                                'modified'             => $modified->format('Y-m-d H:i:s'),
+                            ];
+                            if ($SatellitePushAgentsTable->exists([
+                                'SatellitePushAgents.uuid' => $result['uuid']
+                            ])) {
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->find()
+                                    ->where([
+                                            'SatellitePushAgents.uuid' => $result['uuid']
+                                        ]
+                                    )->first();
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->patchEntity($satellitePushAgentEntity, $data);
+
+                            } else {
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->newEntity($data);
+
+                            }
+                            $SatellitePushAgentsTable->save($satellitePushAgentEntity);
+                        }
+                    }
+                }
+
+                if ($IsGetAllPushAgentsRequest === false) {
+                    // Process Satellite Response for oITC Agent triggered by Wizard
+                    try {
+                        /** @var AgentconfigsTable $AgentconfigsTable */
+                        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+                        $record = $AgentconfigsTable->getConfigById($payload['AgentConfigId']);
+
+                        $task = $SatelliteTasksTable->find()
+                            ->where([
+                                'id'           => $payload['TaskID'],
+                                'satellite_id' => $payload['SatelliteID']
+                            ])
+                            ->firstOrFail();
+
+                        $task = $SatelliteTasksTable->patchEntity($task, [
+                            'result' => $payload['RawResult'] ?? null,
+                            'error'  => $payload['Error'] ?? null,
+                            'status' => $hasError ? SatelliteTask::SatelliteTaskFinishedError : SatelliteTask::SatelliteTaskFinishedSuccessfully
+                        ]);
+
+                        if ($hasError === false && $record->use_autossl) {
+                            $record->set('autossl_successful', true);
+                            $AgentconfigsTable->save($record);
+                        }
+
+                        $SatelliteTasksTable->save($task);
+                    } catch (RecordNotFoundException $e) {
+                        Log::error('Could not find any satellite task for: ' . json_encode($payload));
+                    }
                 }
 
                 break;

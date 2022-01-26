@@ -2,16 +2,18 @@ angular.module('openITCOCKPIT')
     .controller('AgentconnectorsSelectAgentController', function($scope, $http, $state, $stateParams, RedirectService, NotyService){
 
         $scope.hostId = $stateParams.hostId;
+        $scope.isLoading = true;
 
         // Load current agent config if any exists
         $scope.load = function(searchString, selected){
-            $scope.runningCheck = true;
+            $scope.isLoading = true;
             $http.get("/agentconnector/select_agent.json", {
                 params: {
                     hostId: $scope.hostId,
                     'angular': true
                 }
             }).then(function(result){
+                $scope.isLoading = false;
                 $scope.config = result.data.config;
                 $scope.host = result.data.host;
                 $scope.pushAgents = result.data.pushAgents;

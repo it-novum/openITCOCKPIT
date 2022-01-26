@@ -1071,7 +1071,6 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     z-index: 2500;
 }
 
-
 @keyframes strike {
     0% {
         width: 0;
@@ -1114,4 +1113,13 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-size: 140%;
     font-style: normal;
     margin-right: -2px;
+}
+
+.light-on:hover {
+    text-shadow:0 0 3px #FFE205, 0 0 7px #FFE205, 0 0 20px #EDD205;color:#FFE205;
+}
+
+.popover {
+    width:auto;
+    max-width:none; /* Required for popovers wider than 276px (Bootstrap's max-width for popovers) */
 }

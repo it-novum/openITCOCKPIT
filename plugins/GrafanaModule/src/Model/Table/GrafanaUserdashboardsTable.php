@@ -344,4 +344,24 @@ class GrafanaUserdashboardsTable extends Table {
 
         return $list;
     }
+
+    public function getGrafanaUserdashboardsWithPanelsAndMetricsById($id) {
+        $query = $this->find();
+        $query->innerJoin(['GrafanaUserdashboardPanels' => 'grafana_userdashboard_panels'], [
+            'GrafanaUserdashboardPanels.userdashboard_id = GrafanaUserdashboards.id'
+        ])
+            ->innerJoin(['GrafanaUserdashboardMetrics' => 'grafana_userdashboard_metrics'], [
+                'GrafanaUserdashboardMetrics.panel_id = GrafanaUserdashboardPanels.id',
+            ])
+            ->innerJoin(['Services' => 'services'], [
+                'Services.id = GrafanaUserdashboardMetrics.service_id',
+            ])
+            ->where([
+                    'GrafanaUserdashboards.id' => $id,
+                    'Services.disabled'        => 0
+                ]
+            );
+
+        return $query->first();
+    }
 }
