@@ -109,6 +109,34 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                         <div>
 
                                             <div class="row">
+                                                <div class="col-12" ng-show="isLoading">
+                                                    <div
+                                                        class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="alert-icon">
+                                                                <span class="icon-stack icon-stack-md">
+                                                                    <i class="base-7 icon-stack-3x color-info-600"></i>
+                                                                    <i class="fas fa-hourglass-start icon-stack-1x text-white"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="flex-1">
+                                                                <span class="h5 color-info-600">
+                                                                    <?= __('Waiting for Agent data.'); ?>
+                                                                </span>
+                                                                <div class="progress mt-1 progress-xs">
+                                                                    <div
+                                                                        class="progress-bar progress-bar-striped progress-bar-animated bg-info-600"
+                                                                        role="progressbar" style="width: 100%"
+                                                                        aria-valuenow="100"
+                                                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row" ng-hide="isLoading">
                                                 <div class="col-12">
                                                     <div class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                         <div class="d-flex align-items-center">
@@ -137,7 +165,7 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
                                                 </div>
 
                                             </div>
-                                            <div class="row">
+                                            <div class="row" ng-hide="isLoading">
                                                 <div class="form-group col-12 padding-left-0 ">
                                                     <label class="col-12 control-label"
                                                            for="enable_push_mode">

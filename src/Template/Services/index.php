@@ -509,12 +509,17 @@
                                     </i>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('servicename')">
-                                    <i class="fa" ng-class="getSortClass('servicename')"></i>
-                                    <?php echo __('Service name'); ?>
+                                <th class="no-sort">
+                                    <span ng-click="orderBy('Hosts.name')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
+                                        <?= __('Host'); ?> /
+                                    </span>
+                                    <span ng-click="orderBy('servicename')">
+                                        <i class="fa" ng-class="getSortClass('servicename')"></i>
+                                        <?= __('Service'); ?>
+                                    </span>
                                 </th>
-
-
+                                
                                 <th class="no-sort tableStatewidth"
                                     ng-click="orderBy('Servicestatus.last_state_change')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.last_state_change')"></i>

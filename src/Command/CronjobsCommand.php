@@ -105,7 +105,7 @@ class CronjobsCommand extends Command {
         $this->cronjobsToExecute = [];
         foreach ($cronjobs as $cronjob) {
             if (
-                $cronjob['Cronschedule']['start_time'] == null ||
+                !(isset($cronjob['Cronschedule']['start_time'])) ||
                 (time() >= (strtotime($cronjob['Cronschedule']['start_time']) + $this->m2s($cronjob['Cronjob']['interval'])) && $cronjob['Cronschedule']['is_running'] == 0) ||
                 $this->force === true
             ) {
