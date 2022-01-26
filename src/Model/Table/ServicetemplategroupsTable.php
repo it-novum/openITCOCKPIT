@@ -440,8 +440,7 @@ class ServicetemplategroupsTable extends Table {
                 'Servicetemplates' => function (Query $query) {
                     $query->disableAutoFields()
                         ->select([
-                            'id',
-                            'name'
+                            'id'
                         ]);
                     return $query;
                 }
@@ -452,10 +451,10 @@ class ServicetemplategroupsTable extends Table {
             ->disableHydration()
             ->first();
 
-        if (empty($servicetemplates)) {
+        if(empty(!$servicetemplates['servicetemplates'])){
             return [];
         }
-        return $servicetemplates->toArray();
+        return Hash::extract($servicetemplates['servicetemplates'], '{n}.id');
     }
 
     /**
