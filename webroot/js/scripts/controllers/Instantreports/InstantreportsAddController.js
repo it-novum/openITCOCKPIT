@@ -113,7 +113,6 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Instantreport.container_id,
-                        'filter[Hosts.name]': searchString,
                         'filter[servicename]': searchString,
                         'selected[]': $scope.post.Instantreport.services._ids,
                         'resolveContainerIds': true
