@@ -2967,6 +2967,7 @@ class ServicesTable extends Table {
 
         if ($type === 'all') {
             $query->order([
+                'Hosts.name' => 'asc',
                 'servicename' => 'asc'
             ]);
         }
