@@ -231,7 +231,11 @@ class HostgroupsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update contact data
             $User = new User($this->getUser());
-            $hostgroupEntity = $HostgroupsTable->get($id);
+            $hostgroupEntity = $HostgroupsTable->get($id, [
+                'contain' => [
+                    'Containers'
+                ]
+            ]);
 
             $hostgroupEntity->setAccess('uuid', false);
             $hostgroupEntity = $HostgroupsTable->patchEntity($hostgroupEntity, $this->request->getData('Hostgroup'));

@@ -226,14 +226,13 @@ class ServicegroupsController extends AppController {
         }
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
-            //Return host group information
+            //Return service group information
             $this->set('servicegroup', $servicegroup);
             $this->viewBuilder()->setOption('serialize', ['servicegroup']);
             return;
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            //Update contact data
             $User = new User($this->getUser());
             $servicegroupEntity = $ServicegroupsTable->get($id, [
                 'contain' => [
