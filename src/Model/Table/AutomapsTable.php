@@ -221,11 +221,12 @@ class AutomapsTable extends Table {
     }
 
     /**
-     * @param array $selected
-     * @param array $MY_RIGHTS
+     * @param $selected
+     * @param AutomapsFilter $AutomapsFilter
+     * @param $MY_RIGHTS
      * @return array
      */
-    public function getAutomapsForAngular($selected = [], $MY_RIGHTS = []) {
+    public function getAutomapsForAngular($selected = [], AutomapsFilter $AutomapsFilter, $MY_RIGHTS = []) {
         if (!is_array($selected)) {
             $selected = [$selected];
         }
@@ -234,7 +235,9 @@ class AutomapsTable extends Table {
             ->select([
                 'Automaps.id',
                 'Automaps.name'
-            ]);
+            ])->where(
+                $AutomapsFilter->indexFilter()
+            );
 
         if (!empty($MY_RIGHTS)) {
             $query->andWhere([

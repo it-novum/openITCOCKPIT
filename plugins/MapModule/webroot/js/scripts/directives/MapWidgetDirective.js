@@ -34,7 +34,7 @@ angular.module('openITCOCKPIT').directive('mapWidget', function($http){
                 $http.get("/map_module/mapeditors/loadMapsByString.json", {
                     params: {
                         'angular': true,
-                        'filter[Map.name]': searchString,
+                        'filter[Maps.name]': searchString,
                         'selected[]': $scope.map.map_id
                     }
                 }).then(function(result){
