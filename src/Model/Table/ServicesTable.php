@@ -759,7 +759,6 @@ class ServicesTable extends Table {
                 ->order([
                     'servicename' => 'asc'
                 ])
-                ->limit(ITN_AJAX_LIMIT)
                 ->disableHydration()
                 ->all();
 
