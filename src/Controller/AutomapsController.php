@@ -516,7 +516,9 @@ class AutomapsController extends AppController {
             }
             $widgetEntity = $WidgetsTable->get($widgetId);
             $widget = $widgetEntity->toArray();
-
+            $config = [
+                'automap_id' => null
+            ];
             if ($widget['json_data'] !== null && $widget['json_data'] !== '') {
                 $config = json_decode($widget['json_data'], true);
                 if (!isset($config['automap_id'])) {
@@ -564,6 +566,9 @@ class AutomapsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        $AutomapsFilter = new AutomapsFilter($this->request);
+
+
         /** @var AutomapsTable $AutomapsTable */
         $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
         $selected = $this->request->getQuery('selected');
@@ -574,7 +579,7 @@ class AutomapsController extends AppController {
         }
 
         $automaps = Api::makeItJavaScriptAble(
-            $AutomapsTable->getAutomapsForAngular($selected, null, $MY_RIGHTS)
+            $AutomapsTable->getAutomapsForAngular($selected, $AutomapsFilter, $MY_RIGHTS)
         );
 
         $this->set('automaps', $automaps);
