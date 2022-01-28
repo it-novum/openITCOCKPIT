@@ -324,6 +324,8 @@ angular.module('openITCOCKPIT')
             if($scope.interval !== null){
                 $interval.cancel($scope.interval);
             }
+            disableGraphAutorefresh();
+            jQuery('#graph_data_tooltip').remove();  //removed all tooltips from DOM
         });
 
         var getServicestatusTextColor = function(){
@@ -900,12 +902,6 @@ angular.module('openITCOCKPIT')
             graphAutoRefreshIntervalId = null;
         };
 
-        //Disable status update interval, if the object gets removed from DOM.
-        $scope.$on('$destroy', function(){
-            disableGraphAutorefresh();
-        });
-
-
         $scope.clipboardCommand = function(){
             navigator.clipboard.writeText($scope.mergedService.serviceCommandLine);
         };
@@ -953,5 +949,4 @@ angular.module('openITCOCKPIT')
                 jQuery('[data-toggle="tooltip"]').tooltip('hide');
             }, 1500);
         });
-
     });
