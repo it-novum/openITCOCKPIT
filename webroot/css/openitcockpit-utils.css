@@ -1123,3 +1123,14 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     width:auto;
     max-width:none; /* Required for popovers wider than 276px (Bootstrap's max-width for popovers) */
 }
+
+#ContactContainers_chosen .search-choice-disabled{
+    color:#868e96;
+    cursor: not-allowed;
+}
+
+#ContactContainers_chosen .search-choice-disabled:after{
+    font-family: "FontAwesome";
+    content: "\f023";
+    color:#ffbb33;
+}

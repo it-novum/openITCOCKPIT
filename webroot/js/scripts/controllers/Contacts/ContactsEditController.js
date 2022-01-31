@@ -2,6 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('ContactsEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
 
         $scope.id = $stateParams.id;
+        $scope.notRemovableContainers = [1, 37, 50];
 
         $scope.init = true;
 
