@@ -1875,7 +1875,7 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(array_merge($ServiceConditions->getOrder(), ['Services.id' => 'ASC']));
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -2035,7 +2035,7 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(array_merge($ServiceConditions->getOrder(), ['Services.id' => 'ASC']));
 
 
         if ($PaginateOMat === null) {
