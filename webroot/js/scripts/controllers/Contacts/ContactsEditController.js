@@ -2,7 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('ContactsEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
 
         $scope.id = $stateParams.id;
-        $scope.notRemovableContainers = [1, 37, 50];
+        $scope.notRemovableContainers = [22, 1, 15, 23];
 
         $scope.init = true;
 
@@ -19,7 +19,6 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.containers = result.data.containers;
-                $scope.init = false;
             });
         };
 
@@ -32,8 +31,17 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.post = result.data.contact;
+
+                for(var i in $scope.containers){
+                    if($scope.notRemovableContainers.indexOf($scope.containers[i].key) === -1){
+                        $scope.containers[i].editable = true;
+                    } else{
+                        $scope.containers[i].editable = false;
+                    }
+                }
                 $scope.init = false;
                 $scope.data.areContainersChangeable = result.data.areContainersChangeable;
+
                 $scope.loadCommands();
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -175,6 +183,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+
             $scope.loadUsers();
             $scope.loadTimeperiods();
         }, true);
@@ -258,6 +267,4 @@ angular.module('openITCOCKPIT')
             }
 
         });
-
-
     });

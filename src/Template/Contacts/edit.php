@@ -66,19 +66,15 @@
                             <label class="control-label" for="ContactContainers">
                                 <?php echo __('Container'); ?>
                             </label>
-                            {{post.Contact.containers._ids}}
                             <select
                                 id="ContactContainers"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
-                                chosen="{containers}"
+                                chosen="containers"
                                 multiple
+                                ng-options="container.key as container.value for container in containers | filter:{editable:true}"
                                 ng-disabled="data.areContainersChangeable === false"
                                 ng-model="post.Contact.containers._ids">
-                                <option ng-repeat="container in containers" ng-value="container.key"
-                                        ng-disabled="notRemovableContainers.indexOf(container.key) !== -1">
-                                    {{container.value}}
-                                </option>
                             </select>
                             <div ng-show="post.Contact.containers._ids.length === 0" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -87,6 +83,24 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="control-label hintmark">
+                                <?php echo __('Required containers'); ?>
+                            </label>
+                            <select data-placeholder=" "
+                                    class="form-control"
+                                    chosen="{containers}"
+                                    multiple
+                                    ng-disabled="true"
+                                    ng-options="container.key as container.value +' 🔒' disable when true for container in containers | filter:{editable:false}"
+                                    ng-model="notRemovableContainers">
+                            </select>
+                            <div class="help-block">
+                                <?= __('This contact is used by other configuration objects. Deleting these containers would result in a corrupted configuration.') ?>
+                            </div>
+                        </div>
+
 
                         <div class="form-group required" ng-class="{'has-error': errors.name}">
                             <label class="control-label">

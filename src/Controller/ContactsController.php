@@ -49,6 +49,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use FreeDSx\Ldap\Exception\BindException;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Permissions\ContactContainersPermissions;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -228,6 +229,9 @@ class ContactsController extends AppController {
             $this->getWriteContainers(),
             $this->hasRootPrivileges
         );
+
+        $contactContainers = $contact['Contact']['containers']['_ids'];
+        FileDebugger::dump($contactContainers);
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return contact information
@@ -727,4 +731,3 @@ class ContactsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['ldapUsers']);
     }
 }
-
