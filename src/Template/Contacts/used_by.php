@@ -48,7 +48,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='ContactsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='ContactsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -73,6 +74,11 @@
                                 <?php else: ?>
                                     {{ contactgroup.container.name }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(contactgroup.container.parent_id) !== -1">
+                                    <i class="fas fa-lock text-warning"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
@@ -92,6 +98,11 @@
                                 <?php else: ?>
                                     {{ hosttemplate.name }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(hosttemplate.container_id) !== -1">
+                                    <i class="fas fa-lock text-warning"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
@@ -110,6 +121,11 @@
                                 <?php else: ?>
                                     {{ servicetemplate.name }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(servicetemplate.container_id) !== -1">
+                                    <i class="fas fa-lock text-warning"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
@@ -128,6 +144,11 @@
                                 <?php else: ?>
                                     {{ host.name }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(host.container_id) !== -1">
+                                    <i class="fas fa-lock text-warning"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
@@ -159,11 +180,16 @@
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
                                     <a ui-sref="HostescalationsEdit({id:hostescalation.id})">
-                                        <?php echo __('Host escalation'); ?> #{{ $index +1 }}
+                                        <?php echo __('Host escalation'); ?> #{{ $index + 1 }}
                                     </a>
                                 <?php else: ?>
                                     <?php echo __('Host escalation'); ?> #{{ $index +1 }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(hostescalation.container_id) !== -1">
+                                    <i class="fas fa-lock text-warning"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
@@ -177,11 +203,16 @@
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
                                     <a ui-sref="ServiceescalationsEdit({id:serviceescalation.id})">
-                                        <?php echo __('Service escalation'); ?> #{{ $index +1 }}
+                                        <?php echo __('Service escalation'); ?> #{{ $index + 1 }}
                                     </a>
                                 <?php else: ?>
                                     <?php echo __('Service escalation'); ?> #{{ $index +1 }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(hostescalation.container_id) !== -1">
+                                    <i class="fas fa-lock text-warning"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
                         </tbody>

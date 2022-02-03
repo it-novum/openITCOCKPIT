@@ -76,7 +76,7 @@
                                 ng-disabled="data.areContainersChangeable === false"
                                 ng-model="post.Contact.containers._ids">
                             </select>
-                            <div ng-show="post.Contact.containers._ids.length === 0" class="warning-glow">
+                            <div ng-show="post.Contact.containers._ids.length === 0 && requiredContainers.length === 0" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
                             </div>
                             <div ng-repeat="error in errors.containers">
@@ -84,20 +84,34 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="control-label hintmark">
+                        <div class="form-group" ng-show="requiredContainers.length > 0">
+                            <label class="control-label">
                                 <?php echo __('Required containers'); ?>
+                                <?php if ($this->Acl->hasPermission('usedBy', 'contacts')): ?>
+                                    <a ui-sref="ContactsUsedBy({id:id, containerIds: requiredContainers})"
+                                    class="margin-left-5">
+                                        <i class="fa fa-reply-all fa-flip-horizontal text-primary"></i>
+                                        <?php echo __('Used by'); ?>
+                                        <sup>
+                                            <i class="fas fa-info-circle"></i>
+                                        </sup>
+                                    </a>
+                                <?php endif; ?>
                             </label>
+
                             <select data-placeholder=" "
                                     class="form-control"
                                     chosen="{containers}"
                                     multiple
                                     ng-disabled="true"
                                     ng-options="container.key as container.value +' 🔒' disable when true for container in containers | filter:{editable:false}"
-                                    ng-model="notRemovableContainers">
+                                    ng-model="requiredContainers">
                             </select>
                             <div class="help-block">
                                 <?= __('This contact is used by other configuration objects. Deleting these containers would result in a corrupted configuration.') ?>
+                            </div>
+                            <div class="help-block">
+
                             </div>
                         </div>
 
