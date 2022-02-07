@@ -101,7 +101,6 @@ class MapeditorsController extends AppController {
                 'Mapsummaryitems'
             ]
         ])->toArray();
-
         $containerIdsToCheck = Hash::extract($map, 'containers.{n}.id');
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
             $this->render403();
@@ -228,6 +227,8 @@ class MapeditorsController extends AppController {
 
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
+        $properties =[];
 
         switch ($type) {
             case 'host':
@@ -511,7 +512,7 @@ class MapeditorsController extends AppController {
 
                 if (!empty($host) && isset($host[0])) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($host[0]->toArray(), 'hosts_to_containers_sharing.id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($host[0]->toArray(), 'hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
                         }
