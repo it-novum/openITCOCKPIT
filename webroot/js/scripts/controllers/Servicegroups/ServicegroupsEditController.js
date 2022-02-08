@@ -59,10 +59,14 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServices = function(searchString){
+            if($scope.post.Servicegroup.container.parent_id == 0){
+                return;
+            }
             $scope.params = {
-                'angular': true,
                 'containerId': $scope.post.Servicegroup.container.parent_id,
-                'filter[servicename]': searchString,
+                'filter': {
+                    'servicename': searchString,
+                },
                 'selected': $scope.post.Servicegroup.services._ids
             };
             $http.post("/services/loadServicesByContainerIdCake4.json?angular=true",
@@ -73,6 +77,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServicetemplates = function(searchString){
+            if($scope.post.Servicegroup.container.parent_id == 0){
+                return;
+            }
             $http.get("/servicegroups/loadServicetemplates.json", {
                 params: {
                     'angular': true,
@@ -118,5 +125,3 @@ angular.module('openITCOCKPIT')
         //$scope.load();
         $scope.loadContainers();
     });
-
-
