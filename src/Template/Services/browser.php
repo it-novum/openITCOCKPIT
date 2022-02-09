@@ -57,7 +57,8 @@ use Cake\Core\Plugin;
 <enable-service-notifications callback="showFlashMsg"></enable-service-notifications>
 <send-service-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-service-notification>
 <mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>
-<mass-delete-acknowledgements delete-url="/acknowledgements/delete/" callback="showFlashMsg"></mass-delete-acknowledgements>
+<mass-delete-acknowledgements delete-url="/acknowledgements/delete/"
+                              callback="showFlashMsg"></mass-delete-acknowledgements>
 
 
 <div class="row">
@@ -441,29 +442,29 @@ use Cake\Core\Plugin;
 
                                             <div class="row">
                                                 <div class="col-12">
-                                            <div>
-                                                <h4 class="no-padding">
-                                                    <i class="far fa-user"
-                                                       ng-show="!hostAcknowledgement.is_sticky"></i>
-                                                    <i class="fas fa-user"
-                                                       ng-show="hostAcknowledgement.is_sticky"></i>
-                                                    <?php echo __('State of host is acknowledged'); ?>
-                                                    <span ng-show="hostAcknowledgement.is_sticky">
+                                                    <div>
+                                                        <h4 class="no-padding">
+                                                            <i class="far fa-user"
+                                                               ng-show="!hostAcknowledgement.is_sticky"></i>
+                                                            <i class="fas fa-user"
+                                                               ng-show="hostAcknowledgement.is_sticky"></i>
+                                                            <?php echo __('State of host is acknowledged'); ?>
+                                                            <span ng-show="hostAcknowledgement.is_sticky">
                                                             (<?php echo __('Sticky'); ?>)
                                                         </span>
-                                                </h4>
-                                            </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Acknowledgement was set by'); ?>
-                                                <b>{{hostAcknowledgement.author_name}}</b>
-                                                <?php echo __('at'); ?>
-                                                {{hostAcknowledgement.entry_time}}
-                                            </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Comment: '); ?>
-                                                <div style="display:inline"
-                                                     ng-bind-html="hostAcknowledgement.commentDataHtml | trustAsHtml"></div>
-                                            </div>
+                                                        </h4>
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Acknowledgement was set by'); ?>
+                                                        <b>{{hostAcknowledgement.author_name}}</b>
+                                                        <?php echo __('at'); ?>
+                                                        {{hostAcknowledgement.entry_time}}
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Comment: '); ?>
+                                                        <div style="display:inline"
+                                                             ng-bind-html="hostAcknowledgement.commentDataHtml | trustAsHtml"></div>
+                                                    </div>
                                                 </div>
 
                                                 <div class="col-12">
@@ -1121,7 +1122,8 @@ use Cake\Core\Plugin;
                         <div class="row">
                             <div class="col-lg-12 padding-10">
                                 <div class="row">
-
+                                    Start - {{commonTimes.timeline.start * 1000 | date: 'yyyy-MM-dd HH:mm'}} + End -
+                                    {{commonTimes.timeline.end * 1000 | date: 'yyyy-MM-dd HH:mm' }}
                                     <div class="col-lg-12">
 
                                         <h3 class="margin-top-0">
@@ -1129,9 +1131,8 @@ use Cake\Core\Plugin;
                                             <span ng-hide="failureDurationInPercent">
                                                     <i class="fa fa-refresh fa-spin txt-primary"></i>
                                                 </span>
-                                            <span
-                                                ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent + ' %' :
-                                                    '<?php echo __('No data available!'); ?>'}}
+                                            <span ng-show="failureDurationInPercent">
+                                                {{ (failureDurationInPercent) ? failureDurationInPercent + ' %' : '<?= __('No data available!'); ?>'}}
                                             </span>
                                         </h3>
                                     </div>
@@ -1139,14 +1140,18 @@ use Cake\Core\Plugin;
                                         <div id="visualization"></div>
                                     </div>
 
-                                    <div class="col-lg-12">
-                                        <div class="row">
-                                            <div class="col-lg-12 bold"><?php echo __('Legend'); ?></div>
-                                            <div class="col-lg-12">
-                                                <?php echo __('State types'); ?>
+                                    <div class="col-lg-12" ng-hide="true">
+                                        <div class="row margin-top-10">
+                                            <div class="col-lg-12 bold">
+                                                <?= __('Legend'); ?>
+                                                <span class="fw-300">
+                                                    <i class="ng-binding">
+                                                         <?= __('State types'); ?>
+                                                    </i>
+                                                </span>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row margin-top-5">
                                             <div class="col-xs-12 col-lg-3">
                                                 <i class="fa fa-square ok-soft"></i>
                                                 <?php echo __('Ok soft'); ?>
@@ -1206,6 +1211,26 @@ use Cake\Core\Plugin;
                                             <div class="col-xs-12 col-lg-3">
                                                 <i class="fa fa-square txt-downtime-cancelled"></i>
                                                 <?php echo __('Downtime cancelled'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 padding-10">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       class="custom-control-input"
+                                                       id="SynchronizeTimes"
+                                                       ng-model="synchronizeTimes">
+                                                <label class="custom-control-label no-margin"
+                                                       for="SynchronizeTimes">
+                                                    <?= __('Synchronize times for timeline and service graph'); ?>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
