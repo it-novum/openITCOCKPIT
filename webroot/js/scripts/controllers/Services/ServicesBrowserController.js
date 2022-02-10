@@ -718,6 +718,11 @@ angular.module('openITCOCKPIT')
             var start = properties.start || -1;
             var end = properties.end || -1;
 
+            if(start > -1 && end > -1){
+                $scope.commonTimes.timeline.start = start;
+                $scope.commonTimes.timeline.end = end;
+            }
+
             $scope.timelineIsLoading = true;
             if(start > $scope.visTimelineStart && end < $scope.visTimelineEnd){
                 if($scope.synchronizeTimes === true && $scope.graphChanged === true){
@@ -727,6 +732,7 @@ angular.module('openITCOCKPIT')
                     $scope.timeline.options.end = new Date(end * 1000);
                     renderTimeline($scope.timelinedata, $scope.timeline.options);
                 }
+
                 $scope.timelineIsLoading = false;
                 //Zoom in data we already have
                 return;
@@ -798,14 +804,20 @@ angular.module('openITCOCKPIT')
             }
 
             function timeLinkeOnMouseWheel(event){
+                if($scope.synchronizeTimes === false){
+                    return;
+                }
                 $scope.graphChanged = false;
                 $scope.timelineChanged = true;
             }
 
-            function timelineHandleDown(evt){
+            function timelineHandleDown(event){
+                if($scope.synchronizeTimes === false){
+                    return;
+                }
                 $scope.graphChanged = false;
                 $scope.timelineChanged = true;
-                evt.preventDefault();
+                event.preventDefault();
             }
 
             $scope.visContainer.addEventListener('wheel', timeLinkeOnMouseWheel);
@@ -1011,7 +1023,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            if($scope.synchronizeTimes === false || $scope.graphChanged === false){
+            if($scope.synchronizeTimes === false && $scope.graphChanged === false){
                 return;
             }
             if(!_.isEqual(oldValue, newValue)){
@@ -1025,10 +1037,10 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            if($scope.synchronizeTimes === false || $scope.timelineChanged === false){
+
+            if($scope.synchronizeTimes === false && $scope.timelineChanged === false){
                 return;
             }
-
             if(!_.isEqual(oldValue, newValue)){
                 loadGraph(
                     $scope.host.Host.uuid,
