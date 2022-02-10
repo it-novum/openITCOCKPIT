@@ -1122,10 +1122,7 @@ use Cake\Core\Plugin;
                         <div class="row">
                             <div class="col-lg-12 padding-10">
                                 <div class="row">
-                                    Start - {{commonTimes.timeline.start * 1000 | date: 'yyyy-MM-dd HH:mm'}} + End -
-                                    {{commonTimes.timeline.end * 1000 | date: 'yyyy-MM-dd HH:mm' }}
                                     <div class="col-lg-12">
-
                                         <h3 class="margin-top-0">
                                             <?php echo __('Outages: '); ?>
                                             <span ng-hide="failureDurationInPercent">
@@ -1237,6 +1234,8 @@ use Cake\Core\Plugin;
                                 </div>
                             </div>
                         </div>
+                        Start - {{commonTimes.timeline.start * 1000 | date: 'yyyy-MM-dd HH:mm'}} + End -
+                        {{commonTimes.timeline.end * 1000 | date: 'yyyy-MM-dd HH:mm' }}
                     </div>
                     <!-- Timeline tab end -->
                     <!-- ServiceNow tab start -->

@@ -931,6 +931,10 @@ angular.module('openITCOCKPIT')
                     var start = lastTimestampInCurrentData / 1000 - $scope.timezone.user_time_to_server_offset;
 
                     $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime() + $scope.graphAutoRefreshInterval);
+                    if($scope.synchronizeTimes && $scope.commonTimes.timeline.start > 0){
+                        console.log($scope.commonTimes.timeline.start);
+                        start = $scope.commonTimes.timeline.start;
+                    }
 
                     var end = Math.floor($scope.serverTimeDateObject.getTime() / 1000);
                     if(start > 0){
