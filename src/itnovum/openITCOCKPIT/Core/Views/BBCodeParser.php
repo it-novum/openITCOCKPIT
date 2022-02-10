@@ -57,6 +57,14 @@ class BBCodeParser {
         $bbparser->addCodeDefinition($builder->build());
         $builder = new JBBCode\CodeDefinitionBuilder('large', '<span style="font-size: large;">{param}</span>');
         $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('table', '<table>{param}</table>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('tr', '<tr>{param}</tr>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('th', '<th>{param}</th>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('td', '<td>{param}</td>');
+        $bbparser->addCodeDefinition($builder->build());
 
         $builder = new JBBCode\CodeDefinitionBuilder('code', '<pre style="line-height: 12px;">{param}</pre>');
         $bbparser->addCodeDefinition($builder->build());
@@ -66,7 +74,7 @@ class BBCodeParser {
     /**
      * @return JBBCode\Parser
      */
-    public function getParser(){
+    public function getParser() {
         return $this->bbparser;
     }
 
