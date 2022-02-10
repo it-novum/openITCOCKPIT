@@ -1137,7 +1137,7 @@ use Cake\Core\Plugin;
                                         <div id="visualization"></div>
                                     </div>
 
-                                    <div class="col-lg-12" ng-hide="true">
+                                    <div class="col-lg-12">
                                         <div class="row margin-top-10">
                                             <div class="col-lg-12 bold">
                                                 <?= __('Legend'); ?>
@@ -1214,7 +1214,7 @@ use Cake\Core\Plugin;
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" ng-show="mergedService.has_graph">
                             <div class="col-lg-12 padding-10">
                                 <div class="row">
                                     <div class="col-lg-12">
@@ -1234,8 +1234,6 @@ use Cake\Core\Plugin;
                                 </div>
                             </div>
                         </div>
-                        Start - {{commonTimes.timeline.start * 1000 | date: 'yyyy-MM-dd HH:mm'}} + End -
-                        {{commonTimes.timeline.end * 1000 | date: 'yyyy-MM-dd HH:mm' }}
                     </div>
                     <!-- Timeline tab end -->
                     <!-- ServiceNow tab start -->
