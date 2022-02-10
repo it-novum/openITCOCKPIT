@@ -725,14 +725,8 @@ angular.module('openITCOCKPIT')
             var start = properties.start || -1;
             var end = properties.end || -1;
 
-            console.log(new Date(properties.start * 1000));
-            console.log(new Date(properties.end * 1000));
-
             $scope.timelineIsLoading = true;
 
-
-            console.log($scope.timeline.options);
-            console.log($scope.timelinedata);
 
             if(start > $scope.visTimelineStart && end < $scope.visTimelineEnd){
 
@@ -742,8 +736,6 @@ angular.module('openITCOCKPIT')
                     $scope.commonTimes.timeline.end = end;
                     $scope.timeline.options.start = start;
                     $scope.timeline.options.end = end;
-                    console.log($scope.timeline.options);
-                    console.log($scope.timelinedata);
                     renderTimeline($scope.timelinedata, $scope.timeline.options);
                 }
                 //Zoom in data we already have
@@ -811,7 +803,7 @@ angular.module('openITCOCKPIT')
                 });
             }else{
                 $scope.visTimeline.setItems($scope.timelinedata.items);
-                $scope.visTimeline.setOptions($scope.timeline.options);
+                //$scope.visTimeline.setOptions($scope.timeline.options);
             }
 
             $scope.visTimeline.on('changed', function(){
@@ -1020,12 +1012,8 @@ angular.module('openITCOCKPIT')
 
 
             if($scope.synchronizeTimes === true){
-/*
-                if(!_.isEqual(oldValue.timeline, newValue.timeline)){
-                    console.log(oldValue.timeline);
-                    console.log(newValue.timeline,);
-                    console.log('update graph');
 
+                if(!_.isEqual(oldValue.timeline, newValue.timeline)){
                     loadGraph(
                         $scope.host.Host.uuid,
                         $scope.mergedService.uuid,
@@ -1038,7 +1026,7 @@ angular.module('openITCOCKPIT')
                 }
 
 
- */
+                /*
                 if(!_.isEqual(oldValue.graph, newValue.graph)){
                     console.log('update timeline');
                     console.log(new Date($scope.commonTimes.graph.start * 1000));
@@ -1049,6 +1037,7 @@ angular.module('openITCOCKPIT')
                         end: $scope.commonTimes.graph.end
                     });
                 }
+                 */
 
             }
 
