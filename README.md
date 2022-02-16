@@ -8,7 +8,8 @@ The open source configuration interface for [Nagios](https://www.nagios.org/), [
 
 [![Discord: ](https://img.shields.io/badge/Discord-Discord.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/G8KhxKuQ9G)
 [![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-Libera.Chat-blue.svg)](https://web.libera.chat/#openitcockpit)
-
+[![Build Status Stable](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&subject=stable)](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&subject=stable)
+[![Build Status Nightly](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&subject=nightly)](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&subject=nightly)
 
 # What is openITCOCKPIT?
 openITCOCKPIT is an Open Source system monitoring tool built for different monitoring engines like Nagios, Naemon and Prometheus.
@@ -36,11 +37,10 @@ Password: demo123
 
 
 # System requirements
-* Ubuntu Linux 64 bit (20.04 LTS "focal" and 18.04 LTS "bionic"), Debian Linux 64 bit (10 "buster")
-* PHP >= 7.2
+* Ubuntu LTS or Debian
 * 2 CPU cores (x86-64)
 * 2 GB RAM
-* 25 GB space
+* 40 GB space
 
 ### Production system sizing
 Unfortunately there is no golden rule for the right sizing of a monitoring system. This depends on the amount of hosts and services you like to monitor.
