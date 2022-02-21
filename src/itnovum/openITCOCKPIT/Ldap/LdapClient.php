@@ -86,7 +86,9 @@ class LdapClient {
             'ssl_allow_self_signed' => true,
             'ssl_validate_cert'     => false,
             'tls_level'             => 0,
-            'base_dn'               => 'DC=example,DC=org'
+            'base_dn'               => 'DC=example,DC=org',
+            'timeout_connect'       => 3,
+            'timeout_read'          => 30,
         ];
 
         $options = Hash::merge($_options, $options);

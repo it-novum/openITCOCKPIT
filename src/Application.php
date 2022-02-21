@@ -23,8 +23,10 @@ use App\Identifier\LdapIdentifier;
 use App\Identifier\oAuthIdentifier;
 use App\Identifier\PasswordIdentifier;
 use App\Identifier\SslIdentifier;
+use App\Identity\AppIdentity;
 use App\Lib\PluginManager;
 use App\Middleware\AppAuthenticationMiddleware;
+use App\Middleware\LdapUsergroupIdMiddleware;
 use App\Model\Table\SystemsettingsTable;
 use App\Policy\RequestPolicy;
 use Authentication\AuthenticationService;
@@ -121,7 +123,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface {
         $service = new AuthenticationService([
             //Do not redirect!
-            'unauthenticatedRedirect' => null, //'/users/login'
+            'unauthenticatedRedirect' => null, //'/users/login',
+            'identityClass'           => AppIdentity::class
         ]);
         $fields = [
             IdentifierInterface::CREDENTIAL_USERNAME => 'email',
@@ -247,6 +250,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
                 //Only redirect .html requests if login is invalid - no json requests
                 'htmlUnauthenticatedRedirect' => '/users/login'
             ]))
+            ->add(new LdapUsergroupIdMiddleware()) // ITC-2693
             ->add(new AuthorizationMiddleware($this))
             ->add(new RequestAuthorizationMiddleware());
 
