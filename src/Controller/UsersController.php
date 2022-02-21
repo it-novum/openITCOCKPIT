@@ -187,9 +187,13 @@ class UsersController extends AppController {
 
     public function logout() {
         $Session = $this->request->getSession();
+        $identity = $this->getUser();
+        $userId = $identity->get('id');
         $isOAuthLogin = $Session->read('is_oauth_login') === true;
         $Session->delete('is_oauth_login');
         $Session->delete('MessageOtd.showMessage');
+        Cache::delete('permissions_ldap_usergroup_id_for_' . $userId, 'permissions');
+        Cache::delete('userPermissions_' . $userId, 'permissions');
 
         $this->Authentication->logout();
 
@@ -198,6 +202,7 @@ class UsersController extends AppController {
             $this->redirect($oAuthClient->getLogoutUrl());
             return;
         }
+
 
         $this->redirect([
             'action' => 'login'
