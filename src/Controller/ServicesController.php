@@ -2243,6 +2243,9 @@ class ServicesController extends AppController {
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
         $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
 
+        $start = (int)$start;
+        $end = (int)$end;
+
         $this->set('start', $start);
         $this->set('end', $end);
         $this->viewBuilder()->setOption('serialize', [

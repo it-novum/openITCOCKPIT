@@ -65,14 +65,8 @@ angular.module('openITCOCKPIT')
         $scope.synchronizeTimes = false;
         //times for graph and timeline if synchronize Times is active
         $scope.commonTimes = {
-            timeline: {
-                start: null,
-                end: null
-            },
-            graph: {
-                start: null,
-                end: null
-            }
+            start: null,
+            end: null
         };
 
         $scope.timeline = {
@@ -362,8 +356,8 @@ angular.module('openITCOCKPIT')
             $scope.graphChanged = true;
             $scope.timelineChanged = false;
 
-            $scope.commonTimes.graph.start = start;
-            $scope.commonTimes.graph.end = end;
+            $scope.commonTimes.start = start;
+            $scope.commonTimes.end = end;
 
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
         };
@@ -703,8 +697,8 @@ angular.module('openITCOCKPIT')
                         disableGraphAutorefresh();
                     }
 
-                    $scope.commonTimes.graph.start = start;
-                    $scope.commonTimes.graph.end = end;
+                    $scope.commonTimes.start = start;
+                    $scope.commonTimes.end = end;
 
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
                 });
@@ -719,8 +713,10 @@ angular.module('openITCOCKPIT')
             var end = properties.end || -1;
 
             if(start > -1 && end > -1){
-                $scope.commonTimes.timeline.start = start;
-                $scope.commonTimes.timeline.end = end;
+                $scope.commonTimes.start = start;
+                $scope.commonTimes.end = end;
+                start -= $scope.timezone.user_time_to_server_offset;
+                end -= $scope.timezone.user_time_to_server_offset;
             }
 
             $scope.timelineIsLoading = true;
@@ -728,9 +724,13 @@ angular.module('openITCOCKPIT')
                 if($scope.synchronizeTimes === true && $scope.graphChanged === true){
                     $scope.visTimelineStart = start;
                     $scope.visTimelineEnd = end;
+
+                    console.log($scope.timelineChanged);
+
                     $scope.timeline.options.start = new Date(start * 1000);
                     $scope.timeline.options.end = new Date(end * 1000);
-                    renderTimeline($scope.timelinedata, $scope.timeline.options);
+
+                    //renderTimeline($scope.timelinedata, $scope.timeline.options);
                 }
 
                 $scope.timelineIsLoading = false;
@@ -748,8 +748,9 @@ angular.module('openITCOCKPIT')
                 $scope.timelinedata = {};
                 $scope.timeline.options.start = new Date(result.data.start * 1000);
                 $scope.timeline.options.end = new Date(result.data.end * 1000);
-                $scope.timeline.options.min = new Date(new Date(result.data.start * 1000).setFullYear(new Date(result.data.start * 1000).getFullYear() - 1)); //May 1 year of zoom
-                $scope.timeline.options.max = new Date(result.data.end * 1000);    // upper limit of visible range
+
+                $scope.timeline.options.min = new Date(new Date((parseInt(result.data.start, 10) + $scope.timezone.user_time_to_server_offset) * 1000).setFullYear(new Date(result.data.start * 1000).getFullYear() - 1)); //May 1 year of zoom
+                $scope.timeline.options.max = new Date((parseInt(result.data.end, 10) + $scope.timezone.user_time_to_server_offset) * 1000);    // upper limit of visible range
                 $scope.timelinedata = {
                     items: new vis.DataSet(result.data.servicestatehistory),
                     groups: new vis.DataSet(result.data.groups)
@@ -763,8 +764,8 @@ angular.module('openITCOCKPIT')
                 $scope.visTimelineStart = result.data.start;
                 $scope.visTimelineEnd = result.data.end;
 
-                $scope.commonTimes.timeline.start = parseInt($scope.visTimelineStart, 10);
-                $scope.commonTimes.timeline.end = parseInt($scope.visTimelineEnd, 10);
+                $scope.commonTimes.start = parseInt($scope.visTimelineStart, 10);
+                $scope.commonTimes.end = parseInt($scope.visTimelineEnd, 10);
 
                 renderTimeline($scope.timelinedata, $scope.timeline.options);
                 $scope.timelineIsLoading = false;
@@ -775,6 +776,12 @@ angular.module('openITCOCKPIT')
             if($scope.visTimeline === null){
                 $scope.visTimeline = new vis.Timeline($scope.visContainer, $scope.timelinedata.items, $scope.timelinedata.groups, $scope.timeline.options);
                 $scope.visTimeline.on('rangechanged', function(properties){
+                    var newStartTimeWithOffset = new Date();
+                    newStartTimeWithOffset.setTime(properties.start.getTime() + $scope.timezone.user_time_to_server_offset);
+                    var newEndTimeWithOffset = new Date();
+                    newEndTimeWithOffset.setTime(properties.end.getTime() + $scope.timezone.user_time_to_server_offset);
+
+                    console.log(properties);
                     if($scope.visTimelineInit){
                         $scope.visTimelineInit = false;
                         return;
@@ -788,15 +795,19 @@ angular.module('openITCOCKPIT')
                         clearTimeout($scope.visTimeout);
                     }
 
-                    $scope.visTimeout = setTimeout(function(){
-                        $scope.visTimeout = null;
-                        $scope.loadTimelineData({
-                            start: parseInt(properties.start.getTime() / 1000, 10),
-                            end: parseInt(properties.end.getTime() / 1000, 10)
-                        });
-                    }, 500);
+                    if(!$scope.synchronizeTimes || ($scope.synchronizeTimes && $scope.timelineChanged === true)){
+                        $scope.visTimeout = setTimeout(function(){
+                            console.log('Timeout activ');
+                            $scope.visTimeout = null;
+                            $scope.loadTimelineData({
+                                start: parseInt(newStartTimeWithOffset.getTime() / 1000, 10),
+                                end: parseInt(newEndTimeWithOffset.getTime() / 1000, 10)
+                            });
+                        }, 500);
+                    }
                 });
             }else{
+                console.log('ELSE vis Timeline !!!');
                 $scope.visTimeline.setItems($scope.timelinedata.items);
                 if($scope.synchronizeTimes && $scope.graphChanged === true){
                     $scope.visTimeline.setOptions($scope.timeline.options);
@@ -807,6 +818,7 @@ angular.module('openITCOCKPIT')
                 if($scope.synchronizeTimes === false){
                     return;
                 }
+                console.log('WHHHHHEEEEEELLLLL');
                 $scope.graphChanged = false;
                 $scope.timelineChanged = true;
             }
@@ -951,8 +963,8 @@ angular.module('openITCOCKPIT')
                     var start = lastTimestampInCurrentData / 1000 - $scope.timezone.user_time_to_server_offset;
 
                     $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime() + $scope.graphAutoRefreshInterval);
-                    if($scope.synchronizeTimes && $scope.commonTimes.timeline.start > 0){
-                        start = $scope.commonTimes.timeline.start;
+                    if($scope.synchronizeTimes && $scope.commonTimes.start > 0){
+                        start = $scope.commonTimes.start;
                     }
 
                     var end = Math.floor($scope.serverTimeDateObject.getTime() / 1000);
@@ -1015,43 +1027,54 @@ angular.module('openITCOCKPIT')
                 return;
             }
             if($scope.synchronizeTimes === true){
-                loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, $scope.commonTimes.timeline.start, $scope.commonTimes.timeline.end, true);
-            }
-        }, true);
-
-        $scope.$watch('commonTimes.graph', function(newValue, oldValue){
-            if($scope.init){
-                return;
-            }
-            if($scope.synchronizeTimes === false && $scope.graphChanged === false){
-                return;
-            }
-            if(!_.isEqual(oldValue, newValue)){
-                $scope.loadTimelineData({
-                    start: $scope.commonTimes.graph.start,
-                    end: $scope.commonTimes.graph.end
-                });
-            }
-        }, true);
-        $scope.$watch('commonTimes.timeline', function(newValue, oldValue){
-            if($scope.init){
-                return;
-            }
-
-            if($scope.synchronizeTimes === false && $scope.timelineChanged === false){
-                return;
-            }
-            if(!_.isEqual(oldValue, newValue)){
                 loadGraph(
                     $scope.host.Host.uuid,
                     $scope.mergedService.uuid,
                     false,
-                    $scope.commonTimes.timeline.start,
-                    $scope.commonTimes.timeline.end,
+                    $scope.commonTimes.start,
+                    $scope.commonTimes.end,
                     true
                 );
             }
         }, true);
+
+        $scope.$watch('commonTimes', function(newValue, oldValue){
+            if($scope.init){
+                return;
+            }
+            if($scope.synchronizeTimes === false){
+                return;
+            }
+
+            if($scope.timelineChanged === true || $scope.graphChanged === false){
+                console.info('timeline changed !!!');
+
+                loadGraph(
+                    $scope.host.Host.uuid,
+                    $scope.mergedService.uuid,
+                    false,
+                    $scope.commonTimes.start,
+                    $scope.commonTimes.end,
+                    true
+                );
+                return;
+            }
+
+            if($scope.timelineChanged === false || $scope.graphChanged === true && $scope.timelineIsLoading === false){
+                console.info('graph changed !!!');
+
+                $scope.loadTimelineData({
+                    start: parseInt($scope.commonTimes.start, 10),
+                    end: parseInt($scope.commonTimes.end, 10)
+                });
+                return;
+            }
+
+            $scope.graphChanged = false;
+            $scope.timelineChanged = false;
+
+        }, true);
+
 
         jQuery(document).on('show.bs.tooltip', function(e){
             setTimeout(function(){
