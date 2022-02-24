@@ -792,9 +792,9 @@ class UsersTable extends Table {
             'Users.image',
             'Users.onetimetoken',
             'full_name' => $query->func()->concat([
-                'Users.firstname' => 'literal',
+                'Users.lastname' => 'literal',
                 ' ',
-                'Users.lastname'  => 'literal'
+                'Users.firstname'  => 'literal'
             ])
         ])
             ->where([

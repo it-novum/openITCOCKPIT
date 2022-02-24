@@ -216,6 +216,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 id="UserContainerroles"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
+                                callback="loadUserContainerRoles"
                                 chosen="usercontainerroles"
                                 multiple
                                 ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"

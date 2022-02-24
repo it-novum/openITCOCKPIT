@@ -32,6 +32,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 
 
@@ -156,19 +157,25 @@ class UsercontainerrolesTable extends Table {
 
 
     /**
-     * @param array $MY_RIGHTS
+     * @param GenericFilter $GenericFilter
+     * @param $selected
+     * @param $MY_RIGHTS
      * @return array
      */
-    public function getUsercontainerrolesAsList($MY_RIGHTS = []) {
+    public function getUsercontainerrolesAsList(GenericFilter $GenericFilter, $selected = [], $MY_RIGHTS = []) {
         if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
 
-        $query = $this->find()
-            ->select([
-                'Usercontainerroles.id',
-                'Usercontainerroles.name'
-            ])
+        $query = $this->find();
+        if (!empty($GenericFilter->genericFilters())) {
+            $query->where($GenericFilter->genericFilters());
+        }
+
+        $query->select([
+            'Usercontainerroles.id',
+            'Usercontainerroles.name'
+        ])
             ->contain('Containers')
             ->matching('Containers')
             ->where([
@@ -186,6 +193,30 @@ class UsercontainerrolesTable extends Table {
         $result = [];
         foreach ($query->toArray() as $record) {
             $result[$record['id']] = $record['name'];
+        }
+        if (!empty($selected)) {
+            $query = $this->find()
+                ->select([
+                    'Usercontainerroles.id',
+                    'Usercontainerroles.name'
+                ])
+                ->contain('Containers')
+                ->matching('Containers')
+                ->where([
+                    'Usercontainerroles.id IN'                                => $selected,
+                    'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+                ])
+                ->group([
+                    'Usercontainerroles.id'
+                ])
+                ->order([
+                    'Usercontainerroles.name' => 'asc',
+                    'Usercontainerroles.id'   => 'asc'
+                ])->disableHydration();
+
+            foreach ($query->toArray() as $record) {
+                $result[$record['id']] = $record['name'];
+            }
         }
 
         return $result;
