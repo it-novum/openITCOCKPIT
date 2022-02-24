@@ -60,7 +60,7 @@ class UsercontainerrolesTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('usercontainerroles');
@@ -95,7 +95,7 @@ class UsercontainerrolesTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -178,7 +178,8 @@ class UsercontainerrolesTable extends Table {
                 'Usercontainerroles.id'
             ])
             ->order([
-                'Usercontainerroles.name' => 'asc'
+                'Usercontainerroles.name' => 'asc',
+                'Usercontainerroles.id'   => 'asc'
             ])
             ->disableHydration();
 
@@ -211,7 +212,11 @@ class UsercontainerrolesTable extends Table {
                 'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS,
                 $UsercontainerrolesFilter->indexFilter()
             ])
-            ->order($UsercontainerrolesFilter->getOrderForPaginator('Usercontainerroles.name', 'asc'))
+            ->order(array_merge(
+                    $UsercontainerrolesFilter->getOrderForPaginator('Usercontainerroles.name', 'asc'),
+                    ['Usercontainerroles.id' => 'asc']
+                )
+            )
             ->group([
                 'Usercontainerroles.id'
             ]);
@@ -304,10 +309,10 @@ class UsercontainerrolesTable extends Table {
      * @return array
      */
     public function getContainerPermissionsByLdapUserMemberOf($memberOfGroups = []) {
-        if(empty($memberOfGroups)){
+        if (empty($memberOfGroups)) {
             return [];
         }
-        if(!is_array($memberOfGroups)){
+        if (!is_array($memberOfGroups)) {
             $memberOfGroups = [$memberOfGroups];
         }
         $query = $this->find()

@@ -159,7 +159,8 @@ class GrafanaDashboardsTable extends Table {
                 'Host.id'
             ])
             ->order([
-                'Host.name' => 'ASC'
+                'Host.name' => 'asc',
+                'Host.id'   => 'asc'
             ]);
 
         if (!empty($MY_RIGHTS)) {

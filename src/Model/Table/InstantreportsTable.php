@@ -265,7 +265,13 @@ class InstantreportsTable extends Table {
         }
 
         $query->where($indexFilter);
-        $query->order($InstantreportFilter->getOrderForPaginator('Instantreports.name', 'asc'));
+        $query->order(
+            array_merge(
+                $InstantreportFilter->getOrderForPaginator('Instantreports.name', 'asc'),
+                ['Instantreports.id' => 'asc']
+            )
+
+        );
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();

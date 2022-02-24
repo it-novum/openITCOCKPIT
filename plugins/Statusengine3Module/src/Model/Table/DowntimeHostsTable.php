@@ -29,12 +29,10 @@ namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -138,8 +136,12 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
                 'DowntimeHosts.scheduled_start_time >' => $DowntimeHostConditions->getFrom(),
                 'DowntimeHosts.scheduled_start_time <' => $DowntimeHostConditions->getTo(),
             ])
-            ->order($DowntimeHostConditions->getOrder())
-            ->group('DowntimeHosts.internal_downtime_id');
+            ->order(
+                array_merge(
+                    $DowntimeHostConditions->getOrder(),
+                    ['DowntimeHosts.internal_downtime_id' => 'asc']
+                )
+            )->group('DowntimeHosts.internal_downtime_id');
 
 
         if ($DowntimeHostConditions->hasContainerIds()) {
@@ -259,8 +261,12 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
                 ['HostsToContainers' => 'hosts_to_containers'],
                 ['HostsToContainers.host_id = Hosts.id']
             )
-            ->order($DowntimeHostConditions->getOrder())
-            ->group('DowntimeHosts.internal_downtime_id');
+            ->order(
+                array_merge(
+                    $DowntimeHostConditions->getOrder(),
+                    ['DowntimeHosts.internal_downtime_id' => 'asc']
+                )
+            )->group('DowntimeHosts.internal_downtime_id');
 
 
         if ($DowntimeHostConditions->hasHostUuids()) {
