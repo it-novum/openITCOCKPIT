@@ -1532,7 +1532,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1621,8 +1626,12 @@ class ServicesTable extends Table {
         if (!empty($having)) {
             $query->having($having);
         }
-
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1709,7 +1718,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1875,7 +1889,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order(array_merge($ServiceConditions->getOrder(), ['Services.id' => 'ASC']));
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -2035,7 +2054,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order(array_merge($ServiceConditions->getOrder(), ['Services.id' => 'ASC']));
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
 
         if ($PaginateOMat === null) {
@@ -2193,7 +2217,8 @@ class ServicesTable extends Table {
             ->enableHydration($enableHydration)
             ->order([
                 'Hosts.name'  => 'asc',
-                'servicename' => 'asc'
+                'servicename' => 'asc',
+                'Services.id' => 'asc'
             ])
             ->group(['Services.id'])
             ->all();
@@ -2272,7 +2297,8 @@ class ServicesTable extends Table {
 
         $query->enableHydration($enableHydration);
         $query->order([
-            'servicename' => 'asc'
+            'servicename' => 'asc',
+            'Services.id' => 'asc'
         ]);
         $query->group([
             'Services.id'
@@ -2433,7 +2459,13 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -2594,7 +2626,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -2865,7 +2902,8 @@ class ServicesTable extends Table {
 
         if ($type === 'all') {
             $query->order([
-                'servicename' => 'asc'
+                'servicename' => 'asc',
+                'Services.id' => 'asc'
             ]);
         }
 
@@ -2967,8 +3005,9 @@ class ServicesTable extends Table {
 
         if ($type === 'all') {
             $query->order([
-                'Hosts.name' => 'asc',
-                'servicename' => 'asc'
+                'Hosts.name'  => 'asc',
+                'servicename' => 'asc',
+                'Services.id' => 'asc'
             ]);
         }
 
@@ -3401,7 +3440,8 @@ class ServicesTable extends Table {
 
         $query->enableHydration($enableHydration);
         $query->order([
-            'servicename' => 'asc'
+            'servicename' => 'asc',
+            'Services.id' => 'asc'
         ]);
         $query->group([
             'Services.id'
