@@ -1055,3 +1055,11 @@ div.packetmanager-selection > span::selection {
 .bg-white-transparent{
     background: #ffffffbb;
 }
+
+.lock-icon-gradient{
+    background: -webkit-linear-gradient(to bottom, #cccccc 0%, #cccccc 50%, #ffbb33 50%, #ffbb33 100%);
+    background: -moz-linear-gradient(to bottom, #cccccc 0%, #cccccc 50%, #ffbb33 50%, #ffbb33 100%);
+    background: linear-gradient(to bottom, #cccccc 0%, #cccccc 50%, #ffbb33 50%, #ffbb33 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

@@ -923,4 +923,270 @@ class ContactsTable extends Table {
 
         return $list;
     }
+
+    // Containers check for contact
+
+    /**
+     * ContactsToContactgroups
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getContactgroupContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.parent_id'
+            ])
+            ->innerJoin(
+                ['ContactsToContactgroups' => 'contacts_to_contactgroups'],
+                ['ContactsToContactgroups.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Contactgroups' => 'contactgroups'],
+                ['Contactgroups.id = ContactsToContactgroups.contactgroup_id']
+            )
+            ->innerJoin(
+                ['Containers' => 'containers'],
+                ['Containers.id = Contactgroups.container_id']
+            )
+            ->where([
+                'Contacts.id'             => $contactId,
+                'Containers.parent_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Containers.parent_id');
+    }
+
+    /**
+     * ContactsToHosttemplates
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getHosttemplateContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToHosttemplates' => 'contacts_to_hosttemplates'],
+                ['ContactsToHosttemplates.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Hosttemplates' => 'hosttemplates'],
+                ['Hosttemplates.id = ContactsToHosttemplates.hosttemplate_id']
+            )
+            ->where([
+                'Contacts.id'                   => $contactId,
+                'Hosttemplates.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Hosttemplates.container_id');
+    }
+
+
+    /**
+     * ContactsToServicetemplates
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getServicetemplateContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToServicetemplates' => 'contacts_to_servicetemplates'],
+                ['ContactsToServicetemplates.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Servicetemplates' => 'servicetemplates'],
+                ['Servicetemplates.id = ContactsToServicetemplates.servicetemplate_id']
+            )
+            ->where([
+                'Contacts.id'                      => $contactId,
+                'Servicetemplates.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Servicetemplates.container_id');
+    }
+
+    /**
+     * ContactsToHosts
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getHostContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Hosts.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToHosts' => 'contacts_to_hosts'],
+                ['ContactsToHosts.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['Hosts.id = ContactsToHosts.host_id']
+            )
+            ->where([
+                'Contacts.id'           => $contactId,
+                'Hosts.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Hosts.container_id');
+    }
+
+    /**
+     * ContactsToHostescalations,
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getHostescalationContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Hostescalations.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToHostescalations' => 'contacts_to_hostescalations'],
+                ['ContactsToHostescalations.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Hostescalations' => 'hostescalations'],
+                ['Hostescalations.id = ContactsToHostescalations.hostescalation_id']
+            )
+            ->where([
+                'Contacts.id'                     => $contactId,
+                'Hostescalations.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Hostescalations.container_id');
+    }
+
+    /**
+     * ContactsToServiceescalations,
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getServiceescalationContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Serviceescalations.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToServiceescalations' => 'contacts_to_serviceescalations'],
+                ['ContactsToServiceescalations.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Serviceescalations' => 'serviceescalations'],
+                ['Serviceescalations.id = ContactsToServiceescalations.serviceescalation_id']
+            )
+            ->where([
+                'Contacts.id'                        => $contactId,
+                'Serviceescalations.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Serviceescalations.container_id');
+    }
+
+    /**
+     * @param $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getRequiredContainerIdsFoContact($contactId, array $containerIds) {
+        $requiredIds = [];
+        if (empty($containerIds)) {
+            return $requiredIds;
+        }
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $ids = array_unique(
+            array_merge_recursive(
+                $this->getContactgroupContainerIdsForContact($contactId, $containerIds),
+                $this->getHosttemplateContainerIdsForContact($contactId, $containerIds),
+                $this->getServicetemplateContainerIdsForContact($contactId, $containerIds),
+                $this->getHostContainerIdsForContact($contactId, $containerIds),
+                $this->getHostescalationContainerIdsForContact($contactId, $containerIds),
+                $this->getServiceescalationContainerIdsForContact($contactId, $containerIds)
+            )
+        );
+
+        foreach ($ids as $requiredId) {
+            $requiredIds[] = (int)$requiredId;
+        }
+        return $requiredIds;
+    }
+
 }
