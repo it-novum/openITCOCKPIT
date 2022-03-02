@@ -31,12 +31,11 @@ use App\Model\Table\ProxiesTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
-use GrafanaModule\Model\Table\GrafanaConfigurationHostgroupMembershipTable;
 use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
 use GrafanaModule\Model\Table\GrafanaDashboardsTable;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
 /**
@@ -276,11 +275,17 @@ class GrafanaConfigurationController extends AppController {
         }
 
         $grafanaDashboards = [];
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Host.name'
+            ]
+        ]);
 
         /** @var GrafanaDashboardsTable $GrafanaDashboardsTable */
         $GrafanaDashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaDashboards');
 
-        $rawGrafanaDashboards = $GrafanaDashboardsTable->getGrafanaDashboards($this->MY_RIGHTS);
+        $rawGrafanaDashboards = $GrafanaDashboardsTable->getGrafanaDashboards($GenericFilter, $this->MY_RIGHTS);
         foreach ($rawGrafanaDashboards as $rawGrafanaDashboard) {
             $grafanaDashboards[] = [
                 'GrafanaDashboard' => [

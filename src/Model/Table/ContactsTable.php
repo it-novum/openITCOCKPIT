@@ -869,7 +869,8 @@ class ContactsTable extends Table {
 
         $query->enableHydration($enableHydration);
         $query->order([
-            'Contacts.name' => 'asc'
+            'Contacts.name' => 'asc',
+            'Contacts.id'
         ]);
 
         $result = $query->all();

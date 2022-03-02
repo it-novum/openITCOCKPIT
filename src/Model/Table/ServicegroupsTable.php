@@ -572,7 +572,8 @@ class ServicegroupsTable extends Table {
 
         $query
             ->order([
-                'Containers.name' => 'ASC'
+                'Containers.name' => 'asc',
+                'Containers.id'   => 'asc'
             ])
             ->group([
                 'Containers.id'
@@ -606,7 +607,8 @@ class ServicegroupsTable extends Table {
 
             $query
                 ->order([
-                    'Containers.name' => 'ASC'
+                    'Containers.name' => 'asc',
+                    'Containers.id'   => 'asc'
                 ])
                 ->group([
                     'Containers.id'
@@ -735,15 +737,15 @@ class ServicegroupsTable extends Table {
 
         $services = [];
 
-        if(!empty($servicegroup['services'])) {
+        if (!empty($servicegroup['services'])) {
             foreach ($servicegroup['services'] as $service) {
                 $services[$service['id']] = $service;
             }
         }
 
-        if(!empty($servicegroup['servicetemplates'])) {
+        if (!empty($servicegroup['servicetemplates'])) {
             foreach ($servicegroup['servicetemplates'] as $servicetemplate) {
-                foreach($servicetemplate['services'] as $service){
+                foreach ($servicetemplate['services'] as $service) {
                     $services[$service['id']] = $service;
                 }
             }
