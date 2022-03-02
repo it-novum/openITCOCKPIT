@@ -66,6 +66,7 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -986,27 +987,26 @@ class HostsController extends AppController {
             $detailsToEdit = $this->request->getData('data.details', []);
             $HosttemplateCache = new KeyValueStore();
             foreach ($hostIds as $hostId) {
-                $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
+                $hostArray = $HostsTable->getHostByIdForEditDetails($hostId);
                 $currentContainerIds = [];
-                foreach ($hostObject->get('hosts_to_containers_sharing') as $container) {
-                    $currentContainerIds[] = $container->get('id');
-                }
+                foreach ($hostArray['Host']['hosts_to_containers_sharing'] as $container) {
 
-                $dataToSave = [
-                    // Add required fields for HostComparisonForSave class
-                    'name'                        => $hostObject->name,
-                    'hosttemplate_id'             => $hostObject->hosttemplate_id,
-                    'address'                     => $hostObject->address,
-                    'container_id'                => $hostObject->container_id,
-                    'hosts_to_containers_sharing' => [
-                        '_ids' => $currentContainerIds
-                    ]
-                ];
+                    $currentContainerIds[] = $hostArray['Host']['hosts_to_containers_sharing']['_ids'];
+                }
+                return;
+                $hostObjectForChangelog = $hostArray;
+
+                $hosttemplateId = $hostArray['Host']['hosttemplate_id'];
+
+                if (!$HosttemplateCache->has($hosttemplateId)) {
+                    $HosttemplateCache->set($hosttemplateId, $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId));
+                }
+                $hosttemplate = $HosttemplateCache->get($hosttemplateId);
 
                 $sharedContainers = [];
-                $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
                 $containerIdsForChangelog = [];
-                $primaryContainerId = $hostObject->get('container_id');
+
+                $primaryContainerId = $hostArray['Host']['container_id'];
                 foreach ($currentContainerIds as $containerId) {
                     $containerIdsForChangelog[] = $containerId;
                     if ($primaryContainerId !== $containerId) {
@@ -1020,23 +1020,245 @@ class HostsController extends AppController {
                     $this->MY_RIGHTS
                 );
 
+                $allowSharing = $hostSharingPermissions->allowSharing();
+                if ($allowSharing) {
+                    $hasChanges = false;
+
+                    $editDetailKeysToFields = [
+                        'editDescription'              => 'description',
+                        'editTags'                     => 'tags',
+                        'editPriority'                 => 'priority',
+                        'editCheckInterval'            => 'check_interval',
+                        'editRetryInterval'            => 'retry_interval',
+                        'editMaxNumberOfCheckAttempts' => 'max_check_attempts',
+                        'editNotificationInterval'     => 'notification_interval',
+                        'editHostUrl'                  => 'host_url',
+                        'editNotes'                    => 'notes',
+
+                    ];
+
+                    $HostMergerForView = new HostMergerForView($hostArray, $hosttemplate);
+
+
+                    // Merge the Host with the host template to be able to compare description, tags, etc
+                    $mergedHost = $HostMergerForView->getDataForView();
+
+                    FileDebugger::dump($mergedHost);
+                    $hostObject = $HostsTable->getHostForEdit($id);
+
+                    foreach ($editDetailKeysToFields as $editDetailKey => $editDetailField) {
+                        if ($detailsToEdit[$editDetailKey] == 1) {
+                            if (!empty($detailsToEdit['Host'][$editDetailField]) && $detailsToEdit['Host'][$editDetailField] != $mergedHost['Host'][$editDetailField]) {
+                                $hostObject->set($editDetailField, $detailsToEdit['Host'][$editDetailField]);
+                                $hasChanges = true;
+                            }
+                        }
+                    }
+
+                    if ($detailsToEdit['editSatellites'] == 1) {
+                        if ($hostObject->get('host_type') !== EVK_HOST) {
+                            if (is_numeric($detailsToEdit['Host']['satellite_id']) && $detailsToEdit['Host']['satellite_id'] != $hostObject->get('satellite_id')) {
+                                $hostObject->set('satellite_id', $detailsToEdit['Host']['satellite_id']);
+                                $hasChanges = true;
+                            }
+                        }
+                    }
+
+                    if ($detailsToEdit['editSharedContainers'] == 1) {
+                        if (!empty($detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'])) {
+                            if ($detailsToEdit['keepSharedContainers'] == 1) {
+                                $containerIds = array_merge(
+                                    $sharedContainers,
+                                    $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
+                                );
+                                $containerIds[] = $primaryContainerId;
+
+                            } else {
+                                $containerIds = $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'];
+                                $containerIds[] = $primaryContainerId;
+
+                            }
+                            $containerIds = array_unique($containerIds);
+
+                            $hostObject->set([
+                                'hosts_to_containers_sharing' => [
+                                    '_ids' => $containerIds
+                                ]
+                            ]);
+                            $containerIdsForChangelog = $containerIds;
+                            $hasChanges = true;
+                        }
+                    }
+
+                    if ($detailsToEdit['editContacts'] == 1) {
+                        $newContacts = $detailsToEdit['Host']['contacts']['_ids'];
+                        $allContactsAreVisibleForUser = empty($mergedHost['Host']['contacts']) && empty($mergedHost['Host']['hosttemplate']['contacts']);
+                        $contactsFromHost = [];
+                        if (!empty($newContacts)) {
+                            //Check user permissions for already exists contacts. Are all existing contacts visible for the user
+                            if (!empty($mergedHost['Host']['contacts']) || !empty($mergedHost['Host']['hosttemplate']['contacts'])) {
+                                $contactsFromHost = $mergedHost['Host']['contacts'];
+                                if (empty($contactsFromHost)) {
+                                    // Host has no own contacts, use the contacts of the host template
+                                    $contactsFromHost = $mergedHost['Host']['hosttemplate']['contacts'];
+                                }
+                                if (!empty($contactsFromHost)) {
+                                    foreach ($contactsFromHost as $contact) {
+                                        $contactContainerIds = Hash::extract($contact['containers'], '{n}.id');
+                                        if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
+                                            // No permissions for this contact
+                                            // Leave foreach loop
+                                            $allContactsAreVisibleForUser = false;
+                                            break;
+                                        }
+
+                                        // User can see the current contact
+                                        $allContactsAreVisibleForUser = true;
+                                    }
+                                } else {
+                                    $allContactsAreVisibleForUser = true; //nothing to do
+                                }
+                            }
+                            if ($allContactsAreVisibleForUser === true) {
+                                //Container permissions check for contacts
+                                // Host can use this contacts
+                                // Check if the contacts can be used by the host
+                                $contactsAfterContainerCheck = $ContactsTable->removeContactsWhichAreNotInContainer(
+                                    $newContacts,
+                                    $mergedHost['Host']['container_id']
+                                );
+                                if (!empty($contactsAfterContainerCheck)) { // Only save the contacts the host can "see"
+                                    $contactsIdsFromHost = Hash::extract($contactsFromHost, '{n}._joinData.contact_id');
+                                    if ($detailsToEdit['keepContacts']) {
+                                        $contactIds = array_unique(
+                                            array_merge(
+                                                $contactsIdsFromHost, $contactsAfterContainerCheck
+                                            )
+                                        );
+                                    } else {
+                                        $contactIds = $contactsAfterContainerCheck;
+                                    }
+
+                                    $hostObject->set([
+                                        'contacts' => [
+                                            '_ids' => $contactIds
+                                        ]
+                                    ]);
+                                    $hasChanges = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if ($detailsToEdit['editContactgroups'] == 1) {
+                        $newContactgroups = $detailsToEdit['Host']['contactgroups']['_ids'];
+                        $contactgroupsFromHost = [];
+                        $allContactGroupsAreVisibleForUser = empty($mergedHost['Host']['contactgroups']) && empty($mergedHost['Host']['hosttemplate']['contactgroups']);
+                        if (!empty($newContactgroups)) {
+                            //Check user permissions for already exists contacts. Are all existing contact groups are visible for the user
+                            if (!empty($mergedHost['Host']['contactgroups']) || !empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
+                                $contactgroupsFromHost = $mergedHost['Host']['contactgroups'];
+                                if (empty($contactgroupsFromHost)) {
+                                    // Host has no own contact groups, use the contact groups of the host template
+                                    $contactgroupsFromHost = $mergedHost['Host']['hosttemplate']['contactgroups'];
+                                }
+                                if (!empty($contactgroupsFromHost)) {
+                                    foreach ($contactgroupsFromHost as $contactgroup) {
+                                        if (!in_array($contactgroup['container']['parent_id'], $this->MY_RIGHTS, true)) {
+                                            // No permissions for this contact group
+                                            // Leave foreach loop
+                                            $allContactGroupsAreVisibleForUser = false;
+                                            break;
+                                        }
+
+                                        // User can see the current contact group
+                                        $allContactGroupsAreVisibleForUser = true;
+                                    }
+                                } else {
+                                    $allContactGroupsAreVisibleForUser = true; //nothing to do
+                                }
+                            }
+                            if ($allContactGroupsAreVisibleForUser === true) {
+                                // Container permissions check for contact groups
+                                // Host can use this contact groups
+                                // Check if the contact groups can be used by the host
+                                $contactgroupssAfterContainerCheck = $ContactgroupsTable->removeContactgroupsWhichAreNotInContainer(
+                                    $newContactgroups,
+                                    $mergedHost['Host']['container_id']
+                                );
+
+                                if (!empty($contactgroupssAfterContainerCheck)) { // Only save the contact groups the host can "see"
+                                    $contactgroupsIdsFromHost = Hash::extract($contactgroupsFromHost, '{n}._joinData.contactgroup_id');
+                                    if ($detailsToEdit['keepContactgroups']) {
+                                        $contactgroups =
+                                            array_unique(
+                                                array_merge(
+                                                    $contactgroupsIdsFromHost, $contactgroupssAfterContainerCheck
+                                                )
+                                            );
+                                    } else {
+                                        $contactgroups = $contactgroupssAfterContainerCheck;
+                                    }
+                                    $hostObject->set([
+                                        'contactgroups' => [
+                                            '_ids' => $contactgroups
+                                        ]
+                                    ]);
+                                    $hasChanges = true;
+
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if ($hasChanges === true) {
+                    $HostComparisonForSave = new HostComparisonForSave(array_merge(['Host' => $hostObject->toArray()], $hostObject->toArray()), $hosttemplate);
+                    $dataToSave = $HostComparisonForSave->getDataForSaveForAllFields();
+                    FileDebugger::dump('Has changes ');
+                    FileDebugger::dump('BEFORE COMPARISON');
+                    FileDebugger::dump($hostObject->toArray());
+                    FileDebugger::dump($dataToSave);
+                    return;
+                }
+                FileDebugger::dump('Has no changes ');
+
+                return;
+                /*
+                                $dataToSave = [
+                                    // Add required fields for HostComparisonForSave class
+                                    'name'                        => $hostObject->name,
+                                    'hosttemplate_id'             => $hostObject->hosttemplate_id,
+                                    'address'                     => $hostObject->address,
+                                    'container_id'                => $hostObject->container_id,
+                                    'hosts_to_containers_sharing' => [
+                                        '_ids' => $currentContainerIds
+                                    ]
+                                ];
+                */
+
+
                 $hostData = $hostObject->toArray();
+                //FileDebugger::dump($hostData);return;
                 if (!$HosttemplateCache->has($hostData['hosttemplate_id'])) {
                     $HosttemplateCache->set($hostData['hosttemplate_id'], $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']));
                 }
                 $hosttemplate = $HosttemplateCache->get($hostData['hosttemplate_id']);
-
                 $allowSharing = $hostSharingPermissions->allowSharing();
+
                 if ($allowSharing) {
                     $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hosttemplate);
 
                     // Merge the Host with the host template to be able to compare description, tags, etc
                     $mergedHost = $HostMergerForView->getDataForView();
-
+                    FileDebugger::dump($mergedHost);
+                    return;
                     // Keep the contact and contact groups of the host - the comparison will be done later in this code
                     // to check if the host is able to "use/see" the given contact/s due to container permissions
                     $mergedHost['Host']['contacts'] = $hostData['contacts'];
                     $mergedHost['Host']['contactgroups'] = $hostData['contactgroups'];
+
+                    $dataToSave = $mergedHost['Host'];
 
                     if ($detailsToEdit['editSharedContainers'] == 1) {
                         if (!empty($detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'])) {
@@ -1240,11 +1462,15 @@ class HostsController extends AppController {
                             }
                         }
                     }
-
+                    FileDebugger::dump($detailsToEdit);
+                    FileDebugger::dump($mergedHost['Host']['host_type']);
+//FileDebugger::dump($dataToSave);return;
                     if (!empty($dataToSave)) {
                         $HostComparisonForSave = new HostComparisonForSave(['Host' => $dataToSave], $hosttemplate);
 
                         $dataToSave = $HostComparisonForSave->getDataForSaveForAllFields();
+                        FileDebugger::dump($dataToSave['Host']);
+                        return;
                         //Add required fields for validation
                         $dataToSave['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
                         $dataToSave['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
