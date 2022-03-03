@@ -674,6 +674,7 @@ class HostsTable extends Table {
                 'Hosts.id' => $id
             ])
             ->contain($contain)
+            ->disableHydration()
             ->first();
 
         $host = $query;

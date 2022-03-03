@@ -89,7 +89,6 @@ class HostMergerForView {
         $data['customvariables'] = $this->getDataForCustomvariables();
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
         $data['prometheus_exporters'] = $this->getDataForPrometheusExporters();
-FileDebugger::dump($data);
         return [
             'Host' => $data
         ];
@@ -169,12 +168,6 @@ FileDebugger::dump($data);
      * @return array
      */
     public function getDataForContactsAndContactgroups() {
-        FileDebugger::dump('******');
-        FileDebugger::dump($this->host['contacts']['_ids']);
-        FileDebugger::dump($this->host['contactgroups']['_ids']);
-        FileDebugger::dump('******');
-
-        return;
         if (empty($this->host['contacts']['_ids']) && empty($this->host['contactgroups']['_ids'])) {
             $this->hasOwnContacts = false;
             $this->areContactsInheritedFromHosttemplate = true;
