@@ -649,60 +649,6 @@ class HostsTable extends Table {
     }
 
     /**
-     * @param $id
-     * @return array|\Cake\Datasource\EntityInterface|null
-     */
-    public function getHostByIdForEditDetails($id) {
-        $contain = [
-            'Contactgroups',
-            'Contacts',
-            'Hostgroups',
-            'Customvariables',
-            'Parenthosts',
-            'HostsToContainersSharing',
-            'Hostcommandargumentvalues' => [
-                'Commandarguments'
-            ]
-        ];
-
-        if (Plugin::isLoaded('PrometheusModule')) {
-            $contain[] = 'PrometheusExporters';
-        };
-
-        $query = $this->find()
-            ->where([
-                'Hosts.id' => $id
-            ])
-            ->contain($contain)
-            ->disableHydration()
-            ->first();
-
-        $host = $query;
-        $host['hostgroups'] = [
-            '_ids' => Hash::extract($query, 'hostgroups.{n}.id')
-        ];
-        $host['contacts'] = [
-            '_ids' => Hash::extract($query, 'contacts.{n}.id')
-        ];
-        $host['contactgroups'] = [
-            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
-        ];
-        $host['parenthosts'] = [
-            '_ids' => Hash::extract($query, 'parenthosts.{n}.id')
-        ];
-        $host['hosts_to_containers_sharing'] = [
-            '_ids' => Hash::extract($query, 'hosts_to_containers_sharing.{n}.id')
-        ];
-        $host['prometheus_exporters'] = [
-            '_ids' => Hash::extract($query, 'prometheus_exporters.{n}.id')
-        ];
-
-        return [
-            'Host' => $host
-        ];
-    }
-
-    /**
      * @param int|array $ids
      * @return array
      */
@@ -3431,22 +3377,59 @@ class HostsTable extends Table {
 
 
     /**
-     * @param int $id
-     * @param bool $enableHydration
-     * @return array|\Cake\Datasource\EntityInterface
+     * @param $id
+     * @return array
      */
-    public function getHostsbyIdWithDetails($id, $enableHydration = true) {
+    public function getHostByIdWithDetails($id) {
+        $contain = [
+            'Contactgroups',
+            'Contacts',
+            'Hostgroups',
+            'Customvariables',
+            'Parenthosts',
+            'HostsToContainersSharing',
+            'Hostcommandargumentvalues' => [
+                'Commandarguments'
+            ],
+            'CheckPeriod',
+            'NotifyPeriod'
+        ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $contain[] = 'PrometheusExporters';
+        };
+
         $query = $this->find()
             ->where([
                 'Hosts.id' => $id
             ])
-            ->contain([
-                'HostsToContainersSharing',
-                'Hosttemplates'
-            ])
-            ->enableHydration($enableHydration);
+            ->contain($contain)
+            ->disableHydration()
+            ->first();
 
-        return $query->firstOrFail();
+        $host = $query;
+        $host['hostgroups'] = [
+            '_ids' => Hash::extract($query, 'hostgroups.{n}.id')
+        ];
+        $host['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $host['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+        $host['parenthosts'] = [
+            '_ids' => Hash::extract($query, 'parenthosts.{n}.id')
+        ];
+        $host['hosts_to_containers_sharing'] = [
+            '_ids' => Hash::extract($query, 'hosts_to_containers_sharing.{n}.id')
+        ];
+        $host['prometheus_exporters'] = [
+            '_ids' => Hash::extract($query, 'prometheus_exporters.{n}.id')
+        ];
+
+        return [
+            'Host' => $host
+        ];
     }
 
     /**

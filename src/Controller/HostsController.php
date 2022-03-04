@@ -989,12 +989,8 @@ class HostsController extends AppController {
             $ContactCache = new KeyValueStore();
             $ContactgroupCache = new KeyValueStore();
             foreach ($hostIds as $hostId) {
-                $hostArray = $HostsTable->getHostByIdForEditDetails($hostId);
-                $currentContainerIds = [];
-                foreach ($hostArray['Host']['hosts_to_containers_sharing'] as $container) {
-                    $currentContainerIds = $hostArray['Host']['hosts_to_containers_sharing']['_ids'];
-                }
 
+                $hostArray = $HostsTable->getHostByIdWithDetails($hostId);
                 $hosttemplateId = $hostArray['Host']['hosttemplate_id'];
 
                 if (!$HosttemplateCache->has($hosttemplateId)) {
@@ -1002,6 +998,14 @@ class HostsController extends AppController {
                 }
                 $hosttemplate = $HosttemplateCache->get($hosttemplateId);
 
+                $HostMergerForView = new HostMergerForView($hostArray, $hosttemplate);
+                $mergedHost = $HostMergerForView->getDataForView();
+                $hostForChangelog = $mergedHost;
+
+                $currentContainerIds = [];
+                foreach ($hostArray['Host']['hosts_to_containers_sharing'] as $container) {
+                    $currentContainerIds = $hostArray['Host']['hosts_to_containers_sharing']['_ids'];
+                }
 
                 $sharedContainers = [];
                 $containerIdsForChangelog = [];
@@ -1040,8 +1044,6 @@ class HostsController extends AppController {
                     $HostMergerForView = new HostMergerForView($hostArray, $hosttemplate);
                     // Merge the Host with the host template to be able to compare description, tags, etc
                     $mergedHost = $HostMergerForView->getDataForView();
-                    $hostForChangelog = $mergedHost;
-
 
                     foreach ($editDetailKeysToFields as $editDetailKey => $editDetailField) {
                         if ($detailsToEdit[$editDetailKey] == 1) {
@@ -1222,6 +1224,7 @@ class HostsController extends AppController {
                 }
 
                 if ($hasChanges === true) {
+                    $test = $hostArray;
                     $HostComparisonForSave = new HostComparisonForSave($hostArray, $hosttemplate);
                     $hostArray = $HostComparisonForSave->getDataForSaveForAllFields();
                     FileDebugger::dump('Has changes ');
@@ -1248,11 +1251,19 @@ class HostsController extends AppController {
                         $containerIdsForChangelog,
                         $User->getId(),
                         $hostObject->get('name'),
-                        array_merge($HostsTable->resolveDataForChangelog($hostArray), $hostArray),
+                        array_merge($HostsTable->resolveDataForChangelog($test), ['Host' => $hostArray]),
                         array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                     );
+FileDebugger::dump('*******NEW*********');
+//FileDebugger::dump(array_merge($HostsTable->resolveDataForChangelog($hostArray), $hostArray));
+FileDebugger::dump(array_merge($HostsTable->resolveDataForChangelog($test), ['Host' => $hostArray]));
 
+FileDebugger::dump('*******OLD*********');
+FileDebugger::dump($hostForChangelog);
 
+FileDebugger::dump('########## Changelog ################');
+FileDebugger::dump($changelog_data);
+return;
                     FileDebugger::dump($hostArray);
                     FileDebugger::dump($changelog_data);
                     return;
@@ -1269,8 +1280,8 @@ class HostsController extends AppController {
                             $containerIdsForChangelog,
                             $User->getId(),
                             $hostObject->get('name'),
-                            $hostForChangelog,
-                            ['Host' => $hostObject->toArray()]
+                            array_merge($HostsTable->resolveDataForChangelog($hostArray), $hostArray),
+                            array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                         );
                         if ($changelog_data) {
                             $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
