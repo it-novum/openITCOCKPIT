@@ -164,7 +164,7 @@ class ChangelogsTable extends Table {
         $query->order(
             array_merge(
                 $ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'),
-                ['Changelogs.id' => 'asc']
+                ['Changelogs.id' => 'desc']
             )
 
         );
