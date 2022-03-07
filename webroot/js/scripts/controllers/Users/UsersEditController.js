@@ -71,6 +71,7 @@ angular.module('openITCOCKPIT')
                     // Load container permissions based on LDAP groups
                     $scope.loadContainerPermissionsLdap();
                 }
+                $scope.loadUserContainerRoles();
 
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -109,10 +110,12 @@ angular.module('openITCOCKPIT')
             $scope.post.User.apikeys.splice(index, 1);
         };
 
-        $scope.loadUserContaineRoles = function(){
+        $scope.loadUserContainerRoles = function(searchString){
             return $http.get("/users/loadContainerRoles.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Usercontainerroles.name]': searchString,
+                    'selected[]': $scope.post.User.usercontainerroles._ids
                 }
             }).then(function(result){
                 $scope.usercontainerroles = result.data.usercontainerroles;
@@ -302,14 +305,9 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
-        var promise1 = $scope.loadUserContaineRoles();
-        var promise2 = $scope.loadContainer();
-        var promise3 = $scope.loadLocaleOptions();
-
-        $q.all([promise1, promise2, promise3]).then(function(result){
-            //Load user config
-            $scope.load();
-        });
+        $scope.loadContainer();
+        $scope.loadLocaleOptions();
+        $scope.load();
 
         $scope.loadUsergroups();
         $scope.loadDateformats();

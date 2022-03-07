@@ -431,7 +431,12 @@ class UsersTable extends Table {
             $query->having($having);
         }
 
-        $query->order($UsersFilter->getOrderForPaginator('full_name', 'asc'));
+        $query->order(
+            array_merge(
+                $UsersFilter->getOrderForPaginator('full_name', 'asc'),
+                ['Users.id' => 'asc']
+            )
+        );
         $query->group([
             'Users.id'
         ]);
@@ -787,16 +792,17 @@ class UsersTable extends Table {
             'Users.image',
             'Users.onetimetoken',
             'full_name' => $query->func()->concat([
-                'Users.firstname' => 'literal',
+                'Users.lastname' => 'literal',
                 ' ',
-                'Users.lastname'  => 'literal'
+                'Users.firstname'  => 'literal'
             ])
         ])
             ->where([
                 'Users.id IN' => $userIds
             ])
             ->order([
-                'full_name' => 'asc'
+                'full_name' => 'asc',
+                'Users.id'  => 'asc'
             ])
             ->group([
                 'Users.id'
@@ -1325,11 +1331,11 @@ class UsersTable extends Table {
     public function getLdapUsersForSync(bool $enableHydration = true) {
         $query = $this->find()
             ->contain([
-                'Usercontainerroles' => function(Query $q){
-                $q->where([
-                    'UsercontainerrolesMemberships.through_ldap' => 0
-                ]);
-                return $q;
+                'Usercontainerroles' => function (Query $q) {
+                    $q->where([
+                        'UsercontainerrolesMemberships.through_ldap' => 0
+                    ]);
+                    return $q;
                 },
             ])
             ->whereNotNull([

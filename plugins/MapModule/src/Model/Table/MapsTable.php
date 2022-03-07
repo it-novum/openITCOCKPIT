@@ -493,7 +493,10 @@ class MapsTable extends Table {
             ]);
         }
 
-        $query->order(['Maps.name' => 'ASC'])->group('Maps.id');
+        $query->order([
+            'Maps.name' => 'asc',
+            'Maps.id'   => 'asc'
+        ])->group('Maps.id');
         $mapsWithLimit = $query->toArray();
         $selectedMaps = [];
         if (!empty($selected)) {
@@ -519,7 +522,10 @@ class MapsTable extends Table {
                     'MapsToContainers.container_id IN' => $MapConditions->getContainerIds()
                 ]);
             }
-            $query->order(['Maps.name' => 'ASC'])->group('Maps.id');
+            $query->order([
+                'Maps.name' => 'asc',
+                'Maps.id'   => 'asc'
+            ])->group('Maps.id');
 
             $selectedMaps = $query->toArray();
         }

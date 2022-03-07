@@ -29,7 +29,6 @@ namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -157,7 +156,12 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
                 'DowntimeServices.scheduled_start_time >' => $DowntimeServiceConditions->getFrom(),
                 'DowntimeServices.scheduled_start_time <' => $DowntimeServiceConditions->getTo(),
             ])
-            ->order($DowntimeServiceConditions->getOrder())
+            ->order(
+                array_merge(
+                    $DowntimeServiceConditions->getOrder(),
+                    ['DowntimeServices.internal_downtime_id' => 'asc']
+                )
+            )
             ->group('DowntimeServices.internal_downtime_id');
 
 
@@ -295,7 +299,12 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
                 ['HostsToContainers' => 'hosts_to_containers'],
                 ['HostsToContainers.host_id = Hosts.id']
             )
-            ->order($DowntimeServiceConditions->getOrder())
+            ->order(
+                array_merge(
+                    $DowntimeServiceConditions->getOrder(),
+                    ['DowntimeServices.internal_downtime_id' => 'asc']
+                )
+            )
             ->group('DowntimeServices.internal_downtime_id');
 
 
@@ -445,7 +454,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
 
         return [
             'DowntimeServices' => $result,
-            'Hosts'         => [
+            'Hosts'            => [
                 'uuid' => $result['hostname']
             ],
             'Services'         => [

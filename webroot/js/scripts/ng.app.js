@@ -926,9 +926,15 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ContactsUsedBy', {
-                url: '/contacts/usedBy/:id',
+                url: '/contacts/usedBy/:id/:containerIds',
                 templateUrl: "/contacts/usedBy.html",
-                controller: "ContactsUsedByController"
+                controller: "ContactsUsedByController",
+                params: {
+                    containerIds: {
+                        value: null,
+                        squash: true
+                    }
+                },
             })
 
             .state('ContactgroupsIndex', {

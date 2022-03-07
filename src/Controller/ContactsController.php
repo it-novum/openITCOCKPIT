@@ -210,6 +210,7 @@ class ContactsController extends AppController {
         }
 
         $contact = $ContactsTable->getContactForEdit($id);
+
         $contactForChangeLog = $contact;
 
         if (!$this->allowedByContainerId($contact['Contact']['containers']['_ids'])) {
@@ -223,17 +224,22 @@ class ContactsController extends AppController {
             }
         }
 
+        $requiredContainers = $ContactsTable->getRequiredContainerIdsFoContact(
+            $id,
+            $contact['Contact']['containers']['_ids']
+        );
+
         $ContactContainersPermissions = new ContactContainersPermissions(
             $contact['Contact']['containers']['_ids'],
             $this->getWriteContainers(),
             $this->hasRootPrivileges
         );
-
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return contact information
             $this->set('contact', $contact);
             $this->set('areContainersChangeable', $ContactContainersPermissions->areContainersChangeable());
-            $this->viewBuilder()->setOption('serialize', ['contact', 'areContainersChangeable']);
+            $this->set('requiredContainers', $requiredContainers);
+            $this->viewBuilder()->setOption('serialize', ['contact', 'areContainersChangeable', 'requiredContainers']);
             return;
         }
 
@@ -247,6 +253,12 @@ class ContactsController extends AppController {
                 $contactBeforeEdit = $ContactsTable->getContactForEdit($id);
                 //Overwrite post data. User is not permitted to change container ids!
                 $requestData['Contact']['containers']['_ids'] = $contact['Contact']['containers']['_ids'];
+            }
+            if (!empty($requiredContainers)) {
+                //autofill required containers
+                foreach ($requiredContainers as $requiredContainerId) {
+                    $requestData['Contact']['containers']['_ids'][] = $requiredContainerId;
+                }
             }
 
             $contactEntity->setAccess('uuid', false);
@@ -727,4 +739,3 @@ class ContactsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['ldapUsers']);
     }
 }
-

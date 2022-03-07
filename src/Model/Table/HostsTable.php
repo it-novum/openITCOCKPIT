@@ -743,7 +743,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         $result = $query->toArray();
@@ -887,7 +888,12 @@ class HostsTable extends Table {
 
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1028,7 +1034,12 @@ class HostsTable extends Table {
         $query->where($where);
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1102,7 +1113,12 @@ class HostsTable extends Table {
 
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1176,7 +1192,12 @@ class HostsTable extends Table {
 
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1235,7 +1256,12 @@ class HostsTable extends Table {
         ]);
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1321,7 +1347,12 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         if (!empty($HostConditions->getOrder())) {
-            $query->order($HostConditions->getOrder());
+            $query->order(
+                array_merge(
+                    $HostConditions->getOrder(),
+                    ['Hosts.id' => 'asc']
+                )
+            );
         }
 
         if ($PaginateOMat === null) {
@@ -1407,7 +1438,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         if ($PaginateOMat === null) {
@@ -1460,7 +1492,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         $result = $query->toArray();
@@ -1806,7 +1839,8 @@ class HostsTable extends Table {
         }
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
         $query->limit(ITN_AJAX_LIMIT);
 
@@ -1853,7 +1887,8 @@ class HostsTable extends Table {
             }
             $query->group(['Hosts.id']);
             $query->order([
-                'Hosts.name' => 'asc'
+                'Hosts.name' => 'asc',
+                'Hosts.id'   => 'asc'
             ]);
 
             $selectedHosts = $query->toArray();
@@ -2246,7 +2281,10 @@ class HostsTable extends Table {
                 ['Hosts.eventhandler_command_id' => $commandId]
             ]
         ])
-            ->order(['Hosts.name' => 'asc'])
+            ->order([
+                'Hosts.name' => 'asc',
+                'Hosts.id'   => 'asc'
+            ])
             ->enableHydration($enableHydration)
             ->group(['Hosts.id'])
             ->all();
@@ -2305,7 +2343,8 @@ class HostsTable extends Table {
         $query->where($where);
         $query->enableHydration($enableHydration);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
         $query->group([
             'Hosts.id'
@@ -2483,7 +2522,12 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         if ($type === 'all') {
-            $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+            $query->order(
+                array_merge(
+                    $HostFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                    ['Hosts.id' => 'asc']
+                )
+            );
         }
 
         if ($type === 'count') {
@@ -3756,7 +3800,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         $result = $query->toArray();
@@ -3885,7 +3930,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         $result = $query->toArray();

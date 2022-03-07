@@ -50,6 +50,7 @@ use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
 use itnovum\openITCOCKPIT\oAuth\oAuthClient;
@@ -751,8 +752,17 @@ class UsersController extends AppController {
         /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Usercontainerroles.name'
+            ]
+        ]);
+        $selected = $this->request->getQuery('selected', []);
+
+
         $ucr = Api::makeItJavaScriptAble(
-            $UsercontainerrolesTable->getUsercontainerrolesAsList($this->MY_RIGHTS)
+            $UsercontainerrolesTable->getUsercontainerrolesAsList($GenericFilter, $selected, $this->MY_RIGHTS)
         );
         $this->set('usercontainerroles', $ucr);
         $this->viewBuilder()->setOption('serialize', ['usercontainerroles']);
