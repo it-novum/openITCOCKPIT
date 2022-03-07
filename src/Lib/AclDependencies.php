@@ -136,7 +136,8 @@ class AclDependencies {
             ->allow('Angular', 'popover_graph')
             ->allow('Angular', 'thresholds')
             ->allow('Angular', 'mass_delete_acknowledgements')
-            ->allow('Angular', 'message_of_the_day');
+            ->allow('Angular', 'message_of_the_day')
+            ->allow('Angular', 'regexHelpTooltip');
 
         $this
             ->allow('Agentconnector', 'register_agent')
@@ -231,6 +232,10 @@ class AclDependencies {
             ->allow('Dashboards', 'serviceStatusOverviewWidget')
             ->allow('Dashboards', 'websiteWidget')
             ->allow('Dashboards', 'todayWidget')
+            ->allow('Dashboards', 'getPerformanceDataMetrics')
+            ->allow('Dashboards', 'tacticalOverviewWidget')
+            ->allow('Dashboards', 'tacticalOverviewHostsWidget')
+            ->allow('Dashboards', 'tacticalOverviewServicesWidget')
             ->allow('Dashboards', 'calendarWidget');
 
         $this
@@ -264,6 +269,7 @@ class AclDependencies {
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'loadHostsByString')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'install')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'autotls')
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'satellite_response')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'select_agent')
             ->dependency('Agentconnector', 'overview', 'Agentconnector', 'pull')
             ->dependency('Agentconnector', 'overview', 'Agentconnector', 'push')
@@ -517,6 +523,7 @@ class AclDependencies {
             ->dependency('Users', 'index', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'addFromLdap')
             ->dependency('Users', 'add', 'Users', 'loadLdapUserByString')
+            ->dependency('Users', 'add', 'Users', 'loadLdapUserDetails')
             ->dependency('Users', 'add', 'Users', 'loadDateformats')
             ->dependency('Users', 'add', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'loadContainerRoles')
@@ -525,6 +532,7 @@ class AclDependencies {
             ->dependency('Users', 'edit', 'Users', 'loadDateformats')
             ->dependency('Users', 'edit', 'Users', 'loadUsergroups')
             ->dependency('Users', 'edit', 'Users', 'loadContainerRoles')
+            ->dependency('Users', 'edit', 'Users', 'loadLdapUserDetails')
             ->dependency('Users', 'edit', 'Users', 'loadContainerPermissions');
 
 
@@ -561,8 +569,14 @@ class AclDependencies {
 
 
         $this
-            ->dependency('Usergroups', 'index', 'Usergroups', 'view');
+            ->dependency('Usergroups', 'index', 'Usergroups', 'view')
+            ->dependency('Usergroups', 'add', 'Usergroups', 'loadLdapgroupsForAngular')
+            ->dependency('Usergroups', 'edit', 'Usergroups', 'loadLdapgroupsForAngular');
 
+
+        $this
+            ->dependency('Usercontainerroles', 'add', 'Usercontainerroles', 'loadLdapgroupsForAngular')
+            ->dependency('Usercontainerroles', 'edit', 'Usercontainerroles', 'loadLdapgroupsForAngular');
 
         $this
             ->dependency('Backups', 'index', 'Backups', 'checkBackupFinished');

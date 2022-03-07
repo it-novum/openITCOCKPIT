@@ -68,7 +68,7 @@ angular.module('openITCOCKPIT')
 
             // Query new API Key from Server
             var index = $scope.post.User.apikeys.length;
-            if( index > 0 ) {
+            if(index > 0){
                 // Array is not empty so current array index is lenght - 1, arrays start at 0
                 index = index - 1;
             }
@@ -79,10 +79,12 @@ angular.module('openITCOCKPIT')
             $scope.post.User.apikeys.splice(index, 1);
         };
 
-        $scope.loadUserContaineRoles = function(){
+        $scope.loadUserContainerRoles = function(searchString){
             $http.get("/users/loadContainerRoles.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Usercontainerroles.name]': searchString,
+                    'selected[]': $scope.post.User.usercontainerroles._ids
                 }
             }).then(function(result){
                 $scope.usercontainerroles = result.data.usercontainerroles;
@@ -256,7 +258,7 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
-        $scope.loadUserContaineRoles();
+        $scope.loadUserContainerRoles();
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();

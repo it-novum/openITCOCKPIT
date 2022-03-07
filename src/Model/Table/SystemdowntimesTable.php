@@ -134,12 +134,12 @@ class SystemdowntimesTable extends Table {
             ->scalar('day_of_month')
             ->maxLength('day_of_month', 255)
             ->notEmptyString('day_of_month', __('You must select at least one day of the week or one day of the month, or both'), function ($context) {
-            if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
-                //Only required for recurring downtimes
-                return empty($context['data']['weekdays']);
-            }
-            return false;
-        })
+                if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                    //Only required for recurring downtimes
+                    return empty($context['data']['weekdays']);
+                }
+                return false;
+            })
             ->add('day_of_month', 'custom', [
                 'rule'    => function ($value, $context) {
                     if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
@@ -364,8 +364,13 @@ class SystemdowntimesTable extends Table {
             'Systemdowntimes.id'
         ]);
 
-        $query->order($SystemdowntimesConditions->getOrder())
-            ->disableHydration();
+        $query->order(
+            array_merge(
+                $SystemdowntimesConditions->getOrder(),
+                ['Systemdowntimes.id' => 'asc']
+            )
+
+        )->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -405,7 +410,7 @@ class SystemdowntimesTable extends Table {
             'Services.id',
             'Services.uuid',
             'container_ids' => $query->newExpr('GROUP_CONCAT(DISTINCT HostsToContainersSharing.container_id)'),
-            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+            'servicename'   => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
             'Hosts.id',
             'Hosts.uuid',
             'Hosts.name',
@@ -458,8 +463,13 @@ class SystemdowntimesTable extends Table {
         $query->group([
             'Systemdowntimes.id'
         ])
-            ->order($SystemdowntimesConditions->getOrder())
-            ->disableHydration();
+            ->order(
+                array_merge(
+                    $SystemdowntimesConditions->getOrder(),
+                    ['Systemdowntimes.id' => 'asc']
+                )
+
+            )->disableHydration();
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->emptyArrayIfNull($query->toArray());
@@ -538,8 +548,12 @@ class SystemdowntimesTable extends Table {
         $query->group([
             'Systemdowntimes.id'
         ])
-            ->order($SystemdowntimesConditions->getOrder())
-            ->disableHydration();
+            ->order(
+                array_merge(
+                    $SystemdowntimesConditions->getOrder(),
+                    ['Systemdowntimes.id' => 'asc']
+                )
+            )->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -606,8 +620,12 @@ class SystemdowntimesTable extends Table {
         $query->group([
             'Systemdowntimes.id'
         ])
-            ->order($SystemdowntimesConditions->getOrder())
-            ->disableHydration();
+            ->order(
+                array_merge(
+                    $SystemdowntimesConditions->getOrder(),
+                    ['Systemdowntimes.id' => 'asc']
+                )
+            )->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

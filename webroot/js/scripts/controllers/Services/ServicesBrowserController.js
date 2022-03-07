@@ -58,6 +58,7 @@ angular.module('openITCOCKPIT')
         $scope.graphAutoRefreshInterval = 0;
 
         $scope.currentGraphUnit = null;
+        $scope.interval = null;
 
         var flappingInterval;
         var zoomCallbackWasBind = false;
@@ -78,7 +79,7 @@ angular.module('openITCOCKPIT')
 
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $scope.load();
@@ -317,6 +318,15 @@ angular.module('openITCOCKPIT')
 
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, true, lastGraphStart, lastGraphEnd, false);
         };
+
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+            disableGraphAutorefresh();
+            jQuery('#graph_data_tooltip').remove();  //removed all tooltips from DOM
+        });
 
         var getServicestatusTextColor = function(){
             switch($scope.servicestatus.currentState){
@@ -892,12 +902,6 @@ angular.module('openITCOCKPIT')
             graphAutoRefreshIntervalId = null;
         };
 
-        //Disable status update interval, if the object gets removed from DOM.
-        $scope.$on('$destroy', function(){
-            disableGraphAutorefresh();
-        });
-
-
         $scope.clipboardCommand = function(){
             navigator.clipboard.writeText($scope.mergedService.serviceCommandLine);
         };
@@ -945,5 +949,4 @@ angular.module('openITCOCKPIT')
                 jQuery('[data-toggle="tooltip"]').tooltip('hide');
             }, 1500);
         });
-
     });

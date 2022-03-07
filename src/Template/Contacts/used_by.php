@@ -48,7 +48,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='ContactsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='ContactsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -59,7 +60,7 @@
                     <table class="table table-striped m-0 table-bordered table-hover table-sm">
                         <thead>
                         <tr ng-if="objects.Contactgroups.length > 0">
-                            <th class="bg-color-lightGray">
+                            <th class="card-header">
                                 <i class="fa fa-users"></i>
                                 <?php echo __('Contact groups'); ?> ({{objects.Contactgroups.length}})
                             </th>
@@ -73,12 +74,17 @@
                                 <?php else: ?>
                                     {{ contactgroup.container.name }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(contactgroup.container.parent_id) !== -1">
+                                    <i class="fas fa-lock lock-icon-gradient"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
 
                         <tr ng-if="objects.Hosttemplates.length > 0">
-                            <th class="bg-color-lightGray">
+                            <th class="card-header">
                                 <i class="fa fa-pencil-square-o"></i>
                                 <?php echo __('Host templates'); ?> ({{objects.Hosttemplates.length}})
                             </th>
@@ -92,11 +98,16 @@
                                 <?php else: ?>
                                     {{ hosttemplate.name }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(hosttemplate.container_id) !== -1">
+                                    <i class="fas fa-lock lock-icon-gradient"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
                         <tr ng-if="objects.Servicetemplates.length > 0">
-                            <th class="bg-color-lightGray">
+                            <th class="card-header">
                                 <i class="fa fa-pencil-square-o"></i>
                                 <?php echo __('Service templates'); ?> ({{objects.Servicetemplates.length}})
                             </th>
@@ -110,11 +121,16 @@
                                 <?php else: ?>
                                     {{ servicetemplate.name }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(servicetemplate.container_id) !== -1">
+                                    <i class="fas fa-lock lock-icon-gradient"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
                         <tr ng-if="objects.Hosts.length > 0">
-                            <th class="bg-color-lightGray">
+                            <th class="card-header">
                                 <i class="fa fa-desktop"></i>
                                 <?php echo __('Hosts'); ?> ({{objects.Hosts.length}})
                             </th>
@@ -128,11 +144,16 @@
                                 <?php else: ?>
                                     {{ host.name }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(host.container_id) !== -1">
+                                    <i class="fas fa-lock lock-icon-gradient"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
                         <tr ng-if="objects.Services.length > 0">
-                            <th class="bg-color-lightGray">
+                            <th class="card-header">
                                 <i class="fa fa-cog"></i>
                                 <?php echo __('Services'); ?> ({{objects.Services.length}})
                             </th>
@@ -150,7 +171,7 @@
                         </tr>
 
                         <tr ng-if="objects.Hostescalations.length > 0">
-                            <th class="bg-color-lightGray">
+                            <th class="card-header">
                                 <i class="fa fa-bomb"></i>
                                 <?php echo __('Host escalations'); ?> ({{objects.Hostescalations.length}})
                             </th>
@@ -159,16 +180,21 @@
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
                                     <a ui-sref="HostescalationsEdit({id:hostescalation.id})">
-                                        <?php echo __('Host escalation'); ?> #{{ $index +1 }}
+                                        <?php echo __('Host escalation'); ?> #{{ $index + 1 }}
                                     </a>
                                 <?php else: ?>
                                     <?php echo __('Host escalation'); ?> #{{ $index +1 }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(hostescalation.container_id) !== -1">
+                                    <i class="fas fa-lock lock-icon-gradient"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
 
                         <tr ng-if="objects.Serviceescalations.length > 0">
-                            <th class="bg-color-lightGray">
+                            <th class="card-header">
                                 <i class="fa fa-bomb"></i>
                                 <?php echo __('Service escalations'); ?> ({{objects.Serviceescalations.length}})
                             </th>
@@ -177,11 +203,16 @@
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
                                     <a ui-sref="ServiceescalationsEdit({id:serviceescalation.id})">
-                                        <?php echo __('Service escalation'); ?> #{{ $index +1 }}
+                                        <?php echo __('Service escalation'); ?> #{{ $index + 1 }}
                                     </a>
                                 <?php else: ?>
                                     <?php echo __('Service escalation'); ?> #{{ $index +1 }}
                                 <?php endif; ?>
+                                <div class="icon-stack margin-left-5"
+                                     ng-show="containerIds.length > 0 && containerIds.indexOf(hostescalation.container_id) !== -1">
+                                    <i class="fas fa-lock lock-icon-gradient"></i>
+                                    <i class="fas fa-exclamation-triangle fa-xs text-danger cornered cornered-lr"></i>
+                                </div>
                             </td>
                         </tr>
                         </tbody>

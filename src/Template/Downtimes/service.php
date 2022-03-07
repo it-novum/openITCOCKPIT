@@ -298,8 +298,8 @@
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Host'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Services.name')">
-                                    <i class="fa" ng-class="getSortClass('Services.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('servicename')">
+                                    <i class="fa" ng-class="getSortClass('servicename')"></i>
                                     <?php echo __('Service'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('DowntimeServices.author_name')">

@@ -6,9 +6,10 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
             var graphStart = 0;
             var graphEnd = 0;
             $scope.currentServiceDetailsId = null;
+            $scope.interval = null;
+
 
             $scope.showServiceDetailsFlashMsg = function(){
-
                 new Noty({
                     theme: 'metroui',
                     type: 'success',
@@ -19,7 +20,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
 
                 $scope.showFlashSuccess = true;
                 $scope.autoRefreshCounter = 5;
-                var interval = $interval(function(){
+                $scope.interval = $interval(function(){
                     $scope.autoRefreshCounter--;
                     if($scope.autoRefreshCounter === 0){
                         $scope.loadServicestatusDetails($scope.currentServiceDetailsId);
@@ -117,6 +118,13 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                 object[$scope.downtime.internalDowntimeId] = $scope.host.Host.hostname + ' / ' + $scope.mergedService.name;
                 return object;
             };
+
+            //Disable interval if object gets removed from DOM.
+            $scope.$on('$destroy', function(){
+                if($scope.interval !== null){
+                    $interval.cancel($scope.interval);
+                }
+            });
 
             var loadGraph = function(hostUuid, serviceUuid){
                 var serverTime = new Date($scope.timezone.server_time);
@@ -279,7 +287,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
         link: function($scope, element, attr){
             $scope.showServiceStatusDetails = function(serviceId){
                 $scope.loadServicestatusDetails(serviceId);
-                $( ".page-inner" ).append( $('#angularServiceStatusDetailsModal'));
+                $(".page-inner").append($('#angularServiceStatusDetailsModal'));
                 $('#angularServiceStatusDetailsModal').modal('show');
             };
         }

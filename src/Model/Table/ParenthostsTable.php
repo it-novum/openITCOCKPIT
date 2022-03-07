@@ -107,10 +107,6 @@ class ParenthostsTable extends Table {
         }
 
         $query->disableHydration();
-        //->group([
-        //    'Parenthosts.parenthost_id'
-        //]);
-        //FileDebugger::dieQuery($query);
         $query->all();
 
         return $query->toArray();

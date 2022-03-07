@@ -37,6 +37,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use GrafanaModule\Model\Entity\GrafanaDashboard;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 /**
  * GrafanaDashboards Model
@@ -126,10 +127,11 @@ class GrafanaDashboardsTable extends Table {
     }
 
     /**
-     * @param array $MY_RIGHTS
-     * @return array|\Cake\Datasource\ResultSetInterface
+     * @param GenericFilter $GenericFilter
+     * @param $MY_RIGHTS
+     * @return array
      */
-    public function getGrafanaDashboards($MY_RIGHTS = []) {
+    public function getGrafanaDashboards(GenericFilter $GenericFilter, $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'id',
@@ -159,13 +161,18 @@ class GrafanaDashboardsTable extends Table {
                 'Host.id'
             ])
             ->order([
-                'Host.name' => 'ASC'
+                'Host.name' => 'asc',
+                'Host.id'   => 'asc'
             ]);
 
         if (!empty($MY_RIGHTS)) {
             $query->where([
                 'HostsToContainers.container_id IN' => $MY_RIGHTS
             ]);
+        }
+
+        if (!empty($GenericFilter->genericFilters())) {
+            $query->where($GenericFilter->genericFilters());
         }
 
         $query->disableHydration();

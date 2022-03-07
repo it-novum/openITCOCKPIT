@@ -926,9 +926,15 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ContactsUsedBy', {
-                url: '/contacts/usedBy/:id',
+                url: '/contacts/usedBy/:id/:containerIds',
                 templateUrl: "/contacts/usedBy.html",
-                controller: "ContactsUsedByController"
+                controller: "ContactsUsedByController",
+                params: {
+                    containerIds: {
+                        value: null,
+                        squash: true
+                    }
+                },
             })
 
             .state('ContactgroupsIndex', {
@@ -1622,6 +1628,20 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
     .filter('capitalizeFirstLetter', function(){
         return function(input){
             return input.charAt(0).toUpperCase() + input.slice(1);
+        };
+    })
+
+    .filter('orderObjectBy', function(){
+        return function(items, field, reverse){
+            var filtered = [];
+            angular.forEach(items, function(item){
+                filtered.push(item);
+            });
+            filtered.sort(function(a, b){
+                return (a[field] > b[field] ? 1 : -1);
+            });
+            if(reverse) filtered.reverse();
+            return filtered;
         };
     })
 

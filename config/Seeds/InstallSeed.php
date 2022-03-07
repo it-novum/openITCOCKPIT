@@ -133,5 +133,37 @@ class InstallSeed extends AbstractSeed {
             TableRegistry::getTableLocator()->get('WizardAssignments')
         );
         $MysqlWizardImporter->import();
+
+        // Add new cronjobs to database
+        //Cronjobs
+        $table = $this->table('cronjobs');
+
+        // Add all (new) cronjobs to this array
+        $data = [
+            [
+                'task'     => 'LdapGroupImport',
+                'plugin'   => 'Core',
+                'interval' => '1440',
+                'enabled'  => '1',
+            ],
+        ];
+
+        //Check if records exists
+        foreach ($data as $index => $record) {
+            $QueryBuilder = $this->getAdapter()->getQueryBuilder();
+
+            $stm = $QueryBuilder->select('*')
+                ->from($table->getName())
+                ->where([
+                    'plugin' => $record['plugin'],
+                    'task'   => $record['task']
+                ])
+                ->execute();
+            $result = $stm->fetchAll();
+
+            if (empty($result)) {
+                $table->insert($record)->save();
+            }
+        }
     }
 }

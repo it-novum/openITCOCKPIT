@@ -75,6 +75,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 id="UserContainerroles"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
+                                callback="loadUserContainerRoles"
                                 chosen="usercontainerroles"
                                 multiple
                                 ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
@@ -94,21 +95,41 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div class="col col-md-10">
                                 <legend class="no-padding font-sm txt-ack">
                                     {{userContainerRole.path}}
+                                    <i class="fas fa-minus-square text-danger"
+                                       ng-if="selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1"></i>
                                 </legend>
-                                <input name="group-{{userContainerRole.id}}"
-                                       type="radio"
-                                       disabled="disabled"
-                                       ng-checked="userContainerRole._joinData.permission_level === 1">
-                                <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+                                <div class="d-inline-block"
+                                     ng-class="{'strike' : selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1}">
+                                    <input name="group-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 1">
+                                    <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
-                                <input name="group-{{userContainerRole.id}}"
-                                       type="radio"
-                                       disabled="disabled"
-                                       ng-checked="userContainerRole._joinData.permission_level === 2">
-                                <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                    <input name="group-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 2">
+                                    <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                </div>
+                                <span
+                                    ng-repeat="userRole in userContainerRole.user_roles | orderObjectBy:'name':order_revers">
+                                    <span class="badge border-info border text-primary">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
+                                            <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
+                                                    {{userRole.name}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{userRole.name}}
+                                        <?php endif; ?>
+                                    </span>
+                                </span>
                             </div>
                         </div>
-
+                        <div class="col col-md-4 text-right div-bottom-arrow font-xs text-primary italic"
+                             ng-show="post.User.usercontainerroles._ids.length > 0 && selectedUserContainers.length > 0">
+                            <?= __('The user permissions will be extended or adapted with additional containers'); ?>
+                        </div>
                         <div class="form-group" ng-class="{'has-error': errors.containers}">
                             <label class="control-label hintmark" for="UserContainers">
                                 <?php echo __('Container'); ?>

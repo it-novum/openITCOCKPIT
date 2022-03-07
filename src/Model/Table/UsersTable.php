@@ -1,4 +1,27 @@
 <?php
+// Copyright (C) <2019>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
 
 namespace App\Model\Table;
 
@@ -6,6 +29,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\User;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
+use Cake\Database\Query;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
@@ -82,11 +106,12 @@ class UsersTable extends Table {
         ]);
 
         $this->belongsToMany('Usercontainerroles', [
+            'through'          => 'UsercontainerrolesMemberships',
             'className'        => 'Usercontainerroles',
             'joinTable'        => 'users_to_usercontainerroles',
             'foreignKey'       => 'user_id',
             'targetForeignKey' => 'usercontainerrole_id',
-            'saveStrategy'     => 'replace'
+            //'saveStrategy'     => 'replace'
         ]);
     }
 
@@ -268,9 +293,8 @@ class UsersTable extends Table {
         }
 
         //Has the user an user container role assignment?
-        if (isset($context['data']['usercontainerroles']['_ids']) && is_array($context['data']['usercontainerroles']['_ids'])) {
-            if (!empty($context['data']['usercontainerroles']['_ids']) && sizeof($context['data']['usercontainerroles']['_ids']) > 0) {
-
+        if (isset($context['data']['usercontainerroles']) && is_array($context['data']['usercontainerroles'])) {
+            if (sizeof(Hash::extract($context['data']['usercontainerroles'], '{n}.id')) > 0) {
                 //User has a user container role assignment
                 return true;
             }
@@ -377,6 +401,7 @@ class UsersTable extends Table {
             'Users.phone',
             'Users.is_active',
             'Users.samaccountname',
+            'Users.is_oauth',
             'Usergroups.id',
             'Usergroups.name',
             'full_name' => $query->func()->concat([
@@ -406,7 +431,12 @@ class UsersTable extends Table {
             $query->having($having);
         }
 
-        $query->order($UsersFilter->getOrderForPaginator('full_name', 'asc'));
+        $query->order(
+            array_merge(
+                $UsersFilter->getOrderForPaginator('full_name', 'asc'),
+                ['Users.id' => 'asc']
+            )
+        );
         $query->group([
             'Users.id'
         ]);
@@ -483,10 +513,13 @@ class UsersTable extends Table {
         $user['containers'] = [
             '_ids' => Hash::extract($query, 'containers.{n}.id')
         ];
-        $user['usercontainerroles'] = [
-            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.id')
-        ];
 
+        $user['usercontainerroles'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}._joinData[through_ldap=false].usercontainerrole_id')
+        ];
+        $user['usercontainerroles_ldap'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}._joinData[through_ldap=true].usercontainerrole_id')
+        ];
         $user['usercontainerroles_containerids'] = [
             '_ids' => Hash::extract($query, 'usercontainerroles.{n}.containers.{n}.id')
         ];
@@ -508,6 +541,43 @@ class UsersTable extends Table {
         ];
     }
 
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getUserForPermissionCheck($id) {
+        $query = $this->find()
+            ->select([
+                'Users.id',
+                'Users.usergroup_id'
+            ])
+            ->where([
+                'Users.id' => $id
+            ])
+            ->contain([
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ],
+            ])
+            ->disableHydration()
+            ->first();
+
+        $user = $query;
+
+        $user['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $user['usercontainerroles'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.id')
+        ];
+
+        $user['usercontainerroles_containerids'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.containers.{n}.id')
+        ];
+
+        return $user;
+    }
 
     /**
      * @param array $containerPermissions
@@ -722,16 +792,17 @@ class UsersTable extends Table {
             'Users.image',
             'Users.onetimetoken',
             'full_name' => $query->func()->concat([
-                'Users.firstname' => 'literal',
+                'Users.lastname' => 'literal',
                 ' ',
-                'Users.lastname'  => 'literal'
+                'Users.firstname'  => 'literal'
             ])
         ])
             ->where([
                 'Users.id IN' => $userIds
             ])
             ->order([
-                'full_name' => 'asc'
+                'full_name' => 'asc',
+                'Users.id'  => 'asc'
             ])
             ->group([
                 'Users.id'
@@ -1205,15 +1276,15 @@ class UsersTable extends Table {
             ->where([
                 'Users.is_active' => 1
             ]);
-        if(!empty($usergroupsIds)){
+        if (!empty($usergroupsIds)) {
             $query->innerJoinWith('Usergroups')
                 ->where([
                     'Usergroups.id IN ' => $usergroupsIds
                 ]);
         }
         $query->group([
-                'Users.id'
-            ])
+            'Users.id'
+        ])
             ->disableAutoFields()
             ->disableHydration()
             ->all();
@@ -1223,5 +1294,56 @@ class UsersTable extends Table {
             return [];
         }
         return $users;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUserTypesWithStyles() {
+        $types = [
+            'LOCAL_USER' => [
+                'title' => __('Local user'),
+                'color' => 'text-generic',
+                'class' => 'border-generic'
+            ],
+
+            'LDAP_USER' => [
+                'title' => __('LDAP user'),
+                'color' => 'text-prometheus',
+                'class' => 'border-prometheus'
+            ],
+
+            'OAUTH_USER' => [
+                'title' => __('OAuth user'),
+                'color' => 'text-evc',
+                'class' => 'border-evc'
+            ]
+
+        ];
+
+        return $types;
+    }
+
+    /**
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getLdapUsersForSync(bool $enableHydration = true) {
+        $query = $this->find()
+            ->contain([
+                'Usercontainerroles' => function (Query $q) {
+                    $q->where([
+                        'UsercontainerrolesMemberships.through_ldap' => 0
+                    ]);
+                    return $q;
+                },
+            ])
+            ->whereNotNull([
+                'samaccountname'
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $query->toArray();
     }
 }

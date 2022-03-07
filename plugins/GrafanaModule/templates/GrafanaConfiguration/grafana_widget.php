@@ -54,6 +54,7 @@
                         <div class="col-lg-12">
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
+                                    callback="loadGrafanaDashboards"
                                     chosen="availableGrafanaDashboards"
                                     ng-options="aGD.GrafanaDashboard.host_id as aGD.Host.name for aGD in availableGrafanaDashboards"
                                     ng-model="grafana.host_id">
