@@ -1002,6 +1002,8 @@ class HostsController extends AppController {
                 $mergedHost = $HostMergerForView->getDataForView();
                 $hostForChangelog = $mergedHost;
 
+
+
                 $currentContainerIds = [];
                 foreach ($hostArray['Host']['hosts_to_containers_sharing'] as $container) {
                     $currentContainerIds = $hostArray['Host']['hosts_to_containers_sharing']['_ids'];
@@ -1224,11 +1226,9 @@ class HostsController extends AppController {
                 }
 
                 if ($hasChanges === true) {
-                    $test = $hostArray;
+                    $hostChanges = $hostArray;
                     $HostComparisonForSave = new HostComparisonForSave($hostArray, $hosttemplate);
                     $hostArray = $HostComparisonForSave->getDataForSaveForAllFields();
-                    FileDebugger::dump('Has changes ');
-
 
                     $hostArray['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
                     $hostArray['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
@@ -1237,11 +1237,7 @@ class HostsController extends AppController {
 
                     $hostObject = $HostsTable->get($hostId);
 
-                    /**
-                     *  array_merge($HostsTable->resolveDataForChangelog($requestData), $requestData),
-                     * array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
-                     */
-
+                    /** @var  ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
                     $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         'edit',
@@ -1251,22 +1247,15 @@ class HostsController extends AppController {
                         $containerIdsForChangelog,
                         $User->getId(),
                         $hostObject->get('name'),
-                        array_merge($HostsTable->resolveDataForChangelog($test), ['Host' => $hostArray]),
+                        array_merge($HostsTable->resolveDataForChangelog($hostChanges), $hostChanges),
                         array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                     );
-FileDebugger::dump('*******NEW*********');
-//FileDebugger::dump(array_merge($HostsTable->resolveDataForChangelog($hostArray), $hostArray));
-FileDebugger::dump(array_merge($HostsTable->resolveDataForChangelog($test), ['Host' => $hostArray]));
 
-FileDebugger::dump('*******OLD*********');
-FileDebugger::dump($hostForChangelog);
+                    FileDebugger::dump($changelog_data['data']);
 
-FileDebugger::dump('########## Changelog ################');
-FileDebugger::dump($changelog_data);
-return;
-                    FileDebugger::dump($hostArray);
-                    FileDebugger::dump($changelog_data);
                     return;
+
+
                     $hostObject = $HostsTable->patchEntity($hostObject, $hostArray);
                     $HostsTable->save($hostObject);
                     if (!$hostObject->hasErrors()) {
@@ -1280,94 +1269,12 @@ return;
                             $containerIdsForChangelog,
                             $User->getId(),
                             $hostObject->get('name'),
-                            array_merge($HostsTable->resolveDataForChangelog($hostArray), $hostArray),
-                            array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
+                            array_merge($HostsTable->resolveDataForChangelog($hostChanges), $hostChanges),
+                            array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostObjectTmp)
                         );
                         if ($changelog_data) {
                             $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                             $ChangelogsTable->save($changelogEntry);
-                        }
-                    }
-
-
-                    return;
-                }
-                FileDebugger::dump('Has no changes ');
-
-                return;
-                /*
-                                $dataToSave = [
-                                    // Add required fields for HostComparisonForSave class
-                                    'name'                        => $hostObject->name,
-                                    'hosttemplate_id'             => $hostObject->hosttemplate_id,
-                                    'address'                     => $hostObject->address,
-                                    'container_id'                => $hostObject->container_id,
-                                    'hosts_to_containers_sharing' => [
-                                        '_ids' => $currentContainerIds
-                                    ]
-                                ];
-                */
-
-
-                $hostData = $hostObject->toArray();
-                //FileDebugger::dump($hostData);return;
-                if (!$HosttemplateCache->has($hostData['hosttemplate_id'])) {
-                    $HosttemplateCache->set($hostData['hosttemplate_id'], $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']));
-                }
-                $hosttemplate = $HosttemplateCache->get($hostData['hosttemplate_id']);
-                $allowSharing = $hostSharingPermissions->allowSharing();
-
-                if ($allowSharing) {
-                    $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hosttemplate);
-
-                    // Merge the Host with the host template to be able to compare description, tags, etc
-                    $mergedHost = $HostMergerForView->getDataForView();
-                    FileDebugger::dump($mergedHost);
-                    return;
-                    // Keep the contact and contact groups of the host - the comparison will be done later in this code
-                    // to check if the host is able to "use/see" the given contact/s due to container permissions
-                    $mergedHost['Host']['contacts'] = $hostData['contacts'];
-                    $mergedHost['Host']['contactgroups'] = $hostData['contactgroups'];
-
-                    $dataToSave = $mergedHost['Host'];
-
-
-                    FileDebugger::dump($detailsToEdit);
-                    FileDebugger::dump($mergedHost['Host']['host_type']);
-//FileDebugger::dump($dataToSave);return;
-                    if (!empty($dataToSave)) {
-                        $HostComparisonForSave = new HostComparisonForSave(['Host' => $dataToSave], $hosttemplate);
-
-                        $dataToSave = $HostComparisonForSave->getDataForSaveForAllFields();
-                        FileDebugger::dump($dataToSave['Host']);
-                        return;
-                        //Add required fields for validation
-                        $dataToSave['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
-                        $dataToSave['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
-                        $dataToSave['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
-                        $dataToSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
-
-                        $hostObject = $HostsTable->patchEntity($hostObject, $dataToSave);
-                        $HostsTable->save($hostObject);
-                        if (!$hostObject->hasErrors()) {
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                                'edit',
-                                'hosts',
-                                $hostObject->get('id'),
-                                OBJECT_HOST,
-                                $containerIdsForChangelog,
-                                $User->getId(),
-                                $hostObject->get('name'),
-                                $hostObjectForChangelog,
-                                ['Host' => $hostObject->toArray()]
-                            );
-                            if ($changelog_data) {
-                                /** @var Changelog $changelogEntry */
-                                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                                $ChangelogsTable->save($changelogEntry);
-                            }
                         }
                     }
                 }
