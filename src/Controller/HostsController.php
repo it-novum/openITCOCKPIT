@@ -66,7 +66,6 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -1002,8 +1001,6 @@ class HostsController extends AppController {
                 $mergedHost = $HostMergerForView->getDataForView();
                 $hostForChangelog = $mergedHost;
 
-
-
                 $currentContainerIds = [];
                 foreach ($hostArray['Host']['hosts_to_containers_sharing'] as $container) {
                     $currentContainerIds = $hostArray['Host']['hosts_to_containers_sharing']['_ids'];
@@ -1230,31 +1227,16 @@ class HostsController extends AppController {
                     $HostComparisonForSave = new HostComparisonForSave($hostArray, $hosttemplate);
                     $hostArray = $HostComparisonForSave->getDataForSaveForAllFields();
 
+
+                    $HostMergerForView = new HostMergerForView($hostChanges, $hosttemplate);
+                    // Merge the Host with the host template to be able to compare description, tags, etc
+                    $mergedHostToSave = $HostMergerForView->getDataForView();
                     $hostArray['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
                     $hostArray['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
                     $hostArray['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
                     $hostArray['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
                     $hostObject = $HostsTable->get($hostId);
-
-                    /** @var  ChangelogsTable $ChangelogsTable */
-                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                        'edit',
-                        'hosts',
-                        $hostObject->get('id'),
-                        OBJECT_HOST,
-                        $containerIdsForChangelog,
-                        $User->getId(),
-                        $hostObject->get('name'),
-                        array_merge($HostsTable->resolveDataForChangelog($hostChanges), $hostChanges),
-                        array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
-                    );
-
-                    FileDebugger::dump($changelog_data['data']);
-
-                    return;
-
 
                     $hostObject = $HostsTable->patchEntity($hostObject, $hostArray);
                     $HostsTable->save($hostObject);
@@ -1269,8 +1251,8 @@ class HostsController extends AppController {
                             $containerIdsForChangelog,
                             $User->getId(),
                             $hostObject->get('name'),
-                            array_merge($HostsTable->resolveDataForChangelog($hostChanges), $hostChanges),
-                            array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostObjectTmp)
+                            array_merge($HostsTable->resolveDataForChangelog($mergedHostToSave), $mergedHostToSave),
+                            array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                         );
                         if ($changelog_data) {
                             $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
