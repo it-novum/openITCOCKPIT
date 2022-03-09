@@ -208,7 +208,7 @@ class NagiosConfigGenerator {
 
                 $content .= $this->addContent('define command{', 0);
                 $content .= $this->addContent('command_name', 1, $command['Command']['uuid']);
-                $content .= $this->addContent('command_line', 1, $command['Command']['command_line']);
+                $content .= $this->addContent('command_line', 1, $this->escapeLastBackslash($command['Command']['command_line']));
                 $content .= $this->addContent('}', 0);
 
                 if ($this->conf['minified'] == false) {
@@ -268,17 +268,17 @@ class NagiosConfigGenerator {
             $content .= $this->addContent('host_notification_options', 1, $contact->getHostNotificationOptionsForCfg());
             $content .= $this->addContent('service_notification_options', 1, $contact->getServiceNotificationOptionsForCfg());
             if (!empty($contact->get('email'))) {
-                $content .= $this->addContent('email', 1, $contact->get('email'));
+                $content .= $this->addContent('email', 1, $this->escapeLastBackslash($contact->get('email')));
             }
             if (!empty($contact->get('phone'))) {
-                $content .= $this->addContent('pager', 1, $contact->get('phone'));
+                $content .= $this->addContent('pager', 1, $this->escapeLastBackslash($contact->get('phone')));
             }
 
             if ($contact->hasCustomvariables()) {
                 $content .= PHP_EOL;
                 $content .= $this->addContent(';Custom  variables:', 1);
                 foreach ($contact->getCustomvariablesForCfg() as $varName => $varValue) {
-                    $content .= $this->addContent($varName, 1, $varValue);
+                    $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
                 }
             }
 
@@ -577,11 +577,13 @@ class NagiosConfigGenerator {
                     $commandUuid = $this->CommandUuidsCache->get($commandId);
 
                     $commandarguments = $host->getCommandargumentValuesForCfg($hosttemplate);
-                    $content .= $this->addContent('check_command', 1, sprintf(
-                        '%s!%s; %s',
-                        $commandUuid,
-                        implode('!', Hash::extract($commandarguments, '{n}.value')),
-                        implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                    $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                        sprintf(
+                            '%s!%s; %s',
+                            $commandUuid,
+                            implode('!', Hash::extract($commandarguments, '{n}.value')),
+                            implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                        )
                     ));
                 } else {
                     //May be check command without arguments
@@ -753,7 +755,7 @@ class NagiosConfigGenerator {
                 $content .= PHP_EOL;
                 $content .= $this->addContent(';Custom  variables:', 1);
                 foreach ($host->getCustomvariablesForCfg() as $varName => $varValue) {
-                    $content .= $this->addContent($varName, 1, $varValue);
+                    $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
                 }
             }
 
@@ -838,11 +840,13 @@ class NagiosConfigGenerator {
 
             $commandUuid = $this->CommandUuidsCache->get($commandId);
             $commandarguments = $host->getCommandargumentValuesForCfg($hosttemplate);
-            $content .= $this->addContent('check_command', 1, sprintf(
-                '%s!%s; %s',
-                $commandUuid,
-                implode('!', Hash::extract($commandarguments, '{n}.value')),
-                implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+            $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                sprintf(
+                    '%s!%s; %s',
+                    $commandUuid,
+                    implode('!', Hash::extract($commandarguments, '{n}.value')),
+                    implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                )
             ));
         } else {
             //May be check command without arguments
@@ -978,7 +982,7 @@ class NagiosConfigGenerator {
             $content .= PHP_EOL;
             $content .= $this->addContent(';Custom  variables:', 1);
             foreach ($host->getCustomvariablesForCfg() as $varName => $varValue) {
-                $content .= $this->addContent($varName, 1, $varValue);
+                $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
             }
         }
         $content .= $this->addContent('}', 0);
@@ -1035,7 +1039,9 @@ class NagiosConfigGenerator {
             $content .= $this->addContent(';Check settings:', 1);
 
             if ($servicetemplate->hasServicetemplatecommandargumentvalues()) {
-                $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplatecommandargumentvaluesForCfg());
+                $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                    $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplatecommandargumentvaluesForCfg()
+                ));
             } else {
                 $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid'));
             }
@@ -1099,7 +1105,9 @@ class NagiosConfigGenerator {
                 $content .= $this->addContent(';Event handler:', 1);
 
                 if ($servicetemplate->hasServicetemplateeventcommandargumentvalues()) {
-                    $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg());
+                    $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                        $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg()
+                    ));
                 } else {
                     $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid'));
                 }
@@ -1216,11 +1224,13 @@ class NagiosConfigGenerator {
                         }
                         $commandUuid = $this->CommandUuidsCache->get($commandId);
                         $commandarguments = $service->getCommandargumentValuesForCfg($servicetemplate);
-                        $content .= $this->addContent('check_command', 1, sprintf(
-                            '%s!%s; %s',
-                            $commandUuid,
-                            implode('!', Hash::extract($commandarguments, '{n}.value')),
-                            implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                        $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                            sprintf(
+                                '%s!%s; %s',
+                                $commandUuid,
+                                implode('!', Hash::extract($commandarguments, '{n}.value')),
+                                implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                            )
                         ));
                     } else {
                         //May be check command without arguments
@@ -1246,11 +1256,13 @@ class NagiosConfigGenerator {
                             }
                             $commandUuid = $this->CommandUuidsCache->get($commandId);
                             $eventcommandarguments = $service->getEventhandlerCommandargumentValuesForCfg();
-                            $content .= $this->addContent('event_handler', 1, sprintf(
-                                '%s!%s; %s',
-                                $commandUuid,
-                                implode('!', Hash::extract($eventcommandarguments, '{n}.value')),
-                                implode('!', Hash::extract($eventcommandarguments, '{n}.human_name'))
+                            $content .= $this->addContent('event_handler', 1, $this->escapeLastBackslash(
+                                sprintf(
+                                    '%s!%s; %s',
+                                    $commandUuid,
+                                    implode('!', Hash::extract($eventcommandarguments, '{n}.value')),
+                                    implode('!', Hash::extract($eventcommandarguments, '{n}.human_name'))
+                                )
                             ));
                         } else {
                             //May be event handler command without arguments
@@ -1408,7 +1420,7 @@ class NagiosConfigGenerator {
                     $content .= PHP_EOL;
                     $content .= $this->addContent(';Custom  variables:', 1);
                     foreach ($service->getCustomvariablesForCfg() as $varName => $varValue) {
-                        $content .= $this->addContent($varName, 1, $varValue);
+                        $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
                     }
                 }
 
@@ -1496,11 +1508,13 @@ class NagiosConfigGenerator {
             }
             $commandUuid = $this->CommandUuidsCache->get($commandId);
             $commandarguments = $service->getCommandargumentValuesForCfg($servicetemplate);
-            $content .= $this->addContent('check_command', 1, sprintf(
-                '%s!%s; %s',
-                $commandUuid,
-                implode('!', Hash::extract($commandarguments, '{n}.value')),
-                implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+            $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                sprintf(
+                    '%s!%s; %s',
+                    $commandUuid,
+                    implode('!', Hash::extract($commandarguments, '{n}.value')),
+                    implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                )
             ));
         } else {
             //May be check command without arguments
@@ -1526,11 +1540,13 @@ class NagiosConfigGenerator {
                 }
                 $commandUuid = $this->CommandUuidsCache->get($commandId);
                 $eventcommandarguments = $service->getEventhandlerCommandargumentValuesForCfg();
-                $content .= $this->addContent('event_handler', 1, sprintf(
-                    '%s!%s; %s',
-                    $commandUuid,
-                    implode('!', Hash::extract($eventcommandarguments, '{n}.value')),
-                    implode('!', Hash::extract($eventcommandarguments, '{n}.human_name'))
+                $content .= $this->addContent('event_handler', 1, $this->escapeLastBackslash(
+                    sprintf(
+                        '%s!%s; %s',
+                        $commandUuid,
+                        implode('!', Hash::extract($eventcommandarguments, '{n}.value')),
+                        implode('!', Hash::extract($eventcommandarguments, '{n}.human_name'))
+                    )
                 ));
             } else {
                 //May be event handler command without arguments
@@ -1591,14 +1607,14 @@ class NagiosConfigGenerator {
         if (!empty($service->get('contacts'))) {
             $content .= $this->addContent('contacts', 1, $service->getContactsforCfg());
             // ITC-2710 Inheritance of contacts and contact groups
-            if(empty($service->get('contactgroups'))){
+            if (empty($service->get('contactgroups'))) {
                 $content .= $this->addContent('contact_groups', 1, 'null');
             }
         }
 
         if (!empty($service->get('contactgroups'))) {
             // ITC-2710 Inheritance of contacts and contact groups
-            if(empty($service->get('contacts'))){
+            if (empty($service->get('contacts'))) {
                 $content .= $this->addContent('contacts', 1, 'null');
             }
             $content .= $this->addContent('contact_groups', 1, $service->getContactgroupsforCfg());
@@ -1656,7 +1672,7 @@ class NagiosConfigGenerator {
             $content .= PHP_EOL;
             $content .= $this->addContent(';Custom  variables:', 1);
             foreach ($service->getCustomvariablesForCfg() as $varName => $varValue) {
-                $content .= $this->addContent($varName, 1, $varValue);
+                $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
             }
         }
 
@@ -2459,7 +2475,7 @@ class NagiosConfigGenerator {
         $macros = $Macro->getAllMacros();
 
         foreach ($macros as $macro) {
-            $content .= $this->addContent($macro['name'] . '=' . $macro['value'], 0);
+            $content .= $this->addContent($macro['name'] . '=' . $this->escapeLastBackslash($macro['value']), 0);
         }
 
         $file->write($content);
