@@ -100,8 +100,8 @@
                         </td>
                         <td>
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                <a href="/ng/#!/hosts/browser/{{ host.Host.id }}">
-                                    {{ host.Host.hostname }}
+                                <a ui-sref="HostsBrowser({id: host.Host.id})" class="a-clean">
+                                    {{  host.Host.hostname }}
                                 </a>
                             <?php else: ?>
                                 {{ host.Host.hostname }}
