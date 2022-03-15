@@ -109,7 +109,7 @@
                                                     </span>
                                                 </div>
                                                 <input type="text" class="form-control "
-                                                       placeholder="<?php echo __('Filter by excluded host group'); ?>"
+                                                       placeholder="<?php echo __('Filter by excluded host'); ?>"
                                                        ng-model="filter.HostsExcluded.name"
                                                        ng-model-options="{debounce: 500}"
                                                        ng-focus="hostExcludeFocus=true;filter.Hosts.name='';hostFocus=false;">

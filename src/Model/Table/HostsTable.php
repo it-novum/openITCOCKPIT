@@ -4543,7 +4543,6 @@ class HostsTable extends Table {
             'Hosts.name' => 'asc',
             'Hosts.id'   => 'asc'
         ]);
-
         $result = $query->toArray();
         if (empty($result)) {
             return [];

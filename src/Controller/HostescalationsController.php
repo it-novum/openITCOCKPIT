@@ -329,7 +329,22 @@ class HostescalationsController extends AppController {
             throw new NotFoundException(__('Invalid container'));
         }
 
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        }
+
 
         $excludedHosts = $HostsTable->getHostsByContainerIdAndHosgroupIds($containerIds, $hostgroupIds, 'list', 'id');
         $excludedHosts = Api::makeItJavaScriptAble($excludedHosts);
@@ -357,8 +372,21 @@ class HostescalationsController extends AppController {
             throw new NotFoundException(__('Invalid container'));
         }
 
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        }
         $excludedHostgroups = $HostgroupsTable->getHostgroupsByContainerIdAndHostIds($containerIds, $hostIds, 'list', 'id');
         $excludedHostgroups = Api::makeItJavaScriptAble($excludedHostgroups);
 

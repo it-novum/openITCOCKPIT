@@ -750,7 +750,6 @@ class HostgroupsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
@@ -766,6 +765,7 @@ class HostgroupsController extends AppController {
                 CT_NODE
             ]);
         }
+
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($containerIds);
         $hosts = Api::makeItJavaScriptAble(
