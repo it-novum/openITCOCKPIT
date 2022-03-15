@@ -353,8 +353,12 @@ class AclDependencies {
             ->dependency('Hostescalations', 'index', 'Hostescalations', 'view')
             ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadContainers')
             ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadElementsByContainerId')
+            ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadExcludedHostgroupsByContainerIdAndHostIds')
+            ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadExcludedHostsByContainerIdAndHostgroupIds')
             ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadContainers')
-            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadElementsByContainerId');
+            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadElementsByContainerId')
+            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadExcludedHostgroupsByContainerIdAndHostIds')
+            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadExcludedHostsByContainerIdAndHostgroupIds');
 
 
         $this

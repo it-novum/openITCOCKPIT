@@ -867,6 +867,4 @@ class HostgroupsController extends AppController {
         $this->set('hostgroups', $hostgroups);
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
-
-
 }

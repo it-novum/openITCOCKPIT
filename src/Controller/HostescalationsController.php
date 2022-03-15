@@ -275,11 +275,9 @@ class HostescalationsController extends AppController {
 
         $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
-        $hostgroupsExcluded = $hostgroups;
 
         $hosts = $HostsTable->getHostsByContainerId($containerIds, 'list');
         $hosts = Api::makeItJavaScriptAble($hosts);
-        $hostsExcluded = $hosts;
 
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
@@ -290,8 +288,8 @@ class HostescalationsController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
-        $this->set(compact(['hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']));
-        $this->viewBuilder()->setOption('serialize', ['hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']);
+        $this->set(compact(['hosts', 'hostgroups', 'timeperiods', 'contacts', 'contactgroups']));
+        $this->viewBuilder()->setOption('serialize', ['hosts', 'hostgroups', 'timeperiods', 'contacts', 'contactgroups']);
     }
 
     public function loadContainers() {
@@ -312,4 +310,60 @@ class HostescalationsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
+
+    public function loadExcludedHostsByContainerIdAndHostgroupIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $containerId = $this->request->getQuery('containerId');
+        $hostgroupIds = $this->request->getQuery('hostgroupIds');
+
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $excludedHosts = $HostsTable->getHostsByContainerIdAndHosgroupIds($containerIds, $hostgroupIds, 'list', 'id');
+        $excludedHosts = Api::makeItJavaScriptAble($excludedHosts);
+
+
+        $this->set(compact(['excludedHosts']));
+        $this->viewBuilder()->setOption('serialize', ['excludedHosts']);
+    }
+
+    public function loadExcludedHostgroupsByContainerIdAndHostIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $containerId = $this->request->getQuery('containerId');
+        $hostIds = $this->request->getQuery('hostIds');
+
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $excludedHostgroups = $HostgroupsTable->getHostgroupsByContainerIdAndHostIds($containerIds, $hostIds, 'list', 'id');
+        $excludedHostgroups = Api::makeItJavaScriptAble($excludedHostgroups);
+
+
+        $this->set(compact(['excludedHostgroups']));
+        $this->viewBuilder()->setOption('serialize', ['excludedHostgroups']);
+    }
 }
