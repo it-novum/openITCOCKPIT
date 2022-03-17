@@ -119,10 +119,11 @@ class ServicesTable extends Table {
             'saveStrategy'     => 'replace'
         ]);
 
+        /*
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
             'joinType'   => 'INNER'
-        ]);
+        ]);*/
 
         $this->belongsTo('CheckPeriod', [
             'className'  => 'Timeperiods',
