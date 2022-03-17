@@ -107,7 +107,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.servicegroups = result.data.servicegroups;
-                $scope.servicegroups_excluded = result.data.servicegroupsExcluded;
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
@@ -131,23 +130,48 @@ angular.module('openITCOCKPIT')
                     $scope.services = result.data.services;
                     $scope.processChosenServices();
                     $scope.processChosenExcludedServices();
+                    $scope.loadExcludedServicegroups();
                 });
             }
         };
 
         $scope.loadExcludedServices = function(searchString){
-            if($scope.post.Serviceescalation.container_id != null){
-                $http.get("/services/loadServicesByStringCake4.json", {
+            if($scope.post.Serviceescalation.servicegroups._ids.length === 0){
+                $scope.post.Serviceescalation.services_excluded._ids = [];
+                return;
+            }
+            if($scope.post.Serviceescalation.container_id != null && $scope.post.Serviceescalation.servicegroups._ids.length > 0){
+                $http.get("/serviceescalations/loadExcludedServicesByContainerIdAndServicegroupIds.json", {
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Serviceescalation.container_id,
                         'filter[servicename]': searchString,
-                        'selected[]': $scope.post.Serviceescalation.services_excluded._ids
+                        'selected[]': $scope.post.Serviceescalation.services_excluded._ids,
+                        'servicegroupIds[]': $scope.post.Serviceescalation.servicegroups._ids
+
                     }
                 }).then(function(result){
-                    $scope.services_excluded = result.data.services;
-                    $scope.processChosenServices();
-                    $scope.processChosenExcludedServices();
+                    $scope.services_excluded = result.data.excludedServices;
+                });
+            }
+        };
+
+        $scope.loadExcludedServicegroups = function(searchString){
+            if($scope.post.Serviceescalation.services._ids.length === 0){
+                $scope.post.Serviceescalation.servicegroups_excluded._ids = [];
+                return;
+            }
+            if($scope.post.Serviceescalation.container_id != null && $scope.post.Serviceescalation.services._ids.length > 0){
+                $http.get("/serviceescalations/loadExcludedServicegroupsByContainerIdAndServiceIds.json", {
+                    params: {
+                        'angular': true,
+                        'containerId': $scope.post.Serviceescalation.container_id,
+                        'filter[servicename]': searchString,
+                        'selected[]': $scope.post.Serviceescalation.services_excluded._ids,
+                        'hostIds[]': $scope.post.Serviceescalation.services._ids
+                    }
+                }).then(function(result){
+                    $scope.servicegroups_excluded = result.data.excludedServicegroups;
                 });
             }
         };
@@ -217,11 +241,12 @@ angular.module('openITCOCKPIT')
             if($scope.post.Serviceescalation.container_id != null){
                 $scope.loadElementsByContainerId();
                 $scope.loadServices();
-                $scope.loadExcludedServices();
+                //$scope.loadExcludedServices();
             }
         }, true);
 
         $scope.$watch('post.Serviceescalation.services._ids', function(){
+            $scope.loadExcludedServicegroups();
             if($scope.init){
                 return;
             }
@@ -236,6 +261,7 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('post.Serviceescalation.servicegroups._ids', function(){
+            $scope.loadExcludedServices();
             if($scope.init){
                 return;
             }

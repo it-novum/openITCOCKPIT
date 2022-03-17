@@ -300,10 +300,22 @@
                             <tr>
                                 <th class="text-align-center"><i class="fa fa-check-square"
                                                                  aria-hidden="true"></i></th>
-                                <th><?php echo __('Services'); ?></th>
-                                <th><?php echo __('Excluded services'); ?></th>
-                                <th><?php echo __('Service groups'); ?></th>
-                                <th><?php echo __('Excluded service groups'); ?></th>
+                                <th>
+                                    <?php echo __('Services'); ?>
+                                    <div class="icon-stack margin-right-5">
+                                        <i class="fa fa-plus opacity-100 text-primary"></i>
+                                        <i class="fa fa-filter opacity-100 fa-xs text-success cornered cornered-lr"></i>
+                                    </div>
+                                    <?php echo __('Excluded service groups'); ?>
+                                </th>
+                                <th>
+                                    <?php echo __('Service groups'); ?>
+                                    <div class="icon-stack margin-right-5">
+                                        <i class="fa fa-plus opacity-100 text-primary"></i>
+                                        <i class="fa fa-filter opacity-100 fa-xs text-success cornered cornered-lr"></i>
+                                    </div>
+                                    <?php echo __('Excluded services'); ?>
+                                </th>
                                 <th><?php echo __('First'); ?></th>
                                 <th><?php echo __('Last'); ?></th>
                                 <th><?php echo __('Interval'); ?></th>
@@ -347,29 +359,24 @@
                                                    title="disabled" aria-hidden="true"></i>
                                             </div>
                                         </li>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul class="list-unstyled">
-                                        <li ng-repeat="service in serviceescalation.services_excluded"
-                                            title="{{service.servicename}}">
-                                            <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
+                                        <hr class="margin-top-2 margin-bottom-2"
+                                            ng-show="serviceescalation.servicegroups_excluded.length > 0">
+                                        <li ng-repeat="servicegroup in serviceescalation.servicegroups_excluded">
+                                            <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
+                                                 title="{{servicegroup.container.name}}">
                                                 <label class="badge badge-danger label-xs">
                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                 </label>
-                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                    <a ui-sref="ServicesEdit({id: service.id})"
+                                                <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                    <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
                                                        class="badge badge-light label-xs">
-                                                        {{service.servicename}}
+                                                        {{servicegroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                        {{service.servicename}}
+                                                        {{servicegroup.container.name}}
                                                     </span>
                                                 <?php endif; ?>
-                                                <i ng-if="service.disabled == 1"
-                                                   class="fa fa-power-off text-danger"
-                                                   title="disabled" aria-hidden="true"></i>
                                             </div>
                                         </li>
                                     </ul>
@@ -394,26 +401,27 @@
                                                 <?php endif; ?>
                                             </div>
                                         </li>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul class="list-unstyled">
-                                        <li ng-repeat="servicegroup in serviceescalation.servicegroups_excluded">
-                                            <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
-                                                 title="{{servicegroup.container.name}}">
+                                        <hr class="margin-top-2 margin-bottom-2"
+                                            ng-show="serviceescalation.services_excluded.length > 0">
+                                        <li ng-repeat="service in serviceescalation.services_excluded"
+                                            title="{{service.servicename}}">
+                                            <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
                                                 <label class="badge badge-danger label-xs">
                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                 </label>
-                                                <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
-                                                    <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                    <a ui-sref="ServicesEdit({id: service.id})"
                                                        class="badge badge-light label-xs">
-                                                        {{servicegroup.container.name}}
+                                                        {{service.servicename}}
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                        {{servicegroup.container.name}}
+                                                        {{service.servicename}}
                                                     </span>
                                                 <?php endif; ?>
+                                                <i ng-if="service.disabled == 1"
+                                                   class="fa fa-power-off text-danger"
+                                                   title="disabled" aria-hidden="true"></i>
                                             </div>
                                         </li>
                                     </ul>

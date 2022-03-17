@@ -4503,7 +4503,7 @@ class HostsTable extends Table {
      * @param $where
      * @return array
      */
-    public function getHostsByContainerIdAndHosgroupIds($containerIds, $hostgroupIds, $type = 'all', $index = 'id', $where = []) {
+    public function getHostsByContainerIdAndHostgroupIds($containerIds, $hostgroupIds, $type = 'all', $index = 'id', $where = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }

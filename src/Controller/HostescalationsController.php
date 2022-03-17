@@ -346,7 +346,7 @@ class HostescalationsController extends AppController {
         }
 
 
-        $excludedHosts = $HostsTable->getHostsByContainerIdAndHosgroupIds($containerIds, $hostgroupIds, 'list', 'id');
+        $excludedHosts = $HostsTable->getHostsByContainerIdAndHostgroupIds($containerIds, $hostgroupIds, 'list', 'id');
         $excludedHosts = Api::makeItJavaScriptAble($excludedHosts);
 
 

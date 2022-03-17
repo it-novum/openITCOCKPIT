@@ -450,8 +450,12 @@ class AclDependencies {
             ->dependency('Serviceescalations', 'index', 'Serviceescalations', 'view')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadContainers')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadElementsByContainerId')
+            ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
+            ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds')
             ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadContainers')
-            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadElementsByContainerId');
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadElementsByContainerId')
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds');
 
 
         $this

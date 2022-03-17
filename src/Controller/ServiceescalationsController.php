@@ -32,6 +32,7 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -266,7 +267,6 @@ class ServiceescalationsController extends AppController {
 
         $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list', 'id');
         $servicegroups = Api::makeItJavaScriptAble($servicegroups);
-        $servicegroupsExcluded = $servicegroups;
 
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
@@ -278,14 +278,12 @@ class ServiceescalationsController extends AppController {
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $this->set('servicegroups', $servicegroups);
-        $this->set('servicegroupsExcluded', $servicegroupsExcluded);
         $this->set('timeperiods', $timeperiods);
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
 
         $this->viewBuilder()->setOption('serialize', [
             'servicegroups',
-            'servicegroupsExcluded',
             'timeperiods',
             'contacts',
             'contactgroups'
@@ -308,5 +306,89 @@ class ServiceescalationsController extends AppController {
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
         $this->viewBuilder()->setOption('serialize', ['containers']);
+    }
+
+    public function loadExcludedServicesByContainerIdAndServicegroupIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $containerId = $this->request->getQuery('containerId');
+        $servicegroupIds = $this->request->getQuery('servicegroupIds');
+
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        }
+
+
+        $excludedServices = $ServicesTable->getServicesByContainerIdAndServicegroupIds($containerIds, $servicegroupIds, 'all', 'id');
+        $excludedServices = Api::makeItJavaScriptAble($excludedServices);
+
+
+        $this->set(compact(['excludedServices']));
+        $this->viewBuilder()->setOption('serialize', ['excludedServices']);
+    }
+
+    public function loadExcludedServicegroupsByContainerIdAndServiceIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $containerId = $this->request->getQuery('containerId');
+        $serviceIds = $this->request->getQuery('serviceIds');
+
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var ServicegroupsTable $ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        }
+        $excludedServicegroups = $ServicegroupsTable->getServicegroupsByContainerIdAndServiceIds($containerIds, $serviceIds, 'list', 'id');
+        $excludedServicegroups = Api::makeItJavaScriptAble($excludedServicegroups);
+
+
+        $this->set(compact(['excludedServicegroups']));
+        $this->viewBuilder()->setOption('serialize', ['excludedServicegroups']);
     }
 }
