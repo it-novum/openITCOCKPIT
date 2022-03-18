@@ -19,6 +19,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -115,6 +116,14 @@ class HostsTable extends Table {
             'className'        => 'Hosts',
             'foreignKey'       => 'host_id',
             'targetForeignKey' => 'parenthost_id',
+            'joinTable'        => 'hosts_to_parenthosts',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
+
+        $this->belongsToMany('ChildHosts', [
+            'className'        => 'Hosts',
+            'foreignKey'       => 'parenthost_id',
+            'targetForeignKey' => 'host_id',
             'joinTable'        => 'hosts_to_parenthosts',
             'saveStrategy'     => 'replace'
         ])->setDependent(true);
@@ -4493,5 +4502,63 @@ class HostsTable extends Table {
                 }
             ]);
         return $query->first();
+    }
+
+    /**
+     * @param array $containerIds
+     * @param array $where
+     * @return array
+     */
+    public function getParenthostsForDashboard($containerIds = [], $where = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $joins = [
+            [
+                'table'      => 'hosts_to_parenthosts',
+                'type'       => 'INNER',
+                'alias'      => 'Parenthosts',
+                'conditions' => 'Parenthosts.parenthost_id = Hosts.id'
+            ]
+        ];
+        if (!empty($containerIds)) {
+            $joins[] = [
+                'table'      => 'hosts_to_containers',
+                'alias'      => 'HostsToContainers',
+                'type'       => 'LEFT',
+                'conditions' => [
+                    'HostsToContainers.host_id = Hosts.id',
+                ],
+            ];
+            $query['conditions'][''] = $containerIds;
+        }
+
+
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                //'Parenthosts.parenthost_id'
+            ])
+            ->distinct('Hosts.uuid')
+            ->join($joins);
+
+
+        if (!empty($where)) {
+            $query->where($where);
+        }
+
+        if (!empty($containerIds)) {
+            $query->andWhere([
+                'HostsToContainers.container_id IN' => $containerIds
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->all();
+
+        return $query->toArray();
     }
 }
