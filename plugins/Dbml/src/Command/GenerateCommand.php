@@ -19,7 +19,9 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\App;
 use Cake\Core\Plugin;
+use Cake\Database\Schema\TableSchemaInterface;
 use Cake\ORM\Association;
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Dbml\Dbml\DbmlAssociation;
 use Dbml\Dbml\DbmlColumn;
@@ -40,7 +42,7 @@ class GenerateCommand extends Command {
     protected $blockedPlugins = [
         'DebugKit',
         'Migrations',
-        'Acl'
+        //'Acl'
     ];
 
     /**
@@ -81,6 +83,7 @@ class GenerateCommand extends Command {
         $duplicates = [];
 
         $DBML = '';
+        $seenAssociations = [];
         foreach ($tables as $pluginName => $pluginTables) {
             foreach ($pluginTables as $table) {
                 // Remove file extension
@@ -97,7 +100,7 @@ class GenerateCommand extends Command {
                 $driverName = get_class($Table->getConnection()->getDriver());
                 try {
                     $isAlreadyDefined = false;
-                    if(isset($duplicates[$Table->getTable()])){
+                    if (isset($duplicates[$Table->getTable()])) {
                         $isAlreadyDefined = true;
                     }
                     $duplicates[$Table->getTable()] = $Table->getTable();
@@ -110,31 +113,7 @@ class GenerateCommand extends Command {
                     );
                     $DbmlTable->setComment('CakePHP table Object: ' . $tableName);
 
-                    foreach ($schema->columns() as $columnName) {
-                        $column = $schema->getColumn($columnName);
-                        $primaryKeyFields = $schema->getPrimaryKey();
-
-                        $isPrimaryKey = in_array($columnName, $primaryKeyFields, true);
-                        $DbmlColumn = new DbmlColumn($columnName, $column, $isPrimaryKey, $driverName);
-
-                        $DbmlTable->addColumn($DbmlColumn);
-                    }
-
-                    foreach ($schema->constraints() as $constraintName) {
-                        $index = $schema->getConstraint($constraintName);
-                        if ($index['type'] === 'primary') {
-                            continue;
-                        }
-
-                        $DbmlIndex = new DbmlIndex($constraintName, $index['columns'], $index['type']);
-                        $DbmlTable->addIndex($DbmlIndex);
-                    }
-
-                    foreach ($schema->indexes() as $indexName) {
-                        $index = $schema->getIndex($indexName);
-                        $DbmlIndex = new DbmlIndex($indexName, $index['columns'], $index['type']);
-                        $DbmlTable->addIndex($DbmlIndex);
-                    }
+                    $this->appendSchemaToTable($DbmlTable, $schema, $driverName);
 
                     /**
                      * CakePHP associations:
@@ -150,18 +129,24 @@ class GenerateCommand extends Command {
                     foreach ($Table->associations() as $associationName => $association) {
                         $className = $association->getClassName();
                         $AssocTable = TableRegistry::getTableLocator()->get($className);
+                        $dedupKeys = $this->getAssocDedupKeys($Table, $association, $AssocTable);
+                        if (isset($seenAssociations[$dedupKeys['association']]) || isset($seenAssociations[$dedupKeys['association_reverse']])) {
+                            // Association already defined.
+                            continue;
+                        }
 
-                        if($association->type() == Association::ONE_TO_ONE ){
+                        if ($dedupKeys['association'] !== '') {
+                            $seenAssociations[$dedupKeys['association']] = true;
+                        }
+                        if ($dedupKeys['association_reverse'] !== '') {
+                            $seenAssociations[$dedupKeys['association_reverse']] = true;
+                        }
+
+                        if ($association->type() == Association::ONE_TO_ONE) {
                             // HasOne
                             // DBML: -
 
-                            debug($associationName);
-                            debug($association);
-                            die();
-
-
                             /** @var Association\HasOne $association */
-
                             // usergroups.id ON aros.foreign_key
                             $DbmlAssociation = new DbmlAssociation(
                                 $Table->getTable(), //usergroups
@@ -175,7 +160,7 @@ class GenerateCommand extends Command {
                             $DbmlTable->addAssociation($DbmlAssociation);
                         }
 
-                        if($association->type() == Association::ONE_TO_MANY ){
+                        if ($association->type() == Association::ONE_TO_MANY) {
                             // HasMany
                             // DBML: <
 
@@ -194,7 +179,7 @@ class GenerateCommand extends Command {
                             $DbmlTable->addAssociation($DbmlAssociation);
                         }
 
-                        if($association->type() == Association::MANY_TO_ONE ){
+                        if ($association->type() == Association::MANY_TO_ONE) {
                             // BelongsTo
                             // DBML: >
 
@@ -213,21 +198,62 @@ class GenerateCommand extends Command {
                             $DbmlTable->addAssociation($DbmlAssociation);
                         }
 
-                        if($association->type() == Association::MANY_TO_MANY ){
+                        if ($association->type() == Association::MANY_TO_MANY) {
                             // BelongsToMany
+                            /** @var Table $JoinTable */
+                            $JoinTable = $association->junction();
 
-                            // @todo implement me!
+                            $isJoinTableAlreadyDefined = false;
+                            if (isset($duplicates[$JoinTable->getTable()])) {
+                                $isJoinTableAlreadyDefined = true;
+                            }
+                            $duplicates[$JoinTable->getTable()] = $JoinTable->getTable();
+                            $DbmlJunctionTable = new DbmlTable($JoinTable->getTable(), $isJoinTableAlreadyDefined);
+
+                            $schema = $JoinTable->getSchema();
+                            $driverName = get_class($JoinTable->getConnection()->getDriver());
+                            $this->appendSchemaToTable($DbmlJunctionTable, $schema, $driverName);
+
+
+                            // For some reason we do not have to define the associations.
+                            //
+                            //foreach ($JoinTable->associations() as $junctionAssoc) {
+                            //    if (get_class($junctionAssoc) !== Association\BelongsTo::class) {
+                            //        throw new \Exception(sprintf(
+                            //            'Wrong association for junction table %s. Exacted BelongsTo got %s',
+                            //            $JoinTable->getTable(),
+                            //            get_class($junctionAssoc)
+                            //        ));
+                            //    }
+                            //
+                            //    /** @var Association\BelongsTo $junctionAssoc */
+                            //    // contactgroups_to_services
+                            //    $DbmlJunctionAssociation = new DbmlAssociation(
+                            //        $JoinTable->getTable(), // contactgroups_to_services
+                            //        $junctionAssoc->getTable(), // services
+                            //        $junctionAssoc->getForeignKey(), // service_id
+                            //        $junctionAssoc->getPrimaryKey(), // services.id
+                            //
+                            //        'many-to-one',
+                            //        $junctionAssoc->getDependent()
+                            //    );
+                            //
+                            //    $DbmlJunctionTable->addAssociation($DbmlJunctionAssociation);
+                            //}
+
+                            $DbmlTable->addJunctionTable($DbmlJunctionTable);
+
                         }
                     }
-
                     $DBML .= $DbmlTable->toDbml();
                 } catch (\Exception $e) {
                     debug(sprintf('Current Table: "%s" - Error: %s', $tableName, $e->getMessage()));
+                    debug($e->getTraceAsString());
                 }
             }
         }
 
-        //$this->io->out($DBML);
+        $this->io->out($DBML);
     }
 
 
@@ -293,6 +319,112 @@ class GenerateCommand extends Command {
         }
 
         return $tables;
+    }
+
+    /**
+     * @param string|array $delimiter
+     * @param array|string $arr
+     * @return string
+     */
+    private function implodeEvenStrings($delimiter, $arr) {
+        if (is_string($arr)) {
+            return $arr;
+        }
+        return implode($delimiter, $arr);
+    }
+
+    /**
+     * Method to get association keys in both directions to not define association twice.
+     * Otherwise the Hosts table would define an association to services
+     * And the Services' table would define the same association to hosts (but as reverse)
+     *
+     * @param Table $Table
+     * @param Association $Assoc
+     * @param Table $AssocTable
+     * @return array
+     */
+    protected function getAssocDedupKeys(Table $Table, Association $Assoc, Table $AssocTable) {
+        if ($Assoc->type() == Association::ONE_TO_ONE || $Assoc->type() == Association::ONE_TO_MANY) {
+            $associationString = sprintf('%s.%s|%s.%s',
+                $Table->getTable(),
+                $this->implodeEvenStrings(',', $Assoc->getPrimaryKey()),
+                $AssocTable->getTable(),
+                $this->implodeEvenStrings(',', $Assoc->getForeignKey())
+            );
+            $associationStringReverse = sprintf('%s.%s|%s.%s',
+                $AssocTable->getTable(),
+                $this->implodeEvenStrings(',', $Assoc->getForeignKey()),
+                $Table->getTable(),
+                $this->implodeEvenStrings(',', $Assoc->getPrimaryKey())
+            );
+
+            return [
+                'association'         => $associationString,
+                'association_reverse' => $associationStringReverse
+            ];
+        }
+
+        if ($Assoc->type() == Association::MANY_TO_ONE) {
+            $associationString = sprintf('%s.%s|%s.%s',
+                $Table->getTable(),
+                $this->implodeEvenStrings(',', $Assoc->getForeignKey()),
+                $AssocTable->getTable(),
+                $this->implodeEvenStrings(',', $Assoc->getPrimaryKey())
+            );
+            $associationStringReverse = sprintf('%s.%s|%s.%s',
+                $AssocTable->getTable(),
+                $this->implodeEvenStrings(',', $Assoc->getPrimaryKey()),
+                $Table->getTable(),
+                $this->implodeEvenStrings(',', $Assoc->getForeignKey())
+            );
+
+            return [
+                'association'         => $associationString,
+                'association_reverse' => $associationStringReverse
+            ];
+        }
+
+        if ($Assoc->type() == Association::MANY_TO_MANY) {
+            return [
+                'association'         => '',
+                'association_reverse' => ''
+            ];
+        }
+    }
+
+    /**
+     * @param DbmlTable $DbmlTable
+     * @param TableSchemaInterface $schema
+     * @param string $driverName
+     * @return void
+     * @throws \Exception
+     */
+    protected function appendSchemaToTable(DbmlTable &$DbmlTable, TableSchemaInterface $schema, string $driverName) {
+        foreach ($schema->columns() as $columnName) {
+            $column = $schema->getColumn($columnName);
+            $primaryKeyFields = $schema->getPrimaryKey();
+
+            $isPrimaryKey = in_array($columnName, $primaryKeyFields, true);
+            $DbmlColumn = new DbmlColumn($columnName, $column, $isPrimaryKey, $driverName);
+
+            $DbmlTable->addColumn($DbmlColumn);
+        }
+
+        foreach ($schema->constraints() as $constraintName) {
+            $index = $schema->getConstraint($constraintName);
+            if ($index['type'] === 'primary') {
+                continue;
+            }
+
+            $DbmlIndex = new DbmlIndex($constraintName, $index['columns'], $index['type']);
+            $DbmlTable->addIndex($DbmlIndex);
+        }
+
+        foreach ($schema->indexes() as $indexName) {
+            $index = $schema->getIndex($indexName);
+            $DbmlIndex = new DbmlIndex($indexName, $index['columns'], $index['type']);
+            $DbmlTable->addIndex($DbmlIndex);
+        }
     }
 
 }

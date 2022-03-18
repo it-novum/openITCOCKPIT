@@ -32,6 +32,11 @@ class DbmlTable {
     private $associations = [];
 
     /**
+     * @var DbmlTable[]
+     */
+    private $junctionTables = [];
+
+    /**
      * @var null|string
      */
     private $comment;
@@ -55,6 +60,10 @@ class DbmlTable {
 
     public function addAssociation(DbmlAssociation $assoc) {
         $this->associations[] = $assoc;
+    }
+
+    public function addJunctionTable(DbmlTable $junctionTable) {
+        $this->junctionTables[] = $junctionTable;
     }
 
     public function setComment(string $comment) {
@@ -96,6 +105,10 @@ class DbmlTable {
             foreach ($this->associations as $association) {
                 $dbml .= $association->toDbml();
             }
+        }
+
+        foreach ($this->junctionTables as $junctionTable) {
+            $dbml .= $junctionTable->toDbml();
         }
 
         return $dbml . PHP_EOL;
