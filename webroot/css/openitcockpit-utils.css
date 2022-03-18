@@ -1156,3 +1156,19 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     border-left: 3px solid #4285F4;
     border-radius: 7px;
 }
+.hr-sect {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    color: #4285F488;
+}
+.hr-sect:before,
+.hr-sect:after {
+    content: "";
+    flex-grow: 1;
+    background: #4285F488;
+    height: 1px;
+    font-size: 0px;
+    line-height: 0px;
+    margin: 0px 8px;
+}

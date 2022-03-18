@@ -359,8 +359,11 @@
                                                    title="disabled" aria-hidden="true"></i>
                                             </div>
                                         </li>
-                                        <hr class="margin-top-2 margin-bottom-2"
-                                            ng-show="serviceescalation.servicegroups_excluded.length > 0">
+
+                                        <div class="hr-sect" ng-show="serviceescalation.servicegroups_excluded.length > 0">
+                                            <i class="fas fa-filter text-primary opacity-50"></i>
+                                        </div>
+
                                         <li ng-repeat="servicegroup in serviceescalation.servicegroups_excluded">
                                             <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
                                                  title="{{servicegroup.container.name}}">
@@ -401,8 +404,11 @@
                                                 <?php endif; ?>
                                             </div>
                                         </li>
-                                        <hr class="margin-top-2 margin-bottom-2"
-                                            ng-show="serviceescalation.services_excluded.length > 0">
+
+                                        <div class="hr-sect" ng-show="serviceescalation.services_excluded.length > 0">
+                                            <i class="fas fa-filter text-primary opacity-50"></i>
+                                        </div>
+
                                         <li ng-repeat="service in serviceescalation.services_excluded"
                                             title="{{service.servicename}}">
                                             <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
