@@ -46,6 +46,12 @@ class GenerateCommand extends Command {
     ];
 
     /**
+     * Tables which will be ignored during DBML schema generation
+     * @var string[]
+     */
+    protected $blockedTables = [];
+
+    /**
      * @var ConsoleIo
      */
     protected $io;
@@ -73,10 +79,6 @@ class GenerateCommand extends Command {
     public function execute(Arguments $args, ConsoleIo $io) {
         $this->io = $io;
 
-        //$tables = ConnectionManager::get('default')->getSchemaCollection()->listTables();
-        //debug($tables);
-
-        //$Table = TableRegistry::getTableLocator()->get('Commands');
         $tables = $this->getTables();
 
         // Used to filter for duplicates (AcknowledgementHostsTable and AcknowledgementServicesTable are both using the SQL table nagios_acknowledgements for example)
@@ -93,6 +95,10 @@ class GenerateCommand extends Command {
                 $tableName = substr($tableName, 0, (strlen('Table') * -1));
                 if ($pluginName !== 'APP') {
                     $tableName = $pluginName . '.' . $tableName;
+                }
+
+                if (in_array($tableName, $this->blockedTables, true)) {
+                    continue;
                 }
 
                 $Table = TableRegistry::getTableLocator()->get($tableName);
@@ -128,6 +134,10 @@ class GenerateCommand extends Command {
                      */
                     foreach ($Table->associations() as $associationName => $association) {
                         $className = $association->getClassName();
+                        if ($className === 'Permissions') {
+                            $className = 'Acl.Permissions';
+                        }
+
                         $AssocTable = TableRegistry::getTableLocator()->get($className);
                         $dedupKeys = $this->getAssocDedupKeys($Table, $association, $AssocTable);
                         if (isset($seenAssociations[$dedupKeys['association']]) || isset($seenAssociations[$dedupKeys['association_reverse']])) {
@@ -163,6 +173,11 @@ class GenerateCommand extends Command {
                         if ($association->type() == Association::ONE_TO_MANY) {
                             // HasMany
                             // DBML: <
+
+                            if (strtolower($Table->getAlias()) === "acos") {
+                                //debug($association->getAlias());
+                                //    debug($className);
+                            }
 
                             /** @var Association\HasMany $association */
 
@@ -247,13 +262,23 @@ class GenerateCommand extends Command {
                     }
                     $DBML .= $DbmlTable->toDbml();
                 } catch (\Exception $e) {
-                    debug(sprintf('Current Table: "%s" - Error: %s', $tableName, $e->getMessage()));
-                    debug($e->getTraceAsString());
+                    $this->io->error(sprintf('Current Table: "%s" - Error: %s', $tableName, $e->getMessage()));
+                    $this->io->error('We ignore this for now and try to continue');
+                    //debug($e->getTraceAsString());
                 }
             }
         }
 
-        $this->io->out($DBML);
+        $path = TMP;
+        $filename = 'database.dbml';
+        if (!is_writable($path)) {
+            throw new \Exception('Filepath "' . $path . '" is not writable!');
+        }
+
+        $fullPath = $path . $filename;
+
+        file_put_contents($fullPath, $DBML);
+        $this->io->success(sprintf('DBML file written to %s', $fullPath));
     }
 
 
