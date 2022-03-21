@@ -187,8 +187,6 @@ class HostescalationsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            /** @var HostescalationsTable $HostescalationsTable */
-            $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
             $data['hosts'] = $HostescalationsTable->parseHostMembershipData(
                 $this->request->getData('Hostescalation.hosts._ids'),
                 $this->request->getData('Hostescalation.hosts_excluded._ids')

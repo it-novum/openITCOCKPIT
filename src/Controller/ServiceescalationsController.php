@@ -181,8 +181,6 @@ class ServiceescalationsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            /** @var ServiceescalationsTable $ServiceescalationsTable */
-            $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
             $data['services'] = $ServiceescalationsTable->parseServiceMembershipData(
                 $this->request->getData('Serviceescalation.services._ids'),
                 $this->request->getData('Serviceescalation.services_excluded._ids')
@@ -193,6 +191,7 @@ class ServiceescalationsController extends AppController {
             );
 
             $data = array_merge($this->request->getData('Serviceescalation'), $data);
+
             $serviceescalation = $ServiceescalationsTable->patchEntity($serviceescalation, $data);
             $ServiceescalationsTable->save($serviceescalation);
 

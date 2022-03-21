@@ -1591,14 +1591,14 @@ class NagiosConfigGenerator {
         if (!empty($service->get('contacts'))) {
             $content .= $this->addContent('contacts', 1, $service->getContactsforCfg());
             // ITC-2710 Inheritance of contacts and contact groups
-            if(empty($service->get('contactgroups'))){
+            if (empty($service->get('contactgroups'))) {
                 $content .= $this->addContent('contact_groups', 1, 'null');
             }
         }
 
         if (!empty($service->get('contactgroups'))) {
             // ITC-2710 Inheritance of contacts and contact groups
-            if(empty($service->get('contacts'))){
+            if (empty($service->get('contacts'))) {
                 $content .= $this->addContent('contacts', 1, 'null');
             }
             $content .= $this->addContent('contact_groups', 1, $service->getContactgroupsforCfg());
@@ -1776,7 +1776,25 @@ class NagiosConfigGenerator {
             $hostsForCfg = [];
             $excludedHostsForCfg = [];
             $hosts = $hostescalation->get('hosts');
-            if (empty($hosts)) {
+            $hostIdsByHostgroups = [];
+
+            $hostgroups = $hostescalation->get('hostgroups');
+            if (!is_null($hostgroups)) {
+                foreach ($hostgroups as $hostgroup) {
+                    if ($hostgroup->get('_joinData')->get('excluded') === 0) {
+                        $hostgroupsForCfg[] = $hostgroup->get('uuid');
+                        foreach ($hostgroup->get('hosts') as $hostgroupHost) {
+                            $hostIdsByHostgroups[] = $hostgroupHost->get('id');
+                        }
+
+                    } else {
+                        $excludedHostgroupsForCfg[] = '!' . $hostgroup->get('uuid');
+                    }
+                }
+            }
+
+
+            if (empty($hosts) && empty($hostIdsByHostgroups)) {
                 //This hostescalation is broken!
                 $HostescalationsTable->delete($hostescalation);
                 continue;
@@ -1793,16 +1811,7 @@ class NagiosConfigGenerator {
 
             $hostgroupsForCfg = [];
             $excludedHostgroupsForCfg = [];
-            $hostgroups = $hostescalation->get('hostgroups');
-            if (!is_null($hostgroups)) {
-                foreach ($hostgroups as $hostgroup) {
-                    if ($hostgroup->get('_joinData')->get('excluded') === 0) {
-                        $hostgroupsForCfg[] = $hostgroup->get('uuid');
-                    } else {
-                        $excludedHostgroupsForCfg[] = '!' . $hostgroup->get('uuid');
-                    }
-                }
-            }
+
 
             if (empty($hostsForCfg)) {
                 //This hostescalation is broken!
@@ -1877,36 +1886,56 @@ class NagiosConfigGenerator {
         foreach ($serviceescalations as $serviceescalation) {
             $servicesForCfg = [];
             $services = $serviceescalation->get('services');
-            if (empty($services)) {
+            $serviceIdsByServicegroups = [];
+
+            $servicegroups = $serviceescalation->get('servicegroups');
+            if (!is_null($servicegroups)) {
+                foreach ($servicegroups as $servicegroup) {
+                    if ($servicegroup->get('_joinData')->get('excluded') === 0) {
+                        $servicegroupsForCfg[] = $servicegroup->get('uuid');
+                        foreach ($servicegroup->get('services') as $servicegroupService) {
+                            $serviceIdsByServicegroups[] = $servicegroupService->get('id');
+                        }
+                    } else {
+                        $excludedServicegroupIdsForValidation[] = $servicegroup->get('id');
+                        $servicegroupsForCfg[] = '!' . $servicegroup->get('uuid');
+                    }
+                }
+            }
+
+
+            if (empty($services) && empty($serviceIdsByServicegroups)) {
                 //This service escalation is broken!
                 $ServiceescalationsTable->delete($serviceescalation);
                 continue;
             }
+
+            $serviceIdsForValidation = [];
+            $excludedServicegroupIdsForValidation = [];
             if (!is_null($services)) {
                 foreach ($services as $service) {
                     //var_dump($service->get('host')->get('uuid'));
                     if ($service->get('_joinData')->get('excluded') === 0) {
                         $servicesForCfg[$service->get('host')->get('uuid')][] = $service->get('uuid');
+                        $serviceIdsForValidation[] = $service->get('id');
                     } else {
                         $servicesForCfg[$service->get('host')->get('uuid')][] = '!' . $service->get('uuid');
                     }
                 }
+
             }
             if (empty($servicesForCfg)) {
                 //This service escalation is broken!
                 $ServiceescalationsTable->delete($serviceescalation);
                 continue;
             }
+
             $servicegroupsForCfg = [];
-            $servicegroups = $serviceescalation->get('servicegroups');
-            if (!is_null($servicegroups)) {
-                foreach ($servicegroups as $servicegroup) {
-                    if ($servicegroup->get('_joinData')->get('excluded') === 0) {
-                        $servicegroupsForCfg[] = $servicegroup->get('uuid');
-                    } else {
-                        $servicegroupsForCfg[] = '!' . $servicegroup->get('uuid');
-                    }
-                }
+
+
+            //Check if service escalation is valid - not all services are excluded by selected excluded service groups
+            if (!empty($serviceIdsForValidation) && $excludedServicegroupIdsForValidation) {
+
             }
 
             $file = new File($this->conf['path'] . $this->conf['serviceescalations'] . $serviceescalation->get('uuid') . $this->conf['suffix']);

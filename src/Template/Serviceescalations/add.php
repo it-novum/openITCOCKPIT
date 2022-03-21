@@ -189,7 +189,7 @@ Once a service escalated, contacts, contact group and notification options will 
                                         callback="loadExcludedServices"
                                         ng-disabled="post.Serviceescalation.servicegroups._ids.length == 0"
                                         ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services_excluded"
-                                        ng-model="post.Serviceescalation.services._ids">
+                                        ng-model="post.Serviceescalation.services_excluded._ids">
                                     </select>
                                 </div>
                                 <div ng-repeat="error in errors.services_excluded">

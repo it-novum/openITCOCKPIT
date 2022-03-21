@@ -130,7 +130,6 @@ angular.module('openITCOCKPIT')
                     $scope.services = result.data.services;
                     $scope.processChosenServices();
                     $scope.processChosenExcludedServices();
-                    $scope.loadExcludedServicegroups();
                 });
             }
         };
