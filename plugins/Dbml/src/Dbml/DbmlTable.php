@@ -81,7 +81,7 @@ class DbmlTable {
         }
 
         if ($this->comment) {
-            $dbml .= sprintf('%s  Note: "%s"%s', PHP_EOL, $this->comment, PHP_EOL);
+            $dbml .= sprintf('%s  Note: \'\'\'%s\'\'\'%s', PHP_EOL, $this->comment, PHP_EOL);
         }
 
         if (!empty($this->indexes)) {

@@ -231,30 +231,40 @@ class GenerateCommand extends Command {
 
 
                             // For some reason we do not have to define the associations.
-                            //
-                            //foreach ($JoinTable->associations() as $junctionAssoc) {
-                            //    if (get_class($junctionAssoc) !== Association\BelongsTo::class) {
-                            //        throw new \Exception(sprintf(
-                            //            'Wrong association for junction table %s. Exacted BelongsTo got %s',
-                            //            $JoinTable->getTable(),
-                            //            get_class($junctionAssoc)
-                            //        ));
-                            //    }
-                            //
-                            //    /** @var Association\BelongsTo $junctionAssoc */
-                            //    // contactgroups_to_services
-                            //    $DbmlJunctionAssociation = new DbmlAssociation(
-                            //        $JoinTable->getTable(), // contactgroups_to_services
-                            //        $junctionAssoc->getTable(), // services
-                            //        $junctionAssoc->getForeignKey(), // service_id
-                            //        $junctionAssoc->getPrimaryKey(), // services.id
-                            //
-                            //        'many-to-one',
-                            //        $junctionAssoc->getDependent()
-                            //    );
-                            //
-                            //    $DbmlJunctionTable->addAssociation($DbmlJunctionAssociation);
-                            //}
+                            foreach ($JoinTable->associations() as $junctionAssoc) {
+
+                                $dedupKeys = $this->getJunctionDedupKeys($JoinTable, $junctionAssoc);
+                                if (isset($seenAssociations[$dedupKeys['association']]) || isset($seenAssociations[$dedupKeys['association_reverse']])) {
+                                    // Association already defined.
+                                    continue;
+                                }
+
+                                if ($dedupKeys['association'] !== '') {
+                                    $seenAssociations[$dedupKeys['association']] = true;
+                                }
+
+                                if (get_class($junctionAssoc) !== Association\BelongsTo::class) {
+                                    throw new \Exception(sprintf(
+                                        'Wrong association for junction table %s. Exacted BelongsTo got %s',
+                                        $JoinTable->getTable(),
+                                        get_class($junctionAssoc)
+                                    ));
+                                }
+
+                                /** @var Association\BelongsTo $junctionAssoc */
+                                // contactgroups_to_services
+                                $DbmlJunctionAssociation = new DbmlAssociation(
+                                    $JoinTable->getTable(), // contactgroups_to_services
+                                    $junctionAssoc->getTable(), // services
+                                    $junctionAssoc->getForeignKey(), // service_id
+                                    $junctionAssoc->getPrimaryKey(), // services.id
+
+                                    'many-to-one',
+                                    $junctionAssoc->getDependent()
+                                );
+
+                                $DbmlJunctionTable->addAssociation($DbmlJunctionAssociation);
+                            }
 
                             $DbmlTable->addJunctionTable($DbmlJunctionTable);
 
@@ -450,6 +460,26 @@ class GenerateCommand extends Command {
             $DbmlIndex = new DbmlIndex($indexName, $index['columns'], $index['type']);
             $DbmlTable->addIndex($DbmlIndex);
         }
+    }
+
+    protected function getJunctionDedupKeys(Table $JoinTable, Association $junctionAssoc) {
+        $associationString = sprintf('%s.%s|%s.%s',
+            $JoinTable->getTable(),
+            $this->implodeEvenStrings(',', $junctionAssoc->getForeignKey()),
+            $junctionAssoc->getTable(),
+            $this->implodeEvenStrings(',', $junctionAssoc->getPrimaryKey())
+        );
+        $associationStringReverse = sprintf('%s.%s|%s.%s',
+            $junctionAssoc->getTable(),
+            $this->implodeEvenStrings(',', $junctionAssoc->getPrimaryKey()),
+            $JoinTable->getTable(),
+            $this->implodeEvenStrings(',', $junctionAssoc->getForeignKey())
+        );
+
+        return [
+            'association'         => $associationString,
+            'association_reverse' => $associationStringReverse
+        ];
     }
 
 }

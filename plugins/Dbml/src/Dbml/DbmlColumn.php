@@ -50,6 +50,12 @@ class DbmlColumn {
     private $autoIncrement;
 
     /**
+     * Most DBML renderers do not support unsigned data types
+     * @var bool
+     */
+    private $exportUnsignedToDbml = false;
+
+    /**
      * @param string $name name of column in database
      * @param array $column
      * @param bool $isPrimaryKey
@@ -83,7 +89,7 @@ class DbmlColumn {
      * @return string
      */
     public function toDbml() {
-        if (empty($this->unsigned)) {
+        if (empty($this->unsigned) || $this->exportUnsignedToDbml === false) {
             $dbml = sprintf('  "%s" %s', $this->name, $this->type);
             if ($this->length) {
                 $dbml .= sprintf('(%s)', $this->length);
