@@ -4607,7 +4607,7 @@ class ServicesTable extends Table {
 
         $list = [];
         foreach ($result as $row) {
-            $list[$row[$index]] = $row['servicename'];
+            $list[$row[$index]] = $row;
         }
 
         return $list;

@@ -154,6 +154,7 @@ class ServiceescalationsController extends AppController {
         if (!$ServiceescalationsTable->existsById($id)) {
             throw new NotFoundException('Service escalation not found');
         }
+
         $serviceescalation = $ServiceescalationsTable->get($id, [
             'contain' => [
                 'Services'      => function (Query $q) {
@@ -193,6 +194,7 @@ class ServiceescalationsController extends AppController {
             $data = array_merge($this->request->getData('Serviceescalation'), $data);
 
             $serviceescalation = $ServiceescalationsTable->patchEntity($serviceescalation, $data);
+
             $ServiceescalationsTable->save($serviceescalation);
 
             if ($serviceescalation->hasErrors()) {
@@ -342,7 +344,7 @@ class ServiceescalationsController extends AppController {
         }
 
 
-        $excludedServices = $ServicesTable->getServicesByContainerIdAndServicegroupIds($containerIds, $servicegroupIds, 'all', 'id');
+        $excludedServices = $ServicesTable->getServicesByContainerIdAndServicegroupIds($containerIds, $servicegroupIds, 'list', 'id');
         $excludedServices = Api::makeItJavaScriptAble($excludedServices);
 
 
