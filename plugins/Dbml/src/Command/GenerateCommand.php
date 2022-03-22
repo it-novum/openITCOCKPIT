@@ -92,7 +92,7 @@ class GenerateCommand extends Command {
         // Used to filter for duplicates (AcknowledgementHostsTable and AcknowledgementServicesTable are both using the SQL table nagios_acknowledgements for example)
         $duplicates = [];
 
-        $DBML = '';
+        $DBML = $this->getProjectDescription();
         $seenAssociations = [];
         foreach ($tables as $pluginName => $pluginTables) {
             foreach ($pluginTables as $table) {
@@ -517,6 +517,17 @@ class GenerateCommand extends Command {
         $dbml .= 'Ref: services.uuid < statusengine_service_statehistory.service_description' . PHP_EOL;
         $dbml .= 'Ref: services.uuid < statusengine_service_acknowledgements.service_description' . PHP_EOL;
         $dbml .= 'Ref: hosts.uuid < statusengine_host_acknowledgements.hostname' . PHP_EOL;
+        return $dbml;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getProjectDescription() {
+        $dbml = 'Project openITCOCKPIT {' . PHP_EOL;
+        $dbml .= '  database_type: \'MySQL\'' . PHP_EOL;
+        $dbml .= '  Note: \'Database documentaion of the openITCOCKPIT Project https://openitcockpit.io\'' . PHP_EOL;
+        $dbml .= '}' . PHP_EOL;
         return $dbml;
     }
 
