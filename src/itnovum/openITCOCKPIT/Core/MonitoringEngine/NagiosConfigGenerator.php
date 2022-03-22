@@ -1773,48 +1773,75 @@ class NagiosConfigGenerator {
         }
         foreach ($hostescalations as $hostescalation) {
 
-            $hostsForCfg = [];
-            $excludedHostsForCfg = [];
             $hosts = $hostescalation->get('hosts');
-            $hostIdsByHostgroups = [];
-
             $hostgroups = $hostescalation->get('hostgroups');
-            if (!is_null($hostgroups)) {
-                foreach ($hostgroups as $hostgroup) {
-                    if ($hostgroup->get('_joinData')->get('excluded') === 0) {
-                        $hostgroupsForCfg[] = $hostgroup->get('uuid');
-                        foreach ($hostgroup->get('hosts') as $hostgroupHost) {
-                            $hostIdsByHostgroups[] = $hostgroupHost->get('id');
-                        }
 
-                    } else {
-                        $excludedHostgroupsForCfg[] = '!' . $hostgroup->get('uuid');
-                    }
-                }
-            }
+            $escalationHosts = [
+                'included' => [],
+                'excluded' => []
+            ];
 
+            $escalationHostgroups = [
+                'included' => [],
+                'excluded' => []
+            ];
 
-            if (empty($hosts) && empty($hostIdsByHostgroups)) {
-                //This hostescalation is broken!
-                $HostescalationsTable->delete($hostescalation);
-                continue;
-            }
+            $includedHostIds = [];
+            $excludedHostIds = [];
+
+            $includedHostgroupHostIds = [];
+            $excludedHostgroupHostIds = [];
+
             if (!is_null($hosts)) {
                 foreach ($hosts as $host) {
                     if ($host->get('_joinData')->get('excluded') === 0) {
-                        $hostsForCfg[] = $host->get('uuid');
+                        $escalationHosts['included'][] = $host->get('uuid');
+                        $includedHostIds[] = $host->get('id');
                     } else {
-                        $excludedHostsForCfg[] = '!' . $host->get('uuid');
+                        $escalationHosts['excluded'][] = $host->get('uuid');
+                        $excludedHostIds = $host->get('id');
                     }
                 }
             }
 
-            $hostgroupsForCfg = [];
-            $excludedHostgroupsForCfg = [];
+            if (!is_null($hostgroups)) {
+                foreach ($hostgroups as $hostgroup) {
+                    //ignore empty hostgroups
+                    if (empty($hostgroup->get('hosts'))) {
+                        continue;
+                    }
+                    if ($hostgroup->get('_joinData')->get('excluded') === 0) {
+                        $escalationHostgroups['included'][] = $hostgroup->get('uuid');
+                        foreach ($hostgroup->get('hosts') as $hostgroupHost) {
+                            $includedHostgroupHostIds[] = $hostgroupHost->get('id');
+                        }
+                    } else {
+                        $escalationHostgroups['excluded'][] = $hostgroup->get('uuid');
+                        foreach ($hostgroup->get('hosts') as $hostgroupHost) {
+                            $excludedHostgroupHostIds[] = $hostgroupHost->get('id');
+                        }
+                    }
+                }
+            }
 
+            if (empty($escalationHosts['included']) && empty($escalationHostgroups['included'])) {
+                //host escalation is broken - delete !!!
+                $HostescalationsTable->delete($hostescalation);
+                continue;
+            }
 
-            if (empty($hostsForCfg)) {
-                //This hostescalation is broken!
+            //all included hosts are excluded by "excluded host groups" configuration
+            $excludedHostgroupHostIds = array_unique($excludedHostgroupHostIds);
+            if(!empty($escalationHosts['included']) && empty(array_diff($includedHostIds, $excludedHostgroupHostIds))){
+                //host escalation is broken - delete !!!
+                $HostescalationsTable->delete($hostescalation);
+                continue;
+            }
+
+            //all included hosts through host group definition are excluded by "excluded hosts" configuration
+            $includedHostgroupHostIds = array_unique($includedHostgroupHostIds);
+            if(!empty($escalationHostgroups['included']) && empty(array_diff($includedHostgroupHostIds, $excludedHostIds))){
+                //host escalation is broken - delete !!!
                 $HostescalationsTable->delete($hostescalation);
                 continue;
             }
@@ -1833,34 +1860,71 @@ class NagiosConfigGenerator {
             if (!$file->exists()) {
                 $file->create();
             }
-            $content .= $this->addContent('define hostescalation{', 0);
-            if (!empty($hosts)) {
-                $content .= $this->addContent('host_name', 1, implode(',', array_merge($hostsForCfg, $excludedHostsForCfg)));
+
+
+            //export hosts with excluded host groups
+            if (!empty($escalationHosts['included'])) {
+                $content .= $this->addContent('define hostescalation{', 0);
+
+                if (!empty($contactUuids)) {
+                    $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
+                }
+                if (!empty($contactgroupUuids)) {
+                    $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
+                }
+                $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
+                $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
+                $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval'));
+
+                $escalationTimeperiod = $hostescalation->get('timeperiod');
+                if (!is_null($escalationTimeperiod)) {
+                    $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+                }
+
+                $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
+                if (!empty($hostEscalationString)) {
+                    $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
+                }
+
+                $content .= $this->addContent('host_name', 1, implode(',', $escalationHosts['included']));
+                if (!empty($escalationHostgroups['excluded'])) {
+                    $content .= $this->addContent('hostgroup_name', 1, implode(',', preg_filter('/^/', '!', $escalationHostgroups['excluded'])));
+                }
+                $content .= $this->addContent('}', 0);
+
             }
 
-            if (!empty($hostgroups)) {
-                $content .= $this->addContent('hostgroup_name', 1, implode(',', array_merge($hostgroupsForCfg, $excludedHostgroupsForCfg)));
-            }
-            if (!empty($contactUuids)) {
-                $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
-            }
-            if (!empty($contactgroupUuids)) {
-                $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
-            }
-            $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
-            $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
-            $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval'));
+            //export hosts groups with excluded hosts
+            if (!empty($escalationHostgroups['included'])) {
+                $content .= $this->addContent('define hostescalation{', 0);
+                if (!empty($contactUuids)) {
+                    $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
+                }
+                if (!empty($contactgroupUuids)) {
+                    $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
+                }
+                $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
+                $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
+                $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval'));
 
-            $escalationTimeperiod = $hostescalation->get('timeperiod');
-            if (!is_null($escalationTimeperiod)) {
-                $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+                $escalationTimeperiod = $hostescalation->get('timeperiod');
+                if (!is_null($escalationTimeperiod)) {
+                    $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+                }
+
+                $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
+                if (!empty($hostEscalationString)) {
+                    $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
+                }
+                $content .= $this->addContent('hostgroup_name', 1, implode(',', $escalationHostgroups['included']));
+                if (!empty($escalationHosts['excluded'])) {
+                    $content .= $this->addContent('host_name', 1, implode(',', preg_filter('/^/', '!', $escalationHosts['excluded'])));
+
+                }
+                $content .= $this->addContent('}', 0);
             }
 
-            $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
-            if (!empty($hostEscalationString)) {
-                $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
-            }
-            $content .= $this->addContent('}', 0);
+
             $file->write($content);
             $file->close();
         }

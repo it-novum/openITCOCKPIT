@@ -446,8 +446,8 @@ class HostescalationsTable extends Table {
     }
 
     /**
-     * @param null|string $uuid
-     * @return array
+     * @param $uuid
+     * @return Query
      */
     public function getHostescalationsForExport($uuid = null) {
         $query = $this->find()
@@ -458,7 +458,7 @@ class HostescalationsTable extends Table {
                             ->where([
                                 'Hosts.disabled' => 0
                             ])
-                            ->select(['uuid']);
+                            ->select(['uuid', 'id']);
                     },
                 'Hostgroups'    =>
                     function (Query $q) {
