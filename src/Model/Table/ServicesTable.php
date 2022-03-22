@@ -4340,6 +4340,7 @@ class ServicesTable extends Table {
         $query = $this->find();
         $query
             ->select([
+                'Services.host_id',
                 'Services.id',
                 'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
                 'Servicestatus.current_state',

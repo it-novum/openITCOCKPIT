@@ -283,6 +283,9 @@ class AngularController extends AppController {
         if (!$this->isApiRequest()) {
             throw new RuntimeException('Only for API requests');
         }
+
+        $showUnhandled = (bool)$this->request->getQuery('unhandled');
+
         $session = $this->request->getSession();
         $session->close();
 
@@ -336,6 +339,26 @@ class AngularController extends AppController {
             '3' => 0,
         ];
 
+        $hoststatus = [];
+        $unhandledHosts = [
+            '0' => 0,
+            '1' => 0,
+            '2' => 0
+        ];
+
+        $unhandledServices = [
+            '0' => 0,
+            '1' => 0,
+            '2' => 0,
+            '3' => 0
+        ];
+        $unhandledHostsSum = 0;
+        $unhandledServicesSum = 0;
+
+        if($showUnhandled){
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        }
 
         if ($this->DbBackend->isNdoUtils()) {
             /** @var HostsTable $HostsTable */
@@ -343,6 +366,11 @@ class AngularController extends AppController {
 
             $hoststatusCount = $HostsTable->getHoststatusCount($containerIdsForQuery, true);
             $servicestatusCount = $HostsTable->getServicestatusCount($containerIdsForQuery, true);
+
+            if ($showUnhandled) {
+                $hoststatus = $HostsTable->getHostsWithStatusByConditions($containerIdsForQuery, null);
+                $servicestatus = $ServicesTable->getServicesWithStatusByConditions($containerIdsForQuery, null);
+            }
         }
 
         if ($this->DbBackend->isCrateDb()) {
@@ -355,7 +383,37 @@ class AngularController extends AppController {
 
             $hoststatusCount = $HostsTable->getHoststatusCountStatusengine3($containerIdsForQuery, true);
             $servicestatusCount = $HostsTable->getServicestatusCountStatusengine3($containerIdsForQuery, true);
+
+            if ($showUnhandled) {
+                $hoststatus = $HostsTable->getHostsWithStatusByConditionsStatusengine3($containerIdsForQuery, null);
+                $servicestatus = $ServicesTable->getServicesWithStatusByConditionsStatusengine3($containerIdsForQuery, null);
+
+            }
         }
+
+        if ($showUnhandled) {
+            if (!empty($hoststatus)) {
+                $hoststatusSummary = $HostsTable->getHostStateSummary($hoststatus, true);
+                $servicstatusSummary = $ServicesTable->getServiceStateSummary($servicestatus, true);
+
+                $unhandledHosts = [
+                    '1' => $hoststatusSummary['not_handled'][1],
+                    '2' => $hoststatusSummary['not_handled'][2],
+                    '0' => $hoststatusSummary['not_handled'][0]
+                ];
+
+                $unhandledServices = [
+                    '1' => $servicstatusSummary['not_handled'][1],
+                    '2' => $servicstatusSummary['not_handled'][2],
+                    '3' => $servicstatusSummary['not_handled'][3],
+                    '0' => $servicstatusSummary['not_handled'][0]
+                ];
+
+                $unhandledHostsSum = array_sum($unhandledHosts);
+                $unhandledServicesSum = array_sum($unhandledServices);
+            }
+        }
+
 
         $hoststatusSum = array_sum($hoststatusCount);
         $servicestatusSum = array_sum($servicestatusCount);
@@ -379,22 +437,21 @@ class AngularController extends AppController {
         }
 
 
-        $this->set(compact([
+        $vars = [
             'hoststatusCount',
             'servicestatusCount',
             'hoststatusSum',
             'servicestatusSum',
             'hoststatusCountPercentage',
-            'servicestatusCountPercentage'
-        ]));
-        $this->viewBuilder()->setOption('serialize', [
-            'hoststatusCount',
-            'servicestatusCount',
-            'hoststatusSum',
-            'servicestatusSum',
-            'hoststatusCountPercentage',
-            'servicestatusCountPercentage'
-        ]);
+            'servicestatusCountPercentage',
+        ];
+
+        if ($showUnhandled) {
+            $vars = array_merge($vars, ['unhandledHosts', 'unhandledHostsSum', 'unhandledServices', 'unhandledServicesSum']);
+        }
+
+        $this->set(compact($vars));
+        $this->viewBuilder()->setOption('serialize', $vars);
     }
 
     public function menu() {
@@ -1227,7 +1284,7 @@ class AngularController extends AppController {
         return;
     }
 
-    public function regexHelperTooltip(){
+    public function regexHelperTooltip() {
         //Return HTML Template for PaginatorDirective
         return;
     }
