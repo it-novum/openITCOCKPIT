@@ -66,6 +66,12 @@ class GenerateCommand extends Command {
     public function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser {
         $parser = parent::buildOptionParser($parser);
 
+        $parser->addOption('se', [
+            'help'    => 'Append Statusengine 3 table associations.',
+            'boolean' => true,
+            'default' => false
+        ]);
+
         return $parser;
     }
 
@@ -77,6 +83,8 @@ class GenerateCommand extends Command {
      * @return null|void|int The exit code or null for success
      */
     public function execute(Arguments $args, ConsoleIo $io) {
+        $appendStatusengine = $args->getOption('se') === true;
+
         $this->io = $io;
 
         $tables = $this->getTables();
@@ -277,6 +285,10 @@ class GenerateCommand extends Command {
                     //debug($e->getTraceAsString());
                 }
             }
+        }
+
+        if ($appendStatusengine === true) {
+            $DBML .= $this->getStatusengine3Assocs();
         }
 
         $path = TMP;
@@ -480,6 +492,32 @@ class GenerateCommand extends Command {
             'association'         => $associationString,
             'association_reverse' => $associationStringReverse
         ];
+    }
+
+    /**
+     * The Statusengine 3 Associating are not defined in the code. Also, the schema will not change in the future
+     * @return string
+     */
+    protected function getStatusengine3Assocs() {
+        $dbml = PHP_EOL;
+        $dbml .= 'Ref: services.uuid < statusengine_perfdata.service_description' . PHP_EOL;
+        $dbml .= 'Ref: services.uuid - statusengine_servicestatus.service_description' . PHP_EOL;
+        $dbml .= 'Ref: services.uuid < statusengine_servicechecks.service_description' . PHP_EOL;
+        $dbml .= 'Ref: hosts.uuid - statusengine_hoststatus.hostname' . PHP_EOL;
+        $dbml .= 'Ref: hosts.uuid < statusengine_host_statehistory.hostname' . PHP_EOL;
+        $dbml .= 'Ref: services.uuid < statusengine_service_scheduleddowntimes.service_description' . PHP_EOL;
+        $dbml .= 'Ref: hosts.uuid < statusengine_hostchecks.hostname' . PHP_EOL;
+        $dbml .= 'Ref: hosts.uuid < statusengine_host_notifications.hostname' . PHP_EOL;
+        $dbml .= 'Ref: services.uuid < statusengine_service_notifications.service_description' . PHP_EOL;
+        $dbml .= 'Ref: hosts.uuid < statusengine_host_downtimehistory.hostname' . PHP_EOL;
+        $dbml .= 'Ref: statusengine_host_downtimehistory.internal_downtime_id - statusengine_host_scheduleddowntimes.internal_downtime_id' . PHP_EOL;
+        $dbml .= 'Ref: hosts.uuid < statusengine_host_scheduleddowntimes.hostname' . PHP_EOL;
+        $dbml .= 'Ref: services.uuid < statusengine_service_downtimehistory.service_description' . PHP_EOL;
+        $dbml .= 'Ref: statusengine_service_downtimehistory.internal_downtime_id - statusengine_service_scheduleddowntimes.internal_downtime_id' . PHP_EOL;
+        $dbml .= 'Ref: services.uuid < statusengine_service_statehistory.service_description' . PHP_EOL;
+        $dbml .= 'Ref: services.uuid < statusengine_service_acknowledgements.service_description' . PHP_EOL;
+        $dbml .= 'Ref: hosts.uuid < statusengine_host_acknowledgements.hostname' . PHP_EOL;
+        return $dbml;
     }
 
 }
