@@ -595,6 +595,7 @@ class ServicesTable extends Table {
             ->select([
                 'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                 'Services.id',
+                'Services.disabled',
                 'Hosts.name'
             ])
             ->where(
