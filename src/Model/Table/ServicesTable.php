@@ -4189,7 +4189,9 @@ class ServicesTable extends Table {
                     if ($service['Servicestatus']['problem_has_been_acknowledged'] > 0) {
                         $serviceStateSummary['acknowledged'][$service['Servicestatus']['current_state']]++;
                         $serviceStateSummary['acknowledged']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
-                    } else {
+                    }
+
+                    if ($service['Servicestatus']['problem_has_been_acknowledged'] == 0 && $service['Servicestatus']['scheduled_downtime_depth'] == 0) {
                         $serviceStateSummary['not_handled'][$service['Servicestatus']['current_state']]++;
                         $serviceStateSummary['not_handled']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
                     }
