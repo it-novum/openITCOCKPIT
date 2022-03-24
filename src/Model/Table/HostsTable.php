@@ -3350,7 +3350,9 @@ class HostsTable extends Table {
                     if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
                         $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
                         $hostStateSummary['acknowledged']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
-                    } else {
+                    }
+
+                    if($host['Hoststatus']['problem_has_been_acknowledged'] == 0 && $host['Hoststatus']['scheduled_downtime_depth'] == 0){
                         $hostStateSummary['not_handled'][$host['Hoststatus']['current_state']]++;
                         $hostStateSummary['not_handled']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
                     }
