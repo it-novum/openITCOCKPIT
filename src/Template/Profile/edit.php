@@ -569,6 +569,10 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 "https://<?php echo h($_SERVER['SERVER_ADDR']); ?>/hosts/index.json?angular=true" |jq .</pre>
                     </div>
                 </div>
+
+                <div class="row padding-top-10">
+                    <img class="mx-auto" src="{{currentQrCode}}">
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary mr-auto" ng-click="getNewApiKey()">

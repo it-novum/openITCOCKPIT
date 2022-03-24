@@ -62,7 +62,8 @@
         "symfony/finder": "^3.2",
         "symfony/process": "^3.4",
         "symfony/yaml": "^5.0",
-        "twig/twig": "^3.0"
+        "twig/twig": "^3.0",
+        "endroid/qr-code": "^4.4.7"
     },
     "require-dev": {
         "cakephp/bake": "^2.0",
