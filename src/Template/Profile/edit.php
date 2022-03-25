@@ -476,7 +476,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <?php echo __('Show'); ?>
                         </div>
                     </div>
-                    <div class="row" ng-repeat="apikey in apikeys">
+                    <div class="row padding-top-5 padding-bottom-5" ng-repeat="apikey in apikeys">
                         <div class="col-xs-12 col-md-1">
                             {{apikey.id}}
                         </div>

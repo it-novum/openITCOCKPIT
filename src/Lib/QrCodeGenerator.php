@@ -14,7 +14,7 @@ class QrCodeGenerator {
     private $encoding = 'UTF-8';
 
     /** @var int */
-    private $size = 300;
+    private $size = 244;
 
     /**
      * @return string

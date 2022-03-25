@@ -57,7 +57,7 @@
                     </div>
                 </div>
 
-                <div class="row padding-top-10" >
+                <div class="row padding-top-10">
                     <div class="col-lg-12 padding-bottom-5">
                         <span class="bold">
                             <code>curl</code> <?php echo __('example with JSON processor'); ?>:
@@ -70,7 +70,10 @@
                     </div>
                 </div>
 
-                <div class="row padding-top-10">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <?= __('To transfer the API key to your mobile device, scan the QR code.'); ?>
+                    </div>
                     <img class="mx-auto" src="{{currentQrCode}}">
                 </div>
             </div>
