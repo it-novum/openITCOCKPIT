@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\QrCodeGenerator;
 use App\Model\Table\ApikeysTable;
 use App\Model\Table\UsersTable;
 use Cake\Cache\Cache;
@@ -255,8 +256,15 @@ class ProfileController extends AppController {
                     $User->getId()
                 );
                 $Apikey = new Apikey($apikey);
-                $this->set('apikey', $Apikey->toArray());
-                $this->viewBuilder()->setOption('serialize', ['apikey']);
+                $Apikey = $Apikey->toArray();
+
+                $qr = new QrCodeGenerator();
+                $qr->setContent($Apikey['apikey']);
+                $qrcode = $qr->getQrCodeAsBase64();
+
+                $this->set('apikey', $Apikey);
+                $this->set('qrcode', $qrcode);
+                $this->viewBuilder()->setOption('serialize', ['apikey', 'qrcode']);
                 return;
             }
 
@@ -323,8 +331,13 @@ class ProfileController extends AppController {
             $session = $this->request->getSession();
             $session->write('latest_api_key', $newApiKey);
 
+            $qr = new QrCodeGenerator();
+            $qr->setContent($apikey);
+            $qrcode = $qr->getQrCodeAsBase64();
+
             $this->set('apikey', $apikey);
-            $this->viewBuilder()->setOption('serialize', ['apikey']);
+            $this->set('qrcode', $qrcode);
+            $this->viewBuilder()->setOption('serialize', ['apikey', 'qrcode']);
             return;
         }
 

@@ -154,6 +154,8 @@ angular.module('openITCOCKPIT')
                 .then(function(result){
                     $scope.newApiKey = result.data.apikey;
                     $scope.post.Apikey.apikey = $scope.newApiKey;
+
+                    $scope.currentQrCode = result.data.qrcode;
                 });
         };
 
