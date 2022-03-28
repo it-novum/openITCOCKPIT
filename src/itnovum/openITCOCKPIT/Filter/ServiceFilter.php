@@ -51,6 +51,7 @@ class ServiceFilter extends Filter {
             ],
             'equals'   => [
                 'Hosts.id',
+                'Hosts.satellite_id',
                 'Services.id',
                 'Services.uuid',
                 'Services.disabled',

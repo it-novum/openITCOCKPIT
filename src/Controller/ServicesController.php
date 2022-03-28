@@ -53,12 +53,14 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use DistributeModule\Model\Table\SatellitesTable;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -123,12 +125,30 @@ class ServicesController extends AppController {
      * @throws MissingDbBackendException
      */
     public function index() {
+        $User = new User($this->getUser());
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+        $satellites = [];
+
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
+        }
+
         if (!$this->isApiRequest()) {
-            $User = new User($this->getUser());
             $this->set('username', $User->getFullName());
+            $this->set('satellites', $satellites);
+
             //Only ship HTML template
             return;
         }
+
+
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
@@ -137,7 +157,6 @@ class ServicesController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $ServiceFilter = new ServiceFilter($this->request);
-        $User = new User($this->getUser());
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions(
@@ -250,6 +269,16 @@ class ServicesController extends AppController {
                 'Servicestatus' => $Servicestatus->toArray(),
                 'ServiceType'   => $serviceTypes[$service['service_type']]
             ];
+
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+
+            if ($Host->isSatelliteHost() && isset($satellites[$Host->getSatelliteId()])) {
+                $satelliteName = $satellites[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
+            $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['satelliteId'] = $satellite_id;
             $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
         }
