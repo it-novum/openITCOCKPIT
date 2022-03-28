@@ -708,6 +708,7 @@ class ServicesTable extends Table {
             ->select([
                 'Services.id',
                 'Services.name',
+                'Services.disabled',
                 'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                 'Hosts.id',
                 'Hosts.name',
@@ -748,6 +749,7 @@ class ServicesTable extends Table {
                 ->select([
                     'Services.id',
                     'Services.name',
+                    'Services.disabled',
                     'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                     'Hosts.id',
                     'Hosts.name',
@@ -781,7 +783,8 @@ class ServicesTable extends Table {
                 'Service'         => [
                     'id'          => $serviceData['id'],
                     'name'        => $serviceData['name'],
-                    'servicename' => $serviceData['name'] ?? $serviceData['_matchingData']['Servicetemplates']['name']
+                    'servicename' => $serviceData['name'] ?? $serviceData['_matchingData']['Servicetemplates']['name'],
+                    'disabled'    => $serviceData['disabled']
                 ],
                 'Host'            => [
                     'id'   => $serviceData['_matchingData']['Hosts']['id'],
