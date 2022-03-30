@@ -82,6 +82,7 @@ class BrowsersController extends AppController {
         $tenants = Hash::sort($tenants, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 
         $tenantsFiltered = [];
+        $tenantsOfContainerNotVisibleForUser = false;
         foreach ($tenants as $tenant) {
             if (in_array($tenant['container']['id'], $this->MY_RIGHTS, true)) {
                 $tenantsFiltered[$tenant['container']['id']] = [
@@ -89,20 +90,20 @@ class BrowsersController extends AppController {
                     'name'             => $tenant['container']['name'],
                     'containertype_id' => $tenant['container']['containertype_id']
                 ];
+            }else{
+                $tenantsOfContainerNotVisibleForUser = true;
             }
         }
         $tenants = $tenantsFiltered;
         /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($containerId === ROOT_CONTAINER && !empty($tenants)) {
+        if ($containerId === ROOT_CONTAINER && !empty($tenants) && $tenantsOfContainerNotVisibleForUser === false) {
             //First request if tenants are not empty or ROOT_CONTAINER
 
             $this->set('containers', Api::makeItJavaScriptAble($tenants));
             $this->set('breadcrumbs', Api::makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
             //Child container (or so)
-
             $containerNest = $ContainersTable->getChildren($containerId, true);
             $browser = $ContainersTable->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
 
