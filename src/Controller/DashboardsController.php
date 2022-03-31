@@ -1381,7 +1381,7 @@ class DashboardsController extends AppController {
                         'Servicestatus' => []
                     ]);
                 }
-                $Host = new Host($service['host']);
+                $Host = new Host($service->get('host')->toArray());
                 $Service = new Service($service->toArray());
                 $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
 
@@ -1393,14 +1393,13 @@ class DashboardsController extends AppController {
                     'Perfdata'      => $PerfdataParser->parse()
                 ];
 
-                $serviceForJs['Service']['isGenericService'] = $service['Service']['service_type'] == GENERIC_SERVICE;
-                $serviceForJs['Service']['isEVCService'] = $service['Service']['service_type'] == EVK_SERVICE;
-                $serviceForJs['Service']['isSLAService'] = $service['Service']['service_type'] == SLA_SERVICE;
-                $serviceForJs['Service']['isMkService'] = $service['Service']['service_type'] == MK_SERVICE;
+                $serviceForJs['Service']['isGenericService'] = $serviceForJs['Service']['serviceType'] == GENERIC_SERVICE;
+                $serviceForJs['Service']['isEVCService'] = $serviceForJs['Service']['serviceType'] == EVK_SERVICE;
+                $serviceForJs['Service']['isSLAService'] = $serviceForJs['Service']['serviceType'] == SLA_SERVICE;
+                $serviceForJs['Service']['isMkService'] = $serviceForJs['Service']['serviceType'] == MK_SERVICE;
 
                 $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
                 $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
-
                 return $serviceForJs;
             }
         }
