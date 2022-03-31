@@ -150,7 +150,7 @@ class DashboardsController extends AppController {
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
         if (!$DashboardTabsTable->existsById($tabId)) {
-            throw new NotFoundException(sprintf('Tab width id %s not found', $tabId));
+            throw new NotFoundException(sprintf('Tab with id %s not found', $tabId));
         }
 
         $User = new User($this->getUser());
