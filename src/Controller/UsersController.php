@@ -359,7 +359,6 @@ class UsersController extends AppController {
         } else {
             $UserType = $types['LOCAL_USER'];
         }
-
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return user information
             $this->set('user', $user['User']);
@@ -380,12 +379,23 @@ class UsersController extends AppController {
                 $containerIdsWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
                     return $v == 2;
                 }, ARRAY_FILTER_USE_BOTH);
+                $userToEditContainerIdsWithWritePermissions = array_filter($data['ContainersUsersMemberships'], function ($v) {
+                    return $v == 2;
+                }, ARRAY_FILTER_USE_BOTH);
+
+                $notPermittedContainerIds = array_keys(
+                    array_diff_key($userToEditContainerIdsWithWritePermissions, $containerIdsWithWritePermissions)
+                );
+
                 foreach ($data['ContainersUsersMemberships'] as $key => $value) {
+                    // do not overwrite container settings if the user does not have sufficient rights
+                    if (in_array($key, $notPermittedContainerIds, true)) {
+                        continue;
+                    }
                     // reverting write permission to read permission due to insufficient user permission rights
-                    if (!array_key_exists($key, $containerIdsWithWritePermissions) && $value > 1) {
+                    if ($key !== ROOT_CONTAINER && !array_key_exists($key, $containerIdsWithWritePermissions) && $value > 1) {
                         $data['ContainersUsersMemberships'][$key] = READ_RIGHT;
                     }
-
                 }
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
@@ -914,6 +924,7 @@ class UsersController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $containers = $ContainersTable->easyPath(
             $this->MY_RIGHTS,
             OBJECT_HOST, [],

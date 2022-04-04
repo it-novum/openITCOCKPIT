@@ -70,7 +70,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
-            {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+            {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'};
+containerMessage = '<?= __('Hidden due to insufficient permissions'); ?>'">
 
                         <div class="form-group" ng-class="{'has-error': errors.usercontainerroles}" ng-if="isLdapUser">
                             <label class="control-label hintmark" for="UserContainerrolesLdap">

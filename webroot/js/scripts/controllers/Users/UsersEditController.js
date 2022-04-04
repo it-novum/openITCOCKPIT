@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT')
                 }
             }
 
-            return 'ERROR UNKNOWN CONTAINER';
+            return $scope.containerMessage;
         };
 
         $scope.intervalText = 'disabled';
