@@ -166,7 +166,6 @@ class UsercontainerrolesTable extends Table {
         if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
-
         $query = $this->find();
         if (!empty($GenericFilter->genericFilters())) {
             $query->where($GenericFilter->genericFilters());
@@ -177,13 +176,16 @@ class UsercontainerrolesTable extends Table {
             'Usercontainerroles.name'
         ])
             ->contain('Containers')
-            ->matching('Containers')
-            ->where([
-                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
-            ])
-            ->group([
-                'Usercontainerroles.id'
-            ])
+            ->matching('Containers');
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                    'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+                ]
+            );
+        }
+        $query->group([
+            'Usercontainerroles.id'
+        ])
             ->order([
                 'Usercontainerroles.name' => 'asc',
                 'Usercontainerroles.id'   => 'asc'
@@ -201,10 +203,16 @@ class UsercontainerrolesTable extends Table {
                     'Usercontainerroles.name'
                 ])
                 ->contain('Containers')
-                ->matching('Containers')
+                ->matching('Containers');
+            if (!empty($MY_RIGHTS)) {
+                $query->where([
+                        'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+                    ]
+                );
+            }
+            $query
                 ->where([
-                    'Usercontainerroles.id IN'                                => $selected,
-                    'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+                    'Usercontainerroles.id IN'                                => $selected
                 ])
                 ->group([
                     'Usercontainerroles.id'

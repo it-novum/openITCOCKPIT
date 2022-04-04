@@ -233,7 +233,6 @@ class UsersController extends AppController {
             $MY_RIGHTS = [];
         }
         $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $MY_RIGHTS);
-
         $all_users = [];
 
         $types = $UsersTable->getUserTypesWithStyles();
@@ -249,13 +248,13 @@ class UsersController extends AppController {
             } else {
                 $user['UserType'] = $types['LOCAL_USER'];
             }
-
             if ($this->hasRootPrivileges === false) {
                 //Check permissions for non ROOT Users
                 $containerWithWritePermissionByUserContainerRoles = Hash::extract(
                     $user['usercontainerroles'],
                     '{n}.containers.{n}._joinData.container_id'
                 );
+                $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
 
                 $container = Hash::extract(
                     $user['containers'],
@@ -338,9 +337,11 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->getUserForEdit($id);
-        $containersToCheck = array_unique(array_merge(
-            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
-            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        $containersToCheck = array_unique(
+            array_merge(
+                $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+                $user['User']['containers']['_ids'] //Containers defined by the user itself
+            )
         );
 
         if (!$this->allowedByContainerId($containersToCheck)) {
@@ -373,6 +374,19 @@ class UsersController extends AppController {
             $data = $this->request->getData('User', []);
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
+            }
+
+            if (!$this->hasRootPrivileges) {
+                $containerIdsWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
+                    return $v == 2;
+                }, ARRAY_FILTER_USE_BOTH);
+                foreach ($data['ContainersUsersMemberships'] as $key => $value) {
+                    // reverting write permission to read permission due to insufficient user permission rights
+                    if (!array_key_exists($key, $containerIdsWithWritePermissions) && $value > 1) {
+                        $data['ContainersUsersMemberships'][$key] = READ_RIGHT;
+                    }
+
+                }
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
             $user = $UsersTable->get($id);
@@ -759,10 +773,15 @@ class UsersController extends AppController {
             ]
         ]);
         $selected = $this->request->getQuery('selected', []);
-
+        $userContainerIds = $this->MY_RIGHTS;
+        if (!$this->hasRootPrivileges) {
+            $userContainerIds = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
+                return $v == 2;
+            }, ARRAY_FILTER_USE_BOTH);
+        }
 
         $ucr = Api::makeItJavaScriptAble(
-            $UsercontainerrolesTable->getUsercontainerrolesAsList($GenericFilter, $selected, $this->MY_RIGHTS)
+            $UsercontainerrolesTable->getUsercontainerrolesAsList($GenericFilter, $selected, $userContainerIds)
         );
         $this->set('usercontainerroles', $ucr);
         $this->viewBuilder()->setOption('serialize', ['usercontainerroles']);
@@ -888,4 +907,28 @@ class UsersController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['ldapUser']);
     }
 
+    public function loadContainersForAngular() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath(
+            $this->MY_RIGHTS,
+            OBJECT_HOST, [],
+            $this->hasRootPrivileges,
+            [CT_HOSTGROUP]
+        );
+        $containerIdsWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v, $k) use ($containers) {
+            return $v == 2 && array_key_exists($k, $containers);
+        }, ARRAY_FILTER_USE_BOTH);
+
+        $containerIdsWithWritePermissions = array_keys($containerIdsWithWritePermissions);
+
+        $containers = Api::makeItJavaScriptAble($containers);
+        $this->set('containers', $containers);
+        $this->set('containerIdsWithWritePermissions', $containerIdsWithWritePermissions);
+        $this->viewBuilder()->setOption('serialize', ['containers', 'containerIdsWithWritePermissions']);
+    }
 }

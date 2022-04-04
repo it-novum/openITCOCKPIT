@@ -123,12 +123,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainer = function(){
-            return $http.get("/containers/loadContainersForAngular.json", {
+            return $http.get("/users/loadContainersForAngular.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.containers = result.data.containers;
+                $scope.containerIdsWithWritePermissions = result.data.containerIdsWithWritePermissions;
             });
         };
 

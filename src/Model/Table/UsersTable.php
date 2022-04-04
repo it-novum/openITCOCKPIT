@@ -362,7 +362,6 @@ class UsersTable extends Table {
                 'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
             ]);
         }
-
         $userIds = Hash::extract($query->toArray(), '{n}.id');
 
         //Get all user ids where container assigned are made through an user container role
@@ -792,9 +791,9 @@ class UsersTable extends Table {
             'Users.image',
             'Users.onetimetoken',
             'full_name' => $query->func()->concat([
-                'Users.lastname' => 'literal',
+                'Users.lastname'  => 'literal',
                 ' ',
-                'Users.firstname'  => 'literal'
+                'Users.firstname' => 'literal'
             ])
         ])
             ->where([

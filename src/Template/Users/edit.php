@@ -240,7 +240,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        type="radio"
                                        value="1"
                                        ng-model="userContainer.permission_level"
-                                       ng-disabled="userContainer.container_id === 1"
+                                       ng-disabled="userContainer.container_id === 1 || containerIdsWithWritePermissions.indexOf(userContainer.container_id) === -1"
                                        ng-checked="userContainer.permission_level == 1">
                                 <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
@@ -248,7 +248,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        type="radio"
                                        value="2"
                                        ng-model="userContainer.permission_level"
-                                       ng-disabled="userContainer.container_id === 1"
+                                       ng-disabled="userContainer.container_id === 1 || containerIdsWithWritePermissions.indexOf(userContainer.container_id) === -1"
                                        ng-checked="userContainer.permission_level == 2">
                                 <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                             </div>
