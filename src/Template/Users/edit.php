@@ -218,6 +218,7 @@ containerMessage = '<?= __('Hidden due to insufficient permissions'); ?>'">
                                 class="form-control"
                                 chosen="containers"
                                 multiple
+                                ng-disabled="notPermittedContainerIds.length > 0"
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="selectedUserContainers">
                             </select>

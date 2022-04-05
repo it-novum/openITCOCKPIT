@@ -344,6 +344,13 @@ class UsersController extends AppController {
             )
         );
 
+        $notPermittedContainerIds = [];
+        foreach($user['User']['ContainersUsersMemberships'] as $containerId => $rightLevel){
+            if(!isset($this->MY_RIGHTS_LEVEL[$containerId]) || (isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] < $rightLevel)){
+                $notPermittedContainerIds[] = $containerId;
+            }
+        }
+
         if (!$this->allowedByContainerId($containersToCheck)) {
             $this->render403();
             return;
@@ -364,7 +371,8 @@ class UsersController extends AppController {
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('UserType', $UserType);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserType']);
+            $this->set('notPermittedContainerIds', $notPermittedContainerIds);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserType', 'notPermittedContainerIds']);
             return;
         }
 

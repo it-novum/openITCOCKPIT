@@ -37,6 +37,7 @@ angular.module('openITCOCKPIT')
 
                 //Reformat data that it looks like the same like it looks in the add method...
                 $scope.selectedUserContainers = data.containers._ids;
+                $scope.notPermittedContainerIds = result.data.notPermittedContainerIds;
                 delete data.containers;
 
                 //Add new selected containers
