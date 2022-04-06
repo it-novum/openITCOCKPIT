@@ -155,8 +155,8 @@ class InstantReportCommand extends Command implements CronjobInterface {
                     $CakePdf->template('create_pdf_report', 'default');
                     $CakePdf->viewVars([
                         'instantReport' => $instantReport,
-                        'fromDate' => $fromDate,
-                        'toDate' => $toDate,
+                        'fromDate' => $UserTime->format($fromDate),
+                        'toDate' => $UserTime->format($toDate),
                         'UserTime' => $UserTime
                     ]);
                     // Get the PDF string returned
