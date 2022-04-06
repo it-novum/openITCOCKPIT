@@ -250,22 +250,32 @@ class UsersController extends AppController {
             }
             if ($this->hasRootPrivileges === false) {
                 //Check permissions for non ROOT Users
-                $containerWithWritePermissionByUserContainerRoles = Hash::extract(
+                $containerWithWritePermissionByUserContainerRoles = Hash::combine(
                     $user['usercontainerroles'],
-                    '{n}.containers.{n}._joinData.container_id'
-                );
-                $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
-
-                $container = Hash::extract(
-                    $user['containers'],
-                    '{n}.id'
+                    '{n}.containers.{n}._joinData.container_id',
+                    '{n}.containers.{n}._joinData.permission_level'
                 );
 
-                $container = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
-                foreach ($container as $containerId) {
-                    if ($this->isWritableContainer($containerId)) {
-                        $user['allow_edit'] = true;
-                        break;
+                $notPermittedContainer = array_filter($containerWithWritePermissionByUserContainerRoles, function ($v, $k) {
+                    return (!isset($this->MY_RIGHTS_LEVEL[$k]) || (isset($this->MY_RIGHTS_LEVEL[$k]) && $this->MY_RIGHTS_LEVEL[$k] < $v));
+
+                }, ARRAY_FILTER_USE_BOTH);
+                if (!empty($notPermittedContainer)) {
+                    $user['allow_edit'] = false;
+                } else {
+                    $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
+
+                    $container = Hash::extract(
+                        $user['containers'],
+                        '{n}.id'
+                    );
+
+                    $container = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
+                    foreach ($container as $containerId) {
+                        if ($this->isWritableContainer($containerId)) {
+                            $user['allow_edit'] = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -345,8 +355,8 @@ class UsersController extends AppController {
         );
 
         $notPermittedContainerIds = [];
-        foreach($user['User']['ContainersUsersMemberships'] as $containerId => $rightLevel){
-            if(!isset($this->MY_RIGHTS_LEVEL[$containerId]) || (isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] < $rightLevel)){
+        foreach ($user['User']['ContainersUsersMemberships'] as $containerId => $rightLevel) {
+            if (!isset($this->MY_RIGHTS_LEVEL[$containerId]) || (isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] < $rightLevel)) {
                 $notPermittedContainerIds[] = $containerId;
             }
         }
