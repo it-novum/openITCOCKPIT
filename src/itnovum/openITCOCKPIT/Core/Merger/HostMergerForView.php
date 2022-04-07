@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Core\Merger;
 
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\CustomVariableMerger;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * Class HostMergerForView
@@ -88,7 +89,6 @@ class HostMergerForView {
         $data['customvariables'] = $this->getDataForCustomvariables();
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
         $data['prometheus_exporters'] = $this->getDataForPrometheusExporters();
-
         return [
             'Host' => $data
         ];
