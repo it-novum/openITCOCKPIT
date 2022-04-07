@@ -4102,18 +4102,36 @@ class ServicesTable extends Table {
 
     /**
      * @param $servicestatus
-     * @param bool $extended show details ('acknowledged', 'in downtime', ...)
+     * @param bool $extended show details ('acknowledged', 'in downtime', ...
      * @return array
      */
     public function getServiceStateSummary($servicestatus, $extended = true) {
         $serviceStateSummary = [
-            'state' => [
+            'state'        => [
                 0 => 0,
                 1 => 0,
                 2 => 0,
                 3 => 0
             ],
-            'total' => 0
+            'acknowledged' => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0
+            ],
+            'in_downtime'  => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0
+            ],
+            'not_handled'  => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0
+            ],
+            'total'        => 0
         ];
         if ($extended === true) {
             $serviceStateSummary = [
@@ -4189,18 +4207,17 @@ class ServicesTable extends Table {
                 $service['Servicestatus']['current_state'] = 3;
             }
             $serviceStateSummary['state'][$service['Servicestatus']['current_state']]++;
-            $serviceStateSummary['state']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
             if ($extended === true) {
+                $serviceStateSummary['state']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
                 if ($service['Servicestatus']['current_state'] > 0) {
                     if ($service['Servicestatus']['problem_has_been_acknowledged'] > 0) {
                         $serviceStateSummary['acknowledged'][$service['Servicestatus']['current_state']]++;
                         $serviceStateSummary['acknowledged']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
-                    } else {
+                    } else if ($service['Servicestatus']['problem_has_been_acknowledged'] == 0 && $service['Servicestatus']['scheduled_downtime_depth'] == 0) {
                         $serviceStateSummary['not_handled'][$service['Servicestatus']['current_state']]++;
                         $serviceStateSummary['not_handled']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
                     }
                 }
-
                 if ($service['Servicestatus']['scheduled_downtime_depth'] > 0) {
                     $serviceStateSummary['in_downtime'][$service['Servicestatus']['current_state']]++;
                     $serviceStateSummary['in_downtime']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
@@ -4208,6 +4225,17 @@ class ServicesTable extends Table {
                 if ($service['Servicestatus']['active_checks_enabled'] == 0) {
                     $serviceStateSummary['passive'][$service['Servicestatus']['current_state']]++;
                     $serviceStateSummary['passive']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
+                }
+            } else {
+                if ($service['Servicestatus']['current_state'] > 0) {
+                    if ($service['Servicestatus']['problem_has_been_acknowledged'] > 0) {
+                        $serviceStateSummary['acknowledged'][$service['Servicestatus']['current_state']]++;
+                    } else if ($service['Servicestatus']['problem_has_been_acknowledged'] == 0 && $service['Servicestatus']['scheduled_downtime_depth'] == 0) {
+                        $serviceStateSummary['not_handled'][$service['Servicestatus']['current_state']]++;
+                    }
+                }
+                if ($service['Servicestatus']['scheduled_downtime_depth'] > 0) {
+                    $serviceStateSummary['in_downtime'][$service['Servicestatus']['current_state']]++;
                 }
             }
             $serviceStateSummary['total']++;

@@ -1717,7 +1717,6 @@ class DashboardsController extends AppController {
             $servicestatusSummary = [];
             switch ($type) {
                 case 'hosts':
-                case 'hosts_services':
                     $hoststatus = [];
                     if ($this->DbBackend->isNdoUtils()) {
                         /** @var HostsTable $HostsTable */
