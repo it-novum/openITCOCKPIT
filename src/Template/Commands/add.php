@@ -73,7 +73,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
             <div class="panel-container show">
                 <div class="panel-content">
                     <form ng-submit="submit();" ng-init="successMessage=
-            {objectName : '<?php echo __('command'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+            {objectName : '<?php echo __('Command'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
                         <div class="row">
                             <div class="col-xs-12 col-md-offset-2 col-md-12 col-lg-12 padding-left-0 padding-right-0">
@@ -314,7 +314,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
 <div class="modal" tabindex="-1" role="dialog" id="argumentMisMatchModal">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-warning">
                 <h5 class="modal-title"><?php echo __('Mismatch in number of defined arguments detected'); ?></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -335,6 +335,21 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                         <?php echo __('Number of defined arguments:'); ?> <strong>{{definedCommandArguments}}</strong>
                     </div>
                 </div>
+
+                <div class="row padding-top-10" ng-show="usedCommandLineToDefinedCommandArguments.length > 0">
+                    <div class="col-xs-12">
+                        <?= __('Used in command line, but missing in arguments definition'); ?>
+                        <code>{{usedCommandLineToDefinedCommandArguments.join(', ')}}</code>
+
+                    </div>
+                </div>
+                <div class="row padding-top-10">
+                    <div class="col-xs-12" ng-show="definedCommandArgumentsToUsedCommandLine.length > 0">
+                        <?= __('Defined in arguments definition, but not used in command line'); ?>
+                        <code>{{definedCommandArgumentsToUsedCommandLine.join(', ')}}</code>
+                    </div>
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning" ng-click="submit()">

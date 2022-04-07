@@ -88,13 +88,19 @@ angular.module('openITCOCKPIT')
                 (value, index) => usedCommandLineArgs.indexOf(value) === index
             );
 
-            $scope.usedCommandLineArgs = _.intersection(
+            $scope.usedCommandLineArgs =  usedCommandLineArgsFiltered.length;
+
+            $scope.usedCommandLineToDefinedCommandArguments = _.difference(
+                usedCommandLineArgsFiltered, definedCommandArgumentsByName
+            );
+
+            $scope.definedCommandArgumentsToUsedCommandLine = _.difference(
                 definedCommandArgumentsByName, usedCommandLineArgsFiltered
-            ).length;
+            );
 
             $scope.definedCommandArguments = $scope.args.length;
 
-            if($scope.usedCommandLineArgs === $scope.definedCommandArguments){
+            if($scope.usedCommandLineToDefinedCommandArguments.length === 0 && $scope.definedCommandArgumentsToUsedCommandLine.length === 0){
                 $scope.submit();
             }else{
                 $('#argumentMisMatchModal').modal('show');
