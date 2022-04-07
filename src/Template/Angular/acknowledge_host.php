@@ -40,6 +40,11 @@
                             <input type="text" class="form-control" placeholder="<?php echo __('Comment'); ?>"
                                    ng-model="ack.comment">
                         </div>
+                        <div class="col-md-12 no-padding" ng-show="ack.error">
+                            <div class="help-block text-danger">
+                                <?= __('Comment can not be empty'); ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">

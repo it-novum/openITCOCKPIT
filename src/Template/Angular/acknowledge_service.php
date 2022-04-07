@@ -14,12 +14,17 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="input-group" ng-class="{'has-error': ack.error}">
+                        <div class="input-group required" ng-class="{'has-error': ack.error}">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="icon-prepend fa fa-pencil-alt"></i></span>
                             </div>
                             <input type="text" class="form-control" placeholder="<?php echo __('Comment'); ?>"
                                    ng-model="ack.comment">
+                        </div>
+                        <div class="col-md-12 no-padding" ng-show="ack.error">
+                            <div class="help-block text-danger">
+                                <?= __('Comment can not be empty'); ?>
+                            </div>
                         </div>
                     </div>
                 </div>
