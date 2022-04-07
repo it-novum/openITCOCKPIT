@@ -1987,6 +1987,7 @@ class ServicesTable extends Table {
                 'Hosts.description',
                 'Hosts.address',
                 'Hosts.disabled',
+                'Hosts.satellite_id'
             ])
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
