@@ -113,16 +113,34 @@ class DebugConfigNagiosTask {
             'fields' => ['id', 'uuid', 'name'],
         ],
         'Hostescalations'     => [
-            'fields' => ['id', 'uuid'],
+            'fields'  => ['id', 'uuid', 'container_id'],
+            'contain' => [
+                'Hostgroups' => [
+                    'Containers' => [
+                        'fields' => [
+                            'name'
+                        ]
+                    ]
+                ]
+            ]
         ],
         'Serviceescalations'  => [
-            'fields' => ['id', 'uuid'],
+            'fields'  => ['id', 'uuid', 'container_id'],
+            'contain' => [
+                'Servicegroups' => [
+                    'Containers' => [
+                        'fields' => [
+                            'name'
+                        ]
+                    ]
+                ]
+            ]
         ],
         'Hostdependencies'    => [
-            'fields' => ['id', 'uuid'],
+            'fields' => ['id', 'uuid', 'container_id'],
         ],
         'Servicedependencies' => [
-            'fields' => ['id', 'uuid'],
+            'fields' => ['id', 'uuid', 'container_id']
         ]
     ];
 
@@ -150,7 +168,6 @@ class DebugConfigNagiosTask {
 
     private function _buildUuidCache() {
         $this->uuidCache = [];
-
         foreach ($this->tablesToSeach as $TableName => $searchDefinition) {
             /** @var Table $Table */
             $Table = TableRegistry::getTableLocator()->get($TableName);
@@ -186,9 +203,8 @@ class DebugConfigNagiosTask {
                         }
                     }
                 }
-
                 if (isset($entry['container']['name'])) {
-                    $tmp_result['container_name'] = $entry['container']['name'];
+                    $entry['container_name'] = $entry['container']['name'];
                 }
 
                 $entry['TableName'] = $TableName;
@@ -198,62 +214,6 @@ class DebugConfigNagiosTask {
                 }
 
                 $this->uuidCache[$entry['uuid']] = $entry;
-            }
-        }
-    }
-
-    private function _buildUuidCache_deprecated() {
-        $this->uuidCache = [];
-        $Models = ['Host', 'Hosttemplate', 'Timeperiod', 'Command', 'Contact', 'Contactgroup', 'Hostgroup', 'Servicegroup', 'Service', 'Servicetemplate'];
-        $options = [
-
-
-        ];
-
-        foreach ($Models as $ModelName) {
-            if (!in_array($ModelName, $this->uses)) {
-                $this->loadModel($ModelName);
-            }
-
-            foreach ($this->{$ModelName}->find('all', $options[$ModelName]) as $result) {
-                $tmp_result = [];
-                if (isset($result[$ModelName]['id'])) {
-                    $tmp_result['id'] = $result[$ModelName]['id'];
-                }
-
-                if (isset($result[$ModelName]['name'])) {
-                    $tmp_result['name'] = $result[$ModelName]['name'];
-                } else {
-                    //in php isset() returns false, if a variable is null
-                    // $a = null, isset($a) will return false!!!
-                    if ($ModelName == 'Service') {
-                        if ($result['Service']['name'] == null || $result['Service']['name'] == '') {
-                            $tmp_result['name'] = $result['Servicetemplate']['name'];
-                        }
-                    }
-                }
-
-                if (isset($result[$ModelName]['description'])) {
-                    $tmp_result['description'] = $result[$ModelName]['description'];
-                }
-
-                if (isset($result[$ModelName]['container_id'])) {
-                    $tmp_result['container_id'] = $result[$ModelName]['container_id'];
-                }
-
-                if (isset($result['Container']['name'])) {
-                    $tmp_result['container_name'] = $result['Container']['name'];
-                }
-
-
-                $tmp_result['ModelName'] = $ModelName;
-
-                if (!isset($result[$ModelName]['uuid'])) {
-                    debug($result[$ModelName]);
-                }
-
-                $this->uuidCache[$result[$ModelName]['uuid']] = $tmp_result;
-                unset($tmp_result);
             }
         }
     }
@@ -269,12 +229,12 @@ class DebugConfigNagiosTask {
             $Table = TableRegistry::getTableLocator()->get($TableName);
             $ModelSchema = $Table->getSchema()->columns();
 
-            if (in_array('name', array_keys($ModelSchema))) {
+            if (in_array('name', array_keys($ModelSchema), true)) {
                 $input = $this->io->ask(__d('oitc_console', 'Please enter the name of the ' . $TableName . '! This is a wildcard search, for example type "default host" or just "def". Hit return to see all ' . $TableName));
                 $result = $Table->find()->where([
                     'name LIKE' => '%' . $input . '%',
                 ])->all();
-            } else if (in_array('container_id', array_keys($ModelSchema)) && isset($this->tablesToSeach[$TableName]['containertype_id'])) {
+            } else if (in_array('container_id', array_keys($ModelSchema), true) && isset($this->tablesToSeach[$TableName]['containertype_id'])) {
                 $input = $this->io->ask(__d('oitc_console', 'Please enter the name of the ' . $TableName . '! This is a wildcard search, for example type "default host" or just "def". Hit return to see all ' . $TableName));
                 $result = $Table->find()->contain(['Containers'])->where([
                     'Container.name LIKE'        => '%' . $input . '%',
@@ -309,7 +269,7 @@ class DebugConfigNagiosTask {
                     $result = [];
                     $result[0] = $Table->find()->where([
                         'id' => $input
-                    ])->first();
+                    ])->firstOrFail();
                     $this->_outFile($result[0]['uuid'], $TableName, $confName);
                 } else {
                     $this->io->out('<error>' . $TableName . __d('oitc_console', ' not found') . '</error>');
@@ -432,7 +392,7 @@ class DebugConfigNagiosTask {
     }
 
     private function _outFile($uuid, $TableName, $confName) {
-        if (!$this->conf['minified'] || in_array($TableName, ['Hostdependencies', 'Hostescalations', 'Servicedependencies', 'Serviceescalations', 'Servicegroups'])) {
+        if (!$this->conf['minified'] || in_array($TableName, ['Hostdependencies', 'Hostescalations', 'Servicedependencies', 'Serviceescalations'])) {
             // Model that are not saved as minified config files or minified configs asre tournd off
             $file = new \SplFileInfo($this->conf['path'] . $this->conf[$confName] . $uuid . $this->conf['suffix']);
             if ($file->isFile() && $file->isReadable()) {
@@ -456,14 +416,15 @@ class DebugConfigNagiosTask {
 
                     $tableToNagios = [
                         'Commands'         => 'command_name',
-                        //'Contactgroup' => ,
+                        'Contactgroups'    => 'contactgroup_name',
                         'Contacts'         => 'contact_name',
-                        //'Hostgroup' => '',
                         'Hosts'            => 'host_name',
+                        'Hostgroups'       => 'hostgroup_name',
                         'Hosttemplates'    => 'host_name',
                         'Services'         => 'service_description',
+                        'Servicegroups'    => 'servicegroup_name',
                         'Servicetemplates' => 'service_description',
-                        'Timeperiods'      => 'timeperiod_name',
+                        'Timeperiods'      => 'timeperiod_name'
                     ];
 
                     $needel = $tableToNagios[$TableName];
@@ -584,4 +545,3 @@ class DebugConfigNagiosTask {
     }
 
 }
-

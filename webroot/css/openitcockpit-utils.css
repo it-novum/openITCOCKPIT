@@ -1124,3 +1124,51 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     width: auto;
     max-width: none; /* Required for popovers wider than 276px (Bootstrap's max-width for popovers) */
 }
+
+.arrowd-vertical-on-left {
+    position: relative;
+
+}
+.arrowd-vertical-on-left:after {
+    content:"\02939";
+    position: absolute;
+    top: 20%;
+    left: 0;
+    font-size: 20px;
+    color: #4285F4;
+}
+
+
+.arrowd-vertical-on-right {
+    position: relative;
+
+}
+.arrowd-vertical-on-right:after {
+    content:"\2938";
+    position: absolute;
+    top: -10px;
+    right: 0;
+    font-size: 20px;
+    color: #4285F4;
+}
+
+.bordered-vertical-on-left-primary {
+    border-left: 3px solid #4285F4;
+    border-radius: 7px;
+}
+.hr-sect {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    color: #4285F488;
+}
+.hr-sect:before,
+.hr-sect:after {
+    content: "";
+    flex-grow: 1;
+    background: #4285F488;
+    height: 1px;
+    font-size: 0px;
+    line-height: 0px;
+    margin: 0px 8px;
+}

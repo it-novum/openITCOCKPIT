@@ -238,7 +238,7 @@ angular.module('openITCOCKPIT')
 
             $scope.containers = [];
             for(var key in $scope.containersFromApi){
-                var containerName = $scope.containersFromApi[key].value.toLowerCase();
+                var containerName = $scope.containersFromApi[key].value.name.toLowerCase();
                 if(containerName.match(searchString)){
                     $scope.containers.push($scope.containersFromApi[key]);
                 }

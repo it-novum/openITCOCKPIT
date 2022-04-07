@@ -458,6 +458,29 @@
                                         </div>
                                     </fieldset>
                                 </div>
+                                <?php if (sizeof($satellites) > 1): ?>
+                                    <div class="col-xs-12 col-md-3">
+                                        <fieldset>
+                                            <h5><?php echo __('Instance'); ?></h5>
+                                            <div class="form-group smart-form">
+                                                <select
+                                                    id="Instance"
+                                                    data-placeholder="<?php echo __('Filter by instance'); ?>"
+                                                    class="form-control"
+                                                    chosen="{}"
+                                                    multiple
+                                                    ng-model="filter.Hosts.satellite_id"
+                                                    ng-model-options="{debounce: 500}">
+                                                    <?php
+                                                    foreach ($satellites as $satelliteId => $satelliteName):
+                                                        printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
+                                                    endforeach;
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"
@@ -519,7 +542,7 @@
                                         <?= __('Service'); ?>
                                     </span>
                                 </th>
-                                
+
                                 <th class="no-sort tableStatewidth"
                                     ng-click="orderBy('Servicestatus.last_state_change')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.last_state_change')"></i>
@@ -559,8 +582,28 @@
                                            ui-sref="HostsBrowser({id: service.Host.id})">
                                             {{service.Host.hostname}} ({{service.Host.address}})
                                         </a>
+                                        <div class="badge border border-info text-info"
+                                             ng-hide="service.Host.is_satellite_host">
+                                            <i class="fas fa-home "></i>
+                                            {{service.Host.satelliteName}}
+                                        </div>
+                                        <div class="badge border border-secondary text-secondary"
+                                             ng-show="service.Host.is_satellite_host">
+                                            <i class="fas fa-satellite"></i>
+                                            {{service.Host.satelliteName}}
+                                        </div>
                                     <?php else: ?>
                                         {{service.Host.hostname}} ({{service.Host.address}})
+                                        <div class="badge border border-info text-info"
+                                             ng-hide="service.Host.is_satellite_host">
+                                            <i class="fas fa-home "></i>
+                                            {{service.Host.satelliteName}}
+                                        </div>
+                                        <div class="badge border border-secondary text-secondary"
+                                             ng-show="service.Host.is_satellite_host">
+                                            <i class="fas fa-satellite"></i>
+                                            {{service.Host.satelliteName}}
+                                        </div>
                                     <?php endif; ?>
 
                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>

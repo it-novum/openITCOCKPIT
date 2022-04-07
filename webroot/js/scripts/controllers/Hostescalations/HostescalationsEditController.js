@@ -105,9 +105,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.hosts = result.data.hosts;
-                $scope.hosts_excluded = result.data.hostsExcluded;
                 $scope.hostgroups = result.data.hostgroups;
-                $scope.hostgroups_excluded = result.data.hostgroupsExcluded;
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
@@ -134,16 +132,42 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadExcludedHosts = function(searchString){
-            if($scope.post.Hostescalation.container_id != null){
-                $http.get("/hosts/loadHostsByContainerId.json", {
+            if($scope.post.Hostescalation.hostgroups._ids.length === 0){
+                $scope.post.Hostescalation.hosts_excluded._ids = [];
+                return;
+            }
+            if($scope.post.Hostescalation.container_id != null && $scope.post.Hostescalation.hostgroups._ids.length > 0){
+                $http.get("/hostescalations/loadExcludedHostsByContainerIdAndHostgroupIds.json", {
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Hostescalation.container_id,
                         'filter[Hosts.name]': searchString,
-                        'selected[]': $scope.post.Hostescalation.hosts_excluded._ids
+                        'selected[]': $scope.post.Hostescalation.hosts_excluded._ids,
+                        'hostgroupIds[]': $scope.post.Hostescalation.hostgroups._ids
+
                     }
                 }).then(function(result){
-                    $scope.hosts_excluded = result.data.hosts;
+                    $scope.hosts_excluded = result.data.excludedHosts;
+                });
+            }
+        };
+
+        $scope.loadExcludedHostgroups = function(searchString){
+            if($scope.post.Hostescalation.hosts._ids.length === 0){
+                $scope.post.Hostescalation.hostgroups_excluded._ids = [];
+                return;
+            }
+            if($scope.post.Hostescalation.container_id != null && $scope.post.Hostescalation.hosts._ids.length > 0){
+                $http.get("/hostescalations/loadExcludedHostgroupsByContainerIdAndHostIds.json", {
+                    params: {
+                        'angular': true,
+                        'containerId': $scope.post.Hostescalation.container_id,
+                        'filter[Hosts.name]': searchString,
+                        'selected[]': $scope.post.Hostescalation.hosts_excluded._ids,
+                        'hostIds[]': $scope.post.Hostescalation.hosts._ids
+                    }
+                }).then(function(result){
+                    $scope.hostgroups_excluded = result.data.excludedHostgroups;
                 });
             }
         };
@@ -212,10 +236,13 @@ angular.module('openITCOCKPIT')
         $scope.$watch('post.Hostescalation.container_id', function(){
             if($scope.post.Hostescalation.container_id != null){
                 $scope.loadElementsByContainerId();
+                $scope.loadExcludedHosts();
+                $scope.loadExcludedHostgroups();
             }
         }, true);
 
         $scope.$watch('post.Hostescalation.hosts._ids', function(){
+            $scope.loadExcludedHostgroups();
             if($scope.init){
                 return;
             }
@@ -230,6 +257,7 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('post.Hostescalation.hostgroups._ids', function(){
+            $scope.loadExcludedHosts();
             if($scope.init){
                 return;
             }
