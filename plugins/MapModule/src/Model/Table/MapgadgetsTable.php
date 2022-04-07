@@ -74,7 +74,14 @@ class MapgadgetsTable extends Table {
             'className'  => 'MapModule.Maps',
         ]);
 
-        $this->hasMany('Services');
+
+        $this->belongsTo('Services', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'conditions' => [
+                'type' => 'service'
+            ]
+        ]);
     }
 
     public function bindCoreAssociations(RepositoryInterface $coreTable) {

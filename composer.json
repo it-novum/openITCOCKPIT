@@ -15,12 +15,6 @@
         "source": "https://github.com/it-novum/openITCOCKPIT",
         "irc": "irc://irc.libera.chat/openitcockpit"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/it-novum/acl.git"
-        }
-    ],
     "require": {
         "php": ">=7.2",
         "ext-calendar": "*",
@@ -37,7 +31,7 @@
         "ext-zip": "*",
         "alchemy/zippy": "^0.4.9",
         "azuyalabs/yasumi": "^2.2",
-        "cakephp/acl": "dev-4.x-dev",
+        "cakephp/acl": "^0.7.1",
         "cakephp/authentication": "^2.0",
         "cakephp/authorization": "^2.0",
         "cakephp/cakephp": "^4.0",

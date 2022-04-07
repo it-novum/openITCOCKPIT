@@ -71,7 +71,7 @@ class GrafanaDashboardsTable extends Table {
         $this->belongsTo('Configurations', [
             'foreignKey' => 'configuration_id',
             'joinType'   => 'INNER',
-            'className'  => 'GrafanaModule.Configurations',
+            'className'  => 'GrafanaModule.GrafanaConfigurations',
         ]);
         $this->belongsTo('Hosts', [
             'foreignKey' => 'host_id',

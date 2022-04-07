@@ -916,12 +916,12 @@ class DashboardsController extends AppController {
         }
 
 
-        /** @var ParenthostsTable $ParenthostsTable */
-        $ParenthostsTable = TableRegistry::getTableLocator()->get('Parenthosts');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
-        $parentHosts = $ParenthostsTable->getParenthostsForDashboard($containerIds);
-        $hostUuids = Hash::extract($parentHosts, '{n}.Hosts.uuid');
+        $parentHosts = $HostsTable->getParenthostsForDashboard($containerIds);
+        $hostUuids = Hash::extract($parentHosts, '{n}.uuid');
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
@@ -946,11 +946,11 @@ class DashboardsController extends AppController {
         }
 
         $parent_outages = [];
-        foreach ($ParenthostsTable->getParenthostsForDashboard($containerIds, $where) as $parentHost) {
+        foreach ($HostsTable->getParenthostsForDashboard($containerIds, $where) as $parentHost) {
             $Hoststatus = new Hoststatus([], $UserTime);
 
-            if (isset($hoststatus[$parentHost['Hosts']['uuid']])) {
-                $Hoststatus = new Hoststatus($hoststatus[$parentHost['Hosts']['uuid']]['Hoststatus'], $UserTime);
+            if (isset($hoststatus[$parentHost['uuid']])) {
+                $Hoststatus = new Hoststatus($hoststatus[$parentHost['uuid']]['Hoststatus'], $UserTime);
             }
             $parentHost['Hoststatus'] = $Hoststatus->toArray();
             $parent_outages[] = $parentHost;

@@ -49,6 +49,7 @@ class HostsToParenthostsSelectTable extends Table {
         $this->belongsTo('Parenthosts', [
             'foreignKey' => 'parenthost_id',
             'joinType'   => 'INNER',
+            'className' => 'Hosts'
         ]);
     }
 
