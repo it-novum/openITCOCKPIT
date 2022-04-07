@@ -100,11 +100,11 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <div class="text-muted padding-top-20" ng-show="hoststatusSum === 0">
+                    <div class="text-muted text-center" ng-show="hoststatusSum === 0">
                         <?php echo __('No hosts associated with this node'); ?>
                     </div>
 
-                    <div class="text-center" ng-show="hoststatusSum > 0">
+                    <div class="text-center">
                         <img
                             ng-src="/angular/getPieChart/{{hoststatusCountHash[0]}}/{{hoststatusCountHash[1]}}/{{hoststatusCountHash[2]}}.png">
 
@@ -146,7 +146,10 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <div class="text-center" ng-show="servicestatusSum > 0">
+                    <div class="text-muted text-center" ng-show="servicestatusSum === 0">
+                        <?php echo __('No services associated with this node'); ?>
+                    </div>
+                    <div class="text-center">
                         <img
                             ng-src="/angular/getPieChart/{{servicestatusCountHash[0]}}/{{servicestatusCountHash[1]}}/{{servicestatusCountHash[2]}}/{{servicestatusCountHash[3]}}/.png">
 
