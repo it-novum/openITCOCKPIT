@@ -118,6 +118,18 @@ class HostescalationsTable extends Table {
             ->allowEmptyString('container_id', null, false);
 
         $validator
+            ->add('hosts', 'custom', [
+                'rule'    => [$this, 'atLeastOneHostOrHostgroup'],
+                'message' => __('You have to choose at least one host or one host group.')
+            ]);
+
+        $validator
+            ->add('hostgroups', 'custom', [
+                'rule'    => [$this, 'atLeastOneHostOrHostgroup'],
+                'message' => __('You have to choose at least one host or one host group.')
+            ]);
+
+        $validator
             ->add('contacts', 'custom', [
                 'rule'    => [$this, 'atLeastOne'],
                 'message' => __('You must specify at least one contact or contact group.')
@@ -128,13 +140,6 @@ class HostescalationsTable extends Table {
                 'rule'    => [$this, 'atLeastOne'],
                 'message' => __('You must specify at least one contact or contact group.')
             ]);
-
-        $validator
-            ->requirePresence('hosts', true, __('You have to choose at least one host.'))
-            ->allowEmptyString('hosts', null, false)
-            ->multipleOptions('hosts', [
-                'min' => 1
-            ], __('You have to choose at least one host.'));
 
         $validator
             ->integer('first_notification')
@@ -188,6 +193,18 @@ class HostescalationsTable extends Table {
      */
     public function atLeastOne($value, $context) {
         return !empty($context['data']['contacts']['_ids']) || !empty($context['data']['contactgroups']['_ids']);
+    }
+
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for hosts and or host groups
+     */
+    public function atLeastOneHostOrHostgroup($value, $context) {
+        return !empty($context['data']['hosts']) || !empty($context['data']['hostgroups']);
     }
 
     /**
@@ -429,8 +446,8 @@ class HostescalationsTable extends Table {
     }
 
     /**
-     * @param null|string $uuid
-     * @return array
+     * @param $uuid
+     * @return Query
      */
     public function getHostescalationsForExport($uuid = null) {
         $query = $this->find()
@@ -441,12 +458,22 @@ class HostescalationsTable extends Table {
                             ->where([
                                 'Hosts.disabled' => 0
                             ])
-                            ->select(['uuid']);
+                            ->select(['uuid', 'id']);
                     },
                 'Hostgroups'    =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
-                            ->select(['uuid']);
+                            ->select(['uuid', 'id'])
+                            ->contain(
+                                [
+                                    'Hosts' => function (Query $q) {
+                                        return $q->enableAutoFields(false)
+                                            ->select([
+                                                'Hosts.id'
+                                            ])->where(['Hosts.disabled' => 0]);
+                                    }
+                                ]
+                            );
                     },
                 'Timeperiods'   =>
                     function (Query $q) {

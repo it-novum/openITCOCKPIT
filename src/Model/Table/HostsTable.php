@@ -4494,4 +4494,70 @@ class HostsTable extends Table {
             ]);
         return $query->first();
     }
+
+    /**
+     * @param $containerIds
+     * @param $hostgroupIds
+     * @param $type
+     * @param $index
+     * @param $where
+     * @return array
+     */
+    public function getHostsByContainerIdAndHostgroupIds($containerIds, $hostgroupIds, $type = 'all', $index = 'id', $where = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        if (!is_array($hostgroupIds)) {
+            $hostgroupIds = [$hostgroupIds];
+        }
+
+        $_where = [
+            'Hosts.disabled IN' => [0]
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Hosts.' . $index,
+            'Hosts.name'
+        ])->innerJoinWith('Hostgroups')
+            ->where([
+                'Hostgroups.id IN' => $hostgroupIds
+            ]);
+
+        $query->where($where);
+        if (!empty($containerIds)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $containerIds
+            ]);
+        }
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
+        ]);
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row['name'];
+        }
+
+        return $list;
+    }
+
 }

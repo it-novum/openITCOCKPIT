@@ -18,7 +18,7 @@ a:not([href]):not([tabindex]) {
 }
 
 .label-forced {
-    display: inline !important;
+    display: inline-block !important;
     padding: .2em .6em .3em !important;
     font-size: 75% !important;
     font-weight: 700 !important;

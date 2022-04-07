@@ -595,6 +595,7 @@ class ServicesTable extends Table {
             ->select([
                 'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                 'Services.id',
+                'Services.disabled',
                 'Hosts.name'
             ])
             ->where(
@@ -631,6 +632,7 @@ class ServicesTable extends Table {
                 ->select([
                     'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                     'Services.id',
+                    'Services.disabled',
                     'Hosts.name'
                 ])
                 ->where([
@@ -4544,5 +4546,77 @@ class ServicesTable extends Table {
 
         return $query->toArray();
 
+    }
+
+    /**
+     * @param $containerIds
+     * @param $servicegroupIds
+     * @param $type
+     * @param $index
+     * @param $where
+     * @return array
+     */
+    public function getServicesByContainerIdAndServicegroupIds($containerIds, $servicegroupIds, $type = 'all', $index = 'id', $where = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        if (!is_array($servicegroupIds)) {
+            $servicegroupIds = [$servicegroupIds];
+        }
+
+        $_where = [
+            'Hosts.disabled IN'    => [0],
+            'Services.disabled IN' => [0]
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Services.' . $index,
+            'Hosts.name',
+            'Services.disabled',
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+        ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $containerIds
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoinWith('Servicegroups')
+            ->where([
+                'Servicegroups.id IN' => $servicegroupIds
+            ]);
+
+        $query->where($where);
+
+        $query->disableHydration();
+        $query->group(['Services.id']);
+        $query->order([
+            'servicename' => 'asc',
+            'Services.id' => 'asc'
+        ]);
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row;
+        }
+
+        return $list;
     }
 }

@@ -353,8 +353,12 @@ class AclDependencies {
             ->dependency('Hostescalations', 'index', 'Hostescalations', 'view')
             ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadContainers')
             ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadElementsByContainerId')
+            ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadExcludedHostgroupsByContainerIdAndHostIds')
+            ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadExcludedHostsByContainerIdAndHostgroupIds')
             ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadContainers')
-            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadElementsByContainerId');
+            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadElementsByContainerId')
+            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadExcludedHostgroupsByContainerIdAndHostIds')
+            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadExcludedHostsByContainerIdAndHostgroupIds');
 
 
         $this
@@ -446,8 +450,12 @@ class AclDependencies {
             ->dependency('Serviceescalations', 'index', 'Serviceescalations', 'view')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadContainers')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadElementsByContainerId')
+            ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
+            ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds')
             ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadContainers')
-            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadElementsByContainerId');
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadElementsByContainerId')
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds');
 
 
         $this
