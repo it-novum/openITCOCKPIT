@@ -2,8 +2,9 @@
 
 namespace App\Lib;
 
-use Endroid\QrCode\Builder\Builder;
-use Endroid\QrCode\Encoding\Encoding;
+
+
+use Endroid\QrCode\QrCode;
 
 class QrCodeGenerator {
 
@@ -25,12 +26,11 @@ class QrCodeGenerator {
         }
 
         try {
-            $result = Builder::create()
-                ->data($this->content)
-                ->encoding(new Encoding($this->encoding))
-                ->size($this->size)
-                ->build();
-            return $result->getDataUri();
+            $result = new QrCode($this->content);
+            $result->setEncoding($this->encoding);
+            $result->setSize($this->size);
+
+            return $result->writeDataUri();
         } catch (\Exception $e) {
             error_log($e->getMessage());
         }
