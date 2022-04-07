@@ -24,7 +24,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                     $scope.autoRefreshCounter--;
                     if($scope.autoRefreshCounter === 0){
                         $scope.loadServicestatusDetails($scope.currentServiceDetailsId);
-                        $interval.cancel(interval);
+                        $interval.cancel($scope.interval);
                         $scope.showFlashSuccess = false;
                     }
                 }, 1000);
@@ -287,7 +287,6 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
         link: function($scope, element, attr){
             $scope.showServiceStatusDetails = function(serviceId){
                 $scope.loadServicestatusDetails(serviceId);
-                $(".page-inner").append($('#angularServiceStatusDetailsModal'));
                 $('#angularServiceStatusDetailsModal').modal('show');
             };
         }
