@@ -33,6 +33,7 @@ use App\Model\Table\UsercontainerrolesTable;
 use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\LdapgroupFilter;
@@ -55,9 +56,20 @@ class UsercontainerrolesController extends AppController {
 
         /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        $all_usercontainerroles = $UsercontainerrolesTable->getUsercontainerRolesIndex($UsercontainerrolesFilter, $PaginateOMat, $this->MY_RIGHTS);
-
+        $all_usercontainerroles = $UsercontainerrolesTable->getUsercontainerRolesIndex(
+            $UsercontainerrolesFilter,
+            $PaginateOMat,
+            $this->MY_RIGHTS
+        );
+        $containerWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
+            return $v == 2;
+        }, ARRAY_FILTER_USE_BOTH);
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
+            $userRoleContainerIds = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
+            if(!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIds, $containerWithWritePermissions))){
+                unset($all_usercontainerroles[$index]);
+                continue; //insufficient user (container) rights
+            }
             $all_usercontainerroles[$index]['allow_edit'] = $this->hasRootPrivileges;
             if ($this->hasRootPrivileges === false) {
                 foreach ($usercontainerrole['containers'] as $key => $container) {
