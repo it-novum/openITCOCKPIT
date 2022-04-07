@@ -1101,4 +1101,89 @@ class HostgroupsTable extends Table {
         $results = $query->toArray() ?? [];
         return Hash::extract($results, '{n}.container.name');
     }
+
+    /**
+     * @param $containerIds
+     * @param $hostIds
+     * @param $type
+     * @param $index
+     * @return array
+     */
+    public function getHostgroupsByContainerIdAndHostIds($containerIds, $hostIds, $type = 'all', $index = 'container_id') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'HostgroupHostgroupsByContainerId');
+
+                // Tenant host groups are available for all users of a tenant (oITC V2 legacy)
+                $tenantContainerIds[] = $path[1]['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+
+        switch ($type) {
+            case 'all':
+                $query = $this->find()
+                    ->contain([
+                        'Containers'
+                    ])
+                    ->innerJoinWith('Hosts')
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_HOSTGROUP,
+                        'Hosts.id IN '                => $hostIds
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+                return $this->emptyArrayIfNull($query->toArray());
+            default:
+                $query = $this->find()
+                    ->contain([
+                        'Containers'
+                    ])
+                    ->innerJoinWith('Hosts')
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_HOSTGROUP,
+                        'Hosts.id IN '                => $hostIds
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+                $query = $query->toArray();
+                if (empty($query)) {
+                    $query = [];
+                }
+                $return = [];
+                foreach ($query as $hostgroup) {
+                    if ($index === 'id') {
+                        $return[$hostgroup['id']] = $hostgroup['container']['name'];
+                    } else {
+                        $return[$hostgroup['container_id']] = $hostgroup['container']['name'];
+                    }
+                }
+
+                return $return;
+        }
+    }
 }

@@ -52,7 +52,6 @@
 
     function Pielicious(paper, cx, cy, R1, opts) {
         opts = opts || {};
-
         var data = opts.data || [],
 
             wholePie = (data && data.filter(function(number){
@@ -76,7 +75,7 @@
             legend = (opts.legend && is(opts.legend, "object")) || false,
             legendLabels = (legend && opts.legend.labels ? opts.legend.labels : []),
             legendXstart = (legend && opts.legend.x ? opts.legend.x : cx + R1 + 30),
-            legendYstart = (legend && opts.legend.y ? opts.legend.y : cy - R1),
+            legendYstart = (legend && opts.legend.y ? opts.legend.y : cy - R1/2.5),
             legendEvents = (legend && opts.legend.events ? true : false),
             legendLabelXstart = legendXstart + 38,
             legendLabelYstart = legendYstart,
@@ -887,4 +886,3 @@
         return new Pielicious(this, cx, cy, R, opts);
     };
 }());
-

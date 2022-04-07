@@ -476,7 +476,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <?php echo __('Show'); ?>
                         </div>
                     </div>
-                    <div class="row" ng-repeat="apikey in apikeys">
+                    <div class="row padding-top-5 padding-bottom-5" ng-repeat="apikey in apikeys">
                         <div class="col-xs-12 col-md-1">
                             {{apikey.id}}
                         </div>
@@ -568,6 +568,10 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 "Authorization: X-OITC-API {{post.Apikey.apikey}}" \
 "https://<?php echo h($_SERVER['SERVER_ADDR']); ?>/hosts/index.json?angular=true" |jq .</pre>
                     </div>
+                </div>
+
+                <div class="row padding-top-10">
+                    <img class="mx-auto" src="{{currentQrCode}}">
                 </div>
             </div>
             <div class="modal-footer">

@@ -108,7 +108,7 @@ use Cake\Core\Plugin;
                             <li class="nav-item pointer" ng-show="GrafanaDashboardExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
                                    role="tab">
-                                    <i class="fas fa-info">&nbsp;</i> <?php echo __('Grafana'); ?>
+                                    <i class="far fa-chart-bar"></i>&nbsp;<?php echo __('Grafana'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>

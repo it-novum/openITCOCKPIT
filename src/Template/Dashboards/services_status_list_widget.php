@@ -104,7 +104,7 @@
                         </td>
                         <td class="table-color-{{(service.Hoststatus.currentState !== null)?service.Hoststatus.currentState:'disabled'}}">
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                <a href="/ng/#!/hosts/browser/{{ service.Host.id }}">
+                                <a ui-sref="HostsBrowser({id: service.Host.id})" class="a-clean">
                                     {{ service.Host.hostname }}
                                 </a>
                             <?php else: ?>
@@ -113,8 +113,8 @@
                         </td>
                         <td>
                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                <a href="/ng/#!/services/browser/{{ service.Service.id }}">
-                                    {{ service.Service.servicename }}
+                                <a ui-sref="ServicesBrowser({id: service.Service.id})" class="a-clean">
+                                    {{ service.Host.hostname }}
                                 </a>
                             <?php else: ?>
                                 {{ service.Service.servicename }}

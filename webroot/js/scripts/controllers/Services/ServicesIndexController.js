@@ -42,7 +42,8 @@ angular.module('openITCOCKPIT')
                 },
                 Hosts: {
                     id: QueryStringService.getStateValue($stateParams, 'host_id', []),
-                    name: QueryStringService.getStateValue($stateParams, 'hostname', '')
+                    name: QueryStringService.getStateValue($stateParams, 'hostname', ''),
+                    satellite_id: []
                 }
             };
         };
@@ -101,6 +102,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Hosts.id]': $scope.filter.Hosts.id,
                 'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[Hosts.satellite_id][]': $scope.filter.Hosts.satellite_id,
                 'filter[Services.id][]': $scope.filter.Services.id,
                 'filter[servicename]': $scope.filter.Services.name,
                 'filter[servicedescription]': $scope.filter.Services.servicedescription,
@@ -223,6 +225,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Hosts.id]': $scope.filter.Hosts.id,
                 'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[Hosts.satellite_id][]': $scope.filter.Hosts.satellite_id,
                 'filter[Services.id]': $scope.filter.Services.id,
                 'filter[servicename]': $scope.filter.Services.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
