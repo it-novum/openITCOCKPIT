@@ -2117,7 +2117,7 @@ class NagiosConfigGenerator {
                     $content .= $this->addContent('host_name', 1, $hostUuid);
                     $content .= $this->addContent('service_description', 1, implode(',', preg_filter('/^/', '!', $excludedServiceUuids)));
 
-                    $content .= $this->addContent('servicegroup_name', 1, implode(',', $escalationServicegroups['excluded']));
+                    $content .= $this->addContent('servicegroup_name', 1, implode(',', $escalationServicegroups['included']));
 
                     if (!empty($contactUuids)) {
                         $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
