@@ -114,7 +114,7 @@
                         <td>
                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                 <a ui-sref="ServicesBrowser({id: service.Service.id})" class="a-clean">
-                                    {{ service.Host.hostname }}
+                                    {{ service.Service.servicename }}
                                 </a>
                             <?php else: ?>
                                 {{ service.Service.servicename }}
