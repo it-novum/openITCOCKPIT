@@ -203,7 +203,7 @@
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by user'); ?>"
-                                                   ng-model="filter.DowntimeHosts.author_name"
+                                                   ng-model="filter.DowntimeServices.author_name"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -216,7 +216,7 @@
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by comment'); ?>"
-                                                   ng-model="filter.DowntimeHosts.comment_data"
+                                                   ng-model="filter.DowntimeServices.comment_data"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -245,7 +245,7 @@
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
-                                                       ng-model="filter.DowntimeHosts.was_not_cancelled"
+                                                       ng-model="filter.DowntimeServices.was_not_cancelled"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label"
                                                        for="statusFilterWasNotCancelled"><?php echo __('Was not cancelled'); ?></label>
@@ -257,7 +257,7 @@
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
-                                                       ng-model="filter.DowntimeHosts.was_cancelled"
+                                                       ng-model="filter.DowntimeServices.was_cancelled"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label"
                                                        for="statusFilterWasCancelled"><?php echo __('Was cancelled'); ?></label>
