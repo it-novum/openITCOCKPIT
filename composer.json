@@ -134,6 +134,8 @@
     "prefer-stable": true,
     "config": {
         "sort-packages": true,
-        "github-protocols": ["https"]
+        "github-protocols": [
+            "https"
+        ]
     }
 }

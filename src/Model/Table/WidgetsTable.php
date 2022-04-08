@@ -52,10 +52,7 @@ class WidgetsTable extends Table {
             'foreignKey' => 'dashboard_tab_id',
             'joinType'   => 'INNER',
         ]);
-        $this->belongsTo('Types', [
-            'foreignKey' => 'type_id',
-            'joinType'   => 'INNER',
-        ]);
+
         $this->belongsTo('Hosts', [
             'foreignKey' => 'host_id',
         ]);
