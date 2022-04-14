@@ -17,29 +17,8 @@
     },
     "repositories": [
         {
-            "type": "package",
-            "package": {
-                "name": "cakephp/acl",
-                "description": "Acl Plugin for CakePHP 4.x framework",
-                "version": "4.3-dev",
-                "type": "cakephp-plugin",
-                "autoload": {
-                    "psr-4": {
-                        "Acl\\": "src"
-                    }
-                },
-                "autoload-dev": {
-                    "psr-4": {
-                        "Acl\\Test\\": "tests",
-                        "Cake\\Test\\": "vendor/cakephp/cakephp/tests"
-                    }
-                },
-                "source": {
-                    "url": "https://github.com/it-novum/acl.git",
-                    "type": "git",
-                    "reference": "master"
-                }
-            }
+            "type": "vcs",
+            "url": "https://github.com/it-novum/acl.git"
         }
     ],
     "require": {
@@ -58,7 +37,7 @@
         "ext-zip": "*",
         "alchemy/zippy": "^0.4.9",
         "azuyalabs/yasumi": "^2.2",
-        "cakephp/acl": "4.3-dev",
+        "cakephp/acl": "dev-master",
         "cakephp/authentication": "^2.0",
         "cakephp/authorization": "^2.0",
         "cakephp/cakephp": "^4.0",
