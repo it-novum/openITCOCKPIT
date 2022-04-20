@@ -291,7 +291,14 @@ class AngularController extends AppController {
             $recursive = true;
         }
 
-        $containerIds = $this->request->getQuery('containerIds', [ROOT_CONTAINER]);
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        }
+
+        $containerIds = $this->request->getQuery('containerIds', $MY_RIGHTS);
         if (!is_numeric($containerIds) && !is_array($containerIds)) {
             $containerIds = ROOT_CONTAINER;
         }
@@ -392,7 +399,7 @@ class AngularController extends AppController {
         $this->set('unhandledServices', $unhandledServices);
         $this->set('unhandledServicesSum', $unhandledServicesSum);
 
-        
+
         $this->viewBuilder()->setOption('serialize', [
             'hoststatusCount',
             'servicestatusCount',
