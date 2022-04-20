@@ -187,7 +187,10 @@ class GrafanaDashboardsTable extends Table {
      */
     public function getAllDashboardsForDeleteCronjob() {
         $query = $this->find()
-            ->select('host_uuid')
+            ->select([
+                'host_uuid',
+                'grafana_uid'
+            ])
             ->disableHydration()
             ->all();
 
