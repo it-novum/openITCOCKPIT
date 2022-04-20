@@ -94,7 +94,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         if (Configure::read('debug')) {
             //$this->addPlugin(\DebugKit\Plugin::class);
         }
-        $this->addPlugin('Dbml');// @todo remove me as well
+        
+        $this->addPlugin('Dbml');
     }
 
     /**
