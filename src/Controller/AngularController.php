@@ -354,10 +354,8 @@ class AngularController extends AppController {
             $servicestatus = $ServicesTable->getServicesWithStatusByConditionsStatusengine3($containerIdsForQuery, []);
         }
 
-
         $hoststatusSummary = $HostsTable->getHostStateSummary($hoststatus, false);
         $servicestatusSummary = $ServicesTable->getServiceStateSummary($servicestatus, false);
-
         $hoststatusSum = $hoststatusSummary['total'];
         $servicestatusSum = $servicestatusSummary['total'];
 

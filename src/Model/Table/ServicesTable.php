@@ -4446,7 +4446,6 @@ class ServicesTable extends Table {
                 'servicegroup_ids IS NOT NULL',
                 'count > 0'
             ]);
-            $query->group('Services.id');
         }
 
         if (isset($where['Services.keywords rlike'])) {
@@ -4479,6 +4478,8 @@ class ServicesTable extends Table {
             $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
         }
         $query->andWhere($where);
+        $query->group('Services.id');
+
         $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
