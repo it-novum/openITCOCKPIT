@@ -4421,7 +4421,6 @@ class HostsTable extends Table {
                 'hostgroup_ids IS NOT NULL',
                 'count > 0'
             ]);
-            $query->group('Hosts.id');
         }
 
         $where = [];
@@ -4447,6 +4446,7 @@ class HostsTable extends Table {
             );
         }
         $query->andWhere($where);
+        $query->group('Hosts.id');
         $query->disableHydration();
         $result = $query->all();
         if ($result === null) {

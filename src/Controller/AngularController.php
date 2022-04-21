@@ -291,7 +291,14 @@ class AngularController extends AppController {
             $recursive = true;
         }
 
-        $containerIds = $this->request->getQuery('containerIds', [ROOT_CONTAINER]);
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        }
+
+        $containerIds = $this->request->getQuery('containerIds', $MY_RIGHTS);
         if (!is_numeric($containerIds) && !is_array($containerIds)) {
             $containerIds = ROOT_CONTAINER;
         }
@@ -305,7 +312,11 @@ class AngularController extends AppController {
 
         if ($recursive) {
             //get recursive container ids
+            if(empty($containerIds)){
+                $containerIds[] = ROOT_CONTAINER;
+            }
             $containerIdToResolve = $containerIds;
+
             $children = $ContainersTable->getChildren($containerIdToResolve[0]);
             $containerIdsResolved = Hash::extract($children, '{n}.id');
             $recursiveContainerIds = [];
@@ -347,10 +358,8 @@ class AngularController extends AppController {
             $servicestatus = $ServicesTable->getServicesWithStatusByConditionsStatusengine3($containerIdsForQuery, []);
         }
 
-
         $hoststatusSummary = $HostsTable->getHostStateSummary($hoststatus, false);
         $servicestatusSummary = $ServicesTable->getServiceStateSummary($servicestatus, false);
-
         $hoststatusSum = $hoststatusSummary['total'];
         $servicestatusSum = $servicestatusSummary['total'];
 
