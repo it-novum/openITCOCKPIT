@@ -299,7 +299,7 @@ class AngularController extends AppController {
         }
 
         $containerIds = $this->request->getQuery('containerIds', $MY_RIGHTS);
-        if ((!is_numeric($containerIds) && !is_array($containerIds)) || empty($containerIds)) {
+        if (!is_numeric($containerIds) && !is_array($containerIds)) {
             $containerIds = ROOT_CONTAINER;
         }
 
@@ -312,7 +312,11 @@ class AngularController extends AppController {
 
         if ($recursive) {
             //get recursive container ids
+            if(empty($containerIds)){
+                $containerIds[] = ROOT_CONTAINER;
+            }
             $containerIdToResolve = $containerIds;
+
             $children = $ContainersTable->getChildren($containerIdToResolve[0]);
             $containerIdsResolved = Hash::extract($children, '{n}.id');
             $recursiveContainerIds = [];
