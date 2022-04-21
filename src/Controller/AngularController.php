@@ -299,7 +299,7 @@ class AngularController extends AppController {
         }
 
         $containerIds = $this->request->getQuery('containerIds', $MY_RIGHTS);
-        if (!is_numeric($containerIds) && !is_array($containerIds)) {
+        if ((!is_numeric($containerIds) && !is_array($containerIds)) || empty($containerIds)) {
             $containerIds = ROOT_CONTAINER;
         }
 
