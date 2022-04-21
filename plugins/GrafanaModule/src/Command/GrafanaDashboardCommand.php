@@ -276,6 +276,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         $grafanaDashboard->setTitle($host['uuid']);
         $grafanaDashboard->setEditable(false);
         $grafanaDashboard->setTags($this->tag);
+        $grafanaDashboard->setTags('🖥️ '.$host['name']);
         $grafanaDashboard->setHideControls(true);
         $panelId = 1;
         $grafanaRow = new GrafanaRow();
