@@ -392,7 +392,7 @@ class AngularController extends AppController {
         $this->set('unhandledServices', $unhandledServices);
         $this->set('unhandledServicesSum', $unhandledServicesSum);
 
-        
+
         $this->viewBuilder()->setOption('serialize', [
             'hoststatusCount',
             'servicestatusCount',
@@ -1210,6 +1210,16 @@ class AngularController extends AppController {
         ];
         $this->set('config', $config);
         $this->viewBuilder()->setOption('serialize', ['config']);
+    }
+
+    public function getPermissions() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $permissions = $this->PERMISSIONS;
+        $this->set('permissions', $permissions);
+        $this->viewBuilder()->setOption('serialize', ['permissions']);
     }
 
     public function durationInput() {
