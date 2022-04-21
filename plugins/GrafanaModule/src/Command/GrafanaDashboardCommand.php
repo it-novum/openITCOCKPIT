@@ -31,10 +31,10 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
 use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
 use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
@@ -276,6 +276,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         $grafanaDashboard->setTitle($host['uuid']);
         $grafanaDashboard->setEditable(false);
         $grafanaDashboard->setTags($this->tag);
+        $grafanaDashboard->setTags('🖥️ '.$host['name']);
         $grafanaDashboard->setHideControls(true);
         $panelId = 1;
         $grafanaRow = new GrafanaRow();
@@ -393,7 +394,17 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
 
             foreach ($dashboardUuids as $dashboard) {
                 $hostUuid = $dashboard['host_uuid'];
-                $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $hostUuid);
+                $grafanaUid = $dashboard['grafana_uid'];
+                //New grafana >= 8.0
+                if ($grafanaUid !== null) {
+                    $request = new Request('DELETE', sprintf('%s/dashboards/uid/%s',
+                            $this->GrafanaApiConfiguration->getApiUrl(),
+                            $grafanaUid
+                        )
+                    );
+                } else {
+                    $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $hostUuid);
+                }
 
                 try {
                     $response = $this->client->send($request);

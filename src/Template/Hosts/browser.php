@@ -1055,7 +1055,7 @@ use Cake\Core\Plugin;
                     <!-- Servicenow Module end -->
                     <!-- Grafana Module start -->
                     <div ng-show="GrafanaDashboardExists && selectedTab == 'tab5'">
-                        <div class="widget-toolbar">
+                        <div class="widget-toolbar text-right padding-bottom-5">
                             <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                         </div>
                         <iframe-directive url="GrafanaIframeUrl"
