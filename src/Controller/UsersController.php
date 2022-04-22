@@ -960,4 +960,13 @@ class UsersController extends AppController {
         $this->set('containerIdsWithWritePermissions', $containerIdsWithWritePermissions);
         $this->viewBuilder()->setOption('serialize', ['containers', 'containerIdsWithWritePermissions']);
     }
+
+    public function getUserPermissions() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $this->set('permissions', $this->PERMISSIONS);
+        $this->viewBuilder()->setOption('serialize', ['permissions']);
+    }
 }

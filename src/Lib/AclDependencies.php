@@ -255,7 +255,8 @@ class AclDependencies {
         $this
             ->allow('Users', 'login')
             ->allow('Users', 'logout')
-            ->allow('Users', 'getLocaleOptions');
+            ->allow('Users', 'getLocaleOptions')
+            ->allow('Users', 'getUserPermissions');
 
         ///////////////////////////////
         //    Add dependencies       //
