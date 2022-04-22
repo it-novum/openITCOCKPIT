@@ -1221,16 +1221,6 @@ class AngularController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['config']);
     }
 
-    public function getPermissions() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template
-            return;
-        }
-        $permissions = $this->PERMISSIONS;
-        $this->set('permissions', $permissions);
-        $this->viewBuilder()->setOption('serialize', ['permissions']);
-    }
-
     public function durationInput() {
         //Only ship HTML template
         return;

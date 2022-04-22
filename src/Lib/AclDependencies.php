@@ -129,7 +129,6 @@ class AclDependencies {
             ->allow('Angular', 'queryhandler')
             ->allow('Angular', 'hostBrowserMenu')
             ->allow('Angular', 'serviceBrowserMenu')
-            ->allow('Angular', 'getPermissions')
             ->allow('Angular', 'durationInput')
             ->allow('Angular', 'calendar')
             ->allow('Angular', 'reload_required')
@@ -256,7 +255,8 @@ class AclDependencies {
         $this
             ->allow('Users', 'login')
             ->allow('Users', 'logout')
-            ->allow('Users', 'getLocaleOptions');
+            ->allow('Users', 'getLocaleOptions')
+            ->allow('Users', 'getUserPermissions');
 
         ///////////////////////////////
         //    Add dependencies       //
