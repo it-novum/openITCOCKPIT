@@ -966,8 +966,7 @@ class UsersController extends AppController {
             //Only ship HTML template
             return;
         }
-        $permissions = $this->PERMISSIONS;
-        $this->set('permissions', $permissions);
+        $this->set('permissions', $this->PERMISSIONS);
         $this->viewBuilder()->setOption('serialize', ['permissions']);
     }
 }
