@@ -18,7 +18,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/it-novum/acl.git"
+            "url": "https://github.com/it-novum/acl"
         }
     ],
     "require": {
@@ -37,7 +37,7 @@
         "ext-zip": "*",
         "alchemy/zippy": "^0.4.9",
         "azuyalabs/yasumi": "^2.2",
-        "cakephp/acl": "dev-4.x-dev",
+        "itnovum/acl": "^0.7.2",
         "cakephp/authentication": "^2.0",
         "cakephp/authorization": "^2.0",
         "cakephp/cakephp": "^4.0",
