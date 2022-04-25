@@ -109,6 +109,9 @@
                                     <i class="fa" ng-class="getSortClass('Usercontainerroles.name')"></i>
                                     <?php echo __('Name'); ?>
                                 </th>
+                                <th>
+                                    <?= __('Users'); ?>
+                                </th>
                                 <th class="no-sort text-center width-80">
                                     <i class="fa fa-cog"></i>
                                 </th>
@@ -123,6 +126,28 @@
                                 </td>
 
                                 <td>{{usercontainerrole.name}}</td>
+
+                                <td>
+                                    <ul class="padding-left-10">
+                                        <li ng-repeat="user in usercontainerrole.users">
+                                            <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                                <a ui-sref="UsersEdit({id: user.id})"
+                                                   ng-show="user.allow_edit">
+                                                    {{user.full_name}}
+                                                </a>
+                                            <span ng-hide="user.allow_edit">
+                                                {{user.full_name}}
+                                            </span>
+                                            <?php else: ?>
+                                                {{user.full_name}}
+                                            <?php endif; ?>
+                                            <span ng-show="user._joinData.through_ldap"
+                                                  class="badge border margin-right-10 border-warning text-warning">
+                                                <i class="fas fa-key"></i> <?= __('User container role through LDAP'); ?>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </td>
 
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">

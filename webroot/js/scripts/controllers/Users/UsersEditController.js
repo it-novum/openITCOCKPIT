@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT')
                 }
             }
 
-            return 'ERROR UNKNOWN CONTAINER';
+            return $scope.containerMessage;
         };
 
         $scope.intervalText = 'disabled';
@@ -37,6 +37,7 @@ angular.module('openITCOCKPIT')
 
                 //Reformat data that it looks like the same like it looks in the add method...
                 $scope.selectedUserContainers = data.containers._ids;
+                $scope.notPermittedContainerIds = result.data.notPermittedContainerIds;
                 delete data.containers;
 
                 //Add new selected containers
@@ -123,12 +124,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainer = function(){
-            return $http.get("/containers/loadContainersForAngular.json", {
+            return $http.get("/users/loadContainersForAngular.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.containers = result.data.containers;
+                $scope.containerIdsWithWritePermissions = result.data.containerIdsWithWritePermissions;
             });
         };
 

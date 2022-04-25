@@ -150,7 +150,7 @@ class DashboardsController extends AppController {
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
         if (!$DashboardTabsTable->existsById($tabId)) {
-            throw new NotFoundException(sprintf('Tab width id %s not found', $tabId));
+            throw new NotFoundException(sprintf('Tab with id %s not found', $tabId));
         }
 
         $User = new User($this->getUser());
@@ -916,12 +916,12 @@ class DashboardsController extends AppController {
         }
 
 
-        /** @var ParenthostsTable $ParenthostsTable */
-        $ParenthostsTable = TableRegistry::getTableLocator()->get('Parenthosts');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
-        $parentHosts = $ParenthostsTable->getParenthostsForDashboard($containerIds);
-        $hostUuids = Hash::extract($parentHosts, '{n}.Hosts.uuid');
+        $parentHosts = $HostsTable->getParenthostsForDashboard($containerIds);
+        $hostUuids = Hash::extract($parentHosts, '{n}.uuid');
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
@@ -946,11 +946,11 @@ class DashboardsController extends AppController {
         }
 
         $parent_outages = [];
-        foreach ($ParenthostsTable->getParenthostsForDashboard($containerIds, $where) as $parentHost) {
+        foreach ($HostsTable->getParenthostsForDashboard($containerIds, $where) as $parentHost) {
             $Hoststatus = new Hoststatus([], $UserTime);
 
-            if (isset($hoststatus[$parentHost['Hosts']['uuid']])) {
-                $Hoststatus = new Hoststatus($hoststatus[$parentHost['Hosts']['uuid']]['Hoststatus'], $UserTime);
+            if (isset($hoststatus[$parentHost['uuid']])) {
+                $Hoststatus = new Hoststatus($hoststatus[$parentHost['uuid']]['Hoststatus'], $UserTime);
             }
             $parentHost['Hoststatus'] = $Hoststatus->toArray();
             $parent_outages[] = $parentHost;
@@ -1381,7 +1381,7 @@ class DashboardsController extends AppController {
                         'Servicestatus' => []
                     ]);
                 }
-                $Host = new Host($service['host']);
+                $Host = new Host($service->get('host')->toArray());
                 $Service = new Service($service->toArray());
                 $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
 
@@ -1393,14 +1393,13 @@ class DashboardsController extends AppController {
                     'Perfdata'      => $PerfdataParser->parse()
                 ];
 
-                $serviceForJs['Service']['isGenericService'] = $service['Service']['service_type'] == GENERIC_SERVICE;
-                $serviceForJs['Service']['isEVCService'] = $service['Service']['service_type'] == EVK_SERVICE;
-                $serviceForJs['Service']['isSLAService'] = $service['Service']['service_type'] == SLA_SERVICE;
-                $serviceForJs['Service']['isMkService'] = $service['Service']['service_type'] == MK_SERVICE;
+                $serviceForJs['Service']['isGenericService'] = $serviceForJs['Service']['serviceType'] == GENERIC_SERVICE;
+                $serviceForJs['Service']['isEVCService'] = $serviceForJs['Service']['serviceType'] == EVK_SERVICE;
+                $serviceForJs['Service']['isSLAService'] = $serviceForJs['Service']['serviceType'] == SLA_SERVICE;
+                $serviceForJs['Service']['isMkService'] = $serviceForJs['Service']['serviceType'] == MK_SERVICE;
 
                 $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
                 $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
-
                 return $serviceForJs;
             }
         }
@@ -1718,7 +1717,6 @@ class DashboardsController extends AppController {
             $servicestatusSummary = [];
             switch ($type) {
                 case 'hosts':
-                case 'hosts_services':
                     $hoststatus = [];
                     if ($this->DbBackend->isNdoUtils()) {
                         /** @var HostsTable $HostsTable */

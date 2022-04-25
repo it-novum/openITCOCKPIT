@@ -131,11 +131,16 @@ class ServiceescalationsTable extends Table {
             ]);
 
         $validator
-            ->requirePresence('services', true, __('You have to choose at least one service.'))
-            ->allowEmptyString('services', null, false)
-            ->multipleOptions('services', [
-                'min' => 1
-            ], __('You have to choose at least one service.'));
+            ->add('services', 'custom', [
+                'rule'    => [$this, 'atLeastOneServiceOrServicegroup'],
+                'message' => __('You have to choose at least one service or one service group.')
+            ]);
+
+        $validator
+            ->add('servicegroups', 'custom', [
+                'rule'    => [$this, 'atLeastOneServiceOrServicegroup'],
+                'message' => __('You have to choose at least one service or one service group.')
+            ]);
 
 
         $validator
@@ -189,6 +194,17 @@ class ServiceescalationsTable extends Table {
      */
     public function atLeastOne($value, $context) {
         return !empty($context['data']['contacts']['_ids']) || !empty($context['data']['contactgroups']['_ids']);
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for services and or service groups
+     */
+    public function atLeastOneServiceOrServicegroup($value, $context) {
+        return !empty($context['data']['services']) || !empty($context['data']['servicegroups']);
     }
 
     /**
@@ -453,13 +469,24 @@ class ServiceescalationsTable extends Table {
                             ])
                             ->select([
                                 'Hosts.uuid',
+                                'Services.id',
                                 'Services.uuid'
                             ]);
                     },
                 'Servicegroups' =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
-                            ->select(['uuid']);
+                            ->select(['uuid', 'id'])
+                            ->contain(
+                                [
+                                    'Services' => function (Query $q) {
+                                        return $q->enableAutoFields(false)
+                                            ->select([
+                                                'Services.id'
+                                            ])->where(['Services.disabled' => 0]);
+                                    }
+                                ]
+                            );
                     },
                 'Timeperiods'   =>
                     function (Query $q) {

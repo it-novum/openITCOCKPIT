@@ -109,7 +109,7 @@
                                                     </span>
                                                 </div>
                                                 <input type="text" class="form-control "
-                                                       placeholder="<?php echo __('Filter by excluded host group'); ?>"
+                                                       placeholder="<?php echo __('Filter by excluded host'); ?>"
                                                        ng-model="filter.HostsExcluded.name"
                                                        ng-model-options="{debounce: 500}"
                                                        ng-focus="hostExcludeFocus=true;filter.Hosts.name='';hostFocus=false;">
@@ -288,14 +288,26 @@
                             <tr>
                                 <th class="text-align-center"><i class="fa fa-check-square"
                                                                  aria-hidden="true"></i></th>
-                                <th><?php echo __('Hosts'); ?></th>
-                                <th><?php echo __('Excluded hosts'); ?></th>
-                                <th><?php echo __('Host groups'); ?></th>
-                                <th><?php echo __('Excluded hosts groups'); ?></th>
+                                <th>
+                                    <?php echo __('Hosts'); ?>
+                                    <div class="icon-stack margin-right-5">
+                                        <i class="fa fa-plus opacity-100 text-primary"></i>
+                                        <i class="fa fa-filter opacity-100 fa-xs text-success cornered cornered-lr"></i>
+                                    </div>
+                                    <?php echo __('Excluded hosts groups'); ?>
+                                </th>
+                                <th>
+                                    <?php echo __('Host groups'); ?>
+                                    <div class="icon-stack margin-right-5">
+                                        <i class="fa fa-plus opacity-100 text-primary"></i>
+                                        <i class="fa fa-filter opacity-100 fa-xs text-success cornered cornered-lr"></i>
+                                    </div>
+                                    <?php echo __('Excluded hosts'); ?>
+                                </th>
                                 <th><?php echo __('First'); ?></th>
                                 <th><?php echo __('Last'); ?></th>
                                 <th><?php echo __('Interval'); ?></th>
-                                <th><?php echo __('Timeperiod'); ?></th>
+                                <th><?php echo __('Time period'); ?></th>
                                 <th><?php echo __('Contacts'); ?></th>
                                 <th><?php echo __('Contact groups'); ?></th>
                                 <th class="no-sort"><?php echo __('Options'); ?></th>
@@ -326,39 +338,38 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{host.name}}
-                                                            </span>
+                                                        {{host.name}}
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                             <i ng-if="host.disabled == 1"
                                                class="fa fa-power-off text-danger"
                                                title="disabled" aria-hidden="true"></i>
                                         </li>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul class="list-unstyled">
-                                        <li ng-repeat="host in hostescalation.hosts_excluded">
+
+                                        <div class="hr-sect" ng-show="hostescalation.hostgroups_excluded.length > 0">
+                                            <i class="fas fa-filter text-primary opacity-50"></i>
+                                        </div>
+
+                                        <li ng-repeat="hostgroup in hostescalation.hostgroups_excluded">
                                             <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
-                                                 title="{{host.name}}">
+                                                 title="{{hostgroup.container.name}}">
                                                 <label class="badge badge-danger label-xs">
                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                 </label>
-                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                    <a ui-sref="HostsEdit({id:host.id})"
+                                                <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                    <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
                                                        class="badge badge-light label-xs">
-                                                        {{host.name}}
+                                                        {{hostgroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{host.name}}
+                                                                {{hostgroup.container.name}}
                                                             </span>
                                                 <?php endif; ?>
                                             </div>
-                                            <i ng-if="host.disabled == 1"
-                                               class="fa fa-power-off text-danger"
-                                               title="disabled" aria-hidden="true"></i>
                                         </li>
+
                                     </ul>
                                 </td>
                                 <td>
@@ -381,27 +392,31 @@
                                                 <?php endif; ?>
                                             </div>
                                         </li>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul class="list-unstyled">
-                                        <li ng-repeat="hostgroup in hostescalation.hostgroups_excluded">
+
+                                        <div class="hr-sect" ng-show="hostescalation.hosts_excluded.length > 0">
+                                            <i class="fas fa-filter text-primary opacity-50"></i>
+                                        </div>
+
+                                        <li ng-repeat="host in hostescalation.hosts_excluded">
                                             <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
-                                                 title="{{hostgroup.container.name}}">
+                                                 title="{{host.name}}">
                                                 <label class="badge badge-danger label-xs">
                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                 </label>
-                                                <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                                                    <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                    <a ui-sref="HostsEdit({id:host.id})"
                                                        class="badge badge-light label-xs">
-                                                        {{hostgroup.container.name}}
+                                                        {{host.name}}
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{hostgroup.container.name}}
+                                                                {{host.name}}
                                                             </span>
                                                 <?php endif; ?>
                                             </div>
+                                            <i ng-if="host.disabled == 1"
+                                               class="fa fa-power-off text-danger"
+                                               title="disabled" aria-hidden="true"></i>
                                         </li>
                                     </ul>
                                 </td>

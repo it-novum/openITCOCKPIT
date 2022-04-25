@@ -249,7 +249,7 @@ class DefaultMacros {
                         'description' => __('The UUID of the service ("bd19ce04-3209-4664-a146-bd1220e740bc")')
                     ],
                     [
-                        'macro'       => '$SERVICEDESC$',
+                        'macro'       => '$SERVICEDISPLAYNAME$',
                         'description' => __('The human name of the service ("PING")')
                     ],
                     [

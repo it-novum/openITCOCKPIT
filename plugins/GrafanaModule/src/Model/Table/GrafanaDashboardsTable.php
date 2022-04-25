@@ -71,7 +71,7 @@ class GrafanaDashboardsTable extends Table {
         $this->belongsTo('Configurations', [
             'foreignKey' => 'configuration_id',
             'joinType'   => 'INNER',
-            'className'  => 'GrafanaModule.Configurations',
+            'className'  => 'GrafanaModule.GrafanaConfigurations',
         ]);
         $this->belongsTo('Hosts', [
             'foreignKey' => 'host_id',
@@ -187,7 +187,10 @@ class GrafanaDashboardsTable extends Table {
      */
     public function getAllDashboardsForDeleteCronjob() {
         $query = $this->find()
-            ->select('host_uuid')
+            ->select([
+                'host_uuid',
+                'grafana_uid'
+            ])
             ->disableHydration()
             ->all();
 

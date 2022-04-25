@@ -27,6 +27,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Database\Query;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -71,6 +72,15 @@ class UsercontainerrolesTable extends Table {
         /*$this->hasMany('UsersToUsercontainerroles', [
             'foreignKey' => 'usercontainerrole_id'
         ]);*/
+
+        $this->belongsToMany('Users', [
+            'through'          => 'UsercontainerrolesMemberships',
+            'className'        => 'Users',
+            'joinTable'        => 'users_to_usercontainerroles',
+            'foreignKey'       => 'usercontainerrole_id',
+            'targetForeignKey' => 'user_id',
+            //'saveStrategy'     => 'replace'
+        ]);
 
         $this->belongsToMany('Containers', [
             'through'          => 'ContainersUsercontainerrolesMemberships',
@@ -166,7 +176,6 @@ class UsercontainerrolesTable extends Table {
         if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
-
         $query = $this->find();
         if (!empty($GenericFilter->genericFilters())) {
             $query->where($GenericFilter->genericFilters());
@@ -177,13 +186,16 @@ class UsercontainerrolesTable extends Table {
             'Usercontainerroles.name'
         ])
             ->contain('Containers')
-            ->matching('Containers')
-            ->where([
-                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
-            ])
-            ->group([
-                'Usercontainerroles.id'
-            ])
+            ->matching('Containers');
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                    'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+                ]
+            );
+        }
+        $query->group([
+            'Usercontainerroles.id'
+        ])
             ->order([
                 'Usercontainerroles.name' => 'asc',
                 'Usercontainerroles.id'   => 'asc'
@@ -201,10 +213,16 @@ class UsercontainerrolesTable extends Table {
                     'Usercontainerroles.name'
                 ])
                 ->contain('Containers')
-                ->matching('Containers')
+                ->matching('Containers');
+            if (!empty($MY_RIGHTS)) {
+                $query->where([
+                        'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+                    ]
+                );
+            }
+            $query
                 ->where([
-                    'Usercontainerroles.id IN'                                => $selected,
-                    'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+                    'Usercontainerroles.id IN' => $selected
                 ])
                 ->group([
                     'Usercontainerroles.id'
@@ -236,7 +254,26 @@ class UsercontainerrolesTable extends Table {
         $query = $this->find()
             ->disableHydration()
             ->contain([
-                'Containers'
+                'Containers',
+                'Users' => function (Query $q) {
+                    $q->disableAutoFields();
+                    $q->contain([
+                        'Usercontainerroles' => [
+                            'Containers'
+                        ]
+                    ])
+                    ->select([
+                        'Users.id',
+                        'Users.firstname',
+                        'Users.lastname',
+                        'full_name' => $q->func()->concat([
+                            'Users.firstname' => 'literal',
+                            ' ',
+                            'Users.lastname'  => 'literal'
+                        ])
+                    ])->order('full_name');
+                    return $q;
+                }
             ])
             ->matching('Containers')
             ->where([

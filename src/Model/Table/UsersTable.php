@@ -127,23 +127,16 @@ class UsersTable extends Table {
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->allowEmptyString('containers', __('You need to select at least one container or container role.'), function ($context) {
-                return $this->validateHasContainerOrContainerUserRolePermissions(null, $context);
-            })
             ->add('containers', 'custom', [
                 'rule'    => [$this, 'validateHasContainerOrContainerUserRolePermissions'],
                 'message' => __('You need to select at least one container or container role.')
             ]);
 
         $validator
-            ->allowEmptyString('usercontainerroles', __('You need to select at least one container or container role.'), function ($context) {
-                return $this->validateHasContainerOrContainerUserRolePermissions(null, $context);
-            })
             ->add('usercontainerroles', 'custom', [
                 'rule'    => [$this, 'validateHasContainerOrContainerUserRolePermissions'],
                 'message' => __('You need to select at least one container or container role.')
             ]);
-
         $validator
             ->integer('usergroup_id')
             ->requirePresence('usergroup_id', 'create')
@@ -279,29 +272,14 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $context
      * @return bool
+     *
+     * Custom validation rule for containers and or user container roles
      */
     public function validateHasContainerOrContainerUserRolePermissions($value, $context) {
-        if (isset($context['data']['containers']) && is_array($context['data']['containers'])) {
-            if (!empty($context['data']['containers']) && sizeof($context['data']['containers']) > 0) {
-
-                //User has own containers
-                return true;
-            }
-        }
-
-        //Has the user an user container role assignment?
-        if (isset($context['data']['usercontainerroles']) && is_array($context['data']['usercontainerroles'])) {
-            if (sizeof(Hash::extract($context['data']['usercontainerroles'], '{n}.id')) > 0) {
-                //User has a user container role assignment
-                return true;
-            }
-        }
-
-        //No own containers, no user container role
-        return false;
+        return !empty($context['data']['containers']) || !empty($context['data']['usercontainerroles']['_ids']);
     }
 
     /**
@@ -362,7 +340,6 @@ class UsersTable extends Table {
                 'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
             ]);
         }
-
         $userIds = Hash::extract($query->toArray(), '{n}.id');
 
         //Get all user ids where container assigned are made through an user container role
@@ -792,9 +769,9 @@ class UsersTable extends Table {
             'Users.image',
             'Users.onetimetoken',
             'full_name' => $query->func()->concat([
-                'Users.lastname' => 'literal',
+                'Users.lastname'  => 'literal',
                 ' ',
-                'Users.firstname'  => 'literal'
+                'Users.firstname' => 'literal'
             ])
         ])
             ->where([

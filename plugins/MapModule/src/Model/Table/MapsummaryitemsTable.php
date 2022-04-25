@@ -74,10 +74,37 @@ class MapsummaryitemsTable extends Table {
             'className'  => 'MapModule.Maps',
         ]);
 
-        $this->hasMany('Hosts');
-        $this->hasMany('Hostgroups');
-        $this->hasMany('Services');
-        $this->hasMany('Servicegroups');
+        $this->belongsTo('Hosts', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'conditions' => [
+                'type' => 'host'
+            ]
+        ]);
+
+        $this->belongsTo('Services', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'conditions' => [
+                'type' => 'service'
+            ]
+        ]);
+
+        $this->belongsTo('Hostgroups', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'conditions' => [
+                'type' => 'hostgroup'
+            ]
+        ]);
+
+        $this->belongsTo('Servicegroups', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'conditions' => [
+                'type' => 'servicegroup'
+            ]
+        ]);
     }
 
     public function bindCoreAssociations(RepositoryInterface $coreTable) {

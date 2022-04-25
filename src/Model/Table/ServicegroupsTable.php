@@ -897,4 +897,123 @@ class ServicegroupsTable extends Table {
 
         return $list;
     }
+
+    /**
+     * @param $containerIds
+     * @param $hostIds
+     * @param $type
+     * @param $index
+     * @return array
+     */
+    public function getServicegroupsByContainerIdAndServiceIds($containerIds, $serviceIds, $type = 'all', $index = 'container_id') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        if (!is_array($serviceIds)) {
+            $serviceIds = [$serviceIds];
+        }
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ServicegroupServicegroupsByContainerId');
+
+                // Tenant host groups are available for all users of a tenant (oITC V2 legacy)
+                $tenantContainerIds[] = $path[1]['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+
+        switch ($type) {
+            case 'all':
+                $query = $this->find()
+                    ->contain([
+                        'Containers',
+                        'Services' => function (Query $query) use ($containerIds, $serviceIds) {
+                            $query->disableAutoFields()
+                                ->select([
+                                    'Services.id',
+                                    'Services.uuid',
+                                ])
+                                ->innerJoinWith('Hosts')
+                                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds, $serviceIds) {
+                                    if (!empty($MY_RIGHTS)) {
+                                        $q->where([
+                                            'HostsToContainersSharing.id IN ' => $containerIds
+                                        ]);
+                                    }
+                                    return $q;
+                                })->where([
+                                    'Services.id IN ' => $serviceIds
+                                ]);
+                            return $query;
+                        }
+                    ])
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_SERVICEGROUP
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+                return $this->emptyArrayIfNull($query->toArray());
+            default:
+                $query = $this->find()
+                    ->contain([
+                        'Containers',
+                        'Services' => function (Query $query) use ($containerIds, $serviceIds) {
+                            $query->disableAutoFields()
+                                ->select([
+                                    'Services.id',
+                                    'Services.uuid',
+                                ])
+                                ->innerJoinWith('Hosts')
+                                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds, $serviceIds) {
+                                    if (!empty($MY_RIGHTS)) {
+                                        $q->where([
+                                            'HostsToContainersSharing.id IN ' => $containerIds
+                                        ]);
+                                    }
+                                    return $q;
+                                })->where([
+                                    'Services.id IN ' => $serviceIds
+                                ]);
+                            return $query;
+                        }
+                    ])
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_SERVICEGROUP
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+                $query = $query->toArray();
+                if (empty($query)) {
+                    $query = [];
+                }
+                $return = [];
+                foreach ($query as $servicegroup) {
+                    if ($index === 'id') {
+                        $return[$servicegroup['id']] = $servicegroup['container']['name'];
+                    } else {
+                        $return[$servicegroup['container_id']] = $servicegroup['container']['name'];
+                    }
+                }
+
+                return $return;
+        }
+    }
 }

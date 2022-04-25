@@ -95,7 +95,7 @@ class AgentConfiguration {
             'systemdservices'                => true, // Enable Systemd checks (Linux)
             'launchdservices'                => true, // Enable launchd checks (macOS)
             'winservices'                    => true, // Enable Windows Services checks
-            'wineventlog'                    => true, // Enable Windows Event Log checks
+            'wineventlog'                    => false, // Enable Windows Event Log checks (Disabled by default due to bluescreens see OA-40)
             'sensorstats'                    => true, //Enable monitoring of temperature and battery sensors
             'dockerstats'                    => false, // Enable docker checks
             'libvirt'                        => true, // Enable libvirt checks (requires libvirt build),
