@@ -2045,7 +2045,7 @@ class ServicesController extends AppController {
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
-
+        $offset = $UserTime->getUserTimeToServerOffset();
 
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(false));
@@ -2053,6 +2053,10 @@ class ServicesController extends AppController {
         $start = $this->request->getQuery('start', -1);
         $end = $this->request->getQuery('end', -1);
 
+        if($start > 0 && $end > 0){
+            $start -= $offset;
+            $end -= $offset;
+        }
 
         if (!is_numeric($start) || $start < 0) {
             $start = time() - 2 * 24 * 3600;
@@ -2271,6 +2275,9 @@ class ServicesController extends AppController {
 
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
         $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
+
+        $start += $offset;
+        $end += $offset;
 
         $this->set('start', $start);
         $this->set('end', $end);
