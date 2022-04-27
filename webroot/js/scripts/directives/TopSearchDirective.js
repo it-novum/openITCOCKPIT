@@ -27,13 +27,15 @@ angular.module('openITCOCKPIT').directive('topSearch', function($state, $http, N
                 switch($scope.type){
                     case 'host':
                         $state.go('HostsIndex', {
-                            hostname: $scope.searchStr
+                            hostname: $scope.searchStr,
+                            address: ''
                         }).then(function(d){
                             $scope.isSearching = false;
                         });
                         break;
                     case 'address':
                         $state.go('HostsIndex', {
+                            hostname: '',
                             address: $scope.searchStr
                         }).then(function(d){
                             $scope.isSearching = false;

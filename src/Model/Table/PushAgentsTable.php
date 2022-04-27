@@ -37,7 +37,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
@@ -326,7 +325,13 @@ class PushAgentsTable extends Table {
 
         $query->where($where);
         $query->disableHydration();
-        $query->order($GenericFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        $query->order(
+            array_merge(
+                $GenericFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                ['PushAgents.id' => 'asc']
+            )
+
+        );
         $query->group('PushAgents.id');
         //FileDebugger::dieQuery($query);
 

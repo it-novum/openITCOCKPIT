@@ -161,7 +161,13 @@ class ChangelogsTable extends Table {
         $where['Changelogs.created <='] = date('Y-m-d H:i:s', $ChangelogsFilter->getTo());
         $query->group(['Changelogs.id']);
         $query->where($where);
-        $query->order($ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'));
+        $query->order(
+            array_merge(
+                $ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'),
+                ['Changelogs.id' => 'desc']
+            )
+
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query

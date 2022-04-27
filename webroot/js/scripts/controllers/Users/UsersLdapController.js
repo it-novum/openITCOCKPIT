@@ -126,15 +126,18 @@ angular.module('openITCOCKPIT')
             $scope.post.User.apikeys.splice(index, 1);
         };
 
-        $scope.loadUserContaineRoles = function(){
+        $scope.loadUserContainerRoles = function(searchString){
             $http.get("/users/loadContainerRoles.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Usercontainerroles.name]': searchString,
+                    'selected[]': $scope.post.User.usercontainerroles._ids
                 }
             }).then(function(result){
                 $scope.usercontainerroles = result.data.usercontainerroles;
             });
         };
+
 
         $scope.loadContainer = function(){
             $http.get("/containers/loadContainersForAngular.json", {
@@ -180,7 +183,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.userContainerRoleContainerPermissions = result.data.userContainerRoleContainerPermissions;
-                $scope.userContainerRoleContainerIds = Object.keys($scope.userContainerRoleContainerPermissions).map(function(item) {
+                $scope.userContainerRoleContainerIds = Object.keys($scope.userContainerRoleContainerPermissions).map(function(item){
                     return parseInt(item, 10);
                 });
                 /*.map(function(key){
@@ -313,7 +316,7 @@ angular.module('openITCOCKPIT')
 
         $scope.loadLdapConfig();
         $scope.loadLdapUsersByString('');
-        $scope.loadUserContaineRoles();
+        $scope.loadUserContainerRoles();
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();

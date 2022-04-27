@@ -92,7 +92,7 @@ class GrafanaUserdashboardMetricsTable extends Table {
         switch ($coreTable->getAlias()) {
             case 'Hosts':
                 $coreTable->hasOne('GrafanaUserdashboardMetrics', [
-                    'className'  => 'GrafanaModule.GrafanaUserdashboardMetric',
+                    'className'  => 'GrafanaModule.GrafanaUserdashboardMetrics',
                     'foreignKey' => 'host_id',
                     'dependent'  => true
                 ]);
@@ -100,7 +100,7 @@ class GrafanaUserdashboardMetricsTable extends Table {
 
             case 'Services':
                 $coreTable->hasOne('GrafanaUserdashboardMetrics', [
-                    'className'  => 'GrafanaModule.GrafanaUserdashboardMetric',
+                    'className'  => 'GrafanaModule.GrafanaUserdashboardMetrics',
                     'foreignKey' => 'service_id',
                     'dependent'  => true
                 ]);

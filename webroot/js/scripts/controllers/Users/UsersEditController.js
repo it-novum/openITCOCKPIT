@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT')
                 }
             }
 
-            return 'ERROR UNKNOWN CONTAINER';
+            return $scope.containerMessage;
         };
 
         $scope.intervalText = 'disabled';
@@ -37,6 +37,7 @@ angular.module('openITCOCKPIT')
 
                 //Reformat data that it looks like the same like it looks in the add method...
                 $scope.selectedUserContainers = data.containers._ids;
+                $scope.notPermittedContainerIds = result.data.notPermittedContainerIds;
                 delete data.containers;
 
                 //Add new selected containers
@@ -71,6 +72,7 @@ angular.module('openITCOCKPIT')
                     // Load container permissions based on LDAP groups
                     $scope.loadContainerPermissionsLdap();
                 }
+                $scope.loadUserContainerRoles();
 
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -109,10 +111,12 @@ angular.module('openITCOCKPIT')
             $scope.post.User.apikeys.splice(index, 1);
         };
 
-        $scope.loadUserContaineRoles = function(){
+        $scope.loadUserContainerRoles = function(searchString){
             return $http.get("/users/loadContainerRoles.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Usercontainerroles.name]': searchString,
+                    'selected[]': $scope.post.User.usercontainerroles._ids
                 }
             }).then(function(result){
                 $scope.usercontainerroles = result.data.usercontainerroles;
@@ -120,12 +124,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainer = function(){
-            return $http.get("/containers/loadContainersForAngular.json", {
+            return $http.get("/users/loadContainersForAngular.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.containers = result.data.containers;
+                $scope.containerIdsWithWritePermissions = result.data.containerIdsWithWritePermissions;
             });
         };
 
@@ -302,14 +307,9 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
-        var promise1 = $scope.loadUserContaineRoles();
-        var promise2 = $scope.loadContainer();
-        var promise3 = $scope.loadLocaleOptions();
-
-        $q.all([promise1, promise2, promise3]).then(function(result){
-            //Load user config
-            $scope.load();
-        });
+        $scope.loadContainer();
+        $scope.loadLocaleOptions();
+        $scope.load();
 
         $scope.loadUsergroups();
         $scope.loadDateformats();

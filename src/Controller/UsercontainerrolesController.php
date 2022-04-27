@@ -33,6 +33,7 @@ use App\Model\Table\UsercontainerrolesTable;
 use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\LdapgroupFilter;
@@ -55,9 +56,20 @@ class UsercontainerrolesController extends AppController {
 
         /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        $all_usercontainerroles = $UsercontainerrolesTable->getUsercontainerRolesIndex($UsercontainerrolesFilter, $PaginateOMat, $this->MY_RIGHTS);
-
+        $all_usercontainerroles = $UsercontainerrolesTable->getUsercontainerRolesIndex(
+            $UsercontainerrolesFilter,
+            $PaginateOMat,
+            $this->MY_RIGHTS
+        );
+        $containerWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
+            return $v == 2;
+        }, ARRAY_FILTER_USE_BOTH);
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
+            $userRoleContainerIds = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
+            if(!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIds, $containerWithWritePermissions))){
+                unset($all_usercontainerroles[$index]);
+                continue; //insufficient user (container) rights
+            }
             $all_usercontainerroles[$index]['allow_edit'] = $this->hasRootPrivileges;
             if ($this->hasRootPrivileges === false) {
                 foreach ($usercontainerrole['containers'] as $key => $container) {
@@ -68,8 +80,45 @@ class UsercontainerrolesController extends AppController {
                     $all_usercontainerroles[$index]['allow_edit'] = false;
                 }
             }
-        }
 
+            foreach ($usercontainerrole['users'] as $userIndex => $user){
+
+                $usercontainerrole['users'][$userIndex]['allow_edit'] = $this->hasRootPrivileges;
+                if ($this->hasRootPrivileges === false) {
+                    //Check permissions for non ROOT Users
+                    $containerWithWritePermissionByUserContainerRoles = Hash::combine(
+                        $user['usercontainerroles'],
+                        '{n}.containers.{n}._joinData.container_id',
+                        '{n}.containers.{n}._joinData.permission_level'
+                    );
+
+                    $notPermittedContainer = array_filter($containerWithWritePermissionByUserContainerRoles, function ($v, $k) {
+                        return (!isset($this->MY_RIGHTS_LEVEL[$k]) || (isset($this->MY_RIGHTS_LEVEL[$k]) && $this->MY_RIGHTS_LEVEL[$k] < $v));
+
+                    }, ARRAY_FILTER_USE_BOTH);
+                    if (!empty($notPermittedContainer)) {
+                        $usercontainerrole['users'][$userIndex]['allow_edit'] = false;
+                    } else {
+                        $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
+
+                        $container = Hash::extract(
+                            $user['containers'],
+                            '{n}.id'
+                        );
+
+                        $container = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
+                        foreach ($container as $containerId) {
+                            if ($this->isWritableContainer($containerId)) {
+                                $usercontainerrole['users'][$userIndex]['allow_edit'] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            $all_usercontainerroles[$index]['users'] =  $usercontainerrole['users'];
+        }
 
         $this->set('all_usercontainerroles', $all_usercontainerroles);
         $toJson = ['paging', 'all_usercontainerroles'];

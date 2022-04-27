@@ -137,7 +137,7 @@ angular.module('openITCOCKPIT')
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $scope.load();
-                    $interval.cancel(interval);
+                    $interval.cancel($scope.interval);
                     $scope.showFlashSuccess = false;
                 }
             }, 1000);

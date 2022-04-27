@@ -289,6 +289,18 @@ class GrafanaApiConfiguration {
             $uiUrl = $this->getDockerUrl();
         }
 
+        //New Grafana URL >= ? 8.x
+        if ($this->grafana_uid !== null) {
+            return sprintf(
+                '%s/d/%s/%s?theme=%s&kiosk',
+                $uiUrl,
+                $this->grafana_uid,
+                $this->hostUuid,
+                $this->dashboardStyle
+            );
+        }
+
+        //Old grafana 7.x
         return sprintf(
             '%s/dashboard/db/%s?theme=%s&kiosk',
             $uiUrl,

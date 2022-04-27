@@ -208,7 +208,7 @@ class NagiosConfigGenerator {
 
                 $content .= $this->addContent('define command{', 0);
                 $content .= $this->addContent('command_name', 1, $command['Command']['uuid']);
-                $content .= $this->addContent('command_line', 1, $command['Command']['command_line']);
+                $content .= $this->addContent('command_line', 1, $this->escapeLastBackslash($command['Command']['command_line']));
                 $content .= $this->addContent('}', 0);
 
                 if ($this->conf['minified'] == false) {
@@ -268,17 +268,17 @@ class NagiosConfigGenerator {
             $content .= $this->addContent('host_notification_options', 1, $contact->getHostNotificationOptionsForCfg());
             $content .= $this->addContent('service_notification_options', 1, $contact->getServiceNotificationOptionsForCfg());
             if (!empty($contact->get('email'))) {
-                $content .= $this->addContent('email', 1, $contact->get('email'));
+                $content .= $this->addContent('email', 1, $this->escapeLastBackslash($contact->get('email')));
             }
             if (!empty($contact->get('phone'))) {
-                $content .= $this->addContent('pager', 1, $contact->get('phone'));
+                $content .= $this->addContent('pager', 1, $this->escapeLastBackslash($contact->get('phone')));
             }
 
             if ($contact->hasCustomvariables()) {
                 $content .= PHP_EOL;
                 $content .= $this->addContent(';Custom  variables:', 1);
                 foreach ($contact->getCustomvariablesForCfg() as $varName => $varValue) {
-                    $content .= $this->addContent($varName, 1, $varValue);
+                    $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
                 }
             }
 
@@ -577,11 +577,13 @@ class NagiosConfigGenerator {
                     $commandUuid = $this->CommandUuidsCache->get($commandId);
 
                     $commandarguments = $host->getCommandargumentValuesForCfg($hosttemplate);
-                    $content .= $this->addContent('check_command', 1, sprintf(
-                        '%s!%s; %s',
-                        $commandUuid,
-                        implode('!', Hash::extract($commandarguments, '{n}.value')),
-                        implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                    $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                        sprintf(
+                            '%s!%s; %s',
+                            $commandUuid,
+                            implode('!', Hash::extract($commandarguments, '{n}.value')),
+                            implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                        )
                     ));
                 } else {
                     //May be check command without arguments
@@ -753,7 +755,7 @@ class NagiosConfigGenerator {
                 $content .= PHP_EOL;
                 $content .= $this->addContent(';Custom  variables:', 1);
                 foreach ($host->getCustomvariablesForCfg() as $varName => $varValue) {
-                    $content .= $this->addContent($varName, 1, $varValue);
+                    $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
                 }
             }
 
@@ -838,11 +840,13 @@ class NagiosConfigGenerator {
 
             $commandUuid = $this->CommandUuidsCache->get($commandId);
             $commandarguments = $host->getCommandargumentValuesForCfg($hosttemplate);
-            $content .= $this->addContent('check_command', 1, sprintf(
-                '%s!%s; %s',
-                $commandUuid,
-                implode('!', Hash::extract($commandarguments, '{n}.value')),
-                implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+            $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                sprintf(
+                    '%s!%s; %s',
+                    $commandUuid,
+                    implode('!', Hash::extract($commandarguments, '{n}.value')),
+                    implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                )
             ));
         } else {
             //May be check command without arguments
@@ -978,7 +982,7 @@ class NagiosConfigGenerator {
             $content .= PHP_EOL;
             $content .= $this->addContent(';Custom  variables:', 1);
             foreach ($host->getCustomvariablesForCfg() as $varName => $varValue) {
-                $content .= $this->addContent($varName, 1, $varValue);
+                $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
             }
         }
         $content .= $this->addContent('}', 0);
@@ -1035,7 +1039,9 @@ class NagiosConfigGenerator {
             $content .= $this->addContent(';Check settings:', 1);
 
             if ($servicetemplate->hasServicetemplatecommandargumentvalues()) {
-                $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplatecommandargumentvaluesForCfg());
+                $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                    $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplatecommandargumentvaluesForCfg()
+                ));
             } else {
                 $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid'));
             }
@@ -1099,7 +1105,9 @@ class NagiosConfigGenerator {
                 $content .= $this->addContent(';Event handler:', 1);
 
                 if ($servicetemplate->hasServicetemplateeventcommandargumentvalues()) {
-                    $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg());
+                    $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                        $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg()
+                    ));
                 } else {
                     $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid'));
                 }
@@ -1216,11 +1224,13 @@ class NagiosConfigGenerator {
                         }
                         $commandUuid = $this->CommandUuidsCache->get($commandId);
                         $commandarguments = $service->getCommandargumentValuesForCfg($servicetemplate);
-                        $content .= $this->addContent('check_command', 1, sprintf(
-                            '%s!%s; %s',
-                            $commandUuid,
-                            implode('!', Hash::extract($commandarguments, '{n}.value')),
-                            implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                        $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                            sprintf(
+                                '%s!%s; %s',
+                                $commandUuid,
+                                implode('!', Hash::extract($commandarguments, '{n}.value')),
+                                implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                            )
                         ));
                     } else {
                         //May be check command without arguments
@@ -1246,11 +1256,13 @@ class NagiosConfigGenerator {
                             }
                             $commandUuid = $this->CommandUuidsCache->get($commandId);
                             $eventcommandarguments = $service->getEventhandlerCommandargumentValuesForCfg();
-                            $content .= $this->addContent('event_handler', 1, sprintf(
-                                '%s!%s; %s',
-                                $commandUuid,
-                                implode('!', Hash::extract($eventcommandarguments, '{n}.value')),
-                                implode('!', Hash::extract($eventcommandarguments, '{n}.human_name'))
+                            $content .= $this->addContent('event_handler', 1, $this->escapeLastBackslash(
+                                sprintf(
+                                    '%s!%s; %s',
+                                    $commandUuid,
+                                    implode('!', Hash::extract($eventcommandarguments, '{n}.value')),
+                                    implode('!', Hash::extract($eventcommandarguments, '{n}.human_name'))
+                                )
                             ));
                         } else {
                             //May be event handler command without arguments
@@ -1408,7 +1420,7 @@ class NagiosConfigGenerator {
                     $content .= PHP_EOL;
                     $content .= $this->addContent(';Custom  variables:', 1);
                     foreach ($service->getCustomvariablesForCfg() as $varName => $varValue) {
-                        $content .= $this->addContent($varName, 1, $varValue);
+                        $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
                     }
                 }
 
@@ -1496,11 +1508,13 @@ class NagiosConfigGenerator {
             }
             $commandUuid = $this->CommandUuidsCache->get($commandId);
             $commandarguments = $service->getCommandargumentValuesForCfg($servicetemplate);
-            $content .= $this->addContent('check_command', 1, sprintf(
-                '%s!%s; %s',
-                $commandUuid,
-                implode('!', Hash::extract($commandarguments, '{n}.value')),
-                implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+            $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
+                sprintf(
+                    '%s!%s; %s',
+                    $commandUuid,
+                    implode('!', Hash::extract($commandarguments, '{n}.value')),
+                    implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                )
             ));
         } else {
             //May be check command without arguments
@@ -1526,11 +1540,13 @@ class NagiosConfigGenerator {
                 }
                 $commandUuid = $this->CommandUuidsCache->get($commandId);
                 $eventcommandarguments = $service->getEventhandlerCommandargumentValuesForCfg();
-                $content .= $this->addContent('event_handler', 1, sprintf(
-                    '%s!%s; %s',
-                    $commandUuid,
-                    implode('!', Hash::extract($eventcommandarguments, '{n}.value')),
-                    implode('!', Hash::extract($eventcommandarguments, '{n}.human_name'))
+                $content .= $this->addContent('event_handler', 1, $this->escapeLastBackslash(
+                    sprintf(
+                        '%s!%s; %s',
+                        $commandUuid,
+                        implode('!', Hash::extract($eventcommandarguments, '{n}.value')),
+                        implode('!', Hash::extract($eventcommandarguments, '{n}.human_name'))
+                    )
                 ));
             } else {
                 //May be event handler command without arguments
@@ -1591,14 +1607,14 @@ class NagiosConfigGenerator {
         if (!empty($service->get('contacts'))) {
             $content .= $this->addContent('contacts', 1, $service->getContactsforCfg());
             // ITC-2710 Inheritance of contacts and contact groups
-            if(empty($service->get('contactgroups'))){
+            if (empty($service->get('contactgroups'))) {
                 $content .= $this->addContent('contact_groups', 1, 'null');
             }
         }
 
         if (!empty($service->get('contactgroups'))) {
             // ITC-2710 Inheritance of contacts and contact groups
-            if(empty($service->get('contacts'))){
+            if (empty($service->get('contacts'))) {
                 $content .= $this->addContent('contacts', 1, 'null');
             }
             $content .= $this->addContent('contact_groups', 1, $service->getContactgroupsforCfg());
@@ -1656,7 +1672,7 @@ class NagiosConfigGenerator {
             $content .= PHP_EOL;
             $content .= $this->addContent(';Custom  variables:', 1);
             foreach ($service->getCustomvariablesForCfg() as $varName => $varValue) {
-                $content .= $this->addContent($varName, 1, $varValue);
+                $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
             }
         }
 
@@ -1773,39 +1789,75 @@ class NagiosConfigGenerator {
         }
         foreach ($hostescalations as $hostescalation) {
 
-            $hostsForCfg = [];
-            $excludedHostsForCfg = [];
             $hosts = $hostescalation->get('hosts');
-            if (empty($hosts)) {
-                //This hostescalation is broken!
-                $HostescalationsTable->delete($hostescalation);
-                continue;
-            }
+            $hostgroups = $hostescalation->get('hostgroups');
+
+            $escalationHosts = [
+                'included' => [],
+                'excluded' => []
+            ];
+
+            $escalationHostgroups = [
+                'included' => [],
+                'excluded' => []
+            ];
+
+            $includedHostIds = [];
+            $excludedHostIds = [];
+
+            $includedHostgroupHostIds = [];
+            $excludedHostgroupHostIds = [];
+
             if (!is_null($hosts)) {
                 foreach ($hosts as $host) {
                     if ($host->get('_joinData')->get('excluded') === 0) {
-                        $hostsForCfg[] = $host->get('uuid');
+                        $escalationHosts['included'][] = $host->get('uuid');
+                        $includedHostIds[] = $host->get('id');
                     } else {
-                        $excludedHostsForCfg[] = '!' . $host->get('uuid');
+                        $escalationHosts['excluded'][] = $host->get('uuid');
+                        $excludedHostIds = $host->get('id');
                     }
                 }
             }
 
-            $hostgroupsForCfg = [];
-            $excludedHostgroupsForCfg = [];
-            $hostgroups = $hostescalation->get('hostgroups');
             if (!is_null($hostgroups)) {
                 foreach ($hostgroups as $hostgroup) {
+                    //ignore empty hostgroups
+                    if (empty($hostgroup->get('hosts'))) {
+                        continue;
+                    }
                     if ($hostgroup->get('_joinData')->get('excluded') === 0) {
-                        $hostgroupsForCfg[] = $hostgroup->get('uuid');
+                        $escalationHostgroups['included'][] = $hostgroup->get('uuid');
+                        foreach ($hostgroup->get('hosts') as $hostgroupHost) {
+                            $includedHostgroupHostIds[] = $hostgroupHost->get('id');
+                        }
                     } else {
-                        $excludedHostgroupsForCfg[] = '!' . $hostgroup->get('uuid');
+                        $escalationHostgroups['excluded'][] = $hostgroup->get('uuid');
+                        foreach ($hostgroup->get('hosts') as $hostgroupHost) {
+                            $excludedHostgroupHostIds[] = $hostgroupHost->get('id');
+                        }
                     }
                 }
             }
 
-            if (empty($hostsForCfg)) {
-                //This hostescalation is broken!
+            if (empty($escalationHosts['included']) && empty($escalationHostgroups['included'])) {
+                //host escalation is broken - delete !!!
+                $HostescalationsTable->delete($hostescalation);
+                continue;
+            }
+
+            //all included hosts are excluded by "excluded host groups" configuration
+            $excludedHostgroupHostIds = array_unique($excludedHostgroupHostIds);
+            if (!empty($escalationHosts['included']) && empty(array_diff($includedHostIds, $excludedHostgroupHostIds))) {
+                //host escalation is broken - delete !!!
+                $HostescalationsTable->delete($hostescalation);
+                continue;
+            }
+
+            //all included hosts through host group definition are excluded by "excluded hosts" configuration
+            $includedHostgroupHostIds = array_unique($includedHostgroupHostIds);
+            if (!empty($escalationHostgroups['included']) && empty(array_diff($includedHostgroupHostIds, $excludedHostIds))) {
+                //host escalation is broken - delete !!!
                 $HostescalationsTable->delete($hostescalation);
                 continue;
             }
@@ -1824,34 +1876,71 @@ class NagiosConfigGenerator {
             if (!$file->exists()) {
                 $file->create();
             }
-            $content .= $this->addContent('define hostescalation{', 0);
-            if (!empty($hosts)) {
-                $content .= $this->addContent('host_name', 1, implode(',', array_merge($hostsForCfg, $excludedHostsForCfg)));
+
+
+            //export hosts with excluded host groups
+            if (!empty($escalationHosts['included'])) {
+                $content .= $this->addContent('define hostescalation{', 0);
+
+                if (!empty($contactUuids)) {
+                    $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
+                }
+                if (!empty($contactgroupUuids)) {
+                    $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
+                }
+                $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
+                $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
+                $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval'));
+
+                $escalationTimeperiod = $hostescalation->get('timeperiod');
+                if (!is_null($escalationTimeperiod)) {
+                    $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+                }
+
+                $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
+                if (!empty($hostEscalationString)) {
+                    $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
+                }
+
+                $content .= $this->addContent('host_name', 1, implode(',', $escalationHosts['included']));
+                if (!empty($escalationHostgroups['excluded'])) {
+                    $content .= $this->addContent('hostgroup_name', 1, implode(',', preg_filter('/^/', '!', $escalationHostgroups['excluded'])));
+                }
+                $content .= $this->addContent('}', 0);
+
             }
 
-            if (!empty($hostgroups)) {
-                $content .= $this->addContent('hostgroup_name', 1, implode(',', array_merge($hostgroupsForCfg, $excludedHostgroupsForCfg)));
-            }
-            if (!empty($contactUuids)) {
-                $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
-            }
-            if (!empty($contactgroupUuids)) {
-                $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
-            }
-            $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
-            $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
-            $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval'));
+            //export hosts groups with excluded hosts
+            if (!empty($escalationHostgroups['included'])) {
+                $content .= $this->addContent('define hostescalation{', 0);
+                if (!empty($contactUuids)) {
+                    $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
+                }
+                if (!empty($contactgroupUuids)) {
+                    $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
+                }
+                $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
+                $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
+                $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval'));
 
-            $escalationTimeperiod = $hostescalation->get('timeperiod');
-            if (!is_null($escalationTimeperiod)) {
-                $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+                $escalationTimeperiod = $hostescalation->get('timeperiod');
+                if (!is_null($escalationTimeperiod)) {
+                    $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+                }
+
+                $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
+                if (!empty($hostEscalationString)) {
+                    $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
+                }
+                $content .= $this->addContent('hostgroup_name', 1, implode(',', $escalationHostgroups['included']));
+                if (!empty($escalationHosts['excluded'])) {
+                    $content .= $this->addContent('host_name', 1, implode(',', preg_filter('/^/', '!', $escalationHosts['excluded'])));
+
+                }
+                $content .= $this->addContent('}', 0);
             }
 
-            $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
-            if (!empty($hostEscalationString)) {
-                $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
-            }
-            $content .= $this->addContent('}', 0);
+
             $file->write($content);
             $file->close();
         }
@@ -1874,39 +1963,80 @@ class NagiosConfigGenerator {
             mkdir($this->conf['path'] . $this->conf['serviceescalations']);
         }
 
+
         foreach ($serviceescalations as $serviceescalation) {
-            $servicesForCfg = [];
+
             $services = $serviceescalation->get('services');
-            if (empty($services)) {
-                //This service escalation is broken!
-                $ServiceescalationsTable->delete($serviceescalation);
-                continue;
-            }
+            $servicegroups = $serviceescalation->get('servicegroups');
+
+            $escalationServices = [
+                'included' => [],
+                'excluded' => []
+            ];
+
+            $escalationServicegroups = [
+                'included' => [],
+                'excluded' => []
+            ];
+
+            $includedServiceIds = [];
+            $excludedServiceIds = [];
+
+            $includedServicegroupServiceIds = [];
+            $excludedServicegroupServiceIds = [];
+
             if (!is_null($services)) {
                 foreach ($services as $service) {
-                    //var_dump($service->get('host')->get('uuid'));
                     if ($service->get('_joinData')->get('excluded') === 0) {
-                        $servicesForCfg[$service->get('host')->get('uuid')][] = $service->get('uuid');
+                        $escalationServices['included'][$service->get('host')->get('uuid')][] = $service->get('uuid');
+                        $includedServiceIds[] = $service->get('id');
                     } else {
-                        $servicesForCfg[$service->get('host')->get('uuid')][] = '!' . $service->get('uuid');
+                        $escalationServices['excluded'][$service->get('host')->get('uuid')][] = $service->get('uuid');
+                        $excludedServiceIds[] = $service->get('id');
                     }
                 }
             }
-            if (empty($servicesForCfg)) {
-                //This service escalation is broken!
+
+            if (!is_null($servicegroups)) {
+                foreach ($servicegroups as $servicegroup) {
+                    //ignore empty servicegroups
+                    if (empty($servicegroup->get('services'))) {
+                        continue;
+                    }
+                    if ($servicegroup->get('_joinData')->get('excluded') === 0) {
+                        $escalationServicegroups['included'][] = $servicegroup->get('uuid');
+                        foreach ($servicegroup->get('services') as $servicegroupService) {
+                            $includedServicegroupServiceIds[] = $servicegroupService->get('id');
+                        }
+                    } else {
+                        $escalationServicegroups['excluded'][] = $servicegroup->get('uuid');
+                        foreach ($servicegroup->get('services') as $servicegroupService) {
+                            $excludedServicegroupServiceIds[] = $servicegroupService->get('id');
+                        }
+                    }
+                }
+            }
+
+            if (empty($escalationServices['included']) && empty($escalationServicegroups['included'])) {
+                //service escalation is broken - delete !!!
                 $ServiceescalationsTable->delete($serviceescalation);
                 continue;
             }
-            $servicegroupsForCfg = [];
-            $servicegroups = $serviceescalation->get('servicegroups');
-            if (!is_null($servicegroups)) {
-                foreach ($servicegroups as $servicegroup) {
-                    if ($servicegroup->get('_joinData')->get('excluded') === 0) {
-                        $servicegroupsForCfg[] = $servicegroup->get('uuid');
-                    } else {
-                        $servicegroupsForCfg[] = '!' . $servicegroup->get('uuid');
-                    }
-                }
+
+            //all included services are excluded by "excluded service groups" configuration
+            $excludedServicegroupServiceIds = array_unique($excludedServicegroupServiceIds);
+            if (!empty($escalationServices['included']) && empty(array_diff($includedServiceIds, $excludedServicegroupServiceIds))) {
+                //service escalation is broken - delete !!!
+                $ServiceescalationsTable->delete($serviceescalation);
+                continue;
+            }
+
+            //all included services through service group definition are excluded by "excluded service" configuration
+            $includedServicegroupServiceIds = array_unique($includedServicegroupServiceIds);
+            if (!empty($escalationServicegroups['included']) && empty(array_diff($includedServicegroupServiceIds, $excludedServiceIds))) {
+                //service escalation is broken - delete !!!
+                $ServiceescalationsTable->delete($serviceescalation);
+                continue;
             }
 
             $file = new File($this->conf['path'] . $this->conf['serviceescalations'] . $serviceescalation->get('uuid') . $this->conf['suffix']);
@@ -1924,24 +2054,70 @@ class NagiosConfigGenerator {
                 $contactgroupUuids[] = $contactgroup->get('uuid');
             }
 
-            $serviceEscalationString = $serviceescalation->getServiceEscalationStringForCfg();
+            foreach ($escalationServices['included'] as $hostUuid => $includedServiceUuids) {
+                $content .= $this->addContent('define serviceescalation{', 0);
+                $content .= $this->addContent('host_name', 1, $hostUuid);
+                $content .= $this->addContent('service_description', 1, implode(',', $includedServiceUuids));
 
-            if (!empty($servicesForCfg)) {
-                foreach ($servicesForCfg as $hostUuid => $serviceUuids) {
-                    if (sizeof($serviceUuids) === 1) {
-                        if (strpos($serviceUuids[0], '!') === 0 && empty($servicegroupsForCfg)) {
-                            //Only one service in escalation and this service should be ignored from the escalation - this makes no sense!
-                            continue;
-                        }
-                    }
+                if (!empty($escalationServicegroups['excluded'])) {
+                    $content .= $this->addContent('servicegroup_name', 1, implode(',', preg_filter('/^/', '!', $escalationServicegroups['excluded'])));
+                }
 
+                if (!empty($contactUuids)) {
+                    $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
+                }
+                if (!empty($contactgroupUuids)) {
+                    $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
+                }
+                $content .= $this->addContent('first_notification', 1, $serviceescalation->get('first_notification'));
+                $content .= $this->addContent('last_notification', 1, $serviceescalation->get('last_notification'));
+                $content .= $this->addContent('notification_interval', 1, (int)$serviceescalation->get('notification_interval'));
+
+                $escalationTimeperiod = $serviceescalation->get('timeperiod');
+                if (!is_null($escalationTimeperiod)) {
+                    $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+                }
+
+                if (!empty($serviceEscalationString)) {
+                    $content .= $this->addContent('escalation_options', 1, $serviceEscalationString);
+                }
+
+                $content .= $this->addContent('}', 0);
+            }
+
+            if (!empty($escalationServicegroups['included']) && empty($escalationServices['excluded'])) {
+                $content .= $this->addContent('define serviceescalation{', 0);
+
+                $content .= $this->addContent('servicegroup_name', 1, implode(',', $escalationServicegroups['included']));
+
+                if (!empty($contactUuids)) {
+                    $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
+                }
+                if (!empty($contactgroupUuids)) {
+                    $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
+                }
+                $content .= $this->addContent('first_notification', 1, $serviceescalation->get('first_notification'));
+                $content .= $this->addContent('last_notification', 1, $serviceescalation->get('last_notification'));
+                $content .= $this->addContent('notification_interval', 1, (int)$serviceescalation->get('notification_interval'));
+
+                $escalationTimeperiod = $serviceescalation->get('timeperiod');
+                if (!is_null($escalationTimeperiod)) {
+                    $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+                }
+
+                if (!empty($serviceEscalationString)) {
+                    $content .= $this->addContent('escalation_options', 1, $serviceEscalationString);
+                }
+                $content .= $this->addContent('}', 0);
+            }
+
+            if (!empty($escalationServicegroups['included']) && !empty($escalationServices['excluded'])) {
+                foreach ($escalationServices['excluded'] as $hostUuid => $excludedServiceUuids) {
                     $content .= $this->addContent('define serviceescalation{', 0);
                     $content .= $this->addContent('host_name', 1, $hostUuid);
-                    $content .= $this->addContent('service_description', 1, implode(',', $serviceUuids));
+                    $content .= $this->addContent('service_description', 1, implode(',', preg_filter('/^/', '!', $excludedServiceUuids)));
 
-                    if (!empty($servicegroupsForCfg)) {
-                        $content .= $this->addContent('servicegroup_name', 1, implode(',', $servicegroupsForCfg));
-                    }
+                    $content .= $this->addContent('servicegroup_name', 1, implode(',', $escalationServicegroups['included']));
 
                     if (!empty($contactUuids)) {
                         $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
@@ -2459,7 +2635,7 @@ class NagiosConfigGenerator {
         $macros = $Macro->getAllMacros();
 
         foreach ($macros as $macro) {
-            $content .= $this->addContent($macro['name'] . '=' . $macro['value'], 0);
+            $content .= $this->addContent($macro['name'] . '=' . $this->escapeLastBackslash($macro['value']), 0);
         }
 
         $file->write($content);

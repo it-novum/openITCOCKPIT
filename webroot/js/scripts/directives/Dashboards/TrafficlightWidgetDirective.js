@@ -145,11 +145,11 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                     }
 
                     if($scope.ACL.services.index){
-                        return '/ng/#!/services/browser/' + $scope.Service.id
+                        return '/#!/services/browser/' + $scope.Service.id
                     }
                 }else{
                     if($scope.ACL.services.index){
-                        return '/ng/#!/services/browser/' + $scope.Service.id
+                        return '/#!/services/browser/' + $scope.Service.id
                     }
                 }
 

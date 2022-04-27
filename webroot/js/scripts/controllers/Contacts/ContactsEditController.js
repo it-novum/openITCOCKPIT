@@ -2,6 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('ContactsEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
 
         $scope.id = $stateParams.id;
+        $scope.requiredContainers = [];
 
         $scope.init = true;
 
@@ -18,7 +19,6 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.containers = result.data.containers;
-                $scope.init = false;
             });
         };
 
@@ -31,8 +31,19 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.post = result.data.contact;
+
                 $scope.init = false;
                 $scope.data.areContainersChangeable = result.data.areContainersChangeable;
+                $scope.requiredContainers = result.data.requiredContainers;
+
+                for(var i in $scope.containers){
+                    if($scope.requiredContainers.indexOf($scope.containers[i].key) === -1){
+                        $scope.containers[i].editable = true;
+                    } else{
+                        $scope.containers[i].editable = false;
+                    }
+                }
+
                 $scope.loadCommands();
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -63,7 +74,7 @@ angular.module('openITCOCKPIT')
         $scope.loadUsers = function(){
             $http.post("/contacts/loadUsersByContainerId.json?angular=true",
                 {
-                    containerIds: $scope.post.Contact.containers._ids
+                    containerIds: $scope.post.Contact.containers._ids.concat($scope.requiredContainers)
                 }
             ).then(function(result){
                 $scope.users = result.data.users;
@@ -73,7 +84,7 @@ angular.module('openITCOCKPIT')
         $scope.loadTimeperiods = function(){
             $http.post("/contacts/loadTimeperiods.json?angular=true",
                 {
-                    container_ids: $scope.post.Contact.containers._ids
+                    container_ids: $scope.post.Contact.containers._ids.concat($scope.requiredContainers)
                 }
             ).then(function(result){
                 $scope.timeperiods = result.data.timeperiods;
@@ -174,6 +185,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+
             $scope.loadUsers();
             $scope.loadTimeperiods();
         }, true);
@@ -257,6 +269,4 @@ angular.module('openITCOCKPIT')
             }
 
         });
-
-
     });

@@ -119,10 +119,11 @@ class ServicesTable extends Table {
             'saveStrategy'     => 'replace'
         ]);
 
+        /*
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
             'joinType'   => 'INNER'
-        ]);
+        ]);*/
 
         $this->belongsTo('CheckPeriod', [
             'className'  => 'Timeperiods',
@@ -595,6 +596,7 @@ class ServicesTable extends Table {
             ->select([
                 'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                 'Services.id',
+                'Services.disabled',
                 'Hosts.name'
             ])
             ->where(
@@ -631,6 +633,7 @@ class ServicesTable extends Table {
                 ->select([
                     'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                     'Services.id',
+                    'Services.disabled',
                     'Hosts.name'
                 ])
                 ->where([
@@ -708,6 +711,7 @@ class ServicesTable extends Table {
             ->select([
                 'Services.id',
                 'Services.name',
+                'Services.disabled',
                 'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                 'Hosts.id',
                 'Hosts.name',
@@ -748,6 +752,7 @@ class ServicesTable extends Table {
                 ->select([
                     'Services.id',
                     'Services.name',
+                    'Services.disabled',
                     'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                     'Hosts.id',
                     'Hosts.name',
@@ -781,7 +786,8 @@ class ServicesTable extends Table {
                 'Service'         => [
                     'id'          => $serviceData['id'],
                     'name'        => $serviceData['name'],
-                    'servicename' => $serviceData['name'] ?? $serviceData['_matchingData']['Servicetemplates']['name']
+                    'servicename' => $serviceData['name'] ?? $serviceData['_matchingData']['Servicetemplates']['name'],
+                    'disabled'    => $serviceData['disabled']
                 ],
                 'Host'            => [
                     'id'   => $serviceData['_matchingData']['Hosts']['id'],
@@ -1532,7 +1538,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1621,8 +1632,12 @@ class ServicesTable extends Table {
         if (!empty($having)) {
             $query->having($having);
         }
-
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1709,7 +1724,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1875,7 +1895,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1968,6 +1993,7 @@ class ServicesTable extends Table {
                 'Hosts.description',
                 'Hosts.address',
                 'Hosts.disabled',
+                'Hosts.satellite_id'
             ])
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
@@ -2035,7 +2061,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
 
         if ($PaginateOMat === null) {
@@ -2193,7 +2224,8 @@ class ServicesTable extends Table {
             ->enableHydration($enableHydration)
             ->order([
                 'Hosts.name'  => 'asc',
-                'servicename' => 'asc'
+                'servicename' => 'asc',
+                'Services.id' => 'asc'
             ])
             ->group(['Services.id'])
             ->all();
@@ -2272,7 +2304,8 @@ class ServicesTable extends Table {
 
         $query->enableHydration($enableHydration);
         $query->order([
-            'servicename' => 'asc'
+            'servicename' => 'asc',
+            'Services.id' => 'asc'
         ]);
         $query->group([
             'Services.id'
@@ -2433,7 +2466,13 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -2594,7 +2633,12 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        $query->order($ServiceConditions->getOrder());
+        $query->order(
+            array_merge(
+                $ServiceConditions->getOrder(),
+                ['Services.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -2865,7 +2909,8 @@ class ServicesTable extends Table {
 
         if ($type === 'all') {
             $query->order([
-                'servicename' => 'asc'
+                'servicename' => 'asc',
+                'Services.id' => 'asc'
             ]);
         }
 
@@ -2967,8 +3012,9 @@ class ServicesTable extends Table {
 
         if ($type === 'all') {
             $query->order([
-                'Hosts.name' => 'asc',
-                'servicename' => 'asc'
+                'Hosts.name'  => 'asc',
+                'servicename' => 'asc',
+                'Services.id' => 'asc'
             ]);
         }
 
@@ -3401,7 +3447,8 @@ class ServicesTable extends Table {
 
         $query->enableHydration($enableHydration);
         $query->order([
-            'servicename' => 'asc'
+            'servicename' => 'asc',
+            'Services.id' => 'asc'
         ]);
         $query->group([
             'Services.id'
@@ -4056,18 +4103,36 @@ class ServicesTable extends Table {
 
     /**
      * @param $servicestatus
-     * @param bool $extended show details ('acknowledged', 'in downtime', ...)
+     * @param bool $extended show details ('acknowledged', 'in downtime', ...
      * @return array
      */
     public function getServiceStateSummary($servicestatus, $extended = true) {
         $serviceStateSummary = [
-            'state' => [
+            'state'        => [
                 0 => 0,
                 1 => 0,
                 2 => 0,
                 3 => 0
             ],
-            'total' => 0
+            'acknowledged' => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0
+            ],
+            'in_downtime'  => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0
+            ],
+            'not_handled'  => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0
+            ],
+            'total'        => 0
         ];
         if ($extended === true) {
             $serviceStateSummary = [
@@ -4143,18 +4208,17 @@ class ServicesTable extends Table {
                 $service['Servicestatus']['current_state'] = 3;
             }
             $serviceStateSummary['state'][$service['Servicestatus']['current_state']]++;
-            $serviceStateSummary['state']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
             if ($extended === true) {
+                $serviceStateSummary['state']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
                 if ($service['Servicestatus']['current_state'] > 0) {
                     if ($service['Servicestatus']['problem_has_been_acknowledged'] > 0) {
                         $serviceStateSummary['acknowledged'][$service['Servicestatus']['current_state']]++;
                         $serviceStateSummary['acknowledged']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
-                    } else {
+                    } else if ($service['Servicestatus']['problem_has_been_acknowledged'] == 0 && $service['Servicestatus']['scheduled_downtime_depth'] == 0) {
                         $serviceStateSummary['not_handled'][$service['Servicestatus']['current_state']]++;
                         $serviceStateSummary['not_handled']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
                     }
                 }
-
                 if ($service['Servicestatus']['scheduled_downtime_depth'] > 0) {
                     $serviceStateSummary['in_downtime'][$service['Servicestatus']['current_state']]++;
                     $serviceStateSummary['in_downtime']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
@@ -4162,6 +4226,17 @@ class ServicesTable extends Table {
                 if ($service['Servicestatus']['active_checks_enabled'] == 0) {
                     $serviceStateSummary['passive'][$service['Servicestatus']['current_state']]++;
                     $serviceStateSummary['passive']['serviceIds'][$service['Servicestatus']['current_state']][] = $service['id'];
+                }
+            } else {
+                if ($service['Servicestatus']['current_state'] > 0) {
+                    if ($service['Servicestatus']['problem_has_been_acknowledged'] > 0) {
+                        $serviceStateSummary['acknowledged'][$service['Servicestatus']['current_state']]++;
+                    } else if ($service['Servicestatus']['problem_has_been_acknowledged'] == 0 && $service['Servicestatus']['scheduled_downtime_depth'] == 0) {
+                        $serviceStateSummary['not_handled'][$service['Servicestatus']['current_state']]++;
+                    }
+                }
+                if ($service['Servicestatus']['scheduled_downtime_depth'] > 0) {
+                    $serviceStateSummary['in_downtime'][$service['Servicestatus']['current_state']]++;
                 }
             }
             $serviceStateSummary['total']++;
@@ -4300,6 +4375,7 @@ class ServicesTable extends Table {
         $query = $this->find();
         $query
             ->select([
+                'Services.host_id',
                 'Services.id',
                 'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
                 'Servicestatus.current_state',
@@ -4370,7 +4446,6 @@ class ServicesTable extends Table {
                 'servicegroup_ids IS NOT NULL',
                 'count > 0'
             ]);
-            $query->group('Services.id');
         }
 
         if (isset($where['Services.keywords rlike'])) {
@@ -4403,6 +4478,8 @@ class ServicesTable extends Table {
             $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
         }
         $query->andWhere($where);
+        $query->group('Services.id');
+
         $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
@@ -4500,5 +4577,77 @@ class ServicesTable extends Table {
 
         return $query->toArray();
 
+    }
+
+    /**
+     * @param $containerIds
+     * @param $servicegroupIds
+     * @param $type
+     * @param $index
+     * @param $where
+     * @return array
+     */
+    public function getServicesByContainerIdAndServicegroupIds($containerIds, $servicegroupIds, $type = 'all', $index = 'id', $where = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        if (!is_array($servicegroupIds)) {
+            $servicegroupIds = [$servicegroupIds];
+        }
+
+        $_where = [
+            'Hosts.disabled IN'    => [0],
+            'Services.disabled IN' => [0]
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Services.' . $index,
+            'Hosts.name',
+            'Services.disabled',
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+        ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $containerIds
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoinWith('Servicegroups')
+            ->where([
+                'Servicegroups.id IN' => $servicegroupIds
+            ]);
+
+        $query->where($where);
+
+        $query->disableHydration();
+        $query->group(['Services.id']);
+        $query->order([
+            'servicename' => 'asc',
+            'Services.id' => 'asc'
+        ]);
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row;
+        }
+
+        return $list;
     }
 }

@@ -442,7 +442,6 @@ class AgentconnectorController extends AppController {
                 $config['bool']['use_http_basic_auth'] = $record->basic_auth;
                 $config['string']['username'] = $record->username;
                 $config['string']['password'] = $record->password;
-                $config['int']['bind_port'] = (int)$record->port;
                 $config['bool']['use_proxy'] = $record->proxy;
                 $config['bool']['enable_push_mode'] = false;
                 if ($record->push_noticed) {

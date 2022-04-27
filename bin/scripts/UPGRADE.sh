@@ -390,6 +390,10 @@ mysql --defaults-extra-file=${INIFILE} -e "UPDATE servicetemplates SET flap_dete
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok IS NULL AND flap_detection_on_warning IS NULL AND flap_detection_on_unknown IS NULL AND flap_detection_on_critical IS NULL"
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok=0 AND flap_detection_on_warning=0 AND flap_detection_on_unknown=0 AND flap_detection_on_critical=0"
 
+# Enable graphs / performance data for all services ITC-2608
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE servicetemplates SET process_performance_data=1"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET process_performance_data=NULL"
+
 #ALC dependencies config for itc core
 echo "---------------------------------------------------------------"
 echo "Scan for new user permissions. This will take a while..."

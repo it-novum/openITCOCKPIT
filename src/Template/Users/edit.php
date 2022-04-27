@@ -70,7 +70,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
-            {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+            {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'};
+containerMessage = '<?= __('Hidden due to insufficient permissions'); ?>'">
 
                         <div class="form-group" ng-class="{'has-error': errors.usercontainerroles}" ng-if="isLdapUser">
                             <label class="control-label hintmark" for="UserContainerrolesLdap">
@@ -147,6 +148,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 id="UserContainerroles"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
+                                callback="loadUserContainerRoles"
                                 chosen="usercontainerroles"
                                 multiple
                                 ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
@@ -216,6 +218,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 class="form-control"
                                 chosen="containers"
                                 multiple
+                                ng-disabled="notPermittedContainerIds.length > 0"
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="selectedUserContainers">
                             </select>
@@ -239,7 +242,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        type="radio"
                                        value="1"
                                        ng-model="userContainer.permission_level"
-                                       ng-disabled="userContainer.container_id === 1"
+                                       ng-disabled="userContainer.container_id === 1 || containerIdsWithWritePermissions.indexOf(userContainer.container_id) === -1"
                                        ng-checked="userContainer.permission_level == 1">
                                 <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
@@ -247,7 +250,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        type="radio"
                                        value="2"
                                        ng-model="userContainer.permission_level"
-                                       ng-disabled="userContainer.container_id === 1"
+                                       ng-disabled="userContainer.container_id === 1 || containerIdsWithWritePermissions.indexOf(userContainer.container_id) === -1"
                                        ng-checked="userContainer.permission_level == 2">
                                 <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                             </div>
