@@ -178,6 +178,9 @@ angular.module('openITCOCKPIT')
 
                 if($scope.mergedService.has_graph){
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, graphStart, graphEnd, true);
+                    if($scope.selectedTab === 'tab3'){
+                        $scope.loadTimelineData();
+                    }
                 }
 
                 if(typeof $scope.serviceBrowserMenuConfig === "undefined"){
