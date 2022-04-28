@@ -2053,8 +2053,10 @@ class ServicesController extends AppController {
         $start = $this->request->getQuery('start', -1);
         $end = $this->request->getQuery('end', -1);
 
-        if($start > 0 && $end > 0){
+        if ($start > 0) {
             $start -= $offset;
+        }
+        if ($end > 0) {
             $end -= $offset;
         }
 
