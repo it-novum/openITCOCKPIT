@@ -321,7 +321,6 @@ angular.module('openITCOCKPIT')
             //graphTimeSpan = timespan;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
             if($scope.synchronizeTimes === true && $scope.timelineHasBeenChanged === false){
-                console.log('load timeline');
                 $scope.graphHasBeenChanged = true;
                 $scope.loadTimelineData({
                     start: start,
@@ -673,7 +672,6 @@ angular.module('openITCOCKPIT')
 
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
                     if($scope.synchronizeTimes === true && $scope.timelineHasBeenChanged === false){
-                        console.log('load timeline after zoom');
                         $scope.graphHasBeenChanged = true;
                         $scope.loadTimelineData({
                             start: start + $scope.timezone.user_time_to_server_offset,
@@ -779,11 +777,12 @@ angular.module('openITCOCKPIT')
                         $scope.visTimelineInit = false;
                         return;
                     }
-
                     if($scope.timelineIsLoading){
                         return;
                     }
-
+                    if(properties.byUser === false){
+                        return;
+                    }
                     if($scope.visTimeout){
                         clearTimeout($scope.visTimeout);
                     }
@@ -811,6 +810,7 @@ angular.module('openITCOCKPIT')
                 }
                 $scope.graphHasBeenChanged = false;
                 $scope.timelineHasBeenChanged = true;
+                event.preventDefault();
             }
 
             function timelineHandleDown(event){
@@ -819,7 +819,6 @@ angular.module('openITCOCKPIT')
                 }
                 $scope.graphHasBeenChanged = false;
                 $scope.timelineHasBeenChanged = true;
-
                 event.preventDefault();
             }
 
@@ -846,16 +845,17 @@ angular.module('openITCOCKPIT')
                         $scope.visTimelineRange.visTimelineEndAsTimestamp = options.end.getTime();
                     }
 
-
-                    if($scope.synchronizeTimes === true && $scope.timelineMoveTo === false && $scope.graphHasBeenChanged === false){
+                    if($scope.synchronizeTimes === true && $scope.timelineMoveTo === false && ($scope.graphHasBeenChanged === false && $scope.timelineHasBeenChanged === true)){
                         loadGraph(
                             $scope.host.Host.uuid,
                             $scope.mergedService.uuid,
                             false,
-                            $scope.visTimelineRange.visTimelineStartAsTimestamp / 1000 - $scope.timezone.user_time_to_server_offset,
-                            $scope.visTimelineRange.visTimelineEndAsTimestamp / 1000 - $scope.timezone.user_time_to_server_offset,
+                            parseInt($scope.visTimelineRange.visTimelineStartAsTimestamp / 1000 - $scope.timezone.user_time_to_server_offset, 10),
+                            parseInt($scope.visTimelineRange.visTimelineEndAsTimestamp / 1000 - $scope.timezone.user_time_to_server_offset, 10),
                             true
                         );
+                        $scope.graphHasBeenChanged = false;
+                        $scope.timelineHasBeenChanged = false;
                     }
 
                     if($scope.timelineMoveTo === true){
@@ -878,7 +878,6 @@ angular.module('openITCOCKPIT')
                                     item
                                 )
                             );
-
                         }
                     });
                     $scope.failureDurationInPercent = $scope.calculateFailures(
@@ -889,7 +888,6 @@ angular.module('openITCOCKPIT')
                     );
                     $scope.$apply();
                 }, 500);
-
             });
         };
 
@@ -1045,6 +1043,7 @@ angular.module('openITCOCKPIT')
             if($scope.synchronizeTimes === false){
                 return;
             }
+
             loadGraph(
                 $scope.host.Host.uuid,
                 $scope.mergedService.uuid,
