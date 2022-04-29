@@ -58,6 +58,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.synchronizeTimes = false;
+        $scope.graphHasBeenChanged = false;
+        $scope.timelineHasBeenChanged = false;
 
         $scope.graph = {
             graphAutoRefresh: true,
@@ -318,6 +320,14 @@ angular.module('openITCOCKPIT')
 
             //graphTimeSpan = timespan;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
+            if($scope.synchronizeTimes === true && $scope.timelineHasBeenChanged === false){
+                console.log('load timeline');
+                $scope.graphHasBeenChanged = true;
+                $scope.loadTimelineData({
+                    start: start,
+                    end: end
+                });
+            }
         };
 
         $scope.changeDataSource = function(gaugeName){
@@ -662,6 +672,14 @@ angular.module('openITCOCKPIT')
                     }
 
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
+                    if($scope.synchronizeTimes === true && $scope.timelineHasBeenChanged === false){
+                        console.log('load timeline after zoom');
+                        $scope.graphHasBeenChanged = true;
+                        $scope.loadTimelineData({
+                            start: start + $scope.timezone.user_time_to_server_offset,
+                            end: end + $scope.timezone.user_time_to_server_offset
+                        });
+                    }
                 });
             }
 
@@ -678,8 +696,11 @@ angular.module('openITCOCKPIT')
             if(start > $scope.visTimelineStart && end < $scope.visTimelineEnd){
                 $scope.timelineIsLoading = false;
                 //Zoom in data we already have
-                return;
+                if($scope.synchronizeTimes === false){
+                    return;
+                }
             }
+
 
             $http.get("/services/timeline/" + $scope.id + ".json", {
                 params: {
@@ -700,6 +721,7 @@ angular.module('openITCOCKPIT')
 
                 $scope.visTimelineStart = result.data.start;
                 $scope.visTimelineEnd = result.data.end;
+
                 var options = {
                     showCurrentTime: true,
                     orientation: "both",
@@ -750,10 +772,8 @@ angular.module('openITCOCKPIT')
         };
 
         var renderTimeline = function(timelinedata, options){
-            var container = document.getElementById('visualization');
-
             if($scope.visTimeline === null){
-                $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
+                $scope.visTimeline = new vis.Timeline($scope.visContainer, timelinedata.items, timelinedata.groups, options);
                 $scope.visTimeline.on('rangechanged', function(properties){
                     if($scope.visTimelineInit){
                         $scope.visTimelineInit = false;
@@ -778,6 +798,34 @@ angular.module('openITCOCKPIT')
             }else{
                 $scope.visTimeline.setItems(timelinedata.items);
             }
+            if($scope.synchronizeTimes === true && $scope.graphHasBeenChanged === true){
+                $scope.visTimeline.setWindow(
+                    options.start.getTime(),
+                    options.end.getTime()
+                );
+            }
+
+            function timeLinkeOnMouseWheel(event){
+                if($scope.synchronizeTimes === false){
+                    return;
+                }
+                $scope.graphHasBeenChanged = false;
+                $scope.timelineHasBeenChanged = true;
+            }
+
+            function timelineHandleDown(event){
+                if($scope.synchronizeTimes === false){
+                    return;
+                }
+                $scope.graphHasBeenChanged = false;
+                $scope.timelineHasBeenChanged = true;
+
+                event.preventDefault();
+            }
+
+            $scope.visContainer.addEventListener('wheel', timeLinkeOnMouseWheel);
+            $scope.visContainer.onpointerdown = timelineHandleDown;
+
 
             $scope.visTimeline.on('changed', function(){
                 if($scope.visTimelineInit){
@@ -799,7 +847,7 @@ angular.module('openITCOCKPIT')
                     }
 
 
-                    if($scope.synchronizeTimes === true && $scope.timelineMoveTo === false){
+                    if($scope.synchronizeTimes === true && $scope.timelineMoveTo === false && $scope.graphHasBeenChanged === false){
                         loadGraph(
                             $scope.host.Host.uuid,
                             $scope.mergedService.uuid,
@@ -848,6 +896,7 @@ angular.module('openITCOCKPIT')
         $scope.showTimeline = function(){
             $scope.showTimelineTab = true;
             $scope.loadTimelineData();
+            $scope.visContainer = document.getElementById('visualization');
         };
 
         $scope.hideTimeline = function(){
