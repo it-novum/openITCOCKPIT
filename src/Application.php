@@ -74,7 +74,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $this->addPlugin('Authentication');
         $this->addPlugin('Authorization');
 
-        $this->addPlugin('CakePdf');
+        //$this->addPlugin('CakePdf');
+        $this->addPlugin('PuppeteerPdf');
 
         if (PHP_SAPI === 'cli') {
             try {
@@ -94,7 +95,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         if (Configure::read('debug')) {
             //$this->addPlugin(\DebugKit\Plugin::class);
         }
-        
+
         $this->addPlugin('Dbml');
     }
 

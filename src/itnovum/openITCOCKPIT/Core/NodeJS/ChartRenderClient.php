@@ -40,7 +40,7 @@ class ChartRenderClient {
     /**
      * @var string
      */
-    private $address = 'http://127.0.0.1:8084/';
+    private $address = 'http://127.0.0.1:7084/';
 
     /**
      * @var string
@@ -140,7 +140,7 @@ class ChartRenderClient {
      */
     public function getAreaChartAsPngStream($data) {
         try {
-            $response = $this->Client->post('/AreaChart', [
+            $response = $this->Client->post('/area_chart', [
                 RequestOptions::JSON => [
                     'data'     => $this->timestampToDate($data),
                     'settings' => [
