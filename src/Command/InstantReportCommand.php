@@ -27,7 +27,6 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Controller\InstantreportsController;
 use App\itnovum\openITCOCKPIT\Core\Permissions\MyRightsFactory;
 use App\itnovum\openITCOCKPIT\Core\Reports\InstantreportCreator;
 use App\Model\Entity\Instantreport;
@@ -38,16 +37,13 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
-use Cake\Http\Client\Exception\RequestException;
-use Cake\Http\Client\Request;
 use Cake\Mailer\Mailer;
-use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
-use http\Client;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use PuppeteerPdf\Pdf\PdfRenderer;
 
 /**
  * Class InstantReportCommand
@@ -128,9 +124,9 @@ class InstantReportCommand extends Command implements CronjobInterface {
                 $instantReportCronPdfName = preg_replace('[^0-9a-zA-Z_\s]', '_', $instantreportName) . '.pdf';
                 $subject = $sendIntervals[$instantreport->get('send_interval')] . ' Instant Report ' . $instantreportName;
 
-                foreach($instantreport->get('users') as $user){
+                foreach ($instantreport->get('users') as $user) {
                     /** @var User $user */
-                    if(!$UserPermissionsCache->has($user->get('id'))){
+                    if (!$UserPermissionsCache->has($user->get('id'))) {
                         $UserPermissionsCache->set(
                             $user->get('id'),
                             MyRightsFactory::getUserPermissions($user->get('id'), $user->get('usergroup_id'))
@@ -150,18 +146,17 @@ class InstantReportCommand extends Command implements CronjobInterface {
                         $toDate
                     );
 
-                    $CakePdf = new \CakePdf\Pdf\CakePdf();
-                    $CakePdf->templatePath('Instantreports/pdf');
-                    $CakePdf->template('create_pdf_report', 'default');
-                    $CakePdf->viewVars([
+                    $PdfRenderer = new PdfRenderer();
+                    $PdfRenderer->templatePath('Instantreports/pdf');
+                    $PdfRenderer->template('create_pdf_report', 'default');
+                    $PdfRenderer->viewVars([
                         'instantReport' => $instantReport,
-                        'fromDate' => $UserTime->format($fromDate),
-                        'toDate' => $UserTime->format($toDate),
-                        'UserTime' => $UserTime
+                        'fromDate'      => $UserTime->format($fromDate),
+                        'toDate'        => $UserTime->format($toDate),
+                        'UserTime'      => $UserTime
                     ]);
                     // Get the PDF string returned
-                    $pdf = $CakePdf->output();
-
+                    $pdf = $PdfRenderer->output();
 
                     //$file = fopen('/tmp/test.pdf', 'w+');
                     //fwrite($file, $pdf);
@@ -173,13 +168,13 @@ class InstantReportCommand extends Command implements CronjobInterface {
                     $Mailer->setEmailFormat('both');
                     $Mailer->setTo($user->get('email'));
                     $Mailer->setAttachments([
-                        'logo.png' => [
-                            'file' => $Logo->getSmallLogoDiskPath(),
-                            'mimetype' => 'image/png',
+                        'logo.png'                => [
+                            'file'      => $Logo->getSmallLogoDiskPath(),
+                            'mimetype'  => 'image/png',
                             'contentId' => '100'
                         ],
                         $instantReportCronPdfName => [
-                            'data' => $pdf,
+                            'data'     => $pdf,
                             'mimetype' => 'application/pdf'
                         ]
                     ]);
@@ -196,7 +191,7 @@ class InstantReportCommand extends Command implements CronjobInterface {
                 $io->success('Report "' . $instantreport->get('id') . '" sent to mail address "' . implode(', ', $emailsToSend) . '"');
 
             } catch (\Exception $ex) {
-                $io->out('<red> '. __('An error occured while sending instant report mail: ') . $ex->getMessage().'</red>');
+                $io->out('<red> ' . __('An error occured while sending instant report mail: ') . $ex->getMessage() . '</red>');
             }
         }
         if (!$toSend) {
