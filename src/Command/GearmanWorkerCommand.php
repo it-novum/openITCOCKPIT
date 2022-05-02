@@ -1513,7 +1513,7 @@ class GearmanWorkerCommand extends Command {
         /** @var  ChangelogsTable $ChangelogsTable */
         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-        $statusMsg = __('with an error');
+        $successfullyMsg = __('with an error');
         if ($successfully) {
             $successfullyMsg = __('successfully');
         }
