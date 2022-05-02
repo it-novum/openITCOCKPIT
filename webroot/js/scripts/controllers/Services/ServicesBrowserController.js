@@ -3,7 +3,7 @@ angular.module('openITCOCKPIT')
 
         $scope.id = $stateParams.id;
 
-        $scope.selectedTab = 'tab3';
+        $scope.selectedTab = 'tab1';
 
         $scope.showFlashSuccess = false;
 

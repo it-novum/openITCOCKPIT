@@ -63,7 +63,7 @@ use Cake\Core\Plugin;
 
 <div class="row">
     <div class="col-xl-12">
-        <div id="panel-1" class="panel" ng-init="selectedTab = 'tab3';showTimeline();">
+        <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Service'); ?>:
@@ -1119,22 +1119,6 @@ use Cake\Core\Plugin;
                     <!-- Service information tab end -->
                     <!-- Timeline tab start -->
                     <div ng-show="showTimelineTab && selectedTab == 'tab3'">
-                        <div class="row">
-                            <div class="co-lg-12">
-                                <span class="padding-left-5">
-                                     Timeline : {{visTimelineRange.visTimelineStartAsTimestamp | date: 'dd.MM.yyyy HH:mm:ss'}} -- {{visTimelineRange.visTimelineEndAsTimestamp | date: 'dd.MM.yyyy HH:mm:ss'}}
-                                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="co-lg-12">
-                                <span class="padding-left-5">
-                                     Graph : {{start | date: 'dd.MM.yyyy HH:mm:ss'}} -- {{end | date: 'dd.MM.yyyy HH:mm:ss'}}
-                                </span>
-                            </div>
-
-                        </div>
-
                         <div class="row">
                             <div class="col-lg-12 padding-10">
                                 <div class="row">
