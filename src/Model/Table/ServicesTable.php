@@ -4609,7 +4609,7 @@ class ServicesTable extends Table {
             'Services.' . $index,
             'Hosts.name',
             'Services.disabled',
-            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+            'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))')
         ])
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds) {
