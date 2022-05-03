@@ -937,7 +937,7 @@ class GearmanWorkerCommand extends Command {
                     $state['isPushNotificationRunning'] = true;
                 }
 
-                exec($systemsetting['INIT']['INIT.NODEJS_SERVER'] . $errorRedirect, $output, $returncode);
+                exec($systemsetting['INIT']['INIT.OPENITCOCKPIT_NODE'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isNodeJsServerRunning'] = true;
                 }

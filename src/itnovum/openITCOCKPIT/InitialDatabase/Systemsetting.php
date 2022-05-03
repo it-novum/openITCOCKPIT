@@ -788,7 +788,15 @@ class Systemsetting extends Importer {
                 'section'  => 'FRONTEND',
                 'created'  => '2022-01-06 08:52:17',
                 'modified' => '2022-01-06 08:52:17'
-            ]
+            ],
+            (int)92 => [
+                'key'      => 'INIT.OPENITCOCKPIT_NODE',
+                'value'    => 'systemctl status openitcockpit-node',
+                'info'     => 'Command to query the status of openITCOCKPITs Node.js Server backend',
+                'section'  => 'INIT',
+                'created'  => '2022-05-03 13:56:17',
+                'modified' => '2022-05-03 13:56:17'
+            ],
         ];
 
         return $data;
