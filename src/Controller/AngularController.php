@@ -1251,4 +1251,9 @@ class AngularController extends AppController {
         //Return HTML Template for PaginatorDirective
         return;
     }
+
+    public function wizardFilter() {
+        //Only ship HTML template
+        return;
+    }
 }
