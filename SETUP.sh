@@ -147,7 +147,7 @@ systemctl enable\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service\
+ openitcockpit-node.service\
  openitcockpit-graphing.service\
  oitc_cronjobs.timer
 
@@ -398,7 +398,7 @@ systemctl restart\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service\
+ openitcockpit-node.service\
  oitc_cronjobs.timer
 
 for srv in supervisor.service; do

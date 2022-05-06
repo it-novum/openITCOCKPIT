@@ -93,7 +93,7 @@ $UserTime = $User->getUserTime();
             <!-- Hostgroup -->
             <tr>
                 <td class="bg-color-lightGray" colspan="8">
-                    <span><?php echo h($hostgroup['Hostgroup']['Containers']['name']); ?></span>
+                    <span><?php echo h($hostgroup['Hostgroup']['container']['name']); ?></span>
                 </td>
             </tr>
             <?php if (!empty($hostgroup['Hosts'])): ?>

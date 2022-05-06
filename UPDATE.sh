@@ -446,7 +446,7 @@ systemctl enable sudo_server.service\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service\
+ openitcockpit-node.service\
  openitcockpit-graphing.service\
  oitc_cronjobs.timer\
  statusengine.service
@@ -456,7 +456,7 @@ systemctl restart\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service\
+ openitcockpit-node.service\
  oitc_cronjobs.timer\
  statusengine.service
 

@@ -1,0 +1,24 @@
+{
+    "name": "your-name-here/puppeteer-pdf",
+    "description": "PuppeteerPdf plugin for CakePHP",
+    "type": "cakephp-plugin",
+    "license": "MIT license",
+    "require": {
+        "php": ">=7.2",
+        "cakephp/cakephp": "^4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5 || ^9.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "PuppeteerPdf\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PuppeteerPdf\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+        }
+    }
+}
