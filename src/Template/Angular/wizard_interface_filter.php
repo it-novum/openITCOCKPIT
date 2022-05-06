@@ -52,12 +52,3 @@
         </span>
     </div>
 </div>
-<input id="search-fld"
-       type="text"
-       class="form-control top-search-border"
-       placeholder="<?= __('Type to search') ?>"
-       ng-model="searchStr"
-       ng-keydown="isReturnKey($event)"
-       ng-disabled="isSearching"
-       style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
-</div>
