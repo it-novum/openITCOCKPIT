@@ -137,7 +137,9 @@ class AclDependencies {
             ->allow('Angular', 'thresholds')
             ->allow('Angular', 'mass_delete_acknowledgements')
             ->allow('Angular', 'message_of_the_day')
-            ->allow('Angular', 'regexHelpTooltip');
+            ->allow('Angular', 'regexHelpTooltip')
+            ->allow('Angular', 'wizardFilter')
+            ->allow('Angular', 'wizardInterfaceFilter');
 
         $this
             ->allow('Agentconnector', 'register_agent')

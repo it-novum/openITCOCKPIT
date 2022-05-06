@@ -1645,6 +1645,35 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         };
     })
 
+    .filter('filterTagsinput', function(){
+        return function(values, search){
+            if(typeof search === "undefined"){
+                // No search string given
+                return values;
+            }
+
+            var results = [];
+            searchStrings = search.split(",");
+            searchStrings = searchStrings.map(function(v){
+                return new RegExp(v, 'i');
+            })
+
+            for(var i in values){
+                var value = values[i];
+                for(var k in searchStrings){
+                    var searchString = searchStrings[k];
+                    if(value.name.match(searchString)){
+                        results.push(value);
+                        // Avoid duplicates in result;
+                        break;
+                    }
+                }
+            }
+
+            return results;
+        }
+    })
+
     .run(function($rootScope, SortService, $state){
 
         $rootScope.$on('$stateChangeStart', function(event, to, toParams, from, fromParams){
