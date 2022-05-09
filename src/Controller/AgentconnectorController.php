@@ -1311,6 +1311,7 @@ class AgentconnectorController extends AppController {
                 $agentPassword
             );
 
+
             $hostUuid = $pushAgent->get('agentconfig')->get('host')->get('uuid');
             $GearmanClient = new Gearman();
 
@@ -1380,7 +1381,16 @@ class AgentconnectorController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['success', 'received_checks']);
             return;
         } catch (RecordNotFoundException $e) {
-            //No host for given agent config found
+            //No host for given agent config found - only save agent result into database
+            if ($PushAgentsTable->existsByUuidAndPassword($agentUuid, $agentPassword)) {
+                $pushAgent = $PushAgentsTable->getPushAgentByUuidAndPassword(
+                    $agentUuid,
+                    $agentPassword
+                );
+                $pushAgent->set('last_update', new FrozenTime());
+                $pushAgent->set('checkresults', json_encode($checkdata));
+                $PushAgentsTable->save($pushAgent);
+            }
         }
 
         $this->response = $this->response->withStatus(400);
