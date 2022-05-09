@@ -185,6 +185,20 @@ class PushAgentsTable extends Table {
     }
 
     /**
+     * @param $uuid
+     * @param $password
+     * @return array|EntityInterface
+     */
+    public function getPushAgentByUuidAndPassword($uuid, $password) {
+        return $this->find()
+            ->where([
+                'PushAgents.uuid'     => $uuid,
+                'PushAgents.password' => $password
+            ])
+            ->firstOrFail();
+    }
+
+    /**
      * @param int $agentConfigId
      * @return bool
      */
