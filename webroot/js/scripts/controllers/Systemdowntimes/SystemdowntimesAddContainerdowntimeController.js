@@ -20,7 +20,7 @@ angular.module('openITCOCKPIT')
                         duration: 15,
                         downtimetype: 'container',
                         downtimetype_id: '0',
-                        objecttype_id: 4,     //OBJECT_NODE
+                        objecttype_id: 32768,     //OBJECT_SATELLITE
                         object_id: [],
                         comment: '',
                         is_recursive: 0
