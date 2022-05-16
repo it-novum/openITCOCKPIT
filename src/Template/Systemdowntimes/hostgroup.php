@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -98,6 +101,15 @@
                                 <a ui-sref="SystemdowntimesNode" class="nav-link">
                                     <i class="fa fa-chain">&nbsp;</i>
                                     <span class="hidden-mobile hidden-tablet"> <?php echo __('Container'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if (Plugin::isLoaded('DistributeModule') && $this->Acl->hasPermission('downtime', 'satellites', 'DistributeModule')): ?>
+                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesSatelliteController'}"
+                                class="nav-item">
+                                <a ui-sref="SystemdowntimesSatellite" class="nav-link active">
+                                    <i class="fas fa-satellite">&nbsp;</i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Satellite'); ?></span>
                                 </a>
                             </li>
                         <?php endif; ?>
