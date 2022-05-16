@@ -279,7 +279,7 @@ class UsersTable extends Table {
      * Custom validation rule for containers and or user container roles
      */
     public function validateHasContainerOrContainerUserRolePermissions($value, $context) {
-        return !empty($context['data']['containers']) || !empty($context['data']['usercontainerroles']['_ids']);
+        return !empty($context['data']['containers']) || !empty($context['data']['usercontainerroles']['_ids']) || !empty($context['data']['usercontainerroles_ldap']['_ids']);
     }
 
     /**
