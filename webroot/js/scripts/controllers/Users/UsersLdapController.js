@@ -37,6 +37,9 @@ angular.module('openITCOCKPIT')
                     usercontainerroles: {
                         _ids: []
                     },
+                    usercontainerroles_ldap: {
+                        _ids: []
+                    },
                     ContainersUsersMemberships: {},
                     apikeys: []
                 }
@@ -92,6 +95,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.ldapUser = result.data.ldapUser;
                 $scope.selectedUserContainerRolesLdapReadOnly = [];
+                $scope.post.User.usercontainerroles_ldap._ids = Object.keys($scope.ldapUser.userContainerRoleContainerPermissionsLdap);
                 for(var i in $scope.ldapUser.userContainerRoleContainerPermissionsLdap){
                     $scope.selectedUserContainerRolesLdapReadOnly.push(
                         $scope.ldapUser.userContainerRoleContainerPermissionsLdap[i]._joinData.usercontainerrole_id

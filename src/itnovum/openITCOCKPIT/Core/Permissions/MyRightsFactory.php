@@ -85,6 +85,9 @@ class MyRightsFactory {
 
         $containerPermissions = $containerPermissionsUser + $containerPermissions;
 
+        // The ROOT_CONTAINER is always available for ALL users. (READ permissions)
+        // For this reason, in the Web-GUI the only option for the ROOT_CONTAINER is to grant WRITE permissions.
+        // It is unnecessary to select the ROOT_CONTAINER, which is available to all users by default with READ permissions.
         $MY_RIGHTS = [ROOT_CONTAINER];
         $MY_RIGHTS_LEVEL = [ROOT_CONTAINER => READ_RIGHT];
 
