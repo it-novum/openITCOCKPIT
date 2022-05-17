@@ -150,6 +150,12 @@ use Cake\Core\Plugin;
                                     <?php echo __('Create container downtime'); ?>
                                 </a>
                             <?php endif; ?>
+                            <?php if (Plugin::isLoaded('DistributeModule') && $this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+                                <a ui-sref="SystemdowntimesAddSatelliteDowntime" class="dropdown-item">
+                                    <i class="fas fa-satellite"></i>
+                                    <?php echo __('Create satellite downtime'); ?>
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <button class="btn btn-xs btn-primary shadow-0 " ng-click="triggerFilter()">
