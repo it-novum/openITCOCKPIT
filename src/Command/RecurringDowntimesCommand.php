@@ -44,7 +44,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
-use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosCmd;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\StatusDat;
 
 /**
@@ -117,8 +116,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
         $systemdowntimes = $SystemdowntimesTable->getRecurringDowntimesForCronjob();
-
-        $NagiosCmd = new NagiosCmd();
         $ExternalCommands = new ExternalCommands();
 
         foreach ($systemdowntimes as $systemdowntime) {
@@ -148,16 +145,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         'downtimetype' => $systemdowntime->getDowntimetypeId(),
                                         'satellite_id' => $host->get('satellite_id')
                                     ]);
-                                    /*
-                                    $NagiosCmd->scheduleHostDowntime(
-                                        $hostUuid,
-                                        $systemdowntime->getScheduledStartTime(),
-                                        $systemdowntime->getScheduledEndTime(),
-                                        $systemdowntime->get('author'),
-                                        $systemdowntime->getRecurringDowntimeComment(),
-                                        $systemdowntime->getDowntimetypeId()
-                                    );
-                                    */
                                 } catch (RecordNotFoundException $e) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $SystemdowntimesTable->delete($systemdowntime);
@@ -175,16 +162,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         'author'        => $systemdowntime->get('author'),
                                         'downtimetype'  => $systemdowntime->getDowntimetypeId(),
                                     ]);
-                                    /*
-                                     $NagiosCmd->scheduleHostgroupDowntime(
-                                         $hostgroupUuid,
-                                         $systemdowntime->getScheduledStartTime(),
-                                         $systemdowntime->getScheduledEndTime(),
-                                         $systemdowntime->get('author'),
-                                         $systemdowntime->getRecurringDowntimeComment(),
-                                         $systemdowntime->getDowntimetypeId()
-                                     );
-                                    */
                                 } catch (RecordNotFoundException $e) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $SystemdowntimesTable->delete($systemdowntime);
@@ -205,16 +182,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         'downtimetype' => $systemdowntime->getDowntimetypeId(),
                                         'satellite_id' => $service->get('host')->get('satellite_id')
                                     ]);
-                                    /*
-                                                                        $NagiosCmd->scheduleServiceDowntime(
-                                                                            $service->get('host')->get('uuid'),
-                                                                            $service->get('uuid'),
-                                                                            $systemdowntime->getScheduledStartTime(),
-                                                                            $systemdowntime->getScheduledEndTime(),
-                                                                            $systemdowntime->get('author'),
-                                                                            $systemdowntime->getRecurringDowntimeComment()
-                                                                        );
-                                    */
                                 } catch (RecordNotFoundException $e) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $SystemdowntimesTable->delete($systemdowntime);
@@ -255,16 +222,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                     'author'       => $systemdowntime->get('author'),
                                     'downtimetype' => $systemdowntime->getDowntimetypeId()
                                 ]);
-                                /*
-                                $NagiosCmd->scheduleContainerDowntime(
-                                    $hostUuids,
-                                    $systemdowntime->getScheduledStartTime(),
-                                    $systemdowntime->getScheduledEndTime(),
-                                    $systemdowntime->get('author'),
-                                    $systemdowntime->getRecurringDowntimeComment(),
-                                    $systemdowntime->getDowntimetypeId()
-                                );
-                                */
                                 break;
 
                             case OBJECT_SATELLITE: //Satellite downtimes
@@ -287,16 +244,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                             'author'       => $systemdowntime->get('author'),
                                             'downtimetype' => $systemdowntime->getDowntimetypeId()
                                         ]);
-                                        /*
-                                        $NagiosCmd->scheduleContainerDowntime(
-                                            $hostUuids,
-                                            $systemdowntime->getScheduledStartTime(),
-                                            $systemdowntime->getScheduledEndTime(),
-                                            $systemdowntime->get('author'),
-                                            $systemdowntime->getRecurringDowntimeComment(),
-                                            $systemdowntime->getDowntimetypeId()
-                                        );
-                                        */
                                         break;
 
                                     } catch (RecordNotFoundException $e) {
@@ -334,17 +281,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         'downtimetype' => $systemdowntime->getDowntimetypeId(),
                                         'satellite_id' => $host->get('satellite_id')
                                     ]);
-
-                                    /*
-                                    $NagiosCmd->scheduleHostDowntime(
-                                        $hostUuid,
-                                        $systemdowntime->getScheduledStartTime(),
-                                        $systemdowntime->getScheduledEndTime(),
-                                        $systemdowntime->get('author'),
-                                        $systemdowntime->getRecurringDowntimeComment(),
-                                        $systemdowntime->getDowntimetypeId()
-                                    );
-                                    */
                                 } catch (RecordNotFoundException $e) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $SystemdowntimesTable->delete($systemdowntime);
@@ -362,17 +298,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         'author'        => $systemdowntime->get('author'),
                                         'downtimetype'  => $systemdowntime->getDowntimetypeId(),
                                     ]);
-
-                                    /*
-                                    $NagiosCmd->scheduleHostgroupDowntime(
-                                        $hostgroupUuid,
-                                        $systemdowntime->getScheduledStartTime(),
-                                        $systemdowntime->getScheduledEndTime(),
-                                        $systemdowntime->get('author'),
-                                        $systemdowntime->getRecurringDowntimeComment(),
-                                        $systemdowntime->getDowntimetypeId()
-                                    );
-                                    */
                                 } catch (RecordNotFoundException $e) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $SystemdowntimesTable->delete($systemdowntime);
@@ -393,16 +318,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         'downtimetype' => $systemdowntime->getDowntimetypeId(),
                                         'satellite_id' => $service->get('host')->get('satellite_id')
                                     ]);
-                                    /*
-                                    $NagiosCmd->scheduleServiceDowntime(
-                                        $service->get('host')->get('uuid'),
-                                        $service->get('uuid'),
-                                        $systemdowntime->getScheduledStartTime(),
-                                        $systemdowntime->getScheduledEndTime(),
-                                        $systemdowntime->get('author'),
-                                        $systemdowntime->getRecurringDowntimeComment()
-                                    );
-                                    */
                                 } catch (RecordNotFoundException $e) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $SystemdowntimesTable->delete($systemdowntime);
@@ -443,16 +358,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                     'author'       => $systemdowntime->get('author'),
                                     'downtimetype' => $systemdowntime->getDowntimetypeId()
                                 ]);
-                                /*
-                                $NagiosCmd->scheduleContainerDowntime(
-                                    $hostUuids,
-                                    $systemdowntime->getScheduledStartTime(),
-                                    $systemdowntime->getScheduledEndTime(),
-                                    $systemdowntime->get('author'),
-                                    $systemdowntime->getRecurringDowntimeComment(),
-                                    $systemdowntime->getDowntimetypeId()
-                                );
-                                */
                                 break;
 
                             case OBJECT_SATELLITE: //Satellite downtimes
@@ -475,18 +380,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                             'author'       => $systemdowntime->get('author'),
                                             'downtimetype' => $systemdowntime->getDowntimetypeId()
                                         ]);
-                                        /*
-                                        $NagiosCmd->scheduleContainerDowntime(
-                                            $hostUuids,
-                                            $systemdowntime->getScheduledStartTime(),
-                                            $systemdowntime->getScheduledEndTime(),
-                                            $systemdowntime->get('author'),
-                                            $systemdowntime->getRecurringDowntimeComment(),
-                                            $systemdowntime->getDowntimetypeId()
-                                        );
-                                        */
                                         break;
-
                                     } catch (RecordNotFoundException $e) {
                                         // The object for recurring downtime was deleted, so we delete the downtime
                                         $SystemdowntimesTable->delete($systemdowntime);
@@ -524,16 +418,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         'downtimetype' => $systemdowntime->getDowntimetypeId(),
                                         'satellite_id' => $host->get('satellite_id')
                                     ]);
-                                    /*
-                                    $NagiosCmd->scheduleHostDowntime(
-                                        $hostUuid,
-                                        $systemdowntime->getScheduledStartTime(),
-                                        $systemdowntime->getScheduledEndTime(),
-                                        $systemdowntime->get('author'),
-                                        $systemdowntime->getRecurringDowntimeComment(),
-                                        $systemdowntime->getDowntimetypeId()
-                                    );
-                                    */
                                 } catch (RecordNotFoundException $e) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $SystemdowntimesTable->delete($systemdowntime);
@@ -551,21 +435,10 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         'author'        => $systemdowntime->get('author'),
                                         'downtimetype'  => $systemdowntime->getDowntimetypeId(),
                                     ]);
-                                    /*
-                                    $NagiosCmd->scheduleHostgroupDowntime(
-                                        $hostgroupUuid,
-                                        $systemdowntime->getScheduledStartTime(),
-                                        $systemdowntime->getScheduledEndTime(),
-                                        $systemdowntime->get('author'),
-                                        $systemdowntime->getRecurringDowntimeComment(),
-                                        $systemdowntime->getDowntimetypeId()
-                                    );
-                                    */
                                 } catch (RecordNotFoundException $e) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $SystemdowntimesTable->delete($systemdowntime);
                                 }
-
                                 break;
 
                             case OBJECT_SERVICE:
@@ -581,16 +454,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         'downtimetype' => $systemdowntime->getDowntimetypeId(),
                                         'satellite_id' => $service->get('host')->get('satellite_id')
                                     ]);
-                                    /*
-                                    $NagiosCmd->scheduleServiceDowntime(
-                                        $service->get('host')->get('uuid'),
-                                        $service->get('uuid'),
-                                        $systemdowntime->getScheduledStartTime(),
-                                        $systemdowntime->getScheduledEndTime(),
-                                        $systemdowntime->get('author'),
-                                        $systemdowntime->getRecurringDowntimeComment()
-                                    );
-                                    */
                                 } catch (RecordNotFoundException $e) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $SystemdowntimesTable->delete($systemdowntime);
@@ -631,17 +494,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                     'author'       => $systemdowntime->get('author'),
                                     'downtimetype' => $systemdowntime->getDowntimetypeId()
                                 ]);
-
-                                /*
-                                $NagiosCmd->scheduleContainerDowntime(
-                                    $hostUuids,
-                                    $systemdowntime->getScheduledStartTime(),
-                                    $systemdowntime->getScheduledEndTime(),
-                                    $systemdowntime->get('author'),
-                                    $systemdowntime->getRecurringDowntimeComment(),
-                                    $systemdowntime->getDowntimetypeId()
-                                );
-                                */
                                 break;
 
                             case OBJECT_SATELLITE: //Satellite downtimes
@@ -665,17 +517,6 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                             'author'       => $systemdowntime->get('author'),
                                             'downtimetype' => $systemdowntime->getDowntimetypeId()
                                         ]);
-                                        /*
-                                        $NagiosCmd->scheduleContainerDowntime(
-                                            $hostUuids,
-                                            $systemdowntime->getScheduledStartTime(),
-                                            $systemdowntime->getScheduledEndTime(),
-                                            $systemdowntime->get('author'),
-                                            $systemdowntime->getRecurringDowntimeComment(),
-                                            $systemdowntime->getDowntimetypeId()
-                                        );
-                                        */
-
                                         break;
 
                                     } catch (RecordNotFoundException $e) {
