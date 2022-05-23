@@ -479,42 +479,51 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <!-- api key start-->
-
                         <fieldset>
                             <legend class="margin-0 padding-top-10">
                                 <h4><?php echo __('Api keys'); ?> </h4>
                             </legend>
                             <div ng-repeat="(index,apikey) in post.User.apikeys">
-                                <table class="table-default col-lg-12">
-                                    <tr class="col-lg-12">
-                                        <td class=""><?php echo __('Description'); ?></td>
-                                        <td class="col-8"><?php echo __('Api key'); ?></td>
-                                    </tr>
-                                </table>
-                                <!--label></label-->
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control col-lg-4 mr-2"
-                                           ng-model="apikey.description" maxlength="255"
-                                           id="description_{{ index }}">
-                                    <input ng-model="apikey.apikey"
-                                           class="form-control col-lg-6"
-                                           readonly
-                                           maxlength="255"
-                                           type="text"
-                                           id="ApiKey_{{ index }}">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-success"
-                                                ng-click="createApiKey(index)"
-                                                type="button"
-                                                aria-haspopup="true" aria-expanded="false">
-                                            <i class="fa fa-key"></i>
-                                            <?= __('Generate new API key'); ?>
-                                        </button>
+                                <div class="form-row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="control-label" for="description_{{ index }}">
+                                            <?php echo __('Description'); ?>
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" id="description_{{ index }}"
+                                               ng-model="apikey.description" maxlength="255">
+                                        <div ng-repeat="error in errors.apikeys[index].description">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
-                                    <button class="btn btn-danger btn-sm waves-effect waves-themed ml-2" type="button"
-                                            ng-click="removeApikey(index)">
-                                        <i class="fa fa-trash fa-lg"></i>
-                                    </button>
+                                    <div class="col-md-8 mb-3">
+                                        <label class="control-label" for="ApiKey_{{ index }}">
+                                            <?php echo __('Api key'); ?>
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="ApiKey_{{ index }}"
+                                                   readonly
+                                                   ng-model="apikey.apikey">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-success waves-effect waves-themed"
+                                                        ng-click="createApiKey(index)"
+                                                        type="button"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    <i class="fa fa-key"></i>
+                                                    <?= __('Generate new API key'); ?>
+                                                </button>
+                                            </div>
+                                            <button class="btn btn-danger btn-sm waves-effect waves-themed ml-2"
+                                                    type="button"
+                                                    ng-click="removeApikey(index)">
+                                                <i class="fa fa-trash fa-lg"></i>
+                                            </button>
+                                        </div>
+                                        <div ng-repeat="error in errors.apikeys[index].apikey">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </fieldset>
