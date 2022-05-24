@@ -250,8 +250,10 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
         }
 
         $statusenginePath = 'naemon';
+        $configToExport['monitoring_engine'] = 'naemon';
         if ($MonitoringEngine->isNagios()) {
             $statusenginePath = 'nagios';
+            $configToExport['monitoring_engine'] = 'nagios';
         }
 
         $configToExport['statusengine_path'] = $statusenginePath;
