@@ -128,7 +128,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('State since'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ servicestatus.last_state_change_user }}">
                                         {{ servicestatus.last_state_change }}
                                     </div>
                                 </div>
@@ -136,7 +136,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('Last check'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ servicestatus.lastCheckUser }}">
                                         {{ servicestatus.lastCheck }}
                                     </div>
                                 </div>
@@ -146,7 +146,8 @@ use Cake\Core\Plugin;
                                     </div>
                                     <div class="col-6">
                                             <span
-                                                ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false"
+                                                title="{{ servicestatus.nextCheckUser }}">
                                                 {{ servicestatus.nextCheck }}
                                             </span>
                                         <span
@@ -820,19 +821,24 @@ use Cake\Core\Plugin;
                                 <div ng-show="servicestatus.isInMonitoring">
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('State since'); ?></div>
-                                        <h3 class="margin-top-0">{{ servicestatus.last_state_change }}</h3>
+                                        <h3 class="margin-top-0" title="{{ servicestatus.last_state_change_user }}">
+                                            {{ servicestatus.last_state_change }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Last check'); ?></div>
-                                        <h3 class="margin-top-0">{{ servicestatus.lastCheck }}</h3>
+                                        <h3 class="margin-top-0" title="{{ servicestatus.lastCheckUser }}">
+                                            {{ servicestatus.lastCheck }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Next check'); ?></div>
                                         <h3 class="margin-top-0">
                                                 <span
-                                                    ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                    ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false"
+                                                    title="{{ servicestatus.nextCheckUser }}">
                                                     {{ servicestatus.nextCheck }}
                                                     <small style="color: #333;" ng-show="servicestatus.latency > 1">
                                                         (+ {{ servicestatus.latency }})

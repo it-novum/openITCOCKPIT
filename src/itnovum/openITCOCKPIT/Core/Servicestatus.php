@@ -474,9 +474,16 @@ class Servicestatus {
     public function toArrayForBrowser() {
         $arr = $this->toArray();
         $arr['lastHardStateChange'] = $this->UserTime->secondsInHumanShort(time() - $this->getLastHardStateChange());
+        $arr['lastHardStateChangeUser'] = $this->UserTime->format($this->getLastHardStateChange());
+
         $arr['last_state_change'] = $this->UserTime->secondsInHumanShort(time() - $this->getLastStateChange());
+        $arr['last_state_change_user'] = $this->UserTime->format($this->getLastStateChange());
+
         $arr['lastCheck'] = $this->UserTime->timeAgoInWords($this->getLastCheck());
+        $arr['lastCheckUser'] = $this->UserTime->format($this->getLastCheck());
+
         $arr['nextCheck'] = $this->UserTime->timeAgoInWords($this->getNextCheck());
+        $arr['nextCheckUser'] = $this->UserTime->format($this->getNextCheck());
         return $arr;
     }
 
