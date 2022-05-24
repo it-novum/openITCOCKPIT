@@ -33,7 +33,6 @@ use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemfailuresTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\NotFoundException;
-use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -44,6 +43,7 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\Reports\DowntimesMerger;
 use itnovum\openITCOCKPIT\Core\Reports\StatehistoryConverter;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
@@ -184,7 +184,7 @@ class InstantreportCreator {
                     $DowntimeHostConditions->setFrom($fromDate);
                     $DowntimeHostConditions->setTo($toDate);
                     $DowntimeHostConditions->setContainerIds($this->MY_RIGHTS);
-                    $DowntimeHostConditions->includeCancelledDowntimes(false);
+                    $DowntimeHostConditions->includeCancelledDowntimes();
                     $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => 'ASC']);
                     $DowntimeHostConditions->setHostUuid($instantReportHostData['uuid']);
                     /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
@@ -256,26 +256,25 @@ class InstantreportCreator {
                 /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
                 $statehistoriesHost = $StatehistoryHostsTable->getStatehistoryIndex($StatehistoryHostConditions);
 
-                if (empty($statehistoriesHost)) {
-                    $record = $StatehistoryHostsTable->getLastRecord($StatehistoryHostConditions);
-                    if (!empty($record)) {
-                        $statehistoriesHost[] = $record->set('state_time', $fromDate);
-                    }
-                }
 
-                if (empty($statehistoriesHost)) {
-                    $HoststatusTable = $this->DbBackend->getHoststatusTable();
-                    $HoststatusFields = new HoststatusFields($this->DbBackend);
-                    $HoststatusFields
-                        ->currentState()
-                        ->lastHardState()
-                        ->isHardstate()
-                        ->lastStateChange();
-                    $hoststatus = $HoststatusTable->byUuid($instantReportHostData['uuid'], $HoststatusFields);
+                $HoststatusTable = $this->DbBackend->getHoststatusTable();
+                $HoststatusFields = new HoststatusFields($this->DbBackend);
+                $HoststatusFields
+                    ->currentState()
+                    ->lastHardState()
+                    ->isHardstate()
+                    ->lastStateChange();
+                $hoststatus = $HoststatusTable->byUuid($instantReportHostData['uuid'], $HoststatusFields);
+
+                $record = $StatehistoryHostsTable->getLastRecord($StatehistoryHostConditions);
+                if (!empty($record)) {
+                    //Check the current host status to see if it would be newer than the last status history record
                     if (!empty($hoststatus)) {
                         /** @var Hoststatus $Hoststatus */
                         $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
-                        if ($Hoststatus->getLastStateChange() <= $fromDate) {
+                        $hostStatusLastStateChange = $Hoststatus->getLastStateChange();
+
+                        if ($record->get('state_time') < $hostStatusLastStateChange && $hostStatusLastStateChange <= $fromDate) {
                             $stateHistoryHostTmp = [
                                 'StatehistoryHost' => [
                                     'state_time'      => $fromDate,
@@ -289,7 +288,29 @@ class InstantreportCreator {
                             /** @var StatehistoryHost $StatehistoryHost */
                             $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
                             $statehistoriesHost[] = $StatehistoryHost;
+                        } else {
+                            $statehistoriesHost[] = $record->set('state_time', $fromDate);
                         }
+                    }
+                }
+
+                if (empty($statehistoriesHost) && !empty($hoststatus)) {
+                    /** @var Hoststatus $Hoststatus */
+                    $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+                    if ($Hoststatus->getLastStateChange() <= $fromDate) {
+                        $stateHistoryHostTmp = [
+                            'StatehistoryHost' => [
+                                'state_time'      => $fromDate,
+                                'state'           => $Hoststatus->currentState(),
+                                'last_state'      => $Hoststatus->currentState(),
+                                'last_hard_state' => $Hoststatus->getLastHardState(),
+                                'state_type'      => (int)$Hoststatus->isHardState()
+                            ]
+                        ];
+
+                        /** @var StatehistoryHost $StatehistoryHost */
+                        $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                        $statehistoriesHost[] = $StatehistoryHost;
                     }
                 }
 
@@ -322,7 +343,7 @@ class InstantreportCreator {
                         $DowntimeServiceConditions->setFrom($fromDate);
                         $DowntimeServiceConditions->setTo($toDate);
                         $DowntimeServiceConditions->setContainerIds($this->MY_RIGHTS);
-                        $DowntimeServiceConditions->includeCancelledDowntimes(false);
+                        $DowntimeServiceConditions->includeCancelledDowntimes();
                         $DowntimeServiceConditions->setOrder(['DowntimeServices.scheduled_start_time' => 'asc']);
                         $DowntimeServiceConditions->setServiceUuid($service['uuid']);
                         /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
@@ -395,13 +416,6 @@ class InstantreportCreator {
                     /** @var \Statusengine2Module\Model\Entity\StatehistoryService[] $statehistoriesService */
                     $statehistoriesService = $StatehistoryServicesTable->getStatehistoryIndex($StatehistoryServiceConditions);
 
-                    if (empty($statehistoriesService)) {
-                        $record = $StatehistoryServicesTable->getLastRecord($StatehistoryServiceConditions);
-                        if (!empty($record)) {
-                            $statehistoriesService[] = $record->set('state_time', $fromDate);
-                        }
-                    }
-
                     $ServicestatusTable = $this->DbBackend->getServicestatusTable();
                     $ServicestatusFields = new ServicestatusFields($this->DbBackend);
                     $ServicestatusFields
@@ -410,8 +424,36 @@ class InstantreportCreator {
                         ->isHardstate()
                         ->lastStateChange();
                     $servicestatus = $ServicestatusTable->byUuid($serviceUuid, $ServicestatusFields);
-                    if (!empty($servicestatus)) {
-                        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+
+                    $record = $StatehistoryServicesTable->getLastRecord($StatehistoryServiceConditions);
+                    if (!empty($record)) {
+                        //Check the current service status to see if it would be newer than the last status history record
+                        if (!empty($servicestatus)) {
+                            $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+                            $serviceStatusLastStateChange = $Servicestatus->getLastStateChange();
+
+                            if ($record->get('state_time') < $serviceStatusLastStateChange && $serviceStatusLastStateChange <= $fromDate) {
+                                $stateHistoryServiceTmp = [
+                                    'StatehistoryService' => [
+                                        'state_time'      => $fromDate,
+                                        'state'           => $Servicestatus->currentState(),
+                                        'last_state'      => $Servicestatus->currentState(),
+                                        'last_hard_state' => $Servicestatus->getLastHardState(),
+                                        'state_type'      => (int)$Servicestatus->isHardState()
+                                    ]
+                                ];
+
+                                $StatehistoryService = new StatehistoryService($stateHistoryServiceTmp['StatehistoryService']);
+                                $statehistoriesService[] = $StatehistoryService;
+                            } else {
+                                $statehistoriesService[] = $record->set('state_time', $fromDate);
+                            }
+                        }
+                    }
+
+
+                    if (empty($statehistoriesService) && !empty($servicestatus)) {
+                        $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                         if ($Servicestatus->getLastStateChange() <= $fromDate) {
                             $stateHistoryServiceTmp = [
                                 'StatehistoryService' => [
