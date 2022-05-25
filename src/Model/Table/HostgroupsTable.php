@@ -759,6 +759,29 @@ class HostgroupsTable extends Table {
                             'Hosts.description'
                         ])
                         ->contain(['HostsToContainersSharing']);
+                },
+                'Hosttemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid',
+                                        'Hosts.name',
+                                        'Hosts.hosttemplate_id'
+                                    ])
+                                    ->contain(['HostsToContainersSharing']);
+                                $query
+                                    ->leftJoinWith('Hostgroups')
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
                 }
             ])
             ->where($where)
