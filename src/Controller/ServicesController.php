@@ -2206,16 +2206,16 @@ class ServicesController extends AppController {
                     ];
 
                     $StatehistoryService = new StatehistoryService($stateHistoryServiceTmp['StatehistoryService']);
-                    $statehistoriesService[] = $StatehistoryService;
+                    $statehistoryServiceRecords[] = $StatehistoryService;
                 } else {
                     $record->set('state_time', $start);
                     $StatehistoryService = new StatehistoryService($record->toArray());
-                    $statehistoriesService[] = $StatehistoryService;
+                    $statehistoryServiceRecords[] = $StatehistoryService;
                 }
             }
         }
         //Service has no state history record for selected time range
-        if (empty($statehistoriesService)) {
+        if (empty($statehistoryServiceRecords)) {
             if (!empty($servicestatus)) {
                 $isHardstate = false;
                 if (isset($servicestatus['Servicestatus']['state_type'])) {
@@ -2233,12 +2233,17 @@ class ServicesController extends AppController {
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
-                $statehistoriesService[] = $StatehistoryService;
+                $statehistoryServiceRecords[] = $StatehistoryService;
             }
         }
 
+        foreach ($statehistoriesService as $statehistoryService) {
+            $StatehistoryService = new StatehistoryService($statehistoryService);
+            $statehistoryServiceRecords[] = $StatehistoryService;
+        }
 
-        $StatehistorySerializer = new StatehistorySerializer($statehistoriesService, $UserTime, $end, 'service');
+
+        $StatehistorySerializer = new StatehistorySerializer($statehistoryServiceRecords, $UserTime, $end, 'service');
         $this->set('servicestatehistory', $StatehistorySerializer->serialize());
         unset($StatehistorySerializer, $statehistoryServiceRecords);
 
