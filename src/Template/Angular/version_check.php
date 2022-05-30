@@ -24,7 +24,7 @@
 //	confirmation.
 ?>
 <div class="btn-group mr-2" role="group" aria-label="">
-    <button class="btn btn-default" data-original-title="<?= __('New version available!'); ?>" data-placement="bottom"
+    <button class="btn btn-default pulse-primary" data-original-title="<?= __('New version available!'); ?>" data-placement="bottom"
             rel="tooltip"
             data-container="body" ui-sref="PackageManagerIndex" ng-show="newVersionAvailable"
             href="#!/packetmanager/index"><i class="text-primary fas fa-fire"></i>
