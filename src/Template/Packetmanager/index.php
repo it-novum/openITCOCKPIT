@@ -327,7 +327,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                     <?= __('Blog'); ?>
                                 </span>
                                 <p>
-                                    <?= __('New about IT monitoring from the experts behind openITCOCKPIT '); ?>
+                                    <?= __('News about IT monitoring from the experts behind openITCOCKPIT '); ?>
                                 </p>
                                 <p class="m-0">
                                     <?= __('Visit our blog for more details:'); ?>
