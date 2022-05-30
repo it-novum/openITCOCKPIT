@@ -145,7 +145,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('State since'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ hoststatus.last_state_change_user }}">
                                         {{ hoststatus.last_state_change }}
                                     </div>
                                 </div>
@@ -153,7 +153,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('Last check'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ hoststatus.lastCheckUser }}">
                                         {{ hoststatus.lastCheck }}
                                     </div>
                                 </div>
@@ -163,8 +163,10 @@ use Cake\Core\Plugin;
                                     </div>
                                     <div class="col-6">
                                         <span
-                                            ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">{{
-                                            hoststatus.nextCheck }}</span>
+                                            ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false"
+                                            title="{{ hoststatus.nextCheckUser }}">
+                                            {{ hoststatus.nextCheck }}
+                                        </span>
                                         <span
                                             ng-if="mergedHost.active_checks_enabled === false || mergedHost.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
@@ -681,19 +683,24 @@ use Cake\Core\Plugin;
                                 <div ng-show="hoststatus.isInMonitoring">
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('State since'); ?></div>
-                                        <h3 class="margin-top-0">{{ hoststatus.last_state_change }}</h3>
+                                        <h3 class="margin-top-0" title="{{ hoststatus.last_state_change_user }}">
+                                            {{ hoststatus.last_state_change }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Last check'); ?></div>
-                                        <h3 class="margin-top-0">{{ hoststatus.lastCheck }}</h3>
+                                        <h3 class="margin-top-0" title="{{ hoststatus.lastCheckUser }}">
+                                            {{ hoststatus.lastCheck }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Next check'); ?></div>
                                         <h3 class="margin-top-0">
                                             <span
-                                                ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">
+                                                ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false"
+                                                title="{{ hoststatus.nextCheckUser }}">
                                                 {{ hoststatus.nextCheck }}
                                                 <small style="color: #333;"
                                                        ng-show="hoststatus.latency > 1">(+ {{ hoststatus.latency }})
