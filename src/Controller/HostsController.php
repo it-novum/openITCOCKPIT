@@ -2521,7 +2521,7 @@ class HostsController extends AppController {
 
         //Query state history records for host
         /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
-        $statehistories = $StatehistoryHostsTable->getStatehistoryIndex($Conditions);
+        $statehistoriesHost = $StatehistoryHostsTable->getStatehistoryIndex($Conditions);
 
 
         //Host has no state history record for selected time range
@@ -2544,12 +2544,12 @@ class HostsController extends AppController {
                     ];
 
                     $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
-                    $statehistoriesHost[] = $StatehistoryHost;
                 } else {
                     $record->set('state_time', $start);
                     $StatehistoryHost = new StatehistoryHost($record->toArray());
-                    $statehistoriesHost[] = $StatehistoryHost;
                 }
+                $statehistoriesHost[] = $StatehistoryHost;
+
             }
         }
 
@@ -2573,7 +2573,7 @@ class HostsController extends AppController {
             $statehistoriesHost[] = $StatehistoryHost;
         }
 
-        foreach ($statehistories as $statehistory) {
+        foreach ($statehistoriesHost as $statehistory) {
             $StatehistoryHost = new StatehistoryHost($statehistory);
             $statehistoriesHost[] = $StatehistoryHost;
         }
