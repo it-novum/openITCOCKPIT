@@ -228,7 +228,7 @@ class MapeditorsController extends AppController {
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
-        $properties =[];
+        $properties = [];
 
         switch ($type) {
             case 'host':
@@ -563,10 +563,14 @@ class MapeditorsController extends AppController {
                 $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
                 $hostgroup = $HostgroupsTable->getHostgroupByIdForMapeditor($objectId);
+                $hostgroup['hosts'] = array_merge(
+                    $hostgroup['hosts'],
+                    Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}')
+                );
 
-                if (!empty($hostgroup) && isset($hostgroup[0])) {
+                if (!empty($hostgroup)) {
                     if ($this->hasRootPrivileges !== false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup[0]->toArray(), 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -575,7 +579,7 @@ class MapeditorsController extends AppController {
                     $properties = $MapsTable->getHostgroupInformationForSummaryIcon(
                         $HoststatusTable,
                         $ServicestatusTable,
-                        $hostgroup[0]->toArray()
+                        $hostgroup
                     );
                     break;
                 }
@@ -587,6 +591,10 @@ class MapeditorsController extends AppController {
                 $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
                 $servicegroup = $ServicegroupsTable->getServicegroupByIdForMapeditor($objectId);
+                $servicegroup['services'] = array_merge(
+                    $servicegroup['services'],
+                    Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}')
+                );
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'services.{n}.host.hosts_to_containers_sharing.{n}.id'), false)) {

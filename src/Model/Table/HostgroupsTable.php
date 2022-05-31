@@ -375,13 +375,13 @@ class HostgroupsTable extends Table {
     public function getHostgroupByIdForMapeditor($id) {
         $query = $this->find()
             ->contain([
-                'Containers' => function (Query $q) {
+                'Containers'    => function (Query $q) {
                     return $q->select([
                         'Containers.id',
                         'Containers.name'
                     ]);
                 },
-                'Hosts'      => function (Query $q) {
+                'Hosts'         => function (Query $q) {
                     return $q->contain([
                         'HostsToContainersSharing',
                         'Services' => function (Query $q) {
@@ -397,6 +397,32 @@ class HostgroupsTable extends Table {
                     ])->where([
                         'Hosts.disabled' => 0
                     ]);
+                },
+                'Hosttemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid',
+                                        'Hosts.name',
+                                        'Hosts.hosttemplate_id'
+                                    ])
+                                    ->contain([
+                                        'HostsToContainersSharing',
+                                        'Services'
+                                    ]);
+                                $query
+                                    ->leftJoinWith('Hostgroups')
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
                 }
             ])
             ->where([
@@ -407,7 +433,7 @@ class HostgroupsTable extends Table {
                 'Hostgroups.description'
             ]);
 
-        $result = $query->all();
+        $result = $query->first();
         if (empty($result)) {
             return [];
         }
@@ -750,7 +776,7 @@ class HostgroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Hosts' => function (Query $q) {
+                'Hosts'         => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Hosts.id',
