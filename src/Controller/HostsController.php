@@ -2517,58 +2517,79 @@ class HostsController extends AppController {
         $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState()
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->lastHardStateChange();
+
+        $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
+
         //Query state history records for host
         /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
         $statehistories = $StatehistoryHostsTable->getStatehistoryIndex($Conditions);
+        $statehistoriesHost = [];
 
-        $statehistoryRecords = [];
 
         //Host has no state history record for selected time range
+
         //Get last available state history record for this host
         $record = $StatehistoryHostsTable->getLastRecord($Conditions);
         if (!empty($record)) {
-            $record->set('state_time', $start);
-            $StatehistoryHost = new StatehistoryHost($record->toArray());
-            $statehistoryRecords[] = $StatehistoryHost;
-        }
-
-        if (empty($statehistories) && empty($record)) {
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()
-                ->currentState()
-                ->isHardstate()
-                ->lastStateChange()
-                ->lastHardStateChange();
-
-            $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
             if (!empty($hoststatus)) {
-                $isHardstate = false;
-                if (isset($hoststatus['Hoststatus']['state_type'])) {
-                    $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
+                $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+                $hostStatusLastStateChange = $Hoststatus->getLastStateChange();
+                if ($record->get('state_time') < $hostStatusLastStateChange && $hostStatusLastStateChange <= $start) {
+                    $stateHistoryHostTmp = [
+                        'StatehistoryHost' => [
+                            'state_time'      => $start,
+                            'state'           => $Hoststatus->currentState(),
+                            'last_state'      => $Hoststatus->currentState(),
+                            'last_hard_state' => $Hoststatus->getLastHardState(),
+                            'state_type'      => (int)$Hoststatus->isHardState()
+                        ]
+                    ];
+
+                    $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                    $statehistoriesHost[] = $StatehistoryHost;
+                } else {
+                    $record->set('state_time', $start);
+                    $StatehistoryHost = new StatehistoryHost($record->toArray());
+                    $statehistoriesHost[] = $StatehistoryHost;
                 }
-
-                if (isset($hoststatus['Hoststatus']['is_hardstate'])) {
-                    $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
-                }
-
-                $record = [
-                    'state_time' => $hoststatus['Hoststatus']['last_state_change'],
-                    'state'      => $hoststatus['Hoststatus']['current_state'],
-                    'state_type' => $isHardstate,
-                ];
-
-                $StatehistoryHost = new StatehistoryHost($record);
-                $statehistoryRecords[] = $StatehistoryHost;
             }
         }
-        foreach ($statehistories as $statehistory) {
-            $StatehistoryHost = new StatehistoryHost($statehistory);
-            $statehistoryRecords[] = $StatehistoryHost;
+
+        if (empty($statehistoriesHost) && !empty($hoststatus)) {
+            $isHardstate = false;
+            if (isset($hoststatus['Hoststatus']['state_type'])) {
+                $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
+            }
+
+            if (isset($hoststatus['Hoststatus']['is_hardstate'])) {
+                $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
+            }
+
+            $record = [
+                'state_time' => $hoststatus['Hoststatus']['last_state_change'],
+                'state'      => $hoststatus['Hoststatus']['current_state'],
+                'state_type' => $isHardstate,
+            ];
+
+            $StatehistoryHost = new StatehistoryHost($record);
+            $statehistoriesHost[] = $StatehistoryHost;
         }
 
-        $StatehistorySerializer = new StatehistorySerializer($statehistoryRecords, $UserTime, $end, 'host');
+        foreach ($statehistories as $statehistory) {
+            $StatehistoryHost = new StatehistoryHost($statehistory);
+            $statehistoriesHost[] = $StatehistoryHost;
+        }
+
+
+        $StatehistorySerializer = new StatehistorySerializer($statehistoriesHost, $UserTime, $end, 'host');
         $this->set('statehistory', $StatehistorySerializer->serialize());
-        unset($StatehistorySerializer, $statehistoryRecords);
+        unset($StatehistorySerializer, $statehistoriesHost);
 
         /*************  HOST DOWNTIMES *************/
         $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();

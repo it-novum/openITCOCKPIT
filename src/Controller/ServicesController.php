@@ -2087,6 +2087,15 @@ class ServicesController extends AppController {
         $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->lastHardStateChange();
+
+        $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
+
         //Process conditions
         $Conditions = new StatehistoryHostConditions();
         $Conditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
@@ -2102,24 +2111,35 @@ class ServicesController extends AppController {
 
         $statehistoryRecords = [];
 
-        //Host has no state history record for selected time range
         //Get last available state history record for this host
         $record = $StatehistoryHostsTable->getLastRecord($Conditions);
         if (!empty($record)) {
-            $record->set('state_time', $start);
-            $StatehistoryHost = new StatehistoryHost($record->toArray());
-            $statehistoryRecords[] = $StatehistoryHost;
+            if (!empty($hoststatus)) {
+                $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+                $hostStatusLastStateChange = $Hoststatus->getLastStateChange();
+                if ($record->get('state_time') < $hostStatusLastStateChange && $hostStatusLastStateChange <= $start) {
+                    $stateHistoryHostTmp = [
+                        'StatehistoryHost' => [
+                            'state_time'      => $start,
+                            'state'           => $Hoststatus->currentState(),
+                            'last_state'      => $Hoststatus->currentState(),
+                            'last_hard_state' => $Hoststatus->getLastHardState(),
+                            'state_type'      => (int)$Hoststatus->isHardState()
+                        ]
+                    ];
+
+                    $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                    $statehistoryRecords[] = $StatehistoryHost;
+                } else {
+                    $record->set('state_time', $start);
+                    $StatehistoryHost = new StatehistoryHost($record->toArray());
+                    $statehistoryRecords[] = $StatehistoryHost;
+                }
+            }
         }
 
-        if (empty($statehistories) && empty($record)) {
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields
-                ->currentState()
-                ->isHardstate()
-                ->lastStateChange()
-                ->lastHardStateChange();
-
-            $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
+        //Host has no state history record for selected time range
+        if (empty($statehistoryRecords)) {
             if (!empty($hoststatus)) {
                 $isHardstate = false;
                 if (isset($hoststatus['Hoststatus']['state_type'])) {
@@ -2153,6 +2173,16 @@ class ServicesController extends AppController {
         $StatehistoryServicesTable = $this->DbBackend->getStatehistoryServicesTable();
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->lastHardStateChange();
+
+        $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+
+
         //Process conditions
         $StatehistoryServiceConditions = new StatehistoryServiceConditions();
         $StatehistoryServiceConditions->setOrder(['StatehistoryServices.state_time' => 'asc']);
@@ -2164,24 +2194,34 @@ class ServicesController extends AppController {
         $statehistoriesService = $StatehistoryServicesTable->getStatehistoryIndex($StatehistoryServiceConditions);
         $statehistoryServiceRecords = [];
 
-        //Service has no state history record for selected time range
-        //Get last available state history record for this host
+        //Get last available state history record for this service
         $record = $StatehistoryServicesTable->getLastRecord($StatehistoryServiceConditions);
         if (!empty($record)) {
-            $record->set('state_time', $start);
-            $StatehistoryService = new StatehistoryService($record->toArray());
-            $statehistoryServiceRecords[] = $StatehistoryService;
+            if (!empty($servicestatus)) {
+                $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+                $serviceStatusLastStateChange = $Servicestatus->getLastStateChange();
+                if ($record->get('state_time') < $serviceStatusLastStateChange && $serviceStatusLastStateChange <= $start) {
+                    $stateHistoryServiceTmp = [
+                        'StatehistoryService' => [
+                            'state_time'      => $start,
+                            'state'           => $Servicestatus->currentState(),
+                            'last_state'      => $Servicestatus->currentState(),
+                            'last_hard_state' => $Servicestatus->getLastHardState(),
+                            'state_type'      => (int)$Servicestatus->isHardState()
+                        ]
+                    ];
+
+                    $StatehistoryService = new StatehistoryService($stateHistoryServiceTmp['StatehistoryService']);
+                    $statehistoryServiceRecords[] = $StatehistoryService;
+                } else {
+                    $record->set('state_time', $start);
+                    $StatehistoryService = new StatehistoryService($record->toArray());
+                    $statehistoryServiceRecords[] = $StatehistoryService;
+                }
+            }
         }
-
-        if (empty($statehistoriesService) && empty($record)) {
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields
-                ->currentState()
-                ->isHardstate()
-                ->lastStateChange()
-                ->lastHardStateChange();
-
-            $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+        //Service has no state history record for selected time range
+        if (empty($statehistoryServiceRecords)) {
             if (!empty($servicestatus)) {
                 $isHardstate = false;
                 if (isset($servicestatus['Servicestatus']['state_type'])) {
@@ -2199,7 +2239,7 @@ class ServicesController extends AppController {
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
-                $statehistoriesService[] = $StatehistoryService->toArray();
+                $statehistoryServiceRecords[] = $StatehistoryService;
             }
         }
 
@@ -2207,6 +2247,7 @@ class ServicesController extends AppController {
             $StatehistoryService = new StatehistoryService($statehistoryService);
             $statehistoryServiceRecords[] = $StatehistoryService;
         }
+
 
         $StatehistorySerializer = new StatehistorySerializer($statehistoryServiceRecords, $UserTime, $end, 'service');
         $this->set('servicestatehistory', $StatehistorySerializer->serialize());
