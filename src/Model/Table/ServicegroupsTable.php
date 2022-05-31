@@ -470,6 +470,50 @@ class ServicegroupsTable extends Table {
                     ])->where([
                         'Services.disabled' => 0
                     ]);
+                },
+                'Servicetemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Services' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Services.id',
+                                        'Services.servicetemplate_id',
+                                        'Services.uuid',
+                                        'Services.name'
+                                    ])
+                                    ->contain([
+                                        'Servicetemplates' => function (Query $q) {
+                                            return $q->select([
+                                                'Servicetemplates.id',
+                                                'Servicetemplates.name'
+                                            ]);
+                                        },
+                                        'Hosts'            => function (Query $q) {
+                                            return $q->contain([
+                                                'HostsToContainersSharing'
+                                            ])->select([
+                                                'Hosts.id',
+                                                'Hosts.uuid',
+                                                'Hosts.name'
+                                            ])->where([
+                                                'Hosts.disabled' => 0
+                                            ]);
+                                        }
+                                    ])
+                                    ->where([
+                                        'Services.disabled' => 0
+                                    ]);
+                                $query
+                                    ->leftJoinWith('Servicegroups')
+                                    ->whereNull('Servicegroups.id');
+                                return $query;
+                            }
+                        ]);
                 }
             ])
             ->where([
@@ -508,7 +552,7 @@ class ServicegroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Services' => function (Query $q) {
+                'Services'         => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Services.id',
@@ -534,6 +578,50 @@ class ServicegroupsTable extends Table {
                             },
                         ])
                         ->where(['Services.disabled' => 0]);
+                },
+                'Servicetemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Services' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Services.id',
+                                        'Services.servicetemplate_id',
+                                        'Services.uuid',
+                                        'Services.name'
+                                    ])
+                                    ->contain([
+                                        'Servicetemplates' => function (Query $q) {
+                                            return $q->select([
+                                                'Servicetemplates.id',
+                                                'Servicetemplates.name'
+                                            ]);
+                                        },
+                                        'Hosts'            => function (Query $q) {
+                                            return $q->contain([
+                                                'HostsToContainersSharing'
+                                            ])->select([
+                                                'Hosts.id',
+                                                'Hosts.uuid',
+                                                'Hosts.name'
+                                            ])->where([
+                                                'Hosts.disabled' => 0
+                                            ]);
+                                        }
+                                    ])
+                                    ->where([
+                                        'Services.disabled' => 0
+                                    ]);
+                                $query
+                                    ->leftJoinWith('Servicegroups')
+                                    ->whereNull('Servicegroups.id');
+                                return $query;
+                            }
+                        ]);
                 }
             ])
             ->where($where)
