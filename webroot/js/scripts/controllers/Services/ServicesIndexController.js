@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService){
+    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, NotyService){
         $rootScope.lastObjectName = null;
         var startTimestamp = new Date().getTime();
 
@@ -13,6 +13,7 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
 
         /*** Filter Settings ***/
+        filterId = QueryStringService.getStateValue($stateParams, 'filter');
         var defaultFilter = function(){
             $scope.filter = {
                 Servicestatus: {
@@ -55,6 +56,18 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.showFilter = false;
+
+        $scope.bookmark = {
+            name: '',
+            default: false,
+            filter: $scope.filter ?? {}
+        }
+        $scope.bookmark_selects = [];
+        $scope.bookmarks = [];
+        $scope.select = null;
+        $scope.filterUrl = '';
+        $scope.showFilterUrl = false;
+        $scope.bookmarkError = '';
 
         $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
@@ -133,7 +146,190 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter;
+            if($scope.showFilter === true) {
+                $scope.getBookmarks();
+            }
         };
+
+        $scope.triggerBookmarkFilter = function(){
+            $scope.showBookmarkFilter = !$scope.showBookmarkFilter === true;
+        };
+
+        $scope.saveBookmark = function() {
+            var params = {
+                'angular': true,
+            }
+            if($scope.bookmark.filter ){
+                $scope.bookmark.filter = $scope.filter;
+            }
+            var data = $scope.bookmark;
+            $http.post("/services/saveBookmark.json", data, {
+                params: params
+            }).then(function(result){
+                    var bookmarks = result.data.bookmarks ?? [];
+                    var existDefault = false;
+                    bookmarks.forEach(function(item, index){
+                        item.filter = JSON.parse(item.filter);
+                        if(item.default === true){
+                            $scope.filter = item.filter;
+                            $scope.bookmark = item;
+                            $scope.select = item.id;
+                            existDefault = true;
+                        }
+                        if(!existDefault){
+                            $scope.resetFilter();
+                        }
+
+                    });
+                    $scope.bookmarks = bookmarks;
+                    $scope.bookmarkError = '';
+                    NotyService.genericSuccess({
+                        message: 'Filter saved!',
+                        // timeout: timeout
+                    });
+                },
+                function(error){
+                    if (error.status === 400) {
+                        $scope.bookmarkError = error.data.error.error;
+                    }
+                });
+        };
+
+        $scope.getBookmarks = function() {
+            var data = {};
+            var params = {
+                'angular': true,
+            }
+            $http.get("/services/getBookmarks.json", data, {
+                params: params
+            }). then(function(result){
+                    var bookmarks = result.data.bookmarks;
+                    var defaultItem = false;
+                    bookmarks.forEach(function (item, index){
+                        item.filter = JSON.parse(item.filter)
+                        if(item.default === true){
+                            defaultItem = true;
+                            $scope.filter = item.filter;
+                            $scope.bookmark = item;
+                            $scope.select = item.id;
+                        }
+                    });
+                    if(!defaultItem){
+                        $scope.bookmark.name = '';
+                        $scope.resetFilter();
+                    }
+                    $scope.bookmarks = bookmarks;
+                },
+                function(error){
+                    if (error.status == 400) {
+                        $scope.errormsg = error.data.error;
+                        console.log($scope.errormsg);
+                    }
+                });
+        };
+
+        $scope.showBookmarkFilterUrl = function (){
+            $scope.showFilterUrl = !$scope.showFilterUrl === true;
+            $scope.computeBookmarkUrl()
+        };
+
+        $scope.computeBookmarkUrl = function() {
+            if($scope.bookmark.url){
+                $scope.filterUrl = 'https://' + $scope.bookmark.url + '/#!/hosts/index?filter=' + $scope.bookmark.uuid;
+            } else {
+                $scope.filterUrl = '';
+            }
+        }
+
+        $scope.copy2Clipboard = function (){
+            var copyText = document.getElementById("filterUrl");
+            copyText.select();
+            navigator.clipboard.writeText(copyText.value);
+        }
+
+        $scope.deleteBookmark = function() {
+            $('#deleteBookmarkModal').modal('hide');
+            var params = {
+                'angular': true,
+            }
+            var data = $scope.bookmark;
+            $http.post("/services/deleteBookmark.json", data, {
+                params: params
+            }).then(function(result){
+                    var bookmarks = result.data.bookmarks;
+                    var defaultItem = false;
+                    bookmarks.forEach(function(item, index){
+                        item.filter = JSON.parse(item.filter);
+                        if(item.default === true){
+                            defaultItem = true;
+                            $scope.filter = item.filter;
+                            $scope.bookmark = item;
+                            $scope.select = item.id;
+                        }
+                    });
+                    if(!defaultItem){
+                        $scope.bookmark.name = '';
+                        $scope.resetFilter();
+                    }
+                    $scope.bookmarks = bookmarks;
+                },
+                function(error){
+                    if (error.status === 400) {
+                        $scope.errormsg = error.data.error;
+                        console.log($scope.errormsg);
+                    }
+                });
+        };
+
+        $scope.loadDefaultFilterBookmark = function() {
+
+            var params = {
+                'angular': true,
+            }
+            var data = {
+                filter: filterId
+            }
+            $http.post("/services/getDefaultBookmark.json", data, {
+                params: params
+            }).then(function(result){
+                    //$scope.init = false;
+                    if(result.data.bookmark) {
+                        $scope.filter = JSON.parse(result.data.bookmark.filter) ?? defaultFilter();
+                    }
+                        $scope.load();
+                        $scope.setTagInputs();
+                },
+                function(error){
+                    if (error.status == 400) {
+                        $scope.errormsg = error.data.error;
+                        console.log($scope.errormsg);
+                    }
+                });
+        };
+
+        $scope.itemChanged = function(){
+            $scope.bookmarks.forEach(function (item, index){
+                if (item.id == $scope.select) {
+                    $scope.bookmark = item;
+                    $scope.filter = item.filter;
+                    $scope.computeBookmarkUrl();
+                }
+            });
+        }
+
+        //taginputs handled by JQuery!
+        $scope.setTagInputs = function () {
+            if($scope.filter.Services.keywords !== ''){
+                $("#ServicesKeywordsInput").tagsinput('add', $scope.filter.Services.keywords);
+            } else {
+                $("#ServicesKeywordsInput").tagsinput('removeAll');
+            }
+            if($scope.filter.Services.not_keywords !== ''){
+                $("#ServicesNotKeywordsInput").tagsinput('add', $scope.filter.Services.not_keywords);
+            } else {
+                $("#ServicesNotKeywordsInput").tagsinput('removeAll');
+            }
+        }
 
         $scope.resetFilter = function(){
             defaultFilter();
@@ -141,6 +337,7 @@ angular.module('openITCOCKPIT')
             $('#ServicesNotKeywordsInput').tagsinput('removeAll');
 
             $scope.undoSelection();
+            //$scope.bookmark.filter = $scope.filter;
         };
 
         $scope.selectAll = function(){
@@ -272,6 +469,7 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         defaultFilter();
         $scope.loadTimezone();
+        $scope.loadDefaultFilterBookmark();
         SortService.setCallback($scope.load);
 
         jQuery(function(){
@@ -279,9 +477,12 @@ angular.module('openITCOCKPIT')
         });
 
         $scope.$watch('filter', function(){
-            $scope.currentPage = 1;
-            $scope.undoSelection();
-            $scope.load();
+            if($scope.init === false){
+                $scope.currentPage = 1;
+                $scope.undoSelection();
+                $scope.load();
+                $scope.setTagInputs();
+            }
         }, true);
 
         $scope.changeMode = function(val){

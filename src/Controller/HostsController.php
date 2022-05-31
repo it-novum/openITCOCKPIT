@@ -51,6 +51,7 @@ use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use App\Model\Table\FilterBookmarksTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -270,6 +271,121 @@ class HostsController extends AppController {
 
         $this->set('all_hosts', $all_hosts);
         $this->viewBuilder()->setOption('serialize', ['all_hosts']);
+    }
+
+
+    public function saveBookmark(){
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+            //return;
+        }
+        $data = [];
+        $data = $this->request->getData();
+        $data['filter'] = json_encode($data['filter']);
+        if ($this->request->is('post')) {
+
+            if(empty($data['name'])) {
+                $errors = [];
+                $this->response = $this->response->withStatus(400);
+                $errors = [
+                    'error' => __('This field cannot be left empty')
+                ];
+                $this->set('error', $errors);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+        }
+        /** @var User $user */
+        $user = new User($this->getUser());
+        $bookmarkTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
+        //existing bookmark returns
+        if(!empty($data['id']) && !empty($data['uuid']) && !empty($data['user_id']) && $data['user_id'] == $user->getId()){
+            $bookmark = $bookmarkTable->get($data['id']);
+            //if a existing bookmark with the same name, than update the existing bookmark
+            if($bookmark->get('name') == $data['name']) {
+                $bookmark = $bookmarkTable->patchEntity($bookmark, $data);
+
+            }
+            //if existing bookmark with new name, then create new bookmark (new id, new uuid) from existing bookmark
+            else {
+                unset($data['id']);
+                $data['uuid'] = UUID::v4();
+                $data['url'] = $this->request->getUri()->getHost();
+                $bookmark = $bookmarkTable->newEntity($data);
+            }
+        }
+        // create complete new bookmark
+        else {
+            $data['uuid'] = UUID::v4();
+            $data['filter_entity'] = 'host';
+            $data['name'] = $this->request->getData('name');
+            $data['user_id'] = $user->getId();
+            $data['filter'] = json_encode($this->request->getData('filter'));
+            $data['url'] = $this->request->getUri()->getHost();
+            $bookmark = $bookmarkTable->newEntity($data);
+        }
+        //if bookmark should be default, look for and unset old default
+        if(!empty($data['default'])) {
+            $default = $bookmarkTable->getDefaultFilterByUser($user->getId(), 'host');
+            if ($default && $default->id != $data['id']) {
+                $bookmarkTable->patchEntity($default, ['default' => false]);
+                $bookmarkTable->save($default);
+            }
+        }
+        $bookmarkTable->save($bookmark);
+        if ($bookmark->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $bookmark->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+        $data = $bookmarkTable->getFilterByUser($user->getId(), 'host');
+        $this->set('bookmarks', $data);
+        $this->viewBuilder()->setOption('serialize', ['bookmarks']);
+    }
+
+    public function getBookmarks() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var User $user */
+        $user = new User($this->getUser());
+        $table = TableRegistry::getTableLocator()->get('FilterBookmarks');
+        $data = $table->getFilterByUser($user->getId(), 'host');
+        $this->set('bookmarks', $data);
+        $this->viewBuilder()->setOption('serialize', ['bookmarks']);
+    }
+
+    public function getDefaultBookmark() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $table = TableRegistry::getTableLocator()->get('FilterBookmarks');
+        $filter = $this->request->getData('filter');
+        if (!empty($filter)) {
+            $data = $table->getFilterByUuid($filter);
+        } else {
+            /** @var User $user */
+            $user = new User($this->getUser());
+            $data = $table->getDefaultFilterByUser($user->getId(), 'host');
+        }
+        $this->set('bookmark', $data);
+        $this->viewBuilder()->setOption('serialize', ['bookmark']);
+    }
+
+    public function deleteBookmark() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var User $user */
+        $user = new User($this->getUser());
+        $data = $this->request->getData();
+        $table = TableRegistry::getTableLocator()->get('FilterBookmarks');
+        $entity = $table->get($data['id']);
+        $table->delete($entity);
+        $bookmarks = $table->getFilterByUser($user->getId(), 'host');
+        $this->set('bookmarks', $bookmarks);
+        $this->viewBuilder()->setOption('serialize', ['bookmarks']);
     }
 
     public function icon() {
