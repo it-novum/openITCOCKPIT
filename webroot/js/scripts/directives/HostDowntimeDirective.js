@@ -4,8 +4,6 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
         templateUrl: '/angular/downtime_host.html',
 
         controller: function($scope){
-
-
             $scope.doDowntime = false;
             $scope.downtimeModal = {
                 comment: '',
@@ -47,8 +45,6 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
             };
 
             $scope.doHostDowntime = function(){
-
-
                 $http.post("/downtimes/validateDowntimeInputFromAngular.json?angular=true",
                     $scope.downtimeModal
                 ).then(function(result){
@@ -86,9 +82,7 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
                         $scope.errors = result.data.error;
                     }
                 });
-
             };
-
         },
 
         link: function($scope, element, attr){

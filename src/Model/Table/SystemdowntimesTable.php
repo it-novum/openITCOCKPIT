@@ -83,7 +83,7 @@ class SystemdowntimesTable extends Table {
         $validator
             ->integer('objecttype_id')
             ->allowEmptyString('objecttype_id', null, false)
-            ->inList('objecttype_id', [OBJECT_HOST, OBJECT_SERVICE, OBJECT_HOSTGROUP, OBJECT_NODE]);
+            ->inList('objecttype_id', [OBJECT_HOST, OBJECT_SERVICE, OBJECT_HOSTGROUP, OBJECT_NODE, OBJECT_SATELLITE]);
 
         $validator
             ->integer('downtimetype_id')
