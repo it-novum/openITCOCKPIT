@@ -304,6 +304,7 @@ angular.module('openITCOCKPIT')
                         $scope.errormsg = error.data.error;
                         console.log($scope.errormsg);
                     }
+                    $scope.load();
                 });
         };
 
@@ -335,9 +336,8 @@ angular.module('openITCOCKPIT')
             defaultFilter();
             $('#ServicesKeywordsInput').tagsinput('removeAll');
             $('#ServicesNotKeywordsInput').tagsinput('removeAll');
-
             $scope.undoSelection();
-            //$scope.bookmark.filter = $scope.filter;
+
         };
 
         $scope.selectAll = function(){

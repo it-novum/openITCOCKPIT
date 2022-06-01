@@ -298,6 +298,7 @@ angular.module('openITCOCKPIT')
                     $scope.errormsg = error.data.error;
                     console.log($scope.errormsg);
                 }
+                $scope.load();
             });
         };
 
@@ -329,6 +330,8 @@ angular.module('openITCOCKPIT')
 
         $scope.resetFilter = function(){
             defaultFilter();
+            $('#HostKeywordsInput').tagsinput('removeAll');
+            $('#HostNotKeywordsInput').tagsinput('removeAll');
             $scope.undoSelection();
         };
 

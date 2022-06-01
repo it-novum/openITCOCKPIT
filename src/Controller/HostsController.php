@@ -274,16 +274,14 @@ class HostsController extends AppController {
     }
 
 
-    public function saveBookmark(){
+    public function saveBookmark() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-            //return;
         }
         $data = [];
         $data = $this->request->getData();
         $data['filter'] = json_encode($data['filter']);
         if ($this->request->is('post')) {
-
             if(empty($data['name'])) {
                 $errors = [];
                 $this->response = $this->response->withStatus(400);
@@ -297,6 +295,7 @@ class HostsController extends AppController {
         }
         /** @var User $user */
         $user = new User($this->getUser());
+        /** @var FilterBookmarksTable $bookmarkTable */
         $bookmarkTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
         //existing bookmark returns
         if(!empty($data['id']) && !empty($data['uuid']) && !empty($data['user_id']) && $data['user_id'] == $user->getId()){
@@ -304,7 +303,6 @@ class HostsController extends AppController {
             //if a existing bookmark with the same name, than update the existing bookmark
             if($bookmark->get('name') == $data['name']) {
                 $bookmark = $bookmarkTable->patchEntity($bookmark, $data);
-
             }
             //if existing bookmark with new name, then create new bookmark (new id, new uuid) from existing bookmark
             else {
@@ -350,6 +348,7 @@ class HostsController extends AppController {
         }
         /** @var User $user */
         $user = new User($this->getUser());
+        /** @var FilterBookmarksTable $table */
         $table = TableRegistry::getTableLocator()->get('FilterBookmarks');
         $data = $table->getFilterByUser($user->getId(), 'host');
         $this->set('bookmarks', $data);
@@ -360,6 +359,7 @@ class HostsController extends AppController {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
+        /** @var FilterBookmarksTable $table */
         $table = TableRegistry::getTableLocator()->get('FilterBookmarks');
         $filter = $this->request->getData('filter');
         if (!empty($filter)) {
@@ -380,6 +380,7 @@ class HostsController extends AppController {
         /** @var User $user */
         $user = new User($this->getUser());
         $data = $this->request->getData();
+        /** @var FilterBookmarksTable $table */
         $table = TableRegistry::getTableLocator()->get('FilterBookmarks');
         $entity = $table->get($data['id']);
         $table->delete($entity);
