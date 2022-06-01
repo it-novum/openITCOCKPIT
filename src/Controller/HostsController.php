@@ -33,6 +33,7 @@ use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
+use App\Model\Entity\FilterBookmark;
 use App\Model\Entity\Service;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
@@ -41,6 +42,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DocumentationsTable;
+use App\Model\Table\FilterBookmarksTable;
 use App\Model\Table\HostcommandargumentvaluesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
@@ -51,7 +53,6 @@ use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
-use App\Model\Table\FilterBookmarksTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -283,7 +284,6 @@ class HostsController extends AppController {
         $data['filter'] = json_encode($data['filter']);
         if ($this->request->is('post')) {
             if(empty($data['name'])) {
-                $errors = [];
                 $this->response = $this->response->withStatus(400);
                 $errors = [
                     'error' => __('This field cannot be left empty')
@@ -294,22 +294,23 @@ class HostsController extends AppController {
             }
         }
         /** @var User $user */
-        $user = new User($this->getUser());
-        /** @var FilterBookmarksTable $bookmarkTable */
-        $bookmarkTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
+        $User = new User($this->getUser());
+        /** @var FilterBookmarksTable $FilterBookmarksTable */
+        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
         //existing bookmark returns
-        if(!empty($data['id']) && !empty($data['uuid']) && !empty($data['user_id']) && $data['user_id'] == $user->getId()){
-            $bookmark = $bookmarkTable->get($data['id']);
+        if(!empty($data['id']) && !empty($data['uuid']) && !empty($data['user_id']) && $data['user_id'] == $User->getId()){
+            /** @var FilterBookmark $FilterBookmark */
+            $FilterBookmark = $FilterBookmarksTable->get($data['id']);
             //if a existing bookmark with the same name, than update the existing bookmark
-            if($bookmark->get('name') == $data['name']) {
-                $bookmark = $bookmarkTable->patchEntity($bookmark, $data);
+            if($FilterBookmark->get('name') == $data['name']) {
+                $FilterBookmark = $FilterBookmarksTable->patchEntity($FilterBookmark, $data);
             }
             //if existing bookmark with new name, then create new bookmark (new id, new uuid) from existing bookmark
             else {
                 unset($data['id']);
                 $data['uuid'] = UUID::v4();
                 $data['url'] = $this->request->getUri()->getHost();
-                $bookmark = $bookmarkTable->newEntity($data);
+                $FilterBookmark = $FilterBookmarksTable->newEntity($data);
             }
         }
         // create complete new bookmark
@@ -317,28 +318,29 @@ class HostsController extends AppController {
             $data['uuid'] = UUID::v4();
             $data['filter_entity'] = 'host';
             $data['name'] = $this->request->getData('name');
-            $data['user_id'] = $user->getId();
+            $data['user_id'] = $User->getId();
             $data['filter'] = json_encode($this->request->getData('filter'));
             $data['url'] = $this->request->getUri()->getHost();
-            $bookmark = $bookmarkTable->newEntity($data);
+            /** @var FilterBookmark $FilterBookmark */
+            $FilterBookmark = $FilterBookmarksTable->newEntity($data);
         }
         //if bookmark should be default, look for and unset old default
         if(!empty($data['default'])) {
-            $default = $bookmarkTable->getDefaultFilterByUser($user->getId(), 'host');
-            if ($default && $default->id != $data['id']) {
-                $bookmarkTable->patchEntity($default, ['default' => false]);
-                $bookmarkTable->save($default);
+            $default = $FilterBookmarksTable->getDefaultFilterByUser($User->getId(), 'host');
+            if (!empty($default)) {
+                $FilterBookmarksTable->patchEntity($default, ['default' => false]);
+                $FilterBookmarksTable->save($default);
             }
         }
-        $bookmarkTable->save($bookmark);
-        if ($bookmark->hasErrors()) {
+        $FilterBookmarksTable->save($FilterBookmark);
+        if ($FilterBookmark->hasErrors()) {
             $this->response = $this->response->withStatus(400);
-            $this->set('error', $bookmark->getErrors());
+            $this->set('error', $FilterBookmark->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $data = $bookmarkTable->getFilterByUser($user->getId(), 'host');
-        $this->set('bookmarks', $data);
+        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), 'host');
+        $this->set('bookmarks', $filterBookmarks);
         $this->viewBuilder()->setOption('serialize', ['bookmarks']);
     }
 
@@ -347,11 +349,11 @@ class HostsController extends AppController {
             throw new MethodNotAllowedException();
         }
         /** @var User $user */
-        $user = new User($this->getUser());
-        /** @var FilterBookmarksTable $table */
-        $table = TableRegistry::getTableLocator()->get('FilterBookmarks');
-        $data = $table->getFilterByUser($user->getId(), 'host');
-        $this->set('bookmarks', $data);
+        $User = new User($this->getUser());
+        /** @var FilterBookmarksTable $FilterBookmarksTable */
+        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
+        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), 'host');
+        $this->set('bookmarks', $filterBookmarks);
         $this->viewBuilder()->setOption('serialize', ['bookmarks']);
     }
 
@@ -359,17 +361,19 @@ class HostsController extends AppController {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        /** @var FilterBookmarksTable $table */
-        $table = TableRegistry::getTableLocator()->get('FilterBookmarks');
+        /** @var FilterBookmarksTable $FilterBookmarksTable */
+        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
         $filter = $this->request->getData('filter');
         if (!empty($filter)) {
-            $data = $table->getFilterByUuid($filter);
+            /** @var FilterBookmark $FilterBookmark */
+            $FilterBookmark = $FilterBookmarksTable->getFilterByUuid($filter);
         } else {
-            /** @var User $user */
-            $user = new User($this->getUser());
-            $data = $table->getDefaultFilterByUser($user->getId(), 'host');
+            /** @var User $User */
+            $User = new User($this->getUser());
+            /** @var FilterBookmark $FilterBookmark */
+            $FilterBookmark = $FilterBookmarksTable->getDefaultFilterByUser($User->getId(), 'host');
         }
-        $this->set('bookmark', $data);
+        $this->set('bookmark', $FilterBookmark);
         $this->viewBuilder()->setOption('serialize', ['bookmark']);
     }
 
@@ -377,15 +381,15 @@ class HostsController extends AppController {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        /** @var User $user */
-        $user = new User($this->getUser());
+        /** @var User $User */
+        $User = new User($this->getUser());
         $data = $this->request->getData();
-        /** @var FilterBookmarksTable $table */
-        $table = TableRegistry::getTableLocator()->get('FilterBookmarks');
-        $entity = $table->get($data['id']);
-        $table->delete($entity);
-        $bookmarks = $table->getFilterByUser($user->getId(), 'host');
-        $this->set('bookmarks', $bookmarks);
+        /** @var FilterBookmarksTable $FilterBookmarksTable */
+        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
+        $FilterBookmark = $FilterBookmarksTable->get($data['id']);
+        $FilterBookmarksTable->delete($FilterBookmark);
+        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), 'host');
+        $this->set('bookmarks', $filterBookmarks);
         $this->viewBuilder()->setOption('serialize', ['bookmarks']);
     }
 

@@ -63,7 +63,20 @@ class FilterBookmarksTable extends Table {
         return $validator;
     }
 
-    public function getFilterByUser(int $userId, string $type) {
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['FilterBookmarks.id' => $id]);
+    }
+
+    /**
+     * @param int $userId
+     * @param string $type
+     * @return array
+     */
+    public function getFilterByUser(int $userId, string $type): array {
         $query = $this->find()
             ->where([
                 'FilterBookmarks.filter_entity' => $type,
@@ -76,6 +89,11 @@ class FilterBookmarksTable extends Table {
         return $result->toArray();
     }
 
+    /**
+     * @param int $userId
+     * @param string $type
+     * @return array|EntityInterface|null
+     */
     public function getDefaultFilterByUser(int $userId , string $type) {
         $query = $this->find()
             ->where([
@@ -87,6 +105,10 @@ class FilterBookmarksTable extends Table {
         return $query;
     }
 
+    /**
+     * @param string $uuid
+     * @return array|EntityInterface|null
+     */
     public function getFilterByUuid(string $uuid) {
         $query = $this->find()
             ->where([
