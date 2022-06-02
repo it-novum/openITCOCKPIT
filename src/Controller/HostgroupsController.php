@@ -750,20 +750,23 @@ class HostgroupsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        if ($containerId == ROOT_CONTAINER) {
-            //Don't panic! Only root users can edit /root objects ;)
-            //So no loss of selected hosts/host templates
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
-                CT_GLOBAL,
-                CT_TENANT,
-                CT_NODE
-            ]);
-        } else {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
-                CT_GLOBAL,
-                CT_TENANT,
-                CT_NODE
-            ]);
+
+        $containerIds = [$containerId];
+        if ($containerId != ROOT_CONTAINER) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(
+                $containerId,
+                false,
+                [CT_TENANT, CT_LOCATION, CT_NODE]
+            );
+
+            //remove ROOT_CONTAINER from result
+            $containerIds = array_filter(
+                $containerIds,
+                function ($v) {
+                    return $v > 1;
+                }, ARRAY_FILTER_USE_BOTH
+            );
+            sort($containerIds);
         }
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
@@ -776,9 +779,9 @@ class HostgroupsController extends AppController {
     }
 
     /**
-     * @param int|null $containerId
+     * @return void
      */
-    public function loadHosttemplates($containerId = null) {
+    public function loadHosttemplates() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -792,11 +795,23 @@ class HostgroupsController extends AppController {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
-        $containerIds = [ROOT_CONTAINER, $containerId];
-        if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-        }
+        $containerIds = [$containerId];
+        if ($containerId != ROOT_CONTAINER) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(
+                $containerId,
+                false,
+                [CT_TENANT, CT_LOCATION, CT_NODE]
+            );
 
+            //remove ROOT_CONTAINER from result
+            $containerIds = array_filter(
+                $containerIds,
+                function ($v) {
+                    return $v > 1;
+                }, ARRAY_FILTER_USE_BOTH
+            );
+            sort($containerIds);
+        }
         $hosttemplates = Api::makeItJavaScriptAble(
             $HosttemplatesTable->getHosttemplatesForAngular($containerIds, $HosttemplateFilter, $selected)
         );

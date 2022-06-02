@@ -764,11 +764,6 @@ class ContainersTable extends Table {
      * @return array
      */
     public function getContainerWithAllChildren($containerId, $MY_RIGHTS = []) {
-        $containersMap = [
-            'nodes' => [],
-            'edges' => []
-        ];
-
         $parentContainer = $this->getContainerById($containerId);
 
         $query = $this->find('children', ['for' => $containerId]);
