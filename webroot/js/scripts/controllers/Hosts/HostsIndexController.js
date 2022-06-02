@@ -58,7 +58,7 @@ angular.module('openITCOCKPIT')
         }
         $scope.bookmark_selects = [];
         $scope.bookmarks = [];
-        $scope.select = null;
+        $scope.select = 0;
         $scope.filterUrl = '';
         $scope.showFilterUrl = false;
         $scope.bookmarkError = '';
@@ -153,12 +153,13 @@ angular.module('openITCOCKPIT')
         $scope.saveBookmark = function() {
             var params = {
                 'angular': true,
+                'type': 'host'
             }
             if($scope.bookmark.filter ){
                 $scope.bookmark.filter = $scope.filter;
             }
             var data = $scope.bookmark;
-            $http.post("/hosts/saveBookmark.json", data, {
+            $http.post("/filter_bookmarks/add.json", data, {
                 params: params
             }).then(function(result){
                     var bookmarks = result.data.bookmarks ?? [];
@@ -169,10 +170,12 @@ angular.module('openITCOCKPIT')
                             $scope.filter = item.filter;
                             $scope.bookmark = item;
                             $scope.select = item.id;
+                            $scope.setTagInputs();
                             existDefault = true;
                         }
                         if(!existDefault){
                             $scope.resetFilter();
+                            $scope.bookmarkReset();
                         }
 
                     });
@@ -184,9 +187,7 @@ angular.module('openITCOCKPIT')
                     });
                 },
                 function(error){
-                    if (error.status === 400) {
-                        $scope.bookmarkError = error.data.error.error;
-                    }
+                    $scope.bookmarkError = error.data.message;
                 });
         };
 
@@ -194,8 +195,9 @@ angular.module('openITCOCKPIT')
             var data = {};
             var params = {
                 'angular': true,
+                'type': 'host'
             }
-            $http.get("/hosts/getBookmarks.json", data, {
+            $http.post("/filter_bookmarks/index.json", data, {
                 params: params
             }). then(function(result){
                 var bookmarks = result.data.bookmarks;
@@ -210,16 +212,13 @@ angular.module('openITCOCKPIT')
                    }
                 });
                 if(!defaultItem){
-                    $scope.bookmark.name = '';
                     $scope.resetFilter();
+                    $scope.bookmarkReset();
                 }
                 $scope.bookmarks = bookmarks;
             },
                 function(error){
-                    if (error.status == 400) {
-                        $scope.errormsg = error.data.error;
-                        console.log($scope.errormsg);
-                    }
+                    console.log(error.data.message);
                 });
         };
 
@@ -230,7 +229,7 @@ angular.module('openITCOCKPIT')
 
         $scope.computeBookmarkUrl = function() {
             if($scope.bookmark.url){
-                $scope.filterUrl = 'https://' + $scope.bookmark.url + '/#!/hosts/index?filter=' + $scope.bookmark.uuid;
+                $scope.filterUrl = $scope.bookmark.url + '/#!/hosts/index?filter=' + $scope.bookmark.uuid;
             } else {
                 $scope.filterUrl = '';
             }
@@ -246,9 +245,17 @@ angular.module('openITCOCKPIT')
             $('#deleteBookmarkModal').modal('hide');
             var params = {
                 'angular': true,
+                'type': 'host'
             }
             var data = $scope.bookmark;
-            $http.post("/hosts/deleteBookmark.json", data, {
+            if(!data.id) {
+                NotyService.genericError({
+                    message: 'Nothing to delete!',
+                     timeout: 1000
+                });
+                return;
+            }
+            $http.post("/filter_bookmarks/delete.json", data, {
                 params: params
             }).then(function(result){
                     var bookmarks = result.data.bookmarks;
@@ -263,16 +270,13 @@ angular.module('openITCOCKPIT')
                         }
                     });
                     if(!defaultItem){
-                        $scope.bookmark.name = '';
                         $scope.resetFilter();
+                        $scope.bookmarkReset();
                     }
                     $scope.bookmarks = bookmarks;
                 },
                 function(error){
-                    if (error.status === 400) {
-                        $scope.errormsg = error.data.error;
-                        console.log($scope.errormsg);
-                    }
+                    console.log(error.data.message);
                 });
         };
 
@@ -280,24 +284,22 @@ angular.module('openITCOCKPIT')
 
             var params = {
                 'angular': true,
+                'type': 'host'
             }
             var data = {
                 filter: filterId
             }
-            $http.post("/hosts/getDefaultBookmark.json", data, {
+            $http.post("/filter_bookmarks/default.json", data, {
                 params: params
             }).then(function(result){
-                if(result.data.bookmark) {
-                    $scope.filter = JSON.parse(result.data.bookmark.filter) ?? defaultFilter();
+                if(result.data.bookmark && result.data.bookmark.filter) {
+                    $scope.filter = JSON.parse(result.data.bookmark.filter);
                 }
                 $scope.load();
                 $scope.setTagInputs();
             },
             function(error){
-                if (error.status === 400) {
-                    $scope.errormsg = error.data.error;
-                    console.log($scope.errormsg);
-                }
+                console.log(error.data.message);
                 $scope.load();
             });
         };
@@ -310,8 +312,18 @@ angular.module('openITCOCKPIT')
                    $scope.bookmark = item;
                    $scope.filter = item.filter;
                    $scope.computeBookmarkUrl();
+                  // $scope.setTagInputs();
                }
             });
+        }
+
+        $scope.bookmarkReset = function() {
+            $scope.bookmark = {
+                name: '',
+                default: false,
+                filter: $scope.filter ?? {}
+            }
+            $scope.select = 0;
         }
 
         //taginputs handled by JQuery!

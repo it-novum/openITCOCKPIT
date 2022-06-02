@@ -36,7 +36,6 @@ use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
-use App\Model\Entity\FilterBookmark;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -44,7 +43,6 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
-use App\Model\Table\FilterBookmarksTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
@@ -287,124 +285,6 @@ class ServicesController extends AppController {
 
         $this->set('all_services', $all_services);
         $this->viewBuilder()->setOption('serialize', ['all_services']);
-    }
-
-    public function saveBookmark() {
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $data = [];
-        $data = $this->request->getData();
-        $data['filter'] = json_encode($data['filter']);
-        if ($this->request->is('post')) {
-            if(empty($data['name'])) {
-                $this->response = $this->response->withStatus(400);
-                $errors = [
-                    'error' => __('This field cannot be left empty')
-                ];
-                $this->set('error', $errors);
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            }
-        }
-        /** @var User $user */
-        $User = new User($this->getUser());
-        /** @var FilterBookmarksTable $FilterBookmarksTable */
-        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
-        //existing bookmark returns
-        if(!empty($data['id']) && !empty($data['uuid']) && !empty($data['user_id']) && $data['user_id'] == $User->getId()){
-            /** @var FilterBookmark $FilterBookmark */
-            $FilterBookmark = $FilterBookmarksTable->get($data['id']);
-            //if a existing bookmark with the same name, than update the existing bookmark
-            if($FilterBookmark->get('name') == $data['name']) {
-                $FilterBookmark = $FilterBookmarksTable->patchEntity($FilterBookmark, $data);
-
-            }
-            //if existing bookmark with new name, then create new bookmark (new id, new uuid) from existing bookmark
-            else {
-                unset($data['id']);
-                $data['uuid'] = UUID::v4();
-                $data['url'] = $this->request->getUri()->getHost();
-                $FilterBookmark = $FilterBookmarksTable->newEntity($data);
-            }
-        }
-        // create complete new bookmark
-        else {
-            $data['uuid'] = UUID::v4();
-            $data['filter_entity'] = 'service';
-            $data['name'] = $this->request->getData('name');
-            $data['user_id'] = $User->getId();
-            $data['filter'] = json_encode($this->request->getData('filter'));
-            $data['url'] = $this->request->getUri()->getHost();
-            $FilterBookmark = $FilterBookmarksTable->newEntity($data);
-        }
-        //if bookmark should be default, look for and unset old default
-        if(!empty($data['default'])) {
-            $default = $FilterBookmarksTable->getDefaultFilterByUser($User->getId(), 'service');
-            if (!empty($default)) {
-                $FilterBookmarksTable->patchEntity($default, ['default' => false]);
-                $FilterBookmarksTable->save($default);
-            }
-        }
-        $FilterBookmarksTable->save($FilterBookmark);
-        if ($FilterBookmark->hasErrors()) {
-            $this->response = $this->response->withStatus(400);
-            $this->set('error', $FilterBookmark->getErrors());
-            $this->viewBuilder()->setOption('serialize', ['error']);
-            return;
-        }
-        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), 'service');
-        $this->set('bookmarks', $filterBookmarks);
-        $this->viewBuilder()->setOption('serialize', ['bookmarks']);
-    }
-
-    public function getBookmarks() {
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        /** @var User $user */
-        $User = new User($this->getUser());
-        /** @var FilterBookmarksTable $FilterBookmarksTable */
-        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
-        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), 'service');
-        $this->set('bookmarks', $filterBookmarks);
-        $this->viewBuilder()->setOption('serialize', ['bookmarks']);
-    }
-
-    public function getDefaultBookmark() {
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        /** @var FilterBookmarksTable $FilterBookmarksTable */
-        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
-        $filter = $this->request->getData('filter');
-        if (!empty($filter)) {
-            $FilterBookmark = $FilterBookmarksTable->getFilterByUuid($filter);
-        } else {
-            /** @var User $user */
-            $User = new User($this->getUser());
-            /** @var FilterBookmark $FilterBookmark */
-            $FilterBookmark = $FilterBookmarksTable->getDefaultFilterByUser($User->getId(), 'service');
-        }
-        $this->set('bookmark', $FilterBookmark);
-        $this->viewBuilder()->setOption('serialize', ['bookmark']);
-    }
-
-    public function deleteBookmark() {
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        /** @var User $user */
-        $User = new User($this->getUser());
-        $data = $this->request->getData();
-        /** @var FilterBookmarksTable $FilterBookmarksTable */
-        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
-        /** @var FilterBookmark $FilterBookmark */
-        $FilterBookmark = $FilterBookmarksTable->get($data['id']);
-        $FilterBookmarksTable->delete($FilterBookmark);
-        $bookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), 'service');
-        $this->set('bookmarks', $bookmarks);
-        $this->viewBuilder()->setOption('serialize', ['bookmarks']);
     }
 
     /**

@@ -241,6 +241,12 @@ class AclDependencies {
             ->allow('Dashboards', 'calendarWidget');
 
         $this
+            ->allow('FilterBookmarks', 'index')
+            ->allow('FilterBookmarks', 'default')
+            ->allow('FilterBookmarks', 'add')
+            ->allow('FilterBookmarks', 'delete');
+
+        $this
             ->allow('Hosts', 'view')
             ->allow('Hosts', 'icon')
             ->allow('Hosts', 'hostservicelist')
@@ -388,10 +394,6 @@ class AclDependencies {
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostsByContainerId')
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostsByString')
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostById')
-            ->dependency('Hosts', 'index', 'Hosts', 'saveBookmark')
-            ->dependency('Hosts', 'index', 'Hosts', 'getBookmarks')
-            ->dependency('Hosts', 'index', 'Hosts', 'getDefaultBookmark')
-            ->dependency('Hosts', 'index', 'Hosts', 'deleteBookmark')
             ->dependency('Hosts', 'delete', 'Hosts', 'mass_delete')
             ->dependency('Hosts', 'deactivate', 'Hosts', 'mass_deactivate')
             ->dependency('Hosts', 'browser', 'Hosts', 'getGrafanaIframeUrlForDatepicker')
@@ -488,10 +490,6 @@ class AclDependencies {
             ->dependency('Services', 'index', 'Services', 'view')
             ->dependency('Services', 'index', 'Services', 'loadServicesByContainerId')
             ->dependency('Services', 'index', 'Services', 'loadServicesByString')
-            ->dependency('Services', 'index', 'Services', 'saveBookmark')
-            ->dependency('Services', 'index', 'Services', 'getBookmarks')
-            ->dependency('Services', 'index', 'Services', 'getDefaultBookmark')
-            ->dependency('Services', 'index', 'Services', 'deleteBookmark')
             ->dependency('Services', 'add', 'Services', 'loadElementsByHostId')
             ->dependency('Services', 'add', 'Services', 'loadServicetemplate')
             ->dependency('Services', 'add', 'Services', 'loadCommands')
