@@ -112,11 +112,14 @@ class FilterBookmarksController extends AppController {
             $FilterBookmark = $FilterBookmarksTable->newEntity($data);
         }
         //if bookmark should be default, look for and unset old default
-        if(!empty($data['default'])) {
+        if($data['default']) {
             $default = $FilterBookmarksTable->getDefaultFilterByUser($User->getId(), $filterType);
             if (!empty($default)) {
-                $FilterBookmarksTable->patchEntity($default, ['default' => false]);
-                $FilterBookmarksTable->save($default);
+                //look if the given bookmark is new or another than the old default, only then update the old default
+                if(( !empty($data['id']) && $data['id'] !== $default['id'] ) || empty($data['id'])) {
+                    $FilterBookmarksTable->patchEntity($default, ['default' => false]);
+                    $FilterBookmarksTable->save($default);
+                }
             }
         }
         $FilterBookmarksTable->save($FilterBookmark);
