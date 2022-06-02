@@ -2793,7 +2793,7 @@ class ServicesController extends AppController {
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $services = Api::makeItJavaScriptAble(
-            $ServicesTable->getServicesForAngularCake4($ServiceCondition, $selected)
+            $ServicesTable->getServicesForServicegroupForAngular($ServiceCondition, $selected)
         );
 
         $this->set('services', $services);

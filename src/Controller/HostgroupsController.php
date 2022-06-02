@@ -769,10 +769,11 @@ class HostgroupsController extends AppController {
             sort($containerIds);
         }
 
+
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($containerIds);
         $hosts = Api::makeItJavaScriptAble(
-            $HostsTable->getHostsForAngular($HostCondition, $selected)
+            $HostsTable->getHostsForHostgroupForAngular($HostCondition, $selected)
         );
         $this->set('hosts', $hosts);
         $this->viewBuilder()->setOption('serialize', ['hosts']);
