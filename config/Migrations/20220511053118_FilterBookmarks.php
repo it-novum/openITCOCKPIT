@@ -29,9 +29,16 @@ class FilterBookmarks extends AbstractMigration
                 'limit'   => 37,
                 'null'    => false,
             ])
-            ->addColumn('filter_entity', 'string', [
+            ->addColumn('plugin', 'string', [
                 'default'       => null,
-                'limit'         => 37,
+                'null'          => true,
+            ])
+            ->addColumn('controller', 'string', [
+                'default'       => null,
+                'null'          => false,
+            ])
+            ->addColumn('action', 'string', [
+                'default'       => null,
                 'null'          => false,
             ])
             ->addColumn('name', 'string', [
@@ -44,10 +51,6 @@ class FilterBookmarks extends AbstractMigration
                 'null'          => false,
             ])
             ->addColumn('filter', 'text', [
-                'default'       => null,
-                'null'          => false,
-            ])
-            ->addColumn('url', 'text', [
                 'default'       => null,
                 'null'          => false,
             ])
