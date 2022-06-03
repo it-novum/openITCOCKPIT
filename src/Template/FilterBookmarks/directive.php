@@ -41,7 +41,9 @@
                            ng-model="bookmark.name"
                            placeholder="<?php echo __('Filterbookmark name'); ?>"
                     >
-                    <span class="txt-color-red">{{bookmarkError}}</span>
+                    <div ng-repeat="error in errors.name">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
                 </div>
             </div>
             <div class="col-xs-12 col-md-6 margin-bottom-10">
@@ -98,8 +100,6 @@
                 <select class="form-control" ng-change="itemChanged()"
                         ng-options="bookmark.id as bookmark.name for bookmark in bookmarks"
                         ng-model="select">
-                    <!--<option ng-selected="select.id == item.id" ng-repeat="item in bookmarks" ng-value="item.id">{{item.name}}</option>-->
-
                 </select>
             </div>
         </div>
