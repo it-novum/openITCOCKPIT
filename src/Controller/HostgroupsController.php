@@ -759,6 +759,14 @@ class HostgroupsController extends AppController {
                 [CT_TENANT, CT_LOCATION, CT_NODE]
             );
 
+            $path = $ContainersTable->getPathById($containerId);
+            if (isset($path[1]) && $path[1]['containertype_id'] == CT_TENANT) {
+                $tenantContainerId = $path[1]['id'];
+                if ($tenantContainerId != $containerId) {
+                    $containerIds[] = $tenantContainerId;
+                }
+            }
+
             //remove ROOT_CONTAINER from result
             $containerIds = array_filter(
                 $containerIds,
@@ -798,11 +806,19 @@ class HostgroupsController extends AppController {
 
         $containerIds = [$containerId];
         if ($containerId != ROOT_CONTAINER) {
+            $path = $ContainersTable->getPathById($containerId);
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds(
                 $containerId,
                 false,
                 [CT_TENANT, CT_LOCATION, CT_NODE]
             );
+
+            if (isset($path[1]) && $path[1]['containertype_id'] == CT_TENANT) {
+                $tenantContainerId = $path[1]['id'];
+                if ($tenantContainerId != $containerId) {
+                    $containerIds[] = $tenantContainerId;
+                }
+            }
 
             //remove ROOT_CONTAINER from result
             $containerIds = array_filter(
