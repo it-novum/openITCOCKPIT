@@ -13,7 +13,7 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
 
         /*** Filter Settings ***/
-        filterId = QueryStringService.getStateValue($stateParams, 'filter');
+        //filterId = QueryStringService.getStateValue($stateParams, 'filter');
         var defaultFilter = function(){
             $scope.filter = {
                 Servicestatus: {
@@ -57,17 +57,18 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.showFilter = false;
 
-        $scope.bookmark = {
+       /* $scope.bookmark = {
             name: '',
             default: false,
             filter: $scope.filter ?? {}
-        }
-        $scope.bookmark_selects = [];
-        $scope.bookmarks = [];
-        $scope.select = 0;
-        $scope.filterUrl = '';
-        $scope.showFilterUrl = false;
-        $scope.bookmarkError = '';
+        } */
+      //  $scope.bookmark_selects = [];
+        //$scope.bookmarks = [];
+       // $scope.select = 0;
+       // $scope.filterUrl = '';
+       // $scope.showFilterUrl = false;
+      //  $scope.bookmarkError = '';
+        $scope.showBookmarkFilter = false;
 
         $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
@@ -147,7 +148,7 @@ angular.module('openITCOCKPIT')
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter;
             if($scope.showFilter === true) {
-                $scope.getBookmarks();
+               // $scope.getBookmarks();
             }
         };
 
@@ -155,198 +156,11 @@ angular.module('openITCOCKPIT')
             $scope.showBookmarkFilter = !$scope.showBookmarkFilter === true;
         };
 
-        $scope.saveBookmark = function() {
-            var params = {
-                'angular': true,
-                'type': 'service'
-            }
-            if($scope.bookmark.filter ){
-                $scope.bookmark.filter = $scope.filter;
-            }
-            var data = $scope.bookmark;
-            $http.post("/filter_bookmarks/add.json", data, {
-                params: params
-            }).then(function(result){
-                    var bookmarks = result.data.bookmarks ?? [];
-                    var existDefault = false;
-                    bookmarks.forEach(function(item, index){
-                        item.filter = JSON.parse(item.filter);
-                        if(item.default === true){
-                            $scope.filter = item.filter;
-                            $scope.bookmark = item;
-                            $scope.select = item.id;
-                            existDefault = true;
-                        }
-                        if(!existDefault){
-                            $scope.resetFilter();
-                            $scope.bookmarkReset();
-                        }
-
-                    });
-                    $scope.bookmarks = bookmarks;
-                    $scope.bookmarkError = '';
-                    NotyService.genericSuccess({
-                        message: 'Filter saved!',
-                        // timeout: timeout
-                    });
-                },
-                function(error){
-                    $scope.bookmarkError = error.data.message;
-                });
-        };
-
-        $scope.getBookmarks = function() {
-            var data = {};
-            var params = {
-                'angular': true,
-                'type': 'service'
-            }
-            $http.post("/filter_bookmarks/index.json", data, {
-                params: params
-            }). then(function(result){
-                    var bookmarks = result.data.bookmarks;
-                    var defaultItem = false;
-                    bookmarks.forEach(function (item, index){
-                        item.filter = JSON.parse(item.filter)
-                        if(item.default === true){
-                            defaultItem = true;
-                            $scope.filter = item.filter;
-                            $scope.bookmark = item;
-                            $scope.select = item.id;
-                        }
-                    });
-                    if(!defaultItem){
-                        $scope.resetFilter();
-                        $scope.bookmarkReset();
-                    }
-                    $scope.bookmarks = bookmarks;
-                },
-                function(error){
-                    console.log(error.data.message);
-                });
-        };
-
-        $scope.showBookmarkFilterUrl = function (){
-            $scope.showFilterUrl = !$scope.showFilterUrl === true;
-            $scope.computeBookmarkUrl()
-        };
-
-        $scope.computeBookmarkUrl = function() {
-            if($scope.bookmark.url){
-                $scope.filterUrl = $scope.bookmark.url + '/#!/services/index?filter=' + $scope.bookmark.uuid;
-            } else {
-                $scope.filterUrl = '';
-            }
-        }
-
-        $scope.copy2Clipboard = function (){
-            var copyText = document.getElementById("filterUrl");
-            copyText.select();
-            navigator.clipboard.writeText(copyText.value);
-        }
-
-        $scope.deleteBookmark = function() {
-            $('#deleteBookmarkModal').modal('hide');
-            var params = {
-                'angular': true,
-                'type': 'service'
-            }
-            var data = $scope.bookmark;
-            if(!data.id) {
-                NotyService.genericError({
-                    message: 'Nothing to delete!',
-                    timeout: 1000
-                });
-                return;
-            }
-            $http.post("/filter_bookmarks/delete.json", data, {
-                params: params
-            }).then(function(result){
-                    var bookmarks = result.data.bookmarks;
-                    var defaultItem = false;
-                    bookmarks.forEach(function(item, index){
-                        item.filter = JSON.parse(item.filter);
-                        if(item.default === true){
-                            defaultItem = true;
-                            $scope.filter = item.filter;
-                            $scope.bookmark = item;
-                            $scope.select = item.id;
-                        }
-                    });
-                    if(!defaultItem){
-                        $scope.bookmark.name = '';
-                        $scope.resetFilter();
-                        $scope.bookmarkReset();
-                    }
-                    $scope.bookmarks = bookmarks;
-                },
-                function(error){
-                    console.log(error.data.message);
-                });
-        };
-
-        $scope.loadDefaultFilterBookmark = function() {
-
-            var params = {
-                'angular': true,
-                'type': 'service'
-            }
-            var data = {
-                filter: filterId
-            }
-            $http.post("/filter_bookmarks/default.json", data, {
-                params: params
-            }).then(function(result){
-                    if(result.data.bookmark && result.data.bookmark.filter) {
-                        $scope.filter = JSON.parse(result.data.bookmark.filter);
-                    }
-                        $scope.load();
-                        $scope.setTagInputs();
-                },
-                function(error){
-                    console.log(error.data.message);
-                    $scope.load();
-                });
-        };
-
-        $scope.itemChanged = function(){
-            $scope.bookmarks.forEach(function (item, index){
-                if (item.id == $scope.select) {
-                    $scope.bookmark = item;
-                    $scope.filter = item.filter;
-                    $scope.computeBookmarkUrl();
-                    $scope.setTagInputs();
-                }
-            });
-        }
-
-        $scope.bookmarkReset = function() {
-            $scope.bookmark = {
-                name: '',
-                default: false,
-                filter:  {}
-            }
-            $scope.select = 0;
-        }
-
-        //taginputs handled by JQuery!
-        $scope.setTagInputs = function () {
-            if($scope.filter.Services.keywords !== ''){
-                $("#ServicesKeywordsInput").tagsinput('add', $scope.filter.Services.keywords);
-            } else {
-                $("#ServicesKeywordsInput").tagsinput('removeAll');
-            }
-            if($scope.filter.Services.not_keywords !== ''){
-                $("#ServicesNotKeywordsInput").tagsinput('add', $scope.filter.Services.not_keywords);
-            } else {
-                $("#ServicesNotKeywordsInput").tagsinput('removeAll');
-            }
-        }
 
         $scope.resetFilter = function(){
             defaultFilter();
-            $('#ServicesKeywordsInput').tagsinput('removeAll');
-            $('#ServicesNotKeywordsInput').tagsinput('removeAll');
+            //$('#ServicesKeywordsInput').tagsinput('removeAll');
+           // $('#ServicesNotKeywordsInput').tagsinput('removeAll');
             $scope.undoSelection();
 
         };
@@ -476,11 +290,29 @@ angular.module('openITCOCKPIT')
             SortService.setDirection('desc');
         };
 
+        $scope.triggerLoadByBookmark = function(filter){
+            if(typeof filter !== "undefined"){
+                $scope.filter = filter;
+            } else {
+                $scope.resetFilter();
+            }
+
+            $("#ServicesKeywordsInput").tagsinput('removeAll');
+            $("#ServicesKeywordsInput").tagsinput('add', $scope.filter.Services.keywords);
+
+            $("#ServicesNotKeywordsInput").tagsinput('removeAll');
+            $("#ServicesNotKeywordsInput").tagsinput('add', $scope.filter.Services.not_keywords);
+
+            $scope.currentPage = 1;
+            $scope.undoSelection();
+            $scope.load();
+        }
+
 
         //Fire on page load
         defaultFilter();
         $scope.loadTimezone();
-        $scope.loadDefaultFilterBookmark();
+        //$scope.loadDefaultFilterBookmark();
         SortService.setCallback($scope.load);
 
         jQuery(function(){
@@ -492,7 +324,7 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = 1;
                 $scope.undoSelection();
                 $scope.load();
-                $scope.setTagInputs();
+               // $scope.setTagInputs();
             }
         }, true);
 

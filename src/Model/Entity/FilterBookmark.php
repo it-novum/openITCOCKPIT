@@ -10,21 +10,23 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property string $uuid
- * @property string $filter_entity
+ * @property string $plugin
+ * @property string $controller
+ * @property string $action
  * @property string $name
  * @property string $filter
- * @property string $url
  * @property bool $default
 **/
 
 class FilterBookmark extends Entity {
     protected $_accessible = [
         'uuid'            => true,
-        'filter_entity'   => true,
+        'plugin'          => true,
+        'controller'      => true,
+        'action'          => true,
         'name'            => true,
         'user_id'         => true,
         'filter'          => true,
-        'url'             => true,
         'default'         => true,
     ];
 }

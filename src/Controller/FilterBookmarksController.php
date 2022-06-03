@@ -46,17 +46,28 @@ class FilterBookmarksController extends AppController {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        $filterType = $this->request->getQuery('type');
-        if (!$filterType) {
+        $plugin = $this->request->getQuery('plugin', null);
+        $controller = $this->request->getQuery('controller', null);
+        if (!$controller) {
             throw new NotFoundException('Missing type param');
         }
+        $action = $this->request->getQuery('action', null);
+        if (!$action) {
+            throw new NotFoundException('Missing type param');
+        }
+        $queryFilter = $this->request->getQuery('queryFilter', null);
         /** @var User $user */
         $User = new User($this->getUser());
         /** @var FilterBookmarksTable $FilterBookmarksTable */
         $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
-        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $filterType);
+        //$QueryBookmark = new \stdClass();
+        if($queryFilter){
+            $QueryBookmark = $FilterBookmarksTable->getFilterByUuid($queryFilter);
+        }
+        $this->set('bookmark', $QueryBookmark ?? null);
+        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $plugin, $controller, $action);
         $this->set('bookmarks', $filterBookmarks);
-        $this->viewBuilder()->setOption('serialize', ['bookmarks']);
+        $this->viewBuilder()->setOption('serialize', ['bookmarks', 'bookmark']);
     }
 
     public function add() {
@@ -65,10 +76,10 @@ class FilterBookmarksController extends AppController {
         }
         $data = [];
         $data = $this->request->getData();
-        $filterType = $this->request->getQuery('type');
+       /* $filterType = $this->request->getQuery();
         if (!$filterType) {
             throw new NotFoundException('Missing type param');
-        }
+        } */
         $data['filter'] = json_encode($data['filter']);
 
         if ($this->request->is('post')) {
@@ -101,19 +112,15 @@ class FilterBookmarksController extends AppController {
         // create complete new bookmark
         else {
             $data['uuid'] = UUID::v4();
-            $data['filter_entity'] = $filterType;
             $data['name'] = $this->request->getData('name');
             $data['user_id'] = $User->getId();
             $data['filter'] = json_encode($this->request->getData('filter'));
-            $host = $this->request->getUri()->getHost();
-            $scheme = $this->request->getUri()->getScheme();
-            $data['url'] = sprintf("%s://%s", $scheme, $host);
             /** @var FilterBookmark $FilterBookmark */
             $FilterBookmark = $FilterBookmarksTable->newEntity($data);
         }
         //if bookmark should be default, look for and unset old default
         if($data['default']) {
-            $default = $FilterBookmarksTable->getDefaultFilterByUser($User->getId(), $filterType);
+            $default = $FilterBookmarksTable->getDefaultFilterByUser($User->getId(), $data['plugin'], $data['controller'], $data['action']);
             if (!empty($default)) {
                 //look if the given bookmark is new or another than the old default, only then update the old default
                 if(( !empty($data['id']) && $data['id'] !== $default['id'] ) || empty($data['id'])) {
@@ -126,49 +133,23 @@ class FilterBookmarksController extends AppController {
         if ($FilterBookmark->hasErrors()) {
             throw new InternalErrorException('Error at save');
         }
-        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $filterType);
+        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $data['plugin'], $data['controller'], $data['action']);
         $this->set('bookmarks', $filterBookmarks);
         $this->viewBuilder()->setOption('serialize', ['bookmarks']);
-    }
-
-
-    public function default() {
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $filterType = $this->request->getQuery('type');
-        if (!$filterType) {
-            throw new NotFoundException('Missing type param');
-        }
-        /** @var FilterBookmarksTable $FilterBookmarksTable */
-        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
-        $filter = $this->request->getData('filter');
-        if (!empty($filter)) {
-            /** @var FilterBookmark $FilterBookmark */
-            $FilterBookmark = $FilterBookmarksTable->getFilterByUuid($filter);
-        } else {
-            /** @var User $User */
-            $User = new User($this->getUser());
-            /** @var FilterBookmark $FilterBookmark */
-            $FilterBookmark = $FilterBookmarksTable->getDefaultFilterByUser($User->getId(), $filterType);
-        }
-        $this->set('bookmark', $FilterBookmark);
-        $this->viewBuilder()->setOption('serialize', ['bookmark']);
     }
 
     public function delete() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        $filterType = $this->request->getQuery('type');
-        if (!$filterType) {
-            throw new NotFoundException('Missing type param');
-        }
         /** @var User $User */
         $User = new User($this->getUser());
         $data = $this->request->getData();
         if (empty($data['id'])) {
             throw new NotFoundException('No id to delete');
+        }
+        if($User->getId() != $data['user_id']){
+            throw new MethodNotAllowedException();
         }
         /** @var FilterBookmarksTable $FilterBookmarksTable */
         $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
@@ -177,9 +158,14 @@ class FilterBookmarksController extends AppController {
         if ($FilterBookmark->hasErrors()) {
             throw new InternalErrorException('Error at delete');
         }
-        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $filterType);
+        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $data['plugin'], $data['controller'], $data['action']);
         $this->set('bookmarks', $filterBookmarks);
         $this->viewBuilder()->setOption('serialize', ['bookmarks']);
+    }
+
+    public function directive(){
+        // Only ship HTML template
+
     }
 
 }

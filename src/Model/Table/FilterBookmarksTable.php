@@ -2,14 +2,9 @@
 
 namespace App\Model\Table;
 
-use App\Model\Entity\FilterBookmark;
-use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\Database\Query;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\UUID;
 
 class FilterBookmarksTable extends Table {
     //use PaginationAndScrollIndexTrait;
@@ -26,8 +21,6 @@ class FilterBookmarksTable extends Table {
         $this->setTable('filter_bookmarks');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
-
-        $this->addBehavior('Timestamp');
     }
 
     /**
@@ -49,10 +42,22 @@ class FilterBookmarksTable extends Table {
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
-            ->scalar('filter_entity')
-            ->maxLength('filter_entity', 255)
-            ->requirePresence('filter_entity', 'create')
-            ->allowEmptyString('filter_entity', null, false);
+            ->scalar('plugin')
+            ->maxLength('plugin', 255)
+           // ->requirePresence('plugin', 'create')
+            ->allowEmptyString('plugin', null, true);
+
+        $validator
+            ->scalar('controller')
+            ->maxLength('controller', 255)
+            ->requirePresence('controller', 'create')
+            ->allowEmptyString('controller', null, false);
+
+        $validator
+            ->scalar('action')
+            ->maxLength('action', 255)
+            ->requirePresence('action', 'create')
+            ->allowEmptyString('action', null, false);
 
         $validator
             ->scalar('name')
@@ -71,15 +76,20 @@ class FilterBookmarksTable extends Table {
         return $this->exists(['FilterBookmarks.id' => $id]);
     }
 
+
     /**
      * @param int $userId
-     * @param string $type
+     * @param string $plugin
+     * @param string $controller
+     * @param string $action
      * @return array
      */
-    public function getFilterByUser(int $userId, string $type): array {
+    public function getFilterByUser(int $userId, string $plugin, string $controller, string $action): array {
         $query = $this->find()
             ->where([
-                'FilterBookmarks.filter_entity' => $type,
+                'FilterBookmarks.plugin' => $plugin,
+                'FilterBookmarks.controller' => $controller,
+                'FilterBookmarks.action' => $action,
                 'FilterBookmarks.user_id' => $userId
             ]);
         $result = $query->all();
@@ -89,15 +99,20 @@ class FilterBookmarksTable extends Table {
         return $result->toArray();
     }
 
+
     /**
      * @param int $userId
-     * @param string $type
+     * @param string $plugin
+     * @param string $controller
+     * @param string $action
      * @return array|EntityInterface|null
      */
-    public function getDefaultFilterByUser(int $userId , string $type) {
+    public function getDefaultFilterByUser(int $userId , string $plugin, string $controller, string $action) {
         $query = $this->find()
             ->where([
-                'FilterBookmarks.filter_entity' => $type,
+                'FilterBookmarks.plugin' => $plugin,
+                'FilterBookmarks.controller' => $controller,
+                'FilterBookmarks.action' => $action,
                 'FilterBookmarks.user_id' => $userId,
                 'FilterBookmarks.default' => true
             ])
