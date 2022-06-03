@@ -292,6 +292,7 @@ angular.module('openITCOCKPIT')
                 $scope.init = true; //Disable $watch to avoid two HTTP requests
                 $scope.filter = filter;
             } else {
+                $scope.init = true;
                 $scope.resetFilter();
             }
 

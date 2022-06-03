@@ -276,6 +276,7 @@ angular.module('openITCOCKPIT')
                 $scope.filter = filter;
             }
             else {
+                $scope.init = true;
                 $scope.resetFilter();
             }
 

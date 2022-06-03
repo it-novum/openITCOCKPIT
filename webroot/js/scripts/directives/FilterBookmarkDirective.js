@@ -142,7 +142,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                 }).then(function(result){
                         var bookmarks = result.data.bookmarks;
                         var defaultItem = false;
-                        var filter = $scope.filter;
+                        var filter = undefined;
                         bookmarks.forEach(function(item, index){
                             item.filter = JSON.parse(item.filter);
                             if(item.default === true){
