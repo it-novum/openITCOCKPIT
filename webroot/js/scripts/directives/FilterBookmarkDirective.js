@@ -57,7 +57,8 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                             //message: 'Filter saved!',
                             // timeout: timeout
                         });
-                        $scope.loadCallback(filter);
+                        $scope.computeBookmarkUrl();
+                      //  $scope.loadCallback(filter);
                 }, function errorCallback(result){
 
                     NotyService.genericError();
@@ -150,6 +151,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                                 filter = item.filter;
                                 $scope.bookmark = item;
                                 $scope.select = item.id;
+                                $scope.computeBookmarkUrl();
                             }
                         });
                         if(!defaultItem){
@@ -180,6 +182,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     default: false
                 }
                 $scope.select = 0;
+                $scope.filterUrl = '';
             };
 
             $scope.showBookmarkFilterUrl = function (){
