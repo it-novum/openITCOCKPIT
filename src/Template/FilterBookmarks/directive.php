@@ -38,7 +38,7 @@
             <div class="col-xs-12 col-md-6 margin-bottom-10">
                 <div class="form-group">
                     <input type="text" class="form-control form-control-sm"
-                           ng-model="bookmark.name"
+                           ng-model="name"
                            placeholder="<?php echo __('Filterbookmark name'); ?>"
                     >
                     <div ng-repeat="error in errors.name">
@@ -54,7 +54,7 @@
                                class="form-check-input"
                                name="checkbox"
                                checked="checked"
-                               ng-model="bookmark.default">
+                               ng-model="default">
                         <label class="form-check-label"
                                for="defaultBookmark">
                             <?php echo __('Set as default'); ?>

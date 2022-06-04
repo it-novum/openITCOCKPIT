@@ -16,6 +16,9 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             $scope.select = 0;
             $scope.showFilterUrl = false;
             $scope.filterUrl = '';
+            $scope.name = '';
+            $scope.default = false;
+
             $scope.bookmark = {
                 id: null,
                 uuid: '',
@@ -36,6 +39,8 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                 $scope.bookmark.plugin = $scope.phpplugin;
                 $scope.bookmark.controller = $scope.phpcontroller;
                 $scope.bookmark.action = $scope.phpaction;
+                $scope.bookmark.name = $scope.name;
+                $scope.bookmark.default = $scope.default;
                 var data = $scope.bookmark;
                 $http.post("/filter_bookmarks/add.json", data, {
                     params: params
@@ -92,14 +97,16 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                             filter = item.filter;
                             $scope.bookmark = item;
                             $scope.select = item.id;
+                            $scope.name = item.name;
+                            $scope.default = item.default;
                         }
                     }
                     if(result.data.bookmark !== null) {
                         filter = JSON.parse(result.data.bookmark.filter);
                         $scope.bookmark =  result.data.bookmark;
-                        $scope.bookmark.name = 'ExternalFilter'
+                        //$scope.bookmark.name = 'ExternalFilter'
                         $scope.bookmark.filter = filter;
-                        $scope.bookmark.url = $state.href($scope.stateName, {filter: $scope.bookmark.uuid}, {absolute: true})
+                        $scope.name = 'ExternalFilter';
                     }
                     // Trigger load method in main controller
                     $scope.loadCallback(filter);
@@ -118,6 +125,8 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     if(item.id === $scope.select){
                         $scope.bookmark = item;
                         filter = item.filter;
+                        $scope.name = item.name;
+                        $scope.default = item.default;
                     }
                 }
                 // Trigger load method in main controller
@@ -151,6 +160,8 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                                 filter = item.filter;
                                 $scope.bookmark = item;
                                 $scope.select = item.id;
+                                $scope.name = item.name;
+                                $scope.default = item.default;
                                 $scope.computeBookmarkUrl();
                             }
                         });
@@ -182,6 +193,8 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     default: false
                 }
                 $scope.select = 0;
+                $scope.form.name = '';
+                $scope.form.default = false;
                 $scope.filterUrl = '';
             };
 
@@ -191,7 +204,11 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             };
 
             $scope.computeBookmarkUrl = function() {
+                if($scope.bookmark.uuid !== ''){
                     $scope.filterUrl = $state.href($scope.stateName, {filter: $scope.bookmark.uuid}, {absolute: true});
+                } else {
+                    $scope.filterUrl = '';
+                }
             };
 
             $scope.copy2Clipboard = function (){
