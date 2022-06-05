@@ -46,15 +46,12 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     params: params
                 }).then(function(result){
                         var bookmarks = result.data.bookmarks ?? [];
-                        var filter = undefined;
                         bookmarks.forEach(function(item, index){
                             item.filter = JSON.parse(item.filter);
                             if(item.id === result.data.lastBookmarkId ?? 0){
-                                filter = item.filter;
                                 $scope.bookmark = item;
                                 $scope.select = item.id;
                             }
-
                         });
                         $scope.bookmarks = bookmarks;
 
@@ -63,7 +60,6 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                             // timeout: timeout
                         });
                         $scope.computeBookmarkUrl();
-                      //  $scope.loadCallback(filter);
                 }, function errorCallback(result){
 
                     NotyService.genericError();
@@ -87,7 +83,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                 $http.get("/filter_bookmarks/index.json", {
                     params: params
                 }).then(function(result){
-                    $scope.bookmarks = result.data.bookmarks;
+                    $scope.bookmarks = result.data.bookmarks ?? [];
 
                     var filter = $scope.filter;
                     for(var index in $scope.bookmarks){
@@ -104,7 +100,6 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     if(result.data.bookmark !== null) {
                         filter = JSON.parse(result.data.bookmark.filter);
                         $scope.bookmark =  result.data.bookmark;
-                        //$scope.bookmark.name = 'ExternalFilter'
                         $scope.bookmark.filter = filter;
                         $scope.name = 'ExternalFilter';
                     }
