@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+/**
+ * @var \App\View\AppView $this
+ *
+ */
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -188,11 +193,11 @@
                                                 <input type="text"
                                                        class="form-control form-control-sm"
                                                        data-role="tagsinput"
-                                                       id="ServicesKeywordsInput"
+                                                       id="HostKeywordsInput"
                                                        placeholder="<?php echo __('Filter by tags'); ?>"
                                                        ng-model="filter.Host.keywords"
                                                        ng-model-options="{debounce: 500}"
-                                                       style="display: none;">
+                                                       >
                                             </div>
                                         </div>
                                     </div>
@@ -207,7 +212,7 @@
                                             <div class="col tagsinputFilter">
                                                 <input type="text" class="input-sm"
                                                        data-role="tagsinput"
-                                                       id="ServicesNotKeywordsInput"
+                                                       id="HostNotKeywordsInput"
                                                        placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                                        ng-model="filter.Host.not_keywords"
                                                        ng-model-options="{debounce: 500}">
@@ -468,10 +473,26 @@
                                     <?php echo __('Reset Filter'); ?>
                                 </button>
                             </div>
+                            <div class="float-left">
+                                <button type="button" ng-click="triggerBookmarkFilter()"
+                                        class="btn btn-xs btn-primary">
+                                    <?php echo __('Filter Bookmarks'); ?>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <!-- End Filter -->
 
+                    <filter-bookmark
+                        phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
+                        phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
+                        phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
+                        filter="filter"
+                        load-callback="triggerLoadByBookmark"
+                        state-name="HostsIndex"
+                        ng-show="showBookmarkFilter"
+                        >
+                    </filter-bookmark>
+                    <!-- End Filter -->
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>

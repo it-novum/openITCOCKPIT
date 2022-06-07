@@ -488,10 +488,26 @@
                                     <?php echo __('Reset Filter'); ?>
                                 </button>
                             </div>
+                            <div class="float-left">
+                                <button type="button" ng-click="triggerBookmarkFilter()"
+                                        class="btn btn-xs btn-primary">
+                                    <?php echo __('Filter Bookmarks'); ?>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <!-- End Filter -->
 
+                    <filter-bookmark
+                        phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
+                        phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
+                        phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
+                        filter="filter"
+                        load-callback="triggerLoadByBookmark"
+                        state-name="ServicesIndex"
+                        ng-show="showBookmarkFilter"
+                    >
+                    </filter-bookmark>
+                    <!-- End Filter -->
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
