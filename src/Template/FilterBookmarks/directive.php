@@ -38,10 +38,12 @@
             <div class="col-xs-12 col-md-6 margin-bottom-10">
                 <div class="form-group">
                     <input type="text" class="form-control form-control-sm"
-                           ng-model="bookmark.name"
+                           ng-model="name"
                            placeholder="<?php echo __('Filterbookmark name'); ?>"
                     >
-                    <span class="txt-color-red">{{bookmarkError}}</span>
+                    <div ng-repeat="error in errors.name">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
                 </div>
             </div>
             <div class="col-xs-12 col-md-6 margin-bottom-10">
@@ -52,7 +54,7 @@
                                class="form-check-input"
                                name="checkbox"
                                checked="checked"
-                               ng-model="bookmark.default">
+                               ng-model="default">
                         <label class="form-check-label"
                                for="defaultBookmark">
                             <?php echo __('Set as default'); ?>
@@ -98,8 +100,6 @@
                 <select class="form-control" ng-change="itemChanged()"
                         ng-options="bookmark.id as bookmark.name for bookmark in bookmarks"
                         ng-model="select">
-                    <!--<option ng-selected="select.id == item.id" ng-repeat="item in bookmarks" ng-value="item.id">{{item.name}}</option>-->
-
                 </select>
             </div>
         </div>

@@ -503,6 +503,7 @@
                         phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
                         filter="filter"
                         load-callback="triggerLoadByBookmark"
+                        state-name="ServicesIndex"
                         ng-show="showBookmarkFilter"
                     >
                     </filter-bookmark>

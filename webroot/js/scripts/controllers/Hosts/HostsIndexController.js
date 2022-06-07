@@ -137,24 +137,8 @@ angular.module('openITCOCKPIT')
             $scope.showBookmarkFilter = !$scope.showBookmarkFilter === true;
         };
 
-        //taginputs handled by JQuery!
-     /*   $scope.setTagInputs = function () {
-            if($scope.filter.Host.keywords !== ''){
-                $("#HostKeywordsInput").tagsinput('add', $scope.filter.Host.keywords);
-            } else {
-                $("#HostKeywordsInput").tagsinput('removeAll');
-            }
-            if($scope.filter.Host.not_keywords !== ''){
-                $("#HostNotKeywordsInput").tagsinput('add', $scope.filter.Host.not_keywords);
-            } else {
-                $("#HostNotKeywordsInput").tagsinput('removeAll');
-            }
-        } */
-
         $scope.resetFilter = function(){
             defaultFilter();
-           // $('#HostKeywordsInput').tagsinput('removeAll');
-           // $('#HostNotKeywordsInput').tagsinput('removeAll');
             $scope.undoSelection();
         };
 
@@ -288,8 +272,11 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerLoadByBookmark = function(filter){
             if(typeof filter !== "undefined"){
+                $scope.init = true; //Disable $watch to avoid two HTTP requests
                 $scope.filter = filter;
-            } else {
+            }
+            else {
+                $scope.init = true;
                 $scope.resetFilter();
             }
 
@@ -318,7 +305,6 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = 1;
                 $scope.undoSelection();
                 $scope.load();
-                //$scope.setTagInputs();
             }
         }, true);
 

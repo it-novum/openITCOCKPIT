@@ -488,6 +488,7 @@
                         phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
                         filter="filter"
                         load-callback="triggerLoadByBookmark"
+                        state-name="HostsIndex"
                         ng-show="showBookmarkFilter"
                         >
                     </filter-bookmark>
