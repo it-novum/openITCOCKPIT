@@ -125,10 +125,17 @@
                 <div class="panel-content">
 
                     <!-- Start Filter -->
-                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
-                        <div class="card-header">
-                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
-                        </div>
+                    <div class="list-filter card margin-bottom-10">
+                        <filter-bookmark
+                            phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
+                            phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
+                            phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
+                            filter="filter"
+                            load-callback="triggerLoadByBookmark"
+                            state-name="HostsIndex">
+                        </filter-bookmark>
+
+
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
@@ -197,7 +204,7 @@
                                                        placeholder="<?php echo __('Filter by tags'); ?>"
                                                        ng-model="filter.Host.keywords"
                                                        ng-model-options="{debounce: 500}"
-                                                       >
+                                                >
                                             </div>
                                         </div>
                                     </div>
@@ -473,25 +480,9 @@
                                     <?php echo __('Reset Filter'); ?>
                                 </button>
                             </div>
-                            <div class="float-left">
-                                <button type="button" ng-click="triggerBookmarkFilter()"
-                                        class="btn btn-xs btn-primary">
-                                    <?php echo __('Filter Bookmarks'); ?>
-                                </button>
-                            </div>
+
                         </div>
                     </div>
-
-                    <filter-bookmark
-                        phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
-                        phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
-                        phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
-                        filter="filter"
-                        load-callback="triggerLoadByBookmark"
-                        state-name="HostsIndex"
-                        ng-show="showBookmarkFilter"
-                        >
-                    </filter-bookmark>
                     <!-- End Filter -->
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">

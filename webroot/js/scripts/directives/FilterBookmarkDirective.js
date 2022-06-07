@@ -31,7 +31,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                 default: false
             };
 
-            $scope.saveBookmark = function(){
+            $scope.saveBookmark = function(useAsDefault){
                 var params = {
                     'angular': true,
                 }
@@ -40,7 +40,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                 $scope.bookmark.controller = $scope.phpcontroller;
                 $scope.bookmark.action = $scope.phpaction;
                 $scope.bookmark.name = $scope.name;
-                $scope.bookmark.default = $scope.default;
+                $scope.bookmark.default = useAsDefault;
                 var data = $scope.bookmark;
                 $http.post("/filter_bookmarks/add.json", data, {
                     params: params
@@ -54,8 +54,9 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                             }
                         });
                         $scope.bookmarks = bookmarks;
+                        $scope.errors = null;
 
-                        NotyService.genericSuccess({
+                    NotyService.genericSuccess({
                             //message: 'Filter saved!',
                             // timeout: timeout
                         });
