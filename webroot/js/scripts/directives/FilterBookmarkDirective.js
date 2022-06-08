@@ -17,12 +17,15 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             var changeBookmark = function(bookmark){
                 $scope.bookmark = bookmark;
                 var filter = bookmark.filter;
+                $scope.selectedBookmarkId = bookmark.id;
 
                 // Trigger load method in main controller
                 $scope.loadCallback(filter);
             };
 
-            $scope.loadBookmarks = function(){
+            $scope.loadBookmarks = function(selectedBookmark){
+                $scope.init = true;
+
                 var params = {
                     'angular': true,
                     'plugin': $scope.phpplugin,
@@ -43,10 +46,21 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                         }
                         $scope.bookmarks = bookmarks;
 
-                        var filter = $scope.filter; //Should be the default filter on page load
-
                         // Trigger load method in main controller
-                        $scope.loadCallback(filter);
+                        if(typeof selectedBookmark === "undefined"){
+                            $scope.loadCallback();
+                        }else if($scope.queryFilter && result.data.bookmark !== null){
+                            // Set the bookmark from the URL as current selected bookmark
+
+                        }else{
+                            //Load passed bookmark (used by Save as new filter)
+                            changeBookmark(selectedBookmark);
+                        }
+
+                        // This fixes two requests on "Save as new filter"
+                        setTimeout(function(){
+                            $scope.init = false;
+                        }, 250)
                     },
                     function(error){
                         console.log(error.data.message);
@@ -67,21 +81,35 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     'angular': true,
                 }
 
+                $scope.init = true;
                 $http.post("/filter_bookmarks/add.json", post, {
                     params: params
                 }).then(function(result){
                     var bookmark = result.data.bookmark;
                     bookmark.filter = JSON.parse(bookmark.filter);
 
-                    // Add new bookmark to local array of bookmarks
-                    $scope.bookmarks.push(bookmark);
-                    $scope.bookmark = bookmark;
-                    $scope.selectedBookmarkId = bookmark.id;
-
                     $scope.errors = null;
                     NotyService.genericSuccess();
                     $('#createNewBookmarkModal').modal('hide');
 
+                    // When creating a new bookmark, we HAVE TO reload all bookmarks, this is due to
+                    // javascript's object binding.
+                    // Example: The user has selected "Filter 1" from the select / dropdown list, and is now changing some filters. (Pick a checkbox or so)
+                    // The user clicks on "Save as new filter", and openITCOCKPIT will create and save the new Filter as "New Filter".
+                    // Also the system will set is as selected filter in the select box.
+                    // When the user is now selecting "Filter 1" again, the interface will display the exact same filters as "New Filter" has.
+                    // This is due to the user has changed $scope.filter of "Filter 1".
+                    // "Filter 1" is still Ok in the database, so we simply need to reload all filters.
+                    //
+                    // Probably someone smarter than me can fix this easily.
+
+                    // This does not work as expected - read above
+                    //// Add new bookmark to local array of bookmarks
+                    //$scope.bookmarks.push(bookmark);
+                    //$scope.bookmark = bookmark;
+                    //$scope.selectedBookmarkId = bookmark.id;
+
+                    $scope.loadBookmarks(bookmark);
                 }, function errorCallback(result){
                     NotyService.genericError();
 
@@ -177,85 +205,6 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             };
 
 
-            /**** ****/
-            $scope.saveBookmark = function(useAsDefault){
-                // Refactor me
-                $scope.init = true; //Disable watch
-                var params = {
-                    'angular': true,
-                }
-                $scope.bookmark.filter = $scope.filter;
-                $scope.bookmark.plugin = $scope.phpplugin;
-                $scope.bookmark.controller = $scope.phpcontroller;
-                $scope.bookmark.action = $scope.phpaction;
-                $scope.bookmark.name = $scope.name;
-
-                if(useAsDefault){
-                    // This bookmark should be the new default now
-                    $scope.bookmark.default = useAsDefault;
-                }
-                var data = $scope.bookmark;
-                $http.post("/filter_bookmarks/save.json", data, {
-                    params: params
-                }).then(function(result){
-                    var bookmarks = result.data.bookmarks;
-                    for(var index in bookmarks){
-                        var item = bookmarks[index];
-                        item.filter = JSON.parse(item.filter)
-                    }
-
-                    $scope.bookmarks = bookmarks;
-                    result.data.bookmark.filter = JSON.parse(result.data.bookmark.filter)
-                    $scope.bookmark = result.data.bookmark;
-                    $scope.select = result.data.bookmark.id;
-                    $scope.name = result.data.bookmark.name;
-
-
-                    $scope.errors = null;
-                    NotyService.genericSuccess();
-
-                    // Update UUID in URL if required
-                    if($scope.queryFilter){
-                        if($scope.queryFilter !== $scope.bookmark.uuid){
-                            $state.go($scope.stateName, {
-                                filter: $scope.bookmark.uuid
-                            })
-                        }
-                    }
-
-                    //Do not trigger watch on change of $scope.select
-                    setTimeout(function(){
-                        $scope.init = false;
-                    }, 250);
-                }, function errorCallback(result){
-
-                    NotyService.genericError();
-
-                    if(result.data.hasOwnProperty('error')){
-                        $scope.errors = result.data.error;
-                    }
-                });
-            };
-
-            $scope.bookmarkReset = function(){
-                // Refactor me
-                $scope.bookmark = {
-                    id: null,
-                    uuid: '',
-                    name: '',
-                    plugin: null,
-                    controller: '',
-                    action: '',
-                    user_id: 0,
-                    filter: {},
-                    default: false
-                }
-                $scope.select = 0;
-                $scope.filterUrl = '';
-                $scope.name = '';
-            };
-
-
             $scope.copy2Clipboard = function(){
                 navigator.clipboard.writeText($scope.filterUrl);
             };
@@ -264,9 +213,12 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             $scope.loadBookmarks();
 
             $scope.$watch('selectedBookmarkId', function(){
+                if($scope.init){
+                    return;
+                }
+
                 if(typeof $scope.selectedBookmarkId !== "undefined"){
                     for(var index in $scope.bookmarks){
-                        console.log(bookmark);
                         var bookmark = $scope.bookmarks[index];
                         if(bookmark.id === $scope.selectedBookmarkId){
                             changeBookmark(bookmark);
