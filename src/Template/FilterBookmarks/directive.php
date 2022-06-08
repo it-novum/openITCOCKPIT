@@ -58,7 +58,7 @@
             </div>
             <div class="col-5">
                 <div class="form-group chosen-small">
-                    <select class="form-control" chosen="{}" ng-change="itemChanged()"
+                    <select class="form-control" chosen="bookmarks" ng-change="itemChanged(bookmark)"
                             ng-options="bookmark.id as (bookmark.default == 1)?bookmark.name+' ⭐':bookmark.name for bookmark in bookmarks"
                             ng-model="select">
                         <option></option>
@@ -68,17 +68,18 @@
             <div class="col-2 no-padding">
                 <div class="btn-group pull-left">
                     <button type="button"
-                            id="deleteBookmark"
-                            class="btn btn-primary btn-xs waves-effect waves-themed margin-right-5"
-                            ng-click="showBookmarkFilterUrl()" data-toggle="modal" data-target="#showBookmarkModal"
-                            title="<?= __('URL'); ?>">
-                        <i class="fas fa-external-link-alt"></i>
+                            ng-show="bookmark.uuid"
+                            class="btn btn-primary btn-xs waves-effect waves-themed"
+                            ng-click="computeBookmarkUrl()" data-toggle="modal" data-target="#showBookmarkModal"
+                            title="<?= __('Share filter'); ?>">
+                        <i class="far fa-bookmark"></i>
                     </button>
                     <button type="button"
+                            ng-show="bookmark.id"
                             id="deleteBookmark"
                             class="btn btn-danger btn-xs waves-effect waves-themed"
                             data-toggle="modal" data-target="#deleteBookmarkModal"
-                            title="<?= __('Delete'); ?>">
+                            title="<?= __('Delete current filter'); ?>">
                         <i class="fa fa-trash"></i>
                     </button>
                 </div>
@@ -111,7 +112,6 @@
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
         </div>
-
     </div>
 </div>
 <!-- End Filter -->
@@ -135,9 +135,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo __('Close'); ?></button>
                 <button type="button" class="btn btn-danger"
                         ng-click="deleteBookmark()"><?php echo __('Delete'); ?></button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Cancel'); ?></button>
             </div>
         </div>
     </div>
@@ -154,24 +154,26 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-xs-11 col-md-11 margin-bottom-10">
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="filterUrl"
-                                   ng-model="filterUrl">
-                        </div>
-                    </div>
-                    <div class="col-xs-1 col-md-1 margin-bottom-10">
-                        <button class="btn btn-default"
-                              ng-click="copy2Clipboard()"
-                              title="<?= __('Copy to clipboard'); ?>">
+                <div class="input-group mb-3">
+                    <input type="text"
+                           class="form-control"
+                           id="filterUrl"
+                           readonly="readonly"
+                           ng-model="filterUrl">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary"
+                                type="button"
+                                ng-click="copy2Clipboard()"
+                                title="<?= __('Copy to clipboard'); ?>">
                             <i class="fa fa-copy"></i>
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Close'); ?></button>
+            </div>
         </div>
     </div>
 </div>
+

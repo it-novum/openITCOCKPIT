@@ -10,37 +10,37 @@ angular.module('openITCOCKPIT')
         filterAddress = QueryStringService.getStateValue($stateParams, 'address');
         //console.log(QueryStringService.getStateValue($stateParams, 'filter'));
         /*** Filter Settings ***/
-        //filterId = QueryStringService.getStateValue($stateParams, 'filter');
+            //filterId = QueryStringService.getStateValue($stateParams, 'filter');
         var defaultFilter = function(){
-            $scope.filter = {
-                Hoststatus: {
-                    current_state: QueryStringService.hoststate($stateParams),
-                    acknowledged: QueryStringService.getStateValue($stateParams, 'has_been_acknowledged', false) == '1',
-                    not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) == '1',
-                    in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) == '1',
-                    not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
-                    notifications_not_enabled: QueryStringService.getStateValue($stateParams, 'notifications_enabled', false) == '1',
-                    notifications_enabled: QueryStringService.getStateValue($stateParams, 'notifications_not_enabled', false) == '1',
-                    output: ''
-                },
-                Host: {
-                    id: QueryStringService.getStateValue($stateParams, 'id', []),
-                    name: (filterHostname) ? filterHostname : '',
-                    hostdescription: '',
-                    keywords: '',
-                    not_keywords: '',
-                    address: (filterAddress) ? filterAddress : '',
-                    satellite_id: [],
-                    priority: {
-                        1: false,
-                        2: false,
-                        3: false,
-                        4: false,
-                        5: false
+                $scope.filter = {
+                    Hoststatus: {
+                        current_state: QueryStringService.hoststate($stateParams),
+                        acknowledged: QueryStringService.getStateValue($stateParams, 'has_been_acknowledged', false) == '1',
+                        not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) == '1',
+                        in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) == '1',
+                        not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
+                        notifications_not_enabled: QueryStringService.getStateValue($stateParams, 'notifications_enabled', false) == '1',
+                        notifications_enabled: QueryStringService.getStateValue($stateParams, 'notifications_not_enabled', false) == '1',
+                        output: ''
+                    },
+                    Host: {
+                        id: QueryStringService.getStateValue($stateParams, 'id', []),
+                        name: (filterHostname) ? filterHostname : '',
+                        hostdescription: '',
+                        keywords: '',
+                        not_keywords: '',
+                        address: (filterAddress) ? filterAddress : '',
+                        satellite_id: [],
+                        priority: {
+                            1: false,
+                            2: false,
+                            3: false,
+                            4: false,
+                            5: false
+                        }
                     }
-                }
+                };
             };
-        };
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
@@ -52,6 +52,7 @@ angular.module('openITCOCKPIT')
         $scope.showBookmarkFilter = false;
 
         $scope.load = function(){
+            //console.trace();
             lastHostUuid = null;
             var hasBeenAcknowledged = '';
             var inDowntime = '';
@@ -128,8 +129,8 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
-            if($scope.showFilter === true) {
-               // $scope.getBookmarks();
+            if($scope.showFilter === true){
+                // $scope.getBookmarks();
             }
         };
 
@@ -274,8 +275,7 @@ angular.module('openITCOCKPIT')
             if(typeof filter !== "undefined"){
                 $scope.init = true; //Disable $watch to avoid two HTTP requests
                 $scope.filter = filter;
-            }
-            else {
+            }else{
                 $scope.init = true;
                 $scope.resetFilter();
             }
