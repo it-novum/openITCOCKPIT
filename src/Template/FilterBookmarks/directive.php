@@ -77,6 +77,7 @@
                 <div class="btn-group pull-right">
                     <button ng-click="saveBookmark(0)"
                             class="btn btn-success btn-xs waves-effect waves-themed">
+                        <i class="fas fa-plus"></i>
                         <?= __('Save as new filter'); ?>
                     </button>
                 </div>
