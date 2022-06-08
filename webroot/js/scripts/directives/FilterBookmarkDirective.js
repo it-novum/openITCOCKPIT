@@ -17,7 +17,6 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             $scope.showFilterUrl = false;
             $scope.filterUrl = '';
             $scope.name = '';
-            $scope.default = false;
 
             $scope.init = true;
 
