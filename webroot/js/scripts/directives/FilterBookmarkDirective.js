@@ -12,35 +12,9 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
         },
         controller: function($scope){
             $scope.queryFilter = $location.search().filter;
-            $scope.bookmarks = [];
-            $scope.select = 0;
-            $scope.filterUrl = '';
-            $scope.name = '';
-
             $scope.init = true;
 
-            $scope.bookmark = {
-                id: null,
-                uuid: '',
-                name: '',
-                plugin: '',
-                controller: '',
-                action: '',
-                user_id: 0,
-                filter: {},
-                default: false
-            };
-
-            var changeBookmark = function(bookmark){
-                $scope.bookmark = bookmark;
-                var filter = bookmark.filter;
-                $scope.name = bookmark.name; // ?? can we remove this?
-
-                // Trigger load method in main controller
-                $scope.loadCallback(filter);
-            };
-
-            $scope.getBookmarks = function(){
+            $scope.loadBookmarks = function(){
                 var params = {
                     'angular': true,
                     'plugin': $scope.phpplugin,
@@ -53,34 +27,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                 $http.get("/filter_bookmarks/index.json", {
                     params: params
                 }).then(function(result){
-                        var bookmarks = result.data.bookmarks || [];
-                        var filter = $scope.filter; // should be empty on page load
-
-                        for(var index in bookmarks){
-                            var item = bookmarks[index];
-                            item.filter = JSON.parse(item.filter)
-
-                            if(item.default){
-                                // This is the default filter
-                                filter = item.filter;
-                                $scope.select = item.id;
-                                $scope.name = item.name;
-                                $scope.bookmark = item;
-                            }
-                        }
-
-                        $scope.bookmarks = bookmarks;
-
-                        if(result.data.bookmark !== null && $scope.queryFilter){
-                            // User has loaded a filter via the URL
-                            item = result.data.bookmark
-                            item.filter = JSON.parse(item.filter)
-
-                            filter = item.filter;
-                            $scope.select = item.id;
-                            $scope.name = item.name;
-                            $scope.bookmark = item;
-                        }
+                        $scope.bookmarks = result.data.bookmarks || [];
 
                         // Trigger load method in main controller
                         $scope.loadCallback(filter);
@@ -97,7 +44,36 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     });
             };
 
+            $scope.saveNewBookmark = function(){
+                var post = {
+                    name: $scope.newBookmarkName,
+                    filter: JSON.stringify($scope.filter),
+                    plugin: $scope.phpplugin,
+                    controller: $scope.phpcontroller,
+                    action: $scope.phpaction
+                };
+
+                var params = {
+                    'angular': true,
+                }
+
+                $http.post("/filter_bookmarks/add.json", data, {
+                    params: params
+                }).then(function(result){
+                    $scope.errors = null;
+                    NotyService.genericSuccess();
+
+                }, function errorCallback(result){
+                    NotyService.genericError();
+
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+            }
+
             $scope.saveBookmark = function(useAsDefault){
+                // Refactor me
                 $scope.init = true; //Disable watch
                 var params = {
                     'angular': true,
@@ -107,7 +83,11 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                 $scope.bookmark.controller = $scope.phpcontroller;
                 $scope.bookmark.action = $scope.phpaction;
                 $scope.bookmark.name = $scope.name;
-                $scope.bookmark.default = useAsDefault;
+
+                if(useAsDefault){
+                    // This bookmark should be the new default now
+                    $scope.bookmark.default = useAsDefault;
+                }
                 var data = $scope.bookmark;
                 $http.post("/filter_bookmarks/save.json", data, {
                     params: params
@@ -129,8 +109,8 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     NotyService.genericSuccess();
 
                     // Update UUID in URL if required
-                    if ($scope.queryFilter){
-                        if ($scope.queryFilter !== $scope.bookmark.uuid){
+                    if($scope.queryFilter){
+                        if($scope.queryFilter !== $scope.bookmark.uuid){
                             $state.go($scope.stateName, {
                                 filter: $scope.bookmark.uuid
                             })
@@ -152,6 +132,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             };
 
             $scope.deleteBookmark = function(){
+                // Refactor me
                 $scope.init = true;
                 $('#deleteBookmarkModal').modal('hide');
                 var params = {
@@ -204,6 +185,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             };
 
             $scope.bookmarkReset = function(){
+                // Refactor me
                 $scope.bookmark = {
                     id: null,
                     uuid: '',
@@ -232,7 +214,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             };
 
             // Fire on page load
-            $scope.getBookmarks();
+            $scope.loadBookmarks();
 
             $scope.$watch('select', function(){
                 if($scope.init){

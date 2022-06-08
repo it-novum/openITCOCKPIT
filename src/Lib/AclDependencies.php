@@ -242,7 +242,8 @@ class AclDependencies {
 
         $this
             ->allow('FilterBookmarks', 'index')
-            ->allow('FilterBookmarks', 'save')
+            ->allow('FilterBookmarks', 'add')
+            ->allow('FilterBookmarks', 'edit')
             ->allow('FilterBookmarks', 'delete')
             ->allow('FilterBookmarks', 'directive');
 

@@ -71,6 +71,8 @@ class FilterBookmarksController extends AppController {
                 if ($bookmark['user_id'] !== $User->getId()) {
                     // This filter belongs to another user
                     unset($bookmark['user_id']);
+                    unset($bookmark['uuid']);
+                    $bookmark['via_sharing'] = true;
                 }
             }
         }
@@ -78,6 +80,67 @@ class FilterBookmarksController extends AppController {
         $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $plugin, $controller, $action);
         $this->set('bookmarks', $filterBookmarks);
         $this->viewBuilder()->setOption('serialize', ['bookmarks', 'bookmark']);
+    }
+
+    public function add() {
+        if (!$this->isApiRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var FilterBookmarksTable $FilterBookmarksTable */
+        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
+
+        $data = $this->request->getData(null, []);
+        $data['uuid'] = UUID::v4();
+
+        $bookmark = $FilterBookmarksTable->newEmptyEntity();
+        $bookmark = $FilterBookmarksTable->patchEntity($bookmark, $data);
+
+        $FilterBookmarksTable->save($bookmark);
+        if ($bookmark->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $bookmark->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set('bookmark', $bookmark);
+        $this->viewBuilder()->setOption('serialize', ['bookmark']);
+    }
+
+    public function edit($id) {
+        if (!$this->isApiRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var FilterBookmarksTable $FilterBookmarksTable */
+        $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
+
+        $User = new User($this->getUser());
+
+        try {
+            $bookmark = $FilterBookmarksTable->getByIdAndUserId($id, $User->getId());
+        } catch (RecordNotFoundException $e) {
+            throw new NotFoundException();
+        }
+
+        $data = $this->request->getData(null, []);
+        $bookmark->setAccess('id', false);
+        $bookmark->setAccess('uuid', false);
+        $bookmark->setAccess('user_id', false);
+
+        $bookmark = $FilterBookmarksTable->patchEntity($bookmark, $data);
+
+        $FilterBookmarksTable->save($bookmark);
+        if ($bookmark->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $bookmark->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set('bookmark', $bookmark);
+        $this->viewBuilder()->setOption('serialize', ['bookmark']);
     }
 
     public function save() {
@@ -102,6 +165,12 @@ class FilterBookmarksController extends AppController {
                 $bookmark->setAccess('id', false);
                 $bookmark->setAccess('uuid', false);
                 $bookmark->setAccess('user_id', false);
+
+                if (isset($data['name']) && $data['name'] !== $bookmark->name) {
+                    // User has renamed this bookmark - so we create a complete new filter
+                    unset($bookmark);
+                }
+
             } catch (RecordNotFoundException $e) {
                 // No bookmark found for given id and user_id - create a new one
             }
