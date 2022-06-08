@@ -42,9 +42,9 @@
                 <div class="form-group">
                     <div class="input-group w-100">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" ng-class="{'border-danger': errors.name}">
-                                <i class="fas fa-star fa-lg text-default-bookmark" ng-show="default"></i>
-                                <i class="far fa-star fa-lg text-muted" ng-hide="default"></i>
+                            <span class="input-group-text pt-1 pb-1" ng-class="{'border-danger': errors.name}">
+                                <span ng-show="default">⭐</span>
+                                <span class="text-default-bookmark-off" ng-hide="default">⭐</span>
                             </span>
                         </div>
                         <input class="form-control form-control-sm"
@@ -97,7 +97,7 @@
                     <div class="dropdown-menu dropdown-menu-right">
                         <a class="dropdown-item" href="javascript:void(0);"
                            ng-click="saveBookmark(1)">
-                            <i class="fas fa-star text-default-bookmark"></i>
+                            ⭐
                             <?= __('Save filter as default'); ?>
                         </a>
                     </div>

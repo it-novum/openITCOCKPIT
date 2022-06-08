@@ -1355,8 +1355,8 @@ label.menu-open-button:hover {
 .supportCard .card-footer .btn, .supportCard .card-footer a.btn {
     height: 30px !important;
 }
-
 /** end issues page **/
+
 /** chosen small select box **/
 div.form-group.chosen-small div.chosen-container.chosen-container-single {
     font-size: 11px;
@@ -1368,10 +1368,10 @@ div.form-group.chosen-small div.chosen-container.chosen-container-single {
 div.form-group.chosen-small div.chosen-container.chosen-container-single a.chosen-single.chosen-single-with-deselect abbr.search-choice-close {
     background-size: 1.2rem 1.2rem;
 }
-
 /** end chosen small select box **/
-.text-default-bookmark {
-    color: #FFD700;
+
+.text-default-bookmark-off{
+    mix-blend-mode: luminosity;
 }
 
 .was-validated .form-control:invalid, .form-control.is-invalid {
