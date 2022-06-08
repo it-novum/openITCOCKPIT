@@ -35,28 +35,7 @@
             <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
         </div>
         <div class="col-11 form-inline">
-            <div class="col-1 required text-right">
-                <?= __('Name'); ?>
-            </div>
-            <div class="col-4 padding-left-0">
-                <div class="form-group">
-                    <div class="input-group w-100">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text pt-1 pb-1" ng-class="{'border-danger': errors.name}">
-                                <span ng-show="bookmark.default">⭐</span>
-                                <span class="text-default-bookmark-off" ng-hide="bookmark.default">⭐</span>
-                            </span>
-                        </div>
-                        <input class="form-control form-control-sm"
-                               type="text"
-                               ng-class="{'is-invalid': errors.name}"
-                               ng-model="name"
-                               placeholder="<?php echo __('Filterbookmark name'); ?>">
-
-                    </div>
-                </div>
-            </div>
-            <div class="col-5">
+            <div class="col-6 offset-3">
                 <div class="form-group chosen-small">
                     <select class="form-control" chosen="bookmarks" ng-change="itemChanged(bookmark)"
                             ng-options="bookmark.id as (bookmark.default == 1)?bookmark.name+' ⭐':bookmark.name for bookmark in bookmarks"
@@ -65,8 +44,15 @@
                     </select>
                 </div>
             </div>
-            <div class="col-2 no-padding">
+            <div class="col-3 no-padding">
                 <div class="btn-group pull-left">
+                    <button type="button"
+                            ng-show="bookmark.uuid"
+                            class="btn btn-default btn-xs waves-effect waves-themed"
+                            ng-click="computeBookmarkUrl()" data-toggle="modal" data-target="#showBookmarkModal"
+                            title="<?= __('Edit bookmark'); ?>">
+                        <i class="fas fa-edit"></i>
+                    </button>
                     <button type="button"
                             ng-show="bookmark.uuid"
                             class="btn btn-primary btn-xs waves-effect waves-themed"
@@ -82,26 +68,18 @@
                             title="<?= __('Delete current filter'); ?>">
                         <i class="fa fa-trash"></i>
                     </button>
+                    <button ng-click="saveBookmark(0)"
+                            ng-show="bookmark.uuid"
+                            class="btn btn-success btn-xs waves-effect waves-themed">
+                        <?= __('Update filter'); ?>
+                    </button>
                 </div>
                 <div class="btn-group pull-right">
                     <button ng-click="saveBookmark(0)"
                             class="btn btn-success btn-xs waves-effect waves-themed">
-                        <?= __('Save filter'); ?>
+                        <i class="fas fa-plus"></i>
+                        <?= __('Save as new filter'); ?>
                     </button>
-                    <button type="button"
-                            class="btn btn-success btn-xs dropdown-toggle dropdown-toggle-split waves-effect waves-themed"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="sr-only">
-                                Toggle Dropdown
-                            </span>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="javascript:void(0);"
-                           ng-click="saveBookmark(1)">
-                            ⭐
-                            <?= __('Save filter as default'); ?>
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
