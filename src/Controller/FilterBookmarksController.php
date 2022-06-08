@@ -33,6 +33,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -90,8 +91,12 @@ class FilterBookmarksController extends AppController {
         /** @var FilterBookmarksTable $FilterBookmarksTable */
         $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
 
+        $User = new User($this->getUser());
+
         $data = $this->request->getData(null, []);
+        $data['filter'] = json_encode($this->request->getData('filter', '{}'));
         $data['uuid'] = UUID::v4();
+        $data['user_id'] = $User->getId();
 
         $bookmark = $FilterBookmarksTable->newEmptyEntity();
         $bookmark = $FilterBookmarksTable->patchEntity($bookmark, $data);
@@ -125,6 +130,7 @@ class FilterBookmarksController extends AppController {
         }
 
         $data = $this->request->getData(null, []);
+        $data['filter'] = json_encode($this->request->getData('filter', '{}'));
         $bookmark->setAccess('id', false);
         $bookmark->setAccess('uuid', false);
         $bookmark->setAccess('user_id', false);
@@ -216,7 +222,7 @@ class FilterBookmarksController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['bookmarks', 'bookmark']);
     }
 
-    public function delete() {
+    public function delete($id) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -224,30 +230,27 @@ class FilterBookmarksController extends AppController {
         /** @var User $User */
         $User = new User($this->getUser());
 
-        $data = $this->request->getData();
-        if (empty($data['id'])) {
-            throw new NotFoundException('No id given');
-        }
-
         /** @var FilterBookmarksTable $FilterBookmarksTable */
         $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
 
-        if (!$FilterBookmarksTable->existsById($data['id'])) {
-            throw new NotFoundException();
+        try {
+            $bookmark = $FilterBookmarksTable->getByIdAndUserId($id, $User->getId());
+
+            if ($FilterBookmarksTable->delete($bookmark)) {
+                $this->set('success', true);
+                $this->set('message', __('Filter successfully deleted'));
+                $this->viewBuilder()->setOption('serialize', ['success']);
+                return;
+            }
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
         }
 
-        /** @var FilterBookmark $bookmark */
-        $bookmark = $FilterBookmarksTable->get($data['id']);
-
-        if ($User->getId() != $bookmark->user_id) {
-            throw new MethodNotAllowedException('Deletion not allowed, wrong User');
-        }
-
-        $FilterBookmarksTable->delete($bookmark);
-
-        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $data['plugin'], $data['controller'], $data['action']);
-        $this->set('bookmarks', $filterBookmarks);
-        $this->viewBuilder()->setOption('serialize', ['bookmarks']);
+        $this->response = $this->response->withStatus(400);
+        $this->set('success', false);
+        $this->set('message', __('Error while deleting filter bookmark'));
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function directive() {

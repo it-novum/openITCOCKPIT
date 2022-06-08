@@ -68,6 +68,11 @@ class FilterBookmarksTable extends Table {
             ->requirePresence('name', 'create')
             ->allowEmptyString('name', null, false);
 
+        $validator
+            ->requirePresence('user_id', 'create')
+            ->integer('user_id')
+            ->allowEmptyString('user_id', null, false);
+
         return $validator;
     }
 
