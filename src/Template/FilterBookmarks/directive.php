@@ -68,17 +68,18 @@
             <div class="col-2 no-padding">
                 <div class="btn-group pull-left">
                     <button type="button"
-                            id="deleteBookmark"
-                            class="btn btn-primary btn-xs waves-effect waves-themed margin-right-5"
+                            ng-show="bookermark.id"
+                            class="btn btn-primary btn-xs waves-effect waves-themed"
                             ng-click="showBookmarkFilterUrl()" data-toggle="modal" data-target="#showBookmarkModal"
-                            title="<?= __('URL'); ?>">
-                        <i class="fas fa-external-link-alt"></i>
+                            title="<?= __('Share filter'); ?>">
+                        <i class="far fa-bookmark"></i>
                     </button>
                     <button type="button"
+                            ng-show="bookermark.id"
                             id="deleteBookmark"
                             class="btn btn-danger btn-xs waves-effect waves-themed"
                             data-toggle="modal" data-target="#deleteBookmarkModal"
-                            title="<?= __('Delete'); ?>">
+                            title="<?= __('Delete current filter'); ?>">
                         <i class="fa fa-trash"></i>
                     </button>
                 </div>
@@ -158,13 +159,14 @@
                     <div class="col-xs-11 col-md-11 margin-bottom-10">
                         <div class="form-group">
                             <input type="text" class="form-control" id="filterUrl"
+                                   readonly="readonly"
                                    ng-model="filterUrl">
                         </div>
                     </div>
                     <div class="col-xs-1 col-md-1 margin-bottom-10">
                         <button class="btn btn-default"
-                              ng-click="copy2Clipboard()"
-                              title="<?= __('Copy to clipboard'); ?>">
+                                ng-click="copy2Clipboard()"
+                                title="<?= __('Copy to clipboard'); ?>">
                             <i class="fa fa-copy"></i>
                         </button>
                     </div>
