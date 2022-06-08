@@ -75,7 +75,7 @@
                         <i class="far fa-bookmark"></i>
                     </button>
                     <button type="button"
-                            ng-show="bookmark.id"
+                            ng-show="bookmark.id && bookmark.user_id"
                             id="deleteBookmark"
                             class="btn btn-danger btn-xs waves-effect waves-themed"
                             data-toggle="modal" data-target="#deleteBookmarkModal"

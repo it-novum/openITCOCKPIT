@@ -29,11 +29,11 @@ namespace App\Controller;
 
 use App\Model\Entity\FilterBookmark;
 use App\Model\Table\FilterBookmarksTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Http\Exception\InternalErrorException;
 use Cake\ORM\TableRegistry;
-use Cake\Routing\Router;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
@@ -49,103 +49,133 @@ class FilterBookmarksController extends AppController {
         }
         $plugin = $this->request->getQuery('plugin', null);
         $controller = $this->request->getQuery('controller', null);
-        if (!$controller) {
-            throw new NotFoundException('Missing type param');
-        }
         $action = $this->request->getQuery('action', null);
-        if (!$action) {
-            throw new NotFoundException('Missing type param');
+        if ($controller === null || $action === null) {
+            throw new BadRequestException('Missing parameter');
         }
+
         $queryFilter = $this->request->getQuery('queryFilter', null);
-        /** @var User $user */
+
+        /** @var User $User */
         $User = new User($this->getUser());
+
         /** @var FilterBookmarksTable $FilterBookmarksTable */
         $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
+
         if ($queryFilter) {
-            $QueryBookmark = $FilterBookmarksTable->getFilterByUuid($queryFilter);
+            // User want's to load a specific filter by UUID - filter via URL param
+            $bookmark = $FilterBookmarksTable->getFilterByUuid($queryFilter);
+
+            if (!empty($bookmark)) {
+                $bookmark = $bookmark->toArray();
+                if ($bookmark['user_id'] !== $User->getId()) {
+                    // This filter belongs to another user
+                    unset($bookmark['user_id']);
+                }
+            }
         }
-        $this->set('bookmark', $QueryBookmark ?? null);
+        $this->set('bookmark', $bookmark ?? null);
         $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $plugin, $controller, $action);
         $this->set('bookmarks', $filterBookmarks);
         $this->viewBuilder()->setOption('serialize', ['bookmarks', 'bookmark']);
     }
 
-    public function add() {
+    public function save() {
         if (!$this->isApiRequest() && !$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
+
         $data = $this->request->getData();
-        $data['filter'] = json_encode($data['filter'] ?? '');
+        $data['filter'] = json_encode($this->request->getData('filter', '{}'));
 
         /** @var User $user */
         $User = new User($this->getUser());
+
         /** @var FilterBookmarksTable $FilterBookmarksTable */
         $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
 
-        //existing bookmark returns
-        if (!empty($data['id']) && !empty($data['uuid']) && !empty($data['user_id']) && $data['user_id'] == $User->getId()) {
-            /** @var FilterBookmark $FilterBookmark */
-            $FilterBookmark = $FilterBookmarksTable->get($data['id']);
-            //if a existing bookmark with the same name, than update the existing bookmark
-            if ($FilterBookmark->get('name') == $data['name']) {
-                $FilterBookmark = $FilterBookmarksTable->patchEntity($FilterBookmark, $data);
-            } //if existing bookmark with new name, then create new bookmark (new id, new uuid) from existing bookmark
-            else {
-                unset($data['id']);
-                $data['uuid'] = UUID::v4();
-                $FilterBookmark = $FilterBookmarksTable->newEntity($data);
+        // Do we have an id? If yes, try to update existing bookmark
+        if (!empty($data['id'])) {
+            try {
+                // Update existing bookmark
+                $bookmark = $FilterBookmarksTable->getByIdAndUserId($data['id'], $User->getId());
+                $bookmark->setAccess('id', false);
+                $bookmark->setAccess('uuid', false);
+                $bookmark->setAccess('user_id', false);
+            } catch (RecordNotFoundException $e) {
+                // No bookmark found for given id and user_id - create a new one
             }
-        } // create complete new bookmark
-        else {
-            $data['uuid'] = UUID::v4();
-            $data['name'] = $this->request->getData('name');
-            $data['user_id'] = $User->getId();
-            $data['filter'] = json_encode($this->request->getData('filter'));
-            /** @var FilterBookmark $FilterBookmark */
-            $FilterBookmark = $FilterBookmarksTable->newEntity($data);
         }
-        $FilterBookmarksTable->save($FilterBookmark);
-        if ($FilterBookmark->hasErrors()) {
+
+
+        if (!isset($bookmark)) {
+            // Create new bookmark
+            unset($data['id']);
+            $data['uuid'] = UUID::v4();
+            $data['user_id'] = $User->getId();
+
+            $bookmark = $FilterBookmarksTable->newEntity($data);
+            $bookmark->setNew(true);
+        }
+
+        // Update existing bookmark or createa a new one
+        $FilterBookmarksTable->patchEntity($bookmark, $data);
+
+        $FilterBookmarksTable->save($bookmark);
+        if ($bookmark->hasErrors()) {
             $this->response = $this->response->withStatus(400);
-            $this->set('error', $FilterBookmark->getErrors());
+            $this->set('error', $bookmark->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+
         //if bookmark should be default, look for and unset old default
-        if ($FilterBookmark->default) {
+        if ($bookmark->default) {
             $FilterBookmarksTable->updateAll([
                 'default' => false
             ], [
-                'id !='      => $FilterBookmark->id,
+                'id !='      => $bookmark->id,
                 'user_id'    => $User->getId(),
                 'plugin'     => $data['plugin'],
                 'controller' => $data['controller'],
                 'action'     => $data['action']
             ]);
         }
-        $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $data['plugin'], $data['controller'], $data['action']);
-        $this->set('bookmarks', $filterBookmarks);
-        $this->set('lastBookmarkId', $FilterBookmark->id);
-        $this->viewBuilder()->setOption('serialize', ['bookmarks', 'lastBookmarkId']);
+        $bookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $data['plugin'], $data['controller'], $data['action']);
+        $this->set('bookmarks', $bookmarks);
+        $this->set('bookmark', $bookmark);
+        $this->viewBuilder()->setOption('serialize', ['bookmarks', 'bookmark']);
     }
 
     public function delete() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
+
         /** @var User $User */
         $User = new User($this->getUser());
+
         $data = $this->request->getData();
         if (empty($data['id'])) {
-            throw new NotFoundException('No id to delete');
+            throw new NotFoundException('No id given');
         }
-        if ($User->getId() != $data['user_id']) {
-            throw new MethodNotAllowedException('Deletion not allowed, wrong User');
-        }
+
         /** @var FilterBookmarksTable $FilterBookmarksTable */
         $FilterBookmarksTable = TableRegistry::getTableLocator()->get('FilterBookmarks');
-        $FilterBookmark = $FilterBookmarksTable->get($data['id']);
-        $FilterBookmarksTable->delete($FilterBookmark);
+
+        if (!$FilterBookmarksTable->existsById($data['id'])) {
+            throw new NotFoundException();
+        }
+
+        /** @var FilterBookmark $bookmark */
+        $bookmark = $FilterBookmarksTable->get($data['id']);
+
+        if ($User->getId() != $bookmark->user_id) {
+            throw new MethodNotAllowedException('Deletion not allowed, wrong User');
+        }
+
+        $FilterBookmarksTable->delete($bookmark);
+
         $filterBookmarks = $FilterBookmarksTable->getFilterByUser($User->getId(), $data['plugin'], $data['controller'], $data['action']);
         $this->set('bookmarks', $filterBookmarks);
         $this->viewBuilder()->setOption('serialize', ['bookmarks']);
@@ -153,7 +183,6 @@ class FilterBookmarksController extends AppController {
 
     public function directive() {
         // Only ship HTML template
-
     }
 
 }

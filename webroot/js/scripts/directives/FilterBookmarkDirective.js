@@ -14,7 +14,6 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             $scope.queryFilter = $location.search().filter;
             $scope.bookmarks = [];
             $scope.select = 0;
-            $scope.showFilterUrl = false;
             $scope.filterUrl = '';
             $scope.name = '';
 
@@ -41,45 +40,6 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                 $scope.loadCallback(filter);
             };
 
-            $scope.saveBookmark = function(useAsDefault){
-                var params = {
-                    'angular': true,
-                }
-                $scope.bookmark.filter = $scope.filter;
-                $scope.bookmark.plugin = $scope.phpplugin;
-                $scope.bookmark.controller = $scope.phpcontroller;
-                $scope.bookmark.action = $scope.phpaction;
-                $scope.bookmark.name = $scope.name;
-                $scope.bookmark.default = useAsDefault;
-                var data = $scope.bookmark;
-                $http.post("/filter_bookmarks/add.json", data, {
-                    params: params
-                }).then(function(result){
-                    var bookmarks = result.data.bookmarks ?? [];
-                    bookmarks.forEach(function(item, index){
-                        item.filter = JSON.parse(item.filter);
-                        if(item.id === result.data.lastBookmarkId ?? 0){
-                            $scope.bookmark = item;
-                            $scope.select = item.id;
-                        }
-                    });
-                    $scope.bookmarks = bookmarks;
-                    $scope.errors = null;
-
-                    NotyService.genericSuccess({
-                        //message: 'Filter saved!',
-                        // timeout: timeout
-                    });
-                }, function errorCallback(result){
-
-                    NotyService.genericError();
-
-                    if(result.data.hasOwnProperty('error')){
-                        $scope.errors = result.data.error;
-                    }
-                });
-            };
-
             $scope.getBookmarks = function(){
                 var params = {
                     'angular': true,
@@ -87,8 +47,8 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     'controller': $scope.phpcontroller,
                     'action': $scope.phpaction,
                 }
-                if($scope.queryFilter !== "undefined"){
-                    params.queryFilter = $scope.queryFilter;
+                if(typeof $scope.queryFilter !== "undefined"){
+                    params['queryFilter'] = $scope.queryFilter;
                 }
                 $http.get("/filter_bookmarks/index.json", {
                     params: params
@@ -104,11 +64,23 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                                 // This is the default filter
                                 filter = item.filter;
                                 $scope.select = item.id;
+                                $scope.name = item.name;
                                 $scope.bookmark = item;
                             }
                         }
 
                         $scope.bookmarks = bookmarks;
+
+                        if(result.data.bookmark !== null && $scope.queryFilter){
+                            // User has loaded a filter via the URL
+                            item = result.data.bookmark
+                            item.filter = JSON.parse(item.filter)
+
+                            filter = item.filter;
+                            $scope.select = item.id;
+                            $scope.name = item.name;
+                            $scope.bookmark = item;
+                        }
 
                         // Trigger load method in main controller
                         $scope.loadCallback(filter);
@@ -123,6 +95,60 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                         console.log(error.data.message);
                         //NotyService.genericError();
                     });
+            };
+
+            $scope.saveBookmark = function(useAsDefault){
+                $scope.init = true; //Disable watch
+                var params = {
+                    'angular': true,
+                }
+                $scope.bookmark.filter = $scope.filter;
+                $scope.bookmark.plugin = $scope.phpplugin;
+                $scope.bookmark.controller = $scope.phpcontroller;
+                $scope.bookmark.action = $scope.phpaction;
+                $scope.bookmark.name = $scope.name;
+                $scope.bookmark.default = useAsDefault;
+                var data = $scope.bookmark;
+                $http.post("/filter_bookmarks/save.json", data, {
+                    params: params
+                }).then(function(result){
+                    var bookmarks = result.data.bookmarks;
+                    for(var index in bookmarks){
+                        var item = bookmarks[index];
+                        item.filter = JSON.parse(item.filter)
+                    }
+
+                    $scope.bookmarks = bookmarks;
+                    result.data.bookmark.filter = JSON.parse(result.data.bookmark.filter)
+                    $scope.bookmark = result.data.bookmark;
+                    $scope.select = result.data.bookmark.id;
+                    $scope.name = result.data.bookmark.name;
+
+
+                    $scope.errors = null;
+                    NotyService.genericSuccess();
+
+                    // Update UUID in URL if required
+                    if ($scope.queryFilter){
+                        if ($scope.queryFilter !== $scope.bookmark.uuid){
+                            $state.go($scope.stateName, {
+                                filter: $scope.bookmark.uuid
+                            })
+                        }
+                    }
+
+                    //Do not trigger watch on change of $scope.select
+                    setTimeout(function(){
+                        $scope.init = false;
+                    }, 250);
+                }, function errorCallback(result){
+
+                    NotyService.genericError();
+
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
             };
 
             $scope.deleteBookmark = function(){

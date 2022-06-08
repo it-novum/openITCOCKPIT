@@ -2,7 +2,10 @@
 
 namespace App\Model\Table;
 
+use App\Model\Entity\FilterBookmark;
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -44,7 +47,7 @@ class FilterBookmarksTable extends Table {
         $validator
             ->scalar('plugin')
             ->maxLength('plugin', 255)
-           // ->requirePresence('plugin', 'create')
+            // ->requirePresence('plugin', 'create')
             ->allowEmptyString('plugin', null, true);
 
         $validator
@@ -69,6 +72,20 @@ class FilterBookmarksTable extends Table {
     }
 
     /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules): RulesChecker {
+        $rules->add($rules->isUnique(['uuid']));
+
+        return $rules;
+    }
+
+
+    /**
      * @param int $id
      * @return bool
      */
@@ -87,10 +104,10 @@ class FilterBookmarksTable extends Table {
     public function getFilterByUser(int $userId, string $plugin, string $controller, string $action): array {
         $query = $this->find()
             ->where([
-                'FilterBookmarks.plugin' => $plugin,
+                'FilterBookmarks.plugin'     => $plugin,
                 'FilterBookmarks.controller' => $controller,
-                'FilterBookmarks.action' => $action,
-                'FilterBookmarks.user_id' => $userId
+                'FilterBookmarks.action'     => $action,
+                'FilterBookmarks.user_id'    => $userId
             ]);
         $result = $query->all();
         if (empty($result)) {
@@ -107,14 +124,14 @@ class FilterBookmarksTable extends Table {
      * @param string $action
      * @return array|EntityInterface|null
      */
-    public function getDefaultFilterByUser(int $userId , string $plugin, string $controller, string $action) {
+    public function getDefaultFilterByUser(int $userId, string $plugin, string $controller, string $action) {
         $query = $this->find()
             ->where([
-                'FilterBookmarks.plugin' => $plugin,
+                'FilterBookmarks.plugin'     => $plugin,
                 'FilterBookmarks.controller' => $controller,
-                'FilterBookmarks.action' => $action,
-                'FilterBookmarks.user_id' => $userId,
-                'FilterBookmarks.default' => true
+                'FilterBookmarks.action'     => $action,
+                'FilterBookmarks.user_id'    => $userId,
+                'FilterBookmarks.default'    => true
             ])
             ->first();
         return $query;
@@ -127,11 +144,25 @@ class FilterBookmarksTable extends Table {
     public function getFilterByUuid(string $uuid) {
         $query = $this->find()
             ->where([
-                //'FilterBookmarks.filter_entity' => 'host',
                 'FilterBookmarks.uuid' => $uuid,
             ])
             ->first();
         return $query;
+    }
+
+    /**
+     * @param int $id
+     * @return FilterBookmark
+     * @throws RecordNotFoundException
+     */
+    public function getByIdAndUserId($id, int $userId) {
+        return $this->find()
+            ->where([
+                'FilterBookmarks.id'      => $id,
+                'FilterBookmarks.user_id' => $userId
+            ])
+            ->firstOrFail();
+
     }
 
 }
