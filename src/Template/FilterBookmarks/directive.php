@@ -37,9 +37,9 @@
         <div class="col-11 form-inline">
             <div class="col-6 offset-3">
                 <div class="form-group chosen-small">
-                    <select class="form-control" chosen="bookmarks" ng-change="itemChanged(bookmark)"
-                            ng-options="bookmark.id as (bookmark.default == 1)?bookmark.name+' ⭐':bookmark.name for bookmark in bookmarks"
-                            ng-model="select">
+                    <select class="form-control" chosen="bookmarks"
+                            ng-options="bookmark.id as bookmark.name for bookmark in bookmarks"
+                            ng-model="selectedBookmarkId">
                         <option></option>
                     </select>
                 </div>
@@ -47,47 +47,34 @@
             <div class="col-3 no-padding">
                 <div class="btn-group pull-left">
                     <button type="button"
-                            ng-show="bookmark.uuid"
                             class="btn btn-default btn-xs waves-effect waves-themed"
-                            ng-click="computeBookmarkUrl()" data-toggle="modal" data-target="#showBookmarkModal"
+                            data-toggle="modal" data-target="#showBookmarkModal"
                             title="<?= __('Edit bookmark'); ?>">
                         <i class="fas fa-edit"></i>
                     </button>
                     <button type="button"
-                            ng-show="bookmark.uuid"
                             class="btn btn-primary btn-xs waves-effect waves-themed"
-                            ng-click="computeBookmarkUrl()" data-toggle="modal" data-target="#showBookmarkModal"
+                            data-toggle="modal" data-target="#showBookmarkModal"
                             title="<?= __('Share filter'); ?>">
                         <i class="far fa-bookmark"></i>
                     </button>
                     <button type="button"
-                            ng-show="bookmark.id && bookmark.user_id"
                             id="deleteBookmark"
                             class="btn btn-danger btn-xs waves-effect waves-themed"
                             data-toggle="modal" data-target="#deleteBookmarkModal"
                             title="<?= __('Delete current filter'); ?>">
                         <i class="fa fa-trash"></i>
                     </button>
-                    <button ng-click="saveBookmark(0)"
-                            ng-show="bookmark.uuid"
-                            class="btn btn-success btn-xs waves-effect waves-themed">
+                    <button class="btn btn-success btn-xs waves-effect waves-themed">
                         <?= __('Update filter'); ?>
                     </button>
                 </div>
                 <div class="btn-group pull-right">
-                    <button ng-click="saveBookmark(0)"
-                            class="btn btn-success btn-xs waves-effect waves-themed">
+                    <button class="btn btn-success btn-xs waves-effect waves-themed">
                         <i class="fas fa-plus"></i>
                         <?= __('Save as new filter'); ?>
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="row align-items-top" ng-if="errors.name">
-        <div class="col-4 offset-2 padding-left-0">
-            <div ng-repeat="error in errors.name">
-                <div class="help-block text-danger">{{ error }}</div>
             </div>
         </div>
     </div>
@@ -137,7 +124,7 @@
                            class="form-control"
                            id="filterUrl"
                            readonly="readonly"
-                           ng-model="filterUrl">
+                           >
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary"
                                 type="button"
