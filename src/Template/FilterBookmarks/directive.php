@@ -43,8 +43,8 @@
                     <div class="input-group w-100">
                         <div class="input-group-prepend">
                             <span class="input-group-text pt-1 pb-1" ng-class="{'border-danger': errors.name}">
-                                <span ng-show="default">⭐</span>
-                                <span class="text-default-bookmark-off" ng-hide="default">⭐</span>
+                                <span ng-show="bookmark.default">⭐</span>
+                                <span class="text-default-bookmark-off" ng-hide="bookmark.default">⭐</span>
                             </span>
                         </div>
                         <input class="form-control form-control-sm"
@@ -176,4 +176,3 @@
         </div>
     </div>
 </div>
-
