@@ -121,27 +121,6 @@ class FilterBookmarksTable extends Table {
         return $result->toArray();
     }
 
-
-    /**
-     * @param int $userId
-     * @param string $plugin
-     * @param string $controller
-     * @param string $action
-     * @return array|EntityInterface|null
-     */
-    public function getDefaultFilterByUser(int $userId, string $plugin, string $controller, string $action) {
-        $query = $this->find()
-            ->where([
-                'FilterBookmarks.plugin'     => $plugin,
-                'FilterBookmarks.controller' => $controller,
-                'FilterBookmarks.action'     => $action,
-                'FilterBookmarks.user_id'    => $userId,
-                'FilterBookmarks.default'    => true
-            ])
-            ->first();
-        return $query;
-    }
-
     /**
      * @param string $uuid
      * @return array|EntityInterface|null

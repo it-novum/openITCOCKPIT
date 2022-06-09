@@ -38,7 +38,7 @@
             <div class="col-6 offset-3">
                 <div class="form-group chosen-small">
                     <select class="form-control" chosen="bookmarks"
-                            ng-options="bookmark.id as bookmark.name for bookmark in bookmarks"
+                            ng-options="bookmark.id as bookmark.name group by bookmark.fav_group for bookmark in bookmarks"
                             ng-model="selectedBookmarkId">
                         <option></option>
                     </select>
@@ -189,9 +189,9 @@
                     <input type="checkbox"
                            name="checkbox"
                            class="custom-control-input"
-                           ng-model="bookmark.favorit"
-                           id="isFavorit">
-                    <label class="custom-control-label" for="isFavorit">
+                           ng-model="bookmark.favorite"
+                           id="isFavoriteEdit">
+                    <label class="custom-control-label" for="isFavoriteEdit">
                         <?php echo __('Add to favorites'); ?>
                     </label>
                 </div>
@@ -247,9 +247,9 @@
                     <input type="checkbox"
                            name="checkbox"
                            class="custom-control-input"
-                           ng-model="bookmark.favorit"
-                           id="isFavorit">
-                    <label class="custom-control-label" for="isFavorit">
+                           ng-model="bookmark.favorite"
+                           id="isFavoriteAdd">
+                    <label class="custom-control-label" for="isFavoriteAdd">
                         <?php echo __('Add to favorites'); ?>
                     </label>
                 </div>

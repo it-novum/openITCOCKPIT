@@ -99,6 +99,7 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
             $scope.saveNewBookmark = function(){
                 var post = {
                     name: $scope.bookmark.name,
+                    favorite: $scope.bookmark.favorite,
                     filter: JSON.parse(JSON.stringify($scope.filter)), //Get clone not reference
                     plugin: $scope.phpplugin,
                     controller: $scope.phpcontroller,

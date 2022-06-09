@@ -15,18 +15,30 @@ use Cake\ORM\Entity;
  * @property string $action
  * @property string $name
  * @property string $filter
- * @property bool $default
-**/
-
+ * @property bool $favorite
+ **/
 class FilterBookmark extends Entity {
     protected $_accessible = [
-        'uuid'            => true,
-        'plugin'          => true,
-        'controller'      => true,
-        'action'          => true,
-        'name'            => true,
-        'user_id'         => true,
-        'filter'          => true,
-        'default'         => true,
+        'uuid'       => true,
+        'plugin'     => true,
+        'controller' => true,
+        'action'     => true,
+        'name'       => true,
+        'user_id'    => true,
+        'filter'     => true,
+        'favorite'   => true,
     ];
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array {
+        $data = $this->extract($this->getVisible());
+        $data['fav_group'] = __('Filters');
+        if ($this->favorite) {
+            $data['fav_group'] = __('Favorites');
+        }
+        return $data;
+    }
+
 }

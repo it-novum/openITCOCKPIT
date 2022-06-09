@@ -54,7 +54,7 @@ class FilterBookmarks extends AbstractMigration
                 'default'       => null,
                 'null'          => false,
             ])
-            ->addColumn('default', 'boolean', [
+            ->addColumn('favorite', 'boolean', [
                 'default' => '0',
                 'limit'   => 1,
                 'null'    => true,
