@@ -111,7 +111,7 @@
                             phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
                             filter="filter"
                             load-callback="triggerLoadByBookmark"
-                            state-name="HostsIndex">
+                            state-name="ServicesIndex">
                         </filter-bookmark>
 
                         <div class="card-body" ng-show="showFilter">
