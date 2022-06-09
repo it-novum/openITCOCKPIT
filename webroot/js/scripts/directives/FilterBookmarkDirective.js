@@ -46,21 +46,49 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                         }
                         $scope.bookmarks = bookmarks;
 
-                        // Trigger load method in main controller
-                        if(typeof selectedBookmark === "undefined"){
-                            $scope.loadCallback();
-                        }else if($scope.queryFilter && result.data.bookmark !== null){
-                            // Set the bookmark from the URL as current selected bookmark
 
-                        }else{
-                            //Load passed bookmark (used by Save as new filter)
-                            changeBookmark(selectedBookmark);
+                        // First page load, trigger load function with empty default filter
+                        var bookmarkSource = 'default';
+
+                        if($scope.queryFilter && result.data.bookmark !== null){
+                            // The user passed a filter UUID via the URL.
+                            // Trigger the first load function with the filter
+                            bookmarkSource = 'url';
+                        }
+
+                        if(typeof selectedBookmark !== "undefined"){
+                            // Trigger load function and pass the filter from selectedBookmark
+                            // This is used by Save as new filter
+                            bookmarkSource = 'param';
+                        }
+
+                        // Trigger load method in main controller
+                        switch(bookmarkSource){
+                            case 'url':
+                                if(result.data.bookmark.ownership === true){
+                                    // This is our own bookmark.
+                                    result.data.bookmark.filter = JSON.parse(result.data.bookmark.filter);
+                                    changeBookmark(result.data.bookmark);
+                                }else{
+                                    // This is someone else's bookmark. We opened a link with an filter UUID in the url.
+                                    var filter = JSON.parse(result.data.bookmark.filter);
+                                    $scope.loadCallback(filter);
+                                }
+                                break;
+
+                            case 'param':
+                                //Load passed bookmark (used by Save as new filter)
+                                changeBookmark(selectedBookmark);
+                                break;
+
+                            default:
+                                $scope.loadCallback();
                         }
 
                         // This fixes two requests on "Save as new filter"
                         setTimeout(function(){
                             $scope.init = false;
-                        }, 250)
+                        }, 250);
                     },
                     function(error){
                         console.log(error.data.message);
@@ -108,6 +136,16 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     //$scope.bookmarks.push(bookmark);
                     //$scope.bookmark = bookmark;
                     //$scope.selectedBookmarkId = bookmark.id;
+
+                    if($scope.queryFilter){
+                        // We have a filter uuid in the URL - update the URL on change of the uuid
+                        // This will trigger the reload
+                        // Also give jQuery some time to hide the modal completely
+                        setTimeout(function(){
+                            $state.go($scope.stateName, {filter: bookmark.uuid}, {reload: false});
+                        }, 150);
+                        return;
+                    }
 
                     $scope.loadBookmarks(bookmark);
                 }, function errorCallback(result){
@@ -218,10 +256,18 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                 }
 
                 if(typeof $scope.selectedBookmarkId !== "undefined"){
+
                     for(var index in $scope.bookmarks){
                         var bookmark = $scope.bookmarks[index];
                         if(bookmark.id === $scope.selectedBookmarkId){
-                            changeBookmark(bookmark);
+                            if($scope.queryFilter){
+                                // We have a filter uuid in the URL - update the URL on change of the uuid
+                                // This will trigger the reload
+                                $state.go($scope.stateName, {filter: bookmark.uuid}, {reload: false});
+                            }else{
+                                // Change in select box - no UUID in url - just set the new filter
+                                changeBookmark(bookmark);
+                            }
                             break;
                         }
                     }

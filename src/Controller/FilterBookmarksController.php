@@ -69,11 +69,12 @@ class FilterBookmarksController extends AppController {
 
             if (!empty($bookmark)) {
                 $bookmark = $bookmark->toArray();
+                $bookmark['ownership'] = $bookmark['user_id'] === $User->getId();
                 if ($bookmark['user_id'] !== $User->getId()) {
                     // This filter belongs to another user
+                    unset($bookmark['id']);
                     unset($bookmark['user_id']);
                     unset($bookmark['uuid']);
-                    $bookmark['via_sharing'] = true;
                 }
             }
         }
