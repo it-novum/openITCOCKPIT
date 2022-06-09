@@ -136,7 +136,7 @@
                         </filter-bookmark>
 
 
-                        <div class="card-body">
+                        <div class="card-body" ng-show="showFilter">
                             <div class="row">
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">

@@ -104,11 +104,17 @@
                 <div class="panel-content">
 
                     <!-- Start Filter -->
-                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
-                        <div class="card-header">
-                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
-                        </div>
-                        <div class="card-body">
+                    <div class="list-filter card margin-bottom-10">
+                        <filter-bookmark
+                            phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
+                            phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
+                            phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
+                            filter="filter"
+                            load-callback="triggerLoadByBookmark"
+                            state-name="HostsIndex">
+                        </filter-bookmark>
+
+                        <div class="card-body" ng-show="showFilter">
                             <div class="row">
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">
