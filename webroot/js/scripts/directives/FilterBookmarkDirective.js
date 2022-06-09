@@ -256,6 +256,12 @@ angular.module('openITCOCKPIT').directive('filterBookmark', function($http, $loc
                     return;
                 }
 
+                if($scope.selectedBookmarkId === null){
+                    // load page if user has clicked on allow single deselect (chosen box)
+                    $state.go($scope.stateName, {}, {reload: true});
+                    return;
+                }
+
                 if(typeof $scope.selectedBookmarkId !== "undefined"){
 
                     for(var index in $scope.bookmarks){

@@ -113,7 +113,11 @@ class FilterBookmarksTable extends Table {
                 'FilterBookmarks.controller' => $controller,
                 'FilterBookmarks.action'     => $action,
                 'FilterBookmarks.user_id'    => $userId
-            ]);
+            ])
+        ->order([
+            'FilterBookmarks.favorite' => 'asc',
+            'FilterBookmarks.name'     => 'asc',
+        ]);
         $result = $query->all();
         if (empty($result)) {
             return [];
