@@ -10,7 +10,6 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
         },
 
         link: function($scope, element, attrs){
-
             var oldTimeout = false;
             var callback = false;
             if(attrs.callback){
@@ -22,6 +21,17 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
             }, true);
 
             var unwatchSource = $scope.$watch(attrs.chosen, function(){
+                if(attrs.optionsClass){
+                    angular.forEach($scope.$eval(attrs.optionsClass), function(optionKeys, className){
+                        if(typeof optionKeys !== 'undefined'){
+                            angular.forEach(optionKeys, function(key){
+                                    var optionForAddClass = element.find('option[value=\'number:' + key + '\']');
+                                    angular.element(optionForAddClass).addClass(className);
+                                }
+                            );
+                        }
+                    });
+                }
                 element.trigger('chosen:updated');
             }, true);
 

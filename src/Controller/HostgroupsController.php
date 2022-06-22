@@ -865,7 +865,7 @@ class HostgroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
 
-    public function loadHosgroupsByContainerId() {
+    public function loadHostgroupsByContainerId() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }

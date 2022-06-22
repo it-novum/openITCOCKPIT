@@ -2812,6 +2812,37 @@ class HostsController extends AppController {
         $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
+
+        $visibleHostgroups = [];
+        $visibleHostgroupContainerIds = [$containerId];
+        if ($containerId != ROOT_CONTAINER) {
+            $visibleHostgroupContainerIds = $ContainersTable->resolveChildrenOfContainerIds(
+                $containerId,
+                false,
+                [CT_TENANT, CT_LOCATION, CT_NODE]
+            );
+
+            $path = $ContainersTable->getPathById($containerId);
+            if (isset($path[1]) && $path[1]['containertype_id'] == CT_TENANT) {
+                $tenantContainerId = $path[1]['id'];
+                if ($tenantContainerId != $containerId) {
+                    $visibleHostgroupContainerIds[] = $tenantContainerId;
+                }
+            }
+
+            //remove ROOT_CONTAINER from result
+            $visibleHostgroupContainerIds = array_filter(
+                $visibleHostgroupContainerIds,
+                function ($v) {
+                    return $v > 1;
+                }, ARRAY_FILTER_USE_BOTH
+            );
+            sort($visibleHostgroupContainerIds);
+        }
+
+        $visibleHostgroups = $HostgroupsTable->getHostgroupsByContainerId($visibleHostgroupContainerIds, 'list', 'id');
+        $visibleHostgroups = Api::makeItJavaScriptAble($visibleHostgroups);
+
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
@@ -2847,6 +2878,7 @@ class HostsController extends AppController {
 
         $this->set('hosttemplates', $hosttemplates);
         $this->set('hostgroups', $hostgroups);
+        $this->set('visibleHostgroups', $visibleHostgroups);
         $this->set('timeperiods', $timeperiods);
         $this->set('checkperiods', $checkperiods);
         $this->set('contacts', $contacts);
@@ -2858,6 +2890,7 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', [
             'hosttemplates',
             'hostgroups',
+            'visibleHostgroups',
             'timeperiods',
             'checkperiods',
             'contacts',

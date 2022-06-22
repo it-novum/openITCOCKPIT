@@ -1172,3 +1172,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     line-height: 0px;
     margin: 0px 8px;
 }
+
+.groups-to-remove {
+    text-decoration: line-through #CC0000;
+}
