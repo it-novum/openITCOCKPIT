@@ -1193,4 +1193,38 @@ class ContainersTable extends Table {
         }
         return false;
     }
+
+    /**
+     * @param $containerId
+     * @return array
+     */
+    public function resolveContainerIdForGroupPermissions($containerId): array {
+        $visibleContainerIds = [$containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            return $visibleContainerIds;
+        }
+        $visibleContainerIds = $this->resolveChildrenOfContainerIds(
+            $containerId,
+            false,
+            [CT_TENANT, CT_LOCATION, CT_NODE]
+        );
+
+        $path = $this->getPathById($containerId);
+        if (isset($path[1]) && $path[1]['containertype_id'] == CT_TENANT) {
+            $tenantContainerId = $path[1]['id'];
+            if ($tenantContainerId != $containerId) {
+                $visibleContainerIds[] = $tenantContainerId;
+            }
+        }
+
+        //remove ROOT_CONTAINER from result
+        $visibleContainerIds = array_filter(
+            $visibleContainerIds,
+            function ($v) {
+                return $v > 1;
+            }, ARRAY_FILTER_USE_BOTH
+        );
+        sort($visibleContainerIds);
+        return $visibleContainerIds;
+    }
 }

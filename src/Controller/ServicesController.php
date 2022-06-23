@@ -2765,32 +2765,7 @@ class ServicesController extends AppController {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        $containerIds = [$containerId];
-        if ($containerId != ROOT_CONTAINER) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(
-                $containerId,
-                false,
-                [CT_TENANT, CT_LOCATION, CT_NODE]
-            );
-
-            $path = $ContainersTable->getPathById($containerId);
-            if (isset($path[1]) && $path[1]['containertype_id'] == CT_TENANT) {
-                $tenantContainerId = $path[1]['id'];
-                if ($tenantContainerId != $containerId) {
-                    $containerIds[] = $tenantContainerId;
-                }
-            }
-
-            //remove ROOT_CONTAINER from result
-            $containerIds = array_filter(
-                $containerIds,
-                function ($v) {
-                    return $v > 1;
-                }, ARRAY_FILTER_USE_BOTH
-            );
-            sort($containerIds);
-        }
-
+        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
