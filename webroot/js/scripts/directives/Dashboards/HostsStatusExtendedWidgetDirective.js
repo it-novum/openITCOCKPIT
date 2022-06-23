@@ -283,9 +283,17 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
 
 
             // Fix modal appearing under background / backdrop shadow
+            //Issue: If possible have no position fixed, absolute or relative elements above the .modal
             setTimeout(function(){
-                //$('#hostBrowserModal' + $scope.widget.id).appendTo("body");
+                $('#hostBrowserModal' + $scope.widget.id).appendTo("body");
             }, 250);
+
+            // Remove modal HTML from DOM when scope changes
+            // https://weblog.west-wind.com/posts/2016/sep/14/bootstrap-modal-dialog-showing-under-modal-background
+            $scope.$on('$destroy', function(){
+                //console.log('Remove modal: #hostBrowserModal' + $scope.widget.id);
+                $('#hostBrowserModal' + $scope.widget.id).remove();
+            });
         },
 
 
