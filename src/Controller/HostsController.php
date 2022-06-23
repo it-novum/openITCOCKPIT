@@ -742,12 +742,12 @@ class HostsController extends AppController {
                     array_keys($visibleHostgroups),
                     $requestData['Host']['hostgroups']['_ids']
                 );
-                if (!empty($hosttemplate['Hosttemplate']['hostgroups']['_ids'])) {
-                    $hosttemplate['Hosttemplate']['hostgroups']['_ids'] = array_intersect(
-                        array_keys($visibleHostgroups),
-                        $hosttemplate['Hosttemplate']['hostgroups']['_ids']
-                    );
-                }
+            }
+            if (!empty($hosttemplate['Hosttemplate']['hostgroups']['_ids'])) {
+                $hosttemplate['Hosttemplate']['hostgroups']['_ids'] = array_intersect(
+                    array_keys($visibleHostgroups),
+                    $hosttemplate['Hosttemplate']['hostgroups']['_ids']
+                );
             }
 
             $HostComparisonForSave = new HostComparisonForSave($requestData, $hosttemplate);
@@ -1651,6 +1651,12 @@ class HostsController extends AppController {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
+        /** @var  ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var  HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
         /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
@@ -1682,6 +1688,10 @@ class HostsController extends AppController {
 
                     /** @var \App\Model\Entity\Host $sourceHost */
                     $sourceHost = $HostsTable->getHostDetailsForCopy($host2copyData['Source']['id']);
+
+                    $visibleContainerIds = $ContainersTable->resolveContainerIdForGroupPermissions($sourceHost->get('container_id'));
+                    $visibleHostgroups = $HostgroupsTable->getHostgroupsByContainerId($visibleContainerIds, 'list', 'id');
+
                     $hostDefaultValues = $sourceHost->extract([
                             'command_id',
                             'hosttemplate_id',
@@ -1730,7 +1740,10 @@ class HostsController extends AppController {
                     $tmpHost->set('address', $host2copyData['Host']['address']);
                     $tmpHost->set('host_url', $host2copyData['Host']['host_url']);
                     foreach ($sourceHost->get('hostgroups') as $hostgroup) {
-                        $hostgroupsIds[] = $hostgroup->get('id');
+                        $hostgroupId = $hostgroup->get('id');
+                        if (array_key_exists($hostgroupId, $visibleHostgroups)) {
+                            $hostgroupsIds[] = $hostgroupId;
+                        }
                     }
                     foreach ($sourceHost->get('hosts_to_containers_sharing') as $container) {
                         $containerIds[] = $container->get('id');
@@ -1789,6 +1802,12 @@ class HostsController extends AppController {
                     $tmpHost->hostcommandargumentvalues = $hostcommandargumentvalues;
                     $tmpHost->customvariables = $customvariables;
 
+                    if (!empty($hosttemplate['Hosttemplate']['hostgroups']['_ids'])) {
+                        $hosttemplate['Hosttemplate']['hostgroups']['_ids'] = array_intersect(
+                            array_keys($visibleHostgroups),
+                            $hosttemplate['Hosttemplate']['hostgroups']['_ids']
+                        );
+                    }
 
                     $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
                     $mergedHost = $HostMergerForView->getDataForView();
