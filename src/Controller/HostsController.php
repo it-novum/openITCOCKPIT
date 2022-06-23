@@ -184,6 +184,9 @@ class HostsController extends AppController {
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
+        $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
+        $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
@@ -255,10 +258,30 @@ class HostsController extends AppController {
                 $satellite_id = $Host->getSatelliteId();
             }
 
+            $downtime = [];
+            if ($HostControllerRequest->includeDowntimeInformation() && $Hoststatus->isInDowntime()) {
+                $downtime = $DowntimehistoryHostsTable->byHostUuid($Host->getUuid());
+                if (!empty($downtime)) {
+                    $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
+                    $downtime = $Downtime->toArray();
+                }
+            }
+
+            $acknowledgement = [];
+            if ($HostControllerRequest->includeAcknowledgementInformation() && $Hoststatus->isAcknowledged()) {
+                $acknowledgement = $AcknowledgementHostsTable->byHostUuid($Host->getUuid());
+                if (!empty($acknowledgement)) {
+                    $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime, $allowEdit);
+                    $acknowledgement = $Acknowledgement->toArray();
+                }
+            }
+
             $tmpRecord = [
                 'Host'                 => $Host->toArray(),
                 'Hoststatus'           => $Hoststatus->toArray(),
-                'ServicestatusSummary' => $serviceStateSummary
+                'ServicestatusSummary' => $serviceStateSummary,
+                'Downtime'             => $downtime,
+                'Acknowledgement'      => $acknowledgement
             ];
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
@@ -2480,7 +2503,7 @@ class HostsController extends AppController {
         $start = $this->request->getQuery('start', -1);
         $end = $this->request->getQuery('end', -1);
 
-        if($start > 0 && $end > 0){
+        if ($start > 0 && $end > 0) {
             $start -= $offset;
             $end -= $offset;
         }

@@ -221,6 +221,7 @@ class AclDependencies {
             ->allow('Dashboards', 'servicesPiechartWidget')
             ->allow('Dashboards', 'servicesPiechart180Widget')
             ->allow('Dashboards', 'hostsStatusListWidget')
+            ->allow('Dashboards', 'hostsStatusListExtendedWidget')
             ->allow('Dashboards', 'servicesStatusListWidget')
             ->allow('Dashboards', 'saveTabRotateInterval')
             ->allow('Dashboards', 'parentOutagesWidget')
