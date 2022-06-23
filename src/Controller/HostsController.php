@@ -984,6 +984,11 @@ class HostsController extends AppController {
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
+
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
@@ -1271,6 +1276,22 @@ class HostsController extends AppController {
 
                 if ($hasChanges === true) {
                     $hostChanges = $hostArray;
+                    $visibleContainerIds = $ContainersTable->resolveContainerIdForGroupPermissions($hostArray['Host']['container_id']);
+
+                    $visibleHostgroups = $HostgroupsTable->getHostgroupsByContainerId($visibleContainerIds, 'list', 'id');
+                    //remove disallowed host groups from host configuration and temporarily from host template if container rights are not correct
+                    if (!empty($hostArray['Host']['hostgroups']['_ids'])) {
+                        $hostArray['Host']['hostgroups']['_ids'] = array_intersect(
+                            array_keys($visibleHostgroups),
+                            $hostArray['Host']['hostgroups']['_ids']
+                        );
+                        if (!empty($hosttemplate['Hosttemplate']['hostgroups']['_ids'])) {
+                            $hosttemplate['Hosttemplate']['hostgroups']['_ids'] = array_intersect(
+                                array_keys($visibleHostgroups),
+                                $hosttemplate['Hosttemplate']['hostgroups']['_ids']
+                            );
+                        }
+                    }
                     $HostComparisonForSave = new HostComparisonForSave($hostArray, $hosttemplate);
                     $hostArray = $HostComparisonForSave->getDataForSaveForAllFields();
 
