@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+/**
+ * @var \App\View\AppView $this
+ *
+ */
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -120,11 +125,18 @@
                 <div class="panel-content">
 
                     <!-- Start Filter -->
-                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
-                        <div class="card-header">
-                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
-                        </div>
-                        <div class="card-body">
+                    <div class="list-filter card margin-bottom-10">
+                        <filter-bookmark
+                            phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
+                            phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
+                            phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
+                            filter="filter"
+                            load-callback="triggerLoadByBookmark"
+                            state-name="HostsIndex">
+                        </filter-bookmark>
+
+
+                        <div class="card-body" ng-show="showFilter">
                             <div class="row">
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">
@@ -188,11 +200,11 @@
                                                 <input type="text"
                                                        class="form-control form-control-sm"
                                                        data-role="tagsinput"
-                                                       id="ServicesKeywordsInput"
+                                                       id="HostKeywordsInput"
                                                        placeholder="<?php echo __('Filter by tags'); ?>"
                                                        ng-model="filter.Host.keywords"
                                                        ng-model-options="{debounce: 500}"
-                                                       style="display: none;">
+                                                >
                                             </div>
                                         </div>
                                     </div>
@@ -207,7 +219,7 @@
                                             <div class="col tagsinputFilter">
                                                 <input type="text" class="input-sm"
                                                        data-role="tagsinput"
-                                                       id="ServicesNotKeywordsInput"
+                                                       id="HostNotKeywordsInput"
                                                        placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                                        ng-model="filter.Host.not_keywords"
                                                        ng-model-options="{debounce: 500}">
@@ -468,10 +480,10 @@
                                     <?php echo __('Reset Filter'); ?>
                                 </button>
                             </div>
+
                         </div>
                     </div>
                     <!-- End Filter -->
-
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>

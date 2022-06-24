@@ -241,6 +241,13 @@ class AclDependencies {
             ->allow('Dashboards', 'calendarWidget');
 
         $this
+            ->allow('FilterBookmarks', 'index')
+            ->allow('FilterBookmarks', 'add')
+            ->allow('FilterBookmarks', 'edit')
+            ->allow('FilterBookmarks', 'delete')
+            ->allow('FilterBookmarks', 'directive');
+
+        $this
             ->allow('Hosts', 'view')
             ->allow('Hosts', 'icon')
             ->allow('Hosts', 'hostservicelist')
