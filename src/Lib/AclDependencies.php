@@ -223,6 +223,7 @@ class AclDependencies {
             ->allow('Dashboards', 'hostsStatusListWidget')
             ->allow('Dashboards', 'hostsStatusListExtendedWidget')
             ->allow('Dashboards', 'servicesStatusListWidget')
+            ->allow('Dashboards', 'servicesStatusListExtendedWidget')
             ->allow('Dashboards', 'saveTabRotateInterval')
             ->allow('Dashboards', 'parentOutagesWidget')
             ->allow('Dashboards', 'hostsDowntimeWidget')

@@ -978,6 +978,7 @@ class DashboardsController extends AppController {
         return;
     }
 
+    // This gets also used by the hostsStatusListExtendedWidget to load and save the filters
     public function hostsStatusListWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -1023,49 +1024,10 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    public function hostsStatusListExtendedWidget() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship template
-            return;
-        }
-
-        $widgetId = (int)$this->request->getQuery('widgetId');
-        $HostStatusListJson = new HostStatusListJson();
-
-        /** @var WidgetsTable $WidgetsTable */
-        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
-
-        if (!$WidgetsTable->existsById($widgetId)) {
-            throw new NotFoundException('Widget not found');
-        }
-
-        $widget = $WidgetsTable->get($widgetId);
-
-        if ($this->request->is('get')) {
-            $data = [];
-            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
-                $data = json_decode($widget->get('json_data'), true);
-            }
-            $config = $HostStatusListJson->standardizedData($data);
-            $this->set('config', $config);
-            $this->viewBuilder()->setOption('serialize', ['config']);
-            return;
-        }
-
-        if ($this->request->is('post')) {
-            $config = $HostStatusListJson->standardizedData($this->request->getData());
-
-            $widget = $WidgetsTable->patchEntity($widget, [
-                'json_data' => json_encode($config)
-            ]);
-            $WidgetsTable->save($widget);
-
-            $this->set('config', $config);
-            $this->viewBuilder()->setOption('serialize', ['config']);
-            return;
-        }
-
-        throw new MethodNotAllowedException();
+    public function hostsStatusListExtendedWidget(){
+        // Only ship the HTML template
+        // otherwise we need to copy&paste the self::hostsStatusListWidget() 1:1
+        return;
     }
 
     public function hostsDowntimeWidget() {
@@ -1159,6 +1121,7 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    // Gets also used by the servicesStatusListExtendedWidget
     public function servicesStatusListWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -1203,6 +1166,12 @@ class DashboardsController extends AppController {
         }
 
         throw new MethodNotAllowedException();
+    }
+
+    public function servicesStatusListExtendedWidget(){
+        // Only ship the HTML template
+        // otherwise we need to copy&paste the self::servicesStatusListWidget() 1:1
+        return;
     }
 
     public function noticeWidget() {

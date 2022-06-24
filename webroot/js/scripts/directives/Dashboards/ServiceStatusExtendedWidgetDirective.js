@@ -1,7 +1,7 @@
-angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function($http, $rootScope, $interval, NotyService){
+angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', function($http, $rootScope, $interval, NotyService){
     return {
         restrict: 'E',
-        templateUrl: '/dashboards/hostsStatusListExtendedWidget.html',
+        templateUrl: '/dashboards/servicesStatusListExtendedWidget.html',
         scope: {
             'widget': '='
         },
@@ -18,18 +18,19 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
                 hasResize();
             });
 
-            $scope.hostListTimeout = null;
+            $scope.serviceListTimeout = null;
 
-            $scope.sort = 'Hoststatus.current_state';
+            $scope.sort = 'Servicestatus.current_state';
             $scope.direction = 'desc';
             $scope.currentPage = 1;
 
             $scope.filter = {
-                Hoststatus: {
+                Servicestatus: {
                     current_state: {
-                        up: 0,
-                        down: 0,
-                        unreachable: 0
+                        ok: 0,
+                        warning: 0,
+                        critical: 0,
+                        unknown: 0
                     },
                     acknowledged: false,
                     not_acknowledged: false,
@@ -38,6 +39,9 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
                     output: ''
                 },
                 Host: {
+                    name: ''
+                },
+                Service: {
                     name: '',
                     keywords: '',
                     not_keywords: ''
@@ -45,22 +49,24 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
             };
 
             $scope.loadWidgetConfig = function(){
-                $http.get("/dashboards/hostsStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
+                $http.get("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
-                    $('#HostTags').tagsinput('add', $scope.filter.Host.keywords);
-                    $('#HostExcludedTags').tagsinput('add', $scope.filter.Host.not_keywords);
-                    $scope.filter.Hoststatus = result.data.config.Hoststatus;
-                    $scope.filter.Hoststatus.current_state.up = result.data.config.Hoststatus.current_state.up ? 1 : 0;
-                    $scope.filter.Hoststatus.current_state.down = result.data.config.Hoststatus.current_state.down ? 1 : 0;
-                    $scope.filter.Hoststatus.current_state.unreachable = result.data.config.Hoststatus.current_state.unreachable ? 1 : 0;
-                    $scope.filter.Hoststatus.acknowledged = result.data.config.Hoststatus.acknowledged;
-                    $scope.filter.Hoststatus.not_acknowledged = result.data.config.Hoststatus.not_acknowledged;
-                    $scope.filter.Hoststatus.in_downtime = result.data.config.Hoststatus.in_downtime;
-                    $scope.filter.Hoststatus.not_in_downtime = result.data.config.Hoststatus.not_in_downtime;
+                    $scope.filter.Service = result.data.config.Service;
+                    $('#ServiceTags').tagsinput('add', $scope.filter.Service.keywords);
+                    $('#ServiceExcludedTags').tagsinput('add', $scope.filter.Service.not_keywords);
+
+                    $scope.filter.Servicestatus = result.data.config.Servicestatus;
+                    $scope.filter.Servicestatus.current_state.ok = result.data.config.Servicestatus.current_state.ok ? 1 : 0;
+                    $scope.filter.Servicestatus.current_state.warning = result.data.config.Servicestatus.current_state.warning ? 1 : 0;
+                    $scope.filter.Servicestatus.current_state.critical = result.data.config.Servicestatus.current_state.critical ? 1 : 0;
+                    $scope.filter.Servicestatus.current_state.unknown = result.data.config.Servicestatus.current_state.unknown ? 1 : 0;
+                    $scope.filter.Servicestatus.acknowledged = result.data.config.Servicestatus.acknowledged;
+                    $scope.filter.Servicestatus.not_acknowledged = result.data.config.Servicestatus.not_acknowledged;
+                    $scope.filter.Servicestatus.in_downtime = result.data.config.Servicestatus.in_downtime;
+                    $scope.filter.Servicestatus.not_in_downtime = result.data.config.Servicestatus.not_in_downtime;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
-
                     var scrollInterval = parseInt(result.data.config.scroll_interval);
                     if(scrollInterval < 5000){
                         scrollInterval = 5000;
@@ -85,11 +91,11 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
 
                 var hasBeenAcknowledged = '';
                 var inDowntime = '';
-                if($scope.filter.Hoststatus.acknowledged ^ $scope.filter.Hoststatus.not_acknowledged){
-                    hasBeenAcknowledged = $scope.filter.Hoststatus.acknowledged === true;
+                if($scope.filter.Servicestatus.acknowledged ^ $scope.filter.Servicestatus.not_acknowledged){
+                    hasBeenAcknowledged = $scope.filter.Servicestatus.acknowledged === true;
                 }
-                if($scope.filter.Hoststatus.in_downtime ^ $scope.filter.Hoststatus.not_in_downtime){
-                    inDowntime = $scope.filter.Hoststatus.in_downtime === true;
+                if($scope.filter.Servicestatus.in_downtime ^ $scope.filter.Servicestatus.not_in_downtime){
+                    inDowntime = $scope.filter.Servicestatus.in_downtime === true;
                 }
 
                 var params = {
@@ -97,22 +103,23 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
                     'scroll': true,
                     'sort': $scope.sort,
                     'page': $scope.currentPage,
-                    'includes[]': ['downtimes', 'acknowledgements'],
                     'direction': $scope.direction,
+                    'includes[]': ['downtimes', 'acknowledgements'],
                     'filter[Hosts.name]': $scope.filter.Host.name,
-                    'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
-                    'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
-                    'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
-                    'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
-                    'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
-                    'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
+                    'filter[servicename]': $scope.filter.Service.name,
+                    'filter[keywords][]': $scope.filter.Service.keywords.split(','),
+                    'filter[not_keywords][]': $scope.filter.Service.not_keywords.split(','),
+                    'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
+                    'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
+                    'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
+                    'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                     'limit': $scope.limit
                 };
 
-                $http.get("/hosts/index.json", {
+                $http.get("/services/index.json", {
                     params: params
                 }).then(function(result){
-                    $scope.hosts = result.data.all_hosts;
+                    $scope.services = result.data.all_services;
                     $scope.scroll = result.data.scroll;
 
                     if(options.save === true){
@@ -150,11 +157,11 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
             };
 
             var hasResize = function(){
-                if($scope.hostListTimeout){
-                    clearTimeout($scope.hostListTimeout);
+                if($scope.serviceListTimeout){
+                    clearTimeout($scope.serviceListTimeout);
                 }
-                $scope.hostListTimeout = setTimeout(function(){
-                    $scope.hostListTimeout = null;
+                $scope.serviceListTimeout = setTimeout(function(){
+                    $scope.serviceListTimeout = null;
                     $scope.limit = getLimit($widget.height());
                     if($scope.limit <= 0){
                         $scope.limit = 1;
@@ -207,7 +214,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
                 settings['useScroll'] = $scope.useScroll;
                 settings['sort'] = $scope.sort;
                 settings['direction'] = $scope.direction;
-                $http.post("/dashboards/hostsStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
+                $http.post("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
                     $scope.currentPage = 1;
                     $scope.loadWidgetConfig();
                     $scope.hideConfig();
@@ -237,21 +244,19 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
                 $scope.loadWidgetConfig();
             };
 
-            $scope.loadHostBrowserDetails = function(hostId){
-                $http.get("/hosts/browser/" + hostId + ".json", {
+            $scope.loadServiceBrowserDetails = function(serviceId){
+                $http.get("/services/browser/" + serviceId + ".json", {
                     params: {
                         'angular': true
                     }
                 }).then(function(result){
-                    $scope.hostBrowser = result.data;
-                    $('#hostBrowserModal' + $scope.widget.id).modal('show');
+                    $scope.serviceBrowser = result.data;
+                    $('#serviceBrowserModal' + $scope.widget.id).modal('show');
                 }, function errorCallback(result){
                     NotyService.genericError();
                 });
             }
 
-
-            // Fire on page load
             $scope.limit = getLimit($widget.height());
 
             $scope.loadWidgetConfig();
@@ -281,22 +286,19 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
                 });
             });
 
-
             // Fix modal appearing under background / backdrop shadow
             //Issue: If possible have no position fixed, absolute or relative elements above the .modal
             setTimeout(function(){
-                $('#hostBrowserModal' + $scope.widget.id).appendTo("body");
+                $('#serviceBrowserModal' + $scope.widget.id).appendTo("body");
             }, 250);
 
             // Remove modal HTML from DOM when scope changes
             // https://weblog.west-wind.com/posts/2016/sep/14/bootstrap-modal-dialog-showing-under-modal-background
             $scope.$on('$destroy', function(){
-                //console.log('Remove modal: #hostBrowserModal' + $scope.widget.id);
-                $('#hostBrowserModal' + $scope.widget.id).remove();
+                //console.log('Remove modal: #serviceBrowserModal' + $scope.widget.id);
+                $('#serviceBrowserModal' + $scope.widget.id).remove();
             });
         },
-
-
         link: function($scope, element, attr){
 
         }
