@@ -188,6 +188,60 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
     background-color: #4285F4 !important;
 }
 
+/** Border Colors **/
+
+.border-ok, .border-up {
+    border-color: #00C851 !important;
+}
+
+.border-ok-soft, .border-up-soft {
+    border-color: #00ea5f !important;
+}
+
+.border-warning {
+    border-color: #ffbb33 !important;
+}
+
+.border-warning-soft {
+    border-color: #f9d180 !important;
+}
+
+.border-critical, .border-down {
+    border-color: #CC0000 !important;
+}
+
+.border-critical-soft, .border-down-soft {
+    border-color: #ff4444 !important;
+}
+
+.border-unknown, .border-unreachable {
+    border-color: #727b84 !important;
+}
+
+.border-unknown-soft, .border-unreachable-soft {
+    border-color: #CFCFCF !important;
+}
+
+.border-downtime {
+    border-color: #337ab7 !important;
+}
+
+.border-downtime-cancelled {
+    border-color: #00c4d8 !important;
+}
+
+.border-ack {
+    border-color: #3c00ff !important;
+}
+
+.border-color-black {
+    border-color: #000000;
+}
+
+.border-not-monitored {
+    border-color: #4285F4 !important;
+}
+/** End Border **/
 
 /* TEXT COLOR */
 
