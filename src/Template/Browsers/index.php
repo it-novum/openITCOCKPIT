@@ -214,8 +214,11 @@
                         </button>
                     <?php endif; ?>
 
-                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
+                    <button class="btn btn-xs btn-primary mr-1 shadow-0" ng-click="triggerFilter()">
                         <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
+                    </button>
+                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFields()">
+                        <i class="fas fa-list"></i> <?php echo __('Fields'); ?>
                     </button>
                 </div>
             </div>
@@ -409,6 +412,13 @@
                     </div>
                     <!-- End Filter -->
                     <div class="frame-wrap">
+                        <div ng-show="showFields">Fields:
+                            <div style="display: inline" ng-repeat="field in fields">
+                                <input type="checkbox"
+                                       ng-model="field.selected"
+                                       ng-checked="field.selected"> {{field.field}}
+                            </div>
+                        </div>
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
@@ -442,29 +452,33 @@
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Host name'); ?>
                                 </th>
+                                <th ng-show="fields[0].selected" class="no-sort" ng-click="orderBy('Hosts.description')">
+                                    <i class="fa" ng-class="getSortClass('Hosts.description')"></i>
+                                    <?php echo __('Host description'); ?>
+                                </th>
 
-                                <th class="no-sort" ng-click="orderBy('Hosts.address')">
+                                <th ng-show="fields[1].selected" class="no-sort" ng-click="orderBy('Hosts.address')">
                                     <i class="fa" ng-class="getSortClass('Hosts.address')"></i>
                                     <?php echo __('IP address'); ?>
                                 </th>
 
-                                <th class="no-sort tableStatewidth"
+                                <th ng-show="fields[2].selected" class="no-sort tableStatewidth"
                                     ng-click="orderBy('Hoststatus.last_state_change')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.last_state_change')"></i>
                                     <?php echo __('Last state change'); ?>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Hoststatus.last_check')">
+                                <th ng-show="fields[3].selected" class="no-sort tableStatewidth" ng-click="orderBy('Hoststatus.last_check')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.last_check')"></i>
                                     <?php echo __('Last check'); ?>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Hoststatus.output')">
+                                <th ng-show="fields[4].selected" class="no-sort" ng-click="orderBy('Hoststatus.output')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.output')"></i>
                                     <?php echo __('Host output'); ?>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
+                                <th ng-show="fields[5].selected" class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
                                     <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
                                     <?php echo __('Instance'); ?>
                                 </th>
@@ -543,24 +557,28 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[0].selected">
+                                    {{ host.Host.description }}
+                                </td>
+
+                                <td ng-show="fields[1].selected">
                                     {{ host.Host.address }}
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[2].selected">
                                     {{ host.Hoststatus.last_state_change }}
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[3].selected">
                                     {{ host.Hoststatus.lastCheck }}
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[4].selected">
                                     <div class="cropText"
                                          ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[5].selected">
                                     {{ host.Host.satelliteName }}
                                 </td>
 

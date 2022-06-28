@@ -10,6 +10,34 @@ angular.module('openITCOCKPIT')
             containerFilter: ''
         };
         $scope.recursiveBrowser = false;
+        /*** FieldSettings DJ ***/
+        $scope.fields = [
+            {
+                field: 'Description',
+                selected: false
+            },
+            {
+                field: 'Address',
+                selected: true
+            },
+            {
+                field: 'Last state change',
+                selected: true
+            },
+            {
+                field: 'Last check',
+                selected: true
+            },
+            {
+                field: 'Host output',
+                selected: true
+            },
+            {
+                field: 'Instance',
+                selected: true
+            },
+        ];
+        /*** FieldSettings DJ  end***/
 
 
         /*** Filter Settings ***/
@@ -40,6 +68,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.showFilter = false;
+        $scope.showFields = false;
 
         $scope.load = function(){
 
@@ -131,6 +160,10 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
+        };
+
+        $scope.triggerFields = function(){
+            $scope.showFields = !$scope.showFields === true;
         };
 
         $scope.resetFilter = function(){

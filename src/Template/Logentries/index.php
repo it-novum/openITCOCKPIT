@@ -137,29 +137,32 @@
 
                     <div class="frame-wrap">
                         <!-- Fields Start -->
-                      <div ng-show="showFields">Fields:
-                        <div style="display: inline" ng-repeat="field in fields">
-                            <input type="checkbox"
-                                   ng-model="field.selected"
-                                   ng-checked="field.selected"> {{field.field}}
+                        <div ng-show="showFields">Fields:
+                            <div style="display: inline" ng-repeat="field in fields">
+                                <input type="checkbox"
+                                       ng-model="field.selected"
+                                       ng-checked="field.selected"> {{field.field}}
+                            </div>
                         </div>
-                      </div>
                         <!-- Fields End -->
 
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th ng-show="fields[0].selected" class="no-sort" ng-click="orderBy('Logentries.entry_time')">
+                                <th ng-show="fields[0].selected" class="no-sort"
+                                    ng-click="orderBy('Logentries.entry_time')">
                                     <i class="fa" ng-class="getSortClass('Logentries.entry_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
 
-                                <th ng-show="fields[1].selected" class="no-sort" ng-click="orderBy('Logentries.logentry_type')">
+                                <th ng-show="fields[1].selected" class="no-sort"
+                                    ng-click="orderBy('Logentries.logentry_type')">
                                     <i class="fa" ng-class="getSortClass('Logentries.logentry_type')"></i>
                                     <?php echo __('Type'); ?>
                                 </th>
 
-                                <th ng-show="fields[2].selected" class="no-sort" ng-click="orderBy('Logentries.logentry_data')">
+                                <th ng-show="fields[2].selected" class="no-sort"
+                                    ng-click="orderBy('Logentries.logentry_data')">
                                     <i class="fa" ng-class="getSortClass('Logentries.logentry_data')"></i>
                                     <?php echo __('Record'); ?>
                                 </th>
