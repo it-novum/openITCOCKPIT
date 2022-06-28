@@ -221,7 +221,9 @@ class AclDependencies {
             ->allow('Dashboards', 'servicesPiechartWidget')
             ->allow('Dashboards', 'servicesPiechart180Widget')
             ->allow('Dashboards', 'hostsStatusListWidget')
+            ->allow('Dashboards', 'hostsStatusListExtendedWidget')
             ->allow('Dashboards', 'servicesStatusListWidget')
+            ->allow('Dashboards', 'servicesStatusListExtendedWidget')
             ->allow('Dashboards', 'saveTabRotateInterval')
             ->allow('Dashboards', 'parentOutagesWidget')
             ->allow('Dashboards', 'hostsDowntimeWidget')
@@ -239,6 +241,13 @@ class AclDependencies {
             ->allow('Dashboards', 'tacticalOverviewHostsWidget')
             ->allow('Dashboards', 'tacticalOverviewServicesWidget')
             ->allow('Dashboards', 'calendarWidget');
+
+        $this
+            ->allow('FilterBookmarks', 'index')
+            ->allow('FilterBookmarks', 'add')
+            ->allow('FilterBookmarks', 'edit')
+            ->allow('FilterBookmarks', 'delete')
+            ->allow('FilterBookmarks', 'directive');
 
         $this
             ->allow('Hosts', 'view')
