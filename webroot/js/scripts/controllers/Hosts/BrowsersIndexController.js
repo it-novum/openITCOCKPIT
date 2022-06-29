@@ -13,6 +13,38 @@ angular.module('openITCOCKPIT')
         /*** FieldSettings DJ ***/
         $scope.fields = [
             {
+                field: 'Host status',
+                selected: true
+            },
+            {
+                field: 'is acknowledged',
+                selected: true
+            },
+            {
+                field: 'is in downtime',
+                selected: true
+            },
+            {
+                field: 'Notifications enabled',
+                selected: false
+            },
+            {
+                field: 'Grapher',
+                selected: true
+            },
+            {
+                field: 'shared',
+                selected: true
+            },
+            {
+                field: 'passively transfered Host',
+                selected: true
+            },
+            {
+                field: 'Priority',
+                selected: false
+            },
+            {
                 field: 'Description',
                 selected: false
             },
@@ -35,6 +67,14 @@ angular.module('openITCOCKPIT')
             {
                 field: 'Instance',
                 selected: true
+            },
+            {
+                field: 'Service Summary',
+                selected: false
+            },
+            {
+                field: 'Notes',
+                selected: false
             },
         ];
         /*** FieldSettings DJ  end***/
@@ -69,7 +109,6 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.showFilter = false;
         $scope.showFields = false;
-
         $scope.load = function(){
 
             $http.get("/browsers/index/" + $scope.containerId + ".json", {

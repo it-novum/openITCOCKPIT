@@ -784,7 +784,7 @@ class HostsTable extends Table {
             'Hosts.container_id',
             'Hosts.tags',
             'Hosts.priority',
-
+            'Hosts.notes',
             'Hoststatus.current_state',
             'Hoststatus.last_check',
             'Hoststatus.next_check',
@@ -832,6 +832,7 @@ class HostsTable extends Table {
                     'Hosttemplates.uuid',
                     'Hosttemplates.name',
                     'Hosttemplates.description',
+                    'Hosttemplates.notes',
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
@@ -934,11 +935,12 @@ class HostsTable extends Table {
             'Hosts.address',
             'Hosts.satellite_id',
             'Hosts.container_id',
+            'Hosts.hosttemplate_id',
             'Hosts.tags',
             'Hosts.priority',
             //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
             //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-
+            'Hosts.notes',
             'Hoststatus.current_state',
             'Hoststatus.last_check',
             'Hoststatus.next_check',
@@ -980,12 +982,12 @@ class HostsTable extends Table {
                     'Hosttemplates.uuid',
                     'Hosttemplates.name',
                     'Hosttemplates.description',
+                    'Hosttemplates.notes',
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
                     'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
                     'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
-
                 ]
             ]
         ]);
