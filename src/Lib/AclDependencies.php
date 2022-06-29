@@ -377,7 +377,7 @@ class AclDependencies {
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'listToPdf')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'view')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByString')
-            ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHosgroupsByContainerId')
+            ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByContainerId')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosts')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosttemplates')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadContainers')

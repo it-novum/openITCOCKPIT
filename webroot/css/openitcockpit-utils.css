@@ -1177,6 +1177,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     margin: 0px 8px;
 }
 
+.groups-to-remove {
+    text-decoration: line-through #CC0000;
+}
+
 .dropzone .dz-preview .dz-image img {
     margin: auto;   /* center the image inside the thumbnail */
 }

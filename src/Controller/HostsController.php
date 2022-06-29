@@ -516,7 +516,25 @@ class HostsController extends AppController {
             $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
 
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
-            $HostComparisonForSave = new HostComparisonForSave($this->request->getData(), $hosttemplate, true);
+            $requestData = $this->request->getData();
+
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            /** @var HostgroupsTable $HostgroupsTable */
+            $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+            $visibleContainerIds = $ContainersTable->resolveContainerIdForGroupPermissions($requestData['Host']['container_id']);
+            $visibleHostgroups = $HostgroupsTable->getHostgroupsByContainerId($visibleContainerIds, 'list', 'id');
+
+            //remove disallowed host groups from host configuration if container rights are not correct
+            if (!empty($requestData['Host']['hostgroups']['_ids'])) {
+                $requestData['Host']['hostgroups']['_ids'] = array_intersect(
+                    array_keys($visibleHostgroups),
+                    $requestData['Host']['hostgroups']['_ids']
+                );
+            }
+
+            $HostComparisonForSave = new HostComparisonForSave($requestData, $hosttemplate, true);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
             $hostData['uuid'] = UUID::v4();
 
@@ -538,7 +556,7 @@ class HostsController extends AppController {
                 //No errors
 
                 $User = new User($this->getUser());
-                $requestData = $this->request->getData();
+
 
                 $extDataForChangelog = $HostsTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
@@ -610,6 +628,8 @@ class HostsController extends AppController {
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
         if (!$HostsTable->existsById($id)) {
             throw new NotFoundException(__('Host not found'));
@@ -626,6 +646,18 @@ class HostsController extends AppController {
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
             return;
+        }
+
+        $visibleContainerIds = $ContainersTable->resolveContainerIdForGroupPermissions($host['Host']['container_id']);
+        $visibleHostgroups = $HostgroupsTable->getHostgroupsByContainerId($visibleContainerIds, 'list', 'id');
+
+
+        //remove disallowed host groups from host configuration and temporarily from host template if container rights are not correct
+        if (!empty($mergedHost['Host']['hostgroups']['_ids'])) {
+            $mergedHost['Host']['hostgroups']['_ids'] = array_intersect(
+                array_keys($visibleHostgroups),
+                $mergedHost['Host']['hostgroups']['_ids']
+            );
         }
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
@@ -724,6 +756,21 @@ class HostsController extends AppController {
             if ($HostContainersPermissions->allowSharing($this->MY_RIGHTS, $host['Host']['host_type']) === false) {
                 //Overwrite post data. User is not permitted to set new shared containers
                 $requestData['Host']['hosts_to_containers_sharing']['_ids'] = $host['Host']['hosts_to_containers_sharing']['_ids'];
+            }
+
+
+            //remove disallowed host groups from host configuration and temporarily from host template if container rights are not correct
+            if (!empty($requestData['Host']['hostgroups']['_ids'])) {
+                $requestData['Host']['hostgroups']['_ids'] = array_intersect(
+                    array_keys($visibleHostgroups),
+                    $requestData['Host']['hostgroups']['_ids']
+                );
+            }
+            if (!empty($hosttemplate['Hosttemplate']['hostgroups']['_ids'])) {
+                $hosttemplate['Hosttemplate']['hostgroups']['_ids'] = array_intersect(
+                    array_keys($visibleHostgroups),
+                    $hosttemplate['Hosttemplate']['hostgroups']['_ids']
+                );
             }
 
             $HostComparisonForSave = new HostComparisonForSave($requestData, $hosttemplate);
@@ -959,6 +1006,11 @@ class HostsController extends AppController {
 
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
+
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
@@ -1247,6 +1299,22 @@ class HostsController extends AppController {
 
                 if ($hasChanges === true) {
                     $hostChanges = $hostArray;
+                    $visibleContainerIds = $ContainersTable->resolveContainerIdForGroupPermissions($hostArray['Host']['container_id']);
+
+                    $visibleHostgroups = $HostgroupsTable->getHostgroupsByContainerId($visibleContainerIds, 'list', 'id');
+                    //remove disallowed host groups from host configuration and temporarily from host template if container rights are not correct
+                    if (!empty($hostArray['Host']['hostgroups']['_ids'])) {
+                        $hostArray['Host']['hostgroups']['_ids'] = array_intersect(
+                            array_keys($visibleHostgroups),
+                            $hostArray['Host']['hostgroups']['_ids']
+                        );
+                        if (!empty($hosttemplate['Hosttemplate']['hostgroups']['_ids'])) {
+                            $hosttemplate['Hosttemplate']['hostgroups']['_ids'] = array_intersect(
+                                array_keys($visibleHostgroups),
+                                $hosttemplate['Hosttemplate']['hostgroups']['_ids']
+                            );
+                        }
+                    }
                     $HostComparisonForSave = new HostComparisonForSave($hostArray, $hosttemplate);
                     $hostArray = $HostComparisonForSave->getDataForSaveForAllFields();
 
@@ -1606,6 +1674,12 @@ class HostsController extends AppController {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
+        /** @var  ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var  HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
         /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
@@ -1637,6 +1711,10 @@ class HostsController extends AppController {
 
                     /** @var \App\Model\Entity\Host $sourceHost */
                     $sourceHost = $HostsTable->getHostDetailsForCopy($host2copyData['Source']['id']);
+
+                    $visibleContainerIds = $ContainersTable->resolveContainerIdForGroupPermissions($sourceHost->get('container_id'));
+                    $visibleHostgroups = $HostgroupsTable->getHostgroupsByContainerId($visibleContainerIds, 'list', 'id');
+
                     $hostDefaultValues = $sourceHost->extract([
                             'command_id',
                             'hosttemplate_id',
@@ -1685,7 +1763,10 @@ class HostsController extends AppController {
                     $tmpHost->set('address', $host2copyData['Host']['address']);
                     $tmpHost->set('host_url', $host2copyData['Host']['host_url']);
                     foreach ($sourceHost->get('hostgroups') as $hostgroup) {
-                        $hostgroupsIds[] = $hostgroup->get('id');
+                        $hostgroupId = $hostgroup->get('id');
+                        if (array_key_exists($hostgroupId, $visibleHostgroups)) {
+                            $hostgroupsIds[] = $hostgroupId;
+                        }
                     }
                     foreach ($sourceHost->get('hosts_to_containers_sharing') as $container) {
                         $containerIds[] = $container->get('id');
@@ -1744,6 +1825,12 @@ class HostsController extends AppController {
                     $tmpHost->hostcommandargumentvalues = $hostcommandargumentvalues;
                     $tmpHost->customvariables = $customvariables;
 
+                    if (!empty($hosttemplate['Hosttemplate']['hostgroups']['_ids'])) {
+                        $hosttemplate['Hosttemplate']['hostgroups']['_ids'] = array_intersect(
+                            array_keys($visibleHostgroups),
+                            $hosttemplate['Hosttemplate']['hostgroups']['_ids']
+                        );
+                    }
 
                     $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
                     $mergedHost = $HostMergerForView->getDataForView();
@@ -2835,6 +2922,12 @@ class HostsController extends AppController {
         $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
+
+        $visibleContainerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
+
+        $visibleHostgroups = $HostgroupsTable->getHostgroupsByContainerId($visibleContainerIds, 'list', 'id');
+        $visibleHostgroups = Api::makeItJavaScriptAble($visibleHostgroups);
+
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
@@ -2870,6 +2963,7 @@ class HostsController extends AppController {
 
         $this->set('hosttemplates', $hosttemplates);
         $this->set('hostgroups', $hostgroups);
+        $this->set('visibleHostgroups', $visibleHostgroups);
         $this->set('timeperiods', $timeperiods);
         $this->set('checkperiods', $checkperiods);
         $this->set('contacts', $contacts);
@@ -2881,6 +2975,7 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', [
             'hosttemplates',
             'hostgroups',
+            'visibleHostgroups',
             'timeperiods',
             'checkperiods',
             'contacts',
