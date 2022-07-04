@@ -217,9 +217,10 @@
                     <button class="btn btn-xs btn-primary mr-1 shadow-0" ng-click="triggerFilter()">
                         <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
                     </button>
-                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFields()">
+
+                    <!--<button class="btn btn-xs btn-primary mr-1 shadow-0" ng-click="triggerFields()">
                         <i class="fas fa-list"></i> <?php echo __('Fields'); ?>
-                    </button>
+                    </button>-->
                 </div>
             </div>
             <div class="panel-container show">
@@ -413,7 +414,7 @@
                     <!-- End Filter -->
                     <div class="frame-wrap">
 
-                        <div class="list-filter card margin-bottom-10" ng-show="showFields">
+                        <!--<div class="list-filter card margin-bottom-10" ng-show="showFields">
                             <div class="card-header">
                                 <i class="fa fa-list"></i> <?php echo __('Fields'); ?>
                             </div>
@@ -421,155 +422,231 @@
                                 <div class="row">
                                     <div class="col-xs-6 col-md-3 margin-bottom-10">
                                         <input type="checkbox"
-                                               ng-model="fields[1].selected"
-                                               ng-checked="fields[1].selected"> <?php echo __('is acknowledged'); ?><br>
+                                               ng-model="fields[0]"
+                                               ng-checked="fields[0]"> <?php echo __('Hoststatus'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[2].selected"
-                                               ng-checked="fields[2].selected"> <?php echo __('is in downtime'); ?><br>
+                                               ng-model="fields[1]"
+                                               ng-checked="fields[1]"> <?php echo __('is acknowledged'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[3].selected"
-                                               ng-checked="fields[3].selected"> <?php echo __('Notifications enabled'); ?><br>
+                                               ng-model="fields[2]"
+                                               ng-checked="fields[2]"> <?php echo __('is in downtime'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[4].selected"
-                                               ng-checked="fields[4].selected"> <?php echo __('Grapher'); ?><br>
+                                               ng-model="fields[3]"
+                                               ng-checked="fields[3]"> <?php echo __('Notifications enabled'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[5].selected"
-                                               ng-checked="fields[5].selected"> <?php echo __('Shared'); ?><br>
+                                               ng-model="fields[4]"
+                                               ng-checked="fields[4]"> <?php echo __('Grapher'); ?><br>
+                                        <input type="checkbox"
+                                               ng-model="fields[5]"
+                                               ng-checked="fields[5]"> <?php echo __('Shared'); ?><br>
                                     </div>
                                     <div class="col-xs-6 col-md-3 margin-bottom-10">
                                         <input type="checkbox"
-                                               ng-model="fields[6].selected"
-                                               ng-checked="fields[6].selected"> <?php echo __('Passively transferred host'); ?><br>
+                                               ng-model="fields[6]"
+                                               ng-checked="fields[6]"> <?php echo __('Passively transferred host'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[7].selected"
-                                               ng-checked="fields[7].selected"> <?php echo __('Priority'); ?><br>
+                                               ng-model="fields[7]"
+                                               ng-checked="fields[7]"> <?php echo __('Priority'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[8].selected"
-                                               ng-checked="fields[8].selected"> <?php echo __('Host description'); ?><br>
+                                               ng-model="fields[8]"
+                                               ng-checked="fields[8]"> <?php echo __('Host name'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[9].selected"
-                                               ng-checked="fields[9].selected"> <?php echo __('IP address'); ?><br>
+                                               ng-model="fields[9]"
+                                               ng-checked="fields[9]"> <?php echo __('Host description'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[10].selected"
-                                               ng-checked="fields[10].selected"> <?php echo __('Last state change'); ?><br>
+                                               ng-model="fields[10]"
+                                               ng-checked="fields[10]"> <?php echo __('IP address'); ?><br>
+                                        <input type="checkbox"
+                                               ng-model="fields[11]"
+                                               ng-checked="fields[11]"> <?php echo __('Last state change'); ?><br>
                                     </div>
                                     <div class="col-xs-6 col-md-3 margin-bottom-10">
                                         <input type="checkbox"
-                                               ng-model="fields[11].selected"
-                                               ng-checked="fields[11].selected"> <?php echo __('Last check'); ?><br>
+                                               ng-model="fields[12]"
+                                               ng-checked="fields[12]"> <?php echo __('Last check'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[12].selected"
-                                               ng-checked="fields[12].selected"> <?php echo __('Host output'); ?><br>
+                                               ng-model="fields[13]"
+                                               ng-checked="fields[13]"> <?php echo __('Host output'); ?><br>
                                         <input type="checkbox"
-                                               ng-model="fields[13].selected"
-                                               ng-checked="fields[13].selected"> <?php echo __('Instance'); ?><br>
+                                               ng-model="fields[14]"
+                                               ng-checked="fields[14]"> <?php echo __('Instance'); ?><br>
                                         <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                         <input type="checkbox"
-                                               ng-model="fields[14].selected"
-                                               ng-checked="fields[14].selected"> <?php echo __('Service Summary '); ?><br>
+                                               ng-model="fields[15]"
+                                               ng-checked="fields[15]"> <?php echo __('Service Summary '); ?><br>
                                         <?php endif; ?>
                                         <input type="checkbox"
-                                               ng-model="fields[15].selected"
-                                               ng-checked="fields[15].selected"> <?php echo __('Host notes'); ?><br>
+                                               ng-model="fields[16]"
+                                               ng-checked="fields[16]"> <?php echo __('Host notes'); ?><br>
                                     </div>
                                     <div class="col-xs-6 col-md-3 margin-bottom-10">
-                                        <button class="btn btn-xs btn-primary shadow-0" ng-click="javascript:void(0);">
-                                            <i class="fas fa-list"></i> <?php echo __('Save in localstorage'); ?>
+                                        <button class="btn btn-xs btn-primary shadow-0 mb-5 float-right" style="width:200px" ng-click="saveFields()">
+                                            <i class="fas fa-list"></i> <?php echo __('Save selection in localstorage'); ?>
+                                        </button>
+                                        <button class="btn btn-xs btn-primary shadow-0 float-right" style="width:200px" ng-click="defaultFields()">
+                                            <i class="fas fa-list"></i> <?php echo __('Reset to default'); ?>
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            </div>
+                            </div>-->
                         </div>
 
+                    <div class="dropdown">
+                        <button class="btn btn-xs btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-list"></i> <?php echo __('Fieldstest'); ?>
+                        </button>
+                        <div class="dropdown-menu" style="width: 900px;" aria-labelledby="dropdownMenuButton">
+                            <?php $list = [__('Hoststatus'),
+                                __('is acknowledged'),
+                                __('is in downtime'),
+                                __('Notifications enabled'),
+                                __('Grapher'),
+                                __('Shared'),
+                                __('Passively transferred host'),
+                                __('Priority'),
+                                __('Host name'),
+                                __('Host description'),
+                                __('IP address'),
+                                __('Last state change'),
+                                __('Last check'),
+                                __('Host output'),
+                                __('Instance'),
+                                __('Service Summary '),
+                                __('Host notes')];
+                            foreach(array_chunk($list, 6, true) as $chunk):
+                                echo <<<COLL
+                                <div style="display:inline-block;width:200px;">
+COLL;
+                                foreach($chunk as $index => $name):
+                                    if ($name == __('Service Summary ') && !$this->Acl->hasPermission('index', 'services') ):
+                                        continue;
+                                    endif;
+                                    echo
+                                    <<<ITEM
+                                    <div class="dropdown-item" style="display:inline-block;width:200px;">
+                                        <input type="checkbox"
+                                        ng-model="fields[$index]"
+                                        ng-checked="fields[$index]">
+                                        $name
+                                    </div>
+ITEM;
+                                endforeach;
+                                echo
+                                <<<COLlEND
+                                </div>
+COLlEND;
+                            endforeach;?>
+                            <div style="display:inline-block;width:200px">
+                                <div class="dropdown-item" style="display:inline-block;width:200px;">
+                                    <button class="btn btn-xs btn-primary shadow-0" style="width:250px" ng-click="saveFields()">
+                                        <i class="fas fa-list"></i> <?php echo __('Save selection in localstorage'); ?>
+                                    </button>
+                                </div>
 
-                            <!--<div style="display: inline" ng-repeat="field in fields">
-                                <input type="checkbox"
-                                       ng-model="field.selected"
-                                       ng-checked="field.selected"> {{field.field}}
-                            </div>-->
+                                <div class="dropdown-item" style="display:inline-block;width:200px;">
+                                    <button class="btn btn-xs btn-primary shadow-0" style="width:250px" ng-click="defaultFields()">
+                                        <i class="fas fa-list"></i> <?php echo __('Reset to default'); ?>
+                                    </button>
+                                </div>
+                                <div class="dropdown-item" style="display:inline-block;width:200px;">
+                                    <button class="btn btn-xs btn-primary shadow-0" style="width:250px" ng-click="">
+                                        <i class="fas fa-list"></i> <?php echo __('Import colconfig'); ?>
+                                    </button>
+                                </div>
+                                <div class="dropdown-item" style="display:inline-block;width:200px;">
+                                    <button class="btn btn-xs btn-primary shadow-0" style="width:250px" ng-click="">
+                                        <i class="fas fa-list"></i> <?php echo __('Export colconfig'); ?>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th colspan="2" class="no-sort width-95" ng-click="orderBy('Hoststatus.current_state')">
+                                <th ng-show="fields[0]" colspan="2" class="no-sort width-95" ng-click="orderBy('Hoststatus.current_state')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.current_state')"></i>
                                     <?php echo __('Hoststatus'); ?>
                                 </th>
+                                <th ng-hide="fields[0]">
+                                    <i class="fa fa-check-square"></i>
+                                </th>
 
-                                <th ng-show="fields[1].selected" class="no-sort text-center">
+                                <th ng-show="fields[1]" class="no-sort text-center">
                                     <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
-                                <th ng-show="fields[2].selected" class="no-sort text-center">
+                                <th ng-show="fields[2]" class="no-sort text-center">
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
-                                <th ng-show="fields[3].selected" class="no-sort text-center" ng-click="orderBy('Hoststatus.notifications_enabled')">
+                                <th ng-show="fields[3]" class="no-sort text-center" ng-click="orderBy('Hoststatus.notifications_enabled')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.notifications_enabled')"></i>
                                     <i class="fas fa-envelope" title="<?php echo __('Notifications enabled'); ?>">
                                     </i>
                                 </th>
-                                <th ng-show="fields[4].selected" class="no-sort text-center">
+                                <th ng-show="fields[4]" class="no-sort text-center">
                                     <i class="fa fa fa-area-chart" title="<?php echo __('Grapher'); ?>"></i>
                                 </th>
 
-                                <th ng-show="fields[5].selected" class="no-sort text-center">
+                                <th ng-show="fields[5]" class="no-sort text-center">
                                     <i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap"></i>
                                 </th>
 
-                                <th ng-show="fields[6].selected" class="no-sort text-center">
+                                <th ng-show="fields[6]" class="no-sort text-center">
                                     <strong title="<?php echo __('Passively transferred host'); ?>">P</strong>
                                 </th>
 
-                                <th ng-show="fields[7].selected" class="no-sort text-center" ng-click="orderBy('hostpriority')">
+                                <th ng-show="fields[7]" class="no-sort text-center" ng-click="orderBy('hostpriority')">
                                     <i class="fa" ng-class="getSortClass('hostpriority')"></i>
                                     <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
                                     </i>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                <th  ng-show="fields[8]" class="no-sort" ng-click="orderBy('Hosts.name')">
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Host name'); ?>
                                 </th>
-                                <th ng-show="fields[8].selected" class="no-sort" ng-click="orderBy('Hosts.description')">
+                                <th ng-show="fields[9]" class="no-sort" ng-click="orderBy('Hosts.description')">
                                     <i class="fa" ng-class="getSortClass('Hosts.description')"></i>
                                     <?php echo __('Host description'); ?>
                                 </th>
 
-                                <th ng-show="fields[9].selected" class="no-sort" ng-click="orderBy('Hosts.address')">
+                                <th ng-show="fields[10]" class="no-sort" ng-click="orderBy('Hosts.address')">
                                     <i class="fa" ng-class="getSortClass('Hosts.address')"></i>
                                     <?php echo __('IP address'); ?>
                                 </th>
 
-                                <th ng-show="fields[10].selected" class="no-sort tableStatewidth"
+                                <th ng-show="fields[11]" class="no-sort tableStatewidth"
                                     ng-click="orderBy('Hoststatus.last_state_change')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.last_state_change')"></i>
                                     <?php echo __('Last state change'); ?>
                                 </th>
 
-                                <th ng-show="fields[11].selected" class="no-sort tableStatewidth" ng-click="orderBy('Hoststatus.last_check')">
+                                <th ng-show="fields[12]" class="no-sort tableStatewidth" ng-click="orderBy('Hoststatus.last_check')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.last_check')"></i>
                                     <?php echo __('Last check'); ?>
                                 </th>
 
-                                <th ng-show="fields[12].selected" class="no-sort" ng-click="orderBy('Hoststatus.output')">
+                                <th ng-show="fields[13]" class="no-sort" ng-click="orderBy('Hoststatus.output')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.output')"></i>
                                     <?php echo __('Host output'); ?>
                                 </th>
 
-                                <th ng-show="fields[13].selected" class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
+                                <th ng-show="fields[14]" class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
                                     <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
                                     <?php echo __('Instance'); ?>
                                 </th>
 
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                    <th ng-show="fields[14].selected" class="text-center">
+                                    <th ng-show="fields[15]" class="text-center">
                                         <?php echo __('Service Summary '); ?>
                                     </th>
                                 <?php endif; ?>
 
-                                <th ng-show="fields[15].selected" class="no-sort" ng-click="orderBy('Hosts.notes')">
+                                <th ng-show="fields[16]" class="no-sort" ng-click="orderBy('Hosts.notes')">
                                     <i class="fa" ng-class="getSortClass('Hosts.notes')"></i>
                                     <?php echo __('Host notes'); ?>
                                 </th>
@@ -585,11 +662,11 @@
                                            ng-show="host.Host.allow_edit">
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[0]" class="text-center">
                                     <hoststatusicon host="host"></hoststatusicon>
                                 </td>
 
-                                <td ng-show="fields[1].selected" class="text-center">
+                                <td ng-show="fields[1]" class="text-center">
                                     <i class="far fa-user"
                                        ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                        ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
@@ -600,12 +677,12 @@
                                        title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                 </td>
 
-                                <td ng-show="fields[2].selected" class="text-center">
+                                <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
                                        ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
-                                <td ng-show="fields[3].selected" class="text-center">
+                                <td ng-show="fields[3]" class="text-center">
                                     <div class="icon-stack margin-right-5"
                                          title="<?= __('Notifications enabled'); ?>"
                                          ng-show="host.Hoststatus.notifications_enabled">
@@ -620,7 +697,7 @@
                                     </div>
                                 </td>
 
-                                <td ng-show="fields[4].selected" class="text-center">
+                                <td ng-show="fields[4]" class="text-center">
                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                         <a ui-sref="ServicesServiceList({id: host.Host.id})"
                                            class="txt-color-blueDark"
@@ -634,7 +711,7 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td ng-show="fields[5].selected" class="text-center">
+                                <td ng-show="fields[5]" class="text-center">
                                     <a class="txt-color-blueDark" title="<?php echo __('Shared'); ?>"
                                        ng-if="host.Host.allow_sharing === true && host.Host.containerIds.length > 1"
                                        ui-sref="HostsSharing({id:host.Host.id})">
@@ -644,14 +721,14 @@
                                        title="<?php echo __('Restricted view'); ?>"></i>
                                 </td>
 
-                                <td ng-show="fields[6].selected" class="text-center">
+                                <td ng-show="fields[6]" class="text-center">
                                     <strong title="<?php echo __('Passively transferred host'); ?>"
                                             ng-show="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
                                         P
                                     </strong>
                                 </td>
 
-                                <td ng-show="fields[7].selected" class="text-center">
+                                <td ng-show="fields[7]" class="text-center">
                                     <i class="fa fa-fire"
                                        ng-class="{'ok-soft' : host.Host.priority==1,
                                         'ok' : host.Host.priority==2, 'warning' : host.Host.priority==3,
@@ -659,7 +736,7 @@
                                     </i>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[8]">
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <a ui-sref="HostsBrowser({id:host.Host.id})">
                                             {{ host.Host.hostname }}
@@ -669,33 +746,33 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td ng-show="fields[8].selected">
+                                <td ng-show="fields[9]">
                                     {{ host.Host.description }}
                                 </td>
 
-                                <td ng-show="fields[9].selected">
+                                <td ng-show="fields[10]">
                                     {{ host.Host.address }}
                                 </td>
 
-                                <td ng-show="fields[10].selected">
+                                <td ng-show="fields[11]">
                                     {{ host.Hoststatus.last_state_change }}
                                 </td>
 
-                                <td ng-show="fields[11].selected">
+                                <td ng-show="fields[12]">
                                     {{ host.Hoststatus.lastCheck }}
                                 </td>
 
-                                <td ng-show="fields[12].selected">
+                                <td ng-show="fields[13]">
                                     <div class="cropText"
                                          ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
-                                <td ng-show="fields[13].selected">
+                                <td ng-show="fields[14]">
                                     {{ host.Host.satelliteName }}
                                 </td>
 
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                    <td ng-show="fields[14].selected" class="width-160">
+                                    <td ng-show="fields[15]" class="width-160">
                                         <div class="btn-group btn-group-justified" role="group" style="width: 100%">
                                             <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                                 <a class="btn btn-success state-button-small"
@@ -741,7 +818,8 @@
                                         </div>
                                     </td>
                                 <?php endif; ?>
-                                <td ng-show="fields[15].selected">
+
+                                <td ng-show="fields[16]">
                                     {{ host.Host.notes }}
                                 </td>
 

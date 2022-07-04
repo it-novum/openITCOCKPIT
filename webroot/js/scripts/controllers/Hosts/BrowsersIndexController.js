@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('BrowsersIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, $state){
+    .controller('BrowsersIndexController', function($scope, $http, $window, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, $state){
         SortService.setSort('Hoststatus.current_state');
         SortService.setDirection('desc');
 
@@ -11,73 +11,11 @@ angular.module('openITCOCKPIT')
         };
         $scope.recursiveBrowser = false;
         /*** FieldSettings DJ ***/
-        $scope.fields = [
-            {
-                field: 'Host status',
-                selected: true
-            },
-            {
-                field: 'is acknowledged',
-                selected: true
-            },
-            {
-                field: 'is in downtime',
-                selected: true
-            },
-            {
-                field: 'Notifications enabled',
-                selected: false
-            },
-            {
-                field: 'Grapher',
-                selected: true
-            },
-            {
-                field: 'shared',
-                selected: true
-            },
-            {
-                field: 'passively transfered Host',
-                selected: true
-            },
-            {
-                field: 'Priority',
-                selected: false
-            },
-            {
-                field: 'Description',
-                selected: false
-            },
-            {
-                field: 'Address',
-                selected: true
-            },
-            {
-                field: 'Last state change',
-                selected: true
-            },
-            {
-                field: 'Last check',
-                selected: true
-            },
-            {
-                field: 'Host output',
-                selected: true
-            },
-            {
-                field: 'Instance',
-                selected: true
-            },
-            {
-                field: 'Service Summary',
-                selected: false
-            },
-            {
-                field: 'Notes',
-                selected: false
-            },
-        ];
+        //$scope.fields = [];
+
         /*** FieldSettings DJ  end***/
+        //$scope.fields = [true,true,true,false,true,true,true,false,true,false,true,true,true,true,true,false,false];
+        $scope.fields = [];
 
 
         /*** Filter Settings ***/
@@ -101,6 +39,27 @@ angular.module('openITCOCKPIT')
             };
         };
         /*** Filter end ***/
+        $scope.defaultFields = function(){
+            console.log('DefaultFields');
+            $scope.fields = [true,true,true,false,true,true,true,false,true,false,true,true,true,true,true,false,false];
+        };
+
+        $scope.saveFields = function(){
+            console.log('SaveFields');
+            $window.localStorage.removeItem('hostbrowserFields');
+            $window.localStorage.setItem('hostbrowserFields',JSON.stringify($scope.fields));
+
+        }
+
+        $scope.loadFields = function(){
+            var fields =  JSON.parse($window.localStorage.getItem('hostbrowserFields'));
+            if(typeof fields !== undefined && Array.isArray(fields) && fields.length == 17) {
+                $scope.fields = fields;
+            }else {
+                $scope.defaultFields()
+            }
+        }
+
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/hosts/delete/';
@@ -281,6 +240,7 @@ angular.module('openITCOCKPIT')
 
 
         //Fire on page load
+        $scope.loadFields();
         defaultFilter();
         SortService.setCallback($scope.load);
 
