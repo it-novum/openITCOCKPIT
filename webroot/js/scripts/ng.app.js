@@ -377,7 +377,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicesIndex', {
-                url: '/services/index?servicename&servicestate&sort&host_id&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&not_in_downtime&passive',
+                url: '/services/index?servicename&servicestate&sort&host_id&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&not_in_downtime&passive&filter',
                 params: {
                     servicename: {
                         value: null
@@ -421,6 +421,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         array: true
                     },
                     hostname: {
+                        value: null
+                    },
+                    filter: {
                         value: null
                     },
                 },
@@ -1106,7 +1109,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('HostsIndex', {
-                url: '/hosts/index?hostname&hoststate&sort&direction&BrowserContainerId',
+                url: '/hosts/index?hostname&hoststate&sort&direction&BrowserContainerId&filter',
                 templateUrl: "/hosts/index.html",
                 params: {
                     hostname: {
@@ -1144,7 +1147,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     },
                     not_in_downtime: {
                         value: null
-                    }
+                    },
+                    filter: {
+                        value: null
+                    },
                 },
                 controller: "HostsIndexController"
             })
@@ -1643,6 +1649,35 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             if(reverse) filtered.reverse();
             return filtered;
         };
+    })
+
+    .filter('filterTagsinput', function(){
+        return function(values, search){
+            if(typeof search === "undefined"){
+                // No search string given
+                return values;
+            }
+
+            var results = [];
+            searchStrings = search.split(",");
+            searchStrings = searchStrings.map(function(v){
+                return new RegExp(v, 'i');
+            })
+
+            for(var i in values){
+                var value = values[i];
+                for(var k in searchStrings){
+                    var searchString = searchStrings[k];
+                    if(value.name.match(searchString)){
+                        results.push(value);
+                        // Avoid duplicates in result;
+                        break;
+                    }
+                }
+            }
+
+            return results;
+        }
     })
 
     .run(function($rootScope, SortService, $state){

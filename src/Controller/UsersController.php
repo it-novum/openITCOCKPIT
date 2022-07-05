@@ -45,6 +45,7 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -555,6 +556,18 @@ class UsersController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
 
             $data = $this->request->getData('User', []);
+
+            if(empty($data['samaccountname'])){
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', [
+                    'samaccountname' => [
+                        '_empty' => __('This field cannot be left empty')
+                    ]
+                ]);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
             $data['is_ldap'] = true;
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];

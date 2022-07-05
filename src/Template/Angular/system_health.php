@@ -187,7 +187,7 @@
                                     <?php echo __('Warning'); ?>
                                 </h6>
 
-                                <i><?php echo __('NodeJS Server is not running'); ?></i>
+                                <i><?php echo __('Nodejs backend is not running'); ?></i>
                             </div>
                         </span>
                     </li>

@@ -7670,9 +7670,9 @@ body:not(.mobile-detected).modal-open .modal::-webkit-scrollbar-thumb:vertical:h
     border: none;
     border-collapse: collapse; }
   *:not(.keep-print-font) {
-    color: #333 !important;
-    background: transparent !important;
-    font-family: Arial, Helvetica, sans-serif !important;
+    /*color: #333 !important;*/
+    /*background: transparent !important;*/
+    /*font-family: Arial, Helvetica, sans-serif !important;*/ /* This kills Font Awesome in PDF generation! */
     letter-spacing: normal !important;
     font-size: 10pt !important;
     line-height: 1.7 !important;

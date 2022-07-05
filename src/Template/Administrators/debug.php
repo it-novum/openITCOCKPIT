@@ -361,7 +361,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                     </tr>
 
                                     <tr>
-                                        <td><?= __('NodeJS Server'); ?></td>
+                                        <td><?= __('Nodejs Backend'); ?></td>
                                         <td>
                                             <span class="badge border border-success text-success"
                                                   ng-show="processInformation.backgroundProcesses.isNodeJsServerRunning">
@@ -373,7 +373,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <a data-original-title="<?php echo h('Service required to run server side JavaScript to render charts to email notifications and PDF reports.'); ?>"
+                                            <a data-original-title="<?php echo h('Service required to run server side JavaScript to render PDF files and charts for email notifications and PDF reports.'); ?>"
                                                data-placement="right" rel="tooltip" class="text-info"
                                                href="javascript:void(0);">
                                                 <i class="fa fa-info-circle"></i>

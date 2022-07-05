@@ -63,9 +63,10 @@ class DebugCommand extends Command {
         $parser = parent::buildOptionParser($parser);
 
         $parser->addOptions([
-            'tail'  => ['boolean' => true, 'help' => __d('oitc_console', 'Tail and parse monitoring logfile')],
-            'tailf' => ['short' => 't', 'boolean' => true, 'help' => __d('oitc_console', 'Tailf and parse monitoring logfile')],
-            'stdin' => ['short' => 's', 'boolean' => true, 'help' => __d('oitc_console', 'Read and translate from stdin. Example: cat file.cfg | oitc debug -s')],
+            'tail'      => ['boolean' => true, 'help' => __d('oitc_console', 'Tail and parse monitoring logfile')],
+            'tailf'     => ['short' => 't', 'boolean' => true, 'help' => __d('oitc_console', 'Tailf and parse monitoring logfile')],
+            'stdin'     => ['short' => 's', 'boolean' => true, 'help' => __d('oitc_console', 'Read and translate from stdin. Example: cat file.cfg | oitc debug -s')],
+            'timestamp' => ['boolean' => true, 'help' => __d('oitc_console', 'Replace timestamps in output - only for --stdin')],
         ]);
 
         return $parser;
@@ -90,7 +91,8 @@ class DebugCommand extends Command {
 
         if ($args->getOption('stdin')) {
             $this->DebugConfigNagios->setup($this->conf);
-            $this->DebugConfigNagios->translateStdin();
+            $replaceTimestamps = $args->getOption('timestamp') === true;
+            $this->DebugConfigNagios->translateStdin($replaceTimestamps);
             exit(0);
         }
         if ($args->getOption('debug')) {

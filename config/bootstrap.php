@@ -43,8 +43,8 @@ use Cake\Core\Configure;
 use Cake\Core\Configure\Engine\PhpConfig;
 use Cake\Database\TypeFactory;
 use Cake\Datasource\ConnectionManager;
-use Cake\Error\ConsoleErrorHandler;
-use Cake\Error\ErrorHandler;
+use Cake\Error\ErrorTrap;
+use Cake\Error\ExceptionTrap;
 use Cake\Http\ServerRequest;
 use Cake\Log\Log;
 use Cake\Mailer\Email;
@@ -144,9 +144,9 @@ ini_set('intl.default_locale', Configure::read('App.defaultLocale'));
  */
 $isCli = PHP_SAPI === 'cli';
 if ($isCli) {
-    (new ConsoleErrorHandler(Configure::read('Error')))->register();
+    (new ErrorTrap(Configure::read('Error')))->register();
 } else {
-    (new ErrorHandler(Configure::read('Error')))->register();
+    (new ExceptionTrap(Configure::read('Error')))->register();
 }
 
 /*

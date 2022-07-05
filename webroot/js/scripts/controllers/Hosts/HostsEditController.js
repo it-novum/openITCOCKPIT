@@ -217,6 +217,12 @@ angular.module('openITCOCKPIT')
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.hostgroups = result.data.hostgroups;
+                $scope.visibleHostgroups = result.data.visibleHostgroups;
+
+                $scope.invisibleHostgroupIds = _.difference(
+                    _.map($scope.hostgroups, 'key'),
+                    _.map($scope.visibleHostgroups, 'key')
+                );
                 $scope.satellites = result.data.satellites;
                 $scope.sharingContainers = result.data.sharingContainers;
                 $scope.exporters = result.data.exporters;

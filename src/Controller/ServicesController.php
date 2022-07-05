@@ -204,6 +204,9 @@ class ServicesController extends AppController {
 
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
+        $AcknowledgementServicesTable = $this->DbBackend->getAcknowledgementServicesTable();
+        $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
         }
@@ -262,12 +265,32 @@ class ServicesController extends AppController {
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend, $service['service_type']);
 
+            $downtime = [];
+            if ($ServiceControllerRequest->includeDowntimeInformation() && $Servicestatus->isInDowntime()) {
+                $downtime = $DowntimehistoryServicesTable->byServiceUuid($Service->getUuid());
+                if (!empty($downtime)) {
+                    $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
+                    $downtime = $Downtime->toArray();
+                }
+            }
+
+            $acknowledgement = [];
+            if ($ServiceControllerRequest->includeAcknowledgementInformation() && $Servicestatus->isAcknowledged()) {
+                $acknowledgement = $AcknowledgementServicesTable->byServiceUuid($Service->getUuid());
+                if (!empty($acknowledgement)) {
+                    $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime, $allowEdit);
+                    $acknowledgement = $Acknowledgement->toArray();
+                }
+            }
+
             $tmpRecord = [
-                'Service'       => $Service->toArray(),
-                'Host'          => $Host->toArray(),
-                'Hoststatus'    => $Hoststatus->toArray(),
-                'Servicestatus' => $Servicestatus->toArray(),
-                'ServiceType'   => $serviceTypes[$service['service_type']]
+                'Service'         => $Service->toArray(),
+                'Host'            => $Host->toArray(),
+                'Hoststatus'      => $Hoststatus->toArray(),
+                'Servicestatus'   => $Servicestatus->toArray(),
+                'ServiceType'     => $serviceTypes[$service['service_type']],
+                'Downtime'        => $downtime,
+                'Acknowledgement' => $acknowledgement
             ];
 
             $satelliteName = $masterInstanceName;
@@ -2045,7 +2068,7 @@ class ServicesController extends AppController {
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
-
+        $offset = $UserTime->getUserTimeToServerOffset();
 
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(false));
@@ -2053,6 +2076,12 @@ class ServicesController extends AppController {
         $start = $this->request->getQuery('start', -1);
         $end = $this->request->getQuery('end', -1);
 
+        if ($start > 0) {
+            $start -= $offset;
+        }
+        if ($end > 0) {
+            $end -= $offset;
+        }
 
         if (!is_numeric($start) || $start < 0) {
             $start = time() - 2 * 24 * 3600;
@@ -2081,6 +2110,15 @@ class ServicesController extends AppController {
         $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->lastHardStateChange();
+
+        $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
+
         //Process conditions
         $Conditions = new StatehistoryHostConditions();
         $Conditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
@@ -2096,24 +2134,35 @@ class ServicesController extends AppController {
 
         $statehistoryRecords = [];
 
-        //Host has no state history record for selected time range
         //Get last available state history record for this host
         $record = $StatehistoryHostsTable->getLastRecord($Conditions);
         if (!empty($record)) {
-            $record->set('state_time', $start);
-            $StatehistoryHost = new StatehistoryHost($record->toArray());
-            $statehistoryRecords[] = $StatehistoryHost;
+            if (!empty($hoststatus)) {
+                $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+                $hostStatusLastStateChange = $Hoststatus->getLastStateChange();
+                if ($record->get('state_time') < $hostStatusLastStateChange && $hostStatusLastStateChange <= $start) {
+                    $stateHistoryHostTmp = [
+                        'StatehistoryHost' => [
+                            'state_time'      => $start,
+                            'state'           => $Hoststatus->currentState(),
+                            'last_state'      => $Hoststatus->currentState(),
+                            'last_hard_state' => $Hoststatus->getLastHardState(),
+                            'state_type'      => (int)$Hoststatus->isHardState()
+                        ]
+                    ];
+
+                    $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                    $statehistoryRecords[] = $StatehistoryHost;
+                } else {
+                    $record->set('state_time', $start);
+                    $StatehistoryHost = new StatehistoryHost($record->toArray());
+                    $statehistoryRecords[] = $StatehistoryHost;
+                }
+            }
         }
 
-        if (empty($statehistories) && empty($record)) {
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields
-                ->currentState()
-                ->isHardstate()
-                ->lastStateChange()
-                ->lastHardStateChange();
-
-            $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
+        //Host has no state history record for selected time range
+        if (empty($statehistoryRecords)) {
             if (!empty($hoststatus)) {
                 $isHardstate = false;
                 if (isset($hoststatus['Hoststatus']['state_type'])) {
@@ -2147,6 +2196,16 @@ class ServicesController extends AppController {
         $StatehistoryServicesTable = $this->DbBackend->getStatehistoryServicesTable();
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->lastHardStateChange();
+
+        $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+
+
         //Process conditions
         $StatehistoryServiceConditions = new StatehistoryServiceConditions();
         $StatehistoryServiceConditions->setOrder(['StatehistoryServices.state_time' => 'asc']);
@@ -2158,24 +2217,34 @@ class ServicesController extends AppController {
         $statehistoriesService = $StatehistoryServicesTable->getStatehistoryIndex($StatehistoryServiceConditions);
         $statehistoryServiceRecords = [];
 
-        //Service has no state history record for selected time range
-        //Get last available state history record for this host
+        //Get last available state history record for this service
         $record = $StatehistoryServicesTable->getLastRecord($StatehistoryServiceConditions);
         if (!empty($record)) {
-            $record->set('state_time', $start);
-            $StatehistoryService = new StatehistoryService($record->toArray());
-            $statehistoryServiceRecords[] = $StatehistoryService;
+            if (!empty($servicestatus)) {
+                $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+                $serviceStatusLastStateChange = $Servicestatus->getLastStateChange();
+                if ($record->get('state_time') < $serviceStatusLastStateChange && $serviceStatusLastStateChange <= $start) {
+                    $stateHistoryServiceTmp = [
+                        'StatehistoryService' => [
+                            'state_time'      => $start,
+                            'state'           => $Servicestatus->currentState(),
+                            'last_state'      => $Servicestatus->currentState(),
+                            'last_hard_state' => $Servicestatus->getLastHardState(),
+                            'state_type'      => (int)$Servicestatus->isHardState()
+                        ]
+                    ];
+
+                    $StatehistoryService = new StatehistoryService($stateHistoryServiceTmp['StatehistoryService']);
+                    $statehistoryServiceRecords[] = $StatehistoryService;
+                } else {
+                    $record->set('state_time', $start);
+                    $StatehistoryService = new StatehistoryService($record->toArray());
+                    $statehistoryServiceRecords[] = $StatehistoryService;
+                }
+            }
         }
-
-        if (empty($statehistoriesService) && empty($record)) {
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields
-                ->currentState()
-                ->isHardstate()
-                ->lastStateChange()
-                ->lastHardStateChange();
-
-            $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+        //Service has no state history record for selected time range
+        if (empty($statehistoryServiceRecords)) {
             if (!empty($servicestatus)) {
                 $isHardstate = false;
                 if (isset($servicestatus['Servicestatus']['state_type'])) {
@@ -2193,7 +2262,7 @@ class ServicesController extends AppController {
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
-                $statehistoriesService[] = $StatehistoryService->toArray();
+                $statehistoryServiceRecords[] = $StatehistoryService;
             }
         }
 
@@ -2201,6 +2270,7 @@ class ServicesController extends AppController {
             $StatehistoryService = new StatehistoryService($statehistoryService);
             $statehistoryServiceRecords[] = $StatehistoryService;
         }
+
 
         $StatehistorySerializer = new StatehistorySerializer($statehistoryServiceRecords, $UserTime, $end, 'service');
         $this->set('servicestatehistory', $StatehistorySerializer->serialize());
@@ -2271,6 +2341,9 @@ class ServicesController extends AppController {
 
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
         $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
+
+        $start += $offset;
+        $end += $offset;
 
         $this->set('start', $start);
         $this->set('end', $end);
@@ -2712,15 +2785,10 @@ class ServicesController extends AppController {
         }
 
         $ServiceFilter = new ServiceFilter($this->request);
-        $containerIds = [ROOT_CONTAINER, $containerId];
-
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        if ($containerId == ROOT_CONTAINER) {
-            //Don't panic! Only root users can edit /root objects ;)
-            //So no loss of selected hosts/host templates
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-        }
+
+        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
@@ -2731,7 +2799,7 @@ class ServicesController extends AppController {
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $services = Api::makeItJavaScriptAble(
-            $ServicesTable->getServicesForAngularCake4($ServiceCondition, $selected)
+            $ServicesTable->getServicesForServicegroupForAngular($ServiceCondition, $selected)
         );
 
         $this->set('services', $services);

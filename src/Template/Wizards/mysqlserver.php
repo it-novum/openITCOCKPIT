@@ -100,7 +100,8 @@
                                                             <li>
                                                                 <div>
                                                                     <?= __('To enable external databases access you have to change the {0} of your MySQL server.', '<code>bind-address</code>'); ?>
-                                                                    <div class="alert border-danger bg-transparent text-danger">
+                                                                    <div
+                                                                        class="alert border-danger bg-transparent text-danger">
                                                                         <?= __('Changing the bind address can be a potential security issue!'); ?>
                                                                     </div>
 
@@ -150,10 +151,10 @@ GRANT SELECT, SHOW VIEW ON *.* TO 'monitoring'@'<?= h($_SERVER['SERVER_ADDR']); 
                                                 <?php echo __('Username'); ?>
                                             </label>
                                             <input
-                                                    id="UserName"
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="post.username">
+                                                id="UserName"
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="post.username">
                                             <div ng-repeat="error in errors.username">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
@@ -163,10 +164,10 @@ GRANT SELECT, SHOW VIEW ON *.* TO 'monitoring'@'<?= h($_SERVER['SERVER_ADDR']); 
                                                 <?php echo __('Password'); ?>
                                             </label>
                                             <input
-                                                    id="UserName"
-                                                    class="form-control"
-                                                    type="password"
-                                                    ng-model="post.password">
+                                                id="UserName"
+                                                class="form-control"
+                                                type="password"
+                                                ng-model="post.password">
                                             <div ng-repeat="error in errors.password">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
@@ -176,10 +177,10 @@ GRANT SELECT, SHOW VIEW ON *.* TO 'monitoring'@'<?= h($_SERVER['SERVER_ADDR']); 
                                                 <?php echo __('Database'); ?>
                                             </label>
                                             <input
-                                                    id="UserName"
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="post.database">
+                                                id="UserName"
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="post.database">
                                             <div ng-repeat="error in errors.database">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
@@ -196,9 +197,10 @@ GRANT SELECT, SHOW VIEW ON *.* TO 'monitoring'@'<?= h($_SERVER['SERVER_ADDR']); 
                                             </div>
 
                                         </legend>
+                                        <wizard-filter></wizard-filter>
                                         <ul class="no-padding">
                                             <ol class="padding-bottom-20 padding-left-0"
-                                                ng-repeat="service in post.services">
+                                                ng-repeat="service in (filteredItems = (post.services | filterTagsinput:search.name))">
                                                 <div class="form-group">
                                                     <div class="custom-control custom-checkbox">
                                                         <input type="checkbox"
@@ -216,8 +218,8 @@ GRANT SELECT, SHOW VIEW ON *.* TO 'monitoring'@'<?= h($_SERVER['SERVER_ADDR']); 
                                                     </div>
                                                 </div>
                                                 <div
-                                                        class="form-group {{detectColor(commandargument.commandargument.human_name)}}"
-                                                        ng-repeat="commandargument in service.servicecommandargumentvalues">
+                                                    class="form-group {{detectColor(commandargument.commandargument.human_name)}}"
+                                                    ng-repeat="commandargument in service.servicecommandargumentvalues">
                                                     {{commandargument.commandargument.human_name}}
                                                     <input class="form-control"
                                                            type="text"

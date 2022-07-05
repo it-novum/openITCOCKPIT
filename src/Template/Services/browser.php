@@ -57,7 +57,8 @@ use Cake\Core\Plugin;
 <enable-service-notifications callback="showFlashMsg"></enable-service-notifications>
 <send-service-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-service-notification>
 <mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>
-<mass-delete-acknowledgements delete-url="/acknowledgements/delete/" callback="showFlashMsg"></mass-delete-acknowledgements>
+<mass-delete-acknowledgements delete-url="/acknowledgements/delete/"
+                              callback="showFlashMsg"></mass-delete-acknowledgements>
 
 
 <div class="row">
@@ -128,7 +129,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('State since'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ servicestatus.last_state_change_user }}">
                                         {{ servicestatus.last_state_change }}
                                     </div>
                                 </div>
@@ -136,7 +137,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('Last check'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ servicestatus.lastCheckUser }}">
                                         {{ servicestatus.lastCheck }}
                                     </div>
                                 </div>
@@ -146,7 +147,8 @@ use Cake\Core\Plugin;
                                     </div>
                                     <div class="col-6">
                                             <span
-                                                ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false"
+                                                title="{{ servicestatus.nextCheckUser }}">
                                                 {{ servicestatus.nextCheck }}
                                             </span>
                                         <span
@@ -441,29 +443,29 @@ use Cake\Core\Plugin;
 
                                             <div class="row">
                                                 <div class="col-12">
-                                            <div>
-                                                <h4 class="no-padding">
-                                                    <i class="far fa-user"
-                                                       ng-show="!hostAcknowledgement.is_sticky"></i>
-                                                    <i class="fas fa-user"
-                                                       ng-show="hostAcknowledgement.is_sticky"></i>
-                                                    <?php echo __('State of host is acknowledged'); ?>
-                                                    <span ng-show="hostAcknowledgement.is_sticky">
+                                                    <div>
+                                                        <h4 class="no-padding">
+                                                            <i class="far fa-user"
+                                                               ng-show="!hostAcknowledgement.is_sticky"></i>
+                                                            <i class="fas fa-user"
+                                                               ng-show="hostAcknowledgement.is_sticky"></i>
+                                                            <?php echo __('State of host is acknowledged'); ?>
+                                                            <span ng-show="hostAcknowledgement.is_sticky">
                                                             (<?php echo __('Sticky'); ?>)
                                                         </span>
-                                                </h4>
-                                            </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Acknowledgement was set by'); ?>
-                                                <b>{{hostAcknowledgement.author_name}}</b>
-                                                <?php echo __('at'); ?>
-                                                {{hostAcknowledgement.entry_time}}
-                                            </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Comment: '); ?>
-                                                <div style="display:inline"
-                                                     ng-bind-html="hostAcknowledgement.commentDataHtml | trustAsHtml"></div>
-                                            </div>
+                                                        </h4>
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Acknowledgement was set by'); ?>
+                                                        <b>{{hostAcknowledgement.author_name}}</b>
+                                                        <?php echo __('at'); ?>
+                                                        {{hostAcknowledgement.entry_time}}
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Comment: '); ?>
+                                                        <div style="display:inline"
+                                                             ng-bind-html="hostAcknowledgement.commentDataHtml | trustAsHtml"></div>
+                                                    </div>
                                                 </div>
 
                                                 <div class="col-12">
@@ -820,19 +822,24 @@ use Cake\Core\Plugin;
                                 <div ng-show="servicestatus.isInMonitoring">
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('State since'); ?></div>
-                                        <h3 class="margin-top-0">{{ servicestatus.last_state_change }}</h3>
+                                        <h3 class="margin-top-0" title="{{ servicestatus.last_state_change_user }}">
+                                            {{ servicestatus.last_state_change }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Last check'); ?></div>
-                                        <h3 class="margin-top-0">{{ servicestatus.lastCheck }}</h3>
+                                        <h3 class="margin-top-0" title="{{ servicestatus.lastCheckUser }}">
+                                            {{ servicestatus.lastCheck }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Next check'); ?></div>
                                         <h3 class="margin-top-0">
                                                 <span
-                                                    ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                    ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false"
+                                                    title="{{ servicestatus.nextCheckUser }}">
                                                     {{ servicestatus.nextCheck }}
                                                     <small style="color: #333;" ng-show="servicestatus.latency > 1">
                                                         (+ {{ servicestatus.latency }})
@@ -1121,17 +1128,14 @@ use Cake\Core\Plugin;
                         <div class="row">
                             <div class="col-lg-12 padding-10">
                                 <div class="row">
-
                                     <div class="col-lg-12">
-
                                         <h3 class="margin-top-0">
                                             <?php echo __('Outages: '); ?>
                                             <span ng-hide="failureDurationInPercent">
                                                     <i class="fa fa-refresh fa-spin txt-primary"></i>
                                                 </span>
-                                            <span
-                                                ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent + ' %' :
-                                                    '<?php echo __('No data available!'); ?>'}}
+                                            <span ng-show="failureDurationInPercent">
+                                                {{ (failureDurationInPercent) ? failureDurationInPercent + ' %' : '<?= __('No data available!'); ?>'}}
                                             </span>
                                         </h3>
                                     </div>
@@ -1140,13 +1144,17 @@ use Cake\Core\Plugin;
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="row">
-                                            <div class="col-lg-12 bold"><?php echo __('Legend'); ?></div>
-                                            <div class="col-lg-12">
-                                                <?php echo __('State types'); ?>
+                                        <div class="row margin-top-10">
+                                            <div class="col-lg-12 bold">
+                                                <?= __('Legend'); ?>
+                                                <span class="fw-300">
+                                                    <i class="ng-binding">
+                                                         <?= __('State types'); ?>
+                                                    </i>
+                                                </span>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row margin-top-5">
                                             <div class="col-xs-12 col-lg-3">
                                                 <i class="fa fa-square ok-soft"></i>
                                                 <?php echo __('Ok soft'); ?>
@@ -1206,6 +1214,26 @@ use Cake\Core\Plugin;
                                             <div class="col-xs-12 col-lg-3">
                                                 <i class="fa fa-square txt-downtime-cancelled"></i>
                                                 <?php echo __('Downtime cancelled'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="mergedService.has_graph">
+                            <div class="col-lg-12 padding-10">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       class="custom-control-input"
+                                                       id="SynchronizeTimes"
+                                                       ng-model="synchronizeTimes">
+                                                <label class="custom-control-label no-margin"
+                                                       for="SynchronizeTimes">
+                                                    <?= __('Synchronize times for timeline and service graph'); ?>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>

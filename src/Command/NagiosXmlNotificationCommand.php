@@ -639,12 +639,12 @@ class NagiosXmlNotificationCommand extends Command {
 
             if (!empty($graphData)) {
                 //Render graph data to png image blobs for pdf
-                $NodeJsChartRenderClient = new ChartRenderClient();
-                $NodeJsChartRenderClient->setGraphStartTimestamp($graphStart);
-                $NodeJsChartRenderClient->setGraphEndTimestamp(time());
-                $NodeJsChartRenderClient->setHeight(180);
-                $NodeJsChartRenderClient->setWidth(560);
-                $NodeJsChartRenderClient->setTitle(
+                $PuppeteerChartRenderClient = new ChartRenderClient();
+                $PuppeteerChartRenderClient->setGraphStartTimestamp($graphStart);
+                $PuppeteerChartRenderClient->setGraphEndTimestamp(time());
+                $PuppeteerChartRenderClient->setHeight(180);
+                $PuppeteerChartRenderClient->setWidth(560);
+                $PuppeteerChartRenderClient->setTitle(
                     sprintf(
                         '%s - %s',
                         $Host->getHostname(),
@@ -656,7 +656,7 @@ class NagiosXmlNotificationCommand extends Command {
                 foreach (array_chunk($graphData, 2) as $graphDataChunk) {
                     $fileName = sprintf('Chart_%s.png', $id);
                     $attachments[$fileName] = [
-                        'data'      => $NodeJsChartRenderClient->getAreaChartAsPngStream($graphDataChunk),
+                        'data'      => $PuppeteerChartRenderClient->getAreaChartAsPngStream($graphDataChunk),
                         'mimetype'  => 'image/png',
                         'contentId' => 'cid' . $id //Needs to be a string because of CakePHP
                     ];

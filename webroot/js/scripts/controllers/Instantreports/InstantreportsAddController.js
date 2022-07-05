@@ -59,7 +59,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
             if($scope.post.Instantreport.container_id){
-                $http.get("/hostgroups/loadHosgroupsByContainerId.json", {
+                $http.get("/hostgroups/loadHostgroupsByContainerId.json", {
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Instantreport.container_id,

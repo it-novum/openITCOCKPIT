@@ -37,6 +37,7 @@ use FreeDSx\Ldap\LdapClient;
 use FreeDSx\Ldap\Operation\ResultCode;
 use FreeDSx\Ldap\Operations;
 use FreeDSx\Ldap\Search\Filters;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
 
@@ -139,7 +140,10 @@ class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
         if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
             $filter = Filters::and(
                 Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                Filters::equal('cn', $username)
+                Filters::or(
+                    Filters::equal('cn', $username), // Fix login for openLDAP https://github.com/it-novum/openITCOCKPIT/commit/d14c28603dda76558ace345d8ad12dc69caaae08
+                    Filters::equal('uid', $username)
+                )
             );
         }
 

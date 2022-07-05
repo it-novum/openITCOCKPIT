@@ -122,6 +122,7 @@ class Agent extends Importer {
         }
 
         // Delete old 1.x legacy Agentchecks
+        /*
         $legacyServicetemplateUuids = [
             'be4c9649-8771-4704-b409-c56b5f67abc8',
             '3e0bd59e-822d-47ed-a5b2-15f1e53fe043',
@@ -145,6 +146,7 @@ class Agent extends Importer {
                 }
             }
         }
+        */
 
         // Create new Agent Checks
         foreach ($data['Agentchecks'] as $agentcheck) {

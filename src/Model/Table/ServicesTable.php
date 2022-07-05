@@ -4609,7 +4609,7 @@ class ServicesTable extends Table {
             'Services.' . $index,
             'Hosts.name',
             'Services.disabled',
-            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+            'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))')
         ])
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds) {
@@ -4649,5 +4649,112 @@ class ServicesTable extends Table {
         }
 
         return $list;
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array|int $selected
+     * @param bool $returnEmptyArrayIfMyRightsIsEmpty
+     * @return array|null
+     */
+    public function getServicesForServicegroupForAngular(ServiceConditions $ServiceConditions, $selected = [], $returnEmptyArrayIfMyRightsIsEmpty = false) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+        $selected = array_filter($selected);
+
+        if (empty($ServiceConditions->getContainerIds())) {
+            return [];
+        }
+
+
+        $where = $ServiceConditions->getConditions();
+
+        if (!empty($selected)) {
+            $where['NOT'] = [
+                'Services.id IN' => $selected
+            ];
+        }
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
+        $query = $this->find();
+        $query
+            ->innerJoinWith('Hosts', function (Query $q) use ($ServiceConditions) {
+                return $q->where([
+                    'Hosts.container_id IN ' => $ServiceConditions->getContainerIds()
+                ]);
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->select([
+                'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                'Services.id',
+                'Services.disabled',
+                'Hosts.name'
+            ])
+            ->where(
+                $where
+            );
+        if (!empty($having)) {
+            $query->having($having);
+        }
+        $query->order([
+            'servicename' => 'asc'
+        ])
+            ->limit(ITN_AJAX_LIMIT)
+            ->disableHydration()
+            ->all();
+
+        $servicesWithLimit = [];
+        $selectedServices = [];
+        $results = $this->emptyArrayIfNull($query->toArray());
+
+        foreach ($results as $result) {
+            $servicesWithLimit[$result['id']] = $result;
+        }
+
+        if (!empty($selected)) {
+            $query = $this->find();
+            $query
+                ->innerJoinWith('Hosts', function (Query $q) use ($ServiceConditions) {
+                    return $q->where([
+                        'Hosts.container_id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                })
+                ->innerJoinWith('Servicetemplates')
+                ->select([
+                    'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                    'Services.id',
+                    'Services.disabled',
+                    'Hosts.name'
+                ])
+                ->where([
+                    'Services.id IN' => $selected
+                ])
+                ->order([
+                    'servicename' => 'asc'
+                ])
+                ->disableHydration()
+                ->all();
+            $results = $this->emptyArrayIfNull($query->toArray());
+            foreach ($results as $result) {
+                $selectedServices[$result['id']] = $result;
+            }
+
+        }
+        $services = $servicesWithLimit + $selectedServices;
+        $serviceIds = array_keys($services);
+
+        array_multisort(
+            array_column($services, 'servicename'), SORT_ASC, SORT_NATURAL, $services, $serviceIds
+        );
+        $services = array_combine($serviceIds, $services);
+        return $services;
     }
 }

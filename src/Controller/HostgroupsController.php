@@ -750,35 +750,22 @@ class HostgroupsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        if ($containerId == ROOT_CONTAINER) {
-            //Don't panic! Only root users can edit /root objects ;)
-            //So no loss of selected hosts/host templates
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
-                CT_GLOBAL,
-                CT_TENANT,
-                CT_NODE
-            ]);
-        } else {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
-                CT_GLOBAL,
-                CT_TENANT,
-                CT_NODE
-            ]);
-        }
+
+        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($containerIds);
         $hosts = Api::makeItJavaScriptAble(
-            $HostsTable->getHostsForAngular($HostCondition, $selected)
+            $HostsTable->getHostsForHostgroupForAngular($HostCondition, $selected)
         );
         $this->set('hosts', $hosts);
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
     /**
-     * @param int|null $containerId
+     * @return void
      */
-    public function loadHosttemplates($containerId = null) {
+    public function loadHosttemplates() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -792,10 +779,7 @@ class HostgroupsController extends AppController {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
-        $containerIds = [ROOT_CONTAINER, $containerId];
-        if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-        }
+        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
 
         $hosttemplates = Api::makeItJavaScriptAble(
             $HosttemplatesTable->getHosttemplatesForAngular($containerIds, $HosttemplateFilter, $selected)
@@ -833,7 +817,7 @@ class HostgroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
 
-    public function loadHosgroupsByContainerId() {
+    public function loadHostgroupsByContainerId() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
