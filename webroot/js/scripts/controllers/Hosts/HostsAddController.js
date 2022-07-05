@@ -260,7 +260,8 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                     'filter[Hosts.name]': searchString,
                     'selected[]': $scope.post.Host.parenthosts._ids,
-                    'containerId': containerId
+                    'containerId': containerId,
+                    'satellite_id': $scope.post.Host.satellite_id
                 }
             }).then(function(result){
                 $scope.parenthosts = result.data.hosts;
@@ -522,4 +523,10 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
+        $scope.$watch('post.Host.satellite_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadParentHosts('');
+        }, true);
     });

@@ -3151,6 +3151,7 @@ class HostsController extends AppController {
         $selected = $this->request->getQuery('selected');
         $hostId = $this->request->getQuery('hostId');
         $containerId = $this->request->getQuery('containerId');
+        $satelliteId = $this->request->getQuery('satellite_id');
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
             /** @var $ContainersTable ContainersTable */
@@ -3175,6 +3176,7 @@ class HostsController extends AppController {
                 'Hosts.id IN' => $hostId
             ]);
         }
+        $HostCondition->setSatelliteId($satelliteId);
         $hosts = Api::makeItJavaScriptAble(
             $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
