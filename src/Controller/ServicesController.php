@@ -204,6 +204,9 @@ class ServicesController extends AppController {
 
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
+        $AcknowledgementServicesTable = $this->DbBackend->getAcknowledgementServicesTable();
+        $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
         }
@@ -262,12 +265,32 @@ class ServicesController extends AppController {
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend, $service['service_type']);
 
+            $downtime = [];
+            if ($ServiceControllerRequest->includeDowntimeInformation() && $Servicestatus->isInDowntime()) {
+                $downtime = $DowntimehistoryServicesTable->byServiceUuid($Service->getUuid());
+                if (!empty($downtime)) {
+                    $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
+                    $downtime = $Downtime->toArray();
+                }
+            }
+
+            $acknowledgement = [];
+            if ($ServiceControllerRequest->includeAcknowledgementInformation() && $Servicestatus->isAcknowledged()) {
+                $acknowledgement = $AcknowledgementServicesTable->byServiceUuid($Service->getUuid());
+                if (!empty($acknowledgement)) {
+                    $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime, $allowEdit);
+                    $acknowledgement = $Acknowledgement->toArray();
+                }
+            }
+
             $tmpRecord = [
-                'Service'       => $Service->toArray(),
-                'Host'          => $Host->toArray(),
-                'Hoststatus'    => $Hoststatus->toArray(),
-                'Servicestatus' => $Servicestatus->toArray(),
-                'ServiceType'   => $serviceTypes[$service['service_type']]
+                'Service'         => $Service->toArray(),
+                'Host'            => $Host->toArray(),
+                'Hoststatus'      => $Hoststatus->toArray(),
+                'Servicestatus'   => $Servicestatus->toArray(),
+                'ServiceType'     => $serviceTypes[$service['service_type']],
+                'Downtime'        => $downtime,
+                'Acknowledgement' => $acknowledgement
             ];
 
             $satelliteName = $masterInstanceName;
@@ -2762,15 +2785,10 @@ class ServicesController extends AppController {
         }
 
         $ServiceFilter = new ServiceFilter($this->request);
-        $containerIds = [ROOT_CONTAINER, $containerId];
-
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        if ($containerId == ROOT_CONTAINER) {
-            //Don't panic! Only root users can edit /root objects ;)
-            //So no loss of selected hosts/host templates
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-        }
+
+        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
@@ -2781,7 +2799,7 @@ class ServicesController extends AppController {
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $services = Api::makeItJavaScriptAble(
-            $ServicesTable->getServicesForAngularCake4($ServiceCondition, $selected)
+            $ServicesTable->getServicesForServicegroupForAngular($ServiceCondition, $selected)
         );
 
         $this->set('services', $services);

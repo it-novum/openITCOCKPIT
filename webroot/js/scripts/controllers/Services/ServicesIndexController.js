@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService){
+    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, NotyService){
         $rootScope.lastObjectName = null;
         var startTimestamp = new Date().getTime();
 
@@ -13,6 +13,7 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
 
         /*** Filter Settings ***/
+        //filterId = QueryStringService.getStateValue($stateParams, 'filter');
         var defaultFilter = function(){
             $scope.filter = {
                 Servicestatus: {
@@ -55,6 +56,19 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.showFilter = false;
+
+       /* $scope.bookmark = {
+            name: '',
+            default: false,
+            filter: $scope.filter ?? {}
+        } */
+      //  $scope.bookmark_selects = [];
+        //$scope.bookmarks = [];
+       // $scope.select = 0;
+       // $scope.filterUrl = '';
+       // $scope.showFilterUrl = false;
+      //  $scope.bookmarkError = '';
+        $scope.showBookmarkFilter = false;
 
         $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
@@ -133,14 +147,19 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter;
+            if($scope.showFilter === true) {
+            }
         };
+
+        $scope.triggerBookmarkFilter = function(){
+            $scope.showBookmarkFilter = !$scope.showBookmarkFilter === true;
+        };
+
 
         $scope.resetFilter = function(){
             defaultFilter();
-            $('#ServicesKeywordsInput').tagsinput('removeAll');
-            $('#ServicesNotKeywordsInput').tagsinput('removeAll');
-
             $scope.undoSelection();
+
         };
 
         $scope.selectAll = function(){
@@ -268,6 +287,26 @@ angular.module('openITCOCKPIT')
             SortService.setDirection('desc');
         };
 
+        $scope.triggerLoadByBookmark = function(filter){
+            if(typeof filter !== "undefined"){
+                $scope.init = true; //Disable $watch to avoid two HTTP requests
+                $scope.filter = filter;
+            } else {
+                $scope.init = true;
+                $scope.resetFilter();
+            }
+
+            $("#ServicesKeywordsInput").tagsinput('removeAll');
+            $("#ServicesKeywordsInput").tagsinput('add', $scope.filter.Services.keywords);
+
+            $("#ServicesNotKeywordsInput").tagsinput('removeAll');
+            $("#ServicesNotKeywordsInput").tagsinput('add', $scope.filter.Services.not_keywords);
+
+            $scope.currentPage = 1;
+            $scope.undoSelection();
+            $scope.load();
+        }
+
 
         //Fire on page load
         defaultFilter();
@@ -279,9 +318,11 @@ angular.module('openITCOCKPIT')
         });
 
         $scope.$watch('filter', function(){
-            $scope.currentPage = 1;
-            $scope.undoSelection();
-            $scope.load();
+            if($scope.init === false){
+                $scope.currentPage = 1;
+                $scope.undoSelection();
+                $scope.load();
+            }
         }, true);
 
         $scope.changeMode = function(val){

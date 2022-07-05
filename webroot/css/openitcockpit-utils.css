@@ -1129,8 +1129,9 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     position: relative;
 
 }
+
 .arrowd-vertical-on-left:after {
-    content:"\02939";
+    content: "\02939";
     position: absolute;
     top: 20%;
     left: 0;
@@ -1143,8 +1144,9 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     position: relative;
 
 }
+
 .arrowd-vertical-on-right:after {
-    content:"\2938";
+    content: "\2938";
     position: absolute;
     top: -10px;
     right: 0;
@@ -1156,12 +1158,14 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     border-left: 3px solid #4285F4;
     border-radius: 7px;
 }
+
 .hr-sect {
     display: flex;
     flex-basis: 100%;
     align-items: center;
     color: #4285F488;
 }
+
 .hr-sect:before,
 .hr-sect:after {
     content: "";
@@ -1171,4 +1175,25 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-size: 0px;
     line-height: 0px;
     margin: 0px 8px;
+}
+
+.groups-to-remove {
+    text-decoration: line-through #CC0000;
+}
+
+.dropzone .dz-preview .dz-image img {
+    margin: auto;   /* center the image inside the thumbnail */
+}
+.dropzone .dz-preview .dz-error-message {
+    top: 140px;     /* move the tooltip below the "Remove" link */
+}
+.dropzone .dz-preview .dz-error-message:after {
+    left: 30px;     /* move the tooltip's arrow to the left of the "Remove" link */
+    top: -18px;
+    border-bottom-width: 18px;
+}
+.dropzone .dz-preview .dz-remove {
+    margin-top: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
 }

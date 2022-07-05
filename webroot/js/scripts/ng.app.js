@@ -377,7 +377,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicesIndex', {
-                url: '/services/index?servicename&servicestate&sort&host_id&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&not_in_downtime&passive',
+                url: '/services/index?servicename&servicestate&sort&host_id&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&not_in_downtime&passive&filter',
                 params: {
                     servicename: {
                         value: null
@@ -421,6 +421,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         array: true
                     },
                     hostname: {
+                        value: null
+                    },
+                    filter: {
                         value: null
                     },
                 },
@@ -1136,7 +1139,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('HostsIndex', {
-                url: '/hosts/index?hostname&hoststate&sort&direction&BrowserContainerId',
+                url: '/hosts/index?hostname&hoststate&sort&direction&BrowserContainerId&filter',
                 templateUrl: "/hosts/index.html",
                 params: {
                     hostname: {
@@ -1174,7 +1177,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     },
                     not_in_downtime: {
                         value: null
-                    }
+                    },
+                    filter: {
+                        value: null
+                    },
                 },
                 controller: "HostsIndexController"
             })

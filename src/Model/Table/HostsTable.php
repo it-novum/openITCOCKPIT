@@ -4607,4 +4607,93 @@ class HostsTable extends Table {
         return $list;
     }
 
+    /**
+     * @param HostConditions $HostConditions
+     * @param int|array $selected
+     * @param bool $returnEmptyArrayIfMyRightsIsEmpty
+     * @return array|null
+     */
+    public function getHostsForHostgroupForAngular(HostConditions $HostConditions, $selected = []) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+
+        $query = $this->find('list');
+        $containerIds = $HostConditions->getContainerIds();
+        if (empty($containerIds)) {
+            //User has no permissions to edit hosts/services
+            return [];
+        }
+        $query->where([
+            'Hosts.container_id IN' => $containerIds
+        ]);
+
+        $where = $HostConditions->getWhereForFind();
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $where['NOT'] = [
+                'Hosts.id IN' => $selected
+            ];
+        }
+
+
+        if (!empty($where['NOT'])) {
+            // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+            $where['NOT'] = [
+                'OR' => $where['NOT']
+            ];
+        }
+        if (!empty($where)) {
+            $query->where($where);
+        }
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
+        ]);
+        $query->limit(ITN_AJAX_LIMIT);
+
+        $hostsWithLimit = $query->toArray();
+
+        $selectedHosts = [];
+        if (!empty($selected)) {
+            $query = $this->find('list');
+
+            $query->where([
+                'Hosts.container_id IN' => $containerIds
+            ]);
+
+            $where = [
+                'Hosts.id IN' => $selected
+            ];
+            if ($HostConditions->includeDisabled() === false) {
+                $where['Hosts.disabled'] = 0;
+            }
+
+            if (!empty($where['NOT'])) {
+                // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+                $where['NOT'] = [
+                    'OR' => $where['NOT']
+                ];
+            }
+
+            if (!empty($where)) {
+                $query->where($where);
+            }
+            $query->group(['Hosts.id']);
+            $query->order([
+                'Hosts.name' => 'asc',
+                'Hosts.id'   => 'asc'
+            ]);
+
+            $selectedHosts = $query->toArray();
+
+        }
+
+        $hosts = $hostsWithLimit + $selectedHosts;
+        asort($hosts, SORT_FLAG_CASE | SORT_NATURAL);
+        return $hosts;
+    }
 }
