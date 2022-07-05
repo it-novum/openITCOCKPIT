@@ -116,6 +116,10 @@
         "sort-packages": true,
         "github-protocols": [
             "https"
-        ]
+        ],
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "cakephp/plugin-installer": true
+        }
     }
 }

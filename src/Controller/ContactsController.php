@@ -298,6 +298,8 @@ class ContactsController extends AppController {
                     return;
                 }
             }
+
+            debug($contactEntity);
             $this->set('contact', $contactEntity);
             $this->viewBuilder()->setOption('serialize', ['contact']);
         }

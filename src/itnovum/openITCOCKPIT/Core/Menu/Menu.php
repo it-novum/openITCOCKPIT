@@ -138,6 +138,16 @@ class Menu {
                         [],
                         3
                     ))
+                    ->addLink(new MenuLink(
+                        __('Status pages'),
+                        'StatuspagesIndex',
+                        'statuspages',
+                        'index',
+                        '',
+                        'fas fa-info-circle',
+                        [],
+                        3
+                    ))
             )
             ->addCategory(
                 (new MenuCategory(

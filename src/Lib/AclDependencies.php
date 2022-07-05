@@ -529,6 +529,10 @@ class AclDependencies {
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadElementsByContainerId');
 
         $this
+            ->dependency('Statuspages', 'add', 'Statuspages', 'stepTwo')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'stepTwo');
+
+        $this
             ->dependency('Users', 'index', 'Users', 'view')
             ->dependency('Users', 'index', 'Users', 'loadUsersByContainerId')
             ->dependency('Users', 'index', 'Users', 'loadUsergroups')
