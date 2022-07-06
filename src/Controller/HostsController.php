@@ -1774,7 +1774,7 @@ class HostsController extends AppController {
                         $containerIds[] = $container->get('id');
                     }
                     foreach ($sourceHost->get('parenthosts') as $parenthost) {
-                        if ($sourceHost->get('satellite_id') === $parenthost->get('satellite_id')) {
+                        if ($sourceHost->get('satellite_id') === 0 || $sourceHost->get('satellite_id') === $parenthost->get('satellite_id')) {
                             $parenthostsIds[] = $parenthost->get('id');
                         }
                     }
@@ -2091,8 +2091,16 @@ class HostsController extends AppController {
         }
 
         $host = $HostsTable->getHostForBrowser($id);
+        if (!empty($host['parenthosts']) && $host['satellite_id'] > 0) {
+            $parentHostsFiltered = [];
+            foreach ($host['parenthosts'] as $parentHost) {
+                if ($parentHost['satellite_id'] === 0 || $parentHost['satellite_id'] === $host['satellite_id']) {
+                    $parentHostsFiltered[] = $parentHost;
+                }
+            }
+            $host['parenthosts'] = $parentHostsFiltered;
+        }
 
-        $host['parenthosts'] = Hash::extract($host['parenthosts'], '{n}[satellite_id=' . $host['satellite_id'] . ']');
         //Check permissions
         $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
         $containerIdsToCheck[] = $host['container_id'];

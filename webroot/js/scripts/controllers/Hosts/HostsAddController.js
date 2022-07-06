@@ -261,7 +261,7 @@ angular.module('openITCOCKPIT')
                     'filter[Hosts.name]': searchString,
                     'selected[]': $scope.post.Host.parenthosts._ids,
                     'containerId': containerId,
-                    'satellite_id': $scope.post.Host.satellite_id
+                    'satellite_id': ($scope.post.Host.satellite_id > 0)?$scope.post.Host.satellite_id :null
                 }
             }).then(function(result){
                 $scope.parenthosts = result.data.hosts;
