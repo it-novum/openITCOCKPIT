@@ -42,9 +42,7 @@ angular.module('openITCOCKPIT')
             $http.get("/statuspages/index.json", {
                 params: params
             }).then(function(result){
-                console.log(result);
                 $scope.statuspages = result.data.all_statuspages;
-                console.log($scope.statuspages);
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;

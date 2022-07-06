@@ -219,7 +219,7 @@
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                    <?php if ($this->Acl->hasPermission('edit', 'statuspages')): ?>
                                         <button class="btn btn-primary" type="submit">
                                             <?php echo __('Next'); ?>
                                         </button>

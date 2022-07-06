@@ -61,35 +61,100 @@
                           ng-init="successMessage=
             {objectName : '<?php echo __('Statuspage'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
-                    <!-- Hosts start -->
-                        <div ng-repeat="host in hosts">
-                            {{host}}
+                        <!-- Hosts start -->
+                        <table class="table">
+                            <thead>
+                            <th class="col-5"><?= __('Host Name'); ?></th>
+                            <th class="col-7"><?= __('Display Name'); ?></th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="host in post.Statuspages.hosts">
+                                <td>{{host.name}}</td>
+                                <td>
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="host._joinData.display_name">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <!-- Hosts end -->
+                        <hr>
+                        <!-- Services start -->
+                        <table class="table">
+                            <thead>
+                            <th class="col-5"><?= __('Service Name'); ?></th>
+                            <th class="col-7"><?= __('Display Name'); ?></th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="service in post.Statuspages.services">
+                                <td>{{service.servicename}}</td>
+                                <td>
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="service._joinData.display_name">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <!-- Services end -->
+                        <hr>
+                        <!-- Hostgroups start -->
+                        <table class="table">
+                            <thead>
+                            <th class="col-5"><?= __('Hostgroup Name'); ?></th>
+                            <th class="col-7"><?= __('Display Name'); ?></th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="hostgroup in post.Statuspages.hostgroups">
+                                <td>{{hostgroup.Containers.name}}</td>
+                                <td>
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="hostgroup._joinData.display_name">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <!-- Hostgroups end -->
+                        <hr>
+                        <!-- Servicegroups start -->
+                        <table class="table">
+                            <thead>
+                            <th class="col-5"><?= __('Hostgroup Name'); ?></th>
+                            <th class="col-7"><?= __('Display Name'); ?></th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="servicegroup in post.Statuspages.servicegroups">
+                                <td>{{servicegroup.Containers.name}}</td>
+                                <td>
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="servicegroup._joinData.display_name">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <!-- Servicegroups end -->
 
-                            <div class="form-group required" ng-class="{'has-error': errors.name}">
-                                <label class="control-label">
-                                    <?php echo __('Name'); ?>
-                                </label>
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Statuspages.name">
-                                <div ng-repeat="error in errors.name">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <?php if ($this->Acl->hasPermission('add', 'statuspages')): ?>
+                                        <button class="btn btn-primary" type="submit">
+                                            <?php echo __('Create statuspage'); ?>
+                                        </button>
+                                    <?php endif; ?>
+                                    <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-
-                    <!-- Hosts end -->
-                        <hr>
-                    <!-- Services start -->
-                    <!-- Services end -->
-                        <hr>
-                    <!-- Hostgroups start -->
-                    <!-- Hostgroups end -->
-                        <hr>
-                    <!-- Servicegroups start -->
-                    <!-- Servicegroups end -->
-
                     </form>
                 </div>
             </div>

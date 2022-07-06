@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\StatuspagesTable;
+use Cake\Event\EventInterface;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -18,6 +19,12 @@ use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
  * @method \App\Model\Entity\Statuspage[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class StatuspagesController extends AppController {
+
+    public function beforeFilter(EventInterface $event) {
+        parent::beforeFilter($event);
+        $this->Authentication->allowUnauthenticated(['view']);
+    }
+
     /**
      * Index method
      *
@@ -71,11 +78,24 @@ class StatuspagesController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null) {
-        $statuspage = $this->Statuspages->get($id, [
-            'contain' => ['Users', 'HostgroupsToStatuspages', 'HostsToStatuspages', 'ServicegroupsToStatuspages', 'ServicesToStatuspages'],
-        ]);
+        $this->viewBuilder()->setLayout('statuspage_fullscreen');
+       /* if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
-        $this->set(compact('statuspage'));
+       */
+        /** @var $StatuspagesTable StatuspagesTable */
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
+            throw new NotFoundException('Statuspage not found');
+        }
+
+
+        $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id);
+
+        $this->set('Statuspage', $statuspage);
+        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 
     /**
@@ -104,15 +124,9 @@ class StatuspagesController extends AppController {
 
             $statuspageData = $this->request->getData();
 
-
-            debug($statuspageData);
-            // die('ende');
-
             $statuspage = $StatuspagesTable->newEmptyEntity();
             $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData);
 
-            debug($statuspage);
-            die('ende');
             $StatuspagesTable->save($statuspage);
             if ($statuspage->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -209,6 +223,12 @@ class StatuspagesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 
+    /**
+     * Set display names for Hosts, Services, Hostgroups and Servicegroups
+     *
+     * @param $id
+     * @return void
+     */
     public function stepTwo($id = null){
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -221,6 +241,35 @@ class StatuspagesController extends AppController {
             throw new NotFoundException('Statuspage not found');
         }
         $statuspage = $StatuspagesTable->getStatuspageObjects($id);
+
+        if ($this->request->is('post')) {
+            $statuspage = $StatuspagesTable->get($id, [
+                'contain' => [
+                    'Containers',
+                    'Hosts',
+                    'Services',
+                    'Hostgroups',
+                    'Servicegroups'
+                ]
+            ]);
+
+            $statuspageData = $this->request->getData();
+            $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData);
+
+            $StatuspagesTable->save($statuspage);
+            if ($statuspage->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $statuspage->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            } else {
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($statuspage); // REST API ID serialization
+                    return;
+                }
+            }
+
+        }
 
         $this->set('Statuspages', $statuspage);
         $this->viewBuilder()->setOption('serialize', ['Statuspages']);

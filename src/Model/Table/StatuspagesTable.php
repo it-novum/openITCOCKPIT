@@ -207,8 +207,52 @@ class StatuspagesTable extends Table {
             ->firstOrFail();
         $statuspage = $query->toArray();
 
-        //debug($statuspage);
         return $statuspage;
+    }
+
+    public function getStatuspageObjectsForView($id = null) {
+        $statuspageData = $this->getStatuspageObjects($id);
+
+        $statuspageForView = [
+            'statuspage'    => [
+                'name'        => $statuspageData['name'],
+                'description' => $statuspageData['description'],
+            ],
+            'hosts'         => [],
+            'services'      => [],
+            'hostgroups'    => [],
+            'servicegroups' => []
+        ];
+
+
+        foreach ($statuspageData as $key => $statuspage) {
+            if ($key == 'hosts') {
+                foreach ($statuspage as $subKey => $item) {
+                    $statuspageForView[$key][$subKey]['name'] = (!empty($item['_joinData']['display_name']) ? $item['_joinData']['display_name'] : $item['name']);
+                    $statuspageForView[$key][$subKey]['status'] = 1;
+                }
+            }
+            if ($key == 'services') {
+                foreach ($statuspage as $subKey => $item) {
+                    $statuspageForView[$key][$subKey]['name'] = (!empty($item['_joinData']['display_name']) ? $item['_joinData']['display_name'] : $item['servicename']);
+                    $statuspageForView[$key][$subKey]['status'] = 1;
+                }
+            }
+            if ($key == 'hostgroups') {
+                foreach ($statuspage as $subKey => $item) {
+                    $statuspageForView[$key][$subKey]['name'] = (!empty($item['_joinData']['display_name']) ? $item['_joinData']['display_name'] : $item['Containers']['name']);
+                    $statuspageForView[$key][$subKey]['status'] = 1;
+                }
+            }
+            if ($key == 'servicegroups') {
+                foreach ($statuspage as $subKey => $item) {
+                    $statuspageForView[$key][$subKey]['name'] = (!empty($item['_joinData']['display_name']) ? $item['_joinData']['display_name'] : $item['Containers']['name']);
+                    $statuspageForView[$key][$subKey]['status'] = 1;
+                }
+            }
+        }
+
+        return $statuspageForView;
     }
 
     public function getPublicStatuspages() {

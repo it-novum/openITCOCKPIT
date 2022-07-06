@@ -215,26 +215,12 @@
                         </div>
 
                         <hr>
-
-                        <div class="form-group">
-                            <label class="control-label">
-                                <?php echo __('Description'); ?>
-                            </label>
-                            <input
-                                class="form-control"
-                                type="text"
-                                ng-model="post.Statuspages.description">
-                            <div ng-repeat="error in errors.description">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <?php if ($this->Acl->hasPermission('add', 'services')): ?>
+                                    <?php if ($this->Acl->hasPermission('add', 'statuspages')): ?>
                                         <button class="btn btn-primary" type="submit">
-                                            <?php echo __('Create statuspage'); ?>
+                                            <?php echo __('Next'); ?>
                                         </button>
                                     <?php endif; ?>
                                     <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'

@@ -95,14 +95,13 @@ angular.module('openITCOCKPIT')
             $http.post("/statuspages/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                var url = $state.href('StatuspagesEdit', {id: result.data.statuspages.id});
-                NotyService.genericSuccess({
-                    message: '<u><a href="' + url + '" class="txt-color-white"> '
-                        + $scope.successMessage.objectName
-                        + '</a></u> ' + $scope.successMessage.message
-                });
-
-                RedirectService.redirectWithFallback('StatuspagesIndex');
+                if(result.data.id != null){
+                    $state.go('StatuspagesStepTwo', {
+                        id: result.data.id
+                    }).then(function(){
+                        NotyService.scrollTop();
+                    });
+                }
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();
@@ -110,12 +109,6 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
-/*
-        $scope.$watch('post.Statuspages.statuspage_hosts.ids', function(){
-            console.log($scope.post.Statuspages.statuspage_hosts.ids);
-            console.log($scope.hosts);
-        },true);
-*/
         $scope.loadContainers();
         $scope.loadHosts('');
         $scope.loadServices('');

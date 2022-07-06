@@ -131,21 +131,11 @@ console.log(result.data);
             $http.post("/statuspages/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-               // var url = $state.href('StatuspagesEdit', {id: $scope.id});
-                /*NotyService.genericSuccess({
-                    message: '<u><a href="' + url + '" class="txt-color-white"> '
-                        + $scope.successMessage.objectName
-                        + '</a></u> ' + $scope.successMessage.message
-                });
-                 */
-
                 $state.go('StatuspagesStepTwo', {
                     id: $scope.id
                 }).then(function(){
                     NotyService.scrollTop();
                 });
-
-                //RedirectService.redirectWithFallback('StatuspagesIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();

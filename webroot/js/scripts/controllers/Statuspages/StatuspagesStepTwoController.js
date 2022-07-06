@@ -2,6 +2,10 @@ angular.module('openITCOCKPIT')
     .controller('StatuspagesStepTwoController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
         $scope.id = $stateParams.id;
 
+        $scope.post = {
+            Statuspages: {}
+        };
+
         $scope.hosts = {};
         $scope.services = {};
         $scope.hostgroups = {};
@@ -19,24 +23,8 @@ angular.module('openITCOCKPIT')
             $http.get("/statuspages/stepTwo/" + $scope.id + ".json", {
                 params: params
             }).then(function(result){
-                $scope.hosts = result.data.Statuspages.hosts;
-                $scope.services = result.data.Statuspages.services;
-                $scope.hostgroups = result.data.Statuspages.hostgroups;
-                $scope.servicegroups = result.data.Statuspages.servicegroups;
-                console.log(result.data);
+                $scope.post.Statuspages = result.data.Statuspages;
                 $scope.init = false;
-                /*   $scope.data.areContainersChangeable = result.data.areContainersChangeable;
-                   $scope.requiredContainers = result.data.requiredContainers;
-
-                   for(var i in $scope.containers){
-                       if($scope.requiredContainers.indexOf($scope.containers[i].key) === -1){
-                           $scope.containers[i].editable = true;
-                       }else{
-                           $scope.containers[i].editable = false;
-                       }
-                   }
-
-                 */
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -73,7 +61,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                RedirectService.redirectWithFallback('StatuspagesIndex');
+               RedirectService.redirectWithFallback('StatuspagesIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();

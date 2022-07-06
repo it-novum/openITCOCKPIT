@@ -125,6 +125,10 @@
                                     <i class="fa" ng-class="getSortClass('Satuspages.description')"></i>
                                     <?php echo __('Description'); ?>
                                 </th>
+                                <th class="no-sort width-95" ng-click="orderBy('Satuspages.public')">
+                                    <i class="fa" ng-class="getSortClass('Satuspages.public')"></i>
+                                    <?php echo __('Public'); ?>
+                                </th>
                                 <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
                                 </th>
@@ -151,6 +155,10 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>{{statuspage.description}}</td>
+                                <td>
+                                    <i class="fas fa-check text-success" ng-show="statuspage.public"></i>
+                                    <i class="fas fa-times text-danger" ng-show="!statuspage.public"></i>
+                                </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'statuspages')): ?>
@@ -172,7 +180,8 @@
                                         <?php else: ?>
                                             <a href="javascript:void(0);"
                                                class="btn btn-default btn-lower-padding disabled">
-                                                <i class="fa fa-cog"></i></a>
+                                                <i class="fa fa-cog"></i>
+                                            </a>
                                         <?php endif; ?>
                                         <button type="button"
                                                 class="btn btn-default dropdown-toggle btn-lower-padding"
@@ -183,7 +192,7 @@
                                             <?php if ($this->Acl->hasPermission('edit', 'statuspages')): ?>
                                                 <a ui-sref="StatuspagesEdit({id: statuspage.id})"
                                                    ng-if="statuspage.allow_edit"
-                                                   class="btn btn-default btn-lower-padding">
+                                                   class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
                                                 </a>
