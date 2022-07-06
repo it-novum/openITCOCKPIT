@@ -350,6 +350,11 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(redirectState){
+            //clean up parent host  -> remove not visible ids
+            $scope.post.Host.parenthosts._ids = _.intersection(
+                _.map($scope.parenthosts, 'key'),
+                $scope.post.Host.parenthosts._ids
+            );
             $http.post("/hosts/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
