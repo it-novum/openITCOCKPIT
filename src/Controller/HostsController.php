@@ -2088,6 +2088,7 @@ class HostsController extends AppController {
 
         $host = $HostsTable->getHostForBrowser($id);
 
+        $host['parenthosts'] = Hash::extract($host['parenthosts'], '{n}[satellite_id='.$host['satellite_id'].']');
         //Check permissions
         $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
         $containerIdsToCheck[] = $host['container_id'];
