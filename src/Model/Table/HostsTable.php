@@ -3139,7 +3139,8 @@ class HostsTable extends Table {
                     function (Query $q) {
                         return $q->enableAutoFields(false)->select([
                             'id',
-                            'name'
+                            'name',
+                            'satellite_id'
                         ]);
                     },
                 'Hostcommandargumentvalues' => [

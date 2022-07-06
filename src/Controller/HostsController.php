@@ -1744,7 +1744,9 @@ class HostsController extends AppController {
                             'tags',
                             'active_checks_enabled',
                             'satellite_id',
-                            'notifications_enabled'
+                            'notifications_enabled',
+                            'freshness_checks_enabled',
+                            'freshness_threshold'
                         ]
                     );
                     /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
@@ -1772,7 +1774,9 @@ class HostsController extends AppController {
                         $containerIds[] = $container->get('id');
                     }
                     foreach ($sourceHost->get('parenthosts') as $parenthost) {
-                        $parenthostsIds[] = $parenthost->get('id');
+                        if ($sourceHost->get('satellite_id') === $parenthost->get('satellite_id')) {
+                            $parenthostsIds[] = $parenthost->get('id');
+                        }
                     }
                     foreach ($sourceHost->get('contacts') as $contact) {
                         $contactsIds[] = $contact->get('id');
@@ -2088,7 +2092,7 @@ class HostsController extends AppController {
 
         $host = $HostsTable->getHostForBrowser($id);
 
-        $host['parenthosts'] = Hash::extract($host['parenthosts'], '{n}[satellite_id='.$host['satellite_id'].']');
+        $host['parenthosts'] = Hash::extract($host['parenthosts'], '{n}[satellite_id=' . $host['satellite_id'] . ']');
         //Check permissions
         $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
         $containerIdsToCheck[] = $host['container_id'];
