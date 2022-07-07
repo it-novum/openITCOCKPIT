@@ -10,15 +10,12 @@ angular.module('openITCOCKPIT')
             containerFilter: ''
         };
         $scope.recursiveBrowser = false;
-        /*** FieldSettings DJ ***/
-        //$scope.fields = [];
 
-        /*** FieldSettings DJ  end***/
-        //$scope.fields = [true,true,true,false,true,true,true,false,true,false,true,true,true,true,true,false,false];
+
+        /*** column settings DJ ***/
         $scope.fields = [];
+        $scope.columnsLength = 17;
 
-
-        /*** Filter Settings ***/
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -39,26 +36,31 @@ angular.module('openITCOCKPIT')
             };
         };
         /*** Filter end ***/
-        $scope.defaultFields = function(){
-            console.log('DefaultFields');
+
+        /*** columns functions ***/
+        $scope.defaultColumns = function(){
             $scope.fields = [true,true,true,false,true,true,true,false,true,false,true,true,true,true,true,false,false];
         };
 
-        $scope.saveFields = function(){
-            console.log('SaveFields');
-            $window.localStorage.removeItem('hostbrowserFields');
-            $window.localStorage.setItem('hostbrowserFields',JSON.stringify($scope.fields));
+        $scope.saveColumns = function(){
+            $window.localStorage.removeItem('hostbrowserColumns');
+            $window.localStorage.setItem('hostbrowserColumns',JSON.stringify($scope.fields));
 
         }
 
-        $scope.loadFields = function(){
-            var fields =  JSON.parse($window.localStorage.getItem('hostbrowserFields'));
-            if(typeof fields !== undefined && Array.isArray(fields) && fields.length == 17) {
+        $scope.loadColumns = function(){
+            var fields =  JSON.parse($window.localStorage.getItem('hostbrowserColumns'));
+            if(typeof fields !== undefined && Array.isArray(fields) && fields.length == $scope.columnsLength) {
                 $scope.fields = fields;
             }else {
-                $scope.defaultFields()
+                $scope.defaultColumns()
             }
         }
+
+        $scope.triggerLoadColumns= function(fields){
+            $scope.fields = fields;
+        };
+        /*** end columns functions ***/
 
         $scope.massChange = {};
         $scope.selectedElements = 0;
@@ -240,7 +242,7 @@ angular.module('openITCOCKPIT')
 
 
         //Fire on page load
-        $scope.loadFields();
+        $scope.loadColumns(); // load column config
         defaultFilter();
         SortService.setCallback($scope.load);
 

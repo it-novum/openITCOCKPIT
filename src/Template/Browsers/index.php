@@ -410,159 +410,76 @@
                                 </button>
                             </div>
                         </div>
+                        <!-- new Footer-->
+                        <div class="card-footer">
+                            <i class="fa fa-list"></i> <?php echo __('Column configuration'); ?>
+
+                                <div class="dropdown mr-1 float-right">
+                                    <button class="btn btn-xs btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-list"></i> <?php echo __('Columns'); ?>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" style="width: 700px;" aria-labelledby="dropdownMenuButton">
+                                        <?php $list = [__('Hoststatus'),
+                                            __('is acknowledged'),
+                                            __('is in downtime'),
+                                            __('Notifications enabled'),
+                                            __('Grapher'),
+                                            __('Shared'),
+                                            __('Passively transferred host'),
+                                            __('Priority'),
+                                            __('Host name'),
+                                            __('Host description'),
+                                            __('IP address'),
+                                            __('Last state change'),
+                                            __('Last check'),
+                                            __('Host output'),
+                                            __('Instance'),
+                                            __('Service Summary '),
+                                            __('Host notes')];
+                                        foreach(array_chunk($list, 6, true) as $chunk):
+                                            echo <<<COLL
+				                            <div style="display:inline-block;width:200px;">
+COLL;
+                                            foreach($chunk as $index => $name):
+                                                if ($name == __('Service Summary ') && !$this->Acl->hasPermission('index', 'services') ):
+                                                    continue;
+                                                endif;
+                                                echo <<<ITEM
+                                                <div class="dropdown-item" style="display:inline-block;width:200px;">
+                                                    <input type="checkbox"
+                                                    ng-model="fields[$index]"
+                                                    ng-checked="fields[$index]">
+                                                    $name
+                                                </div>
+ITEM;
+                                            endforeach;
+                                            echo <<<COLlEND
+				                                </div>
+COLlEND;
+                                        endforeach;?>
+                                    </div>
+                                </div>
+                                <button class="btn btn-xs btn-secondary shadow-0 mr-1 float-right" ng-click="defaultColumns()">
+                                    <i class="fas fa-list"></i> <?php echo __('Reset to default'); ?>
+                                </button>
+                                <button class="btn btn-xs btn-secondary shadow-0 mr-1 float-right"  ng-click="saveColumns()">
+                                    <i class="fas fa-list"></i> <?php echo __('Save configuration in localstorage'); ?>
+                                </button>
+                                <columns-config-import class="mr-1 float-right"
+                                                       state-name="hostbrowserColumns"
+                                                       callback="triggerLoadColumns">
+                                </columns-config-import>
+                                <columns-config-export class="mr-1 float-right"
+                                                       fields="fields"
+                                                       state-name="hostbrowserColumns">
+                                </columns-config-export>
+
+                        </div>
+                        <!-- end Footer-->
+
                     </div>
                     <!-- End Filter -->
                     <div class="frame-wrap">
-
-                        <!--<div class="list-filter card margin-bottom-10" ng-show="showFields">
-                            <div class="card-header">
-                                <i class="fa fa-list"></i> <?php echo __('Fields'); ?>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-xs-6 col-md-3 margin-bottom-10">
-                                        <input type="checkbox"
-                                               ng-model="fields[0]"
-                                               ng-checked="fields[0]"> <?php echo __('Hoststatus'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[1]"
-                                               ng-checked="fields[1]"> <?php echo __('is acknowledged'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[2]"
-                                               ng-checked="fields[2]"> <?php echo __('is in downtime'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[3]"
-                                               ng-checked="fields[3]"> <?php echo __('Notifications enabled'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[4]"
-                                               ng-checked="fields[4]"> <?php echo __('Grapher'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[5]"
-                                               ng-checked="fields[5]"> <?php echo __('Shared'); ?><br>
-                                    </div>
-                                    <div class="col-xs-6 col-md-3 margin-bottom-10">
-                                        <input type="checkbox"
-                                               ng-model="fields[6]"
-                                               ng-checked="fields[6]"> <?php echo __('Passively transferred host'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[7]"
-                                               ng-checked="fields[7]"> <?php echo __('Priority'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[8]"
-                                               ng-checked="fields[8]"> <?php echo __('Host name'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[9]"
-                                               ng-checked="fields[9]"> <?php echo __('Host description'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[10]"
-                                               ng-checked="fields[10]"> <?php echo __('IP address'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[11]"
-                                               ng-checked="fields[11]"> <?php echo __('Last state change'); ?><br>
-                                    </div>
-                                    <div class="col-xs-6 col-md-3 margin-bottom-10">
-                                        <input type="checkbox"
-                                               ng-model="fields[12]"
-                                               ng-checked="fields[12]"> <?php echo __('Last check'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[13]"
-                                               ng-checked="fields[13]"> <?php echo __('Host output'); ?><br>
-                                        <input type="checkbox"
-                                               ng-model="fields[14]"
-                                               ng-checked="fields[14]"> <?php echo __('Instance'); ?><br>
-                                        <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                        <input type="checkbox"
-                                               ng-model="fields[15]"
-                                               ng-checked="fields[15]"> <?php echo __('Service Summary '); ?><br>
-                                        <?php endif; ?>
-                                        <input type="checkbox"
-                                               ng-model="fields[16]"
-                                               ng-checked="fields[16]"> <?php echo __('Host notes'); ?><br>
-                                    </div>
-                                    <div class="col-xs-6 col-md-3 margin-bottom-10">
-                                        <button class="btn btn-xs btn-primary shadow-0 mb-5 float-right" style="width:200px" ng-click="saveFields()">
-                                            <i class="fas fa-list"></i> <?php echo __('Save selection in localstorage'); ?>
-                                        </button>
-                                        <button class="btn btn-xs btn-primary shadow-0 float-right" style="width:200px" ng-click="defaultFields()">
-                                            <i class="fas fa-list"></i> <?php echo __('Reset to default'); ?>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>-->
-                        </div>
-
-                    <div class="dropdown">
-                        <button class="btn btn-xs btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-list"></i> <?php echo __('Fieldstest'); ?>
-                        </button>
-                        <div class="dropdown-menu" style="width: 900px;" aria-labelledby="dropdownMenuButton">
-                            <?php $list = [__('Hoststatus'),
-                                __('is acknowledged'),
-                                __('is in downtime'),
-                                __('Notifications enabled'),
-                                __('Grapher'),
-                                __('Shared'),
-                                __('Passively transferred host'),
-                                __('Priority'),
-                                __('Host name'),
-                                __('Host description'),
-                                __('IP address'),
-                                __('Last state change'),
-                                __('Last check'),
-                                __('Host output'),
-                                __('Instance'),
-                                __('Service Summary '),
-                                __('Host notes')];
-                            foreach(array_chunk($list, 6, true) as $chunk):
-                                echo <<<COLL
-                                <div style="display:inline-block;width:200px;">
-COLL;
-                                foreach($chunk as $index => $name):
-                                    if ($name == __('Service Summary ') && !$this->Acl->hasPermission('index', 'services') ):
-                                        continue;
-                                    endif;
-                                    echo
-                                    <<<ITEM
-                                    <div class="dropdown-item" style="display:inline-block;width:200px;">
-                                        <input type="checkbox"
-                                        ng-model="fields[$index]"
-                                        ng-checked="fields[$index]">
-                                        $name
-                                    </div>
-ITEM;
-                                endforeach;
-                                echo
-                                <<<COLlEND
-                                </div>
-COLlEND;
-                            endforeach;?>
-                            <div style="display:inline-block;width:200px">
-                                <div class="dropdown-item" style="display:inline-block;width:200px;">
-                                    <button class="btn btn-xs btn-primary shadow-0" style="width:250px" ng-click="saveFields()">
-                                        <i class="fas fa-list"></i> <?php echo __('Save selection in localstorage'); ?>
-                                    </button>
-                                </div>
-
-                                <div class="dropdown-item" style="display:inline-block;width:200px;">
-                                    <button class="btn btn-xs btn-primary shadow-0" style="width:250px" ng-click="defaultFields()">
-                                        <i class="fas fa-list"></i> <?php echo __('Reset to default'); ?>
-                                    </button>
-                                </div>
-                                <div class="dropdown-item" style="display:inline-block;width:200px;">
-                                    <button class="btn btn-xs btn-primary shadow-0" style="width:250px" ng-click="">
-                                        <i class="fas fa-list"></i> <?php echo __('Import colconfig'); ?>
-                                    </button>
-                                </div>
-                                <div class="dropdown-item" style="display:inline-block;width:200px;">
-                                    <button class="btn btn-xs btn-primary shadow-0" style="width:250px" ng-click="">
-                                        <i class="fas fa-list"></i> <?php echo __('Export colconfig'); ?>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>

@@ -54,9 +54,6 @@
                     <button class="btn btn-xs btn-primary mr-1 shadow-0" ng-click="triggerFilter()">
                         <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
                     </button>
-                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFields()">
-                        <i class="fas fa-list"></i> <?php echo __('Fields'); ?>
-                    </button>
                 </div>
             </div>
             <div class="panel-container show">
@@ -136,32 +133,23 @@
                     <!-- Filter End -->
 
                     <div class="frame-wrap">
-                        <!-- Fields Start -->
-                        <div ng-show="showFields">Fields:
-                            <div style="display: inline" ng-repeat="field in fields">
-                                <input type="checkbox"
-                                       ng-model="field.selected"
-                                       ng-checked="field.selected"> {{field.field}}
-                            </div>
-                        </div>
-                        <!-- Fields End -->
 
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th ng-show="fields[0].selected" class="no-sort"
+                                <th class="no-sort"
                                     ng-click="orderBy('Logentries.entry_time')">
                                     <i class="fa" ng-class="getSortClass('Logentries.entry_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
 
-                                <th ng-show="fields[1].selected" class="no-sort"
+                                <th class="no-sort"
                                     ng-click="orderBy('Logentries.logentry_type')">
                                     <i class="fa" ng-class="getSortClass('Logentries.logentry_type')"></i>
                                     <?php echo __('Type'); ?>
                                 </th>
 
-                                <th ng-show="fields[2].selected" class="no-sort"
+                                <th class="no-sort"
                                     ng-click="orderBy('Logentries.logentry_data')">
                                     <i class="fa" ng-class="getSortClass('Logentries.logentry_data')"></i>
                                     <?php echo __('Record'); ?>
@@ -171,13 +159,13 @@
                             <tbody>
                             <tr ng-repeat="logentry in logentries">
                                 {{logentry}}
-                                <td ng-show="fields[0].selected">
+                                <td>
                                     {{ logentry.entry_time }}
                                 </td>
-                                <td ng-show="fields[1].selected">
+                                <td>
                                     {{ logentry.logentry_type_string }}
                                 </td>
-                                <td ng-show="fields[2].selected">
+                                <td>
                                     <div compile="logentry.logentry_data_html"></div>
                                 </td>
                             </tr>

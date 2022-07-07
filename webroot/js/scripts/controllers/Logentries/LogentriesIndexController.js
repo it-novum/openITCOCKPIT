@@ -18,27 +18,9 @@ angular.module('openITCOCKPIT')
                 }
             };
         };
-        /*** Filter end ***/
-        /*** FieldSettings DJ ***/
-            $scope.fields = [
-                {
-                    field: 'Date',
-                    selected: true
-                },
-                {
-                    field: 'Type',
-                    selected: true
-                },
-                {
-                    field: 'Record',
-                    selected: true
-                },
-            ];
-        /*** FieldSettings DJ  end***/
 
         $scope.init = true;
         $scope.showFilter = false;
-        $scope.showFields = false;
 
 
         $scope.load = function(){
@@ -80,10 +62,6 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
-        };
-
-        $scope.triggerFields = function(){
-            $scope.showFields = !$scope.showFields === true;
         };
 
         $scope.resetFilter = function(){
