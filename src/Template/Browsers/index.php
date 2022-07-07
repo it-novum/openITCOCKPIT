@@ -437,26 +437,23 @@
                                             __('Service Summary '),
                                             __('Host notes')];
                                         foreach(array_chunk($list, 6, true) as $chunk):
-                                            echo <<<COLL
-				                            <div style="display:inline-block;width:200px;">
-COLL;
+                                            echo '<div style="display:inline-block;width:200px;">';
                                             foreach($chunk as $index => $name):
                                                 if ($name == __('Service Summary ') && !$this->Acl->hasPermission('index', 'services') ):
                                                     continue;
                                                 endif;
-                                                echo <<<ITEM
+                                                ?>
                                                 <div class="dropdown-item" style="display:inline-block;width:200px;">
                                                     <input type="checkbox"
-                                                    ng-model="fields[$index]"
-                                                    ng-checked="fields[$index]">
-                                                    $name
+                                                           ng-model="fields[<?=$index?>]"
+                                                           ng-checked="fields[<?=$index?>]">
+                                                    <?= h($name) ?>
                                                 </div>
-ITEM;
+                                            <?php
                                             endforeach;
-                                            echo <<<COLlEND
-				                                </div>
-COLlEND;
-                                        endforeach;?>
+                                            echo '</div>';
+                                        endforeach;
+                                        ?>
                                     </div>
                                 </div>
                                 <button class="btn btn-xs btn-secondary shadow-0 mr-1 float-right" ng-click="defaultColumns()">
