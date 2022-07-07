@@ -527,8 +527,7 @@ COLlEND;
                                     <?php echo __('Host name'); ?>
                                 </th>
 
-                                <th ng-show="fields[9]" class="no-sort" ng-click="orderBy('Hosts.description')">
-                                    <i class="fa" ng-class="getSortClass('Hosts.description')"></i>
+                                <th ng-show="fields[9]" class="text-center">
                                     <?php echo __('Host description'); ?>
                                 </th>
 
@@ -564,8 +563,7 @@ COLlEND;
                                     </th>
                                 <?php endif; ?>
 
-                                <th ng-show="fields[16]" class="no-sort" ng-click="orderBy('Hosts.notes')">
-                                    <i class="fa" ng-class="getSortClass('Hosts.notes')"></i>
+                                <th ng-show="fields[16]" class="text-center">
                                     <?php echo __('Host notes'); ?>
                                 </th>
 
