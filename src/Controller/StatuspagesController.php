@@ -91,8 +91,8 @@ class StatuspagesController extends AppController {
             throw new NotFoundException('Statuspage not found');
         }
 
-
-        $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id);
+        $DbBackend = $this->DbBackend;
+        $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend);
 
         $this->set('Statuspage', $statuspage);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);

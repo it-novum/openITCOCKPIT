@@ -7,7 +7,7 @@
 
 <pre>
 <?php
-print_r($Statuspage);
+//print_r($Statuspage);
 ?>
     </pre>
 <div ng-controller="StatuspagesViewController">
@@ -31,20 +31,11 @@ print_r($Statuspage);
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title"><?= $obj['name'] ?></h5>
-                            <p class="card-text"><?= $obj['status'] ?> <i class="fas fa-check-circle"></i> <i class="fas fa-times-circle"></i></p>
+                            <p class="card-text"><?= $obj['humanState'] ?> - <?= $obj['currentState'] ?> <i class="fas fa-check-circle"></i> <i class="fas fa-times-circle"></i></p>
                         </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         <?php endforeach; ?>
-        <div class="col-sm-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
