@@ -228,10 +228,6 @@ class StatuspagesTable extends Table {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        /** @var HostgroupsTable $HostgroupsTable */
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-        /** @var ServicegroupsTable $ServicegroupsTable */
-        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
         $HoststatusTable = $DbBackend->getHoststatusTable();
         $ServicestatusTable = $DbBackend->getServicestatusTable();
@@ -334,9 +330,54 @@ class StatuspagesTable extends Table {
                 }
             }
         }
+
+
+        $statuspageForView['statuspage']['cumulatedState'] = $this->getCumulatedStateForStatuspage($statuspageForView);
+
         return $statuspageForView;
     }
 
+
+    /**
+     * @param $statuspageData
+     * @return array
+     */
+    public function getCumulatedStateForStatuspage($statuspageData): array {
+        $states = [
+            'hosts'         => [],
+            'services'      => [],
+            'hostgroups'    => [],
+            'servicegroups' => []
+        ];
+        foreach ($statuspageData as $key => $statuspage) {
+            if ($key == 'statuspage') {
+                continue;
+            }
+            //@TODO get the hostgroup statetype (host or service) from the cumulated status
+            //if ($key != 'hostgroups') {
+            $tmpState = Hash::extract($statuspage, '{n}.currentState');
+            /*} else {
+                $hostgroupStates = [];
+                max(array_column($statuspage, 'currentState'));
+                debug();
+            }*/
+
+            $states[$key] = max($tmpState);
+        }
+
+        $worstState = [
+            'state'     => max($states), // int status
+            'stateType' => '' // host or service
+        ];
+
+        return $worstState;
+    }
+
+
+    /**
+     * @param $id
+     * @return array
+     */
     private function getHostForStatuspage($id) {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
