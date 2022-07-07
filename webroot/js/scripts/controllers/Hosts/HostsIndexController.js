@@ -88,7 +88,7 @@ angular.module('openITCOCKPIT')
 
         $scope.loadColumns = function(){
             var fields =  JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
-            if(typeof fields !== undefined && Array.isArray(fields) && fields.length == $scope.columnsLength) {
+            if(typeof fields !== undefined && Array.isArray(fields)) {
                 $scope.fields = fields;
             }else {
                 $scope.defaultColumns()
