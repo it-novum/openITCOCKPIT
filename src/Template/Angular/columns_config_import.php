@@ -51,7 +51,7 @@
                     <div class="col-lg-12">
                         <div class="form-group">
                             <label class="bold">
-                                <?= __('Paste a configuration string or import:'); ?>
+                                <?= __('Paste a column configuration string'); ?>
                             </label>
                                 <input
                                     id="ColumnsImportText"

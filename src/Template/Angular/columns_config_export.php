@@ -40,7 +40,7 @@
         <div class="modal-content">
             <div class="modal-header bg-info txt-color-white">
                 <h5 class="modal-title">
-                    <?php echo __('Export column configuration'); ?>
+                    <?php echo __('Share column configuration'); ?>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -48,7 +48,7 @@
             </div>
             <div class="modal-body">
                 <label class="bold">
-                    <?= __('Share this configuration string:'); ?>
+                    <?= __('Share this column configuration string'); ?>
                 </label>
                 <div class="input-group mb-3">
                     <input type="text"

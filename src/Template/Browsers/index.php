@@ -463,7 +463,7 @@ COLlEND;
                                     <i class="fas fa-list"></i> <?php echo __('Reset to default'); ?>
                                 </button>
                                 <button class="btn btn-xs btn-secondary shadow-0 mr-1 float-right"  ng-click="saveColumns()">
-                                    <i class="fas fa-list"></i> <?php echo __('Save configuration in localstorage'); ?>
+                                    <i class="fas fa-list"></i> <?php echo __('Save Columns configuration in browser'); ?>
                                 </button>
                                 <columns-config-import class="mr-1 float-right"
                                                        state-name="hostbrowserColumns"
