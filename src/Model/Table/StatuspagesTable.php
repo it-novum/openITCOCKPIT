@@ -284,7 +284,7 @@ class StatuspagesTable extends Table {
                         $statuspageForView[$key][$subKey]['name'] = (!empty($item['_joinData']['display_name']) ? $item['_joinData']['display_name'] : $item['servicename']);
                         if (isset($servicestatus['Servicestatus'])) {
                             $statuspageForView[$key][$subKey]['currentState'] = $servicestatus['Servicestatus']['currentState'];
-                            $statuspageForView[$key][$subKey]['humanState'] = $servicestatus['Servicestatus']['currentState'];
+                            $statuspageForView[$key][$subKey]['humanState'] = $servicestatus['Servicestatus']['humanState'];
                         }
                     }
                 }
