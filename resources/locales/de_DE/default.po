@@ -10682,6 +10682,13 @@ msgstr "Host Ausgabe"
 msgid "Instance"
 msgstr "Instanz"
 
+#: src/Template/Browsers/index.php:567
+#: src/Template/Browsers/index.php:438
+#: src/Template/Hosts/index.php:641
+#: src/Template/Hosts/index.php:510
+msgid "Host notes"
+msgstr "Hostnotizen"
+
 #: src/Template/Browsers/index.php:415
 msgid "Column configuration"
 msgstr "Spaltenkonfiguration"
