@@ -410,7 +410,7 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- new Footer-->
+                        <!-- Filter card footer with column configuration-->
                         <div class="card-footer">
                             <i class="fa fa-list"></i> <?php echo __('Column configuration'); ?>
 
@@ -466,12 +466,12 @@ COLlEND;
                                     <i class="fas fa-list"></i> <?php echo __('Save Columns configuration in browser'); ?>
                                 </button>
                                 <columns-config-import class="mr-1 float-right"
-                                                       state-name="hostbrowserColumns"
+                                                       state-name="{{columnsTableKey}}"
                                                        callback="triggerLoadColumns">
                                 </columns-config-import>
                                 <columns-config-export class="mr-1 float-right"
                                                        fields="fields"
-                                                       state-name="hostbrowserColumns">
+                                                       state-name="{{columnsTableKey}}">
                                 </columns-config-export>
 
                         </div>
@@ -526,6 +526,7 @@ COLlEND;
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Host name'); ?>
                                 </th>
+
                                 <th ng-show="fields[9]" class="no-sort" ng-click="orderBy('Hosts.description')">
                                     <i class="fa" ng-class="getSortClass('Hosts.description')"></i>
                                     <?php echo __('Host description'); ?>

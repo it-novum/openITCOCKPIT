@@ -11,11 +11,6 @@ angular.module('openITCOCKPIT')
         };
         $scope.recursiveBrowser = false;
 
-
-        /*** column settings DJ ***/
-        $scope.fields = [];
-        $scope.columnsLength = 17;
-
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -37,19 +32,43 @@ angular.module('openITCOCKPIT')
         };
         /*** Filter end ***/
 
-        /*** columns functions ***/
+        /*** column vars ***/
+        $scope.fields = [];
+        $scope.columnsLength = 17;
+        $scope.columnsTableKey = 'hostbrowserColumns';
+
+        /*** columns functions
+         columns:
+          ['Hoststatus',
+         'is acknowledged',
+         'is in downtime',
+         'Notifications enabled',
+         'Grapher',
+         'Shared',
+         'Passively transferred host',
+         'Priority',
+         'Host name',
+         'Host description',
+         'IP address',
+         'Last state change',
+         'Last check',
+         'Host output',
+         'Instance',
+         'Service Summary ',
+         'Host notes'] ***/
         $scope.defaultColumns = function(){
             $scope.fields = [true,true,true,false,true,true,true,false,true,false,true,true,true,true,true,false,false];
+            $window.localStorage.removeItem($scope.columnsTableKey);
         };
 
         $scope.saveColumns = function(){
-            $window.localStorage.removeItem('hostbrowserColumns');
-            $window.localStorage.setItem('hostbrowserColumns',JSON.stringify($scope.fields));
+            $window.localStorage.removeItem($scope.columnsTableKey);
+            $window.localStorage.setItem($scope.columnsTableKey,JSON.stringify($scope.fields));
 
         }
 
         $scope.loadColumns = function(){
-            var fields =  JSON.parse($window.localStorage.getItem('hostbrowserColumns'));
+            var fields =  JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
             if(typeof fields !== undefined && Array.isArray(fields) && fields.length == $scope.columnsLength) {
                 $scope.fields = fields;
             }else {
