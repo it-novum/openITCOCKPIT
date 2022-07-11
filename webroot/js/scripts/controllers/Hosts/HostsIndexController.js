@@ -54,7 +54,7 @@ angular.module('openITCOCKPIT')
         /*** column vars ***/
         $scope.fields = [];
         $scope.columnsLength = 17;
-        $scope.columnsTableKey = 'hostindexColumns';
+        $scope.columnsTableKey = 'HostsIndexColumns';
 
         /*** columns functions
          columns:
