@@ -411,15 +411,19 @@
                             </div>
                         </div>
                         <!-- Filter card footer with column configuration-->
-                        <div class="card-footer">
+                        <div class="card-footer" ng-show="showFilter">
                             <i class="fa fa-list"></i> <?php echo __('Column configuration'); ?>
 
-                                <div class="dropdown mr-1 float-right">
-                                    <button class="btn btn-xs btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-list"></i> <?php echo __('Columns'); ?>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right" style="width: 700px;" aria-labelledby="dropdownMenuButton">
-                                        <?php $list = [__('Hoststatus'),
+                            <div class="dropdown mr-1 float-right">
+                                <button class="btn btn-xs btn-secondary dropdown-toggle" type="button"
+                                        data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-columns"></i>
+                                    <?php echo __('Columns'); ?>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-columns" aria-labelledby="dropdownMenuButton">
+                                    <div class="row">
+                                        <?php $list = [
+                                            __('Hoststatus'),
                                             __('is acknowledged'),
                                             __('is in downtime'),
                                             __('Notifications enabled'),
@@ -435,19 +439,28 @@
                                             __('Host output'),
                                             __('Instance'),
                                             __('Service Summary '),
-                                            __('Host notes')];
-                                        foreach(array_chunk($list, 6, true) as $chunk):
-                                            echo '<div style="display:inline-block;width:200px;">';
-                                            foreach($chunk as $index => $name):
-                                                if ($name == __('Service Summary ') && !$this->Acl->hasPermission('index', 'services') ):
+                                            __('Host notes')
+                                        ];
+                                        foreach (array_chunk($list, 6, true) as $chunk):
+                                            echo '<div class="col-xs-12 col-md-12 col-lg-4">';
+                                            foreach ($chunk as $index => $name):
+                                                if ($name == __('Service Summary ') && !$this->Acl->hasPermission('index', 'services')):
                                                     continue;
                                                 endif;
                                                 ?>
-                                                <div class="dropdown-item" style="display:inline-block;width:200px;">
-                                                    <input type="checkbox"
-                                                           ng-model="fields[<?=$index?>]"
-                                                           ng-checked="fields[<?=$index?>]">
-                                                    <?= h($name) ?>
+                                                <div class="dropdown-item-xs padding-left-10">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox"
+                                                               id="columnCheckbox<?= $index ?>"
+                                                               class="custom-control-input"
+                                                               name="checkbox"
+                                                               ng-checked="fields[<?= $index ?>]"
+                                                               ng-model="fields[<?= $index ?>]">
+                                                        <label class="custom-control-label"
+                                                               for="columnCheckbox<?= $index ?>">
+                                                            <?= h($name) ?>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             <?php
                                             endforeach;
@@ -455,21 +468,50 @@
                                         endforeach;
                                         ?>
                                     </div>
+
+                                    <div class="card-footer">
+                                        <div class="btn-group w-100">
+                                            <button type="button"
+                                                    class="btn btn-primary btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Share configuration'); ?>"
+                                                    data-toggle="modal" data-target="#showFieldsModal">
+                                                <i class="fas fa-share-alt"></i>
+                                                <?= __('Share'); ?>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-secondary btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Import configuration'); ?>"
+                                                    data-toggle="modal" data-target="#importFieldsModal">
+                                                <i class="fas fa-file-import"></i>
+                                                <?= __('Import'); ?>
+                                            </button>
+
+                                            <button type="button"
+                                                    class="btn btn-default btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Reset to default'); ?>"
+                                                    ng-click="defaultColumns()">
+                                                <i class="fas fa-recycle"></i>
+                                                <?= __('Reset to default') ?>
+                                            </button>
+                                            <button class="btn btn-success btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Save Columns configuration in browser'); ?>"
+                                                    ng-click="saveColumns()">
+                                                <?= __('Save'); ?>
+                                            </button>
+                                        </div>
+                                    </div>
+
                                 </div>
-                                <button class="btn btn-xs btn-secondary shadow-0 mr-1 float-right" ng-click="defaultColumns()">
-                                    <i class="fas fa-list"></i> <?php echo __('Reset to default'); ?>
-                                </button>
-                                <button class="btn btn-xs btn-secondary shadow-0 mr-1 float-right"  ng-click="saveColumns()">
-                                    <i class="fas fa-list"></i> <?php echo __('Save Columns configuration in browser'); ?>
-                                </button>
-                                <columns-config-import class="mr-1 float-right"
-                                                       state-name="{{columnsTableKey}}"
-                                                       callback="triggerLoadColumns">
-                                </columns-config-import>
-                                <columns-config-export class="mr-1 float-right"
-                                                       fields="fields"
-                                                       state-name="{{columnsTableKey}}">
-                                </columns-config-export>
+
+                            </div>
+                            <columns-config-import
+                                state-name="{{columnsTableKey}}"
+                                callback="triggerLoadColumns">
+                            </columns-config-import>
+                            <columns-config-export
+                                fields="fields"
+                                state-name="{{columnsTableKey}}">
+                            </columns-config-export>
 
                         </div>
                         <!-- end Footer-->

@@ -138,13 +138,13 @@ class Host {
         if (empty($host['Host']['description']) && isset($host['Hosttemplate']['description'])) {
             $this->description = $host['Hosttemplate']['description'];
         } else {
-            $this->description = $host['Host']['description'];
+            $this->description = $host['Host']['description'] ?? null;
         }
 
         if (empty($host['Host']['notes']) && isset($host['Hosttemplate']['notes'])) {
             $this->notes = $host['Hosttemplate']['notes'];
         } else {
-            $this->notes = $host['Host']['notes'];
+            $this->notes = $host['Host']['notes'] ?? null;
         }
 
         if (isset($host['Host']['hosttemplate_id'])) {
