@@ -7,7 +7,7 @@
 
 <pre>
 <?php
-print_r($Statuspage);
+//print_r($Statuspage);
 ?>
     </pre>
 <div ng-controller="StatuspagesViewController">
@@ -16,12 +16,23 @@ print_r($Statuspage);
             <h1 class="display-4"><?= $Statuspage['statuspage']['name']; ?></h1>
             <p class="lead"><?= $Statuspage['statuspage']['description']; ?></p>
             <hr class="my-4">
-            <?php
-            //@TODO add cumulated state for alert
-            ?>
-            <div class="alert alert-success" role="alert">
-                All systems operational <i class="fas fa-check"></i> <i class="fas fa-times"></i>
-            </div>
+            <?php if ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'up' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'ok'): ?>
+                <div class="alert alert-success" role="alert">
+                    <?= __('All systems operational'); ?> <i class="fas fa-check"></i>
+                </div>
+            <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'warning'): ?>
+                <div class="alert alert-warning" role="alert">
+                    <?= __('Warning') ?> <i class="fas fa-exclamation-circle"></i>
+                </div>
+            <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'critical' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'down'): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= __('Critical') ?> <i class="fas fa-times"></i>
+                </div>
+            <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'unreachable' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'unknown'): ?>
+                <div class="alert alert-secondary" role="alert">
+                    <?= __('Unknown') ?> <i class="fas fa-times"></i>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
     <div class="d-flex justify-content-center">
@@ -47,7 +58,6 @@ print_r($Statuspage);
                                     <?php endif; ?>
                                 </h5>
                                 <p class="card-text"><?= $obj['humanState'] ?>
-
                                 </p>
                             </div>
                         </div>

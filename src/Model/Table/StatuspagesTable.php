@@ -11,6 +11,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
@@ -331,7 +332,6 @@ class StatuspagesTable extends Table {
             }
         }
 
-
         $statuspageForView['statuspage']['cumulatedState'] = $this->getCumulatedStateForStatuspage($statuspageForView);
 
         return $statuspageForView;
@@ -349,25 +349,35 @@ class StatuspagesTable extends Table {
             'hostgroups'    => [],
             'servicegroups' => []
         ];
+
         foreach ($statuspageData as $key => $statuspage) {
             if ($key == 'statuspage') {
                 continue;
             }
-            //@TODO get the hostgroup statetype (host or service) from the cumulated status
-            //if ($key != 'hostgroups') {
-            $tmpState = Hash::extract($statuspage, '{n}.currentState');
-            /*} else {
-                $hostgroupStates = [];
-                max(array_column($statuspage, 'currentState'));
-                debug();
-            }*/
+            $itemState = [];
+            foreach ($statuspage as $subKey => $item) {
+                $itemState[$subKey] = $item['currentState'];
+            }
+            $worstItemStatusKey = array_keys($itemState, max($itemState))[0];
+            $states[$key] = $statuspage[$worstItemStatusKey];
+        }
 
-            $states[$key] = max($tmpState);
+
+        $tmpStates = [];
+        foreach ($states as $key => $item) {
+            $tmpStates[$key] = $item['currentState'];
+        }
+        $worstTmpItemStatusKey = array_keys($tmpStates, max($tmpStates))[0];
+
+        $stateType = $worstTmpItemStatusKey;
+        if($worstTmpItemStatusKey == 'hostgroups'){
+            $stateType = Inflector::pluralize($states[$worstTmpItemStatusKey]['stateType']);
         }
 
         $worstState = [
-            'state'     => max($states), // int status
-            'stateType' => '' // host or service
+            'state'     => $states[$worstTmpItemStatusKey]['currentState'], // int status
+            'stateType' => $stateType, // hosts or services
+            'humanState' => $states[$worstTmpItemStatusKey]['humanState']
         ];
 
         return $worstState;
