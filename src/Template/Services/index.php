@@ -494,12 +494,6 @@
                                     <?php echo __('Reset Filter'); ?>
                                 </button>
                             </div>
-                            <div class="float-left">
-                                <button type="button" ng-click="triggerBookmarkFilter()"
-                                        class="btn btn-xs btn-primary">
-                                    <?php echo __('Filter Bookmarks'); ?>
-                                </button>
-                            </div>
                         </div>
                     </div>
 
