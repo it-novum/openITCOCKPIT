@@ -28,10 +28,7 @@
  *
  */
 ?>
-    <button class="btn btn-xs btn-secondary shadow-0"
-            data-toggle="modal" data-target="#importFieldsModal">
-        <i class="fas fa-list"></i> <?php echo __('Import configuration'); ?>
-    </button>
+
 
 <!-- Begin import fields config modal-->
 <div class="modal fade" id="importFieldsModal" role="dialog" aria-hidden="true">

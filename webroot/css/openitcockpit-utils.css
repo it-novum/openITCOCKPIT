@@ -518,6 +518,24 @@ openITCOCKPIT v4 Utilities
     padding-bottom: 0.1rem;
 }
 
+.dropdown-item-xs:hover, .dropdown-item-xs:focus {
+    color: #16181b;
+    text-decoration: none;
+    background-color: #e9ecef;
+}
+
+.dropdown-item-xs.active, .dropdown-item-xs:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #007bff;
+}
+
+.dropdown-item-xs.disabled, .dropdown-item-xs:disabled {
+    color: #adb5bd;
+    pointer-events: none;
+    background-color: transparent;
+}
+
 /* marquee-like animation */
 @keyframes moveme {
     0% {

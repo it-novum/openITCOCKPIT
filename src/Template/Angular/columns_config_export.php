@@ -28,11 +28,6 @@
  *
  */
 ?>
-    <button class="btn btn-xs btn-secondary shadow-0"
-        data-toggle="modal" data-target="#showFieldsModal">
-        <i class="fas fa-list"></i> <?php echo __('Share configuration'); ?>
-    </button>
-
 
 <!-- Begin share fields config modal-->
 <div class="modal fade" id="showFieldsModal" role="dialog" aria-hidden="true">
