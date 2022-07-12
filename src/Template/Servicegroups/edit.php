@@ -89,7 +89,7 @@
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="post.Servicegroup.container.parent_id">
                             </select>
-                            <div ng-repeat="error in errors.container">
+                            <div ng-repeat="error in errors.container.parent_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div ng-show="post.Servicegroup.container.parent_id < 1" class="warning-glow">

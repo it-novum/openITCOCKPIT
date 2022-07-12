@@ -100,6 +100,11 @@ class Host {
     private $priority;
 
     /**
+     * @var string|null
+     */
+    private $notes;
+
+    /**
      * Host constructor.
      * @param array $host
      * @param bool $allowEdit
@@ -130,8 +135,16 @@ class Host {
             $this->address = $host['Host']['address'];
         }
 
-        if (isset($host['Host']['description'])) {
-            $this->description = $host['Host']['description'];
+        if (empty($host['Host']['description']) && isset($host['Hosttemplate']['description'])) {
+            $this->description = $host['Hosttemplate']['description'];
+        } else {
+            $this->description = $host['Host']['description'] ?? null;
+        }
+
+        if (empty($host['Host']['notes']) && isset($host['Hosttemplate']['notes'])) {
+            $this->notes = $host['Hosttemplate']['notes'];
+        } else {
+            $this->notes = $host['Host']['notes'] ?? null;
         }
 
         if (isset($host['Host']['hosttemplate_id'])) {
@@ -230,6 +243,13 @@ class Host {
      */
     public function getDescription() {
         return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotes() {
+        return $this->notes;
     }
 
     /**
