@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('columnsConfigImport', function($http, $window, NotyService, $state){
+angular.module('openITCOCKPIT').directive('columnsConfigImport', function($http){
     return {
         restrict: 'E',
         templateUrl: '/angular/columns_config_import.html',
@@ -19,10 +19,9 @@ angular.module('openITCOCKPIT').directive('columnsConfigImport', function($http,
                         $scope.callback(configObject.value)
                         $('#importFieldsModal').modal('hide');
                     }else if(configObject.key != $scope.stateName){
-                        $scope.error = 'Column config is not for this table';
-                        //NotyService.genericError();
+                        $scope.error = $scope.errorMessages.notThisTable;
                     }else{
-                        $scope.error = 'Unable to import config';
+                        $scope.error = $scope.errorMessages.generic;
                     }
                 } catch(err) {
                     $scope.error = err.message;

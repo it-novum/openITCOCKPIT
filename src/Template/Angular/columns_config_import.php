@@ -31,7 +31,8 @@
 
 
 <!-- Begin import fields config modal-->
-<div class="modal fade" id="importFieldsModal" role="dialog" aria-hidden="true">
+<div class="modal fade" id="importFieldsModal" role="dialog" aria-hidden="true"
+     ng-init="errorMessages={notThisTable: '<?= __('Column config is not for this table'); ?>', generic: '<?= __('Unable to import config'); ?>'}">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary txt-color-white">
