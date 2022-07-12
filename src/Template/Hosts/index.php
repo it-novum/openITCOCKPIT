@@ -528,7 +528,7 @@
                                                                name="checkbox"
                                                                ng-checked="fields[<?= $index ?>]"
                                                                ng-model="fields[<?= $index ?>]">
-                                                        <label class="custom-control-label"
+                                                        <label class="custom-control-label noselect"
                                                                for="columnCheckbox<?= $index ?>">
                                                             <?= h($name) ?>
                                                         </label>
