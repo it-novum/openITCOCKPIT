@@ -10682,6 +10682,51 @@ msgstr "Host Ausgabe"
 msgid "Instance"
 msgstr "Instanz"
 
+#: src/Template/Browsers/index.php:567
+#: src/Template/Browsers/index.php:438
+#: src/Template/Hosts/index.php:641
+#: src/Template/Hosts/index.php:510
+msgid "Host notes"
+msgstr "Hostnotizen"
+
+#: src/Template/Browsers/index.php:415
+msgid "Column configuration"
+msgstr "Spaltenkonfiguration"
+
+
+#: src/Template/Browsers/index.php:419
+msgid "Columns"
+msgstr "Spalten"
+
+#: src/Template/Browsers/index.php:466
+msgid "Save Columns configuration in browser"
+msgstr "Spaltenkonfiguration in Browser speichern"
+
+#: src/Template/Angular/columns_config_import.php:33
+msgid "Import configuration"
+msgstr "Import Konfiguration"
+
+#: src/Template/Angular/columns_config_import.php:54
+msgid "Paste a column configuration string"
+msgstr "Erhaltenen Spaltenkonfiguration einfügen"
+
+
+#: src/Template/Angular/columns_config_import.php:42
+msgid "Import column configuration"
+msgstr "Import Spaltenkonfiguration"
+
+#: src/Template/Angular/columns_config_export.php:43
+msgid "Share configuration"
+msgstr "Teile Konfiguration"
+
+#: src/Template/Angular/columns_config_export.php:43
+msgid "Share column configuration"
+msgstr "Teile Spaltenkonfiguration"
+
+#: src/Template/Angular/columns_config_export.php:51
+msgid "Share this column configuration string"
+msgstr "Teile diese Spaltenkonfiguration"
+
 #: src/Template/Browsers/index.php:492
 #: src/Template/Currentstatereports/index.php:316
 #: src/Template/Currentstatereports/index.php:369

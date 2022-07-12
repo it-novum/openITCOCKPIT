@@ -518,6 +518,24 @@ openITCOCKPIT v4 Utilities
     padding-bottom: 0.1rem;
 }
 
+.dropdown-item-xs:hover, .dropdown-item-xs:focus {
+    color: #16181b;
+    text-decoration: none;
+    background-color: #e9ecef;
+}
+
+.dropdown-item-xs.active, .dropdown-item-xs:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #007bff;
+}
+
+.dropdown-item-xs.disabled, .dropdown-item-xs:disabled {
+    color: #adb5bd;
+    pointer-events: none;
+    background-color: transparent;
+}
+
 /* marquee-like animation */
 @keyframes moveme {
     0% {
@@ -1182,18 +1200,30 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 }
 
 .dropzone .dz-preview .dz-image img {
-    margin: auto;   /* center the image inside the thumbnail */
+    margin: auto; /* center the image inside the thumbnail */
 }
+
 .dropzone .dz-preview .dz-error-message {
-    top: 140px;     /* move the tooltip below the "Remove" link */
+    top: 140px; /* move the tooltip below the "Remove" link */
 }
+
 .dropzone .dz-preview .dz-error-message:after {
-    left: 30px;     /* move the tooltip's arrow to the left of the "Remove" link */
+    left: 30px; /* move the tooltip's arrow to the left of the "Remove" link */
     top: -18px;
     border-bottom-width: 18px;
 }
+
 .dropzone .dz-preview .dz-remove {
     margin-top: 4px;
     font-size: 11px;
     text-transform: uppercase;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

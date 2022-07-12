@@ -1261,4 +1261,13 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
+    public function columns_config_import() {
+        //Only ship HTML template
+        return;
+    }
+    public function columns_config_export() {
+        //Only ship HTML template
+        return;
+    }
 }
