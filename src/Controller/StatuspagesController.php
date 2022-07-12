@@ -22,7 +22,7 @@ class StatuspagesController extends AppController {
 
     public function beforeFilter(EventInterface $event) {
         parent::beforeFilter($event);
-        $this->Authentication->allowUnauthenticated(['view']);
+        $this->Authentication->addUnauthenticatedActions(['status']);
     }
 
     /**
@@ -78,6 +78,7 @@ class StatuspagesController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null) {
+        //$this->Authorization->skipAuthorization();
         $this->viewBuilder()->setLayout('statuspage_fullscreen');
        /* if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -102,9 +103,23 @@ class StatuspagesController extends AppController {
      * Public viewable statuspages
      * @return void
      */
-    public function status() {
+    public function status($id = null) {
         //statuspages need to have public = true to be listed here
+        $this->viewBuilder()->setLayout('statuspage_fullscreen');
 
+        /** @var $StatuspagesTable StatuspagesTable */
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
+            throw new NotFoundException('Statuspage not found');
+        }
+
+        $conditions = ['Statuspages.public' => 1];
+
+        $DbBackend = $this->DbBackend;
+        $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend, $conditions);
+
+        $this->set('Statuspage', $statuspage);
+        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 
     /**

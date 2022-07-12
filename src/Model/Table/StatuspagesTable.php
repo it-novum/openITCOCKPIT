@@ -173,10 +173,12 @@ class StatuspagesTable extends Table {
      * @param $id
      * @return array|void
      */
-    public function getStatuspageObjects($id = null) {
+    public function getStatuspageObjects($id = null, $conditions = []) {
         if (!$this->existsById($id)) {
             return;
         }
+
+        $conditions = array_merge(['Statuspages.id' => $id], $conditions);
 
         $query = $this->find()
             ->contain('Hosts', function (Query $q) {
@@ -215,16 +217,19 @@ class StatuspagesTable extends Table {
                         'Containers.containertype_id' => CT_SERVICEGROUP
                     ]);
             })
-            ->where([
-                'Statuspages.id' => $id
-            ])
+            ->where($conditions)
             ->firstOrFail();
         $statuspage = $query->toArray();
 
         return $statuspage;
     }
 
-    public function getStatuspageObjectsForView($id = null, $DbBackend = null) {
+    /**
+     * @param $id
+     * @param $DbBackend
+     * @return array
+     */
+    public function getStatuspageObjectsForView($id = null, $DbBackend = null, $conditions = []) {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var ServicesTable $ServicesTable */
@@ -233,7 +238,16 @@ class StatuspagesTable extends Table {
         $HoststatusTable = $DbBackend->getHoststatusTable();
         $ServicestatusTable = $DbBackend->getServicestatusTable();
 
-        $statuspageData = $this->getStatuspageObjects($id);
+        $statuspageData = $this->getStatuspageObjects($id, $conditions);
+
+        $statuspageObjects = [
+            'hosts'         => (isset($statuspageData['hosts']) ? $statuspageData['hosts'] : []),
+            'services'      => (isset($statuspageData['services']) ? $statuspageData['services'] : []),
+            'hostgroups'    => (isset($statuspageData['hostgroups']) ? $statuspageData['hostgroups'] : []),
+            'servicegroups' => (isset($statuspageData['servicegroups']) ? $statuspageData['servicegroups'] : [])
+        ];
+
+        $this->getDowntimesForStatuspageObjects($statuspageObjects);
 
         $statuspageForView = [
             'statuspage'    => [
@@ -334,6 +348,7 @@ class StatuspagesTable extends Table {
 
         $statuspageForView['statuspage']['cumulatedState'] = $this->getCumulatedStateForStatuspage($statuspageForView);
 
+
         return $statuspageForView;
     }
 
@@ -370,13 +385,13 @@ class StatuspagesTable extends Table {
         $worstTmpItemStatusKey = array_keys($tmpStates, max($tmpStates))[0];
 
         $stateType = $worstTmpItemStatusKey;
-        if($worstTmpItemStatusKey == 'hostgroups'){
+        if ($worstTmpItemStatusKey == 'hostgroups') {
             $stateType = Inflector::pluralize($states[$worstTmpItemStatusKey]['stateType']);
         }
 
         $worstState = [
-            'state'     => $states[$worstTmpItemStatusKey]['currentState'], // int status
-            'stateType' => $stateType, // hosts or services
+            'state'      => $states[$worstTmpItemStatusKey]['currentState'], // int status
+            'stateType'  => $stateType, // hosts or services
             'humanState' => $states[$worstTmpItemStatusKey]['humanState']
         ];
 
@@ -570,6 +585,14 @@ class StatuspagesTable extends Table {
         return $hostgroup;
     }
 
+    /**
+     * @param HostsTable $HostsTable
+     * @param ServicesTable $ServicesTable
+     * @param HoststatusTableInterface $HoststatusTable
+     * @param ServicestatusTableInterface $ServicestatusTable
+     * @param array $hostgroup
+     * @return array[]
+     */
     private function getHostgroupSummary(HostsTable $HostsTable, ServicesTable $ServicesTable, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable, array $hostgroup) {
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields
@@ -786,6 +809,12 @@ class StatuspagesTable extends Table {
         return $result->toArray();
     }
 
+    /**
+     * @param ServicesTable $ServicesTable
+     * @param ServicestatusTableInterface $ServicestatusTable
+     * @param array $servicegroup
+     * @return array[]
+     */
     private function getServicegroupSummary(ServicesTable $ServicesTable, ServicestatusTableInterface $ServicestatusTable, array $servicegroup) {
         $ServicestatusFields = new ServicestatusFields(new DbBackend());
         $ServicestatusFields
@@ -850,7 +879,19 @@ class StatuspagesTable extends Table {
         ];
     }
 
-    public function getPublicStatuspages() {
+    public function getDowntimesForStatuspageObjects($statuspageData) {
+       // debug($statuspageData);
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var ServicegroupsTable $ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
+        foreach ($statuspageData as $key => $statuspageItem) {
+
+        }
     }
 }

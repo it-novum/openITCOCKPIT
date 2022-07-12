@@ -53,6 +53,10 @@ class RequestPolicy implements RequestPolicyInterface {
 
         //FileDebugger::dump(sprintf('Controller: %s | Action: %s | Plugin: %s', $controller, $action, $plugin));
 
+        if(strtolower($controller) === 'statuspages' && strtolower($action) === 'status'){
+            return true;
+        }
+
         if ($identity === null) {
             //User is not logged in!
             if (strtolower($controller) === 'users' && strtolower($action) === 'login') {
