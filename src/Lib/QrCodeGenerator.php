@@ -2,8 +2,6 @@
 
 namespace App\Lib;
 
-
-use chillerlan\QRCode\Data\QRMatrix;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 
@@ -28,7 +26,6 @@ class QrCodeGenerator {
         if (empty($this->content)) {
             return '';
         }
-//debug($this->content);
         try {
             $options = new QROptions([
             ]);
