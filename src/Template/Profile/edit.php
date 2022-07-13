@@ -571,7 +571,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </div>
 
                 <div class="row padding-top-10">
-                    <img class="mx-auto" src="{{currentQrCode}}">
+                    <img class="mx-auto" ng-src="{{currentQrCode}}">
                 </div>
             </div>
             <div class="modal-footer">

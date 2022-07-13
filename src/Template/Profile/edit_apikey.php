@@ -74,7 +74,7 @@
                     <div class="col-lg-12">
                         <?= __('To transfer the API key to your mobile device, scan the QR code.'); ?>
                     </div>
-                    <img class="mx-auto" src="{{currentQrCode}}">
+                    <img class="mx-auto" ng-src="{{currentQrCode}}">
                 </div>
             </div>
             <div class="modal-footer">
