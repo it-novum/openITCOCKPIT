@@ -79,7 +79,7 @@ class BrowsersController extends AppController {
         $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
 
         $tenants = $TenantsTable->getTenantsForBrowsersIndex($this->MY_RIGHTS, $User->getId());
-        $tenants = Hash::sort($tenants, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
+        $tenants = Hash::sort($tenants, '{n}.container.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 
         $tenantsFiltered = [];
         $tenantsOfContainerNotVisibleForUser = false;
