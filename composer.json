@@ -35,7 +35,6 @@
         "ext-soap": "*",
         "ext-sockets": "*",
         "ext-zip": "*",
-        "alchemy/zippy": "^1.0",
         "azuyalabs/yasumi": "^2.2",
         "cakephp/authentication": "^2.0",
         "cakephp/authorization": "^2.0",
