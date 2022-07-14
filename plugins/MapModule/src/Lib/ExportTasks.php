@@ -63,14 +63,15 @@ class ExportTasks implements PluginExportTasks {
                 unlink($mapZipArchive);
             }
 
+            debug($files);
             if (!empty($files)) {
                 //Cannot create an empty zip
                 $zipArchive = new \ZipArchive();
                 if ($zipArchive->open($mapZipArchive, \ZipArchive::CREATE) !== true) {
                     Log::error('Cant create zip file');
                 } else {
-                    foreach ($files as $file) {
-                        $zipArchive->addFile($file, basename($file));
+                    foreach ($files as $filename => $file) {
+                        $zipArchive->addFile($file, $filename);
                     }
                     $zipArchive->close();
                 }
