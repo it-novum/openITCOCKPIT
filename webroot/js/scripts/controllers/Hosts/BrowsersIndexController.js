@@ -34,7 +34,7 @@ angular.module('openITCOCKPIT')
 
         /*** column vars ***/
         $scope.fields = [];
-        $scope.columnsLength = 17;
+        $scope.columnsLength = 16;
         $scope.columnsTableKey = 'HostsBrowserColumns';
 
         /*** columns functions
@@ -43,7 +43,6 @@ angular.module('openITCOCKPIT')
          'is acknowledged',
          'is in downtime',
          'Notifications enabled',
-         'Grapher',
          'Shared',
          'Passively transferred host',
          'Priority',
@@ -57,7 +56,7 @@ angular.module('openITCOCKPIT')
          'Service Summary ',
          'Host notes'] ***/
         $scope.defaultColumns = function(){
-            $scope.fields = [true,true,true,false,true,true,true,false,true,false,true,true,true,true,true,false,false];
+            $scope.fields = [true,true,true,false,true,true,false,true,false,true,true,true,true,true,false,false];
             $window.localStorage.removeItem($scope.columnsTableKey);
         };
 

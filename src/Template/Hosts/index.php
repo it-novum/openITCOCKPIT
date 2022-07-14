@@ -499,7 +499,6 @@
                                             __('is acknowledged'),
                                             __('is in downtime'),
                                             __('Notifications enabled'),
-                                            __('Grapher'),
                                             __('Shared'),
                                             __('Passively transferred host'),
                                             __('Priority'),
@@ -620,65 +619,61 @@
                                 </th>
 
                                 <th ng-show="fields[4]" class="no-sort text-center">
-                                    <i class="fa fa fa-area-chart" title="<?php echo __('Grapher'); ?>"></i>
-                                </th>
-
-                                <th ng-show="fields[5]" class="no-sort text-center">
                                     <i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap"></i>
                                 </th>
 
-                                <th ng-show="fields[6]" class="no-sort text-center">
+                                <th ng-show="fields[5]" class="no-sort text-center">
                                     <strong title="<?php echo __('Passively transferred host'); ?>">P</strong>
                                 </th>
 
-                                <th ng-show="fields[7]" class="no-sort text-center" ng-click="orderBy('hostpriority')">
+                                <th ng-show="fields[6]" class="no-sort text-center" ng-click="orderBy('hostpriority')">
                                     <i class="fa" ng-class="getSortClass('hostpriority')"></i>
                                     <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
                                     </i>
                                 </th>
 
-                                <th ng-show="fields[8]" class="no-sort" ng-click="orderBy('Hosts.name')">
+                                <th ng-show="fields[7]" class="no-sort" ng-click="orderBy('Hosts.name')">
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Host name'); ?>
                                 </th>
 
-                                <th ng-show="fields[9]" class="text-center">
+                                <th ng-show="fields[8]" class="text-center">
                                     <?php echo __('Host description'); ?>
                                 </th>
 
-                                <th ng-show="fields[10]" class="no-sort" ng-click="orderBy('Hosts.address')">
+                                <th ng-show="fields[9]" class="no-sort" ng-click="orderBy('Hosts.address')">
                                     <i class="fa" ng-class="getSortClass('Hosts.address')"></i>
                                     <?php echo __('IP address'); ?>
                                 </th>
 
-                                <th ng-show="fields[11]" class="no-sort tableStatewidth"
+                                <th ng-show="fields[10]" class="no-sort tableStatewidth"
                                     ng-click="orderBy('Hoststatus.last_state_change')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.last_state_change')"></i>
                                     <?php echo __('Last state change'); ?>
                                 </th>
 
-                                <th ng-show="fields[12]" class="no-sort tableStatewidth"
+                                <th ng-show="fields[11]" class="no-sort tableStatewidth"
                                     ng-click="orderBy('Hoststatus.last_check')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.last_check')"></i>
                                     <?php echo __('Last check'); ?>
                                 </th>
 
-                                <th ng-show="fields[13]" class="no-sort" ng-click="orderBy('Hoststatus.output')">
+                                <th ng-show="fields[12]" class="no-sort" ng-click="orderBy('Hoststatus.output')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.output')"></i>
                                     <?php echo __('Host output'); ?>
                                 </th>
 
-                                <th ng-show="fields[14]" class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
+                                <th ng-show="fields[13]" class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
                                     <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
                                     <?php echo __('Instance'); ?>
                                 </th>
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                    <th ng-show="fields[15]" class="text-center">
+                                    <th ng-show="fields[14]" class="text-center">
                                         <?php echo __('Service Summary '); ?>
                                     </th>
                                 <?php endif; ?>
 
-                                <th ng-show="fields[16]" class="text-center"
+                                <th ng-show="fields[15]" class="text-center"
                                 ">
                                 <?php echo __('Host notes'); ?>
                                 </th>
@@ -727,20 +722,8 @@
                                         <i class="fas fa-times opacity-100 fa-xs text-danger cornered cornered-lr"></i>
                                     </div>
                                 </td>
+
                                 <td ng-show="fields[4]" class="text-center">
-                                    <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                        <a ui-sref="ServicesServiceList({id: host.Host.id})"
-                                           class="txt-color-blueDark"
-                                           ng-if="host.Host.has_graphs">
-                                            <i class="fa fa-area-chart"></i>
-                                        </a>
-                                    <?php else: ?>
-                                        <i class="fa fa-area-chart txt-color-blueDark"
-                                           ng-if="host.Host.has_graphs">
-                                        </i>
-                                    <?php endif; ?>
-                                </td>
-                                <td ng-show="fields[5]" class="text-center">
                                     <a class="txt-color-blueDark" title="<?php echo __('Shared'); ?>"
                                        ng-if="host.Host.allow_sharing === true && host.Host.containerIds.length > 1"
                                        ui-sref="HostsSharing({id:host.Host.id})">
@@ -751,14 +734,14 @@
                                        title="<?php echo __('Restricted view'); ?>"></i>
                                 </td>
 
-                                <td ng-show="fields[6]" class="text-center">
+                                <td ng-show="fields[5]" class="text-center">
                                     <strong title="<?php echo __('Passively transferred host'); ?>"
                                             ng-show="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
                                         P
                                     </strong>
                                 </td>
 
-                                <td ng-show="fields[7]" class="text-center">
+                                <td ng-show="fields[6]" class="text-center">
                                     <i class="fa fa-fire"
                                        ng-class="{'ok-soft' : host.Host.priority==1,
                                         'ok' : host.Host.priority==2, 'warning' : host.Host.priority==3,
@@ -766,7 +749,7 @@
                                     </i>
                                 </td>
 
-                                <td ng-show="fields[8]">
+                                <td ng-show="fields[7]">
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <a ui-sref="HostsBrowser({id:host.Host.id})">
                                             {{ host.Host.hostname }}
@@ -776,32 +759,32 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td ng-show="fields[9]">
+                                <td ng-show="fields[8]">
                                     {{ host.Host.description }}
                                 </td>
 
-                                <td ng-show="fields[10]">
+                                <td ng-show="fields[9]">
                                     {{ host.Host.address }}
                                 </td>
 
-                                <td ng-show="fields[11]">
+                                <td ng-show="fields[10]">
                                     {{ host.Hoststatus.last_state_change }}
                                 </td>
 
-                                <td ng-show="fields[12]">
+                                <td ng-show="fields[11]">
                                     {{ host.Hoststatus.lastCheck }}
                                 </td>
 
-                                <td ng-show="fields[13]">
+                                <td ng-show="fields[12]">
                                     <div class="word-break"
                                          ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
-                                <td ng-show="fields[14]">
+                                <td ng-show="fields[13]">
                                     {{ host.Host.satelliteName }}
                                 </td>
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                    <td ng-show="fields[15]" class="width-160">
+                                    <td ng-show="fields[14]" class="width-160">
                                         <div class="btn-group btn-group-justified" role="group" style="width: 100%">
                                             <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                                 <a class="btn btn-success state-button-small"
@@ -848,7 +831,7 @@
                                     </td>
                                 <?php endif; ?>
 
-                                <td ng-show="fields[16]">
+                                <td ng-show="fields[15]">
                                     {{ host.Host.notes }}
                                 </td>
 
