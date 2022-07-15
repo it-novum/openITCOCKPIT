@@ -82,6 +82,10 @@ class HostMacroReplacer {
      * @param string $msg
      */
     public function replaceBasicMacros($msg) {
+        if(is_null($msg)){
+            return $msg;
+        }
+
         $mapping = $this->buildMapping('basic');
 
         return str_replace($mapping['search'], $mapping['replace'], $msg);
@@ -96,6 +100,10 @@ class HostMacroReplacer {
      * @param string $msg
      */
     public function replaceStatusMacros($msg) {
+        if(is_null($msg)){
+            return $msg;
+        }
+
         $mapping = $this->buildMapping('status');
 
         return str_replace($mapping['search'], $mapping['replace'], $msg);
