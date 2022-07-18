@@ -1124,7 +1124,7 @@ class NagiosConfigGenerator {
                         $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg()
                     ));
                 } else {
-                    $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid'));
+                    $content .= $this->addContent('event_handler', 1, $servicetemplate->get('check_command')->get('uuid'));
                 }
             }
 
