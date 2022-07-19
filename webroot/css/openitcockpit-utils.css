@@ -1246,3 +1246,8 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
         background-position: 0% 50%;
     }
 }
+
+.was-validated textarea.form-control:invalid, textarea.form-control.is-invalid {
+    padding-right: calc(1.5em + 0.75rem);
+    background-position: top calc(0.375em + 0.1875rem) right calc(1.0em + 0.1875rem);
+}
