@@ -1251,3 +1251,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     padding-right: calc(1.5em + 0.75rem);
     background-position: top calc(0.375em + 0.1875rem) right calc(1.0em + 0.1875rem);
 }
+
+.font-5-rem{
+    font-size:5rem;
+}

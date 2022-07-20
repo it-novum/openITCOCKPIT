@@ -1128,3 +1128,8 @@ div.packetmanager-selection > span::selection {
         width: 700px;
     }
 }
+
+.new-flame-bg{
+    background-color: #ff0000;
+    background-image: linear-gradient(0deg, #f00 0%, #ffa700 100%);
+}
