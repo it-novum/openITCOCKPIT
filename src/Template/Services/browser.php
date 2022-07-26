@@ -103,7 +103,7 @@ use Cake\Core\Plugin;
                             </li>
                         <?php endif; ?>
                         <?php if (Plugin::isLoaded('CustomalertModule')): ?>
-                            <li class="nav-item pointer">
+                            <li class="nav-item pointer" ng-show="CustomalertsExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
                                    role="tab">
                                     <i class="fa-solid fa-bullhorn">&nbsp;</i> <?php echo __('Custom alerts'); ?>
@@ -1143,7 +1143,11 @@ use Cake\Core\Plugin;
                                                     <i class="fa fa-refresh fa-spin txt-primary"></i>
                                                 </span>
                                             <span ng-show="failureDurationInPercent">
-                                                {{ (failureDurationInPercent) ? failureDurationInPercent + ' %' : '<?= __('No data available!'); ?>'}}
+                                                {{ (failureDurationInPercent) ? failureDurationInPercent + ' %' : '<?= __('
+                                                No
+                                                data
+                                                available
+                                                !'); ?>'}}
                                             </span>
                                         </h3>
                                     </div>
@@ -1270,11 +1274,7 @@ use Cake\Core\Plugin;
                     <div ng-show="selectedTab == 'tab5'">
                         <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
                             <?php if (Plugin::isLoaded('CustomalertModule') && $this->Acl->hasPermission('history', 'customalerts', 'CustomalertModule')): ?>
-                                <customalerts-history-element service-id="{{mergedService.id}}"></customalerts-history-element>
-                            <?php else: ?>
-                                <label class="text-danger">
-                                    <?php echo __('No permissions'); ?>
-                                </label>
+                                <customalerts-history service-id="mergedService.id"></customalerts-history>
                             <?php endif; ?>
                         </div>
                     </div>

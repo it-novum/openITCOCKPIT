@@ -60,6 +60,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use CustomalertModule\Model\Table\CustomalertsTable;
 use DistributeModule\Model\Table\SatellitesTable;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
@@ -2805,4 +2806,24 @@ class ServicesController extends AppController {
         $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
+
+    public function loadCustomalerts() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+
+        $customalertsExists = false;
+
+        if (Plugin::isLoaded('CustomalertModule')) {
+            /** @var CustomalertsTable $CustomalertsTable */
+            $CustomalertsTable = TableRegistry::getTableLocator()->get('CustomalertModule.Customalerts');
+            $customalertsExists = $CustomalertsTable->existsCustomalertsByServiceId($id);
+        }
+
+        $this->set('CustomalertsExists', $customalertsExists);
+        $this->viewBuilder()->setOption('serialize', ['CustomalertsExists']);
+    }
+
 }

@@ -197,6 +197,8 @@ angular.module('openITCOCKPIT')
                     $scope.loadTimelineData();
                 }
 
+                $scope.loadCustomAlerts();
+
                 if(typeof $scope.serviceBrowserMenuConfig === "undefined"){
                     $scope.serviceBrowserMenuConfig = {
                         autoload: true,
@@ -955,6 +957,17 @@ angular.module('openITCOCKPIT')
                 // Integer id was passed via URL
                 $scope.load();
             }
+        };
+
+        $scope.loadCustomAlerts = function(){
+            $http.get("/services/loadCustomalerts/.json", {
+                params: {
+                    'id': $scope.id,
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.CustomalertsExists = result.data.CustomalertsExists;
+            });
         };
 
         var enableGraphAutorefresh = function(){
