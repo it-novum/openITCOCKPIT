@@ -1119,12 +1119,14 @@ class NagiosConfigGenerator {
                 $content .= PHP_EOL;
                 $content .= $this->addContent(';Event handler:', 1);
 
+                $commandUuid = $this->CommandUuidsCache->get($servicetemplate->get('eventhandler_command_id'));
+
                 if ($servicetemplate->hasServicetemplateeventcommandargumentvalues()) {
-                    $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
-                        $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg()
+                    $content .= $this->addContent('event_handler', 1, $this->escapeLastBackslash(
+                        $commandUuid . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg()
                     ));
                 } else {
-                    $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid'));
+                    $content .= $this->addContent('event_handler', 1, $commandUuid);
                 }
             }
 

@@ -1227,3 +1227,31 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     -ms-user-select: none;
     user-select: none;
 }
+
+.flame {
+    background-color: #ff0000;
+    background-image: linear-gradient(0deg, #ff0000 0%, #ffed00 74%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 100% 200%;
+    -webkit-animation: burn 6s ease infinite;
+    animation: burn 6s alternate infinite;
+}
+
+@keyframes burn {
+    0% {
+        background-position: 90% 100%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.was-validated textarea.form-control:invalid, textarea.form-control.is-invalid {
+    padding-right: calc(1.5em + 0.75rem);
+    background-position: top calc(0.375em + 0.1875rem) right calc(1.0em + 0.1875rem);
+}
+
+.font-5-rem{
+    font-size:5rem;
+}
