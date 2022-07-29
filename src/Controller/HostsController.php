@@ -2835,8 +2835,16 @@ class HostsController extends AppController {
         $hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $hosttemplateType);
         $hosttemplates = Api::makeItJavaScriptAble($hosttemplates);
 
-        $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
-        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        if ($containerId == ROOT_CONTAINER) {
+            // ITC-2819
+            // Hosts in the /root container can be a member of any host group
+            $hostgroups = $HostgroupsTable->getHostgroupsAsList();
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        } else {
+            $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        }
+
 
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
