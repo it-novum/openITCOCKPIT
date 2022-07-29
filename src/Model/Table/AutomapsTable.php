@@ -226,7 +226,7 @@ class AutomapsTable extends Table {
      * @param $MY_RIGHTS
      * @return array
      */
-    public function getAutomapsForAngular($selected = [], AutomapsFilter $AutomapsFilter, $MY_RIGHTS = []) {
+    public function getAutomapsForAngular($selected, AutomapsFilter $AutomapsFilter, $MY_RIGHTS = []) {
         if (!is_array($selected)) {
             $selected = [$selected];
         }

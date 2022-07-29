@@ -784,7 +784,7 @@ class HostsTable extends Table {
             'Hosts.container_id',
             'Hosts.tags',
             'Hosts.priority',
-
+            'Hosts.notes',
             'Hoststatus.current_state',
             'Hoststatus.last_check',
             'Hoststatus.next_check',
@@ -832,6 +832,7 @@ class HostsTable extends Table {
                     'Hosttemplates.uuid',
                     'Hosttemplates.name',
                     'Hosttemplates.description',
+                    'Hosttemplates.notes',
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
@@ -934,11 +935,12 @@ class HostsTable extends Table {
             'Hosts.address',
             'Hosts.satellite_id',
             'Hosts.container_id',
+            'Hosts.hosttemplate_id',
             'Hosts.tags',
             'Hosts.priority',
             //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
             //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-
+            'Hosts.notes',
             'Hoststatus.current_state',
             'Hoststatus.last_check',
             'Hoststatus.next_check',
@@ -980,12 +982,12 @@ class HostsTable extends Table {
                     'Hosttemplates.uuid',
                     'Hosttemplates.name',
                     'Hosttemplates.description',
+                    'Hosttemplates.notes',
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
                     'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
                     'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
-
                 ]
             ]
         ]);
@@ -1874,6 +1876,10 @@ class HostsTable extends Table {
             ];
             if ($HostConditions->includeDisabled() === false) {
                 $where['Hosts.disabled'] = 0;
+            }
+            $satelliteId = $HostConditions->getSatelliteId();
+            if ($satelliteId !== null) {
+                $where['Hosts.satellite_id'] = $satelliteId;
             }
             if ($HostConditions->hasNotConditions()) {
                 if (!empty($where['NOT'])) {
@@ -3135,7 +3141,8 @@ class HostsTable extends Table {
                     function (Query $q) {
                         return $q->enableAutoFields(false)->select([
                             'id',
-                            'name'
+                            'name',
+                            'satellite_id'
                         ]);
                     },
                 'Hostcommandargumentvalues' => [
@@ -4612,6 +4619,8 @@ class HostsTable extends Table {
      * @param int|array $selected
      * @param bool $returnEmptyArrayIfMyRightsIsEmpty
      * @return array|null
+     * @deprecated since ITC-2819
+     * See https://github.com/it-novum/openITCOCKPIT/pull/1377/files?diff=split&w=0 how to restore <= 4.4.1 behavior
      */
     public function getHostsForHostgroupForAngular(HostConditions $HostConditions, $selected = []) {
         if (!is_array($selected)) {

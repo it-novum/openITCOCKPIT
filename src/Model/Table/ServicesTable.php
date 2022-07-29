@@ -1824,6 +1824,7 @@ class ServicesTable extends Table {
                 'Hosts.description',
                 'Hosts.address',
                 'Hosts.disabled',
+                'Hosts.notes'
             ])
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
@@ -1993,7 +1994,8 @@ class ServicesTable extends Table {
                 'Hosts.description',
                 'Hosts.address',
                 'Hosts.disabled',
-                'Hosts.satellite_id'
+                'Hosts.satellite_id',
+                'Hosts.notes'
             ])
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
@@ -4656,6 +4658,8 @@ class ServicesTable extends Table {
      * @param array|int $selected
      * @param bool $returnEmptyArrayIfMyRightsIsEmpty
      * @return array|null
+     * @deprecated since ITC-2819
+     * See https://github.com/it-novum/openITCOCKPIT/pull/1377/files?diff=split&w=0 how to restore <= 4.4.1 behavior
      */
     public function getServicesForServicegroupForAngular(ServiceConditions $ServiceConditions, $selected = [], $returnEmptyArrayIfMyRightsIsEmpty = false) {
         if (!is_array($selected)) {

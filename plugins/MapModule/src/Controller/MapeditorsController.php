@@ -699,7 +699,7 @@ class MapeditorsController extends AppController {
                     $hosts = [];
                     $services = [];
                     if (!empty($hostIds)) {
-                        $hostsById = $HostsTable->getHostsWithServicesByIdsForMapeditor($hostIds);
+                        $hostsById = $HostsTable->getHostsWithServicesByIdsForMapeditor($hostIds, false);
 
                         if (!empty($hostsById)) {
                             if ($this->hasRootPrivileges === false) {
@@ -709,7 +709,9 @@ class MapeditorsController extends AppController {
                                 }
                             }
                             foreach ($hostsById as $host) {
-                                $hosts[$host['id']] = $host;
+                                $hosts[$host['id']] = [
+                                    'Host' => $host
+                                ];
                                 foreach ($host['services'] as $serviceData) {
                                     $services[$serviceData['id']] = [
                                         'Service' => $serviceData

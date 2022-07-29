@@ -113,6 +113,10 @@
     border-left: 3px solid #C9302C;
 }
 
+.changelog-blockquote-secondary {
+    border-left: 3px solid #868e96;
+}
+
 .changelog_delete {
     text-decoration: line-through;
 }

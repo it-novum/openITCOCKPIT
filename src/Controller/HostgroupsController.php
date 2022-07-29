@@ -751,12 +751,26 @@ class HostgroupsController extends AppController {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        }
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($containerIds);
         $hosts = Api::makeItJavaScriptAble(
-            $HostsTable->getHostsForHostgroupForAngular($HostCondition, $selected)
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
         $this->set('hosts', $hosts);
         $this->viewBuilder()->setOption('serialize', ['hosts']);
@@ -779,8 +793,11 @@ class HostgroupsController extends AppController {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
-        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
-
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
         $hosttemplates = Api::makeItJavaScriptAble(
             $HosttemplatesTable->getHosttemplatesForAngular($containerIds, $HosttemplateFilter, $selected)
         );

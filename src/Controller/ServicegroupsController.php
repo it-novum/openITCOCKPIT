@@ -650,7 +650,10 @@ class ServicegroupsController extends AppController {
         /** @var $ServicetemplatesTable ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
-        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
 
         $servicetemplates = Api::makeItJavaScriptAble(
             $ServicetemplatesTable->getServicetemplatesForAngular($containerIds, $ServicetemplateFilter, $selected)

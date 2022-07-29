@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, NotyService, QueryStringService, $stateParams){
+    .controller('HostsIndexController', function($scope, $http, $window, $rootScope, $httpParamSerializer, SortService, MassChangeService, NotyService, QueryStringService, $stateParams){
         $rootScope.lastObjectName = null;
         SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Hoststatus.current_state'));
         SortService.setDirection(QueryStringService.getStateValue($stateParams, 'direction', 'desc'));
@@ -50,6 +50,54 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.showFilter = false;
         $scope.showBookmarkFilter = false;
+
+        /*** column vars ***/
+        $scope.fields = [];
+        $scope.columnsLength = 16;
+        $scope.columnsTableKey = 'HostsIndexColumns';
+
+        /*** columns functions
+         columns:
+         ['Hoststatus',
+         'is acknowledged',
+         'is in downtime',
+         'Notifications enabled',
+         'Shared',
+         'Passively transferred host',
+         'Priority',
+         'Host name',
+         'Host description',
+         'IP address',
+         'Last state change',
+         'Last check',
+         'Host output',
+         'Instance',
+         'Service Summary ',
+         'Host notes'] ***/
+        $scope.defaultColumns = function(){
+            $scope.fields = [true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,false];
+            $window.localStorage.removeItem($scope.columnsTableKey);
+        };
+
+        $scope.saveColumns = function(){
+            $window.localStorage.removeItem($scope.columnsTableKey);
+            $window.localStorage.setItem($scope.columnsTableKey,JSON.stringify($scope.fields));
+
+        }
+
+        $scope.loadColumns = function(){
+            var fields =  JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
+            if(typeof fields !== undefined && Array.isArray(fields)) {
+                $scope.fields = fields;
+            }else {
+                $scope.defaultColumns()
+            }
+        }
+
+        $scope.triggerLoadColumns= function(fields){
+            $scope.fields = fields;
+        };
+        /*** end columns functions ***/
 
         $scope.load = function(){
             //console.trace();
@@ -293,6 +341,7 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         defaultFilter();
+        $scope.loadColumns(); // load column config
         //$scope.loadDefaultFilterBookmark();
         SortService.setCallback($scope.load);
 
