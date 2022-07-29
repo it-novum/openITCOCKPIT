@@ -4614,6 +4614,8 @@ class HostsTable extends Table {
      * @param int|array $selected
      * @param bool $returnEmptyArrayIfMyRightsIsEmpty
      * @return array|null
+     * @deprecated since ITC-2819
+     * See https://github.com/it-novum/openITCOCKPIT/pull/1377/files?diff=split&w=0 how to restore <= 4.4.1 behavior
      */
     public function getHostsForHostgroupForAngular(HostConditions $HostConditions, $selected = []) {
         if (!is_array($selected)) {

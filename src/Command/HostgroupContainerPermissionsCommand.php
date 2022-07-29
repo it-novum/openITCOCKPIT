@@ -21,6 +21,8 @@ use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 
 /**
  * HostgroupContainerPermissions command.
+ * @deprecated since ITC-2819
+ * See https://github.com/it-novum/openITCOCKPIT/pull/1377/files?diff=split&w=0 how to restore <= 4.4.1 behavior
  */
 class HostgroupContainerPermissionsCommand extends Command {
     /**
@@ -44,6 +46,11 @@ class HostgroupContainerPermissionsCommand extends Command {
      * @return null|void|int The exit code or null for success
      */
     public function execute(Arguments $args, ConsoleIo $io) {
+        $io->info('Execution of this command is disabled! ITC-2819');
+        exit(0);
+
+        // Old ITC-2800 code below
+
         $lockfile = '/opt/openitc/var/hostgroup_container_permissions.lock';
 
         if (file_exists($lockfile)) {

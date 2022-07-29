@@ -273,7 +273,6 @@
                                                 chosen="hostgroups"
                                                 multiple
                                                 ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                                options-class="{ 'groups-to-remove' : invisibleHostgroupIds }"
                                                 ng-model="post.Host.hostgroups._ids">
                                             </select>
                                             <template-diff ng-show="post.Host.hosttemplate_id"
