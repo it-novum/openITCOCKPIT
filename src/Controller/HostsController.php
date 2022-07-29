@@ -1671,8 +1671,8 @@ class HostsController extends AppController {
                             'active_checks_enabled',
                             'satellite_id',
                             'notifications_enabled',
-                            'freshness_threshold',
-                            'freshness_checks_enabled'
+                            'freshness_checks_enabled',
+                            'freshness_threshold'
                         ]
                     );
                     /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
@@ -1697,7 +1697,9 @@ class HostsController extends AppController {
                         $containerIds[] = $container->get('id');
                     }
                     foreach ($sourceHost->get('parenthosts') as $parenthost) {
-                        $parenthostsIds[] = $parenthost->get('id');
+                        if ($sourceHost->get('satellite_id') === 0 || $sourceHost->get('satellite_id') === $parenthost->get('satellite_id')) {
+                            $parenthostsIds[] = $parenthost->get('id');
+                        }
                     }
                     foreach ($sourceHost->get('contacts') as $contact) {
                         $contactsIds[] = $contact->get('id');
@@ -2005,6 +2007,15 @@ class HostsController extends AppController {
         }
 
         $host = $HostsTable->getHostForBrowser($id);
+        if (!empty($host['parenthosts']) && $host['satellite_id'] > 0) {
+            $parentHostsFiltered = [];
+            foreach ($host['parenthosts'] as $parentHost) {
+                if ($parentHost['satellite_id'] === 0 || $parentHost['satellite_id'] === $host['satellite_id']) {
+                    $parentHostsFiltered[] = $parentHost;
+                }
+            }
+            $host['parenthosts'] = $parentHostsFiltered;
+        }
 
         //Check permissions
         $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
@@ -3069,6 +3080,7 @@ class HostsController extends AppController {
         $selected = $this->request->getQuery('selected');
         $hostId = $this->request->getQuery('hostId');
         $containerId = $this->request->getQuery('containerId');
+        $satelliteId = $this->request->getQuery('satellite_id');
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
             /** @var $ContainersTable ContainersTable */
@@ -3093,6 +3105,7 @@ class HostsController extends AppController {
                 'Hosts.id IN' => $hostId
             ]);
         }
+        $HostCondition->setSatelliteId($satelliteId);
         $hosts = Api::makeItJavaScriptAble(
             $HostsTable->getHostsForAngular($HostCondition, $selected)
         );

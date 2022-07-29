@@ -1877,6 +1877,10 @@ class HostsTable extends Table {
             if ($HostConditions->includeDisabled() === false) {
                 $where['Hosts.disabled'] = 0;
             }
+            $satelliteId = $HostConditions->getSatelliteId();
+            if ($satelliteId !== null) {
+                $where['Hosts.satellite_id'] = $satelliteId;
+            }
             if ($HostConditions->hasNotConditions()) {
                 if (!empty($where['NOT'])) {
                     $where['NOT'] = array_merge($where['NOT'], $HostConditions->getNotConditions());
@@ -3137,7 +3141,8 @@ class HostsTable extends Table {
                     function (Query $q) {
                         return $q->enableAutoFields(false)->select([
                             'id',
-                            'name'
+                            'name',
+                            'satellite_id'
                         ]);
                     },
                 'Hostcommandargumentvalues' => [
