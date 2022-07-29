@@ -375,6 +375,12 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(redirectState){
+            //clean up host and host templates -> remove not visible ids
+            $scope.post.Host.hostgroups._ids = _.intersection(
+                _.map($scope.hostgroups, 'key'),
+                $scope.post.Host.hostgroups._ids
+            );
+
             $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
