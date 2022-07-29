@@ -51,7 +51,7 @@
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
-                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
+                    <button class="btn btn-xs btn-primary mr-1 shadow-0" ng-click="triggerFilter()">
                         <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
                     </button>
                 </div>
@@ -133,20 +133,24 @@
                     <!-- Filter End -->
 
                     <div class="frame-wrap">
+
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('Logentries.entry_time')">
+                                <th class="no-sort"
+                                    ng-click="orderBy('Logentries.entry_time')">
                                     <i class="fa" ng-class="getSortClass('Logentries.entry_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Logentries.logentry_type')">
+                                <th class="no-sort"
+                                    ng-click="orderBy('Logentries.logentry_type')">
                                     <i class="fa" ng-class="getSortClass('Logentries.logentry_type')"></i>
                                     <?php echo __('Type'); ?>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Logentries.logentry_data')">
+                                <th class="no-sort"
+                                    ng-click="orderBy('Logentries.logentry_data')">
                                     <i class="fa" ng-class="getSortClass('Logentries.logentry_data')"></i>
                                     <?php echo __('Record'); ?>
                                 </th>

@@ -7,9 +7,9 @@
 namespace MapModule\Lib;
 
 
-use Alchemy\Zippy\Zippy;
 use App\Lib\PluginExportTasks;
 use Cake\Core\Configure;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
@@ -27,8 +27,6 @@ class ExportTasks implements PluginExportTasks {
         if (!\Cake\Core\Plugin::isLoaded('DistributeModule')) {
             return true;
         }
-
-        $zippy = Zippy::load();
 
         //Create zip file with all maps per satellite if DistributeModule is loaded
 
@@ -67,7 +65,16 @@ class ExportTasks implements PluginExportTasks {
 
             if (!empty($files)) {
                 //Cannot create an empty zip
-                $archive = $zippy->create($mapZipArchive, $files);
+                $zipArchive = new \ZipArchive();
+                if ($zipArchive->open($mapZipArchive, \ZipArchive::CREATE) !== true) {
+                    Log::error('Cant create zip file');
+                } else {
+                    foreach ($files as $filename => $file) {
+                        $zipArchive->addFile($file, $filename);
+                    }
+                    $zipArchive->close();
+                }
+
             }
 
             if (file_exists($mapJson)) {

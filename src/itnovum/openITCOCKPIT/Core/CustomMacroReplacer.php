@@ -94,6 +94,10 @@ class CustomMacroReplacer {
      * @return string mixed
      */
     public function replaceAllMacros($msg) {
+        if (is_null($msg)) {
+            return $msg;
+        }
+
         if (empty($this->mapping['search']) || empty($this->mapping['replace'])) {
             return $msg;
         }

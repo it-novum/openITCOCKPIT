@@ -58,22 +58,6 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <div class="alert alert-primary bg-primary-400 alert-dismissible fade show" role="alert">
-                        <div class="d-flex align-items-center">
-                            <div class="alert-icon width-3">
-                                <div class='icon-stack  icon-stack-sm'>
-                                    <i class="base base-9 icon-stack-3x opacity-100 color-primary-900"></i>
-                                    <i class="fas fa-info-circle icon-stack-1x opacity-100 color-white"></i>
-                                </div>
-                            </div>
-                            <div class="flex-1 color-white">
-                                <span class="h5 m-0 fw-700">
-                                    <?php echo __('Please note!'); ?>
-                                </span>
-                                <?php echo __('Only host templates and hosts of the selected container are loaded.'); ?>
-                            </div>
-                        </div>
-                    </div>
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
                         {objectName : '<?php echo __('Host group'); ?>' , message: '<?php echo __('created successfully'); ?>'}">

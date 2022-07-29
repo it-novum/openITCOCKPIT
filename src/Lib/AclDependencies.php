@@ -139,7 +139,9 @@ class AclDependencies {
             ->allow('Angular', 'message_of_the_day')
             ->allow('Angular', 'regexHelpTooltip')
             ->allow('Angular', 'wizardFilter')
-            ->allow('Angular', 'wizardInterfaceFilter');
+            ->allow('Angular', 'wizardInterfaceFilter')
+            ->allow('Angular', 'columnsConfigImport')
+            ->allow('Angular', 'columnsConfigExport');
 
         $this
             ->allow('Agentconnector', 'register_agent')
@@ -503,7 +505,8 @@ class AclDependencies {
             ->dependency('Services', 'edit', 'Services', 'loadCommands')
             ->dependency('Services', 'edit', 'Services', 'loadCommandArguments')
             ->dependency('Services', 'edit', 'Services', 'loadEventhandlerCommandArguments')
-            ->dependency('Services', 'serviceList', 'Services', 'deleted');
+            ->dependency('Services', 'serviceList', 'Services', 'deleted')
+            ->dependency('Services', 'browser', 'Services', 'loadCustomalerts');
 
 
         $this

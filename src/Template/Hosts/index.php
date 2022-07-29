@@ -480,84 +480,204 @@
                                     <?php echo __('Reset Filter'); ?>
                                 </button>
                             </div>
+                        </div>
+
+                        <!-- Filter card footer with column configuration-->
+                        <div class="card-footer" ng-show="showFilter">
+                            <i class="fa fa-list"></i> <?php echo __('Column configuration'); ?>
+
+                            <div class="dropdown mr-1 float-right">
+                                <button class="btn btn-xs btn-secondary dropdown-toggle" type="button"
+                                        data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-columns"></i>
+                                    <?php echo __('Columns'); ?>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-columns" aria-labelledby="dropdownMenuButton">
+                                    <div class="row">
+                                        <?php $list = [
+                                            __('Hoststatus'),
+                                            __('is acknowledged'),
+                                            __('is in downtime'),
+                                            __('Notifications enabled'),
+                                            __('Shared'),
+                                            __('Passively transferred host'),
+                                            __('Priority'),
+                                            __('Host name'),
+                                            __('Host description'),
+                                            __('IP address'),
+                                            __('Last state change'),
+                                            __('Last check'),
+                                            __('Host output'),
+                                            __('Instance'),
+                                            __('Service Summary '),
+                                            __('Host notes')
+                                        ];
+                                        foreach (array_chunk($list, 6, true) as $chunk):
+                                            echo '<div class="col-xs-12 col-md-12 col-lg-4">';
+                                            foreach ($chunk as $index => $name):
+                                                if ($name == __('Service Summary ') && !$this->Acl->hasPermission('index', 'services')):
+                                                    continue;
+                                                endif;
+                                                ?>
+                                                <div class="dropdown-item-xs padding-left-10">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox"
+                                                               id="columnCheckbox<?= $index ?>"
+                                                               class="custom-control-input"
+                                                               name="checkbox"
+                                                               ng-checked="fields[<?= $index ?>]"
+                                                               ng-model="fields[<?= $index ?>]">
+                                                        <label class="custom-control-label noselect"
+                                                               for="columnCheckbox<?= $index ?>">
+                                                            <?= h($name) ?>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <?php
+                                            endforeach;
+                                            echo '</div>';
+                                        endforeach;
+                                        ?>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="btn-group w-100">
+                                            <button type="button"
+                                                    class="btn btn-primary btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Share configuration'); ?>"
+                                                    data-toggle="modal" data-target="#showFieldsModal">
+                                                <i class="fas fa-share-alt"></i>
+                                                <?= __('Share'); ?>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-secondary btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Import configuration'); ?>"
+                                                    data-toggle="modal" data-target="#importFieldsModal">
+                                                <i class="fas fa-file-import"></i>
+                                                <?= __('Import'); ?>
+                                            </button>
+
+                                            <button type="button"
+                                                    class="btn btn-default btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Reset to default'); ?>"
+                                                    ng-click="defaultColumns()">
+                                                <i class="fas fa-recycle"></i>
+                                                <?= __('Reset to default') ?>
+                                            </button>
+                                            <button class="btn btn-success btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Save Columns configuration in browser'); ?>"
+                                                    ng-click="saveColumns()">
+                                                <?= __('Save'); ?>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <columns-config-import
+                                state-name="{{columnsTableKey}}"
+                                callback="triggerLoadColumns">
+                            </columns-config-import>
+                            <columns-config-export
+                                fields="fields"
+                                state-name="{{columnsTableKey}}">
+                            </columns-config-export>
 
                         </div>
+                        <!-- end Footer-->
+
                     </div>
                     <!-- End Filter -->
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th colspan="2" class="no-sort width-90"
+                                <th ng-show="fields[0]" colspan="2" class="no-sort width-90"
                                     ng-click="orderBy('Hoststatus.current_state')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.current_state')"></i>
                                     <?php echo __('Hoststatus'); ?>
                                 </th>
+                                <th ng-hide="fields[0]">
+                                    <i class="fa fa-check-square"></i>
+                                </th>
 
-                                <th class="no-sort text-center">
+                                <th ng-show="fields[1]" class="no-sort text-center">
                                     <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th ng-show="fields[2]" class="no-sort text-center">
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center" ng-click="orderBy('Hoststatus.notifications_enabled')">
+                                <th ng-show="fields[3]" class="no-sort text-center"
+                                    ng-click="orderBy('Hoststatus.notifications_enabled')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.notifications_enabled')"></i>
                                     <i class="fas fa-envelope" title="<?php echo __('Notifications enabled'); ?>">
                                     </i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th ng-show="fields[4]" class="no-sort text-center">
                                     <i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap"></i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th ng-show="fields[5]" class="no-sort text-center">
                                     <strong title="<?php echo __('Passively transferred host'); ?>">P</strong>
                                 </th>
 
-                                <th class="no-sort text-center" ng-click="orderBy('hostpriority')">
+                                <th ng-show="fields[6]" class="no-sort text-center" ng-click="orderBy('hostpriority')">
                                     <i class="fa" ng-class="getSortClass('hostpriority')"></i>
                                     <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
                                     </i>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                <th ng-show="fields[7]" class="no-sort" ng-click="orderBy('Hosts.name')">
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Host name'); ?>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Hosts.address')">
+                                <th ng-show="fields[8]" class="text-center">
+                                    <?php echo __('Host description'); ?>
+                                </th>
+
+                                <th ng-show="fields[9]" class="no-sort" ng-click="orderBy('Hosts.address')">
                                     <i class="fa" ng-class="getSortClass('Hosts.address')"></i>
                                     <?php echo __('IP address'); ?>
                                 </th>
 
-                                <th class="no-sort tableStatewidth"
+                                <th ng-show="fields[10]" class="no-sort tableStatewidth"
                                     ng-click="orderBy('Hoststatus.last_state_change')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.last_state_change')"></i>
                                     <?php echo __('Last state change'); ?>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Hoststatus.last_check')">
+                                <th ng-show="fields[11]" class="no-sort tableStatewidth"
+                                    ng-click="orderBy('Hoststatus.last_check')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.last_check')"></i>
                                     <?php echo __('Last check'); ?>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Hoststatus.output')">
+                                <th ng-show="fields[12]" class="no-sort" ng-click="orderBy('Hoststatus.output')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.output')"></i>
                                     <?php echo __('Host output'); ?>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
+                                <th ng-show="fields[13]" class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
                                     <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
                                     <?php echo __('Instance'); ?>
                                 </th>
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                    <th class="text-center">
+                                    <th ng-show="fields[14]" class="text-center">
                                         <?php echo __('Service Summary '); ?>
                                     </th>
                                 <?php endif; ?>
+
+                                <th ng-show="fields[15]" class="text-center"
+                                ">
+                                <?php echo __('Host notes'); ?>
+                                </th>
+
                                 <th class="no-sort text-center editItemWidth"><i class="fa fa-gear"></i></th>
                             </tr>
                             </thead>
@@ -569,11 +689,11 @@
                                            ng-show="host.Host.allow_edit">
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[0]" class="text-center">
                                     <hoststatusicon host="host"></hoststatusicon>
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[1]" class="text-center">
                                     <i class="far fa-user"
                                        ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                        ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
@@ -584,11 +704,11 @@
                                        title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
                                        ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
-                                <td class="text-center">
+                                <td ng-show="fields[3]" class="text-center">
                                     <div class="icon-stack margin-right-5"
                                          title="<?= __('Notifications enabled'); ?>"
                                          ng-show="host.Hoststatus.notifications_enabled">
@@ -602,8 +722,8 @@
                                         <i class="fas fa-times opacity-100 fa-xs text-danger cornered cornered-lr"></i>
                                     </div>
                                 </td>
-                                <td class="text-center">
 
+                                <td ng-show="fields[4]" class="text-center">
                                     <a class="txt-color-blueDark" title="<?php echo __('Shared'); ?>"
                                        ng-if="host.Host.allow_sharing === true && host.Host.containerIds.length > 1"
                                        ui-sref="HostsSharing({id:host.Host.id})">
@@ -614,14 +734,14 @@
                                        title="<?php echo __('Restricted view'); ?>"></i>
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[5]" class="text-center">
                                     <strong title="<?php echo __('Passively transferred host'); ?>"
                                             ng-show="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
                                         P
                                     </strong>
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[6]" class="text-center">
                                     <i class="fa fa-fire"
                                        ng-class="{'ok-soft' : host.Host.priority==1,
                                         'ok' : host.Host.priority==2, 'warning' : host.Host.priority==3,
@@ -629,7 +749,7 @@
                                     </i>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[7]">
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <a ui-sref="HostsBrowser({id:host.Host.id})">
                                             {{ host.Host.hostname }}
@@ -639,28 +759,32 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[8]">
+                                    {{ host.Host.description }}
+                                </td>
+
+                                <td ng-show="fields[9]">
                                     {{ host.Host.address }}
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[10]">
                                     {{ host.Hoststatus.last_state_change }}
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[11]">
                                     {{ host.Hoststatus.lastCheck }}
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[12]">
                                     <div class="word-break"
                                          ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[13]">
                                     {{ host.Host.satelliteName }}
                                 </td>
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                    <td class="width-160">
+                                    <td ng-show="fields[14]" class="width-160">
                                         <div class="btn-group btn-group-justified" role="group" style="width: 100%">
                                             <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                                 <a class="btn btn-success state-button-small"
@@ -706,6 +830,11 @@
                                         </div>
                                     </td>
                                 <?php endif; ?>
+
+                                <td ng-show="fields[15]">
+                                    {{ host.Host.notes }}
+                                </td>
+
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>

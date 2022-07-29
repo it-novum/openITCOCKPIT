@@ -241,6 +241,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 .border-not-monitored {
     border-color: #4285F4 !important;
 }
+
 /** End Border **/
 
 /* TEXT COLOR */
@@ -1103,17 +1104,32 @@ div.packetmanager-selection > span::selection {
 }
 
 .calendar-card-shadow {
-    box-shadow:inset 0 0 12px 12px #dbdeed, inset 0 0 3px 2px #312727,2px 0 3px -2px #888;
+    box-shadow: inset 0 0 12px 12px #dbdeed, inset 0 0 3px 2px #312727, 2px 0 3px -2px #888;
 }
 
-.bg-white-transparent{
+.bg-white-transparent {
     background: #ffffffbb;
 }
 
-.lock-icon-gradient{
+.lock-icon-gradient {
     background: -webkit-linear-gradient(to bottom, #cccccc 0%, #cccccc 50%, #ffbb33 50%, #ffbb33 100%);
     background: -moz-linear-gradient(to bottom, #cccccc 0%, #cccccc 50%, #ffbb33 50%, #ffbb33 100%);
     background: linear-gradient(to bottom, #cccccc 0%, #cccccc 50%, #ffbb33 50%, #ffbb33 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.dropdown-menu-columns {
+    width: 400px;
+}
+
+@media (min-width: 768px) {
+    .dropdown-menu-columns {
+        width: 700px;
+    }
+}
+
+.new-flame-bg {
+    background-color: #ff0000;
+    background: linear-gradient(0deg, #f00 0%, #ffa700 100%) !important;
 }

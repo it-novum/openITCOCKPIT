@@ -217,12 +217,6 @@ angular.module('openITCOCKPIT')
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.hostgroups = result.data.hostgroups;
-                $scope.visibleHostgroups = result.data.visibleHostgroups;
-
-                $scope.invisibleHostgroupIds = _.difference(
-                    _.map($scope.hostgroups, 'key'),
-                    _.map($scope.visibleHostgroups, 'key')
-                );
                 $scope.satellites = result.data.satellites;
                 $scope.sharingContainers = result.data.sharingContainers;
                 $scope.exporters = result.data.exporters;
@@ -350,11 +344,19 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(redirectState){
+
             //clean up parent host  -> remove not visible ids
             $scope.post.Host.parenthosts._ids = _.intersection(
                 _.map($scope.parenthosts, 'key'),
                 $scope.post.Host.parenthosts._ids
             );
+
+            //clean up host and host templates -> remove not visible ids
+            $scope.post.Host.hostgroups._ids = _.intersection(
+                _.map($scope.hostgroups, 'key'),
+                $scope.post.Host.hostgroups._ids
+            );
+
             $http.post("/hosts/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
