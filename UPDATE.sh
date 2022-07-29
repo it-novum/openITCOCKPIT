@@ -285,6 +285,10 @@ oitc agent --generate-server-ca
 #echo "Apply strict checking of host group assignments by container permissions"
 #oitc HostgroupContainerPermissions
 
+# ITC-1911
+echo "Cleanup for invalid parent hosts on satellite instance"
+oitc ParentHostsVisibilityCleaning
+
 NORESTART=false
 NOSYSTEMFILES=false
 for i in "$@"; do
@@ -531,4 +535,3 @@ chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
 chmod u+s /opt/openitc/nagios/libexec/check_icmp
 chmod u+s /opt/openitc/nagios/libexec/check_dhcp
-

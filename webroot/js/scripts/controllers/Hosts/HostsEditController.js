@@ -232,7 +232,8 @@ angular.module('openITCOCKPIT')
                     'filter[Hosts.name]': searchString,
                     'selected[]': $scope.post.Host.parenthosts._ids,
                     'containerId': containerId,
-                    'hostId': $scope.id
+                    'hostId': $scope.id,
+                    'satellite_id': ($scope.post.Host.satellite_id > 0)?$scope.post.Host.satellite_id :null
                 }
             }).then(function(result){
                 $scope.parenthosts = result.data.hosts;
@@ -343,12 +344,18 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(redirectState){
+
+            //clean up parent host  -> remove not visible ids
+            $scope.post.Host.parenthosts._ids = _.intersection(
+                _.map($scope.parenthosts, 'key'),
+                $scope.post.Host.parenthosts._ids
+            );
+
             //clean up host and host templates -> remove not visible ids
             $scope.post.Host.hostgroups._ids = _.intersection(
                 _.map($scope.hostgroups, 'key'),
                 $scope.post.Host.hostgroups._ids
             );
-
 
             $http.post("/hosts/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
@@ -510,4 +517,10 @@ angular.module('openITCOCKPIT')
                 }
             }
         });
+        $scope.$watch('post.Host.satellite_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadParentHosts('');
+        }, true);
     });
