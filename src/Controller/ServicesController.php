@@ -2789,7 +2789,15 @@ class ServicesController extends AppController {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
+        $containerIds = [ROOT_CONTAINER, $containerId];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
@@ -2800,7 +2808,7 @@ class ServicesController extends AppController {
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $services = Api::makeItJavaScriptAble(
-            $ServicesTable->getServicesForServicegroupForAngular($ServiceCondition, $selected)
+            $ServicesTable->getServicesForAngularCake4($ServiceCondition, $selected)
         );
 
         $this->set('services', $services);
