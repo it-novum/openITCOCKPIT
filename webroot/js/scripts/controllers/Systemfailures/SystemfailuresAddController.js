@@ -5,16 +5,18 @@ angular.module('openITCOCKPIT')
             createAnother: false
         };
 
+        var now = new Date();
+        now.setHours("00", "00", "00");
+
         var clearForm = function(){
 
-            var now = new Date();
 
             $scope.post = {
                 Systemfailure: {
                     from_date: '',
-                    from_time: '00:00',
+                    from_time: now,
                     to_date: '',
-                    to_time: '00:00',
+                    to_time: now,
                     comment: ''
                 }
             };
@@ -25,8 +27,17 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
+            var submitObject = {
+                Systemfailure: {
+                    from_date: ($scope.post.Systemfailure.from_date instanceof Date) ? $scope.post.Systemfailure.from_date.toLocaleDateString('de-DE', {day:"2-digit", month: "2-digit", year:"numeric"}) : '',
+                    from_time: $scope.post.Systemfailure.from_time.toLocaleTimeString('de-DE', {hour:"2-digit", minute: "2-digit"}),
+                    to_date: ($scope.post.Systemfailure.to_date instanceof Date) ? $scope.post.Systemfailure.to_date.toLocaleDateString('de-DE', {day:"2-digit", month: "2-digit", year:"numeric"}) : '',
+                    to_time: $scope.post.Systemfailure.to_time.toLocaleTimeString('de-DE', {hour:"2-digit", minute: "2-digit"}),
+                    comment: $scope.post.Systemfailure.comment
+                }
+            };
             $http.post("/systemfailures/add.json?angular=true",
-                $scope.post
+                submitObject
             ).then(function(result){
                 NotyService.genericSuccess({
                     message: $scope.successMessage.objectName + $scope.successMessage.message
@@ -52,15 +63,5 @@ angular.module('openITCOCKPIT')
             });
 
         };
-
-        jQuery(function(){
-            $('#SystemfailureFromDate').datepicker({
-                format: 'dd.mm.yyyy'
-            });
-            $('#SystemfailureToDate').datepicker({
-                format: 'dd.mm.yyyy'
-            });
-        });
-
 
     });

@@ -666,6 +666,8 @@ class AngularController extends AppController {
         $UserTime = $User->getUserTime();
 
         $defaultValues = [
+            'js_from'         => $UserTime->customFormat('Y, m, d, H, i', time()),
+            'js_to'           => $UserTime->customFormat('Y, m, d, H, i', time() + 60 * 15),
             'from_date'       => $UserTime->customFormat('d.m.Y', time()),
             'from_time'       => $UserTime->customFormat('H:i', time()),
             'to_date'         => $UserTime->customFormat('d.m.Y', time()),
