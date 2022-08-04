@@ -281,9 +281,13 @@ oitc agent --migrate
 echo "Checking that a server certificate for the openITCOCKPIT Monitoring Agent exists"
 oitc agent --generate-server-ca
 
-# ITC-2800
-echo "Apply strict checking of host group assignments by container permissions"
-oitc HostgroupContainerPermissions
+# ITC-2800 ITC-2819
+#echo "Apply strict checking of host group assignments by container permissions"
+#oitc HostgroupContainerPermissions
+
+# ITC-1911
+echo "Cleanup for invalid parent hosts on satellite instance"
+oitc ParentHostsVisibilityCleaning
 
 NORESTART=false
 NOSYSTEMFILES=false
@@ -531,4 +535,3 @@ chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
 chmod u+s /opt/openitc/nagios/libexec/check_icmp
 chmod u+s /opt/openitc/nagios/libexec/check_dhcp
-

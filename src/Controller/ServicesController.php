@@ -60,6 +60,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use CustomalertModule\Model\Table\CustomalertsTable;
 use DistributeModule\Model\Table\SatellitesTable;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
@@ -2788,7 +2789,15 @@ class ServicesController extends AppController {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        $containerIds = $ContainersTable->resolveContainerIdForGroupPermissions($containerId);
+        $containerIds = [ROOT_CONTAINER, $containerId];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
@@ -2799,10 +2808,30 @@ class ServicesController extends AppController {
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $services = Api::makeItJavaScriptAble(
-            $ServicesTable->getServicesForServicegroupForAngular($ServiceCondition, $selected)
+            $ServicesTable->getServicesForAngularCake4($ServiceCondition, $selected)
         );
 
         $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
+
+    public function loadCustomalerts() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+
+        $customalertsExists = false;
+
+        if (Plugin::isLoaded('CustomalertModule')) {
+            /** @var CustomalertsTable $CustomalertsTable */
+            $CustomalertsTable = TableRegistry::getTableLocator()->get('CustomalertModule.Customalerts');
+            $customalertsExists = $CustomalertsTable->existsCustomalertsByServiceId($id);
+        }
+
+        $this->set('CustomalertsExists', $customalertsExists);
+        $this->viewBuilder()->setOption('serialize', ['CustomalertsExists']);
+    }
+
 }

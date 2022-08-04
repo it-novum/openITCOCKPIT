@@ -505,7 +505,8 @@ class AclDependencies {
             ->dependency('Services', 'edit', 'Services', 'loadCommands')
             ->dependency('Services', 'edit', 'Services', 'loadCommandArguments')
             ->dependency('Services', 'edit', 'Services', 'loadEventhandlerCommandArguments')
-            ->dependency('Services', 'serviceList', 'Services', 'deleted');
+            ->dependency('Services', 'serviceList', 'Services', 'deleted')
+            ->dependency('Services', 'browser', 'Services', 'loadCustomalerts');
 
 
         $this

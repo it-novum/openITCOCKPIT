@@ -279,7 +279,7 @@ class Hoststatus {
      * @return string
      */
     function HostStatusBackgroundColor() {
-        if($this->currentState === null){
+        if ($this->currentState === null) {
             return 'bg-primary';
         }
 
@@ -344,28 +344,28 @@ class Hoststatus {
     }
 
     public function getLastHardStateChange() {
-        if (!is_numeric($this->lastHardStateChange)) {
+        if (!is_numeric($this->lastHardStateChange) && !is_null($this->lastHardStateChange)) {
             return strtotime($this->lastHardStateChange);
         }
         return $this->lastHardStateChange;
     }
 
     public function getLastStateChange() {
-        if (!is_numeric($this->last_state_change)) {
+        if (!is_numeric($this->last_state_change) && !is_null($this->last_state_change)) {
             return strtotime($this->last_state_change);
         }
         return $this->last_state_change;
     }
 
     public function getLastCheck() {
-        if (!is_numeric($this->lastCheck)) {
+        if (!is_numeric($this->lastCheck) && !is_null($this->lastCheck)) {
             return strtotime($this->lastCheck);
         }
         return $this->lastCheck;
     }
 
     public function getNextCheck() {
-        if (!is_numeric($this->nextCheck)) {
+        if (!is_numeric($this->nextCheck) && !is_null($this->nextCheck)) {
             return strtotime($this->nextCheck);
         }
         return $this->nextCheck;
@@ -438,7 +438,7 @@ class Hoststatus {
     }
 
     public function getLastTimeUp() {
-        if (!is_numeric($this->last_time_up)) {
+        if (!is_numeric($this->last_time_up) && !is_null($this->last_time_up)) {
             return strtotime($this->last_time_up);
         }
         return $this->last_time_up;
