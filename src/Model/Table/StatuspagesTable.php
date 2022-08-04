@@ -369,17 +369,21 @@ class StatuspagesTable extends Table {
                 continue;
             }
             $itemState = [];
-            foreach ($statuspage as $subKey => $item) {
-                $itemState[$subKey] = $item['currentState'];
+            if (!empty($statuspage)) {
+                foreach ($statuspage as $subKey => $item) {
+                    $itemState[$subKey] = $item['currentState'];
+                }
+                $worstItemStatusKey = array_keys($itemState, max($itemState))[0];
+                $states[$key] = $statuspage[$worstItemStatusKey];
             }
-            $worstItemStatusKey = array_keys($itemState, max($itemState))[0];
-            $states[$key] = $statuspage[$worstItemStatusKey];
         }
 
 
         $tmpStates = [];
         foreach ($states as $key => $item) {
-            $tmpStates[$key] = $item['currentState'];
+            if (!empty($item)) {
+                $tmpStates[$key] = $item['currentState'];
+            }
         }
         $worstTmpItemStatusKey = array_keys($tmpStates, max($tmpStates))[0];
 
