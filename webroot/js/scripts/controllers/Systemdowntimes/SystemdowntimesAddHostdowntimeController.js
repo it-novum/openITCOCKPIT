@@ -71,15 +71,15 @@ angular.module('openITCOCKPIT')
             };
 
             $scope.submit = function(){
-                var submitObject = {
+                var POSTParams = {
                     Systemdowntime: {
                         is_recurring: $scope.post.Systemdowntime.is_recurring,
                         weekdays: $scope.post.Systemdowntime.weekdays,
                         day_of_month: $scope.post.Systemdowntime.day_of_month,
-                        from_date: $scope.post.Systemdowntime.from_date.toLocaleDateString('de-DE', {day:"2-digit", month: "2-digit", year:"numeric"}),
-                        from_time: $scope.post.Systemdowntime.from_time.toLocaleTimeString('de-DE', {hour:"2-digit", minute: "2-digit"}),
-                        to_date: $scope.post.Systemdowntime.to_date.toLocaleDateString('de-DE', {day:"2-digit", month: "2-digit", year:"numeric"}),
-                        to_time: $scope.post.Systemdowntime.to_time.toLocaleTimeString('de-DE', {hour:"2-digit", minute: "2-digit"}),
+                        from_date: date('d.m.Y', $scope.post.Systemdowntime.from_date.getTime() / 1000),
+                        from_time: date('H:i', $scope.post.Systemdowntime.from_time.getTime() / 1000),
+                        to_date: date('d.m.Y', $scope.post.Systemdowntime.to_date.getTime() / 1000),
+                        to_time: date('H:i', $scope.post.Systemdowntime.to_time.getTime() / 1000),
                         duration: $scope.post.Systemdowntime.duration,
                         downtimetype: $scope.post.Systemdowntime.downtimetype,
                         downtimetype_id: $scope.post.Systemdowntime.downtimetype_id,
@@ -90,7 +90,7 @@ angular.module('openITCOCKPIT')
                     }
                 };
                 $http.post("/systemdowntimes/addHostdowntime.json?angular=true",
-                    submitObject
+                    POSTParams
                 ).then(function(result){
                     NotyService.genericSuccess({
                         message: $scope.successMessage.objectName + ' ' + $scope.successMessage.message

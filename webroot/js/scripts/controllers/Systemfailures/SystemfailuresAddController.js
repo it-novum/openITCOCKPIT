@@ -6,7 +6,7 @@ angular.module('openITCOCKPIT')
         };
 
         var now = new Date();
-        now.setHours("00", "00", "00");
+        now.setHours(0, 0, 0);
 
         var clearForm = function(){
 
@@ -27,17 +27,17 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-            var submitObject = {
+            var POSTParams = {
                 Systemfailure: {
-                    from_date: ($scope.post.Systemfailure.from_date instanceof Date) ? $scope.post.Systemfailure.from_date.toLocaleDateString('de-DE', {day:"2-digit", month: "2-digit", year:"numeric"}) : '',
-                    from_time: $scope.post.Systemfailure.from_time.toLocaleTimeString('de-DE', {hour:"2-digit", minute: "2-digit"}),
-                    to_date: ($scope.post.Systemfailure.to_date instanceof Date) ? $scope.post.Systemfailure.to_date.toLocaleDateString('de-DE', {day:"2-digit", month: "2-digit", year:"numeric"}) : '',
-                    to_time: $scope.post.Systemfailure.to_time.toLocaleTimeString('de-DE', {hour:"2-digit", minute: "2-digit"}),
+                    from_date: ($scope.post.Systemfailure.from_date instanceof Date) ? date('d.m.Y', $scope.post.Systemfailure.from_date.getTime() / 1000) : '',
+                    from_time: date('H:i', $scope.post.Systemfailure.from_time.getTime() / 1000),
+                    to_date: ($scope.post.Systemfailure.to_date instanceof Date) ?date('d.m.Y', $scope.post.Systemfailure.to_date.getTime() / 1000) : '',
+                    to_time: date('H:i', $scope.post.Systemfailure.to_time.getTime() / 1000),
                     comment: $scope.post.Systemfailure.comment
                 }
             };
             $http.post("/systemfailures/add.json?angular=true",
-                submitObject
+                POSTParams
             ).then(function(result){
                 NotyService.genericSuccess({
                     message: $scope.successMessage.objectName + $scope.successMessage.message
