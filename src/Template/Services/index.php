@@ -496,17 +496,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <filter-bookmark
-                        phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
-                        phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
-                        phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
-                        filter="filter"
-                        load-callback="triggerLoadByBookmark"
-                        state-name="ServicesIndex"
-                        ng-show="showBookmarkFilter"
-                    >
-                    </filter-bookmark>
                     <!-- End Filter -->
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
