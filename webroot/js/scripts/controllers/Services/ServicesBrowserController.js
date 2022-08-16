@@ -167,9 +167,11 @@ angular.module('openITCOCKPIT')
                 $scope.timezone = results[1].data.timezone;
 
                 $scope.serverTimeDateObject = new Date($scope.timezone.server_time_iso);
-console.log($scope.serverTimeDateObject);
+                //$scope.serverTimeDateObject = luxon.DateTime.fromISO($scope.timezone.server_time_iso).setZone($scope.timezone.user_timezone);
                 graphStart = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - ($scope.currentSelectedTimerange * 3600));
+                //graphStart = (parseInt($scope.serverTimeDateObject.ts / 1000, 10) - ($scope.currentSelectedTimerange * 3600));
                 graphEnd = parseInt($scope.serverTimeDateObject.getTime() / 1000, 10);
+                //graphEnd = parseInt($scope.serverTimeDateObject.ts / 1000, 10);
 
                 $scope.dataSources = [];
                 for(var dsName in results[0].data.mergedService.Perfdata){
@@ -610,6 +612,12 @@ console.log($scope.serverTimeDateObject);
                 defaultTheme: false
             };
 
+            options.xaxis.tickFormatter = function(val, axis) {
+                var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
+                return date.toFormat('dd.LL.yyyy HH:mm:ss');
+            };
+
+/*
             options.xaxis.tickFormatter = function(val, axis){
                 var fooJS = new Date(val);
                 var fixTime = function(value){
@@ -620,6 +628,8 @@ console.log($scope.serverTimeDateObject);
                 };
                 return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
             };
+
+ */
             options.series.color = defaultColor;
             options.series.threshold = thresholdAreas;
             options.grid.markings = thresholdLines;
