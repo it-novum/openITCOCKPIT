@@ -5,12 +5,13 @@
  */
 ?>
 
-<pre>
-<?php
-//print_r($Statuspage);
-?>
-    </pre>
 <div ng-controller="StatuspagesViewController">
+    <div class="d-flex justify-content-center">
+        <div class="alert alert-info w-75" role="alert">
+            <h4 class="alert-heading"><?= __('Info!') ?></h4>
+            <?= __('This is a non public view!'); ?>
+        </div>
+    </div>
     <div class="d-flex justify-content-center">
         <div class="jumbotron w-75">
             <h1 class="display-4"><?= $Statuspage['statuspage']['name']; ?></h1>

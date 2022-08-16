@@ -140,14 +140,14 @@
                                 <td class="text-center" class="width-15">
                                     <?php if ($this->Acl->hasPermission('delete', 'statuspages')): ?>
                                         <input type="checkbox"
-                                               ng-model="massChange[statuspage.Statuspage.id]"
-                                               ng-show="statuspage.Statuspage.allow_edit">
+                                               ng-model="massChange[statuspage.id]"
+                                               ng-show="statuspage.allow_edit">
                                     <?php endif; ?>
                                 </td>
 
                                 <td class="word-break">
                                     <?php if ($this->Acl->hasPermission('view', 'statuspages')): ?>
-                                        <a ui-sref="StatuspagesView({id:statuspage.id})">
+                                        <a href="/statuspages/view/{{statuspage.id}}" target="_blank">
                                             {{statuspage.name}}
                                         </a>
                                     <?php else: ?>
@@ -198,18 +198,17 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('view', 'statuspages')): ?>
-                                                <a ui-sref="StatuspagesView({id: statuspage.id})"
+                                                <a href="/statuspages/view/{{statuspage.id}}" target="_blank"
                                                    class="dropdown-item">
                                                     <i class="fas fa-calendar-week"></i>
                                                     <?php echo __('View'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('copy', 'statuspages')): ?>
-                                                <a ui-sref="StatuspagesCopy({ids: statuspage.id})"
-                                                   ng-if="statuspage.allow_edit"
-                                                   class="dropdown-item">
-                                                    <i class="fas fa-files-o"></i>
-                                                    <?php echo __('Copy'); ?>
+                                            <?php if ($this->Acl->hasPermission('status', 'statuspages')): ?>
+                                                <a href="/statuspages/status/{{statuspage.id}}" target="_blank"
+                                                   class="dropdown-item" ng-show="statuspage.public">
+                                                    <i class="fas fa-eye"></i>
+                                                    <?php echo __('Public View'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'statuspages')): ?>

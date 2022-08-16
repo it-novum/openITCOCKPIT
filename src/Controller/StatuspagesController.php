@@ -298,6 +298,11 @@ class StatuspagesController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
         $this->request->allowMethod(['post', 'delete']);
         $statuspage = $this->Statuspages->get($id);
         if ($this->Statuspages->delete($statuspage)) {

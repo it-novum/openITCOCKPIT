@@ -385,19 +385,27 @@ class StatuspagesTable extends Table {
                 $tmpStates[$key] = $item['currentState'];
             }
         }
-        $worstTmpItemStatusKey = array_keys($tmpStates, max($tmpStates))[0];
+        if(!empty(($tmpStates))){
+            $worstTmpItemStatusKey = array_keys($tmpStates, max($tmpStates))[0];
 
-        $stateType = $worstTmpItemStatusKey;
-        if ($worstTmpItemStatusKey == 'hostgroups') {
-            $stateType = Inflector::pluralize($states[$worstTmpItemStatusKey]['stateType']);
+            $stateType = $worstTmpItemStatusKey;
+            if ($worstTmpItemStatusKey == 'hostgroups') {
+                $stateType = Inflector::pluralize($states[$worstTmpItemStatusKey]['stateType']);
+            }
+
+            $worstState = [
+                'state'      => $states[$worstTmpItemStatusKey]['currentState'], // int status
+                'stateType'  => $stateType, // hosts or services
+                'humanState' => $states[$worstTmpItemStatusKey]['humanState']
+            ];
+
+        }else{
+            $worstState = [
+                'state'      => 2, // int status
+                'stateType'  => 'host', // hosts or services
+                'humanState' => 'unreachable'
+            ];
         }
-
-        $worstState = [
-            'state'      => $states[$worstTmpItemStatusKey]['currentState'], // int status
-            'stateType'  => $stateType, // hosts or services
-            'humanState' => $states[$worstTmpItemStatusKey]['humanState']
-        ];
-
         return $worstState;
     }
 

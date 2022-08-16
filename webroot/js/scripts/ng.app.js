@@ -504,7 +504,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('StatuspagesView', {
-                url: '/statuspages/view',
+                url: '/statuspages/view/:id',
                 templateUrl: "/statuspages/view.html",
                 controller: "StatuspagesViewController"
             })
