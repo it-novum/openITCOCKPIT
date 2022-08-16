@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('StatuspagesIndexController', function($scope, $q, $rootScope, $stateParams, $http, $sce, $timeout, SortService, QueryStringService, MassChangeService){
+    .controller('StatuspagesIndexController', function($scope, $rootScope, $stateParams, $http, SortService, QueryStringService, MassChangeService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Statuspages.name'));
@@ -14,7 +14,9 @@ angular.module('openITCOCKPIT')
                 Statuspages: {
                     id: QueryStringService.getStateValue($stateParams, 'id', []),
                     name: '',
-                    description: ''
+                    description: '',
+                    is_public:QueryStringService.getStateValue($stateParams, 'is_public', false) == '1',
+                    is_not_public:QueryStringService.getStateValue($stateParams, 'is_not_public', false) == '1',
                 }
             };
         };
@@ -27,7 +29,10 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
 
         $scope.load = function(){
-
+            var isPublic = '';
+            if($scope.filter.Statuspages.is_public ^ $scope.filter.Statuspages.is_not_public){
+                isPublic = $scope.filter.Statuspages.is_public == true;
+            }
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
@@ -37,6 +42,7 @@ angular.module('openITCOCKPIT')
                 'filter[Statuspages.id][]': $scope.filter.Statuspages.id,
                 'filter[Statuspages.name]': $scope.filter.Statuspages.name,
                 'filter[Statuspages.description]': $scope.filter.Statuspages.description,
+                'filter[Statuspages.public]': isPublic,
             };
 
             $http.get("/statuspages/index.json", {
@@ -51,6 +57,11 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
+        };
+
+        $scope.resetFilter = function(){
+            defaultFilter();
+            $scope.undoSelection();
         };
 
 
@@ -96,6 +107,12 @@ angular.module('openITCOCKPIT')
         defaultFilter();
         $scope.load();
         SortService.setCallback($scope.load);
+
+        $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
+            $scope.undoSelection();
+            $scope.load();
+        }, true);
 
         $scope.$watch('massChange', function(){
             MassChangeService.setSelected($scope.massChange);

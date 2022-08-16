@@ -41,9 +41,7 @@ class StatuspagesController extends AppController {
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
 
         $statuspagesFilter = new StatuspagesFilter($this->request);
-
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $statuspagesFilter->getPage());
-
         $all_statuspages = $StatuspagesTable->getStatuspagesIndex($statuspagesFilter, $PaginateOMat, $this->MY_RIGHTS);
 
         $statuspagesWithContainers = [];

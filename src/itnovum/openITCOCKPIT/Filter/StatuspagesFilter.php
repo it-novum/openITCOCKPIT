@@ -32,9 +32,12 @@ class StatuspagesFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
+            'bool'     => [
+                'Statuspages.public'
+            ],
             'like' => [
-                'Statuspage.name',
-                'Statuspage.description',
+                'Statuspages.name',
+                'Statuspages.description',
             ]
         ];
 

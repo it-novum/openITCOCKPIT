@@ -141,6 +141,8 @@ class StatuspagesTable extends Table {
      * @return array
      */
     public function getStatuspagesIndex(StatuspagesFilter $StatuspagesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        //debug($StatuspagesFilter->indexFilter());
+
         $query = $this->find('all');
         $query->contain(['Containers']);
         $query->where($StatuspagesFilter->indexFilter());

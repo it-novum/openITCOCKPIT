@@ -101,6 +101,38 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-lg-2">
+                                    <fieldset>
+                                        <h5><?php echo __('Public'); ?></h5>
+                                        <div class="form-group smart-form">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="statuspageIsPublic"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Statuspages.is_public"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="statuspageIsPublic"><?php echo __('Is public'); ?></label>
+                                            </div>
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="statuspageIsNotPublic"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Statuspages.is_not_public"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="statuspageIsNotPublic"><?php echo __('Not public'); ?></label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"
                                         class="btn btn-xs btn-danger">
