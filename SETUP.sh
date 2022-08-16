@@ -97,6 +97,7 @@ fi # End RHEL section
 
 echo "Copy required system files"
 rsync -K -a ${APPDIR}/system/etc/. /etc/ # we use rsync because the destination can be a symlink on RHEL
+chown root:root /etc
 cp -r ${APPDIR}/system/lib/. /lib/
 rsync -K -a ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
 cp -r ${APPDIR}/system/usr/. /usr/
