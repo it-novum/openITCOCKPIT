@@ -609,20 +609,7 @@ angular.module('openITCOCKPIT')
                 var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
                 return date.toFormat('dd.LL.yyyy HH:mm:ss');
             };
-
-/*
-            options.xaxis.tickFormatter = function(val, axis){
-                var fooJS = new Date(val);
-                var fixTime = function(value){
-                    if(value < 10){
-                        return '0' + value;
-                    }
-                    return value;
-                };
-                return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
-            };
-
- */
+            
             options.series.color = defaultColor;
             options.series.threshold = thresholdAreas;
             options.grid.markings = thresholdLines;
