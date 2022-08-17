@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Model\Table\StatuspagesTable;
 use Cake\Event\EventInterface;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -296,19 +297,34 @@ class StatuspagesController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $AutomapsTable StatuspagesTable */
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+
+        if (!$StatuspagesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Statuspage'));
+        }
+
+        $statuspage = $StatuspagesTable->get($id);
+
+        if (!$this->allowedByContainerId($statuspage->get('container_id'), true)) {
+            $this->render403();
             return;
         }
 
-        $this->request->allowMethod(['post', 'delete']);
-        $statuspage = $this->Statuspages->get($id);
-        if ($this->Statuspages->delete($statuspage)) {
-            $this->Flash->success(__('The statuspage has been deleted.'));
-        } else {
-            $this->Flash->error(__('The statuspage could not be deleted. Please, try again.'));
+        if (!$StatuspagesTable->delete($statuspage)) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id']);
+            return;
         }
 
-        return $this->redirect(['action' => 'index']);
+        $this->set('success', true);
+        $this->set('id', $id);
+        $this->viewBuilder()->setOption('serialize', ['success', 'id']);
     }
 }

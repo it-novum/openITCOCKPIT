@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('StatuspagesStepTwoController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
+    .controller('StatuspagesStepTwoController', function($scope, $http, SudoService, $state, $stateParams, NotyService){
         $scope.id = $stateParams.id;
 
         $scope.post = {
@@ -61,7 +61,9 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-               RedirectService.redirectWithFallback('StatuspagesIndex');
+                $state.go('StatuspagesIndex').then(function(){
+                    NotyService.scrollTop();
+                });
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();
