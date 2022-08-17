@@ -240,7 +240,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     gaugeData.push([frontEndTimestamp, performance_data.data[timestamp]]);
                 }
 
-                var label = $scope.host.hostname + '/' + $scope.service.servicename + ' "' + performance_data.datasource.label + '"';
+                var label = $scope.service.servicename + ' "' + performance_data.datasource.label + '"';
                 if(performance_data.datasource.unit){
                     label = label + ' in ' + performance_data.datasource.unit;
                 }
