@@ -417,6 +417,7 @@ angular.module('openITCOCKPIT')
                                 data: {}
                             };
                             //Convert Servertime into user time
+
                             for(var timestamp in result.data.performance_data[0].data){
                                 var frontEndTimestamp = (parseInt(timestamp, 10));
                                 $scope.perfdata.data[frontEndTimestamp] = result.data.performance_data[0].data[timestamp];
@@ -516,18 +517,10 @@ angular.module('openITCOCKPIT')
         };
 
         var showTooltip = function(x, y, contents, timestamp){
-            var self = this;
             var $graph_data_tooltip = $('#graph_data_tooltip');
 
-            var fooJS = new Date(timestamp);
-            var fixTime = function(value){
-                if(value < 10){
-                    return '0' + value;
-                }
-                return value;
-            };
-
-            var humanTime = fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
+            var fooJS = luxon.DateTime.fromJSDate(new Date(timestamp)).setZone($scope.timezone.user_timezone);
+            var humanTime = fooJS.toFormat('dd.LL.yyyy HH:mm:ss');
 
             $graph_data_tooltip
                 .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><strong>' + contents + '</strong>')
