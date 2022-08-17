@@ -13,7 +13,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
             $scope.graphPopoverId = UuidService.v4();
 
             $scope.doLoadGraph = function(hostUuid, serviceUuid){
-                var serverTime = new Date($scope.timezone.server_time);
+                var serverTime = new Date($scope.timezone.server_time_iso);
                 var compareTimestamp = new Date().getTime();
                 var diffFromStartToNow = parseInt(compareTimestamp - startTimestamp, 10);
 
@@ -50,7 +50,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     graph_data = [];
                     var color = GraphDefaultsObj.getColorByIndex(index);
                     for(var timestamp in $scope.popoverPerfdata[index].data){
-                        var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
+                        var frontEndTimestamp = (parseInt(timestamp, 10));
                         graph_data.push([frontEndTimestamp, $scope.popoverPerfdata[index].data[timestamp]]);
                     }
 
@@ -60,20 +60,14 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     options.colors = color.border;
 
                     options.xaxis.tickFormatter = function(val, axis){
-                        var fooJS = new Date(val);
-                        var fixTime = function(value){
-                            if(value < 10){
-                                return '0' + value;
-                            }
-                            return value;
-                        };
-                        return fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
+                        var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
+                        return date.toFormat('HH:mm:ss');
                     };
                     options.xaxis.mode = 'time';
                     options.xaxis.timeformat = '%H:%M:%S';
                     options.xaxis.timeBase = 'milliseconds';
-                    options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
-                    options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
+                    options.xaxis.min = graphStart * 1000;
+                    options.xaxis.max = graphEnd * 1000;
 
                     if($scope.popoverPerfdata[index].datasource.unit){
                         options.yaxis.axisLabel = $scope.popoverPerfdata[index].datasource.unit;
