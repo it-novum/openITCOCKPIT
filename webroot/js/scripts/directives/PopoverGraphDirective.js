@@ -50,7 +50,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     graph_data = [];
                     var color = GraphDefaultsObj.getColorByIndex(index);
                     for(var timestamp in $scope.popoverPerfdata[index].data){
-                        var frontEndTimestamp = (parseInt(timestamp, 10));
+                        var frontEndTimestamp = parseInt(timestamp, 10);
                         graph_data.push([frontEndTimestamp, $scope.popoverPerfdata[index].data[timestamp]]);
                     }
 
