@@ -519,8 +519,8 @@ angular.module('openITCOCKPIT')
         var showTooltip = function(x, y, contents, timestamp){
             var $graph_data_tooltip = $('#graph_data_tooltip');
 
-            var fooJS = luxon.DateTime.fromJSDate(new Date(timestamp)).setZone($scope.timezone.user_timezone);
-            var humanTime = fooJS.toFormat('dd.LL.yyyy HH:mm:ss');
+            var date = luxon.DateTime.fromJSDate(new Date(timestamp)).setZone($scope.timezone.user_timezone);
+            var humanTime = date.toFormat('dd.LL.yyyy HH:mm:ss');
 
             $graph_data_tooltip
                 .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><strong>' + contents + '</strong>')
