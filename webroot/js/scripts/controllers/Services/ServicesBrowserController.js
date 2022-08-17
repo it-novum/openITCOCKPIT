@@ -609,7 +609,7 @@ angular.module('openITCOCKPIT')
                 var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
                 return date.toFormat('dd.LL.yyyy HH:mm:ss');
             };
-            
+
             options.series.color = defaultColor;
             options.series.threshold = thresholdAreas;
             options.grid.markings = thresholdLines;
@@ -638,9 +638,6 @@ angular.module('openITCOCKPIT')
                 $("#graphCanvas").bind("plotselected", function(event, ranges){
                     var start = parseInt(ranges.xaxis.from / 1000, 10);
                     var end = parseInt(ranges.xaxis.to / 1000, 10);
-
-                    //start -= $scope.timezone.user_time_to_server_offset;
-                    //end -= $scope.timezone.user_time_to_server_offset;
 
                     //Zoomed from right to left?
                     if(start > end){
