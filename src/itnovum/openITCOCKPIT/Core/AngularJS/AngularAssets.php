@@ -106,7 +106,8 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/canvas-gauges/gauge.min.js',
         'node_modules/tsparticles/tsparticles.min.js',
         'node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js',
-        'node_modules/lodash/lodash.min.js'
+        'node_modules/lodash/lodash.min.js',
+        'node_modules/luxon/build/global/luxon.min.js'
     ];
 
     /**

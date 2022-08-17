@@ -146,7 +146,10 @@ class AngularController extends AppController {
             'user_offset'                => $UserTime->getOffset(),
             'server_time_utc'            => time(),
             'server_time'                => date('F d, Y H:i:s'),
-            'server_timezone_offset'     => $ServerTime->getOffset()
+            'server_timezone_offset'     => $ServerTime->getOffset(),
+            //ISO 8601
+            'server_time_iso'            => date('c'),
+            'server_timezone'            => $ServerTimeZone->getName()
         ];
         $this->set('timezone', $timezone);
         $this->viewBuilder()->setOption('serialize', ['timezone']);
@@ -312,7 +315,7 @@ class AngularController extends AppController {
 
         if ($recursive) {
             //get recursive container ids
-            if(empty($containerIds)){
+            if (empty($containerIds)) {
                 $containerIds[] = ROOT_CONTAINER;
             }
             $containerIdToResolve = $containerIds;
@@ -1266,6 +1269,7 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
     public function columns_config_export() {
         //Only ship HTML template
         return;
