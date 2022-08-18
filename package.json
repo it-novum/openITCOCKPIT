@@ -54,6 +54,7 @@
         "timsort": "^0.3.0",
         "tsparticles": "^1.18.0",
         "underscore": "^1.11.0",
+        "uplot": "^1.6.22",
         "uuid": "^7.0.3",
         "vis-data": "^7.1.2",
         "vis-network": "^9.0.4",

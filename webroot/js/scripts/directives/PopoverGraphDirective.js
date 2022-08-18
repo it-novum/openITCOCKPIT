@@ -39,7 +39,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
             };
 
             var renderGraphs = function(){
-                var GraphDefaultsObj = new GraphDefaults();
+                var uPlotGraphDefaultsObj = new uPlotGraphDefaults();
 
                 for(var index in $scope.popoverPerfdata){
                     if(index > 3){
@@ -47,35 +47,32 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                         continue;
                     }
 
-                    graph_data = [];
-                    var color = GraphDefaultsObj.getColorByIndex(index);
+                    // https://github.com/leeoniya/uPlot/tree/master/docs#data-format
+                    var data = [];
+                    var xData = []
+                    var yData = []
                     for(var timestamp in $scope.popoverPerfdata[index].data){
-                        var frontEndTimestamp = parseInt(timestamp, 10);
-                        graph_data.push([frontEndTimestamp, $scope.popoverPerfdata[index].data[timestamp]]);
+                        xData.push(timestamp); // Timestamps
+                        yData.push($scope.popoverPerfdata[index].data[timestamp]); // values
                     }
+                    data.push(xData);
+                    data.push(yData);
+
 
                     //Render Chart
-                    var options = GraphDefaultsObj.getDefaultOptions();
-                    options.height = '500px';
-                    options.colors = color.border;
+                    var $elm = $('#serviceGraphFlot-' + $scope.graphPopoverId + '-' + index);
 
-                    options.xaxis.tickFormatter = function(val, axis){
-                        var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
-                        return date.toFormat('HH:mm:ss');
-                    };
-                    options.xaxis.mode = 'time';
-                    options.xaxis.timeformat = '%H:%M:%S';
-                    options.xaxis.timeBase = 'milliseconds';
-                    options.xaxis.min = graphStart * 1000;
-                    options.xaxis.max = graphEnd * 1000;
-
-                    if($scope.popoverPerfdata[index].datasource.unit){
-                        options.yaxis.axisLabel = $scope.popoverPerfdata[index].datasource.unit;
-                    }
+                    var options = uPlotGraphDefaultsObj.getDefaultOptions({
+                        unit: $scope.popoverPerfdata[index].datasource.unit
+                    });
+                    options.height = $elm.height() - 25; // 27px for headline
+                    options.width = $elm.width();
+                    options.title = $scope.popoverPerfdata[index].datasource.name;
 
                     if(document.getElementById('serviceGraphFlot-' + $scope.graphPopoverId + '-' + index) && !$scope.mouseout){
                         try{
-                            self.plot = $.plot('#serviceGraphFlot-' + $scope.graphPopoverId + '-' + index, [graph_data], options);
+                            var elm = document.getElementById('serviceGraphFlot-' + $scope.graphPopoverId + '-' + index);
+                            self.plot = new uPlot(options, data, elm);
                         }catch(e){
                             console.error(e);
                         }
@@ -131,6 +128,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
             };
 
             $scope.mouseleave = function(){
+                return; // todo remove this
                 $scope.mouseout = true;
 
                 if($scope.popoverTimer !== null){
