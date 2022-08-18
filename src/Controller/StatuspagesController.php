@@ -3,14 +3,25 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\ContainersTable;
+use App\Model\Table\HostgroupsTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\StatuspagesTable;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
+use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 
 /**
@@ -79,12 +90,12 @@ class StatuspagesController extends AppController {
     public function view($id = null) {
         //$this->Authorization->skipAuthorization();
         $this->viewBuilder()->setLayout('statuspage_fullscreen');
-       /* if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
+        /* if (!$this->isApiRequest()) {
+             //Only ship HTML template for angular
+             return;
+         }
 
-       */
+        */
         /** @var $StatuspagesTable StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
@@ -179,6 +190,7 @@ class StatuspagesController extends AppController {
             throw new NotFoundException('Statuspage not found');
         }
 
+
         $statuspage = $StatuspagesTable->get($id, [
             'contain' => [
                 'Containers',
@@ -188,6 +200,8 @@ class StatuspagesController extends AppController {
                 'Servicegroups'
             ]
         ]);
+
+
         $statuspage['containers'] = [
             '_ids' => Hash::extract($statuspage, 'containers.{n}.id')
         ];
@@ -208,13 +222,11 @@ class StatuspagesController extends AppController {
             '_ids' => Hash::extract($statuspage, 'servicegroups.{n}.id')
         ];
 
-        //debug($statuspage);
-/*
         if (!$this->allowedByContainerId($statuspage['containers']['_ids'])) {
             $this->render403();
             return;
         }
-*/
+
         if ($this->request->is('post')) {
             $statuspageData = $this->request->getData();
             $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData);
@@ -243,7 +255,7 @@ class StatuspagesController extends AppController {
      * @param $id
      * @return void
      */
-    public function stepTwo($id = null){
+    public function stepTwo($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -326,5 +338,141 @@ class StatuspagesController extends AppController {
         $this->set('success', true);
         $this->set('id', $id);
         $this->viewBuilder()->setOption('serialize', ['success', 'id']);
+    }
+
+    /**
+     * differnt from the standard method as these can handle multiple containerIDs
+     * @return void
+     */
+    public function loadHostsByContainerIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerIds = $this->request->getQuery('containerIds');
+        $selected = $this->request->getQuery('selected');
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        $containerIds = array_unique($containerIds);
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($containerIds);
+
+        $hosts = Api::makeItJavaScriptAble(
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set('hosts', $hosts);
+        $this->viewBuilder()->setOption('serialize', ['hosts']);
+    }
+
+    /**
+     * differnt from the standard method as these can handle multiple containerIDs
+     * @return void
+     */
+    public function loadServicesByContainerIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->getQuery('selected');
+        $containerIds = $this->request->getQuery('containerIds');
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        $containerIds = array_unique($containerIds);
+
+        $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
+        $ServiceCondition->setContainerIds($containerIds);
+        $ServiceCondition->setIncludeDisabled(false);
+
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = Api::makeItJavaScriptAble(
+            $ServicesTable->getServicesForAngularCake4($ServiceCondition, $selected)
+        );
+
+        $this->set('services', $services);
+        $this->viewBuilder()->setOption('serialize', ['services']);
+    }
+
+    /**
+     * differnt from the standard method as these can handle multiple containerIDs
+     * @return void
+     */
+    public function loadServicegroupsByContainerIds() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        $containerIds = $this->request->getQuery('containerIds');
+
+        $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        $containerIds = array_unique($containerIds);
+
+        $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list');
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
+
+        $this->set('servicegroups', $servicegroups);
+        $this->viewBuilder()->setOption('serialize', ['servicegroups']);
+    }
+
+    /**
+     * differnt from the standard method as these can handle multiple containerIDs
+     * @return void
+     */
+    public function loadHostgroupsByContainerIds() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerIds = $this->request->getQuery('containerIds');
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        $containerIds = array_unique($containerIds);
+
+
+        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
+        $HostgroupCondition->setContainerIds($containerIds);
+
+        $hostgroups = $HostgroupsTable->getHostgroupsByContainerIdNew($HostgroupCondition);
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+
+        $this->set('hostgroups', $hostgroups);
+        $this->viewBuilder()->setOption('serialize', ['hostgroups']);
+    }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+        }
+
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 }
