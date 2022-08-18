@@ -143,7 +143,6 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
             };
 
             $scope.mouseleave = function(){
-                return; // todo remove this
                 $scope.mouseout = true;
 
                 if($scope.popoverTimer !== null){
