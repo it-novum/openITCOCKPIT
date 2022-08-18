@@ -62,6 +62,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     //Render Chart
                     var $elm = $('#serviceGraphFlot-' + $scope.graphPopoverId + '-' + index);
 
+                    var colors = uPlotGraphDefaultsObj.getColorByIndex(index);
                     var options = uPlotGraphDefaultsObj.getDefaultOptions({
                         unit: $scope.popoverPerfdata[index].datasource.unit,
                         showLegend: false,
@@ -72,8 +73,12 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                             warning: $scope.popoverPerfdata[index].datasource.warn,
                             critical: $scope.popoverPerfdata[index].datasource.crit
                         },
+                        // X-Axis min / max
                         start: graphStart,
-                        end: graphEnd
+                        end: graphEnd,
+                        //Fallback if no thresholds exists
+                        strokeColor: colors.stroke,
+                        fillColor: colors.fill
                     });
                     options.height = $elm.height() - 25; // 27px for headline
                     options.width = $elm.width();

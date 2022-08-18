@@ -1,30 +1,5 @@
 var uPlotGraphDefaults = (function(){
     function uPlotGraphDefaults(){
-        this.defaultFillColor = '#4285F4';
-        this.defaultBorderColor = '#4073E0';
-
-        this.okFillColor = '#00C851';
-        this.okBorderColor = '#00B44D';
-
-        this.criticalFillColor = '#CC0000';
-        this.criticalBorderColor = '#C00000';
-
-        this.warningFillColor = '#ffbb33';
-        this.warningBorderColor = '#E7931D';
-
-        this.unknownFillColor = '#9B9B9B';
-        this.unknownBorderColor = '#757575';
-
-        this.defaultColors = [
-            [this.defaultFillColor, this.defaultBorderColor],
-            ['#ffbb33', '#E7931D'],
-            ['#B054DE', '#8a2eb8'],
-            ['#CC0000', '#C00000'],
-            ['#00C851', '#00B44D'],
-            ['#262626', '#000000'],
-            ['#4285F4', '#4073E0']
-        ];
-
         let can = document.createElement("canvas");
         this.ctx = can.getContext("2d");
     }
@@ -98,61 +73,37 @@ var uPlotGraphDefaults = (function(){
     };
 
     /**
-     * @param amount integer
-     * @returns {{fill: Array, border: Array}}
-     */
-    uPlotGraphDefaults.prototype.getColors = function(amount){
-        amount = parseInt(amount, 10);
-
-        var colors = {
-            fill: [],
-            border: []
-        };
-
-
-        if(amount > this.defaultColors.length){
-            var ColorGeneratorObj = new ColorGenerator();
-            var missingColors = amount - this.defaultColors.length;
-
-            var randomColors = ColorGeneratorObj.generate(missingColors, 90, 120);
-            for(var i in randomColors){
-                colors.fill.push(randomColors[i]);
-                colors.border.push(randomColors[i]);
-            }
-        }else{
-            for(var i = 1; i < amount; i++){
-                colors.fill.push(this.defaultColors[(i - 1)][0]);
-                colors.border.push(this.defaultColors[(i - 1)][1]);
-            }
-        }
-
-        return colors;
-    };
-
-    /**
-     * @param index integer
-     * @returns {{fill: Array, border: Array}}
+     * @param index
+     * @returns {{fill: string, stroke: string}}
      */
     uPlotGraphDefaults.prototype.getColorByIndex = function(index){
         index = parseInt(index, 10);
-
-        var color = {
-            fill: [],
-            border: []
+        var colors = {
+            stroke: [
+                "rgba(50, 116, 217, 1)",
+                "rgba(0,200,81, 1)",
+                "rgba(163, 82, 204, 1)",
+                "rgba(255, 120, 10, 1)"
+            ],
+            fill: [
+                "rgba(50, 116, 217, 0.2)",
+                "rgba(0,200,81, 0.2)",
+                "rgba(163, 82, 204, 0.2)",
+                "rgba(255, 120, 10, 0.2)"
+            ]
         };
 
-        if(index > this.defaultColors.length){
-            var randomColors = ColorGeneratorObj.generate(1, 90, 120);
-            for(var i in randomColors){
-                color.fill.push(randomColors[i]);
-                color.border.push(randomColors[i]);
-            }
-        }else{
-            color.fill.push(this.defaultColors[index][0]);
-            color.border.push(this.defaultColors[index][1]);
+        if(typeof colors.stroke[index] == "undefined"){
+            return {
+                stroke: "rgba(255, 120, 10, 1)",
+                fill: "rgba(255, 120, 10, 0.2)"
+            };
         }
 
-        return color;
+        return {
+            stroke: colors.stroke[index],
+            fill: colors.fill[index],
+        };
     };
 
     uPlotGraphDefaults.prototype.getDefaultOptions = function(opts){
@@ -173,6 +124,9 @@ var uPlotGraphDefaults = (function(){
         opts.start = opts.start || 0;
         opts.end = opts.end || new Date().getTime();
 
+        opts.strokeColor = opts.strokeColor || "rgba(50, 116, 217, 1)";
+        opts.fillColor = opts.fillColor || "rgba(50, 116, 217, 0.2)";
+
         uPlotOptions = {
             title: "Area Chart",
             tzDate: function(ts){
@@ -186,32 +140,12 @@ var uPlotGraphDefaults = (function(){
             },
             scales: {
                 x: {
-                    time: true
-
-                    /*
-                    range: function(u, dataMin, dataMax){
-                        if(dataMin == null){
-                            console.log('HIER');
-                            return [opts.start, opts.end];
-                        }
-
-                        console.log('DA!!!');
-                        console.log(dataMin);
-                        console.log(dataMax);
-                        return [dataMin, dataMax];
-                    }
-                     */
+                    time: true,
+                    auto: true,
+                    min: opts.start,
+                    max: opts.end,
+                    //range: [opts.start, opts.end],
                 },
-                /*
-                y: {
-                    range(u, dataMin, dataMax) {
-                        if (dataMin == null)
-                            return [0, 100];
-
-                        return uPlot.rangeNum(dataMin, dataMax, 0.1, true);
-                    }
-                },
-                 */
             },
             series: [
                 {},
@@ -220,8 +154,8 @@ var uPlotGraphDefaults = (function(){
                     width: opts.lineWidth,
                     paths: _spline,
 
-                    stroke: "red",
-                    fill: "red"
+                    stroke: opts.strokeColor,
+                    fill: opts.fillColor,
                 },
             ],
             axes: [
