@@ -162,40 +162,88 @@ var uPlotGraphDefaults = (function(){
 
         opts = opts || {};
         opts.unit = opts.unit || '';
+        opts.timezone = opts.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+        opts.showLegend = opts.showLegend !== false;
+        opts.lineWidth = opts.lineWidth || 3;
+        opts.thresholds = opts.thresholds || {};
+        opts.thresholds.show = opts.thresholds.show !== false;
+        opts.thresholds.warning = opts.thresholds.warning || null;
+        opts.thresholds.critical = opts.thresholds.critical || null;
 
-        return {
+        opts.start = opts.start || 0;
+        opts.end = opts.end || new Date().getTime();
+
+        uPlotOptions = {
             title: "Area Chart",
+            tzDate: function(ts){
+                return uPlot.tzDate(new Date(ts * 1000), opts.timezone)
+            },
+            cursor: {
+                drag: {
+                    x: true,
+                    y: false,
+                }
+            },
             scales: {
                 x: {
-                    time: true,
+                    time: true
+
+                    /*
+                    range: function(u, dataMin, dataMax){
+                        if(dataMin == null){
+                            console.log('HIER');
+                            return [opts.start, opts.end];
+                        }
+
+                        console.log('DA!!!');
+                        console.log(dataMin);
+                        console.log(dataMax);
+                        return [dataMin, dataMax];
+                    }
+                     */
                 },
+                /*
+                y: {
+                    range(u, dataMin, dataMax) {
+                        if (dataMin == null)
+                            return [0, 100];
+
+                        return uPlot.rangeNum(dataMin, dataMax, 0.1, true);
+                    }
+                },
+                 */
             },
             series: [
                 {},
                 {
                     label: "Series Title",
-                    width: 3,
+                    width: opts.lineWidth,
                     paths: _spline,
 
-                    stroke: function(u, seriesIdx){
-                        return this.scaleGradient(u, 'y', 1, [
-                            [0, "#56a64b"],
-                            [1, "#eab839"],
-                            [2, "#e02f44"],
-                        ], true)
-                    }.bind(this),
-                    fill: function(u, seriesIdx){
-                        return this.scaleGradient(u, 'y', 1, [
-                            [0, "rgba(86, 166, 75, 0.3)"],
-                            [1, "rgba(234, 184, 57, 0.3)"],
-                            [2, "rgba(224, 47, 68, 0.3)"],
-                        ], true)
-                    }.bind(this),
+                    stroke: "red",
+                    fill: "red"
                 },
             ],
             axes: [
-                {},
                 {
+                    // https://github.com/leeoniya/uPlot/tree/master/docs#axis--grid-opts
+                    // https://github.com/leeoniya/uPlot/blob/master/src/fmtDate.js#L65-L107
+                    // @formatter:off
+                    values: [
+                        // tick incr          default           year                             month    day                        hour     min                sec       mode
+                        [3600 * 24 * 365,   "{YYYY}",         null,                            null,    null,                      null,    null,              null,        1],
+                        [3600 * 24 * 28,    "{MMM}",          "\n{YYYY}",                      null,    null,                      null,    null,              null,        1],
+                        [3600 * 24,         "{M}/{D}",        "\n{YYYY}",                      null,    null,                      null,    null,              null,        1],
+                        [3600,              "{h}{aa}",        "\n{M}/{D}/{YY}",                null,    null,                      null,    null,              null,        1],
+                        [60,                "{HH}:{mm}",      null,                            null,    null,                      null,    null,              null,        1],
+                        [1,                 ":{ss}",          "\n{M}/{D}/{YY} {h}:{mm}{aa}",   null,    "\n{M}/{D} {h}:{mm}{aa}",  null,    "\n{h}:{mm}{aa}",  null,        1],
+                        [0.001,             ":{ss}.{fff}",    "\n{M}/{D}/{YY} {h}:{mm}{aa}",   null,    "\n{M}/{D} {h}:{mm}{aa}",  null,    "\n{h}:{mm}{aa}",  null,        1],
+                    ],
+                    // @formatter:on
+                },
+                {
+                    // https://github.com/leeoniya/uPlot/blob/master/docs/README.md#axis--grid-opts
+                    size: 100, // default is 50
                     values: function(u, vals, space){
                         return vals.map(function(v){
                             return v + ' ' + opts.unit;
@@ -204,9 +252,57 @@ var uPlotGraphDefaults = (function(){
                 },
             ],
             legend: {
-                show: false
+                show: opts.showLegend
             }
         };
+
+        if(opts.thresholds.show){
+            if(opts.thresholds.warning !== "" &&
+                opts.thresholds.critical !== "" &&
+                opts.thresholds.warning !== null &&
+                opts.thresholds.critical !== null){
+                opts.thresholds.warning = parseFloat(opts.thresholds.warning);
+                opts.thresholds.critical = parseFloat(opts.thresholds.critical);
+                if(opts.thresholds.critical > opts.thresholds.warning){
+                    // Normal thresholds like for a Ping
+                    uPlotOptions.series[1].stroke = function(u, seriesIdx){
+                        return this.scaleGradient(u, 'y', 1, [
+                            [0, "rgba(86, 166, 75, 1)"],
+                            [opts.thresholds.warning, "rgba(234, 184, 57, 1)"],
+                            [opts.thresholds.critical, "rgba(224, 47, 68, 1)"],
+                        ], true)
+                    }.bind(this);
+
+                    uPlotOptions.series[1].fill = function(u, seriesIdx){
+                        return this.scaleGradient(u, 'y', 1, [
+                            [0, "rgba(86, 166, 75, 0.2)"],
+                            [opts.thresholds.warning, "rgba(234, 184, 57, 0.2)"],
+                            [opts.thresholds.critical, "rgba(224, 47, 68, 0.2)"]
+                        ], true)
+                    }.bind(this);
+
+                }else{
+                    // warning is < than critical, Free disk space for example
+                    uPlotOptions.series[1].stroke = function(u, seriesIdx){
+                        return this.scaleGradient(u, 'y', 1, [
+                            [0, "rgba(224, 47, 68, 1)"],
+                            [opts.thresholds.critical, "rgba(234, 184, 57, 1)"],
+                            [opts.thresholds.warning, "rgba(86, 166, 75, 1)"],
+                        ], true)
+                    }.bind(this);
+
+                    uPlotOptions.series[1].fill = function(u, seriesIdx){
+                        return this.scaleGradient(u, 'y', 1, [
+                            [0, "rgba(224, 47, 68, 0.2)"],
+                            [opts.thresholds.critical, "rgba(234, 184, 57, 0.2)"],
+                            [opts.thresholds.warning, "rgba(86, 166, 75, 0.2)"]
+                        ], true)
+                    }.bind(this);
+                }
+            }
+        }
+
+        return uPlotOptions;
     };
 
     return uPlotGraphDefaults;

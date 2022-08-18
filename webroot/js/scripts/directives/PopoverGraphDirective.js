@@ -27,7 +27,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                         service_uuid: serviceUuid,
                         start: graphStart,
                         end: graphEnd,
-                        jsTimestamp: 1
+                        jsTimestamp: 0
                     }
                 }).then(function(result){
                     $scope.isLoadingGraph = false;
@@ -63,7 +63,17 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     var $elm = $('#serviceGraphFlot-' + $scope.graphPopoverId + '-' + index);
 
                     var options = uPlotGraphDefaultsObj.getDefaultOptions({
-                        unit: $scope.popoverPerfdata[index].datasource.unit
+                        unit: $scope.popoverPerfdata[index].datasource.unit,
+                        showLegend: false,
+                        timezone: $scope.timezone.user_timezone,
+                        lineWidth: 2,
+                        thresholds: {
+                            show: true,
+                            warning: $scope.popoverPerfdata[index].datasource.warn,
+                            critical: $scope.popoverPerfdata[index].datasource.crit
+                        },
+                        start: graphStart,
+                        end: graphEnd
                     });
                     options.height = $elm.height() - 25; // 27px for headline
                     options.width = $elm.width();
