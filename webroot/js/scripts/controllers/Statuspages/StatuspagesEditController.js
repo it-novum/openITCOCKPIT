@@ -39,19 +39,8 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.post.Statuspages = result.data.Statuspage;
+                $scope.post.Statuspages.public = +result.data.Statuspage.public
                 $scope.init = false;
-             /*   $scope.data.areContainersChangeable = result.data.areContainersChangeable;
-                $scope.requiredContainers = result.data.requiredContainers;
-
-                for(var i in $scope.containers){
-                    if($scope.requiredContainers.indexOf($scope.containers[i].key) === -1){
-                        $scope.containers[i].editable = true;
-                    }else{
-                        $scope.containers[i].editable = false;
-                    }
-                }
-
-              */
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
