@@ -147,6 +147,7 @@ class AngularController extends AppController {
             'server_time_utc'            => time(),
             'server_time'                => date('F d, Y H:i:s'),
             'server_timezone_offset'     => $ServerTime->getOffset(),
+            'user_timezone_offset_p'     => date('P', $UserTime->getTimestamp()),
             //ISO 8601
             'server_time_iso'            => date('c'),
             'server_timezone'            => $ServerTimeZone->getName()
