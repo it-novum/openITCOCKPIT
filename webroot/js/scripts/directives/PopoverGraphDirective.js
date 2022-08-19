@@ -59,14 +59,12 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                 //if(($scope.popoverOffset.relativeTop - currentScrollPosition + margin + popupGraphContainerHeight) > $(window).innerHeight()){
                 if(absoluteBottomPositionOfPopoverGraphContainer > $(window).innerHeight()){
                     //There is no space in the window for the popup, we need to place it above the mouse cursor
-                    console.log('above');
                     $popupGraphContainer.css({
                         'top': parseInt($scope.popoverOffset.relativeTop - popupGraphContainerHeight - margin + 10),
                         'left': parseInt($scope.popoverOffset.relativeLeft + margin),
                         'padding': '6px'
                     });
                 }else{
-                    console.log('down');
                     //Default Popup
                     $popupGraphContainer.css({
                         'top': parseInt($scope.popoverOffset.relativeTop + margin),
