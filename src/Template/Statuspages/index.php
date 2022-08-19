@@ -179,9 +179,13 @@
 
                                 <td class="word-break">
                                     <?php if ($this->Acl->hasPermission('view', 'statuspages')): ?>
-                                        <a href="/statuspages/view/{{statuspage.id}}" target="_blank">
+                                        <a href="/statuspages/view/{{statuspage.id}}" target="_blank"
+                                           ng-if="statuspage.allow_view">
                                             {{statuspage.name}}
                                         </a>
+                                        <span ng-if="!statuspage.allow_view">
+                                            {{statuspage.name}}
+                                        </span>
                                     <?php else: ?>
                                         {{statuspage.name}}
                                     <?php endif; ?>
@@ -231,7 +235,7 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('view', 'statuspages')): ?>
                                                 <a href="/statuspages/view/{{statuspage.id}}" target="_blank"
-                                                   class="dropdown-item">
+                                                   class="dropdown-item" ng-if="statuspage.allow_view">
                                                     <i class="fas fa-calendar-week"></i>
                                                     <?php echo __('View'); ?>
                                                 </a>

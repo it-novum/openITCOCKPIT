@@ -133,6 +133,42 @@ class StatuspagesTable extends Table {
         return $this->exists(['Statuspages.id' => $id]);
     }
 
+    /**
+     * @param $statuspageId
+     * @param $MY_RIGHTS
+     * @return bool
+     */
+    public function allowedByStatuspageId($statuspageId = [], $MY_RIGHTS): bool {
+        if (empty($statuspageId)) {
+            return false;
+        }
+
+        if (!$this->existsById($statuspageId)) {
+            return false;
+        }
+
+        $query = $this->get($statuspageId, [
+            'contain' => ['Containers']
+        ]);
+
+        $result = null;
+        if (!empty($query)) {
+            $result = $query->toArray();
+        }
+
+        $containerIds = null;
+        if (!empty($result) && !empty($result['containers'])) {
+            $containerIds = Hash::extract($result, 'containers.{n}.id');
+        }
+
+        if (!empty($containerIds)) {
+            if (empty(array_diff($containerIds, $MY_RIGHTS))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * @param StatuspagesFilter $StatuspagesFilter
@@ -247,6 +283,7 @@ class StatuspagesTable extends Table {
             'statuspage'    => [
                 'name'        => $statuspageData['name'],
                 'description' => $statuspageData['description'],
+                'public'      => $statuspageData['public']
             ],
             'hosts'         => [],
             'services'      => [],
@@ -387,7 +424,7 @@ class StatuspagesTable extends Table {
                 $tmpStates[$key] = $item['currentState'];
             }
         }
-        if(!empty(($tmpStates))){
+        if (!empty(($tmpStates))) {
             $worstTmpItemStatusKey = array_keys($tmpStates, max($tmpStates))[0];
 
             $stateType = $worstTmpItemStatusKey;
@@ -401,7 +438,7 @@ class StatuspagesTable extends Table {
                 'humanState' => $states[$worstTmpItemStatusKey]['humanState']
             ];
 
-        }else{
+        } else {
             $worstState = [
                 'state'      => 2, // int status
                 'stateType'  => 'host', // hosts or services

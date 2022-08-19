@@ -39,7 +39,6 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.post.Statuspages = result.data.Statuspage;
-console.log(result.data);
                 $scope.init = false;
              /*   $scope.data.areContainersChangeable = result.data.areContainersChangeable;
                 $scope.requiredContainers = result.data.requiredContainers;

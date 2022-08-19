@@ -66,10 +66,23 @@ class StatuspagesController extends AppController {
             $all_statuspages[$key]['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {
                 $all_statuspages[$key]['allow_edit'] = false;
-                if (!empty(array_intersect($statuspagesWithContainers[$statuspage['id']], $this->getWriteContainers()))) {
+                if (empty(array_diff($statuspagesWithContainers[$statuspage['id']], $this->getWriteContainers()))) {
+                    //statuspage has no containers where user has no edit permission
                     $all_statuspages[$key]['allow_edit'] = true;
                 }
             }
+
+            $all_statuspages[$key]['allow_view'] = true;
+            if ($all_statuspages[$key]['public'] === false) {
+                if ($this->hasRootPrivileges === false) {
+                    $all_statuspages[$key]['allow_view'] = false;
+                    if (empty(array_diff($statuspagesWithContainers[$statuspage['id']], $this->MY_RIGHTS))) {
+                        //statuspage has no containers where user has no edit permission
+                        $all_statuspages[$key]['allow_view'] = true;
+                    }
+                }
+            }
+
         }
 
         $this->set('all_statuspages', $all_statuspages);
@@ -88,22 +101,24 @@ class StatuspagesController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null) {
-        //$this->Authorization->skipAuthorization();
         $this->viewBuilder()->setLayout('statuspage_fullscreen');
-        /* if (!$this->isApiRequest()) {
-             //Only ship HTML template for angular
-             return;
-         }
 
-        */
         /** @var $StatuspagesTable StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
 
+
         $DbBackend = $this->DbBackend;
         $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend);
+
+        if (!empty($statuspage) && $statuspage['statuspage']['public'] === false) {
+            if (!$StatuspagesTable->allowedByStatuspageId($id, $this->MY_RIGHTS)) {
+                $this->render403();
+                return;
+            }
+        }
 
         $this->set('Statuspage', $statuspage);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
@@ -188,6 +203,11 @@ class StatuspagesController extends AppController {
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
+        }
+
+        if (!$StatuspagesTable->allowedByStatuspageId($id, $this->MY_RIGHTS)) {
+            $this->render403();
+            return;
         }
 
 

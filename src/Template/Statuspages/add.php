@@ -62,11 +62,11 @@
             {objectName : '<?php echo __('Statuspage'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
                         <div class="form-group required" ng-class="{'has-error': errors.containers}">
-                            <label class="control-label" for="ContactContainers">
+                            <label class="control-label" for="StatuspagesContainers">
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                id="ContactContainers"
+                                id="StatuspagesContainers"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="containers"
@@ -95,7 +95,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.description}">
+                        <div class="form-group required" ng-class="{'has-error': errors.description}">
                             <label class="control-label">
                                 <?php echo __('Description'); ?>
                             </label>
