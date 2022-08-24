@@ -10,6 +10,7 @@ angular.module('openITCOCKPIT')
                 name: '',
                 description: '',
                 public: false,
+                show_comments: false,
                 hosts: {
                     _ids: []
                 },
@@ -39,7 +40,8 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.post.Statuspages = result.data.Statuspage;
-                $scope.post.Statuspages.public = +result.data.Statuspage.public
+                $scope.post.Statuspages.public = +result.data.Statuspage.public;
+                $scope.post.Statuspages.show_comments = +result.data.Statuspage.show_comments;
                 $scope.init = false;
             }, function errorCallback(result){
                 if(result.status === 403){

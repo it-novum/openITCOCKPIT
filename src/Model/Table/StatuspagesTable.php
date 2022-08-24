@@ -122,6 +122,10 @@ class StatuspagesTable extends Table {
             ->boolean('public')
             ->notEmptyString('public');
 
+        $validator
+            ->boolean('show_comments')
+            ->notEmptyString('show_comments');
+
         return $validator;
     }
 

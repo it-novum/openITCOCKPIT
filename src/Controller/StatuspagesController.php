@@ -112,7 +112,6 @@ class StatuspagesController extends AppController {
 
         $DbBackend = $this->DbBackend;
         $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend);
-
         if (!empty($statuspage) && $statuspage['statuspage']['public'] === false) {
             if (!$StatuspagesTable->allowedByStatuspageId($id, $this->MY_RIGHTS)) {
                 $this->render403();

@@ -39,6 +39,11 @@ class Statuspage extends AbstractMigration {
                     'limit'   => null,
                     'null'    => false,
                 ])
+                ->addColumn('show_comments', 'boolean', [
+                    'default' => '0',
+                    'limit'   => null,
+                    'null'    => false,
+                ])
                 ->create();
         }
 

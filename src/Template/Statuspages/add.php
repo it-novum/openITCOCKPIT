@@ -128,6 +128,26 @@
                             </div>
                         </div>
 
+                        <div class="form-group" ng-class="{'has-error': errors.show_comments}">
+                            <div class="custom-control custom-checkbox margin-bottom-10"
+                                 ng-class="{'has-error': errors.show_comments}">
+
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="showComments"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.Statuspages.show_comments">
+                                <label class="custom-control-label" for="showComments">
+                                    <?php echo __('Show comments'); ?>
+                                </label>
+                            </div>
+
+                            <div class="col col-xs-12 col-md-offset-2 help-block">
+                                <?php echo __('If enabled the statuspage will show downtime and acknowledgement comments for each element. Public visible statuspages will show anonymized comments'); ?>
+                            </div>
+                        </div>
+
                         <hr>
 
                         <div class="form-group"

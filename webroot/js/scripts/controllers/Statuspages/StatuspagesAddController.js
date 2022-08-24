@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
                 name: '',
                 description: '',
                 public: false,
+                show_comments: false,
                 hosts: {
                     _ids: []
                 },

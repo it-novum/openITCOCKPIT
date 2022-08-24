@@ -34,6 +34,7 @@ class Statuspage extends Entity
         'name' => true,
         'description' => true,
         'public' => true,
+        'show_comments' => true,
         'containers' => true,
         'hostgroups' => true,
         'hosts' => true,
