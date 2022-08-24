@@ -62,7 +62,7 @@
             {objectName : '<?php echo __('Statuspage'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
                         <!-- Hosts start -->
-                        <table class="table">
+                        <table class="table" ng-if="post.Statuspages.hosts.length > 0">
                             <thead>
                             <th class="col-5"><?= __('Host Name'); ?></th>
                             <th class="col-7"><?= __('Display Name'); ?></th>
@@ -82,7 +82,7 @@
                         <!-- Hosts end -->
                         <hr>
                         <!-- Services start -->
-                        <table class="table">
+                        <table class="table" ng-if="post.Statuspages.services.length > 0">
                             <thead>
                             <th class="col-5"><?= __('Service Name'); ?></th>
                             <th class="col-7"><?= __('Display Name'); ?></th>
@@ -102,7 +102,8 @@
                         <!-- Services end -->
                         <hr>
                         <!-- Hostgroups start -->
-                        <table class="table">
+
+                        <table class="table" ng-if="post.Statuspages.hostgroups.length > 0">
                             <thead>
                             <th class="col-5"><?= __('Hostgroup Name'); ?></th>
                             <th class="col-7"><?= __('Display Name'); ?></th>
@@ -122,9 +123,9 @@
                         <!-- Hostgroups end -->
                         <hr>
                         <!-- Servicegroups start -->
-                        <table class="table">
+                        <table class="table" ng-if="post.Statuspages.servicegroups.length > 0">
                             <thead>
-                            <th class="col-5"><?= __('Hostgroup Name'); ?></th>
+                            <th class="col-5"><?= __('Servicegroup Name'); ?></th>
                             <th class="col-7"><?= __('Display Name'); ?></th>
                             </thead>
                             <tbody>
