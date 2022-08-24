@@ -7,8 +7,10 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
             var startTimestamp = new Date().getTime();
 
             $scope.popoverOffset = {
-                top: 0,
-                left: 0
+                relativeTop: 0,
+                relativeLeft: 0,
+                absoluteTop: 0,
+                absoluteLeft: 0
             };
 
             $scope.popoverPerfdata = {};
