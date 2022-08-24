@@ -96,7 +96,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
 
 
                     //Render Chart
-                    var $elm = $('#serviceGraphFlot-' + $scope.graphPopoverId + '-' + index);
+                    var $elm = $('#serviceGraphUPlot-' + $scope.graphPopoverId + '-' + index);
 
                     var colors = uPlotGraphDefaultsObj.getColorByIndex(index);
                     var options = uPlotGraphDefaultsObj.getDefaultOptions({
@@ -120,9 +120,9 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     options.width = $elm.width();
                     options.title = $scope.popoverPerfdata[index].datasource.name;
 
-                    if(document.getElementById('serviceGraphFlot-' + $scope.graphPopoverId + '-' + index) && !$scope.mouseout){
+                    if(document.getElementById('serviceGraphUPlot-' + $scope.graphPopoverId + '-' + index) && !$scope.mouseout){
                         try{
-                            var elm = document.getElementById('serviceGraphFlot-' + $scope.graphPopoverId + '-' + index);
+                            var elm = document.getElementById('serviceGraphUPlot-' + $scope.graphPopoverId + '-' + index);
                             self.plot = new uPlot(options, data, elm);
                         }catch(e){
                             console.error(e);

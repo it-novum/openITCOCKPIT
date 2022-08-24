@@ -35,7 +35,7 @@
              ng-repeat="(index, value) in popoverPerfdata"
              ng-if="index < 4"
             ng-class="{'col-lg-12': popoverPerfdata.length === 1}">
-            <div id="serviceGraphFlot-{{graphPopoverId}}-{{index}}" class="serviceGraphFlot"></div>
+            <div id="serviceGraphUPlot-{{graphPopoverId}}-{{index}}" class="serviceGraphUPlot"></div>
         </div>
     </div>
 </div>
