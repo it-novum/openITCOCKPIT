@@ -112,6 +112,7 @@ class StatuspagesController extends AppController {
 
         $DbBackend = $this->DbBackend;
         $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend);
+        //debug($statuspage);
         if (!empty($statuspage) && $statuspage['statuspage']['public'] === false) {
             if (!$StatuspagesTable->allowedByStatuspageId($id, $this->MY_RIGHTS)) {
                 $this->render403();
@@ -140,7 +141,7 @@ class StatuspagesController extends AppController {
         $conditions = ['Statuspages.public' => 1];
 
         $DbBackend = $this->DbBackend;
-        $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend, $conditions);
+        $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend, $conditions, true);
 
         $this->set('Statuspage', $statuspage);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);

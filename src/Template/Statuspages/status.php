@@ -7,7 +7,7 @@
 
 <pre>
 <?php
-//print_r($Statuspage);
+print_r($Statuspage);
 ?>
     </pre>
 <div>

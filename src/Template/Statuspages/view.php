@@ -5,6 +5,11 @@
  */
 ?>
 
+<pre>
+<?php
+print_r($Statuspage);
+?>
+    </pre>
 <div ng-controller="StatuspagesViewController">
     <div class="d-flex justify-content-center">
         <div class="alert alert-info w-75" role="alert">

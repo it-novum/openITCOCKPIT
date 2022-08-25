@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
@@ -25,6 +26,7 @@ use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use MapModule\Model\Table\MapsTable;
+use Statusengine2Module\Model\Table\HoststatusTable;
 
 /**
  * Statuspages Model
@@ -272,14 +274,22 @@ class StatuspagesTable extends Table {
     /**
      * @param $id
      * @param $DbBackend
+     * @param $conditions
+     * @param $public
      * @return array
      */
-    public function getStatuspageObjectsForView($id = null, $DbBackend = null, $conditions = []) {
+    public function getStatuspageObjectsForView($id = null, $DbBackend = null, $conditions = [], $public = false) {
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
+        /** @var HoststatusTable $HoststatusTable */
         $HoststatusTable = $DbBackend->getHoststatusTable();
+        /** @var ServicestatusTable $ServicestatusTable */
         $ServicestatusTable = $DbBackend->getServicestatusTable();
+        /** @var AcknowledgementHostsTableInterface $AcknowledgementHostsTable */
+        $AcknowledgementHostsTable = $DbBackend->getAcknowledgementHostsTable();
+        /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
+        $DowntimehistoryHostsTable = $DbBackend->getDowntimehistoryHostsTable();
 
         $statuspageData = $this->getStatuspageObjects($id, $conditions);
 
@@ -305,6 +315,8 @@ class StatuspagesTable extends Table {
                         // This is plain host state - no cumulated service state
                         $hoststatus = $this->getHostSummary(
                             $HoststatusTable,
+                            $AcknowledgementHostsTable,
+                            $DowntimehistoryHostsTable,
                             $host
                         );
 
@@ -314,8 +326,25 @@ class StatuspagesTable extends Table {
                             $statuspageForView[$key][$subKey]['humanState'] = $hoststatus['Hoststatus']['humanState'];
                             $statuspageForView[$key][$subKey]['inDowntime'] = $hoststatus['Hoststatus']['inDowntime'];
                             $statuspageForView[$key][$subKey]['acknowledged'] = $hoststatus['Hoststatus']['acknowledged'];
-                        }
 
+                            if($hoststatus['Hoststatus']['acknowledged'] === 1 && !empty($hoststatus['Hoststatus']['acknowledgement'])){
+                                $statuspageForView[$key][$subKey]['acknowlegement']['entry_time'] = $hoststatus['Hoststatus']['acknowledgement']['entry_time'];
+                                if(!$public){
+                                    //do not show user entered comment in public view
+                                    $statuspageForView[$key][$subKey]['acknowlegement']['comment_data'] = $hoststatus['Hoststatus']['acknowledgement']['comment_data'];
+                                }
+                            }
+
+                            if(!empty($hoststatus['Hoststatus']['downtime'])){
+                                $statuspageForView[$key][$subKey]['downtime']['entry_time'] = $hoststatus['Hoststatus']['downtime']['entry_time'];
+                                $statuspageForView[$key][$subKey]['downtime']['scheduled_start_time'] = $hoststatus['Hoststatus']['downtime']['scheduled_start_time'];
+                                $statuspageForView[$key][$subKey]['downtime']['scheduled_end_time'] = $hoststatus['Hoststatus']['downtime']['scheduled_end_time'];
+                                if(!$public){
+                                    //do not show user entered comment in public view
+                                    $statuspageForView[$key][$subKey]['downtime']['comment_data'] = $hoststatus['Hoststatus']['downtime']['comment_data'];
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -389,7 +418,7 @@ class StatuspagesTable extends Table {
         }
 
         $statuspageForView['statuspage']['cumulatedState'] = $this->getCumulatedStateForStatuspage($statuspageForView);
-
+debug($statuspageForView);
 
         return $statuspageForView;
     }
@@ -475,13 +504,13 @@ class StatuspagesTable extends Table {
     }
 
     /**
-     * @param ServicesTable $ServicesTable
      * @param HoststatusTableInterface $HoststatusTable
-     * @param ServicestatusTableInterface $Servicestatus
+     * @param AcknowledgementHostsTableInterface $AcknowledgementHostsTable
+     * @param DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable
      * @param array $host
-     * @return array
+     * @return array[]
      */
-    private function getHostSummary(HoststatusTableInterface $HoststatusTable, array $host) {
+    private function getHostSummary(HoststatusTableInterface $HoststatusTable, AcknowledgementHostsTableInterface $AcknowledgementHostsTable, DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable, array $host) {
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields
             ->currentState()
@@ -489,6 +518,25 @@ class StatuspagesTable extends Table {
             ->problemHasBeenAcknowledged();
 
         $hoststatus = $HoststatusTable->byUuid($host['uuid'], $HoststatusFields);
+        $acknowledgement = $AcknowledgementHostsTable->byHostUuid($host['uuid']);
+        $downtime = $DowntimehistoryHostsTable->byHostUuid($host['uuid']);
+
+
+        // ACK Comment:
+        //$acknowledgement['comment_data'];
+        // ACK Eintragungszeit:
+        //$acknowledgement['entry_time'];
+
+        //debug($acknowledgement);
+
+        //Downtime Comment:
+        //$downtime['comment_data'];
+        //Downtime start time:
+        //$downtime['scheduled_start_time'];
+        //Downtime end time:
+        //$downtime['scheduled_end_time'];
+        //Downtime eintragungszeit:
+        //$downtime['entry_time'];
 
 
         if (empty($hoststatus)) {
@@ -502,11 +550,23 @@ class StatuspagesTable extends Table {
         $hostIsAckd = $hoststatus->isAcknowledged();
 
         $hoststatus = [
-            'currentState' => $hoststatus->toArray()['currentState'],
-            'humanState'   => $hoststatusAsString,
-            'inDowntime'   => (int)$hostIsInDowntime,
-            'acknowledged' => (int)$hostIsAckd
+            'currentState'    => $hoststatus->toArray()['currentState'],
+            'humanState'      => $hoststatusAsString,
+            'inDowntime'      => (int)$hostIsInDowntime,
+            'acknowledged'    => (int)$hostIsAckd,
+            'acknowledgement' => [
+                'comment_data' => $acknowledgement['comment_data'],
+                'entry_time'   => $acknowledgement['entry_time'],
+            ],
+            'downtime'        => [
+                'comment_data'         => $downtime['comment_data'],
+                'scheduled_start_time' => $downtime['scheduled_start_time'],
+                'scheduled_end_time'   => $downtime['scheduled_end_time'],
+                'entry_time'           => $downtime['entry_time'],
+            ]
         ];
+
+        //debug($hoststatus);
 
         return [
             'Hoststatus' => $hoststatus
