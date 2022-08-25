@@ -2,6 +2,60 @@ var uPlotGraphDefaults = (function(){
     function uPlotGraphDefaults(){
         let can = document.createElement("canvas");
         this.ctx = can.getContext("2d");
+
+        // Tooltip vars
+        this.tooltip = document.createElement("div");
+        this.tooltip.className = "u-tooltip";
+        this.tooltipVisible = false;
+        this.seriesIdx = 0;
+        this.dataIdx = null;
+        this.over = {};
+        this.tooltipLeftOffset = 0;
+        this.tooltipTopOffset = 0;
+        this.fmtDate = uPlot.fmtDate("{YYYY}-{MM}-{DD} {HH}:{mm}:{ss}");
+        this.unit = '';
+        // Tooltip End
+    }
+
+    uPlotGraphDefaults.prototype.showTooltip = function(){
+        if(!this.tooltipVisible){
+            this.tooltip.style.display = "block";
+            this.over.style.cursor = "pointer";
+            this.tooltipVisible = true;
+        }
+    };
+
+    uPlotGraphDefaults.prototype.hideTooltip = function(){
+        if(this.tooltipVisible){
+            this.tooltip.style.display = "none";
+            this.over.style.cursor = null;
+            this.tooltipVisible = false;
+        }
+    };
+
+    uPlotGraphDefaults.prototype.setTooltip = function(u){
+        this.showTooltip();
+
+        let top = u.valToPos(u.data[1][this.dataIdx], 'y');
+        let lft = u.valToPos(u.data[0][this.dataIdx], 'x');
+
+        let shiftX = 10;
+        let shiftY = 10;
+
+        this.tooltip.style.top = (this.tooltipTopOffset + top + shiftX) + "px";
+        this.tooltip.style.left = (this.tooltipLeftOffset + lft + shiftY) + "px";
+
+        //tooltip.style.borderColor = isInterpolated(dataIdx) ? interpolatedColor : seriesColors[seriesIdx - 1];
+        this.tooltip.style.borderColor = '#FF0000';
+
+        //console.log(u.data);
+        //console.log(this.seriesIdx);
+        //console.log(this.dataIdx);
+        //console.log(u.data[0][this.dataIdx]);
+        this.tooltip.textContent = (
+            this.fmtDate(new Date(u.data[0][this.dataIdx] * 1000)) + "\n" +
+            uPlot.fmtNum(u.data[1][this.dataIdx]) + " " + this.unit
+        );
     }
 
     uPlotGraphDefaults.prototype.scaleGradient = function(u, scaleKey, ori, scaleStops, discrete = false){
@@ -127,6 +181,9 @@ var uPlotGraphDefaults = (function(){
         opts.strokeColor = opts.strokeColor || "rgba(50, 116, 217, 1)";
         opts.fillColor = opts.fillColor || "rgba(50, 116, 217, 0.2)";
 
+        opts.enableTooltip = opts.enableTooltip !== false;
+
+        this.unit = opts.unit;
         uPlotOptions = {
             title: "Area Chart",
             tzDate: function(ts){
@@ -233,6 +290,50 @@ var uPlotGraphDefaults = (function(){
                         ], true)
                     }.bind(this);
                 }
+            }
+        }
+
+        if(opts.enableTooltip){
+            uPlotOptions.hooks = {
+                ready: [
+                    function(u){
+                        this.over = u.over;
+                        this.tooltipLeftOffset = parseFloat(this.over.style.left);
+                        this.tooltipTopOffset = parseFloat(this.over.style.top);
+                        u.root.querySelector(".u-wrap").appendChild(this.tooltip);
+
+                        this.over.addEventListener("mouseleave", function(){
+                            this.hideTooltip();
+                        }.bind(this));
+
+                    }.bind(this)
+                ],
+                setCursor: [
+                    function(u){
+                        var c = u.cursor;
+
+                        if(this.dataIdx != c.idx){
+                            this.dataIdx = c.idx;
+                            this.setTooltip(u);
+                        }
+                    }.bind(this)
+                ],
+                setSeries: [
+                    function(u, sidx){
+                        console.log("setSeries");
+                        // ¯\_(ツ)_/¯
+                        /*
+                        if(this.seriesIdx != sidx){
+                            this.seriesIdx = sidx;
+
+                            if(sidx == null)
+                                this.hideTooltip();
+                            else if(this.dataIdx != null)
+                                this.setTooltip(u);
+                        }
+                        */
+                    }.bind(this)
+                ]
             }
         }
 

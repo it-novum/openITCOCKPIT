@@ -77,13 +77,13 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
             };
 
             var renderGraphs = function(){
-                var uPlotGraphDefaultsObj = new uPlotGraphDefaults();
-
                 for(var index in $scope.popoverPerfdata){
                     if(index > 3){
                         //Only render 4 gauges in popover...
                         continue;
                     }
+
+                    var uPlotGraphDefaultsObj = new uPlotGraphDefaults();
 
                     // https://github.com/leeoniya/uPlot/tree/master/docs#data-format
                     var data = [];
@@ -169,6 +169,8 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
             };
 
             $scope.mouseleave = function(){
+                return false;
+
                 $scope.mouseout = true;
 
                 if($scope.popoverTimer !== null){
