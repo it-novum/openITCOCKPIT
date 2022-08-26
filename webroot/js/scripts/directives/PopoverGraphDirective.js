@@ -169,8 +169,6 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
             };
 
             $scope.mouseleave = function(){
-                return false;
-
                 $scope.mouseout = true;
 
                 if($scope.popoverTimer !== null){
