@@ -24,6 +24,7 @@ var uPlotGraphDefaults = (function(){
 
     }
 
+
     uPlotGraphDefaults.prototype.showTooltip = function(){
         if(!this.tooltipVisible){
             this.tooltip.style.display = "block";
@@ -257,7 +258,8 @@ var uPlotGraphDefaults = (function(){
         opts.fillColor = opts.fillColor || "rgba(50, 116, 217, 0.2)";
 
         opts.enableTooltip = opts.enableTooltip !== false;
-
+        opts.YAxisLabelLength = opts.YAxisLabelLength || 50;
+        
         this.unit = opts.unit;
         uPlotOptions = {
             title: "Area Chart",
@@ -318,7 +320,7 @@ var uPlotGraphDefaults = (function(){
                 },
                 {
                     // https://github.com/leeoniya/uPlot/blob/master/docs/README.md#axis--grid-opts
-                    size: 100, // default is 50
+                    size: opts.YAxisLabelLength, // default is 50
                     values: function(u, vals, space){
                         return vals.map(function(v){
                             return v + ' ' + opts.unit;

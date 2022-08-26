@@ -96,7 +96,6 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     data.push(xData);
                     data.push(yData);
 
-
                     //Render Chart
                     var $elm = $('#serviceGraphUPlot-' + $scope.graphPopoverId + '-' + index);
 
@@ -116,7 +115,8 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                         end: graphEnd,
                         //Fallback if no thresholds exists
                         strokeColor: colors.stroke,
-                        fillColor: colors.fill
+                        fillColor: colors.fill,
+                        YAxisLabelLength: 100,
                     });
                     options.height = $elm.height() - 25; // 27px for headline
                     options.width = $elm.width();
