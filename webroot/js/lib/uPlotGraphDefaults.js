@@ -1,3 +1,5 @@
+// MIT License
+
 var uPlotGraphDefaults = (function(){
     function uPlotGraphDefaults(){
         let can = document.createElement("canvas");
@@ -15,6 +17,11 @@ var uPlotGraphDefaults = (function(){
         this.fmtDate = uPlot.fmtDate("{YYYY}-{MM}-{DD} {HH}:{mm}:{ss}");
         this.unit = '';
         // Tooltip End
+
+        // Gradient thresholds vars
+        this.thresholdColors = [];
+        // Gradient thresholds vars End
+
     }
 
     uPlotGraphDefaults.prototype.showTooltip = function(){
@@ -46,16 +53,19 @@ var uPlotGraphDefaults = (function(){
         this.tooltip.style.left = (this.tooltipLeftOffset + lft + shiftY) + "px";
 
         //tooltip.style.borderColor = isInterpolated(dataIdx) ? interpolatedColor : seriesColors[seriesIdx - 1];
-        this.tooltip.style.borderColor = '#FF0000';
+        var pointColorFunc = this.pointColorFn().bind(this);
+        // seriesIdx = 1 because we only have one series in the chart
+        this.tooltip.style.borderColor = pointColorFunc(u, 1);
 
         //console.log(u.data);
         //console.log(this.seriesIdx);
         //console.log(this.dataIdx);
         //console.log(u.data[0][this.dataIdx]);
-        this.tooltip.textContent = (
-            this.fmtDate(new Date(u.data[0][this.dataIdx] * 1000)) + "\n" +
-            uPlot.fmtNum(u.data[1][this.dataIdx]) + " " + this.unit
-        );
+        //this.tooltip.textContent = (
+        //    this.fmtDate(new Date(u.data[0][this.dataIdx] * 1000)) + "\n" +
+        //    uPlot.fmtNum(u.data[1][this.dataIdx]) + " " + this.unit
+        //);
+        this.tooltip.innerHTML = this.fmtDate(new Date(u.data[0][this.dataIdx] * 1000)) + "<br><b>" + uPlot.fmtNum(u.data[1][this.dataIdx]) + " " + this.unit + "</b>";
     }
 
     uPlotGraphDefaults.prototype.scaleGradient = function(u, scaleKey, ori, scaleStops, discrete = false){
@@ -160,6 +170,71 @@ var uPlotGraphDefaults = (function(){
         };
     };
 
+    // This is stolen from Grafana
+    // https://github.com/grafana/grafana/blob/cea2b4b7b8554cdb10317a6edd67bb741e3d38af/packages/grafana-ui/src/components/uPlot/config/UPlotConfigBuilder.ts#L213-L226
+    // and the uPlot demos
+    // https://github.com/leeoniya/uPlot/blob/master/demos/gradients.html
+    uPlotGraphDefaults.prototype.pointColorFn = function(alpha){
+        if(typeof alpha === "undefined"){
+            alpha = null;
+        }
+        return function(u, seriesIdx){
+            var parseRgba = function(rgba){
+                // https://stackoverflow.com/questions/34980574/how-to-extract-color-values-from-rgb-string-in-javascript#comment107835204_34980657
+                parsedRgbaString = rgba.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d*)?)\))?/);
+                var r = parsedRgbaString[1];
+                var g = parsedRgbaString[2];
+                var b = parsedRgbaString[3];
+                var a = parsedRgbaString[4];
+
+                return [r, g, b, a];
+            };
+
+            var s = u.series[seriesIdx].points._stroke;
+            // interpolate for gradients/thresholds
+            if(typeof s !== 'string'){
+                //var timestamp = u.data[0][u.cursor.idxs[0]];
+
+                var pointColor = 'rgba(0,0,0,1)';
+
+                var currentValue = u.data[1][u.cursor.idxs[0]];
+
+                for(var i in this.thresholdColors){
+                    var threshold = this.thresholdColors[i][0];
+                    var color = this.thresholdColors[i][1];
+
+                    if(currentValue >= threshold){
+                        pointColor = color;
+                    }
+                }
+
+                var rgba = parseRgba(pointColor);
+                var r = rgba[0];
+                var g = rgba[1];
+                var b = rgba[2];
+                var a = 1;
+
+                if(alpha !== null){
+                    a = alpha;
+                }
+
+                return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + a + ')';
+            }
+
+            var rgba = parseRgba(s);
+            var r = rgba[0];
+            var g = rgba[1];
+            var b = rgba[2];
+            var a = rgba[3];
+
+            if(alpha !== null){
+                a = alpha;
+            }
+
+            return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + a + ')';
+        };
+    };
+
     uPlotGraphDefaults.prototype.getDefaultOptions = function(opts){
         const {linear, spline, stepped, bars} = uPlot.paths;
         const _linear = linear();
@@ -193,6 +268,12 @@ var uPlotGraphDefaults = (function(){
                 drag: {
                     x: true,
                     y: false,
+                },
+                points: {
+                    stroke: this.pointColorFn(0.5).bind(this),
+                    fill: this.pointColorFn().bind(this),
+                    size: 10,
+                    width: 2.5
                 }
             },
             scales: {
@@ -213,6 +294,9 @@ var uPlotGraphDefaults = (function(){
 
                     stroke: opts.strokeColor,
                     fill: opts.fillColor,
+                    points: {
+                        show: false
+                    },
                 },
             ],
             axes: [
@@ -272,6 +356,13 @@ var uPlotGraphDefaults = (function(){
                         ], true)
                     }.bind(this);
 
+                    // Save the thresholds so we can set the color for the mouse over point
+                    this.thresholdColors = [
+                        [0, "rgba(86, 166, 75, 0.2)"],
+                        [opts.thresholds.warning, "rgba(234, 184, 57, 0.2)"],
+                        [opts.thresholds.critical, "rgba(224, 47, 68, 0.2)"]
+                    ];
+
                 }else{
                     // warning is < than critical, Free disk space for example
                     uPlotOptions.series[1].stroke = function(u, seriesIdx){
@@ -289,6 +380,13 @@ var uPlotGraphDefaults = (function(){
                             [opts.thresholds.warning, "rgba(86, 166, 75, 0.2)"]
                         ], true)
                     }.bind(this);
+
+                    // Save the thresholds so we can set the color for the mouse over point
+                    this.thresholdColors = [
+                        [0, "rgba(224, 47, 68, 0.2)"],
+                        [opts.thresholds.critical, "rgba(234, 184, 57, 0.2)"],
+                        [opts.thresholds.warning, "rgba(86, 166, 75, 0.2)"]
+                    ];
                 }
             }
         }

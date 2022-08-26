@@ -23,48 +23,6 @@
 //  confirmation.
 ?>
 
-
-<style>
-
-    .uplot {
-        display: inline-block;
-        vertical-align: top;
-        width: min-content;
-    }
-
-    .u-over {
-        box-shadow: 0px 0px 0px 0.5px #ccc;
-    }
-
-    .u-legend {
-        text-align: left;
-        padding-left: 50px;
-    }
-
-    .u-inline tr {
-        margin-right: 8px;
-    }
-
-    .u-label {
-        font-size: 12px;
-    }
-
-    .u-tooltip {
-        font-size: 10pt;
-        position: absolute;
-        background: #fff;
-        display: none;
-        border: 2px solid black;
-        padding: 4px;
-        pointer-events: none;
-        z-index: 100;
-        white-space: pre;
-        font-family: monospace;
-    }
-
-</style>
-
-
 <div class="popup-graph-container" id="serviceGraphContainer-{{graphPopoverId}}">
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6" ng-show="isLoadingGraph">
@@ -76,7 +34,7 @@
         <div class="col-sm-12 col-md-12 col-lg-6"
              ng-repeat="(index, value) in popoverPerfdata"
              ng-if="index < 4"
-            ng-class="{'col-lg-12': popoverPerfdata.length === 1}">
+             ng-class="{'col-lg-12': popoverPerfdata.length === 1}">
             <div id="serviceGraphUPlot-{{graphPopoverId}}-{{index}}" class="serviceGraphUPlot"></div>
         </div>
     </div>
