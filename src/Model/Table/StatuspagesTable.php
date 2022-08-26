@@ -28,7 +28,6 @@ use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use Statusengine2Module\Model\Table\HoststatusTable;
-use Statusengine3Module\Model\Table\AcknowledgementServicesTable;
 
 /**
  * Statuspages Model
@@ -384,6 +383,7 @@ class StatuspagesTable extends Table {
                                     }
 
                                     $statuspageForView[$key][$subKey]['serviceSummary'][] = $currentServiceSummary;
+                                    unset($currentServiceSummary);
                                 }
 
                             }
@@ -439,7 +439,6 @@ class StatuspagesTable extends Table {
                                     $statuspageForView[$key][$subKey]['downtime']['comment_data'] = $servicestatus['Servicestatus']['downtime']['comment_data'];
                                 }
                             }
-
                         }
                     }
                 }
@@ -478,6 +477,8 @@ class StatuspagesTable extends Table {
                     $servicegroupstatus = $this->getServicegroupSummary(
                         $ServicesTable,
                         $ServicestatusTable,
+                        $AcknowledgementServicesTable,
+                        $DowntimehistoryServicesTable,
                         $servicegroup
                     );
 
@@ -487,8 +488,42 @@ class StatuspagesTable extends Table {
                         $statuspageForView[$key][$subKey]['humanState'] = $servicegroupstatus['CumulatedState']['humanState'];
                         $statuspageForView[$key][$subKey]['inDowntime'] = $servicegroupstatus['CumulatedState']['inDowntime'];
                         $statuspageForView[$key][$subKey]['acknowledged'] = $servicegroupstatus['CumulatedState']['acknowledged'];
-                    }
 
+                        if (!empty($servicegroupstatus['CumulatedState']['serviceSummary'])) {
+                            foreach ($servicegroupstatus['CumulatedState']['serviceSummary'] as $serviceSummaryForServicegroup) {
+                                $currentServiceSummary = [
+                                    'currentState'    => $serviceSummaryForServicegroup['currentState'],
+                                    'humanState'      => $serviceSummaryForServicegroup['humanState'],
+                                    'inDowntime'      => $serviceSummaryForServicegroup['inDowntime'],
+                                    'acknowledged'    => $serviceSummaryForServicegroup['acknowledged'],
+                                    'acknowledgement' => [],
+                                    'downtime'        => [],
+                                ];
+
+                                if (!empty($serviceSummaryForServicegroup['acknowledgement'])) {
+                                    $currentServiceSummary['acknowledgement']['entry_time'] = $serviceSummaryForServicegroup['acknowledgement']['entry_time'];
+                                    if (!$public) {
+                                        //do not show user entered comment in public view
+                                        $currentServiceSummary['acknowledgement']['comment_data'] = $serviceSummaryForServicegroup['acknowledgement']['comment_data'];
+                                    }
+                                }
+
+                                if (!empty($serviceSummaryForServicegroup['downtime'])) {
+                                    $currentServiceSummary['downtime']['entry_time'] = $serviceSummaryForServicegroup['downtime']['entry_time'];
+                                    $currentServiceSummary['downtime']['scheduled_start_time'] = $serviceSummaryForServicegroup['downtime']['scheduled_start_time'];
+                                    $currentServiceSummary['downtime']['scheduled_end_time'] = $serviceSummaryForServicegroup['downtime']['scheduled_end_time'];
+                                    if (!$public) {
+                                        //do not show user entered comment in public view
+                                        $currentServiceSummary['downtime']['comment_data'] = $serviceSummaryForServicegroup['downtime']['comment_data'];
+                                    }
+                                }
+
+                                $statuspageForView[$key][$subKey]['serviceSummary'][] = $currentServiceSummary;
+                                unset($currentServiceSummary);
+                            }
+
+                        }
+                    }
                 }
             }
         }
@@ -1111,7 +1146,7 @@ class StatuspagesTable extends Table {
      * @param array $servicegroup
      * @return array[]
      */
-    private function getServicegroupSummary(ServicesTable $ServicesTable, ServicestatusTableInterface $ServicestatusTable, array $servicegroup) {
+    private function getServicegroupSummary(ServicesTable $ServicesTable, ServicestatusTableInterface $ServicestatusTable, $AcknowledgementServicesTable, DowntimehistoryServicesTableInterface $DowntimehistoryServicesTable, array $servicegroup) {
         $ServicestatusFields = new ServicestatusFields(new DbBackend());
         $ServicestatusFields
             ->currentState()
@@ -1134,43 +1169,72 @@ class StatuspagesTable extends Table {
         ];
         $cumulatedServiceState = null;
         $servicesResult = [];
+
+        $ServiceSummary = [];
+        $allServiceStates = [];
+        $allServiceDowntimes = [];
+        $allServiceAcknowledgements = [];
         foreach ($servicegroup['services'] as $service) {
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
-                'Service' => $service,
-            ]);
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['host']);
-
-            if (isset($servicestatusResults[$Service->getUuid()])) {
-                $Servicestatus = new Servicestatus(
-                    $servicestatusResults[$Service->getUuid()]['Servicestatus']
-                );
-                $serviceIdsGroupByState[$Servicestatus->currentState()][] = $service['id'];
-
-            } else {
-                $Servicestatus = new Servicestatus(
-                    ['Servicestatus' => []]
-                );
-            }
-
-            $isInDowntime = $Servicestatus->isInDowntime();
-            $isAcknowledged = $Servicestatus->isAcknowledged();
-
-            $servicesResult[] = [
-                'Service'       => $Service->toArray(),
-                'Servicestatus' => $Servicestatus->toArray(),
-                'InDowntime'    => $isInDowntime,
-                'Acknowledged'  => $isAcknowledged,
-                'Host'          => $Host->toArray()
+            $service = [
+                'id'   => $service['id'],
+                'uuid' => $service['uuid'],
             ];
+            $currentServiceSummary = $this->getServiceSummary($ServicestatusTable, $AcknowledgementServicesTable, $DowntimehistoryServicesTable, $service);
+            $ServiceSummary[] = $currentServiceSummary['Servicestatus'];
+            $allServiceStates[] = $currentServiceSummary['Servicestatus']['currentState'];
+            $allServiceDowntimes[] = $currentServiceSummary['Servicestatus']['inDowntime'];
+            $allServiceAcknowledgements[] = $currentServiceSummary['Servicestatus']['acknowledged'];
         }
-        $servicesResult = Hash::sort($servicesResult, '{s}.Servicestatus.currentState', 'desc');
-        if (!empty($servicestatusResults)) {
-            $cumulatedServiceState = Hash::apply($servicestatusResults, '{s}.Servicestatus.current_state', 'max');
+
+        if (!empty($allServiceStates)) {
+            $cumulatedServiceState = max($allServiceStates);
         }
+
         $CumulatedServiceStatus = new Servicestatus([
             'current_state' => $cumulatedServiceState
         ]);
 
+
+        /*
+                foreach ($servicegroup['services'] as $service) {
+                    $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
+                        'Service' => $service,
+                    ]);
+                    $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['host']);
+
+                    if (isset($servicestatusResults[$Service->getUuid()])) {
+                        $Servicestatus = new Servicestatus(
+                            $servicestatusResults[$Service->getUuid()]['Servicestatus']
+                        );
+                        $serviceIdsGroupByState[$Servicestatus->currentState()][] = $service['id'];
+
+                    } else {
+                        $Servicestatus = new Servicestatus(
+                            ['Servicestatus' => []]
+                        );
+                    }
+
+                    $isInDowntime = $Servicestatus->isInDowntime();
+                    $isAcknowledged = $Servicestatus->isAcknowledged();
+
+                    $servicesResult[] = [
+                        'Service'       => $Service->toArray(),
+                        'Servicestatus' => $Servicestatus->toArray(),
+                        'InDowntime'    => $isInDowntime,
+                        'Acknowledged'  => $isAcknowledged,
+                        'Host'          => $Host->toArray()
+                    ];
+
+
+                }
+                $servicesResult = Hash::sort($servicesResult, '{s}.Servicestatus.currentState', 'desc');
+                if (!empty($servicestatusResults)) {
+                    $cumulatedServiceState = Hash::apply($servicestatusResults, '{s}.Servicestatus.current_state', 'max');
+                }
+                $CumulatedServiceStatus = new Servicestatus([
+                    'current_state' => $cumulatedServiceState
+                ]);
+        */
         $servicegroupDowntimes = Hash::extract($servicesResult, '{n}.InDowntime');
         $servicegroupAcknowledgements = Hash::extract($servicesResult, '{n}.Acknowledged');
 
@@ -1185,12 +1249,19 @@ class StatuspagesTable extends Table {
             $servicegroupAck = false;
         }
 
+
         $CumulatedState = [
-            'currentState' => $CumulatedServiceStatus->toArray()['currentState'],
-            'humanState'   => $CumulatedServiceStatus->toArray()['humanState'],
-            'inDowntime'   => (int)$servicegroupDowntime,
-            'acknowledged' => (int)$servicegroupAck,
+            'currentState'   => $CumulatedServiceStatus->toArray()['currentState'],
+            'humanState'     => $CumulatedServiceStatus->toArray()['humanState'],
+            'inDowntime'     => (int)$servicegroupDowntime,
+            'acknowledged'   => (int)$servicegroupAck,
+            'serviceSummary' => []
         ];
+
+        if(!empty($ServiceSummary)){
+            $CumulatedState['serviceSummary'] = $ServiceSummary;
+        }
+
 
         return [
             'CumulatedState' => $CumulatedState,
