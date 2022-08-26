@@ -161,7 +161,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 var humanTime = date.toFormat('dd.LL.yyyy HH:mm:ss');
 
                 $graph_data_tooltip
-                    .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><strong>' + contents + '</strong>')
+                    .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><b>' + contents + '</b>')
                     .css({
                         top: y,
                         left: x + 10
@@ -250,7 +250,12 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 graph_data.push({
                     label: label,
                     data: gaugeData,
-                    unit: performance_data.datasource.unit
+                    unit: performance_data.datasource.unit,
+                    // https://github.com/MichaelZinsmaier/CurvedLines
+                    curvedLines: {
+                        apply: true,
+                        //monotonicFit: true
+                    }
                 });
                 var options = GraphDefaultsObj.getDefaultOptions();
                 options.height = $scope.height + 'px';
@@ -275,10 +280,11 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 options.series.color = defaultColor;
                 options.series.threshold = thresholdAreas;
                 options.grid.markings = thresholdLines;
-                options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
+                //options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
+                options.lines.fillColor.colors = [{ brightness: 1, opacity: 0.2 }, { brightness: 1, opacity: 0.2}];
                 options.points = {
                     show: false,
-                    radius: 1
+                    radius: 2.5
                 };
 
                 if($scope.height < 130){

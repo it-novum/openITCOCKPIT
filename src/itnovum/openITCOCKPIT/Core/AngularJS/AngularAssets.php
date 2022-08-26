@@ -60,6 +60,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/flot/jquery.flot.resize.js',
         'node_modules/flot/jquery.flot.threshold.js',
         'node_modules/flot/jquery.flot.selection.js',
+        'js/lib/jquery.flot.curvedLines.js',
         //'node_modules/jquery-nestable/jquery.nestable.js',
         //webroot/legacy/smartadmin/js/plugin/jquery-nestable/jquery.nestable.js
         'js/lib/jquery-nestable/jquery.nestable.js',
