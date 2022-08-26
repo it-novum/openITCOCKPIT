@@ -1172,8 +1172,8 @@ class StatuspagesTable extends Table {
 
         $ServiceSummary = [];
         $allServiceStates = [];
-        $allServiceDowntimes = [];
-        $allServiceAcknowledgements = [];
+        // $allServiceDowntimes = [];
+        // $allServiceAcknowledgements = [];
         foreach ($servicegroup['services'] as $service) {
             $service = [
                 'id'   => $service['id'],
@@ -1182,8 +1182,8 @@ class StatuspagesTable extends Table {
             $currentServiceSummary = $this->getServiceSummary($ServicestatusTable, $AcknowledgementServicesTable, $DowntimehistoryServicesTable, $service);
             $ServiceSummary[] = $currentServiceSummary['Servicestatus'];
             $allServiceStates[] = $currentServiceSummary['Servicestatus']['currentState'];
-            $allServiceDowntimes[] = $currentServiceSummary['Servicestatus']['inDowntime'];
-            $allServiceAcknowledgements[] = $currentServiceSummary['Servicestatus']['acknowledged'];
+            //$allServiceDowntimes[] = $currentServiceSummary['Servicestatus']['inDowntime'];
+            //$allServiceAcknowledgements[] = $currentServiceSummary['Servicestatus']['acknowledged'];
         }
 
         if (!empty($allServiceStates)) {
@@ -1194,47 +1194,6 @@ class StatuspagesTable extends Table {
             'current_state' => $cumulatedServiceState
         ]);
 
-
-        /*
-                foreach ($servicegroup['services'] as $service) {
-                    $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
-                        'Service' => $service,
-                    ]);
-                    $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['host']);
-
-                    if (isset($servicestatusResults[$Service->getUuid()])) {
-                        $Servicestatus = new Servicestatus(
-                            $servicestatusResults[$Service->getUuid()]['Servicestatus']
-                        );
-                        $serviceIdsGroupByState[$Servicestatus->currentState()][] = $service['id'];
-
-                    } else {
-                        $Servicestatus = new Servicestatus(
-                            ['Servicestatus' => []]
-                        );
-                    }
-
-                    $isInDowntime = $Servicestatus->isInDowntime();
-                    $isAcknowledged = $Servicestatus->isAcknowledged();
-
-                    $servicesResult[] = [
-                        'Service'       => $Service->toArray(),
-                        'Servicestatus' => $Servicestatus->toArray(),
-                        'InDowntime'    => $isInDowntime,
-                        'Acknowledged'  => $isAcknowledged,
-                        'Host'          => $Host->toArray()
-                    ];
-
-
-                }
-                $servicesResult = Hash::sort($servicesResult, '{s}.Servicestatus.currentState', 'desc');
-                if (!empty($servicestatusResults)) {
-                    $cumulatedServiceState = Hash::apply($servicestatusResults, '{s}.Servicestatus.current_state', 'max');
-                }
-                $CumulatedServiceStatus = new Servicestatus([
-                    'current_state' => $cumulatedServiceState
-                ]);
-        */
         $servicegroupDowntimes = Hash::extract($servicesResult, '{n}.InDowntime');
         $servicegroupAcknowledgements = Hash::extract($servicesResult, '{n}.Acknowledged');
 
@@ -1258,10 +1217,9 @@ class StatuspagesTable extends Table {
             'serviceSummary' => []
         ];
 
-        if(!empty($ServiceSummary)){
+        if (!empty($ServiceSummary)) {
             $CumulatedState['serviceSummary'] = $ServiceSummary;
         }
-
 
         return [
             'CumulatedState' => $CumulatedState,
