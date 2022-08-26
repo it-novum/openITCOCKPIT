@@ -269,7 +269,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
 
                 options.xaxis.tickFormatter = function(val, axis){
                     var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
-                    return date.toFormat('dd.LL.yyyy HH:mm:ss');
+                    return date.toFormat('HH:mm:ss');
                 };
 
                 options.series.color = defaultColor;
