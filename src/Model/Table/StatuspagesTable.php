@@ -451,19 +451,91 @@ class StatuspagesTable extends Table {
                         Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}')
                     );
 
+
                     $hostgroupstatus = $this->getHostgroupSummary(
                         $ServicesTable,
-                        $HoststatusTable,
                         $ServicestatusTable,
+                        $AcknowledgementServicesTable,
+                        $DowntimehistoryServicesTable,
+                        $HoststatusTable,
+                        $AcknowledgementHostsTable,
+                        $DowntimehistoryHostsTable,
                         $hostgroup
                     );
                     $statuspageForView[$key][$subKey]['name'] = (!empty($item['_joinData']['display_name']) ? $item['_joinData']['display_name'] : $item['Containers']['name']);
                     if (isset($hostgroupstatus['CumulatedState'])) {
                         $statuspageForView[$key][$subKey]['currentState'] = $hostgroupstatus['CumulatedState']['currentState'];
                         $statuspageForView[$key][$subKey]['humanState'] = $hostgroupstatus['CumulatedState']['humanState'];
-                        $statuspageForView[$key][$subKey]['stateType'] = $hostgroupstatus['CumulatedState']['stateType'];
                         $statuspageForView[$key][$subKey]['inDowntime'] = $hostgroupstatus['CumulatedState']['inDowntime'];
                         $statuspageForView[$key][$subKey]['acknowledged'] = $hostgroupstatus['CumulatedState']['acknowledged'];
+                    }
+
+                    if (!empty($hostgroupstatus['CumulatedState']['hostSummary'])) {
+                        foreach ($hostgroupstatus['CumulatedState']['hostSummary'] as $hostSummaryforHostgroup) {
+                            $currentHostSummary = [
+                                'currentState'    => $hostSummaryforHostgroup['currentState'],
+                                'humanState'      => $hostSummaryforHostgroup['humanState'],
+                                'inDowntime'      => $hostSummaryforHostgroup['inDowntime'],
+                                'acknowledged'    => $hostSummaryforHostgroup['acknowledged'],
+                                'acknowledgement' => [],
+                                'downtime'        => [],
+                                'serviceSummary'  => []
+                            ];
+
+                            if (!empty($hostSummaryforHostgroup['downtime'])) {
+                                $currentHostSummary['downtime']['entry_time'] = $hostSummaryforHostgroup['downtime']['entry_time'];
+                                $currentHostSummary['downtime']['scheduled_start_time'] = $hostSummaryforHostgroup['downtime']['scheduled_start_time'];
+                                $currentHostSummary['downtime']['scheduled_end_time'] = $hostSummaryforHostgroup['downtime']['scheduled_end_time'];
+                                if (!$public) {
+                                    //do not show user entered comment in public view
+                                    $currentHostSummary['downtime']['comment_data'] = $hostSummaryforHostgroup['downtime']['comment_data'];
+                                }
+                            }
+
+                            if (!empty($hostSummaryforHostgroup['acknowledgement'])) {
+                                $currentHostSummary['acknowledgement']['entry_time'] = $hostSummaryforHostgroup['acknowledgement']['entry_time'];
+                                if (!$public) {
+                                    //do not show user entered comment in public view
+                                    $currentHostSummary['acknowledgement']['comment_data'] = $hostSummaryforHostgroup['acknowledgement']['comment_data'];
+                                }
+                            }
+
+                            if (!empty($hostSummaryforHostgroup['serviceSummary'])) {
+                                foreach ($hostSummaryforHostgroup['serviceSummary'] as $serviceSummaryforHostgroup) {
+
+                                    $currentServiceSummary = [
+                                        'currentState'    => $serviceSummaryforHostgroup['Servicestatus']['currentState'],
+                                        'humanState'      => $serviceSummaryforHostgroup['Servicestatus']['humanState'],
+                                        'inDowntime'      => $serviceSummaryforHostgroup['Servicestatus']['inDowntime'],
+                                        'acknowledged'    => $serviceSummaryforHostgroup['Servicestatus']['acknowledged'],
+                                        'acknowledgement' => [],
+                                        'downtime'        => [],
+                                    ];
+
+                                    if (!empty($serviceSummaryforHostgroup['Servicestatus']['downtime'])) {
+                                        $currentServiceSummary['downtime']['entry_time'] = $serviceSummaryforHostgroup['Servicestatus']['downtime']['entry_time'];
+                                        $currentServiceSummary['downtime']['scheduled_start_time'] = $serviceSummaryforHostgroup['Servicestatus']['downtime']['scheduled_start_time'];
+                                        $currentServiceSummary['downtime']['scheduled_end_time'] = $serviceSummaryforHostgroup['Servicestatus']['downtime']['scheduled_end_time'];
+                                        if (!$public) {
+                                            //do not show user entered comment in public view
+                                            $currentServiceSummary['downtime']['comment_data'] = $serviceSummaryforHostgroup['Servicestatus']['downtime']['comment_data'];
+                                        }
+                                    }
+
+                                    if (!empty($serviceSummaryforHostgroup['Servicestatus']['acknowledgement'])) {
+                                        $currentServiceSummary['acknowledgement']['entry_time'] = $serviceSummaryforHostgroup['Servicestatus']['acknowledgement']['entry_time'];
+                                        if (!$public) {
+                                            //do not show user entered comment in public view
+                                            $currentServiceSummary['acknowledgement']['comment_data'] = $serviceSummaryforHostgroup['Servicestatus']['acknowledgement']['comment_data'];
+                                        }
+                                    }
+                                    $currentHostSummary['serviceSummary'][] = $currentServiceSummary;
+                                    unset($currentServiceSummary);
+                                }
+                            }
+                            $statuspageForView[$key][$subKey]['hostSummary'] = $currentHostSummary;
+                            unset($currentHostSummary);
+                        }
                     }
                 }
             }
@@ -915,7 +987,7 @@ class StatuspagesTable extends Table {
      * @param array $hostgroup
      * @return array[]
      */
-    private function getHostgroupSummary(ServicesTable $ServicesTable, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable, array $hostgroup) {
+    private function getHostgroupSummary(ServicesTable $ServicesTable, ServicestatusTableInterface $ServicestatusTable, $AcknowledgementServicesTable, DowntimehistoryServicesTableInterface $DowntimehistoryServicesTable, HoststatusTableInterface $HoststatusTable, AcknowledgementHostsTableInterface $AcknowledgementHostsTable, DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable, array $hostgroup) {
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields
             ->currentState()
@@ -924,162 +996,96 @@ class StatuspagesTable extends Table {
 
         $hostUuids = Hash::extract($hostgroup['hosts'], '{n}.uuid');
 
-        $hoststatusByUuids = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
-
         $ServicestatusFieds = new ServicestatusFields(new DbBackend());
         $ServicestatusFieds
             ->currentState()
             ->scheduledDowntimeDepth()
             ->problemHasBeenAcknowledged();
-        $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
 
-
-        if (empty($hoststatusByUuids)) {
-            $hoststatusByUuids['Hoststatus'] = [];
-        }
-        $hoststatusResult = [];
-        $cumulatedHostState = -1;
         $cumulatedServiceState = null;
         $allServiceStatus = [];
-        $totalServiceStateSummary = [
-            'state' => [
-                0 => 0,
-                1 => 0,
-                2 => 0,
-                3 => 0,
-            ],
-            'total' => 0
-        ];
 
-        $hostIdsGroupByState = [
-            0 => [],
-            1 => [],
-            2 => []
-        ];
-
-        $serviceIdsGroupByState = [
-            0 => [],
-            1 => [],
-            2 => [],
-            3 => []
-        ];
-
-
+        $hostSummary = [];
         foreach ($hostgroup['hosts'] as $host) {
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $host]);
-            if (isset($hoststatusByUuids[$Host->getUuid()])) {
-                $Hoststatus = new Hoststatus(
-                    $hoststatusByUuids[$Host->getUuid()]['Hoststatus']
-                );
-                $hostIdsGroupByState[$Hoststatus->currentState()][] = $host['id'];
 
-                if ($Hoststatus->currentState() > $cumulatedHostState) {
-                    $cumulatedHostState = $Hoststatus->currentState();
-                }
+            $host = [
+                'id'   => $Host->getId(),
+                'uuid' => $Host->getUuid()
+            ];
+
+            $currentHostSummary = $this->getHostSummary(
+                $ServicesTable,
+                $ServicestatusTable,
+                $AcknowledgementServicesTable,
+                $DowntimehistoryServicesTable,
+                $HoststatusTable,
+                $AcknowledgementHostsTable,
+                $DowntimehistoryHostsTable,
+                $host
+            );
+
+            if (!empty($currentHostSummary)) {
+                $hostSummary[] = $currentHostSummary['Hoststatus'];
+            }
+
+            $cumulatedHostState = Hash::apply($hostSummary, '{n}.currentState', 'max');
+            $hostDowntimes = Hash::extract($hostSummary, '{n}.inDowntime');
+            $hostAcknowledgements = Hash::extract($hostSummary, '{n}.acknowledged');
+            $allServiceStatus = Hash::extract($hostSummary, '{n}.serviceSummary.{n}.Servicestatus.currentState');
+
+
+            $hostgroupDowntime = true;
+            $hostgroupAck = true;
+            if (in_array(false, $hostDowntimes)) {
+                $hostgroupDowntime = false;
+            }
+
+            if (in_array(false, $hostAcknowledgements)) {
+                $hostgroupAck = false;
+            }
+
+            $cumulatedState = null;
+            $cumulatedStateType = 'host';
+            $cumulatedHumanState = '';
+            if ($cumulatedHostState > 0) {
+                $CumulatedHostStatus = new Hoststatus([
+                    'current_state' => $cumulatedHostState
+                ]);
+
+
+                $cumulatedStateType = 'host';
+                $cumulatedState = $CumulatedHostStatus->toArray()['currentState'];
+                $cumulatedHumanState = $CumulatedHostStatus->toArray()['humanState'];
             } else {
-                $Hoststatus = new Hoststatus(
-                    ['Hoststatus' => []]
-                );
-            }
-            $services = $ServicesTable->find()
-                ->join([
-                    [
-                        'table'      => 'servicetemplates',
-                        'type'       => 'INNER',
-                        'alias'      => 'Servicetemplates',
-                        'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
-                    ],
-                ])
-                ->select([
-                    'Services.id',
-                    'Services.name',
-                    'Services.uuid',
-                    'Servicetemplates.name'
-                ])
-                ->where([
-                    'Services.host_id'  => $Host->getId(),
-                    'Services.disabled' => 0
-                ])->all()->toArray();
-
-            $servicesUuids = Hash::extract($services, '{n}.uuid');
-            $servicesIdsByUuid = Hash::combine($services, '{n}.uuid', '{n}.id');
-            $servicestatusResults = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
-
-            $serviceIdsGroupByStatePerHost = [
-                0 => [],
-                1 => [],
-                2 => [],
-                3 => []
-            ];
-            foreach ($servicestatusResults as $serviceUuid => $servicestatusResult) {
-                $allServiceStatus[] = $servicestatusResult['Servicestatus']['current_state'];
-                $serviceIdsGroupByState[$servicestatusResult['Servicestatus']['current_state']][] = $servicesIdsByUuid[$serviceUuid];
-                $serviceIdsGroupByStatePerHost[$servicestatusResult['Servicestatus']['current_state']][] = $servicesIdsByUuid[$serviceUuid];
+                if (!empty($allServiceStatus)) {
+                    $cumulatedServiceState = (int)max($allServiceStatus);
+                }
+                $CumulatedServiceStatus = new Servicestatus([
+                    'current_state' => $cumulatedServiceState
+                ]);
+                $cumulatedStateType = 'service';
+                $cumulatedState = $CumulatedServiceStatus->toArray()['currentState'];
+                $cumulatedHumanState = $CumulatedServiceStatus->toArray()['humanState'];
             }
 
-            $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatusResults);
-            $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
-
-            $isInDowntime = $Hoststatus->isInDowntime();
-            $isAcknowledged = $Hoststatus->isAcknowledged();
-            $hoststatusResult[] = [
-                'Host'                   => $Host->toArray(),
-                'Hoststatus'             => $Hoststatus->toArray(),
-                'InDowntime'             => $isInDowntime,
-                'Acknowledged'           => $isAcknowledged,
-                'ServiceSummary'         => $serviceStateSummary,
-                'ServiceIdsGroupByState' => $serviceIdsGroupByStatePerHost
+            $hostgroupState = [
+                'currentState'    => $cumulatedState,
+                'curentStateType' => $cumulatedStateType,
+                'humanState'      => $cumulatedHumanState,
+                'inDowntime'      => (int)$hostgroupDowntime,
+                'acknowledged'    => (int)$hostgroupAck,
+                'hostSummary'     => []
             ];
 
-            foreach ($serviceStateSummary['state'] as $state => $stateValue) {
-                $totalServiceStateSummary['state'][$state] += $stateValue;
+            if (!empty($hostSummary)) {
+                $hostgroupState['hostSummary'] = $hostSummary;
             }
-            $totalServiceStateSummary['total'] += $serviceStateSummary['total'];
-        }
-        $hoststatusResult = Hash::sort($hoststatusResult, '{s}.Hoststatus.currentState', 'desc');
 
-        $hostDowntimes = Hash::extract($hoststatusResult, '{n}.InDowntime');
-        $hostAcknowledgements = Hash::extract($hoststatusResult, '{n}.Acknowledged');
-
-        $hostgroupDowntime = true;
-        $hostgroupAck = true;
-        if (in_array(false, $hostDowntimes, true)) {
-            $hostgroupDowntime = false;
-        }
-
-        if (in_array(false, $hostAcknowledgements, true)) {
-            $hostgroupAck = false;
-        }
-
-        if ($cumulatedHostState > 0) {
-            $CumulatedHostStatus = new Hoststatus([
-                'current_state' => $cumulatedHostState
-            ]);
-            $CumulatedHumanState = [
-                'stateType'    => 'host',
-                'inDowntime'   => (int)$hostgroupDowntime,
-                'acknowledged' => (int)$hostgroupAck,
-                'currentState' => $CumulatedHostStatus->toArray()['currentState'],
-                'humanState'   => $CumulatedHostStatus->toArray()['humanState']
-            ];
-        } else {
-            if (!empty($allServiceStatus)) {
-                $cumulatedServiceState = (int)max($allServiceStatus);
-            }
-            $CumulatedServiceStatus = new Servicestatus([
-                'current_state' => $cumulatedServiceState
-            ]);
-            $CumulatedHumanState = [
-                'stateType'    => 'service',
-                'inDowntime'   => (int)$hostgroupDowntime,
-                'acknowledged' => (int)$hostgroupAck,
-                'currentState' => $CumulatedServiceStatus->toArray()['currentState'],
-                'humanState'   => $CumulatedServiceStatus->toArray()['humanState']
+            return [
+                'CumulatedState' => $hostgroupState,
             ];
         }
-        return [
-            'CumulatedState' => $CumulatedHumanState,
-        ];
     }
 
     /**
