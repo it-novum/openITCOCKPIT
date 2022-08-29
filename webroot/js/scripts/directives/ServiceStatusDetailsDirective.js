@@ -218,7 +218,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                 var humanTime = fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
 
                 $graph_data_tooltip
-                    .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><strong>' + contents + '</strong>')
+                    .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><b>' + contents + '</b>')
                     .css({
                         top: y,
                         left: x + 10

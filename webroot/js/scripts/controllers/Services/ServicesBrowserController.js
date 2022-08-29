@@ -523,7 +523,7 @@ angular.module('openITCOCKPIT')
             var humanTime = date.toFormat('dd.LL.yyyy HH:mm:ss');
 
             $graph_data_tooltip
-                .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><strong>' + contents + '</strong>')
+                .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><b>' + contents + '</b>')
                 .css({
                     top: y,
                     left: x + 10
@@ -613,11 +613,12 @@ angular.module('openITCOCKPIT')
             options.series.color = defaultColor;
             options.series.threshold = thresholdAreas;
             options.grid.markings = thresholdLines;
-            options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
+            //options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
+            options.lines.fillColor.colors = [{ brightness: 1, opacity: 0.2 }, { brightness: 1, opacity: 0.2}];
 
             options.points = {
                 show: $scope.graph.showDatapoints,
-                radius: 1
+                radius: 2.5
             };
 
             options.xaxis.min = (lastGraphStart * 1000);
@@ -632,7 +633,14 @@ angular.module('openITCOCKPIT')
             //    $scope.currentGraphUnit = performance_data.datasource.unit;
             //}
 
-            plot = $.plot('#graphCanvas', [graph_data], options);
+            plot = $.plot('#graphCanvas', [{
+                data: graph_data,
+                // https://github.com/MichaelZinsmaier/CurvedLines
+                curvedLines: {
+                    apply: true,
+                    //monotonicFit: true
+                }
+            }], options);
 
             if(zoomCallbackWasBind === false){
                 $("#graphCanvas").bind("plotselected", function(event, ranges){
