@@ -26,6 +26,8 @@
 /**
  * @var \App\View\AppView $this
  */
+
+use App\Lib\Environments;
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +43,33 @@
     <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
 
     <link rel="stylesheet" type="text/css" href="/node_modules/noty/lib/noty.css">
+    <?php
+    $cssFiles = [
+        '/css/openitcockpit-colors.css',
+        '/css/openitcockpit-utils.css',
+    ];
 
+
+    $fileVersion = '?v' . time();
+    if (ENVIRONMENT === Environments::PRODUCTION):
+        Configure::load('version');
+        $fileVersion = '?v' . OPENITCOCKPIT_VERSION;
+    endif;
+
+
+    foreach ($cssFiles as $cssFile) {
+        printf('<link rel="stylesheet" type="text/css" href="' . $cssFile . '">');
+    }
+
+    if (\Cake\Core\Plugin::isLoaded('DesignModule')) {
+        //load custom design css file
+        $customCss = PLUGIN . 'DesignModule' . DS . 'webroot' . DS . 'css' . DS . 'customStyle.css';
+        if (file_exists($customCss)) {
+            $customCss = 'design_module/css/customStyle.css';
+            printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $customCss, $fileVersion, PHP_EOL);
+        }
+    }
+    ?>
     <title><?= __('Fullscreen') ?></title>
 
     <!-- FAVICONS -->
