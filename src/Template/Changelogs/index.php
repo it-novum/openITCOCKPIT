@@ -275,6 +275,7 @@
                         <div class="col-lg-12">
                             <ul class="cbp_tmtimeline">
                                 <li ng-repeat="change in changes">
+                                    {{change.action}}
                                     <time class="cbp_tmtime" datetime="{{change.time}}">
                                         <span>{{change.time}}</span>
                                         <span>{{change.timeAgoInWords}}</span>

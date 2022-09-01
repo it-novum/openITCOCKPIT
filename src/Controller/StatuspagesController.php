@@ -109,10 +109,20 @@ class StatuspagesController extends AppController {
             throw new NotFoundException('Statuspage not found');
         }
 
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemname = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SYSTEMNAME');
+        $systemname = $systemname->get('value');
+        $systemaddress = $SystemsettingsTable->getSystemsettingByKey('SYSTEM.ADDRESS');
+        $systemaddress = $systemaddress->get('value');
 
         $DbBackend = $this->DbBackend;
         $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend);
-        //debug($statuspage);
+
+        if (!empty($statuspage)) {
+            $downtimeAndAckHistory = $StatuspagesTable->getDowntimeAndAckHistory($statuspage, false);
+        }
+
         if (!empty($statuspage) && $statuspage['statuspage']['public'] === false) {
             if (!$StatuspagesTable->allowedByStatuspageId($id, $this->MY_RIGHTS)) {
                 $this->render403();
@@ -120,8 +130,11 @@ class StatuspagesController extends AppController {
             }
         }
 
+        $this->set('systemname', $systemname);
+        $this->set('systemaddress', $systemaddress);
         $this->set('Statuspage', $statuspage);
-        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
+        $this->set('downtimeAndAckHistory', $downtimeAndAckHistory);
+        $this->viewBuilder()->setOption('serialize', ['Statuspage', 'downtimeAndAckHistory', 'systemname', 'systemaddress']);
     }
 
     /**

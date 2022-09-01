@@ -45,6 +45,9 @@ use App\Lib\Environments;
     <link rel="stylesheet" type="text/css" href="/node_modules/noty/lib/noty.css">
     <?php
     $cssFiles = [
+        '/css/changelog.css',
+        '/smartadmin4/dist/css/app.bundle.css',
+        '/smartadmin4/dist/css/themes/cust-theme-10.css',
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
     ];
@@ -58,7 +61,7 @@ use App\Lib\Environments;
 
 
     foreach ($cssFiles as $cssFile) {
-        printf('<link rel="stylesheet" type="text/css" href="' . $cssFile . '">');
+        printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
     }
 
     if (\Cake\Core\Plugin::isLoaded('DesignModule')) {
@@ -80,7 +83,7 @@ use App\Lib\Environments;
     <link rel="manifest" href="/img/favicons/site.webmanifest">
 
 </head>
-<body class="app">
+<body class="app nav-function-top">
 <div ng-controller="StatuspageFullscreenLayoutController">
     <?= $this->fetch('content') ?>
 </div>
