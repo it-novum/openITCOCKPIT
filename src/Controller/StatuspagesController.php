@@ -18,6 +18,7 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
@@ -119,8 +120,10 @@ class StatuspagesController extends AppController {
         $DbBackend = $this->DbBackend;
         $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend);
 
+        $userTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
+
         if (!empty($statuspage)) {
-            $downtimeAndAckHistory = $StatuspagesTable->getDowntimeAndAckHistory($statuspage, false);
+            $downtimeAndAckHistory = $StatuspagesTable->getDowntimeAndAckHistory($statuspage, false, $userTime);
         }
 
         if (!empty($statuspage) && $statuspage['statuspage']['public'] === false) {
@@ -151,13 +154,28 @@ class StatuspagesController extends AppController {
             throw new NotFoundException('Statuspage not found');
         }
 
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemname = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SYSTEMNAME');
+        $systemname = $systemname->get('value');
+        $systemaddress = $SystemsettingsTable->getSystemsettingByKey('SYSTEM.ADDRESS');
+        $systemaddress = $systemaddress->get('value');
+
         $conditions = ['Statuspages.public' => 1];
 
         $DbBackend = $this->DbBackend;
         $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend, $conditions, true);
 
+        $userTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
+        if (!empty($statuspage)) {
+            $downtimeAndAckHistory = $StatuspagesTable->getDowntimeAndAckHistory($statuspage, true, $userTime);
+        }
+
+        $this->set('systemname', $systemname);
+        $this->set('systemaddress', $systemaddress);
         $this->set('Statuspage', $statuspage);
-        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
+        $this->set('downtimeAndAckHistory', $downtimeAndAckHistory);
+        $this->viewBuilder()->setOption('serialize', ['Statuspage', 'downtimeAndAckHistory', 'systemname', 'systemaddress']);
     }
 
     /**

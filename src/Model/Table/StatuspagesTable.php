@@ -336,6 +336,7 @@ class StatuspagesTable extends Table {
                             $statuspageForView[$key][$subKey]['acknowledged'] = $hoststatus['Hoststatus']['acknowledged'];
                             $statuspageForView[$key][$subKey]['parentName'] = $hoststatus['Hoststatus']['parentName'];
                             $statuspageForView[$key][$subKey]['parentType'] = $hoststatus['Hoststatus']['parentType'];
+                            $statuspageForView[$key][$subKey]['selfType'] = $hoststatus['Hoststatus']['selfType'];
 
                             if ($hoststatus['Hoststatus']['acknowledged'] === 1 && !empty($hoststatus['Hoststatus']['acknowledgement'])) {
                                 $statuspageForView[$key][$subKey]['acknowlegement']['entry_time'] = $hoststatus['Hoststatus']['acknowledgement']['entry_time'];
@@ -367,6 +368,7 @@ class StatuspagesTable extends Table {
                                         'downtime'        => [],
                                         'parentName'      => $serviceSummaryForHost['Servicestatus']['parentName'],
                                         'parentType'      => $serviceSummaryForHost['Servicestatus']['parentType'],
+                                        'selfType'        => $serviceSummaryForHost['Servicestatus']['selfType'],
                                     ];
 
                                     if (!empty($serviceSummaryForHost['Servicestatus']['acknowledgement'])) {
@@ -395,6 +397,10 @@ class StatuspagesTable extends Table {
 
                             if (isset($hoststatus['Hoststatus']['cumulatedServiceState'])) {
                                 $statuspageForView[$key][$subKey]['cumulatedServiceState'] = $hoststatus['Hoststatus']['cumulatedServiceState'];
+                            }
+
+                            if (isset($hoststatus['Hoststatus']['cumulatedServiceHumansState'])) {
+                                $statuspageForView[$key][$subKey]['cumulatedServiceHumansState'] = $hoststatus['Hoststatus']['cumulatedServiceHumansState'];
                             }
 
                             if (isset($hoststatus['Hoststatus']['serviceAcknowledged'])) {
@@ -428,6 +434,7 @@ class StatuspagesTable extends Table {
                             $statuspageForView[$key][$subKey]['acknowledged'] = $servicestatus['Servicestatus']['acknowledged'];
                             $statuspageForView[$key][$subKey]['parentName'] = $servicestatus['Servicestatus']['parentName'];
                             $statuspageForView[$key][$subKey]['parentType'] = $servicestatus['Servicestatus']['parentType'];
+                            $statuspageForView[$key][$subKey]['selfType'] = $servicestatus['Servicestatus']['selfType'];
 
                             if ($servicestatus['Servicestatus']['acknowledged'] === 1 && !empty($servicestatus['Servicestatus']['acknowledgement'])) {
                                 $statuspageForView[$key][$subKey]['acknowlegement']['entry_time'] = $servicestatus['Servicestatus']['acknowledgement']['entry_time'];
@@ -479,6 +486,7 @@ class StatuspagesTable extends Table {
                         $statuspageForView[$key][$subKey]['acknowledged'] = $hostgroupstatus['CumulatedState']['acknowledged'];
                         $statuspageForView[$key][$subKey]['parentName'] = '';
                         $statuspageForView[$key][$subKey]['parentType'] = '';
+                        $statuspageForView[$key][$subKey]['selfType'] = $hostgroupstatus['CumulatedState']['selfType'];
                     }
 
                     if (!empty($hostgroupstatus['CumulatedState']['hostSummary'])) {
@@ -496,6 +504,7 @@ class StatuspagesTable extends Table {
                                 'serviceInDowntime'     => null,
                                 'parentName'            => $hostSummaryforHostgroup['parentName'],
                                 'parentType'            => $hostSummaryforHostgroup['parentType'],
+                                'selfType'              => $hostSummaryforHostgroup['selfType'],
                             ];
 
                             if (!empty($hostSummaryforHostgroup['downtime'])) {
@@ -527,7 +536,8 @@ class StatuspagesTable extends Table {
                                         'acknowledgement' => [],
                                         'downtime'        => [],
                                         'parentName'      => $serviceSummaryforHostgroup['Servicestatus']['parentName'],
-                                        'parentType'      => $serviceSummaryforHostgroup['Servicestatus']['parentType']
+                                        'parentType'      => $serviceSummaryforHostgroup['Servicestatus']['parentType'],
+                                        'selfType'        => $serviceSummaryforHostgroup['Servicestatus']['selfType']
                                     ];
 
                                     if (!empty($serviceSummaryforHostgroup['Servicestatus']['downtime'])) {
@@ -593,6 +603,7 @@ class StatuspagesTable extends Table {
                         $statuspageForView[$key][$subKey]['acknowledged'] = $servicegroupstatus['CumulatedState']['acknowledged'];
                         $statuspageForView[$key][$subKey]['parentName'] = '';
                         $statuspageForView[$key][$subKey]['parentType'] = '';
+                        $statuspageForView[$key][$subKey]['selfType'] = $servicegroupstatus['CumulatedState']['selfType'];
 
                         if (!empty($servicegroupstatus['CumulatedState']['serviceSummary'])) {
                             foreach ($servicegroupstatus['CumulatedState']['serviceSummary'] as $serviceSummaryForServicegroup) {
@@ -604,7 +615,8 @@ class StatuspagesTable extends Table {
                                     'acknowledgement' => [],
                                     'downtime'        => [],
                                     'parentName'      => $serviceSummaryForServicegroup['parentName'],
-                                    'parentType'      => $serviceSummaryForServicegroup['parentType']
+                                    'parentType'      => $serviceSummaryForServicegroup['parentType'],
+                                    'selfType'        => $serviceSummaryForServicegroup['selfType']
                                 ];
 
                                 if (!empty($serviceSummaryForServicegroup['acknowledgement'])) {
@@ -817,18 +829,20 @@ class StatuspagesTable extends Table {
         $hostIsAckd = $hoststatus->isAcknowledged();
 
         $hoststatus = [
-            'currentState'          => $hoststatus->toArray()['currentState'],
-            'humanState'            => $hoststatusAsString,
-            'inDowntime'            => (int)$hostIsInDowntime,
-            'acknowledged'          => (int)$hostIsAckd,
-            'acknowledgement'       => [],
-            'downtime'              => [],
-            'serviceSummary'        => [],
-            'cumulatedServiceState' => null,
-            'serviceAcknowledged'   => (int)$serviceAcknowledged,
-            'serviceInDowntime'     => (int)$serviceIsInDowntime,
-            'parentName'            => $parentName,
-            'parentType'            => $parentType
+            'currentState'               => $hoststatus->toArray()['currentState'],
+            'humanState'                 => $hoststatusAsString,
+            'inDowntime'                 => (int)$hostIsInDowntime,
+            'acknowledged'               => (int)$hostIsAckd,
+            'acknowledgement'            => [],
+            'downtime'                   => [],
+            'serviceSummary'             => [],
+            'cumulatedServiceState'      => null,
+            'cumulatedServiceHumansState' => null,
+            'serviceAcknowledged'        => (int)$serviceAcknowledged,
+            'serviceInDowntime'          => (int)$serviceIsInDowntime,
+            'parentName'                 => $parentName,
+            'parentType'                 => $parentType,
+            'selfType'                   => 'host'
         ];
 
         if (!empty($ServiceSummary)) {
@@ -837,6 +851,8 @@ class StatuspagesTable extends Table {
 
         if (!empty($cumulatedServiceState)) {
             $hoststatus['cumulatedServiceState'] = $cumulatedServiceState;
+            $state = new Servicestatus(['current_state' => $cumulatedServiceState]);
+            $hoststatus['cumulatedServiceHumansState'] = $state->ServiceStatusAsString();
         }
 
         if (!empty($acknowledgement)) {
@@ -940,7 +956,8 @@ class StatuspagesTable extends Table {
             'acknowledgement' => [],
             'downtime'        => [],
             'parentName'      => $parentName,
-            'parentType'      => $parentType
+            'parentType'      => $parentType,
+            'selfType'        => 'service'
         ];
 
 
@@ -1133,7 +1150,8 @@ class StatuspagesTable extends Table {
             'acknowledged'    => (int)$hostgroupAck,
             'hostSummary'     => [],
             'parentName'      => $parentName,
-            'parentType'      => $parentType
+            'parentType'      => $parentType,
+            'selfType'        => 'hostgroup'
         ];
 
         if (!empty($hostSummary)) {
@@ -1281,7 +1299,8 @@ class StatuspagesTable extends Table {
             'acknowledged'   => (int)$servicegroupAck,
             'serviceSummary' => [],
             'parentName'     => $parentName,
-            'parentType'     => $parentType
+            'parentType'     => $parentType,
+            'selfType'       => 'servicegroup'
         ];
 
         if (!empty($ServiceSummary)) {
@@ -1299,7 +1318,7 @@ class StatuspagesTable extends Table {
      * @param bool $public
      * @return array|\ArrayAccess|\ArrayAccess[]
      */
-    public function getDowntimeAndAckHistory($statuspageData, bool $public = true) {
+    public function getDowntimeAndAckHistory($statuspageData, bool $public = true, $userTime) {
         $downtimesAndAcks = [];
         foreach ($statuspageData as $key => $statuspage) {
             if ($key === 'statuspage') {
@@ -1313,10 +1332,47 @@ class StatuspagesTable extends Table {
         }
         if (!empty($downtimesAndAcks)) {
             $downtimesAndAcks = Hash::extract($downtimesAndAcks, '{n}.{n}');
+            //get rid of old downtimes
+            foreach ($downtimesAndAcks as $key => $downtimeAndAck) {
+                if (isset($downtimeAndAck['scheduled_end_time']) && !empty($downtimeAndAck['scheduled_end_time'])) {
+                    if ($downtimeAndAck['scheduled_end_time'] <= time()) {
+                        unset($downtimesAndAcks[$key]);
+                    }
+                }
+            }
+
             //sort array by sort_time key
             usort($downtimesAndAcks, function ($a, $b) {
-                return $a['sort_time'] - $b['sort_time'];
+                return $b['sort_time'] - $a['sort_time'];
             });
+
+            $timeAgoInWordsOptions = [
+                'end'      => 0,
+                'accuracy' => [
+                    'year'   => 'month',  // The format if years > 0   (default "day")
+                    'month'  => 'month',  // The format if months > 0  (default "day")
+                    'week'   => 'day',    // The format if weeks > 0   (default "day")
+                    'day'    => 'hour',   // The format if weeks > 0   (default "hour")
+                    'hour'   => 'minute', // The format if hours > 0   (default "minute")
+                    'minute' => 'minute', // The format if minutes > 0 (default "minute")
+                    'second' => 'second', // The format if seconds > 0 (default "second")
+                ]
+            ];
+
+            foreach ($downtimesAndAcks as $currentKey => $history) {
+                //$UserTime->secondsInHumanShort()
+                $downtimesAndAcks[$currentKey]['entry_time'] = $userTime->format($history['entry_time']);
+                $downtimesAndAcks[$currentKey]['entry_time_in_words'] = $userTime->timeAgoInWords($history['entry_time'], $timeAgoInWordsOptions);
+                if (!empty($history['scheduled_start_time'])) {
+                    $downtimesAndAcks[$currentKey]['scheduled_start_time'] = $userTime->format($history['scheduled_start_time']);
+                    $downtimesAndAcks[$currentKey]['scheduled_start_time_in_words'] = $userTime->timeAgoInWords($history['scheduled_start_time'], $timeAgoInWordsOptions);
+                }
+
+                if (!empty($history['scheduled_end_time'])) {
+                    $downtimesAndAcks[$currentKey]['scheduled_end_time'] = $userTime->format($history['scheduled_end_time']);
+                    $downtimesAndAcks[$currentKey]['scheduled_end_time_in_words'] = $userTime->timeAgoInWords($history['scheduled_end_time'], $timeAgoInWordsOptions);
+                }
+            }
         }
 
         return $downtimesAndAcks;
@@ -1337,6 +1393,7 @@ class StatuspagesTable extends Table {
                         'name'                 => (!empty($statuspage['name']) ? $statuspage['name'] : ''), //given real name or anonymized name for Hosts or services. This is not filled if its a child element
                         'parentName'           => (!empty($statuspage['parentName']) ? $statuspage['parentName'] : ''), // name of the parent Host, hostgroup or servicegroup -> if empty then there is no parent -> object has been placed directly as host or service
                         'parentType'           => (!empty($statuspage['parentType']) ? $statuspage['parentType'] : ''), //or hostgroup or servicegroup -> if empty then there is no parent -> object has been placed directly as host or service
+                        'selfType'             => (!empty($statuspage['selfType']) ? $statuspage['selfType'] : ''), //Type of the element itself host/service
                         'type'                 => 'downtime', //or acknowledgement
                         'comment_data'         => ($public === true ? '' : $statuspage['downtime']['comment_data']),// downtime or ack message. if its a public statuspage, this will not be filled
                         'sort_time'            => $statuspage['downtime']['scheduled_start_time'], // entry_time on acks and scheduled_start_time on downtimes
@@ -1353,6 +1410,7 @@ class StatuspagesTable extends Table {
                         'name'                 => (!empty($statuspage['name']) ? $statuspage['name'] : ''),
                         'parentName'           => (!empty($statuspage['parentName']) ? $statuspage['parentName'] : ''),
                         'parentType'           => (!empty($statuspage['parentType']) ? $statuspage['parentType'] : ''),
+                        'selfType'             => (!empty($statuspage['selfType']) ? $statuspage['selfType'] : ''),
                         'type'                 => 'acknowledgement',
                         'comment_data'         => ($public === true ? '' : $statuspage['acknowledgement']['comment_data']),
                         'sort_time'            => $statuspage['acknowledgement']['entry_time'],

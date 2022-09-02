@@ -39,7 +39,8 @@ $logo = new Logo();
             </div>
         </div>
         <div class="d-flex justify-content-center ">
-            <div class="jumbotron w-100 bg-white " style="border: 1px solid rgba(0,0,0,.125);">
+            <div class="jumbotron w-100 bg-white padding-bottom-2 margin-bottom-25"
+                 style="border: 1px solid rgba(0,0,0,.125);">
                 <h1 class="display-4"><?= $Statuspage['statuspage']['name']; ?></h1>
                 <p class="lead"><?= $Statuspage['statuspage']['description']; ?></p>
                 <hr class="my-4">
@@ -59,20 +60,28 @@ $logo = new Logo();
                         <?= __('Partial Outage') ?>
                     </div>
                 <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'unreachable' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'unknown'): ?>
-                    <div class="alert alert-secondary" role="alert">
+                    <div class="alert alert-secondary bg-unknown txt-color-white " role="alert">
                         <i class="fas fa-times"></i>
                         <?= __('Unknown') ?>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center margin-bottom-25">
             <div class="row w-100">
                 <?php foreach ($Statuspage as $key => $item):
                     if ($key == 'statuspage') {
                         continue;
                     }
+
+
                     foreach ($item as $subKey => $obj):
+
+                        if ($key === 'hosts') {
+                            if ($obj['currentState'] < $obj['cumulatedServiceState']) {
+                                $obj['humanState'] = $obj['cumulatedServiceHumansState'];
+                            }
+                        }
                         ?>
                         <div class="col-sm-6 no-padding">
                             <div class="card">
@@ -107,46 +116,97 @@ $logo = new Logo();
             </div>
         </div>
         <!-- Timeline start -->
-        <div class="d-flex justify-content-center margin-top-10">
+        <div class="d-flex justify-content-center">
             <div class="row w-100">
-               <!-- <div class="frame-wrap"> -->
-                    <div class="col-lg-12 no-padding">
-                        <ul class="cbp_tmtimeline">
+                <!-- <div class="frame-wrap"> -->
+                <div class="col-lg-12 no-padding">
+                    <ul class="cbp_tmtimeline">
+                        <?php
+                        foreach ($downtimeAndAckHistory as $history):
+                            ?>
                             <li>
                                 <time class="cbp_tmtime" datetime="18:52:51 - 29.08.2022">
-                                    <span>18:52:51 - 29.08.2022</span>
-                                    <span>1 day, 1 hour ago</span>
+                                    <?php if ($history['type'] == 'acknowledgement'): ?>
+                                        <span><?= $history['entry_time']; ?></span>
+                                        <span><?= $history['entry_time_in_words']; ?></span>
+                                    <?php else: ?>
+                                        <span><?= $history['scheduled_start_time']; ?></span>
+                                        <span><?= $history['scheduled_start_time_in_words']; ?></span>
+                                    <?php endif; ?>
                                 </time>
                                 <div class="cbp_tmicon txt-color-white"
                                      title="">
-                                    <i class="fas fa-user"></i>
+                                    <?php if ($history['type'] == 'acknowledgement'): ?>
+                                        <i class="fas fa-user"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-power-off"></i>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="cbp_tmlabel">
                                     <h2 class="font-md">
-                                        test message
+                                        <?php
+                                        if (!empty($history['parentType']) && !empty($history['parentName'])) {
+                                            // echo $history['selfType'] .' of '. $history['parentType'].' '. $history['parentName'] . ' is '. $history['type'];
+                                        }
+
+                                        $message = '';
+                                        if (!empty($history['name'])) {
+                                            //element itself is in downtime or ack'd
+                                            $displayName = $history['name'];
+                                            $displayType = $history['selfType'];
+                                        }
+                                        if (!empty($history['parentType']) && !empty($history['parentName'])) {
+                                            //subelement of this is in downtime or ack'd
+                                            $displayName = $history['parentName'];
+                                            $displayType = ucfirst($history['parentType']);
+                                            if ($history['type'] == 'acknowledgement') {
+                                                $message = __('There is a acknowledged ' . $history['selfType']);
+                                            }
+                                            if ($history['type'] == 'downtime') {
+                                                $message = __('There is a ' . $history['selfType'] . ' in downtime');
+                                            }
+
+                                        }
+
+                                        echo $displayType . ': ' . $displayName;
+                                        ?>
                                     </h2>
+
+                                    <blockquote class="blockquote changelog-blockquote-primary">
+                                        <div class="margin-left-10"
+
+                                        <span>
+                                            <footer class="padding-left-10 blockquote-footer">
+                                                Type: <span class="text-primary"><?= $message; ?></span>
+                                            </footer>
+                                        </span>
+                                        <span>
+                                            <footer class="padding-left-10 blockquote-footer">
+                                                Comment: <span
+                                                    class="text-primary"><?= $history['comment_data']; ?></span>
+                                            </footer>
+                                        </span>
+
+                                        <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
+                                              ng-if="tableChanges.isArray" class="padding-top-5">
+                                            <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
+                                                <footer class="padding-left-10 blockquote-footer"
+                                                        ng-if="subFieldName !== 'id'">
+                                                    {{subFieldName}}:
+                                                    <span class="text-primary">{{subFieldValue}}</span>
+                                                </footer>
+                                            </span>
+                                            <div class="padding-top-5"></div>
+                                        </span>
                                 </div>
+                                </blockquote>
                             </li>
-                            <li>
-                                <time class="cbp_tmtime" datetime="18:52:51 - 29.08.2022">
-                                    <span>18:52:51 - 29.08.2022</span>
-                                    <span>1 day, 1 hour ago</span>
-                                </time>
-                                <div class="cbp_tmicon txt-color-white"
-                                     title="">
-                                    <i class="fas fa-power-off"></i>
-                                </div>
-                                <div class="cbp_tmlabel">
-                                    <h2 class="font-md">
-                                        test message
-                                    </h2>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-              <!--  </div> -->
+                        <?php
+                        endforeach;
+                        ?>
+                    </ul>
+                </div>
             </div>
         </div>
-        <!-- Timeline end -->
     </div>
 </div>

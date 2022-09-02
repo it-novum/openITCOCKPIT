@@ -3,75 +3,196 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Statuspage $statuspage
  */
+
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
+$logo = new Logo();
 ?>
 
 <pre>
 <?php
 //print_r($Statuspage);
+//print_r($downtimeAndAckHistory);
 ?>
     </pre>
-<div>
-    <div class="d-flex justify-content-center">
-        <div class="jumbotron w-75">
-            <h1 class="display-4"><?= $Statuspage['statuspage']['name']; ?></h1>
-            <p class="lead"><?= $Statuspage['statuspage']['description']; ?></p>
-            <hr class="my-4">
-            <?php if ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'up' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'ok'): ?>
-                <div class="alert alert-success" role="alert">
-                    <?= __('All systems operational'); ?> <i class="fas fa-check"></i>
-                </div>
-            <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'warning'): ?>
-                <div class="alert alert-warning" role="alert">
-                    <?= __('Warning') ?> <i class="fas fa-exclamation-circle"></i>
-                </div>
-            <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'critical' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'down'): ?>
-                <div class="alert alert-danger" role="alert">
-                    <?= __('Critical') ?> <i class="fas fa-times"></i>
-                </div>
-            <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'unreachable' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'unknown'): ?>
-                <div class="alert alert-secondary" role="alert">
-                    <?= __('Unknown') ?> <i class="fas fa-times"></i>
-                </div>
-            <?php endif; ?>
+<div ng-controller="StatuspagesViewController">
+    <header id="header" class="page-header" role="banner" style="background-color: #fff; background-image: none;">
+        <!-- we need this logo when user switches to nav-function-top -->
+        <div class="page-logo">
+            <a href="<?php printf('https://%s', $systemaddress); ?>"
+               class="page-logo-link press-scale-down d-flex align-items-center position-relative">
+                <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="SmartAdmin WebApp" aria-roledescription="logo">
+                <span class="page-logo-text mr-1" style="color: #000;"><?= $systemname; ?></span>
+                <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2"></span>
+            </a>
         </div>
-    </div>
-    <div class="d-flex justify-content-center">
-        <div class="row w-75">
-            <?php foreach ($Statuspage as $key => $item):
-                if ($key == 'statuspage') {
-                    continue;
-                }
-                foreach ($item as $subKey => $obj):
-                    ?>
-                    <div class="col-sm-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title d-flex"><?= $obj['name'] ?>
-                                    <div class="ml-auto">
-                                        <?php if ($obj['inDowntime']): ?>
-                                            <i class="fa fa-power-off"></i>
-                                        <?php endif; ?>
-                                        <?php if ($obj['acknowledged']): ?>
-                                            <i class="fas fa-user ng-scope"></i>
-                                        <?php endif; ?>
-                                        <?php if ($obj['humanState'] == 'up' || $obj['humanState'] == 'ok'): ?>
-                                            <i class="fas fa-check-circle text-success ml-auto"></i>
-                                        <?php elseif ($obj['humanState'] == 'warning'): ?>
-                                            <i class="fas fa-exclamation-circle text-warning ml-auto"></i>
-                                        <?php elseif ($obj['humanState'] == 'critical' || $obj['humanState'] == 'down'): ?>
-                                            <i class="fas fa-times-circle text-danger ml-auto"></i>
-                                        <?php elseif ($obj['humanState'] == 'unreachable' || $obj['humanState'] == 'unknown'): ?>
-                                            <i class="fas fa-times-circle text-secondary ml-auto"></i>
-                                        <?php endif; ?>
-                                    </div>
-                                </h5>
-                                <p class="card-text"><?= $obj['humanState'] ?>
-                                </p>
+        <div class="ml-auto d-flex">
+
+        </div>
+    </header>
+
+    <div class="container" style="margin-top:60px;">
+        <div class="d-flex justify-content-center ">
+            <div class="jumbotron w-100 bg-white padding-bottom-2 margin-bottom-25"
+                 style="border: 1px solid rgba(0,0,0,.125);">
+                <h1 class="display-4"><?= $Statuspage['statuspage']['name']; ?></h1>
+                <p class="lead"><?= $Statuspage['statuspage']['description']; ?></p>
+                <hr class="my-4">
+                <?php if ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'up' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'ok'): ?>
+                    <div class="alert alert-success" role="alert">
+                        <i class="fas fa-check"></i>
+                        <?= __('All systems operational'); ?>
+                    </div>
+                <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'warning'): ?>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <?= __('Performance Issues') ?>
+                    </div>
+                <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'critical' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'down'): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-times"></i>
+                        <?= __('Partial Outage') ?>
+                    </div>
+                <?php elseif ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'unreachable' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'unknown'): ?>
+                    <div class="alert alert-secondary bg-unknown txt-color-white " role="alert">
+                        <i class="fas fa-times"></i>
+                        <?= __('Unknown') ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center margin-bottom-25">
+            <div class="row w-100">
+                <?php foreach ($Statuspage as $key => $item):
+                    if ($key == 'statuspage') {
+                        continue;
+                    }
+                    foreach ($item as $subKey => $obj):
+                        if ($key === 'hosts') {
+                            if ($obj['currentState'] < $obj['cumulatedServiceState']) {
+                                $obj['humanState'] = $obj['cumulatedServiceHumansState'];
+                            }
+                        }
+                        ?>
+                        <div class="col-sm-6 no-padding">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-text d-flex">
+                                        <span class="text-wrap"><?= $obj['name'] ?></span>
+                                        <div class="ml-auto">
+                                            <?php if ($obj['inDowntime']): ?>
+                                                <i class="fa fa-power-off"></i>
+                                            <?php endif; ?>
+                                            <?php if ($obj['acknowledged']): ?>
+                                                <i class="fas fa-user ng-scope"></i>
+                                            <?php endif; ?>
+                                            <?php if ($obj['humanState'] == 'up' || $obj['humanState'] == 'ok'): ?>
+                                                <i class="fas fa-check-circle text-success ml-auto"></i>
+                                            <?php elseif ($obj['humanState'] == 'warning'): ?>
+                                                <i class="fas fa-exclamation-circle text-warning ml-auto"></i>
+                                            <?php elseif ($obj['humanState'] == 'critical' || $obj['humanState'] == 'down'): ?>
+                                                <i class="fas fa-times-circle text-danger ml-auto"></i>
+                                            <?php elseif ($obj['humanState'] == 'unreachable' || $obj['humanState'] == 'unknown'): ?>
+                                                <i class="fas fa-times-circle text-secondary ml-auto"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                    </h5>
+                                    <!-- <p class="card-text"><?= $obj['humanState'] ?>
+                                    </p> -->
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <?php endforeach; ?>
                 <?php endforeach; ?>
-            <?php endforeach; ?>
+            </div>
+        </div>
+        <!-- Timeline start -->
+        <div class="d-flex justify-content-center">
+            <div class="row w-100">
+                <!-- <div class="frame-wrap"> -->
+                <div class="col-lg-12 no-padding">
+                    <ul class="cbp_tmtimeline">
+                        <?php
+                        foreach ($downtimeAndAckHistory as $history):
+                            ?>
+                            <li>
+                                <time class="cbp_tmtime" datetime="18:52:51 - 29.08.2022">
+                                    <?php if ($history['type'] == 'acknowledgement'): ?>
+                                        <span><?= $history['entry_time']; ?></span>
+                                        <span><?= $history['entry_time_in_words']; ?></span>
+                                    <?php else: ?>
+                                        <span><?= $history['scheduled_start_time']; ?></span>
+                                        <span><?= $history['scheduled_start_time_in_words']; ?></span>
+                                    <?php endif; ?>
+                                </time>
+                                <div class="cbp_tmicon txt-color-white"
+                                     title="">
+                                    <?php if ($history['type'] == 'acknowledgement'): ?>
+                                        <i class="fas fa-user"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-power-off"></i>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="cbp_tmlabel">
+                                    <h2 class="font-md">
+                                        <?php
+                                        if (!empty($history['parentType']) && !empty($history['parentName'])) {
+                                            // echo $history['selfType'] .' of '. $history['parentType'].' '. $history['parentName'] . ' is '. $history['type'];
+                                        }
+
+                                        $message = '';
+                                        if (!empty($history['name'])) {
+                                            //element itself is in downtime or ack'd
+                                            $displayName = $history['name'];
+                                            $displayType = $history['selfType'];
+                                        }
+                                        if (!empty($history['parentType']) && !empty($history['parentName'])) {
+                                            //subelement of this is in downtime or ack'd
+                                            $displayName = $history['parentName'];
+                                            $displayType = ucfirst($history['parentType']);
+                                            if ($history['type'] == 'acknowledgement') {
+                                                $message = __('There is a acknowledged ' . $history['selfType']);
+                                            }
+                                            if ($history['type'] == 'downtime') {
+                                                $message = __('There is a ' . $history['selfType'] . ' in downtime');
+                                            }
+
+                                        }
+
+                                        echo $displayType . ': ' . $displayName;
+                                        ?>
+                                    </h2>
+
+                                    <blockquote class="blockquote changelog-blockquote-primary">
+                                        <div class="margin-left-10"
+
+                                        <span>
+                                            <footer class="padding-left-10 blockquote-footer">
+                                                Comment: <span class="text-primary"><?= $message; ?></span>
+                                            </footer>
+                                        </span>
+
+                                        <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
+                                              ng-if="tableChanges.isArray" class="padding-top-5">
+                                            <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
+                                                <footer class="padding-left-10 blockquote-footer"
+                                                        ng-if="subFieldName !== 'id'">
+                                                    {{subFieldName}}:
+                                                    <span class="text-primary">{{subFieldValue}}</span>
+                                                </footer>
+                                            </span>
+                                            <div class="padding-top-5"></div>
+                                        </span>
+                                    </blockquote>
+                                </div>
+                            </li>
+                        <?php
+                        endforeach;
+                        ?>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
