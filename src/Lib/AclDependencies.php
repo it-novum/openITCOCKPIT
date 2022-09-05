@@ -140,8 +140,8 @@ class AclDependencies {
             ->allow('Angular', 'regexHelpTooltip')
             ->allow('Angular', 'wizardFilter')
             ->allow('Angular', 'wizardInterfaceFilter')
-            ->allow('Angular', 'columnsConfigImport')
-            ->allow('Angular', 'columnsConfigExport');
+            ->allow('Angular', 'columns_config_import')
+            ->allow('Angular', 'columns_config_export');
 
         $this
             ->allow('Agentconnector', 'register_agent')
