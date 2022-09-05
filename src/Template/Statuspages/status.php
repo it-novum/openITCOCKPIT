@@ -171,6 +171,20 @@ $logo = new Logo();
                                                 Comment: <span class="text-primary"><?= $message; ?></span>
                                             </footer>
                                         </span>
+                                        <?php if ($history['type'] == 'downtime'): ?>
+                                            <span>
+                                                <footer class="padding-left-10 blockquote-footer">
+                                                    From: <span
+                                                        class="text-primary"><?= $history['scheduled_start_time']; ?></span>
+                                                </footer>
+                                            </span>
+                                            <span>
+                                                <footer class="padding-left-10 blockquote-footer">
+                                                    To: <span
+                                                        class="text-primary"><?= $history['scheduled_end_time']; ?></span>
+                                                </footer>
+                                            </span>
+                                        <?php endif; ?>
 
                                         <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
                                               ng-if="tableChanges.isArray" class="padding-top-5">

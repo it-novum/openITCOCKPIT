@@ -132,7 +132,6 @@ class StatuspagesController extends AppController {
                 return;
             }
         }
-
         $this->set('systemname', $systemname);
         $this->set('systemaddress', $systemaddress);
         $this->set('Statuspage', $statuspage);

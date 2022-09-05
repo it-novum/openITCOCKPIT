@@ -82,12 +82,33 @@ $logo = new Logo();
                                 $obj['humanState'] = $obj['cumulatedServiceHumansState'];
                             }
                         }
+
+                        $id = $obj['id'];
+                        $internalLink = '';
+                        switch ($key) {
+                            case 'hosts':
+                                $internalLink = 'hosts/browser/' . $id;
+                                break;
+                            case 'services':
+                                $internalLink = 'services/browser/' . $id;
+                                break;
+                            case 'hostgroups':
+                                $internalLink = 'hostgroups/extended/' . $id;
+                                break;
+                            case 'servicegroups':
+                                $internalLink = 'servicegroups/extended/' . $id;
+                                break;
+                        }
+
+                        $sref = 'HostsBrowser({id:' . $obj['id'] . '})'
                         ?>
                         <div class="col-sm-6 no-padding">
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-text d-flex">
-                                        <span class="text-wrap"><?= $obj['name'] ?></span>
+                                        <span class="text-wrap"><a
+                                                href="<?php printf('https://%s/#!/%s', $systemaddress, $internalLink); ?>"
+                                                class="color-black"><?= $obj['name'] ?></a></span>
                                         <div class="ml-auto">
                                             <?php if ($obj['inDowntime']): ?>
                                                 <i class="fa fa-power-off"></i>
@@ -145,10 +166,6 @@ $logo = new Logo();
                                 <div class="cbp_tmlabel">
                                     <h2 class="font-md">
                                         <?php
-                                        if (!empty($history['parentType']) && !empty($history['parentName'])) {
-                                            // echo $history['selfType'] .' of '. $history['parentType'].' '. $history['parentName'] . ' is '. $history['type'];
-                                        }
-
                                         $message = '';
                                         if (!empty($history['name'])) {
                                             //element itself is in downtime or ack'd
@@ -165,27 +182,60 @@ $logo = new Logo();
                                             if ($history['type'] == 'downtime') {
                                                 $message = __('There is a ' . $history['selfType'] . ' in downtime');
                                             }
-
                                         }
-
                                         echo $displayType . ': ' . $displayName;
                                         ?>
                                     </h2>
 
                                     <blockquote class="blockquote changelog-blockquote-primary">
                                         <div class="margin-left-10"
-
-                                        <span>
-                                            <footer class="padding-left-10 blockquote-footer">
-                                                Type: <span class="text-primary"><?= $message; ?></span>
-                                            </footer>
-                                        </span>
-                                        <span>
-                                            <footer class="padding-left-10 blockquote-footer">
-                                                Comment: <span
-                                                    class="text-primary"><?= $history['comment_data']; ?></span>
-                                            </footer>
-                                        </span>
+                                        <?php if ($Statuspage['statuspage']['showComments']): ?>
+                                            <span>
+                                                <footer class="padding-left-10 blockquote-footer">
+                                                    Type: <span class="text-primary"><?= $message; ?></span>
+                                                </footer>
+                                            </span>
+                                            <span>
+                                                <footer class="padding-left-10 blockquote-footer">
+                                                    Comment: <span
+                                                        class="text-primary"><?= $history['comment_data']; ?></span>
+                                                </footer>
+                                            </span>
+                                            <?php if ($history['type'] == 'downtime'): ?>
+                                                <span>
+                                                    <footer class="padding-left-10 blockquote-footer">
+                                                        From: <span
+                                                            class="text-primary"><?= $history['scheduled_start_time']; ?></span>
+                                                    </footer>
+                                                </span>
+                                                <span>
+                                                    <footer class="padding-left-10 blockquote-footer">
+                                                        To: <span
+                                                            class="text-primary"><?= $history['scheduled_end_time']; ?></span>
+                                                    </footer>
+                                                </span>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span>
+                                                <footer class="padding-left-10 blockquote-footer">
+                                                    Comment: <span class="text-primary"><?= $message; ?></span>
+                                                </footer>
+                                            </span>
+                                            <?php if ($history['type'] == 'downtime'): ?>
+                                                <span>
+                                                    <footer class="padding-left-10 blockquote-footer">
+                                                        From: <span
+                                                            class="text-primary"><?= $history['scheduled_start_time']; ?></span>
+                                                    </footer>
+                                                </span>
+                                                <span>
+                                                    <footer class="padding-left-10 blockquote-footer">
+                                                        To: <span
+                                                            class="text-primary"><?= $history['scheduled_end_time']; ?></span>
+                                                    </footer>
+                                                </span>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
 
                                         <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
                                               ng-if="tableChanges.isArray" class="padding-top-5">

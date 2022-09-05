@@ -144,7 +144,7 @@
                             </div>
 
                             <div class="col col-xs-12 col-md-offset-2 help-block">
-                                <?php echo __('If enabled the statuspage will show downtime and acknowledgement comments for each element. Public visible statuspages will show anonymized comments'); ?>
+                                <?php echo __('If enabled internal statuspage will show downtime and acknowledgement comments for each element. Public visible statuspages will always show anonymized comments'); ?>
                             </div>
                         </div>
 
