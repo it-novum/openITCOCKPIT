@@ -45,7 +45,7 @@ use App\Lib\Environments;
     <link rel="stylesheet" type="text/css" href="/node_modules/noty/lib/noty.css">
     <?php
     $cssFiles = [
-        '/css/changelog.css',
+        '/css/statuspage-timeline.css',
         '/smartadmin4/dist/css/app.bundle.css',
         '/smartadmin4/dist/css/themes/cust-theme-10.css',
         '/css/openitcockpit-colors.css',

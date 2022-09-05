@@ -19,7 +19,7 @@ $logo = new Logo();
     <header id="header" class="page-header" role="banner" style="background-color: #fff; background-image: none;">
         <!-- we need this logo when user switches to nav-function-top -->
         <div class="page-logo">
-            <a href="<?php printf('https://%s', $systemaddress); ?>"
+            <a href="/"
                class="page-logo-link press-scale-down d-flex align-items-center position-relative">
                 <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="SmartAdmin WebApp" aria-roledescription="logo">
                 <span class="page-logo-text mr-1" style="color: #000;"><?= $systemname; ?></span>
@@ -99,15 +99,13 @@ $logo = new Logo();
                                 $internalLink = 'servicegroups/extended/' . $id;
                                 break;
                         }
-
-                        $sref = 'HostsBrowser({id:' . $obj['id'] . '})'
                         ?>
                         <div class="col-sm-6 no-padding">
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-text d-flex">
                                         <span class="text-wrap"><a
-                                                href="<?php printf('https://%s/#!/%s', $systemaddress, $internalLink); ?>"
+                                                href="<?php printf('/#!/%s', $internalLink); ?>"
                                                 class="color-black"><?= $obj['name'] ?></a></span>
                                         <div class="ml-auto">
                                             <?php if ($obj['inDowntime']): ?>
@@ -146,7 +144,7 @@ $logo = new Logo();
                         foreach ($downtimeAndAckHistory as $history):
                             ?>
                             <li>
-                                <time class="cbp_tmtime" datetime="18:52:51 - 29.08.2022">
+                                <time class="cbp_tmtime"  datetime="18:52:51 - 29.08.2022">
                                     <?php if ($history['type'] == 'acknowledgement'): ?>
                                         <span><?= $history['entry_time']; ?></span>
                                         <span><?= $history['entry_time_in_words']; ?></span>
@@ -155,12 +153,12 @@ $logo = new Logo();
                                         <span><?= $history['scheduled_start_time_in_words']; ?></span>
                                     <?php endif; ?>
                                 </time>
-                                <div class="cbp_tmicon txt-color-white"
-                                     title="">
+                                <div class="cbp_tmicon bg-white"
+                                     title="<?= $history['type'] ?>">
                                     <?php if ($history['type'] == 'acknowledgement'): ?>
-                                        <i class="fas fa-user"></i>
+                                        <i class="fas fa-user color-black"></i>
                                     <?php else: ?>
-                                        <i class="fas fa-power-off"></i>
+                                        <i class="fas fa-power-off color-black"></i>
                                     <?php endif; ?>
                                 </div>
                                 <div class="cbp_tmlabel">
@@ -187,51 +185,46 @@ $logo = new Logo();
                                         ?>
                                     </h2>
 
-                                    <blockquote class="blockquote changelog-blockquote-primary">
-                                        <div class="margin-left-10"
+                                    <blockquote
+                                        class="blockquote changelog-blockquote-primary statuspage-history-checkmarks">
                                         <?php if ($Statuspage['statuspage']['showComments']): ?>
                                             <span>
                                                 <footer class="padding-left-10 blockquote-footer">
-                                                    Type: <span class="text-primary"><?= $message; ?></span>
+                                                    Type: <span><?= $message; ?></span>
                                                 </footer>
                                             </span>
                                             <span>
                                                 <footer class="padding-left-10 blockquote-footer">
-                                                    Comment: <span
-                                                        class="text-primary"><?= $history['comment_data']; ?></span>
+                                                    Comment: <span><?= $history['comment_data']; ?></span>
                                                 </footer>
                                             </span>
                                             <?php if ($history['type'] == 'downtime'): ?>
                                                 <span>
                                                     <footer class="padding-left-10 blockquote-footer">
-                                                        From: <span
-                                                            class="text-primary"><?= $history['scheduled_start_time']; ?></span>
+                                                        From: <span><?= $history['scheduled_start_time']; ?></span>
                                                     </footer>
                                                 </span>
                                                 <span>
                                                     <footer class="padding-left-10 blockquote-footer">
-                                                        To: <span
-                                                            class="text-primary"><?= $history['scheduled_end_time']; ?></span>
+                                                        To: <span><?= $history['scheduled_end_time']; ?></span>
                                                     </footer>
                                                 </span>
                                             <?php endif; ?>
                                         <?php else: ?>
                                             <span>
                                                 <footer class="padding-left-10 blockquote-footer">
-                                                    Comment: <span class="text-primary"><?= $message; ?></span>
+                                                    Comment: <span><?= $message; ?></span>
                                                 </footer>
                                             </span>
                                             <?php if ($history['type'] == 'downtime'): ?>
                                                 <span>
                                                     <footer class="padding-left-10 blockquote-footer">
-                                                        From: <span
-                                                            class="text-primary"><?= $history['scheduled_start_time']; ?></span>
+                                                        From: <span><?= $history['scheduled_start_time']; ?></span>
                                                     </footer>
                                                 </span>
                                                 <span>
                                                     <footer class="padding-left-10 blockquote-footer">
-                                                        To: <span
-                                                            class="text-primary"><?= $history['scheduled_end_time']; ?></span>
+                                                        To: <span><?= $history['scheduled_end_time']; ?></span>
                                                     </footer>
                                                 </span>
                                             <?php endif; ?>
@@ -248,8 +241,8 @@ $logo = new Logo();
                                             </span>
                                             <div class="padding-top-5"></div>
                                         </span>
+                                    </blockquote>
                                 </div>
-                                </blockquote>
                             </li>
                         <?php
                         endforeach;

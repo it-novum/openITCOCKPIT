@@ -19,7 +19,7 @@ $logo = new Logo();
     <header id="header" class="page-header" role="banner" style="background-color: #fff; background-image: none;">
         <!-- we need this logo when user switches to nav-function-top -->
         <div class="page-logo">
-            <a href="<?php printf('https://%s', $systemaddress); ?>"
+            <a href="/"
                class="page-logo-link press-scale-down d-flex align-items-center position-relative">
                 <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="SmartAdmin WebApp" aria-roledescription="logo">
                 <span class="page-logo-text mr-1" style="color: #000;"><?= $systemname; ?></span>
@@ -125,12 +125,12 @@ $logo = new Logo();
                                         <span><?= $history['scheduled_start_time_in_words']; ?></span>
                                     <?php endif; ?>
                                 </time>
-                                <div class="cbp_tmicon txt-color-white"
-                                     title="">
+                                <div class="cbp_tmicon bg-white"
+                                     title="<?= $history['type'] ?>">
                                     <?php if ($history['type'] == 'acknowledgement'): ?>
-                                        <i class="fas fa-user"></i>
+                                        <i class="fas fa-user color-black"></i>
                                     <?php else: ?>
-                                        <i class="fas fa-power-off"></i>
+                                        <i class="fas fa-power-off color-black"></i>
                                     <?php endif; ?>
                                 </div>
                                 <div class="cbp_tmlabel">
@@ -163,25 +163,22 @@ $logo = new Logo();
                                         ?>
                                     </h2>
 
-                                    <blockquote class="blockquote changelog-blockquote-primary">
-                                        <div class="margin-left-10"
-
+                                    <blockquote
+                                        class="blockquote changelog-blockquote-primary statuspage-history-checkmarks">
                                         <span>
                                             <footer class="padding-left-10 blockquote-footer">
-                                                Comment: <span class="text-primary"><?= $message; ?></span>
+                                                Comment: <span><?= $message; ?></span>
                                             </footer>
                                         </span>
                                         <?php if ($history['type'] == 'downtime'): ?>
                                             <span>
                                                 <footer class="padding-left-10 blockquote-footer">
-                                                    From: <span
-                                                        class="text-primary"><?= $history['scheduled_start_time']; ?></span>
+                                                    From: <span><?= $history['scheduled_start_time']; ?></span>
                                                 </footer>
                                             </span>
                                             <span>
                                                 <footer class="padding-left-10 blockquote-footer">
-                                                    To: <span
-                                                        class="text-primary"><?= $history['scheduled_end_time']; ?></span>
+                                                    To: <span><?= $history['scheduled_end_time']; ?></span>
                                                 </footer>
                                             </span>
                                         <?php endif; ?>

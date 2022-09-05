@@ -114,8 +114,6 @@ class StatuspagesController extends AppController {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemname = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SYSTEMNAME');
         $systemname = $systemname->get('value');
-        $systemaddress = $SystemsettingsTable->getSystemsettingByKey('SYSTEM.ADDRESS');
-        $systemaddress = $systemaddress->get('value');
 
         $DbBackend = $this->DbBackend;
         $statuspage = $StatuspagesTable->getStatuspageObjectsForView($id, $DbBackend);
@@ -132,8 +130,8 @@ class StatuspagesController extends AppController {
                 return;
             }
         }
+
         $this->set('systemname', $systemname);
-        $this->set('systemaddress', $systemaddress);
         $this->set('Statuspage', $statuspage);
         $this->set('downtimeAndAckHistory', $downtimeAndAckHistory);
         $this->viewBuilder()->setOption('serialize', ['Statuspage', 'downtimeAndAckHistory', 'systemname', 'systemaddress']);
@@ -157,8 +155,6 @@ class StatuspagesController extends AppController {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemname = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SYSTEMNAME');
         $systemname = $systemname->get('value');
-        $systemaddress = $SystemsettingsTable->getSystemsettingByKey('SYSTEM.ADDRESS');
-        $systemaddress = $systemaddress->get('value');
 
         $conditions = ['Statuspages.public' => 1];
 
@@ -171,7 +167,6 @@ class StatuspagesController extends AppController {
         }
 
         $this->set('systemname', $systemname);
-        $this->set('systemaddress', $systemaddress);
         $this->set('Statuspage', $statuspage);
         $this->set('downtimeAndAckHistory', $downtimeAndAckHistory);
         $this->viewBuilder()->setOption('serialize', ['Statuspage', 'downtimeAndAckHistory', 'systemname', 'systemaddress']);
