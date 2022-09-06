@@ -22939,7 +22939,7 @@ msgstr "Виберіть усі типи об’єктів, які потріб�
 #: ImportModule/templates/ExternalSystems/add.php:268
 #: ImportModule/templates/ExternalSystems/edit.php:266
 msgid "Load i-doit object types for import"
-msgstr "Завантажте типи об’єктів i-doit для імпорту"
+msgstr "Завантажте типи об’єктів для імпорту"
 
 #: ImportModule/templates/ExternalSystems/add.php:271
 #: ImportModule/templates/ExternalSystems/edit.php:269

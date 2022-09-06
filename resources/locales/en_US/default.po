@@ -23018,7 +23018,7 @@ msgstr ""
 
 #: ImportModule/templates/ExternalSystems/add.php:268
 #: ImportModule/templates/ExternalSystems/edit.php:266
-msgid "Load i-doit object types for import"
+msgid "Load object types for import"
 msgstr ""
 
 #: ImportModule/templates/ExternalSystems/add.php:271
