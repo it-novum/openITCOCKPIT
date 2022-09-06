@@ -22948,7 +22948,7 @@ msgid "No service template groups defined"
 msgstr "Keine Servicevorlagengruppen definiert"
 
 #: ImportModule/src/Model/Table/ImportersTable.php:127
-msgid "External system can not be blank if data source is i-doit."
+msgid "External system can not be blank if data source is i-doit / iTop."
 msgstr "Das Feld \"Externes System\" darf nicht leer sein, wenn die Datenquelle i-doit ist."
 
 #: ImportModule/templates/ExternalSystems/add.php:20

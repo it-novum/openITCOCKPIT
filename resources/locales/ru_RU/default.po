@@ -22866,8 +22866,8 @@ msgid "No service template groups defined"
 msgstr "Группы шаблонов служб не определены"
 
 #: ImportModule/src/Model/Table/ImportersTable.php:127
-msgid "External system can not be blank if data source is i-doit."
-msgstr "Внешняя система не может быть пустой, если источником данных является i-doit."
+msgid "External system can not be blank if data source is i-doit / iTop."
+msgstr "Внешняя система не может быть пустой, если источником данных является i-doit / iTop."
 
 #: ImportModule/templates/ExternalSystems/add.php:20
 #: ImportModule/templates/ExternalSystems/edit.php:19
