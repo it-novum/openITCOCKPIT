@@ -60,86 +60,94 @@
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
             {objectName : '<?php echo __('Statuspage'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
-
                         <!-- Hosts start -->
-                        <table class="table" ng-if="post.Statuspages.hosts.length > 0">
-                            <thead>
-                            <th class="col-5"><?= __('Host Name'); ?></th>
-                            <th class="col-7"><?= __('Display Name'); ?></th>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="host in post.Statuspages.hosts">
-                                <td>{{host.name}}</td>
-                                <td>
-                                    <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="host._joinData.display_name">
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <span ng-if="post.Statuspages.hosts.length > 0">
+                            <table class="table">
+                                <thead>
+                                <th class="col-5"><?= __('Host name'); ?></th>
+                                <th class="col-7"><?= __('Display name'); ?></th>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="host in post.Statuspages.hosts">
+                                    <td>{{host.name}}</td>
+                                    <td>
+                                        <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="host._joinData.display_name">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </span>
                         <!-- Hosts end -->
-                        <hr>
                         <!-- Services start -->
-                        <table class="table" ng-if="post.Statuspages.services.length > 0">
-                            <thead>
-                            <th class="col-5"><?= __('Service Name'); ?></th>
-                            <th class="col-7"><?= __('Display Name'); ?></th>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="service in post.Statuspages.services">
-                                <td>{{service.servicename}}</td>
-                                <td>
-                                    <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="service._joinData.display_name">
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <span ng-if="post.Statuspages.services.length > 0">
+                            <hr>
+                            <table class="table">
+                                <thead>
+                                <th class="col-3"><?= __('Service name'); ?></th>
+                                <th class="col-2"><?= __('From host'); ?></th>
+                                <th class="col-7"><?= __('Display name'); ?></th>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="service in post.Statuspages.services">
+                                    <td>{{service.servicename}}</td>
+                                    <td>{{service.hostname}}</td>
+                                    <td>
+                                        <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="service._joinData.display_name">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </span>
                         <!-- Services end -->
-                        <hr>
                         <!-- Hostgroups start -->
-
-                        <table class="table" ng-if="post.Statuspages.hostgroups.length > 0">
-                            <thead>
-                            <th class="col-5"><?= __('Hostgroup Name'); ?></th>
-                            <th class="col-7"><?= __('Display Name'); ?></th>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="hostgroup in post.Statuspages.hostgroups">
-                                <td>{{hostgroup.Containers.name}}</td>
-                                <td>
-                                    <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="hostgroup._joinData.display_name">
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <span ng-if="post.Statuspages.hostgroups.length > 0">
+                            <hr>
+                            <table class="table">
+                                <thead>
+                                <th class="col-5"><?= __('Hostgroup name'); ?></th>
+                                <th class="col-7"><?= __('Display name'); ?></th>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="hostgroup in post.Statuspages.hostgroups">
+                                    <td>{{hostgroup.Containers.name}}</td>
+                                    <td>
+                                        <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="hostgroup._joinData.display_name">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </span>
                         <!-- Hostgroups end -->
-                        <hr>
                         <!-- Servicegroups start -->
-                        <table class="table" ng-if="post.Statuspages.servicegroups.length > 0">
-                            <thead>
-                            <th class="col-5"><?= __('Servicegroup Name'); ?></th>
-                            <th class="col-7"><?= __('Display Name'); ?></th>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="servicegroup in post.Statuspages.servicegroups">
-                                <td>{{servicegroup.Containers.name}}</td>
-                                <td>
-                                    <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="servicegroup._joinData.display_name">
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <span ng-if="post.Statuspages.servicegroups.length > 0">
+                            <hr>
+                            <table class="table">
+                                <thead>
+                                <th class="col-5"><?= __('Servicegroup name'); ?></th>
+                                <th class="col-7"><?= __('Display name'); ?></th>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="servicegroup in post.Statuspages.servicegroups">
+                                    <td>{{servicegroup.Containers.name}}</td>
+                                    <td>
+                                        <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="servicegroup._joinData.display_name">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </span>
                         <!-- Servicegroups end -->
 
                         <div class="card margin-top-10">

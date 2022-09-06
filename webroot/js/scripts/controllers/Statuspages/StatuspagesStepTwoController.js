@@ -24,6 +24,7 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.post.Statuspages = result.data.Statuspages;
+                console.log($scope.post.Statuspages);
                 $scope.init = false;
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -35,20 +36,6 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
-
-        $scope.loadContainers = function(){
-            var params = {
-                'angular': true
-            };
-
-            $http.get("/containers/loadContainersForAngular.json", {
-                params: params
-            }).then(function(result){
-                $scope.containers = result.data.containers;
-                $scope.init = false;
-            });
-        };
-
 
         $scope.submit = function(){
             $http.post("/statuspages/stepTwo/" + $scope.id + ".json?angular=true",
@@ -64,6 +51,7 @@ angular.module('openITCOCKPIT')
                 $state.go('StatuspagesIndex').then(function(){
                     NotyService.scrollTop();
                 });
+
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();

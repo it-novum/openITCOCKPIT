@@ -190,7 +190,7 @@
                                         {{statuspage.name}}
                                     <?php endif; ?>
                                 </td>
-                                <td>{{statuspage.description}}</td>
+                                <td class="text-truncate text-truncate-sm">{{statuspage.description}}</td>
                                 <td>
                                     <i class="fas fa-check text-success" ng-show="statuspage.public"></i>
                                     <i class="fas fa-times text-danger" ng-show="!statuspage.public"></i>

@@ -95,7 +95,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.description}">
+                        <div class="form-group" ng-class="{'has-error': errors.description}">
                             <label class="control-label">
                                 <?php echo __('Description'); ?>
                             </label>
@@ -105,6 +105,9 @@
                                 ng-model="post.Statuspages.description">
                             <div ng-repeat="error in errors.description">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="col col-xs-12 col-md-offset-2 help-block">
+                                <?php echo __('This field can also be used to publish additional information on the statuspage'); ?>
                             </div>
                         </div>
 

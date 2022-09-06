@@ -8,13 +8,6 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 $logo = new Logo();
 ?>
-
-<pre>
-<?php
-//print_r($Statuspage);
-//print_r($downtimeAndAckHistory);
-?>
-    </pre>
 <div ng-controller="StatuspagesViewController">
     <header id="header" class="page-header" role="banner" style="background-color: #fff; background-image: none;">
         <!-- we need this logo when user switches to nav-function-top -->
@@ -76,32 +69,95 @@ $logo = new Logo();
 
 
                     foreach ($item as $subKey => $obj):
-
-                        if ($key === 'hosts') {
-                            if ($obj['currentState'] < $obj['cumulatedServiceState']) {
-                                $obj['humanState'] = $obj['cumulatedServiceHumansState'];
-                            }
-                        }
-
                         $id = $obj['id'];
                         $internalLink = '';
+                        $statusmessage = '';
+                        $ackMessage = '';
+                        $downtimeMessage = '';
                         switch ($key) {
                             case 'hosts':
                                 $internalLink = 'hosts/browser/' . $id;
+
+                                if ($obj['currentState'] < $obj['cumulatedServiceState']) {
+                                    $obj['humanState'] = $obj['cumulatedServiceHumansState'];
+                                }
+
+                                /*
+                                 * inDowntime
+                                    acknowledged
+                                     serviceAcknowledged
+                                     serviceInDowntime
+                                */
+
+
+                                if ($obj['serviceAcknowledged']) {
+                                    $ackMessage = __('There is a acknowledged service');
+                                }
+                                if ($obj['acknowledged']) {
+                                    $ackMessage = __($obj['name'] . ' is acknowledged');
+                                }
+                                if ($obj['serviceInDowntime']) {
+                                    $downtimeMessage = __('There is a service in downtime');
+                                }
+                                if ($obj['inDowntime']) {
+                                    $downtimeMessage = __($obj['name'] . ' is in downtime');
+                                }
+
+                                $statusmessage = $ackMessage;
+                                if (!empty($downtimeMessage)) {
+                                    $statusmessage = $downtimeMessage;
+                                }
                                 break;
                             case 'services':
                                 $internalLink = 'services/browser/' . $id;
+
+                                if ($obj['acknowledged']) {
+                                    $ackMessage = __($obj['name'] . ' is acknowledged');
+                                }
+                                if ($obj['inDowntime']) {
+                                    $downtimeMessage = __($obj['name'] . ' is in downtime');
+                                }
+
+                                $statusmessage = $ackMessage;
+                                if (!empty($downtimeMessage)) {
+                                    $statusmessage = $downtimeMessage;
+                                }
                                 break;
                             case 'hostgroups':
                                 $internalLink = 'hostgroups/extended/' . $id;
+
+
+                                if ($obj['acknowledged']) {
+                                    $ackMessage = __('Hosts of Hostgroup: ' . $obj['name'] . ' are acknowledged');
+                                }
+                                if ($obj['inDowntime']) {
+                                    $downtimeMessage = __('Hosts of Hostgroup: ' . $obj['name'] . ' are in downtime');
+                                }
+
+                                $statusmessage = $ackMessage;
+                                if (!empty($downtimeMessage)) {
+                                    $statusmessage = $downtimeMessage;
+                                }
                                 break;
                             case 'servicegroups':
                                 $internalLink = 'servicegroups/extended/' . $id;
+
+                                if ($obj['acknowledged']) {
+                                    $ackMessage = __('Hosts of Servicegroup: ' . $obj['name'] . ' are acknowledged');
+                                }
+                                if ($obj['inDowntime']) {
+                                    $downtimeMessage = __('Hosts of Servicegroup: ' . $obj['name'] . ' are in downtime');
+                                }
+
+                                $statusmessage = $ackMessage;
+                                if (!empty($downtimeMessage)) {
+                                    $statusmessage = $downtimeMessage;
+                                }
                                 break;
                         }
                         ?>
                         <div class="col-sm-6 no-padding">
-                            <div class="card">
+                            <div class="card" style="min-height: 95px;">
                                 <div class="card-body">
                                     <h5 class="card-text d-flex">
                                         <span class="text-wrap"><a
@@ -109,24 +165,25 @@ $logo = new Logo();
                                                 class="color-black"><?= $obj['name'] ?></a></span>
                                         <div class="ml-auto">
                                             <?php if ($obj['inDowntime']): ?>
-                                                <i class="fa fa-power-off"></i>
+                                                <i class="fa fa-power-off fa-xl"></i>
                                             <?php endif; ?>
                                             <?php if ($obj['acknowledged']): ?>
-                                                <i class="fas fa-user ng-scope"></i>
+                                                <i class="fas fa-user fa-xl"></i>
                                             <?php endif; ?>
                                             <?php if ($obj['humanState'] == 'up' || $obj['humanState'] == 'ok'): ?>
-                                                <i class="fas fa-check-circle text-success ml-auto"></i>
+                                                <i class="fas fa-check-circle fa-xl text-success ml-auto"></i>
                                             <?php elseif ($obj['humanState'] == 'warning'): ?>
-                                                <i class="fas fa-exclamation-circle text-warning ml-auto"></i>
+                                                <i class="fas fa-exclamation-circle fa-xl text-warning ml-auto"></i>
                                             <?php elseif ($obj['humanState'] == 'critical' || $obj['humanState'] == 'down'): ?>
-                                                <i class="fas fa-times-circle text-danger ml-auto"></i>
+                                                <i class="fas fa-times-circle fa-xl text-danger ml-auto"></i>
                                             <?php elseif ($obj['humanState'] == 'unreachable' || $obj['humanState'] == 'unknown'): ?>
-                                                <i class="fas fa-times-circle text-secondary ml-auto"></i>
+                                                <i class="fas fa-times-circle fa-xl text-secondary ml-auto"></i>
                                             <?php endif; ?>
                                         </div>
                                     </h5>
-                                    <!-- <p class="card-text"><?= $obj['humanState'] ?>
-                                    </p> -->
+
+                                    <p class="card-text"><?= $statusmessage; ?>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -144,7 +201,7 @@ $logo = new Logo();
                         foreach ($downtimeAndAckHistory as $history):
                             ?>
                             <li>
-                                <time class="cbp_tmtime"  datetime="18:52:51 - 29.08.2022">
+                                <time class="cbp_tmtime" datetime="18:52:51 - 29.08.2022">
                                     <?php if ($history['type'] == 'acknowledgement'): ?>
                                         <span><?= $history['entry_time']; ?></span>
                                         <span><?= $history['entry_time_in_words']; ?></span>
@@ -169,6 +226,12 @@ $logo = new Logo();
                                             //element itself is in downtime or ack'd
                                             $displayName = $history['name'];
                                             $displayType = $history['selfType'];
+                                            if ($history['type'] == 'acknowledgement') {
+                                                $message = __($displayName. ' is acknowledged');
+                                            }
+                                            if ($history['type'] == 'downtime') {
+                                                $message = __($displayName.' is in downtime');
+                                            }
                                         }
                                         if (!empty($history['parentType']) && !empty($history['parentName'])) {
                                             //subelement of this is in downtime or ack'd
@@ -181,7 +244,8 @@ $logo = new Logo();
                                                 $message = __('There is a ' . $history['selfType'] . ' in downtime');
                                             }
                                         }
-                                        echo $displayType . ': ' . $displayName;
+
+                                        echo ucfirst($history['type']).': '. $displayType . ' "' . $displayName.'"';
                                         ?>
                                     </h2>
 
@@ -229,18 +293,6 @@ $logo = new Logo();
                                                 </span>
                                             <?php endif; ?>
                                         <?php endif; ?>
-
-                                        <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
-                                              ng-if="tableChanges.isArray" class="padding-top-5">
-                                            <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
-                                                <footer class="padding-left-10 blockquote-footer"
-                                                        ng-if="subFieldName !== 'id'">
-                                                    {{subFieldName}}:
-                                                    <span class="text-primary">{{subFieldValue}}</span>
-                                                </footer>
-                                            </span>
-                                            <div class="padding-top-5"></div>
-                                        </span>
                                     </blockquote>
                                 </div>
                             </li>

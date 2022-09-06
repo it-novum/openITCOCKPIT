@@ -123,7 +123,6 @@ class StatuspagesController extends AppController {
         if (!empty($statuspage)) {
             $downtimeAndAckHistory = $StatuspagesTable->getDowntimeAndAckHistory($statuspage, false, $userTime);
         }
-
         if (!empty($statuspage) && $statuspage['statuspage']['public'] === false) {
             if (!$StatuspagesTable->allowedByStatuspageId($id, $this->MY_RIGHTS)) {
                 $this->render403();
@@ -312,6 +311,25 @@ class StatuspagesController extends AppController {
             throw new NotFoundException('Statuspage not found');
         }
         $statuspage = $StatuspagesTable->getStatuspageObjects($id);
+        /** @var $ServicesTable ServicesTable */
+
+
+
+        if (!empty($statuspage)) {
+            if (!empty($statuspage['services'])) {
+                //add hostname to the services for relation
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                foreach ($statuspage['services'] as $key => $statuspageServices) {
+                    $currentUuid = $statuspageServices['uuid'];
+                    $currentService = $ServicesTable->getServiceByUuid($currentUuid);
+                    if (!empty($currentService)) {
+                        $currentService = $currentService->toArray();
+                        $hostnameOfService = $currentService['host']['name'];
+                        $statuspage['services'][$key]['hostname'] = $hostnameOfService;
+                    }
+                }
+            }
+        }
 
         if ($this->request->is('post')) {
             $statuspage = $StatuspagesTable->get($id, [
@@ -339,7 +357,6 @@ class StatuspagesController extends AppController {
                     return;
                 }
             }
-
         }
 
         $this->set('Statuspages', $statuspage);

@@ -31,8 +31,8 @@ class Statuspage extends AbstractMigration {
                 ])
                 ->addColumn('description', 'string', [
                     'default' => null,
-                    'limit'   => 255,
-                    'null'    => false,
+                    'limit'   => 1000,
+                    'null'    => true,
                 ])
                 ->addColumn('public', 'boolean', [
                     'default' => '0',
