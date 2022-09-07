@@ -438,22 +438,32 @@ class MapeditorsController extends AppController {
     }
 
     /**
-     * @param $maps
-     * @param $parentMapId
+     * @param array $maps
+     * @param int $parentMapId
+     * @param array &$resolvedMaps
      * @return array
      */
-    public function getDependendMaps($maps, $parentMapId) {
+    public function getDependendMaps($maps, $parentMapId, &$resolvedMaps = []) {
         $allRelatedMapIdsOfParent = [];
+        $resolvedMaps[$parentMapId] = $parentMapId;
 
         $childMapIds = $maps[$parentMapId];
         foreach ($childMapIds as $childMapId) {
-            $allRelatedMapIdsOfParent[] = (int)$childMapId;
-            //Is the children map used as parent map in an other relation?
-            if (isset($maps[$childMapId]) && !in_array($childMapId, $allRelatedMapIdsOfParent, true)) { //in_array to avoid endless loop
+            $childMapId = (int)$childMapId;
+            $allRelatedMapIdsOfParent[] = $childMapId;
+
+            if (isset($resolvedMaps[$childMapId])) {
+                // We have to be inside a recursion
+                // Looks a loop like 10 -> 20 -> 8 -> 10
+                continue;
+            }
+
+            // Is the child map used as parent map in another relation?
+            if (isset($maps[$childMapId])) {
                 //Rec
                 $allRelatedMapIdsOfParent = array_merge(
                     $allRelatedMapIdsOfParent,
-                    $this->getDependendMaps($maps, $childMapId)
+                    $this->getDependendMaps($maps, $childMapId, $resolvedMaps)
                 );
             }
         }
@@ -1001,7 +1011,6 @@ class MapeditorsController extends AppController {
                 $MapsummaryitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapsummaryitems');
                 /** @var MapitemsTable $MapitemsTable */
                 $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
-
                 if ($summaryStateItem) {
                     $map = $MapsTable->getMapsummaryitemForMapsummary($objectId);
                     $mapId = $map['Mapsummaryitems']['map_id'];
@@ -1009,7 +1018,6 @@ class MapeditorsController extends AppController {
                     $map = $MapsTable->getMapitemForMapsummary($objectId);
                     $mapId = $map['Mapitems']['map_id'];
                 }
-
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}.id'), false)) {
@@ -1024,9 +1032,9 @@ class MapeditorsController extends AppController {
                         $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
-                            '{n}.Mapsummaryitem.object_id',
-                            '{n}.Mapsummaryitem.object_id',
-                            '{n}.Mapsummaryitem.map_id'
+                            '{n}.object_id',
+                            '{n}.object_id',
+                            '{n}.map_id'
                         );
                         if (isset($mapIdGroupByMapId[$objectId])) {
                             $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $objectId);

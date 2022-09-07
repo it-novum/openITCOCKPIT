@@ -1017,7 +1017,6 @@ class MapsTable extends Table {
             'servicegroup' => []
         ];
         $allDependentMapElements = Hash::filter($allDependentMapElements);
-
         foreach ($allDependentMapElements as $allDependentMapElementArray) {
             foreach ($allDependentMapElementArray as $mapElementKey => $mapElementData) {
                 if (is_array($mapElementData)) {
@@ -1054,7 +1053,7 @@ class MapsTable extends Table {
                 ->toArray();
             $hostIdsByHostgroup = $query;
             foreach ($hostIdsByHostgroup as $hostIdByHostgroup) {
-                $hostIds[$hostIdByHostgroup['HostsToHostgroups']['host_id']] = $hostIdByHostgroup['HostsToHostgroups']['host_id'];
+                $mapElementsByCategory['host'][] = $hostIdByHostgroup['HostsToHostgroups']['host_id'];
             }
         }
         if (!empty($mapElementsByCategory['servicegroup'])) {
@@ -1082,7 +1081,7 @@ class MapsTable extends Table {
 
             $serviceIdsByServicegroup = $query->all()->toArray();
             foreach ($serviceIdsByServicegroup as $serviceIdByServicegroup) {
-                $serviceIds[$serviceIdByServicegroup['ServicesToServicegroups']['service_id']] = $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
+                $mapElementsByCategory['service'][] =  $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
             }
         }
 
