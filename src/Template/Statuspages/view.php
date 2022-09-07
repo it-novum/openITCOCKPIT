@@ -201,7 +201,7 @@ $logo = new Logo();
                         foreach ($downtimeAndAckHistory as $history):
                             ?>
                             <li>
-                                <time class="cbp_tmtime" datetime="18:52:51 - 29.08.2022">
+                                <time class="cbp_tmtime">
                                     <?php if ($history['type'] == 'acknowledgement'): ?>
                                         <span><?= $history['entry_time']; ?></span>
                                         <span><?= $history['entry_time_in_words']; ?></span>

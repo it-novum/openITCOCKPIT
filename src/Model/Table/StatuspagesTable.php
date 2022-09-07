@@ -1370,7 +1370,6 @@ class StatuspagesTable extends Table {
             }
 
             $data = $this->getDowntimesAndAcks($statuspage, $public);
-            // debug($data);
             if (!empty($data)) {
                 $downtimesAndAcks[] = Hash::extract($data, '{n}.{n}');
             }

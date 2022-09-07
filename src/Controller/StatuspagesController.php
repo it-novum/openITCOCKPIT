@@ -313,8 +313,6 @@ class StatuspagesController extends AppController {
         $statuspage = $StatuspagesTable->getStatuspageObjects($id);
         /** @var $ServicesTable ServicesTable */
 
-
-
         if (!empty($statuspage)) {
             if (!empty($statuspage['services'])) {
                 //add hostname to the services for relation
