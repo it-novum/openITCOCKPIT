@@ -31,11 +31,11 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="StatuspagesIndex">
-            <i class="fas fa-info-circle"></i> <?php echo __('Statuspages'); ?>
+            <i class="fas fa-info-circle"></i> <?php echo __('Status pages'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-plus"></i> <?php echo __('Step two'); ?>
+        <i class="fa fa-list"></i> <?php echo __('Step 2'); ?>
     </li>
 </ol>
 
@@ -44,7 +44,8 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Statuspage step two'); ?>
+                    <?php echo __('Status page'); ?>
+                    <span class="fw-300"><i><?php echo __('anonymize names'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
@@ -57,6 +58,13 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
+                    <div class="d-flex justify-content-center">
+                        <div class="alert alert-info w-100" role="alert">
+                            <h4 class="alert-heading"><?= __('Info'); ?></h4>
+                            <?= __('In this optional step you can anonymize the elements to be displayed. The names entered here will be displayed on the status page instead of their real names.'); ?>
+                        </div>
+                    </div>
+
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
             {objectName : '<?php echo __('Statuspage'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
@@ -155,7 +163,7 @@
                                 <div class="float-right">
                                     <?php if ($this->Acl->hasPermission('add', 'statuspages')): ?>
                                         <button class="btn btn-primary" type="submit">
-                                            <?php echo __('Create statuspage'); ?>
+                                            <?php echo __('Update status page'); ?>
                                         </button>
                                     <?php endif; ?>
                                     <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'

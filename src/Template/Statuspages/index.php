@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="StatuspagesIndex">
-            <i class="fas fa-info-circle"></i> <?php echo __('Statuspages'); ?>
+            <i class="fas fa-info-circle"></i> <?php echo __('Status pages'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -46,7 +46,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Statuspages'); ?>
+                    <?php echo __('Status pages'); ?>
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
@@ -80,7 +80,7 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by Statuspage name'); ?>"
+                                                   placeholder="<?php echo __('Filter by Status page name'); ?>"
                                                    ng-model="filter.Statuspages.name"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
@@ -93,7 +93,7 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by Statuspage description'); ?>"
+                                                   placeholder="<?php echo __('Filter by Status page description'); ?>"
                                                    ng-model="filter.Statuspages.description"
                                                    ng-model-options="{debounce: 500}">
 
@@ -151,7 +151,7 @@
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Statuspages.name')">
                                     <i class="fa" ng-class="getSortClass('Statuspages.name')"></i>
-                                    <?php echo __('Statuspage name'); ?>
+                                    <?php echo __('Status page name'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Satuspages.description')">
                                     <i class="fa" ng-class="getSortClass('Satuspages.description')"></i>

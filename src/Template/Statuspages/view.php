@@ -8,12 +8,6 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 $logo = new Logo();
 ?>
-
-<pre>
-    <?php
-    //print_r($Statuspage);
-    ?>
-</pre>
 <div ng-controller="StatuspagesViewController">
     <header id="header" class="page-header" role="banner" style="background-color: #fff; background-image: none;">
         <!-- we need this logo when user switches to nav-function-top -->
@@ -30,7 +24,7 @@ $logo = new Logo();
         </div>
     </header>
 
-    <div class="container" style="margin-top:60px;">
+    <div class="container" style="margin-top:75px;">
         <div class="d-flex justify-content-center">
             <div class="alert alert-info w-100" role="alert">
                 <h4 class="alert-heading"><?= __('Info!') ?></h4>

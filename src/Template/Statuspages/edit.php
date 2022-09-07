@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="StatuspagesIndex">
-            <i class="fas fa-info-circle"></i> <?php echo __('Statuspages'); ?>
+            <i class="fas fa-info-circle"></i> <?php echo __('Status pages'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -44,7 +44,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Edit Statuspage'); ?>
+                    <?php echo __('Edit status page'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
@@ -107,7 +107,7 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div class="col col-xs-12 col-md-offset-2 help-block">
-                                <?php echo __('This field can also be used to publish additional information on the statuspage'); ?>
+                                <?php echo __('This field can also be used to publish additional information on the status page'); ?>
                             </div>
                         </div>
 
@@ -127,7 +127,7 @@
                             </div>
 
                             <div class="col col-xs-12 col-md-offset-2 help-block">
-                                <?php echo __('If enabled the statuspage will be public available without authorization'); ?>
+                                <?php echo __('If enabled the status page will be public available without authorization'); ?>
                             </div>
                         </div>
 
@@ -147,7 +147,7 @@
                             </div>
 
                             <div class="col col-xs-12 col-md-offset-2 help-block">
-                                <?php echo __('If enabled internal statuspage will show downtime and acknowledgement comments for each element. Public visible statuspages will always show anonymized comments'); ?>
+                                <?php echo __('If enabled internal status page will show downtime and acknowledgement comments for each element. Public visible status pages will always show anonymized comments'); ?>
                             </div>
                         </div>
 

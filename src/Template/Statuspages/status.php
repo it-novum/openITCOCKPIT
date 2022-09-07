@@ -25,7 +25,7 @@ $logo = new Logo();
         </div>
     </header>
 
-    <div class="container" style="margin-top:60px;">
+    <div class="container" style="margin-top:75px;">
         <div class="d-flex justify-content-center ">
             <div class="jumbotron w-100 bg-white padding-bottom-2 margin-bottom-25"
                  style="border: 1px solid rgba(0,0,0,.125);">
