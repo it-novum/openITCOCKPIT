@@ -1339,6 +1339,7 @@ class StatuspagesTable extends Table {
             }
 
             $data = $this->getDowntimesAndAcks($statuspage, $public);
+           // debug($data);
             if (!empty($data)) {
                 $downtimesAndAcks[] = Hash::extract($data, '{n}.{n}');
             }
@@ -1418,7 +1419,8 @@ class StatuspagesTable extends Table {
                 }
             }
             if (isset($statuspage['acknowledgement']) && is_array($statuspage['acknowledgement'])) {
-                if (!empty($statuspage['acknowledgement'])) {
+                if (!empty($statuspage['acknowledgement']) && $statuspage['acknowledged'] === 1) {
+                    //only consider acknowledgements which are running right now - otherwise there will be old stuff displayed which isnt up-to-date because of the lack of an end time
                     $currentAcknowledgement = [
                         'name'                 => (!empty($statuspage['name']) ? $statuspage['name'] : ''),
                         'parentName'           => (!empty($statuspage['parentName']) ? $statuspage['parentName'] : ''),

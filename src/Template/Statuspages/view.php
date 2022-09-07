@@ -8,6 +8,12 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 $logo = new Logo();
 ?>
+
+<pre>
+    <?php
+    //print_r($Statuspage);
+    ?>
+</pre>
 <div ng-controller="StatuspagesViewController">
     <header id="header" class="page-header" role="banner" style="background-color: #fff; background-image: none;">
         <!-- we need this logo when user switches to nav-function-top -->
