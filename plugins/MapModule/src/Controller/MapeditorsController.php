@@ -438,22 +438,32 @@ class MapeditorsController extends AppController {
     }
 
     /**
-     * @param $maps
-     * @param $parentMapId
+     * @param array $maps
+     * @param int $parentMapId
+     * @param array &$resolvedMaps
      * @return array
      */
-    public function getDependendMaps($maps, $parentMapId) {
+    public function getDependendMaps($maps, $parentMapId, &$resolvedMaps = []) {
         $allRelatedMapIdsOfParent = [];
+        $resolvedMaps[$parentMapId] = $parentMapId;
 
         $childMapIds = $maps[$parentMapId];
         foreach ($childMapIds as $childMapId) {
-            $allRelatedMapIdsOfParent[] = (int)$childMapId;
-            //Is the children map used as parent map in an other relation?
-            if (isset($maps[$childMapId]) && !in_array($childMapId, $allRelatedMapIdsOfParent, true)) { //in_array to avoid endless loop
+            $childMapId = (int)$childMapId;
+            $allRelatedMapIdsOfParent[] = $childMapId;
+
+            if (isset($resolvedMaps[$childMapId])) {
+                // We have to be inside a recursion
+                // Looks a loop like 10 -> 20 -> 8 -> 10
+                continue;
+            }
+
+            // Is the child map used as parent map in another relation?
+            if (isset($maps[$childMapId])) {
                 //Rec
                 $allRelatedMapIdsOfParent = array_merge(
                     $allRelatedMapIdsOfParent,
-                    $this->getDependendMaps($maps, $childMapId)
+                    $this->getDependendMaps($maps, $childMapId, $resolvedMaps)
                 );
             }
         }

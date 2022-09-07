@@ -285,8 +285,9 @@ class MapsummaryitemsTable extends Table {
                 'Mapsummaryitems.object_id',
             ])
             ->where([
-                'Mapsummaryitems.type'       => 'map',
-                'Mapsummaryitems.map_id != ' => $mapId
+                'Mapsummaryitems.type'          => 'map',
+                'Mapsummaryitems.map_id != '    => $mapId,
+                'Mapsummaryitems.object_id != ' => $mapId
             ]);
         if (!empty($MY_RIGHTS)) {
             $query->where(['MapsToContainers.container_id IN' => $MY_RIGHTS]);
