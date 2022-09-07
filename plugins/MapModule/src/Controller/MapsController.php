@@ -75,7 +75,7 @@ class MapsController extends AppController {
             }
 
             foreach ($all_map->getContainerIds() as $containerId) {
-                if ($this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT) {
+                if (isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT) {
                     $map['allowEdit'] = true;
                     $map['allowCopy'] = true;
                     continue;
