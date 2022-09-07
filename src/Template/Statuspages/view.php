@@ -79,7 +79,7 @@ $logo = new Logo();
                                 $internalLink = 'hosts/browser/' . $id;
 
                                 if ($obj['currentState'] < $obj['cumulatedServiceState']) {
-                                    $obj['humanState'] = $obj['cumulatedServiceHumansState'];
+                                    $obj['humanState'] = $obj['cumulatedServiceHumanState'];
                                 }
 
                                 /*

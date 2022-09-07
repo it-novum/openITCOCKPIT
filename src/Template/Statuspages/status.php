@@ -64,7 +64,7 @@ $logo = new Logo();
                     foreach ($item as $subKey => $obj):
                         if ($key === 'hosts') {
                             if ($obj['currentState'] < $obj['cumulatedServiceState']) {
-                                $obj['humanState'] = $obj['cumulatedServiceHumansState'];
+                                $obj['humanState'] = $obj['cumulatedServiceHumanState'];
                             }
                         }
 
@@ -75,7 +75,7 @@ $logo = new Logo();
                             case 'hosts':
 
                                 if ($obj['currentState'] < $obj['cumulatedServiceState']) {
-                                    $obj['humanState'] = $obj['cumulatedServiceHumansState'];
+                                    $obj['humanState'] = $obj['cumulatedServiceHumanState'];
                                 }
 
                                 if ($obj['serviceAcknowledged']) {

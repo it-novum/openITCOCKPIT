@@ -335,7 +335,7 @@ class StatuspagesTable extends Table {
                             $statuspageForView[$key][$subKey]['parentType'] = $hoststatus['Hoststatus']['parentType'];
                             $statuspageForView[$key][$subKey]['selfType'] = $hoststatus['Hoststatus']['selfType'];
 
-                            if(!$public){
+                            if (!$public) {
                                 $statuspageForView[$key][$subKey]['id'] = $host['id'];
                             }
 
@@ -400,8 +400,8 @@ class StatuspagesTable extends Table {
                                 $statuspageForView[$key][$subKey]['cumulatedServiceState'] = $hoststatus['Hoststatus']['cumulatedServiceState'];
                             }
 
-                            if (isset($hoststatus['Hoststatus']['cumulatedServiceHumansState'])) {
-                                $statuspageForView[$key][$subKey]['cumulatedServiceHumansState'] = $hoststatus['Hoststatus']['cumulatedServiceHumansState'];
+                            if (isset($hoststatus['Hoststatus']['cumulatedServiceHumanState'])) {
+                                $statuspageForView[$key][$subKey]['cumulatedServiceHumanState'] = $hoststatus['Hoststatus']['cumulatedServiceHumanState'];
                             }
 
                             if (isset($hoststatus['Hoststatus']['serviceAcknowledged'])) {
@@ -437,7 +437,7 @@ class StatuspagesTable extends Table {
                             $statuspageForView[$key][$subKey]['parentType'] = $servicestatus['Servicestatus']['parentType'];
                             $statuspageForView[$key][$subKey]['selfType'] = $servicestatus['Servicestatus']['selfType'];
 
-                            if(!$public){
+                            if (!$public) {
                                 $statuspageForView[$key][$subKey]['id'] = $service['id'];
                             }
 
@@ -494,7 +494,7 @@ class StatuspagesTable extends Table {
                         $statuspageForView[$key][$subKey]['selfType'] = $hostgroupstatus['CumulatedState']['selfType'];
                     }
 
-                    if(!$public){
+                    if (!$public) {
                         $statuspageForView[$key][$subKey]['id'] = $hostgroup['id'];
                     }
 
@@ -614,7 +614,7 @@ class StatuspagesTable extends Table {
                         $statuspageForView[$key][$subKey]['parentType'] = '';
                         $statuspageForView[$key][$subKey]['selfType'] = $servicegroupstatus['CumulatedState']['selfType'];
 
-                        if(!$public){
+                        if (!$public) {
                             $statuspageForView[$key][$subKey]['id'] = $servicegroup['id'];
                         }
 
@@ -677,35 +677,66 @@ class StatuspagesTable extends Table {
         ];
 
         foreach ($statuspageData as $key => $statuspage) {
-
             if ($key == 'statuspage') {
                 continue;
             }
-
-
             $itemState = [];
             if (!empty($statuspage)) {
+                //determine the element with the worst state
                 foreach ($statuspage as $subKey => $item) {
                     $itemState[$subKey] = $item['currentState'];
+                    if ($key == 'hosts') {
+                        if (isset($item['cumulatedServiceState']) && $item['cumulatedServiceState']) {
+                            //consider service states of hosts
+                            if ($item['cumulatedServiceState'] > $item['currentState']) {
+                                $itemState[$subKey] = $item['cumulatedServiceState'];
+                            }
+                        }
+                    }
                 }
+                //worst element of the each hosts, services, hostgroups and servicegroups
                 $worstItemStatusKey = array_keys($itemState, max($itemState))[0];
                 $states[$key] = $statuspage[$worstItemStatusKey];
+
             }
         }
 
         $tmpStates = [];
+        $servicesOfHosts = [];
         foreach ($states as $key => $item) {
             if (!empty($item)) {
                 $tmpStates[$key] = $item['currentState'];
+                if (isset($item['cumulatedServiceState']) && $item['cumulatedServiceState']) {
+                    //consider service states of hosts
+                    if ($item['cumulatedServiceState'] > $item['currentState']) {
+                        $servicesOfHosts[$key] = $item['cumulatedServiceState'];
+                    }
+                }
             }
+        }
+        //will be set true if the worst state of a host is determined by its services (e.g. host state = 0 hosts service state = 2)
+        $isCumulatedServiceState = false;
+        if(isset($servicesOfHosts) && isset($tmpStates['hosts']) && $servicesOfHosts['hosts'] > $tmpStates['hosts']){
+            $tmpStates['hosts'] = $servicesOfHosts['hosts'];
+            $isCumulatedServiceState = true;
         }
         if (!empty(($tmpStates))) {
             $worstTmpItemStatusKey = array_keys($tmpStates, max($tmpStates))[0];
             $stateType = $worstTmpItemStatusKey;
+            $statusKey = 'currentState';
+            $humanStateKey = 'humanState';
+
+            if($isCumulatedServiceState){
+                //worst state is determined by a service from a displayed host
+                $statusKey = 'cumulatedServiceState';
+                $humanStateKey = 'cumulatedServiceHumanState';
+                $stateType  = 'services';
+            }
+
             $worstState = [
-                'state'      => $states[$worstTmpItemStatusKey]['currentState'], // int status
+                'state'      => $states[$worstTmpItemStatusKey][$statusKey], // int status
                 'stateType'  => $stateType, // hosts or services
-                'humanState' => $states[$worstTmpItemStatusKey]['humanState']
+                'humanState' => $states[$worstTmpItemStatusKey][$humanStateKey]
             ];
         } else {
             $worstState = [
@@ -850,7 +881,7 @@ class StatuspagesTable extends Table {
             'downtime'                    => [],
             'serviceSummary'              => [],
             'cumulatedServiceState'       => null,
-            'cumulatedServiceHumansState' => null,
+            'cumulatedServiceHumanState' => null,
             'serviceAcknowledged'         => (int)$serviceAcknowledged,
             'serviceInDowntime'           => (int)$serviceIsInDowntime,
             'parentName'                  => $parentName,
@@ -865,7 +896,7 @@ class StatuspagesTable extends Table {
         if (!empty($cumulatedServiceState)) {
             $hoststatus['cumulatedServiceState'] = $cumulatedServiceState;
             $state = new Servicestatus(['current_state' => $cumulatedServiceState]);
-            $hoststatus['cumulatedServiceHumansState'] = $state->ServiceStatusAsString();
+            $hoststatus['cumulatedServiceHumanState'] = $state->ServiceStatusAsString();
         }
 
         if (!empty($acknowledgement)) {
@@ -1339,7 +1370,7 @@ class StatuspagesTable extends Table {
             }
 
             $data = $this->getDowntimesAndAcks($statuspage, $public);
-           // debug($data);
+            // debug($data);
             if (!empty($data)) {
                 $downtimesAndAcks[] = Hash::extract($data, '{n}.{n}');
             }
