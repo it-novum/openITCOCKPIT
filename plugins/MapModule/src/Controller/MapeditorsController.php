@@ -1011,7 +1011,6 @@ class MapeditorsController extends AppController {
                 $MapsummaryitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapsummaryitems');
                 /** @var MapitemsTable $MapitemsTable */
                 $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
-
                 if ($summaryStateItem) {
                     $map = $MapsTable->getMapsummaryitemForMapsummary($objectId);
                     $mapId = $map['Mapsummaryitems']['map_id'];
@@ -1019,7 +1018,6 @@ class MapeditorsController extends AppController {
                     $map = $MapsTable->getMapitemForMapsummary($objectId);
                     $mapId = $map['Mapitems']['map_id'];
                 }
-
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}.id'), false)) {
@@ -1034,9 +1032,9 @@ class MapeditorsController extends AppController {
                         $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
-                            '{n}.Mapsummaryitem.object_id',
-                            '{n}.Mapsummaryitem.object_id',
-                            '{n}.Mapsummaryitem.map_id'
+                            '{n}.object_id',
+                            '{n}.object_id',
+                            '{n}.map_id'
                         );
                         if (isset($mapIdGroupByMapId[$objectId])) {
                             $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $objectId);
