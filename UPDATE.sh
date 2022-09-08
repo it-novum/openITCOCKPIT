@@ -347,6 +347,7 @@ PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 if [[ "$NOSYSTEMFILES" == "false" ]]; then
   echo "Copy required system files"
   rsync -K -a ${APPDIR}/system/etc/. /etc/
+  chown root:root /etc
   cp -r ${APPDIR}/system/lib/. /lib/
   cp -r ${APPDIR}/system/usr/. /usr/
   cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf

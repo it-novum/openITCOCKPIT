@@ -4375,6 +4375,7 @@ class ServicesTable extends Table {
      */
     public function getServicesWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
         $query = $this->find();
+        $where = [];
         $query
             ->select([
                 'Services.host_id',
@@ -4450,7 +4451,7 @@ class ServicesTable extends Table {
             ]);
         }
 
-        if (isset($where['Services.keywords rlike'])) {
+        if (isset($conditions['Services.keywords rlike'])) {
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
                 $where['Services.keywords rlike'],
@@ -4460,7 +4461,7 @@ class ServicesTable extends Table {
             unset($where['Services.keywords rlike']);
         }
 
-        if (isset($where['Services.not_keywords not rlike'])) {
+        if (isset($conditions['Services.not_keywords not rlike'])) {
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
                 $where['Services.not_keywords not rlike'],
@@ -4470,7 +4471,24 @@ class ServicesTable extends Table {
             unset($where['Services.not_keywords not rlike']);
         }
 
-        $where = [];
+        if (!empty($conditions['Service']['keywords'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $conditions['Service']['keywords'],
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($conditions['Service']['not_keywords'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $conditions['Service']['not_keywords'],
+                'string',
+                'NOT RLIKE'
+            );
+        }
+
         if (!empty($conditions['Service']['servicename'])) {
             $query->having([
                 'servicename LIKE' => $conditions['Service']['servicename']
@@ -4479,6 +4497,7 @@ class ServicesTable extends Table {
         if (!empty($conditions['Host']['name'])) {
             $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
         }
+
         $query->andWhere($where);
         $query->group('Services.id');
 

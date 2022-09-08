@@ -222,7 +222,7 @@ class DebugConfigNagiosTask {
      * @param null|string $TableName
      * @param $confName
      */
-    public function debug($TableName = null, $confName) {
+    public function debug(?string $TableName, string $confName) {
         if ($TableName !== null && is_array($this->tablesToSeach) && isset($this->tablesToSeach[$TableName])) {
 
             /** @var Table $Table */

@@ -52,26 +52,13 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     $scope.service = results[0].data.service;
                     $scope.allowView = results[0].data.allowView;
                     $scope.timezone = results[1].data.timezone;
-                    $scope.serverTimeDateObject = new Date($scope.timezone.server_time);
+                    $scope.serverTimeDateObject = new Date($scope.timezone.server_time_iso);
 
                     initRefreshTimer();
 
                     loadGraph($scope.host.uuid, $scope.service.uuid);
                 });
             };
-            /*
-                        $scope.loadTimezone = function(){
-                            $http.get("/angular/user_timezone.json", {
-                                params: {
-                                    'angular': true,
-                                    'disableGlobalLoader': true
-                                }
-                            }).then(function(result){
-                                $scope.timezone = result.data.timezone;
-                                $scope.load();
-                            });
-                        };
-            */
 
             $scope.stop = function(){
                 if($scope.statusUpdateInterval !== null){
@@ -86,8 +73,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
             });
 
             var loadGraph = function(hostUuid, serviceuuid){
-                graphEnd = parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10);
-                graphStart = (parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10) - (1 * 3600));
+                graphEnd = parseInt(new Date($scope.timezone.server_time_iso).getTime() / 1000, 10);
+                graphStart = (parseInt(new Date($scope.timezone.server_time_iso).getTime() / 1000, 10) - (1 * 3600));
 
                 $scope.isLoadingGraph = true;
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
@@ -168,21 +155,13 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
             };
 
             var showTooltip = function(x, y, contents, timestamp){
-                var self = this;
                 var $graph_data_tooltip = $('#graph_data_tooltip');
 
-                var fooJS = new Date(timestamp);
-                var fixTime = function(value){
-                    if(value < 10){
-                        return '0' + value;
-                    }
-                    return value;
-                };
-
-                var humanTime = fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
+                var date = luxon.DateTime.fromJSDate(new Date(timestamp)).setZone($scope.timezone.user_timezone);
+                var humanTime = date.toFormat('dd.LL.yyyy HH:mm:ss');
 
                 $graph_data_tooltip
-                    .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><strong>' + contents + '</strong>')
+                    .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><b>' + contents + '</b>')
                     .css({
                         top: y,
                         left: x + 10
@@ -257,11 +236,11 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
 
                 var gaugeData = [];
                 for(var timestamp in performance_data.data){
-                    var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
+                    var frontEndTimestamp = parseInt(timestamp, 10);
                     gaugeData.push([frontEndTimestamp, performance_data.data[timestamp]]);
                 }
 
-                var label = $scope.host.hostname + '/' + $scope.service.servicename + ' "' + performance_data.datasource.label + '"';
+                var label = $scope.service.servicename + ' "' + performance_data.datasource.label + '"';
                 if(performance_data.datasource.unit){
                     label = label + ' in ' + performance_data.datasource.unit;
                 }
@@ -271,7 +250,12 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 graph_data.push({
                     label: label,
                     data: gaugeData,
-                    unit: performance_data.datasource.unit
+                    unit: performance_data.datasource.unit,
+                    // https://github.com/MichaelZinsmaier/CurvedLines
+                    curvedLines: {
+                        apply: true,
+                        //monotonicFit: true
+                    }
                 });
                 var options = GraphDefaultsObj.getDefaultOptions();
                 options.height = $scope.height + 'px';
@@ -289,23 +273,18 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 };
 
                 options.xaxis.tickFormatter = function(val, axis){
-                    var fooJS = new Date(val);
-                    var fixTime = function(value){
-                        if(value < 10){
-                            return '0' + value;
-                        }
-                        return value;
-                    };
-                    return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
+                    var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
+                    return date.toFormat('HH:mm:ss');
                 };
 
                 options.series.color = defaultColor;
                 options.series.threshold = thresholdAreas;
                 options.grid.markings = thresholdLines;
-                options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
+                //options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
+                options.lines.fillColor.colors = [{ brightness: 1, opacity: 0.2 }, { brightness: 1, opacity: 0.2}];
                 options.points = {
                     show: false,
-                    radius: 1
+                    radius: 2.5
                 };
 
                 if($scope.height < 130){
@@ -314,8 +293,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     };
                 }
 
-                options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
-                options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
+                options.xaxis.min = graphStart * 1000;
+                options.xaxis.max = graphEnd * 1000;
                 options.selection.mode = null;
 
                 $scope.plot = $.plot('#mapgraph-' + $scope.item.id, graph_data, options);

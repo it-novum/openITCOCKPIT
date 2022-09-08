@@ -53,7 +53,7 @@ class EvcContainerPermissions {
      * @param array $MY_RIGHTS_LEVEL
      * @param array $ContainersToCheck
      */
-    public function __construct($MY_RIGHTS_LEVEL, $usedEvcContainerIdsGroupByHost = [], $evcPrimaryContainerId) {
+    public function __construct(array $MY_RIGHTS_LEVEL, array $usedEvcContainerIdsGroupByHost, $evcPrimaryContainerId) {
         $this->MY_VIEW_RIGHTS_LEVEL = $MY_RIGHTS_LEVEL;
         $this->evcPrimaryContainerId = (int)$evcPrimaryContainerId;
         foreach ($MY_RIGHTS_LEVEL as $containerId => $rightLevel) {
