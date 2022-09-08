@@ -63,7 +63,7 @@ a:not([href]):not([tabindex]) {
     display: none;
 }
 
-.serviceGraphFlot {
+.serviceGraphUPlot {
     width: 100%;
     height: 260px;
 }
@@ -1381,4 +1381,17 @@ div.form-group.chosen-small div.chosen-container.chosen-container-single a.chose
     background-repeat: no-repeat;
     background-position: center right calc(0.3675em + 0.25rem);
     background-size: calc(0.735em + 0.5rem) calc(0.735em + 0.5rem);
+}
+
+.u-tooltip {
+    font-size: 10pt;
+    position: absolute;
+    background: #fff;
+    display: none;
+    border: 2px solid black;
+    padding: 4px;
+    pointer-events: none;
+    z-index: 100;
+    white-space: pre;
+    font-family: monospace;
 }
