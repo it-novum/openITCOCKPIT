@@ -6,14 +6,19 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
         controller: function($scope){
             var startTimestamp = new Date().getTime();
 
+            $scope.popoverOffset = {
+                relativeTop: 0,
+                relativeLeft: 0,
+                absoluteTop: 0,
+                absoluteLeft: 0
+            };
+
             $scope.popoverPerfdata = {};
-
             $scope.popoverTimer = null;
-
             $scope.graphPopoverId = UuidService.v4();
 
             $scope.doLoadGraph = function(hostUuid, serviceUuid){
-                var serverTime = new Date($scope.timezone.server_time);
+                var serverTime = new Date($scope.timezone.server_time_iso);
                 var compareTimestamp = new Date().getTime();
                 var diffFromStartToNow = parseInt(compareTimestamp - startTimestamp, 10);
 
@@ -27,7 +32,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                         service_uuid: serviceUuid,
                         start: graphStart,
                         end: graphEnd,
-                        jsTimestamp: 1
+                        jsTimestamp: 0
                     }
                 }).then(function(result){
                     $scope.isLoadingGraph = false;
@@ -38,55 +43,95 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                 });
             };
 
-            var renderGraphs = function(){
-                var GraphDefaultsObj = new GraphDefaults();
+            $scope.placePopoverGraph = function(){
+                // Do we need this?
+                //var currentScrollPosition = $(window).scrollTop();
 
+                var margin = 15;
+                var $popupGraphContainer = $('#serviceGraphContainer-' + $scope.graphPopoverId);
+                var popupGraphContainerHeight = $popupGraphContainer.height();
+                if(popupGraphContainerHeight < 272){
+                    // The popupGraphContainerHeight is at least 272px in height.
+                    popupGraphContainerHeight = 272;
+                }
+
+
+                var absoluteBottomPositionOfPopoverGraphContainer = $scope.popoverOffset.absoluteTop + margin + popupGraphContainerHeight;
+
+                //if(($scope.popoverOffset.relativeTop - currentScrollPosition + margin + popupGraphContainerHeight) > $(window).innerHeight()){
+                if(absoluteBottomPositionOfPopoverGraphContainer > $(window).innerHeight()){
+                    //There is no space in the window for the popup, we need to place it above the mouse cursor
+                    $popupGraphContainer.css({
+                        'top': parseInt($scope.popoverOffset.relativeTop - popupGraphContainerHeight - margin + 10),
+                        'left': parseInt($scope.popoverOffset.relativeLeft + margin),
+                        'padding': '6px'
+                    });
+                }else{
+                    //Default Popup
+                    $popupGraphContainer.css({
+                        'top': parseInt($scope.popoverOffset.relativeTop + margin),
+                        'left': parseInt($scope.popoverOffset.relativeLeft + margin),
+                        'padding': '6px'
+                    });
+                }
+            };
+
+            var renderGraphs = function(){
                 for(var index in $scope.popoverPerfdata){
                     if(index > 3){
                         //Only render 4 gauges in popover...
                         continue;
                     }
 
-                    graph_data = [];
-                    var color = GraphDefaultsObj.getColorByIndex(index);
+                    var uPlotGraphDefaultsObj = new uPlotGraphDefaults();
+
+                    // https://github.com/leeoniya/uPlot/tree/master/docs#data-format
+                    var data = [];
+                    var xData = []
+                    var yData = []
                     for(var timestamp in $scope.popoverPerfdata[index].data){
-                        var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
-                        graph_data.push([frontEndTimestamp, $scope.popoverPerfdata[index].data[timestamp]]);
+                        xData.push(timestamp); // Timestamps
+                        yData.push($scope.popoverPerfdata[index].data[timestamp]); // values
                     }
+                    data.push(xData);
+                    data.push(yData);
 
                     //Render Chart
-                    var options = GraphDefaultsObj.getDefaultOptions();
-                    options.height = '500px';
-                    options.colors = color.border;
+                    var $elm = $('#serviceGraphUPlot-' + $scope.graphPopoverId + '-' + index);
 
-                    options.xaxis.tickFormatter = function(val, axis){
-                        var fooJS = new Date(val);
-                        var fixTime = function(value){
-                            if(value < 10){
-                                return '0' + value;
-                            }
-                            return value;
-                        };
-                        return fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
-                    };
-                    options.xaxis.mode = 'time';
-                    options.xaxis.timeformat = '%H:%M:%S';
-                    options.xaxis.timeBase = 'milliseconds';
-                    options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
-                    options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
+                    var colors = uPlotGraphDefaultsObj.getColorByIndex(index);
+                    var options = uPlotGraphDefaultsObj.getDefaultOptions({
+                        unit: $scope.popoverPerfdata[index].datasource.unit,
+                        showLegend: false,
+                        timezone: $scope.timezone.user_timezone,
+                        lineWidth: 2,
+                        thresholds: {
+                            show: true,
+                            warning: $scope.popoverPerfdata[index].datasource.warn,
+                            critical: $scope.popoverPerfdata[index].datasource.crit
+                        },
+                        // X-Axis min / max
+                        start: graphStart,
+                        end: graphEnd,
+                        //Fallback if no thresholds exists
+                        strokeColor: colors.stroke,
+                        fillColor: colors.fill,
+                        YAxisLabelLength: 100,
+                    });
+                    options.height = $elm.height() - 25; // 27px for headline
+                    options.width = $elm.width();
+                    options.title = $scope.popoverPerfdata[index].datasource.name;
 
-                    if($scope.popoverPerfdata[index].datasource.unit){
-                        options.yaxis.axisLabel = $scope.popoverPerfdata[index].datasource.unit;
-                    }
-
-                    if(document.getElementById('serviceGraphFlot-' + $scope.graphPopoverId + '-' + index) && !$scope.mouseout){
+                    if(document.getElementById('serviceGraphUPlot-' + $scope.graphPopoverId + '-' + index) && !$scope.mouseout){
                         try{
-                            self.plot = $.plot('#serviceGraphFlot-' + $scope.graphPopoverId + '-' + index, [graph_data], options);
+                            var elm = document.getElementById('serviceGraphUPlot-' + $scope.graphPopoverId + '-' + index);
+                            self.plot = new uPlot(options, data, elm);
                         }catch(e){
                             console.error(e);
                         }
                     }
                 }
+                $scope.placePopoverGraph();
             };
 
         },
@@ -97,36 +142,23 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     $scope.popoverTimer = setTimeout(function(){
                         $scope.mouseout = false;
                         $scope.isLoadingGraph = true;
+
+                        var position = $event.target.getBoundingClientRect();
                         var offset = {
-                            top: $event.relatedTarget.offsetTop + 40,
-                            left: $event.relatedTarget.offsetLeft + 40
+                            relativeTop: $event.relatedTarget.offsetTop + 40,
+                            relativeLeft: $event.relatedTarget.offsetLeft + 40,
+                            absoluteTop: position.top,
+                            absoluteLeft: position.left,
                         };
 
                         if($event.relatedTarget.offsetParent && $event.relatedTarget.offsetParent.offsetTop){
-                            offset.top += $event.relatedTarget.offsetParent.offsetTop;
+                            offset.relativeTop += $event.relatedTarget.offsetParent.offsetTop;
                         }
+                        $scope.popoverOffset = offset;
 
-                        var currentScrollPosition = $(window).scrollTop();
+                        $scope.placePopoverGraph();
 
-                        var margin = 15;
                         var $popupGraphContainer = $('#serviceGraphContainer-' + $scope.graphPopoverId);
-
-                        if((offset.top - currentScrollPosition + margin + $popupGraphContainer.height()) > $(window).innerHeight()){
-                            //There is no space in the window for the popup, we need to set it to an higher point
-                            $popupGraphContainer.css({
-                                'top': parseInt(offset.top - $popupGraphContainer.height() - margin + 10),
-                                'left': parseInt(offset.left + margin),
-                                'padding': '6px'
-                            });
-                        }else{
-                            //Default Popup
-                            $popupGraphContainer.css({
-                                'top': parseInt(offset.top + margin),
-                                'left': parseInt(offset.left + margin),
-                                'padding': '6px'
-                            });
-                        }
-
                         $popupGraphContainer.show();
                         $scope.doLoadGraph(hostUuid, serviceUuid);
                         $scope.popoverTimer = null;
