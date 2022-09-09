@@ -56,17 +56,14 @@ use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TacticalOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\WebsiteJson;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use ParsedownExtra;
 use RuntimeException;
 use Statusengine\PerfdataParser;
@@ -1024,7 +1021,7 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    public function hostsStatusListExtendedWidget(){
+    public function hostsStatusListExtendedWidget() {
         // Only ship the HTML template
         // otherwise we need to copy&paste the self::hostsStatusListWidget() 1:1
         return;
@@ -1168,7 +1165,7 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    public function servicesStatusListExtendedWidget(){
+    public function servicesStatusListExtendedWidget() {
         // Only ship the HTML template
         // otherwise we need to copy&paste the self::servicesStatusListWidget() 1:1
         return;
@@ -1726,7 +1723,6 @@ class DashboardsController extends AppController {
                 $data = json_decode($widget->get('json_data'), true);
             }
             $config = $TacticalOverviewJson->standardizedData($data);
-
             $hoststatusSummary = [];
             $servicestatusSummary = [];
             switch ($type) {
@@ -1784,7 +1780,6 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $TacticalOverviewJson->standardizedData($this->request->getData());
-
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
             ]);
