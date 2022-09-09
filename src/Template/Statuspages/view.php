@@ -78,16 +78,11 @@ $logo = new Logo();
                             case 'hosts':
                                 $internalLink = 'hosts/browser/' . $id;
 
-                                if ($obj['currentState'] < $obj['cumulatedServiceState']) {
-                                    $obj['humanState'] = $obj['cumulatedServiceHumanState'];
+                                if(isset($obj['cumulatedServiceState'])){
+                                    if ($obj['currentState'] < $obj['cumulatedServiceState']) {
+                                        $obj['humanState'] = $obj['cumulatedServiceHumanState'];
+                                    }
                                 }
-
-                                /*
-                                 * inDowntime
-                                    acknowledged
-                                     serviceAcknowledged
-                                     serviceInDowntime
-                                */
 
 
                                 if ($obj['serviceAcknowledged']) {
