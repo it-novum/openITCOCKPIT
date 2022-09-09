@@ -340,10 +340,10 @@ class StatuspagesTable extends Table {
                             }
 
                             if ($hoststatus['Hoststatus']['acknowledged'] === 1 && !empty($hoststatus['Hoststatus']['acknowledgement'])) {
-                                $statuspageForView[$key][$subKey]['acknowlegement']['entry_time'] = $hoststatus['Hoststatus']['acknowledgement']['entry_time'];
+                                $statuspageForView[$key][$subKey]['acknowledgement']['entry_time'] = $hoststatus['Hoststatus']['acknowledgement']['entry_time'];
                                 if (!$public) {
                                     //do not show user entered comment in public view
-                                    $statuspageForView[$key][$subKey]['acknowlegement']['comment_data'] = $hoststatus['Hoststatus']['acknowledgement']['comment_data'];
+                                    $statuspageForView[$key][$subKey]['acknowledgement']['comment_data'] = $hoststatus['Hoststatus']['acknowledgement']['comment_data'];
                                 }
                             }
 
@@ -442,10 +442,10 @@ class StatuspagesTable extends Table {
                             }
 
                             if ($servicestatus['Servicestatus']['acknowledged'] === 1 && !empty($servicestatus['Servicestatus']['acknowledgement'])) {
-                                $statuspageForView[$key][$subKey]['acknowlegement']['entry_time'] = $servicestatus['Servicestatus']['acknowledgement']['entry_time'];
+                                $statuspageForView[$key][$subKey]['acknowledgement']['entry_time'] = $servicestatus['Servicestatus']['acknowledgement']['entry_time'];
                                 if (!$public) {
                                     //do not show user entered comment in public view
-                                    $statuspageForView[$key][$subKey]['acknowlegement']['comment_data'] = $servicestatus['Servicestatus']['acknowledgement']['comment_data'];
+                                    $statuspageForView[$key][$subKey]['acknowledgement']['comment_data'] = $servicestatus['Servicestatus']['acknowledgement']['comment_data'];
                                 }
                             }
 
