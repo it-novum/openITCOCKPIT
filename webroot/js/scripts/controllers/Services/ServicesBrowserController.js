@@ -638,7 +638,7 @@ angular.module('openITCOCKPIT')
                 // https://github.com/MichaelZinsmaier/CurvedLines
                 curvedLines: {
                     apply: true,
-                    //monotonicFit: true
+                    monotonicFit: true
                 }
             }], options);
 
