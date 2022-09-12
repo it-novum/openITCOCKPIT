@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('StatuspagesEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
+    .controller('StatuspagesEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService){
         $scope.id = $stateParams.id;
 
         $scope.post = {
@@ -52,6 +52,7 @@ angular.module('openITCOCKPIT')
                     $state.go('404');
                 }
             });
+            $scope.loadContainers();
         };
 
         $scope.loadContainers = function(){
@@ -67,11 +68,11 @@ angular.module('openITCOCKPIT')
             });
         };
 
-
         $scope.loadHosts = function(searchString){
-            $http.get("/hosts/loadHostsByString/1.json", {
+            $http.get("/statuspages/loadHostsByContainerIds.json", {
                 params: {
                     'angular': true,
+                    'containerIds[]': $scope.post.Statuspages.containers._ids,
                     'filter[Hosts.name]': searchString,
                     'selected[]': $scope.post.Statuspages.hosts.ids
                 }
@@ -81,10 +82,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServices = function(searchString){
-            $http.get("/services/loadServicesByStringCake4/1.json", {
+            $http.get("/statuspages/loadServicesByContainerIds.json", {
                 params: {
                     'angular': true,
-                    'filter[servicename]': searchString,
+                    'containerIds[]': $scope.post.Statuspages.containers._ids,
+                    'filter': {
+                        'servicename': searchString,
+                    },
                     'selected[]': $scope.post.Statuspages.services.ids
                 }
             }).then(function(result){
@@ -93,11 +97,12 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHostgroups = function(searchString){
-            $http.get("/hostgroups/loadHostgroupsByString/1.json", {
+            $http.get("/statuspages/loadHostgroupsByContainerIds.json", {
                 params: {
                     'angular': true,
                     'filter[Containers.name]': searchString,
-                    'selected[]': $scope.post.Statuspages.hostgroups.ids
+                    'selected[]': $scope.post.Statuspages.hostgroups.ids,
+                    'containerIds[]': $scope.post.Statuspages.containers._ids
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;
@@ -105,11 +110,12 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServicegroups = function(searchString){
-            $http.get("/servicegroups/loadServicegroupsByString/1.json", {
+            $http.get("/statuspages/loadServicegroupsByContainerIds.json", {
                 params: {
                     'angular': true,
                     'filter[Containers.name]': searchString,
-                    'selected[]': $scope.post.Statuspages.servicegroups.ids
+                    'selected[]': $scope.post.Statuspages.servicegroups.ids,
+                    'containerIds[]': $scope.post.Statuspages.containers._ids
                 }
             }).then(function(result){
                 $scope.servicegroups = result.data.servicegroups;
@@ -133,12 +139,16 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
-        $scope.loadContainers();
-        $scope.loadHosts('');
-        $scope.loadServices('');
-        $scope.loadHostgroups('');
-        $scope.loadServicegroups('');
 
         $scope.loadStatuspage();
 
+        $scope.$watch('post.Statuspages.containers._ids', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadHosts('');
+            $scope.loadServices('');
+            $scope.loadHostgroups('');
+            $scope.loadServicegroups('');
+        }, true);
     });
