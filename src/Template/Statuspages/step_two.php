@@ -72,13 +72,15 @@
                         <span ng-if="post.Statuspages.hosts.length > 0">
                             <table class="table">
                                 <thead>
-                                <th class="col-5"><?= __('Host name'); ?></th>
-                                <th class="col-7"><?= __('Display name'); ?></th>
+                                <tr class="d-flex">
+                                    <th class="col-5"><?= __('Host name'); ?></th>
+                                    <th class="col-7"><?= __('Display name'); ?></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="host in post.Statuspages.hosts">
-                                    <td>{{host.name}}</td>
-                                    <td>
+                                <tr ng-repeat="host in post.Statuspages.hosts" class="d-flex">
+                                    <td class="col-5">{{host.name}}</td>
+                                    <td class="col-7">
                                         <input
                                             class="form-control"
                                             type="text"
@@ -94,15 +96,17 @@
                             <hr>
                             <table class="table">
                                 <thead>
-                                <th class="col-3"><?= __('Service name'); ?></th>
-                                <th class="col-2"><?= __('From host'); ?></th>
-                                <th class="col-7"><?= __('Display name'); ?></th>
+                                <tr class="d-flex">
+                                    <th class="col-3"><?= __('Service name'); ?></th>
+                                    <th class="col-2"><?= __('From host'); ?></th>
+                                    <th class="col-7"><?= __('Display name'); ?></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="service in post.Statuspages.services">
-                                    <td>{{service.servicename}}</td>
-                                    <td>{{service.hostname}}</td>
-                                    <td>
+                                <tr ng-repeat="service in post.Statuspages.services" class="d-flex">
+                                    <td class="col-3">{{service.servicename}}</td>
+                                    <td class="col-2">{{service.hostname}}</td>
+                                    <td class="col-7">
                                         <input
                                             class="form-control"
                                             type="text"
@@ -118,13 +122,15 @@
                             <hr>
                             <table class="table">
                                 <thead>
-                                <th class="col-5"><?= __('Hostgroup name'); ?></th>
-                                <th class="col-7"><?= __('Display name'); ?></th>
+                                <tr class="d-flex">
+                                    <th class="col-5"><?= __('Hostgroup name'); ?></th>
+                                    <th class="col-7"><?= __('Display name'); ?></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="hostgroup in post.Statuspages.hostgroups">
-                                    <td>{{hostgroup.Containers.name}}</td>
-                                    <td>
+                                <tr ng-repeat="hostgroup in post.Statuspages.hostgroups" class="d-flex">
+                                    <td class="col-5">{{hostgroup.Containers.name}}</td>
+                                    <td class="col-7">
                                         <input
                                             class="form-control"
                                             type="text"
@@ -140,13 +146,15 @@
                             <hr>
                             <table class="table">
                                 <thead>
-                                <th class="col-5"><?= __('Servicegroup name'); ?></th>
-                                <th class="col-7"><?= __('Display name'); ?></th>
+                                <tr class="d-flex">
+                                    <th class="col-5"><?= __('Servicegroup name'); ?></th>
+                                    <th class="col-7"><?= __('Display name'); ?></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="servicegroup in post.Statuspages.servicegroups">
-                                    <td>{{servicegroup.Containers.name}}</td>
-                                    <td>
+                                <tr ng-repeat="servicegroup in post.Statuspages.servicegroups" class="d-flex">
+                                    <td class="col-5">{{servicegroup.Containers.name}}</td>
+                                    <td class="col-7">
                                         <input
                                             class="form-control"
                                             type="text"
