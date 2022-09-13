@@ -39,14 +39,23 @@ angular.module('openITCOCKPIT')
                         'angular': true
                     }
                 }).then(function(result){
-                    $scope.post.Systemdowntime.from_date = result.data.defaultValues.from_date;
-                    $scope.post.Systemdowntime.from_time = result.data.defaultValues.from_time;
-                    $scope.post.Systemdowntime.to_date = result.data.defaultValues.to_date;
-                    $scope.post.Systemdowntime.to_time = result.data.defaultValues.to_time;
+                    var fromDate = $scope.parseDateTime(result.data.defaultValues.js_from);
+                    $scope.post.Systemdowntime.from_date = fromDate;
+                    $scope.post.Systemdowntime.from_time = fromDate;
+                    var toDate = $scope.parseDateTime(result.data.defaultValues.js_to);
+                    $scope.post.Systemdowntime.to_date = toDate;
+                    $scope.post.Systemdowntime.to_time = toDate;
                     $scope.post.Systemdowntime.comment = result.data.defaultValues.comment;
                     $scope.post.Systemdowntime.duration = result.data.defaultValues.duration;
                     $scope.post.Systemdowntime.downtimetype_id = result.data.defaultValues.downtimetype_id;
                 });
+            };
+
+            $scope.parseDateTime = function(jsStringData) {
+                var splitData = jsStringData.split(',');
+                var date = new Date(splitData[0], splitData[1] - 1, splitData[2]);
+                date.setHours(splitData[3], splitData[4], "00");
+                return date;
             };
 
             $scope.loadHosts = function(searchString){
@@ -62,8 +71,26 @@ angular.module('openITCOCKPIT')
             };
 
             $scope.submit = function(){
+                var POSTParams = {
+                    Systemdowntime: {
+                        is_recurring: $scope.post.Systemdowntime.is_recurring,
+                        weekdays: $scope.post.Systemdowntime.weekdays,
+                        day_of_month: $scope.post.Systemdowntime.day_of_month,
+                        from_date: date('d.m.Y', $scope.post.Systemdowntime.from_date.getTime() / 1000),
+                        from_time: date('H:i', $scope.post.Systemdowntime.from_time.getTime() / 1000),
+                        to_date: date('d.m.Y', $scope.post.Systemdowntime.to_date.getTime() / 1000),
+                        to_time: date('H:i', $scope.post.Systemdowntime.to_time.getTime() / 1000),
+                        duration: $scope.post.Systemdowntime.duration,
+                        downtimetype: $scope.post.Systemdowntime.downtimetype,
+                        downtimetype_id: $scope.post.Systemdowntime.downtimetype_id,
+                        objecttype_id: $scope.post.Systemdowntime.objecttype_id,     //OBJECT_HOST
+                        object_id: $scope.post.Systemdowntime.object_id,
+                        comment: $scope.post.Systemdowntime.comment,
+                        is_recursive: $scope.post.Systemdowntime.is_recursive
+                    }
+                };
                 $http.post("/systemdowntimes/addHostdowntime.json?angular=true",
-                    $scope.post
+                    POSTParams
                 ).then(function(result){
                     NotyService.genericSuccess({
                         message: $scope.successMessage.objectName + ' ' + $scope.successMessage.message

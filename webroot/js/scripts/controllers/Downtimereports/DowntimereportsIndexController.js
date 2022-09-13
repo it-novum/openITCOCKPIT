@@ -16,6 +16,8 @@ angular.module('openITCOCKPIT')
             from_date: date('d.m.Y', now.getTime() / 1000 - (3600 * 24 * 30)),
             to_date: date('d.m.Y', now.getTime() / 1000)
         };
+        $scope.from = new Date(now.getTime() - (3600 * 24 * 30 * 1000));
+        $scope.to = new Date(now.getTime());
 
         $scope.timeperiods = {};
         $scope.reportData = {
@@ -40,13 +42,12 @@ angular.module('openITCOCKPIT')
                 //PDF Report
                 var GETParams = {
                     'angular': true,
-                    'data[from_date]': $scope.post.from_date,
-                    'data[to_date]': $scope.post.to_date,
+                    'data[from_date]': date('d.m.Y', $scope.from.getTime() / 1000),
+                    'data[to_date]': date('d.m.Y', $scope.to.getTime() / 1000),
                     'data[evaluation_type]': $scope.post.evaluation_type,
                     'data[reflection_state]': $scope.post.reflection_state,
                     'data[timeperiod_id]': $scope.post.timeperiod_id
                 };
-
                 $http.get("/downtimereports/createPdfReport.json", {
                         params: GETParams
                     }
@@ -60,7 +61,16 @@ angular.module('openITCOCKPIT')
 
             }else{
                 //HTML Report
-                $http.post("/downtimereports/index.json", $scope.post
+                var POSTParams = {
+                    evaluation_type: $scope.post.evaluation_type,
+                    report_format: $scope.post.report_format,
+                    reflection_state: $scope.post.reflection_state,
+                    timeperiod_id: $scope.post.timeperiod_id,
+                    from_date: date('d.m.Y', $scope.from.getTime() / 1000),
+                    to_date: date('d.m.Y', $scope.to.getTime() / 1000)
+                };
+
+                $http.post("/downtimereports/index.json", POSTParams
                 ).then(function(result){
                     NotyService.genericSuccess({
                         message: $scope.reportMessage.successMessage
