@@ -448,16 +448,18 @@ class StatuspagesController extends AppController {
         $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
         $containerIds = array_unique($containerIds);
 
-        $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
-        $ServiceCondition->setContainerIds($containerIds);
-        $ServiceCondition->setIncludeDisabled(false);
 
+        // as $ServiceCondition->setIncludeDisabled(false); has no function at all we need to exclude the disabled services here
+        $conditions = ['Services.disabled' => 0];
+        $ServiceCondition = new ServiceConditions($conditions);
+        $ServiceCondition->setContainerIds($containerIds);
+        //$ServiceCondition->setIncludeDisabled(false); // this has no function
 
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $services = Api::makeItJavaScriptAble(
-            $ServicesTable->getServicesForAngularCake4($ServiceCondition, $selected)
+            $ServicesTable->getServicesForAngular($ServiceCondition, $selected)
         );
 
         $this->set('services', $services);

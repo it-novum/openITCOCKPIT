@@ -186,7 +186,7 @@
                                     class="form-control"
                                     chosen="services"
                                     multiple
-                                    ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
+                                    ng-options="(service.value.Service.id) as service.value.Host.name + '/' +service.value.Service.servicename group by service.value.Host.name disable when service.vServiceInUse for service in services"
                                     ng-model="post.Statuspages.services._ids">
                                 </select>
                             </div>
