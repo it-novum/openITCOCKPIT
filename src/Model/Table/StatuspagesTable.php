@@ -1165,11 +1165,43 @@ class StatuspagesTable extends Table {
         $cumulatedState = null;
         $cumulatedStateType = 'host';
         $cumulatedHumanState = '';
-        if ($cumulatedHostState > 0) {
+
+        $useHostStatus = true;
+        if(!empty($allServiceStatus)){
+            // nehm servicestatus
+            $useHostStatus = false;
+        }
+        if($cumulatedHostState > 0){
+            //nehm host status weil hoststatus > 0
+            $useHostStatus = true;
+        }
+
+
+        if($useHostStatus){
             $CumulatedHostStatus = new Hoststatus([
                 'current_state' => $cumulatedHostState
             ]);
 
+            $cumulatedStateType = 'host';
+            $cumulatedState = $CumulatedHostStatus->toArray()['currentState'];
+            $cumulatedHumanState = $CumulatedHostStatus->toArray()['humanState'];
+        }else{
+            $cumulatedServiceState = (int)max($allServiceStatus);
+
+            $CumulatedServiceStatus = new Servicestatus([
+                'current_state' => $cumulatedServiceState
+            ]);
+
+            $cumulatedStateType = 'service';
+            $cumulatedState = $CumulatedServiceStatus->toArray()['currentState'];
+            $cumulatedHumanState = $CumulatedServiceStatus->toArray()['humanState'];
+        }
+        /*
+
+        if ($cumulatedHostState > 0) {
+            $CumulatedHostStatus = new Hoststatus([
+                'current_state' => $cumulatedHostState
+            ]);
 
             $cumulatedStateType = 'host';
             $cumulatedState = $CumulatedHostStatus->toArray()['currentState'];
@@ -1177,14 +1209,25 @@ class StatuspagesTable extends Table {
         } else {
             if (!empty($allServiceStatus)) {
                 $cumulatedServiceState = (int)max($allServiceStatus);
+
+                $CumulatedServiceStatus = new Servicestatus([
+                    'current_state' => $cumulatedServiceState
+                ]);
+
+                $cumulatedStateType = 'service';
+                $cumulatedState = $CumulatedServiceStatus->toArray()['currentState'];
+                $cumulatedHumanState = $CumulatedServiceStatus->toArray()['humanState'];
+            }else{
+                $CumulatedHostStatus = new Hoststatus([
+                    'current_state' => $cumulatedHostState
+                ]);
+
+                $cumulatedStateType = 'host';
+                $cumulatedState = $CumulatedHostStatus->toArray()['currentState'];
+                $cumulatedHumanState = $CumulatedHostStatus->toArray()['humanState'];
             }
-            $CumulatedServiceStatus = new Servicestatus([
-                'current_state' => $cumulatedServiceState
-            ]);
-            $cumulatedStateType = 'service';
-            $cumulatedState = $CumulatedServiceStatus->toArray()['currentState'];
-            $cumulatedHumanState = $CumulatedServiceStatus->toArray()['humanState'];
         }
+        */
 
         $hostgroupState = [
             'currentState'    => $cumulatedState,

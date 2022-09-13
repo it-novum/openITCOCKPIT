@@ -78,12 +78,11 @@ $logo = new Logo();
                             case 'hosts':
                                 $internalLink = 'hosts/browser/' . $id;
 
-                                if(isset($obj['cumulatedServiceState'])){
+                                if (isset($obj['cumulatedServiceState'])) {
                                     if ($obj['currentState'] < $obj['cumulatedServiceState']) {
                                         $obj['humanState'] = $obj['cumulatedServiceHumanState'];
                                     }
                                 }
-
 
                                 if ($obj['serviceAcknowledged']) {
                                     $ackMessage = __('There is a acknowledged service');
@@ -222,10 +221,10 @@ $logo = new Logo();
                                             $displayName = $history['name'];
                                             $displayType = $history['selfType'];
                                             if ($history['type'] == 'acknowledgement') {
-                                                $message = __($displayName. ' is acknowledged');
+                                                $message = __($displayName . ' is acknowledged');
                                             }
                                             if ($history['type'] == 'downtime') {
-                                                $message = __($displayName.' is in downtime');
+                                                $message = __($displayName . ' is in downtime');
                                             }
                                         }
                                         if (!empty($history['parentType']) && !empty($history['parentName'])) {
@@ -240,7 +239,7 @@ $logo = new Logo();
                                             }
                                         }
 
-                                        echo ucfirst($history['type']).': '. $displayType . ' "' . $displayName.'"';
+                                        echo ucfirst($history['type']) . ': ' . $displayType . ' "' . $displayName . '"';
                                         ?>
                                     </h2>
 
