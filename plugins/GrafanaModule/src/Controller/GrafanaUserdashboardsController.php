@@ -25,6 +25,8 @@
 
 namespace GrafanaModule\Controller;
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaFieldConfigDefaults;
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaPanelOverrides;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
@@ -765,17 +767,25 @@ class GrafanaUserdashboardsController extends AppController {
                                 ));
                         }
                     }
+
+                    $GrafanaFieldConfigDefaults = new GrafanaFieldConfigDefaults();
+                    $GrafanaFieldConfigDefaults->setUnit($panel['unit']);
+
+
                     $GrafanaPanel->addTargets(
                         $GrafanaTargetCollection,
                         new GrafanaSeriesOverrides($GrafanaTargetCollection),
                         new GrafanaYAxes($GrafanaTargetCollection),
-                        new GrafanaThresholdCollection($GrafanaTargetCollection)
+                        new GrafanaThresholdCollection($GrafanaTargetCollection),
+                        new GrafanaPanelOverrides($GrafanaTargetCollection),
+                        $GrafanaFieldConfigDefaults
                     );
                     $GrafanaRow->addPanel($GrafanaPanel);
                 }
                 $GrafanaDashboard->addRow($GrafanaRow);
             }
             $json = $GrafanaDashboard->getGrafanaDashboardJson();
+            //debug($json);
             if ($json) {
                 $request = new Request('POST', $GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
                 try {

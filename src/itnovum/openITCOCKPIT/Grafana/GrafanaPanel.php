@@ -27,6 +27,9 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaFieldConfigDefaults;
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaPanelOverrides;
+
 class GrafanaPanel {
 
     /**
@@ -77,7 +80,25 @@ class GrafanaPanel {
     /**
      * @var array
      */
-    private $panel = [
+    private $panelOverrides = [];
+
+    /**
+     * @var array
+     */
+    private $GrafanaFieldConfigDefaults = [];
+
+    /**
+     * Definition of the panel graph type
+     * @var string
+     */
+    private $type = 'timeseries';
+
+    /**
+     * @var array
+     * @deprecated this is the graph(old) format of grafana which is marked as deprecated
+     * see: https://grafana.com/docs/grafana/latest/visualizations/graph-panel/
+     */
+    private $panel_old = [
         "aliasColors"     => [
             //Insert colors here
         ],
@@ -137,6 +158,124 @@ class GrafanaPanel {
     ];
 
     /**
+     * Hybrid structure. Contains the old one with elements from new structure.
+     * @var array
+     */
+    private $panel_merged = [
+        "aliasColors"     => [ // old setter color of the metric, not working anymore
+            //Insert colors here
+        ],
+        "bars"            => false,
+        //"datasource"      => null,
+        "datasource"      => '-- Mixed --',
+        "fill"            => 1,
+        "id"              => null,
+        "legend"          => [ // may obsolete -> see: legend->calcs
+            "alignAsTable" => true,
+            "avg"          => true,
+            "current"      => true,
+            "hideEmpty"    => false,
+            "hideZero"     => false,
+            "max"          => true,
+            "min"          => true,
+            "show"         => true,
+            "total"        => false,
+            "values"       => true
+        ],
+        "lines"           => true,
+        "linewidth"       => 1,
+        "links"           => [],
+        "nullPointMode"   => "connected",
+        "percentage"      => false,
+        "pointradius"     => 5,
+        "points"          => false,
+        "renderer"        => "flot",
+        "seriesOverrides" => [],
+        "span"            => 6,
+        "stack"           => false, // old, not working
+        "steppedLine"     => false,
+        "targets"         => [
+            //Insert targets here
+        ],
+        "thresholds"      => [
+            //Insert thresholds here
+        ],
+        "timeFrom"        => null,
+        "timeShift"       => null,
+        "title"           => "",
+        "tooltip"         => [
+            "shared"     => true,
+            "sort"       => 0,
+            "value_type" => "individual"
+        ],
+        "type"            => "", // graph type definiton
+        "xaxis"           => [
+            "mode"   => "time",
+            "name"   => null,
+            "show"   => true,
+            "values" => []
+        ],
+        "yaxes"           => [
+            //Insert yaxes here
+        ],
+        //below here are the new options
+        "fieldConfig"     => [
+            "defaults" => [
+                "custom" => [
+                    "spanNulls"   => true, //connect null values
+                    "showPoints"  => "never",
+                    "fillOpacity" => 10,
+                    /*
+                      "stacking"=> [
+                          "group"=> "A",
+                          "mode"=> "normal" // or "none"
+                        ],
+                     */
+                ],
+                "unit"   => "", // new unit definition - old one was part of "yaxes":[{"format":"hertz"}]
+            ],
+            /*"overrides" => [
+                [
+                    "matcher"    => [
+                        "id"      => "byName",
+                        "options" => "default host.LinuxLoad.load1"
+                    ],
+                    "properties" => [
+                        [
+                            "id"    => "color",
+                            "value" => [
+                                "fixedColor" => "rgb(17, 36, 214)", // color of the metric
+                                "mode"       => "fixed"
+                            ]
+                        ],
+                        [
+                            "id" => "custom.axisPlacement", // Y-Axis placement (in this case to the right side)
+                            "value" => "right"
+                        ]
+                    ]
+                ],
+                //next custom override for another metric...
+            ]*/
+        ],
+        "options"         => [
+            "legend"  => [
+                "calcs"       => [
+                    "min",
+                    "max",
+                    "mean",
+                    "lastNotNull",
+                ],
+                "displayMode" => "table",
+                "placement"   => "bottom"
+            ],
+            "tooltip" => [
+                "mode" => "multi",
+                "sort" => "asc"
+            ]
+        ],
+    ];
+
+    /**
      * GrafanaPanel constructor.
      * @param $panelId
      * @param int $span
@@ -159,21 +298,35 @@ class GrafanaPanel {
      * @return array
      */
     public function getPanelAsArray() {
-        $this->panel['id'] = $this->panelId;
-        $this->panel['title'] = $this->title;
-        $this->panel['targets'] = $this->targets;
-        $this->panel['aliasColors'] = $this->color;
-        $this->panel['span'] = $this->span;
+        // MERGED HYBRID STRUCTURE
+        $this->panel_merged['id'] = $this->panelId;
+        $this->panel_merged['title'] = $this->title;
+        $this->panel_merged['targets'] = $this->targets;
+        $this->panel_merged['fieldConfig']['overrides'] = $this->panelOverrides;
+        $this->panel_merged['fieldConfig']['defaults'] = $this->GrafanaFieldConfigDefaults;
+        $this->panel_merged['span'] = $this->span; // stretches panel to full size
+        $this->panel_merged['type'] = $this->type;
 
         if ($this->SeriesOverrides->hasOverrides()) {
-            $this->panel['seriesOverrides'] = $this->SeriesOverrides->getOverrides();
+            /*
+             "seriesOverrides": [
+                {
+                  "alias": "rta",
+                  "yaxis": 1
+                },
+                {
+                  "alias": "pl",
+                  "yaxis": 2
+                }
+              ],
+             */
+            $this->panel_merged['seriesOverrides'] = $this->SeriesOverrides->getOverrides(); // defines the yaxis units but not the placement of the axis
         }
 
-        $this->panel['yaxes'] = $this->YAxes->getAxesAsArray();
-
-        $this->panel['thresholds'] = $this->ThresholdCollection->getThresholdsAsArray();
-
-        return $this->panel;
+        $this->panel_merged['yaxes'] = $this->YAxes->getAxesAsArray(); // defines the format (eg. ms, percent etc.) of the yaxis
+        $this->panel_merged['thresholds'] = $this->ThresholdCollection->getThresholdsAsArray();
+        //print_r($this->ThresholdCollection->getThresholdsAsArray());
+        return $this->panel_merged;
     }
 
     /**
@@ -190,15 +343,21 @@ class GrafanaPanel {
      * @param GrafanaThresholdCollection $ThresholdCollection
      */
     public function addTargets(
-        GrafanaTargetCollection $grafanaTargetCollection,
-        GrafanaSeriesOverrides $SeriesOverrides,
-        GrafanaYAxes $YAxes,
-        GrafanaThresholdCollection $ThresholdCollection
+        GrafanaTargetCollection    $grafanaTargetCollection,
+        GrafanaSeriesOverrides     $SeriesOverrides,
+        GrafanaYAxes               $YAxes,
+        GrafanaThresholdCollection $ThresholdCollection,
+        GrafanaPanelOverrides      $GrafanaPanelOverrides,
+        GrafanaFieldConfigDefaults $GrafanaFieldConfigDefaults
     ) {
+
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
-        $this->color = $grafanaTargetCollection->getColorsAsArray();
         $this->SeriesOverrides = $SeriesOverrides;
         $this->YAxes = $YAxes;
         $this->ThresholdCollection = $ThresholdCollection;
+
+        // Adaptions to new structure
+        $this->panelOverrides = $GrafanaPanelOverrides->getOverrides();
+        $this->GrafanaFieldConfigDefaults = $GrafanaFieldConfigDefaults->getFieldConfigDefaults();
     }
 }

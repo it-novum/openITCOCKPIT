@@ -82,7 +82,23 @@ class GrafanaTargetCollection {
             if ($grafanaTarget->getColor() !== null) {
                 $alias = str_replace("'", '', $grafanaTarget->getAlias());
 
-                $colorsArray[$alias] = $grafanaTarget->getColor();
+                //$colorsArray[$alias] = $grafanaTarget->getColor();
+                $colorsArray[] = [
+                    "matcher"    => [
+                        "id"      => "byName",
+                        "options" => $alias
+                    ],
+                    "properties" => [
+                        [
+                            "id"    => "color",
+                            "value" => [
+                                "fixedColor" => $grafanaTarget->getColor(),
+                                "mode"       => "fixed"
+                            ]
+                        ]
+                    ]
+                ];
+
             }
         }
         return $colorsArray;

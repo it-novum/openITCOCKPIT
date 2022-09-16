@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace GrafanaModule\Command;
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaFieldConfigDefaults;
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaPanelOverrides;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ProxiesTable;
@@ -331,13 +333,16 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                     )
                 );
             }
-
+            $GrafanaFieldConfigDefaults = new GrafanaFieldConfigDefaults();
+            //$GrafanaFieldConfigDefaults->setUnit($panel['unit']);
 
             $grafanaPanel->addTargets(
                 $grafanaTargetCollection,
                 new GrafanaSeriesOverrides($grafanaTargetCollection),
                 new GrafanaYAxes($grafanaTargetCollection),
-                new GrafanaThresholdCollection($grafanaTargetCollection)
+                new GrafanaThresholdCollection($grafanaTargetCollection),
+                new GrafanaPanelOverrides($grafanaTargetCollection),
+                $GrafanaFieldConfigDefaults
             );
 
             if ($panelId % 2 === 0) {
