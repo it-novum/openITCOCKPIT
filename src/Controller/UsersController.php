@@ -194,7 +194,7 @@ class UsersController extends AppController {
         $isOAuthLogin = $Session->read('is_oauth_login') === true;
         $Session->delete('is_oauth_login');
         $Session->delete('MessageOtd.showMessage');
-        Cache::delete('permissions_ldap_usergroup_id_for_' . $userId, 'permissions');
+        Cache::delete('ltc_ldap_usergroup_id_for_' . $userId, 'long_time_cache');
         Cache::delete('userPermissions_' . $userId, 'permissions');
 
         $this->Authentication->logout();
