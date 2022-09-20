@@ -234,14 +234,16 @@ class LdapClient {
         return $result;
     }
 
+
     /**
      * @param string $sAMAccountName
+     * @param bool $exactMatch match the exact sAMAccountName (if true sAMAccountName=foo else sAMAccountName=*foo* [very slow on large LDAP trees])
      * @return \FreeDSx\Ldap\Search\Filter\AndFilter|\FreeDSx\Ldap\Search\Filter\FilterInterface|\FreeDSx\Ldap\Search\Filter\SubstringFilter
      */
-    private function getUsersFilter($sAMAccountName = '') {
+    private function getUsersFilter($sAMAccountName = '', $exactMatch = false) {
         if ($this->isOpenLdap) {
             if ($sAMAccountName != '' && $this->rawFilter == '') {
-                $filter = \FreeDSx\Ldap\Search\Filters::contains('uid', $sAMAccountName);
+                $filter = \FreeDSx\Ldap\Search\Filters::startsWith('uid', $sAMAccountName);
             }
 
             if ($this->rawFilter != '' && $sAMAccountName == '') {
@@ -252,10 +254,17 @@ class LdapClient {
             //$filter = \FreeDSx\Ldap\Search\Filters::contains('uid', $sAMAccountName);
 
             if ($this->rawFilter != '' && $sAMAccountName != '') {
-                $filter = \FreeDSx\Ldap\Search\Filters::and(
-                    \FreeDSx\Ldap\Search\Filters::raw($this->rawFilter),
-                    \FreeDSx\Ldap\Search\Filters::contains('uid', $sAMAccountName)
-                );
+                if ($exactMatch === false) {
+                    $filter = \FreeDSx\Ldap\Search\Filters::and(
+                        \FreeDSx\Ldap\Search\Filters::raw($this->rawFilter),
+                        \FreeDSx\Ldap\Search\Filters::startsWith('uid', $sAMAccountName)
+                    );
+                } else {
+                    $filter = \FreeDSx\Ldap\Search\Filters::and(
+                        \FreeDSx\Ldap\Search\Filters::raw($this->rawFilter),
+                        \FreeDSx\Ldap\Search\Filters::equal('uid', $sAMAccountName)
+                    );
+                }
             }
 
             return $filter;
@@ -263,7 +272,11 @@ class LdapClient {
 
         //MS AD filters
         if ($sAMAccountName != '' && $this->rawFilter == '') {
-            $filter = \FreeDSx\Ldap\Search\Filters::contains('sAMAccountName', $sAMAccountName);
+            if ($exactMatch === false) {
+                $filter = \FreeDSx\Ldap\Search\Filters::startsWith('sAMAccountName', $sAMAccountName);
+            } else {
+                $filter = \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $sAMAccountName);
+            }
         }
 
         if ($this->rawFilter != '' && $sAMAccountName == '') {
@@ -271,10 +284,20 @@ class LdapClient {
         }
 
         if ($this->rawFilter != '' && $sAMAccountName != '') {
-            $filter = \FreeDSx\Ldap\Search\Filters::and(
-                \FreeDSx\Ldap\Search\Filters::raw($this->rawFilter),
-                \FreeDSx\Ldap\Search\Filters::contains('sAMAccountName', $sAMAccountName)
-            );
+            if ($exactMatch === false) {
+                // Filters::contains() == sAMAccountName=*foo* (very slow)
+                // Filters::startsWith() == sAMAccountName=foo* (mutch faster)
+                $filter = \FreeDSx\Ldap\Search\Filters::and(
+                    \FreeDSx\Ldap\Search\Filters::raw($this->rawFilter),
+                    \FreeDSx\Ldap\Search\Filters::startsWith('sAMAccountName', $sAMAccountName)
+                );
+            } else {
+                // sAMAccountName=foo
+                $filter = \FreeDSx\Ldap\Search\Filters::and(
+                    \FreeDSx\Ldap\Search\Filters::raw($this->rawFilter),
+                    \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $sAMAccountName)
+                );
+            }
         }
 
         return $filter;
@@ -287,14 +310,15 @@ class LdapClient {
     public function getUser(string $sAMAccountName, bool $includeMember = true) {
         if ($this->isOpenLdap === false) {
             //MS AD
-            $filter = $this->getUsersFilter($sAMAccountName);
+            $filter = $this->getUsersFilter($sAMAccountName, true);
             $search = \FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf');
         } else {
             //OpenLDAP
-            $filter = $this->getUsersFilter($sAMAccountName);
+            $filter = $this->getUsersFilter($sAMAccountName, true);
             $search = \FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf');
         }
 
+        //debug($filter->toString());
         $paging = $this->ldap->paging($search, 1);
 
         foreach ($paging->getEntries() as $entry) {
