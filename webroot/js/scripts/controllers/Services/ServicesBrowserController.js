@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesBrowserController', function($scope, $http, $q, QueryStringService, $interval, $stateParams, UuidService, $state){
+    .controller('ServicesBrowserController', function($scope, $http, $q, QueryStringService, $interval, $stateParams, UuidService, $state, LocalStorageService){
 
         $scope.id = $stateParams.id;
 
@@ -63,7 +63,8 @@ angular.module('openITCOCKPIT')
 
         $scope.graph = {
             graphAutoRefresh: true,
-            showDatapoints: false
+            showDatapoints: false,
+            smoothInterpolation: LocalStorageService.getItemWithDefault('smoothGraphInterpolation', 'false') === 'true',
         };
         $scope.graphAutoRefreshInterval = 0;
 
@@ -605,7 +606,7 @@ angular.module('openITCOCKPIT')
                 defaultTheme: false
             };
 
-            options.xaxis.tickFormatter = function(val, axis) {
+            options.xaxis.tickFormatter = function(val, axis){
                 var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
                 return date.toFormat('dd.LL.yyyy HH:mm:ss');
             };
@@ -614,12 +615,12 @@ angular.module('openITCOCKPIT')
             options.series.threshold = thresholdAreas;
             options.grid.markings = thresholdLines;
             //options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
-            options.lines.fillColor.colors = [{ brightness: 1, opacity: 0.2 }, { brightness: 1, opacity: 0.2}];
+            options.lines.fillColor.colors = [{brightness: 1, opacity: 0.2}, {brightness: 1, opacity: 0.2}];
 
-            options.points = {
-                show: $scope.graph.showDatapoints,
-                radius: 2.5
-            };
+            //options.points = {
+            //    show: $scope.graph.showDatapoints,
+            //    radius: 2.5
+            //};
 
             options.xaxis.min = (lastGraphStart * 1000);
             options.xaxis.max = (graphRenderEnd * 1000);
@@ -633,14 +634,46 @@ angular.module('openITCOCKPIT')
             //    $scope.currentGraphUnit = performance_data.datasource.unit;
             //}
 
-            plot = $.plot('#graphCanvas', [{
-                data: graph_data,
-                // https://github.com/MichaelZinsmaier/CurvedLines
-                curvedLines: {
-                    apply: true,
-                    monotonicFit: true
-                }
-            }], options);
+            if($scope.graph.smoothInterpolation === true){
+                // Enable curved lines
+                plot = $.plot('#graphCanvas', [{
+                    data: graph_data, // Pass data for curved lines
+                    // https://github.com/MichaelZinsmaier/CurvedLines
+                    curvedLines: {
+                        apply: true,
+                        monotonicFit: false,
+                        //tension: 1
+                    },
+                    points: {
+                        show: false
+                    },
+                },
+                    {
+                        //original data points
+                        data: graph_data,
+                        points: {
+                            show: $scope.graph.showDatapoints,
+                            radius: 2.5
+                        },
+                        lines: {
+                            show: false
+                        }
+                    }
+                ], options);
+            }else{
+                // Use default flot chart
+                plot = $.plot('#graphCanvas', [{
+                    data: graph_data,
+                    curvedLines: {
+                        apply: false
+                    },
+                    points: {
+                        show: $scope.graph.showDatapoints,
+                        radius: 2.5
+                    },
+                }], options);
+            }
+
 
             if(zoomCallbackWasBind === false){
                 $("#graphCanvas").bind("plotselected", function(event, ranges){
@@ -1034,6 +1067,20 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
+        });
+
+        $scope.$watch('graph.smoothInterpolation', function(){
+            if($scope.init){
+                return;
+            }
+
+            if($scope.graph.smoothInterpolation){
+                LocalStorageService.setItem('smoothGraphInterpolation', 'true');
+            }else{
+                LocalStorageService.setItem('smoothGraphInterpolation', 'false');
+            }
+
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
         });
 
