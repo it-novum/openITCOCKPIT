@@ -24,15 +24,15 @@
 //	confirmation.
 ?>
 <div class="btn-group mr-2" role="group" aria-label="<?= __('Display of server and client times'); ?>">
-    <!-- ngIf: showClientTime -->
-    <button class="btn btn-secondary ng-binding ng-scope" data-original-title="<?= __('local time of client'); ?>"
+
+    <button class="btn btn-secondary" data-original-title="<?= __('local time of client'); ?>"
             data-placement="bottom" rel="tooltip" data-container="body" ng-if="showClientTime">
         {{ currentClientTime }}
-    </button><!-- end ngIf: showClientTime -->
+    </button>
     <button class="btn btn-default " data-original-title="<?= __('display time information'); ?>"
             data-placement="bottom"
             rel="tooltip" data-container="body"><i class="fas fa-clock"></i></button>
-    <button class="btn btn-primary ng-binding" data-original-title="<?= __('local time of server'); ?>" data-placement="bottom"
+    <button class="btn btn-primary" data-original-title="<?= __('local time of server'); ?>" data-placement="bottom"
             rel="tooltip" data-container="body">
         {{ currentServerTime }}
     </button>

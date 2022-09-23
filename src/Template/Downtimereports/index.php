@@ -167,8 +167,8 @@
                                     </label>
                                     <input
                                         class="form-control"
-                                        type="text"
-                                        ng-model="post.from_date"
+                                        type="date"
+                                        ng-model="from"
                                         placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.from_date">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -181,8 +181,8 @@
                                     </label>
                                     <input
                                         class="form-control"
-                                        type="text"
-                                        ng-model="post.to_date"
+                                        type="date"
+                                        ng-model="to"
                                         placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.to_date">
                                         <div class="help-block text-danger">{{ error }}</div>
