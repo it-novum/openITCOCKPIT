@@ -120,4 +120,5 @@ plugins/DB2Module
 plugins/MSSQLModule
 plugins/ORACLEModule
 plugins/UPSModule
+plugins/VMwareSnapshotModule
 plugins/CustomalertModule
