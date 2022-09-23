@@ -48,8 +48,18 @@ angular.module('openITCOCKPIT')
         $scope.visChangeTimeout = null;
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
+        $scope.timelineMoveTo = false;
         $scope.failureDurationInPercent = null;
         $scope.lastLoadDate = Date.now();       //required for status color update in service-browser-menu
+
+        $scope.visTimelineRange = {
+            visTimelineStartAsTimestamp: null,
+            visTimelineEndAsTimestamp: null
+        };
+
+        $scope.synchronizeTimes = false;
+        $scope.graphHasBeenChanged = false;
+        $scope.timelineHasBeenChanged = false;
 
         $scope.graph = {
             graphAutoRefresh: true,
@@ -59,6 +69,9 @@ angular.module('openITCOCKPIT')
 
         $scope.currentGraphUnit = null;
         $scope.interval = null;
+
+        $scope.start = null;
+        $scope.end = null;
 
         var flappingInterval;
         var zoomCallbackWasBind = false;
@@ -153,10 +166,12 @@ angular.module('openITCOCKPIT')
                 $scope.graphAutoRefreshInterval = parseInt($scope.mergedService.check_interval, 10) * 1000;
                 $scope.timezone = results[1].data.timezone;
 
-                $scope.serverTimeDateObject = new Date($scope.timezone.server_time);
-
+                $scope.serverTimeDateObject = new Date($scope.timezone.server_time_iso);
+                //$scope.serverTimeDateObject = luxon.DateTime.fromISO($scope.timezone.server_time_iso).setZone($scope.timezone.user_timezone);
                 graphStart = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - ($scope.currentSelectedTimerange * 3600));
+                //graphStart = (parseInt($scope.serverTimeDateObject.ts / 1000, 10) - ($scope.currentSelectedTimerange * 3600));
                 graphEnd = parseInt($scope.serverTimeDateObject.getTime() / 1000, 10);
+                //graphEnd = parseInt($scope.serverTimeDateObject.ts / 1000, 10);
 
                 $scope.dataSources = [];
                 for(var dsName in results[0].data.mergedService.Perfdata){
@@ -179,6 +194,12 @@ angular.module('openITCOCKPIT')
                 if($scope.mergedService.has_graph){
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, graphStart, graphEnd, true);
                 }
+                if($scope.selectedTab === 'tab3'){
+                    $scope.timelineMoveTo = true;
+                    $scope.loadTimelineData();
+                }
+
+                $scope.loadCustomAlerts();
 
                 if(typeof $scope.serviceBrowserMenuConfig === "undefined"){
                     $scope.serviceBrowserMenuConfig = {
@@ -298,11 +319,18 @@ angular.module('openITCOCKPIT')
 
         $scope.changeGraphTimespan = function(timespan){
             $scope.currentSelectedTimerange = timespan;
-            var start = (parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10) - (timespan * 3600));
-            var end = parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10);
+            var start = parseInt(new Date(new Date($scope.timezone.server_time_iso)).getTime() / 1000, 10) - (timespan * 3600);
+            var end = parseInt(new Date(new Date($scope.timezone.server_time_iso)).getTime() / 1000, 10);
 
             //graphTimeSpan = timespan;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
+            if($scope.synchronizeTimes === true && $scope.timelineHasBeenChanged === false){
+                $scope.graphHasBeenChanged = true;
+                $scope.loadTimelineData({
+                    start: start,
+                    end: end
+                });
+            }
         };
 
         $scope.changeDataSource = function(gaugeName){
@@ -315,7 +343,6 @@ angular.module('openITCOCKPIT')
 
         $scope.changeAggregation = function(aggregation){
             $scope.currentAggregation = aggregation;
-
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, true, lastGraphStart, lastGraphEnd, false);
         };
 
@@ -351,7 +378,6 @@ angular.module('openITCOCKPIT')
 
 
         var loadGraph = function(hostUuid, serviceuuid, appendData, start, end, saveStartAndEnd){
-
             if(saveStartAndEnd){
                 lastGraphStart = start;
                 lastGraphEnd = end;
@@ -391,8 +417,9 @@ angular.module('openITCOCKPIT')
                                 data: {}
                             };
                             //Convert Servertime into user time
+
                             for(var timestamp in result.data.performance_data[0].data){
-                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
+                                var frontEndTimestamp = (parseInt(timestamp, 10));
                                 $scope.perfdata.data[frontEndTimestamp] = result.data.performance_data[0].data[timestamp];
                             }
                         }else{
@@ -417,7 +444,7 @@ angular.module('openITCOCKPIT')
                         if(result.data.performance_data.length > 0){
                             //Append new data to current graph
                             for(var timestamp in result.data.performance_data[0].data){
-                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
+                                var frontEndTimestamp = (parseInt(timestamp, 10));
                                 $scope.perfdata.data[frontEndTimestamp] = result.data.performance_data[0].data[timestamp];
                             }
                         }
@@ -490,21 +517,13 @@ angular.module('openITCOCKPIT')
         };
 
         var showTooltip = function(x, y, contents, timestamp){
-            var self = this;
             var $graph_data_tooltip = $('#graph_data_tooltip');
 
-            var fooJS = new Date(timestamp);
-            var fixTime = function(value){
-                if(value < 10){
-                    return '0' + value;
-                }
-                return value;
-            };
-
-            var humanTime = fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
+            var date = luxon.DateTime.fromJSDate(new Date(timestamp)).setZone($scope.timezone.user_timezone);
+            var humanTime = date.toFormat('dd.LL.yyyy HH:mm:ss');
 
             $graph_data_tooltip
-                .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><strong>' + contents + '</strong>')
+                .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><b>' + contents + '</b>')
                 .css({
                     top: y,
                     left: x + 10
@@ -522,7 +541,6 @@ angular.module('openITCOCKPIT')
             var GraphDefaultsObj = new GraphDefaults();
 
             var defaultColor = GraphDefaultsObj.defaultFillColor;
-
             if(performance_data.datasource.warn !== "" &&
                 performance_data.datasource.crit !== "" &&
                 performance_data.datasource.warn !== null &&
@@ -586,29 +604,27 @@ angular.module('openITCOCKPIT')
             options.tooltipOpts = {
                 defaultTheme: false
             };
-            options.xaxis.tickFormatter = function(val, axis){
-                var fooJS = new Date(val);
-                var fixTime = function(value){
-                    if(value < 10){
-                        return '0' + value;
-                    }
-                    return value;
-                };
-                return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
+
+            options.xaxis.tickFormatter = function(val, axis) {
+                var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
+                return date.toFormat('dd.LL.yyyy HH:mm:ss');
             };
+
             options.series.color = defaultColor;
             options.series.threshold = thresholdAreas;
             options.grid.markings = thresholdLines;
-            options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
+            //options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
+            options.lines.fillColor.colors = [{ brightness: 1, opacity: 0.2 }, { brightness: 1, opacity: 0.2}];
 
             options.points = {
                 show: $scope.graph.showDatapoints,
-                radius: 1
+                radius: 2.5
             };
 
-
-            options.xaxis.min = ((lastGraphStart + $scope.timezone.user_time_to_server_offset) * 1000);
-            options.xaxis.max = ((graphRenderEnd + $scope.timezone.user_time_to_server_offset) * 1000);
+            options.xaxis.min = (lastGraphStart * 1000);
+            options.xaxis.max = (graphRenderEnd * 1000);
+            $scope.start = options.xaxis.min;
+            $scope.end = options.xaxis.max;
 
             options.yaxis.axisLabel = performance_data.datasource.unit;
 
@@ -617,15 +633,19 @@ angular.module('openITCOCKPIT')
             //    $scope.currentGraphUnit = performance_data.datasource.unit;
             //}
 
-            plot = $.plot('#graphCanvas', [graph_data], options);
+            plot = $.plot('#graphCanvas', [{
+                data: graph_data,
+                // https://github.com/MichaelZinsmaier/CurvedLines
+                curvedLines: {
+                    apply: true,
+                    monotonicFit: true
+                }
+            }], options);
 
             if(zoomCallbackWasBind === false){
                 $("#graphCanvas").bind("plotselected", function(event, ranges){
                     var start = parseInt(ranges.xaxis.from / 1000, 10);
                     var end = parseInt(ranges.xaxis.to / 1000, 10);
-
-                    start -= $scope.timezone.user_time_to_server_offset;
-                    end -= $scope.timezone.user_time_to_server_offset;
 
                     //Zoomed from right to left?
                     if(start > end){
@@ -642,8 +662,14 @@ angular.module('openITCOCKPIT')
                     if((end + graphAutoRefreshIntervalInSeconds + 120) < currentTimestamp){
                         disableGraphAutorefresh();
                     }
-
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
+                    if($scope.synchronizeTimes === true && $scope.timelineHasBeenChanged === false){
+                        $scope.graphHasBeenChanged = true;
+                        $scope.loadTimelineData({
+                            start: start + $scope.timezone.user_time_to_server_offset,
+                            end: end + $scope.timezone.user_time_to_server_offset
+                        });
+                    }
                 });
             }
 
@@ -660,8 +686,11 @@ angular.module('openITCOCKPIT')
             if(start > $scope.visTimelineStart && end < $scope.visTimelineEnd){
                 $scope.timelineIsLoading = false;
                 //Zoom in data we already have
-                return;
+                if($scope.synchronizeTimes === false){
+                    return;
+                }
             }
+
 
             $http.get("/services/timeline/" + $scope.id + ".json", {
                 params: {
@@ -682,7 +711,9 @@ angular.module('openITCOCKPIT')
 
                 $scope.visTimelineStart = result.data.start;
                 $scope.visTimelineEnd = result.data.end;
+
                 var options = {
+                    showCurrentTime: true,
                     orientation: "both",
                     xss: {
                         disabled: false,
@@ -731,19 +762,19 @@ angular.module('openITCOCKPIT')
         };
 
         var renderTimeline = function(timelinedata, options){
-            var container = document.getElementById('visualization');
             if($scope.visTimeline === null){
-                $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
+                $scope.visTimeline = new vis.Timeline($scope.visContainer, timelinedata.items, timelinedata.groups, options);
                 $scope.visTimeline.on('rangechanged', function(properties){
                     if($scope.visTimelineInit){
                         $scope.visTimelineInit = false;
                         return;
                     }
-
                     if($scope.timelineIsLoading){
                         return;
                     }
-
+                    if(properties.byUser === false){
+                        return;
+                    }
                     if($scope.visTimeout){
                         clearTimeout($scope.visTimeout);
                     }
@@ -758,6 +789,34 @@ angular.module('openITCOCKPIT')
             }else{
                 $scope.visTimeline.setItems(timelinedata.items);
             }
+            if($scope.synchronizeTimes === true && $scope.graphHasBeenChanged === true){
+                $scope.visTimeline.setWindow(
+                    options.start.getTime(),
+                    options.end.getTime()
+                );
+            }
+
+            function timeLinkeOnMouseWheel(event){
+                if($scope.synchronizeTimes === false){
+                    return;
+                }
+                $scope.graphHasBeenChanged = false;
+                $scope.timelineHasBeenChanged = true;
+                event.preventDefault();
+            }
+
+            function timelineHandleDown(event){
+                if($scope.synchronizeTimes === false){
+                    return;
+                }
+                $scope.graphHasBeenChanged = false;
+                $scope.timelineHasBeenChanged = true;
+                event.preventDefault();
+            }
+
+            $scope.visContainer.addEventListener('wheel', timeLinkeOnMouseWheel);
+            $scope.visContainer.onpointerdown = timelineHandleDown;
+
 
             $scope.visTimeline.on('changed', function(){
                 if($scope.visTimelineInit){
@@ -768,9 +827,34 @@ angular.module('openITCOCKPIT')
                 }
                 $scope.visChangeTimeout = setTimeout(function(){
                     $scope.visChangeTimeout = null;
+
                     var timeRange = $scope.visTimeline.getWindow();
-                    var visTimelineStartAsTimestamp = new Date(timeRange.start).getTime();
-                    var visTimelineEndAsTimestamp = new Date(timeRange.end).getTime();
+                    $scope.visTimelineRange.visTimelineStartAsTimestamp = new Date(timeRange.start).getTime();
+                    $scope.visTimelineRange.visTimelineEndAsTimestamp = new Date(timeRange.end).getTime();
+
+
+                    if($scope.visTimelineRange.visTimelineEndAsTimestamp < options.end.getTime()){
+                        $scope.visTimelineRange.visTimelineEndAsTimestamp = options.end.getTime();
+                    }
+
+                    if($scope.synchronizeTimes === true && $scope.timelineMoveTo === false && ($scope.graphHasBeenChanged === false && $scope.timelineHasBeenChanged === true)){
+                        loadGraph(
+                            $scope.host.Host.uuid,
+                            $scope.mergedService.uuid,
+                            false,
+                            parseInt($scope.visTimelineRange.visTimelineStartAsTimestamp / 1000 - $scope.timezone.user_time_to_server_offset, 10),
+                            parseInt($scope.visTimelineRange.visTimelineEndAsTimestamp / 1000 - $scope.timezone.user_time_to_server_offset, 10),
+                            true
+                        );
+                        $scope.graphHasBeenChanged = false;
+                        $scope.timelineHasBeenChanged = false;
+                    }
+
+                    if($scope.timelineMoveTo === true){
+                        $scope.visTimeline.moveTo(options.end.getTime(), {animation: true});
+                        $scope.timelineMoveTo = false;
+                    }
+
                     var criticalItems = $scope.visTimeline.itemsData.get({
                         fields: ['start', 'end', 'className', 'group'],    // output the specified fields only
                         type: {
@@ -781,29 +865,28 @@ angular.module('openITCOCKPIT')
                             return (item.group == 4 &&
                                 (item.className === 'bg-critical' || item.className === 'bg-critical-soft') &&
                                 $scope.CheckIfItemInRange(
-                                    visTimelineStartAsTimestamp,
-                                    visTimelineEndAsTimestamp,
+                                    $scope.visTimelineRange.visTimelineStartAsTimestamp,
+                                    $scope.visTimelineRange.visTimelineEndAsTimestamp,
                                     item
                                 )
                             );
-
                         }
                     });
                     $scope.failureDurationInPercent = $scope.calculateFailures(
-                        (visTimelineEndAsTimestamp - visTimelineStartAsTimestamp), //visible time range
+                        ($scope.visTimelineRange.visTimelineEndAsTimestamp - $scope.visTimelineRange.visTimelineStartAsTimestamp), //visible time range
                         criticalItems,
-                        visTimelineStartAsTimestamp,
-                        visTimelineEndAsTimestamp
+                        $scope.visTimelineRange.visTimelineStartAsTimestamp,
+                        $scope.visTimelineRange.visTimelineEndAsTimestamp
                     );
                     $scope.$apply();
                 }, 500);
-
             });
         };
 
         $scope.showTimeline = function(){
             $scope.showTimelineTab = true;
             $scope.loadTimelineData();
+            $scope.visContainer = document.getElementById('visualization');
         };
 
         $scope.hideTimeline = function(){
@@ -866,6 +949,17 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.loadCustomAlerts = function(){
+            $http.get("/services/loadCustomalerts/.json", {
+                params: {
+                    'id': $scope.id,
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.CustomalertsExists = result.data.CustomalertsExists;
+            });
+        };
+
         var enableGraphAutorefresh = function(){
             $scope.graph.graphAutoRefresh = true;
 
@@ -881,8 +975,7 @@ angular.module('openITCOCKPIT')
                     }
 
                     // Get back to server time
-                    var start = lastTimestampInCurrentData / 1000 - $scope.timezone.user_time_to_server_offset;
-
+                    var start = lastTimestampInCurrentData / 1000;
                     $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime() + $scope.graphAutoRefreshInterval);
 
                     var end = Math.floor($scope.serverTimeDateObject.getTime() / 1000);
@@ -943,6 +1036,24 @@ angular.module('openITCOCKPIT')
             }
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
         });
+
+
+        $scope.$watch('synchronizeTimes', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.synchronizeTimes === false){
+                return;
+            }
+            loadGraph(
+                $scope.host.Host.uuid,
+                $scope.mergedService.uuid,
+                false,
+                $scope.visTimelineRange.visTimelineStartAsTimestamp / 1000 - $scope.timezone.user_time_to_server_offset,
+                $scope.visTimelineRange.visTimelineEndAsTimestamp / 1000 - $scope.timezone.user_time_to_server_offset,
+                true
+            );
+        }, true);
 
         jQuery(document).on('show.bs.tooltip', function(e){
             setTimeout(function(){

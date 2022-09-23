@@ -51,7 +51,7 @@ class AcknowledgementSerializer {
      * @param array $acknowledgementRecords
      * @param UserTime $UserTime
      */
-    public function __construct($acknowledgementRecords = [], UserTime $UserTime) {
+    public function __construct(array $acknowledgementRecords, UserTime $UserTime) {
         $this->records = $acknowledgementRecords;
         $this->UserTime = $UserTime;
 

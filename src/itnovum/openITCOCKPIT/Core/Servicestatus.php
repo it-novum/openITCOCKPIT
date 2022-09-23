@@ -264,7 +264,7 @@ class Servicestatus {
      * @return string
      */
     function ServiceStatusBackgroundColor() {
-        if($this->currentState === null){
+        if ($this->currentState === null) {
             return 'bg-primary';
         }
 
@@ -317,7 +317,7 @@ class Servicestatus {
     }
 
     public function getLastHardStateChange() {
-        if (!is_numeric($this->lastHardStateChange)) {
+        if (!is_numeric($this->lastHardStateChange) && !is_null($this->lastHardStateChange)) {
             return strtotime($this->lastHardStateChange);
         }
         return $this->lastHardStateChange;
@@ -328,21 +328,21 @@ class Servicestatus {
     }
 
     public function getLastStateChange() {
-        if (!is_numeric($this->last_state_change)) {
+        if (!is_numeric($this->last_state_change) && !is_null($this->last_state_change)) {
             return strtotime($this->last_state_change);
         }
         return $this->last_state_change;
     }
 
     public function getLastCheck() {
-        if (!is_numeric($this->lastCheck)) {
+        if (!is_numeric($this->lastCheck) && !is_null($this->lastCheck)) {
             return strtotime($this->lastCheck);
         }
         return $this->lastCheck;
     }
 
     public function getNextCheck() {
-        if (!is_numeric($this->nextCheck)) {
+        if (!is_numeric($this->nextCheck) && !is_null($this->nextCheck)) {
             return strtotime($this->nextCheck);
         }
         return $this->nextCheck;
@@ -411,7 +411,7 @@ class Servicestatus {
     }
 
     public function getLastTimeOk() {
-        if (!is_numeric($this->last_time_ok)) {
+        if (!is_numeric($this->last_time_ok) && !is_null($this->last_time_ok)) {
             return strtotime($this->last_time_ok);
         }
         return $this->last_time_ok;
@@ -474,9 +474,16 @@ class Servicestatus {
     public function toArrayForBrowser() {
         $arr = $this->toArray();
         $arr['lastHardStateChange'] = $this->UserTime->secondsInHumanShort(time() - $this->getLastHardStateChange());
+        $arr['lastHardStateChangeUser'] = $this->UserTime->format($this->getLastHardStateChange());
+
         $arr['last_state_change'] = $this->UserTime->secondsInHumanShort(time() - $this->getLastStateChange());
+        $arr['last_state_change_user'] = $this->UserTime->format($this->getLastStateChange());
+
         $arr['lastCheck'] = $this->UserTime->timeAgoInWords($this->getLastCheck());
+        $arr['lastCheckUser'] = $this->UserTime->format($this->getLastCheck());
+
         $arr['nextCheck'] = $this->UserTime->timeAgoInWords($this->getNextCheck());
+        $arr['nextCheckUser'] = $this->UserTime->format($this->getNextCheck());
         return $arr;
     }
 
@@ -506,14 +513,14 @@ class Servicestatus {
     /**
      * @param int $state
      */
-    public function setCurrentState($state){
+    public function setCurrentState($state) {
         $this->currentState = (int)$state;
     }
 
     /**
      * @param string $output
      */
-    public function setOutput($output){
+    public function setOutput($output) {
         $this->output = $output;
     }
 }

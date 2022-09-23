@@ -750,6 +750,7 @@ class HostgroupsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
@@ -776,9 +777,9 @@ class HostgroupsController extends AppController {
     }
 
     /**
-     * @param int|null $containerId
+     * @return void
      */
-    public function loadHosttemplates($containerId = null) {
+    public function loadHosttemplates() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -794,9 +795,9 @@ class HostgroupsController extends AppController {
 
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
-
         $hosttemplates = Api::makeItJavaScriptAble(
             $HosttemplatesTable->getHosttemplatesForAngular($containerIds, $HosttemplateFilter, $selected)
         );
@@ -833,7 +834,7 @@ class HostgroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
 
-    public function loadHosgroupsByContainerId() {
+    public function loadHostgroupsByContainerId() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }

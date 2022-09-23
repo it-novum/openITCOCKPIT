@@ -77,4 +77,14 @@ class HostControllerRequest {
         return $this->HostFilter->getOrderForPaginator($sort, $direction);
     }
 
+    public function includeDowntimeInformation() {
+        $includes = $this->request->getQuery('includes', []);
+        return in_array('downtimes', $includes, true);
+    }
+
+    public function includeAcknowledgementInformation() {
+        $includes = $this->request->getQuery('includes', []);
+        return in_array('acknowledgements', $includes, true);
+    }
+
 }

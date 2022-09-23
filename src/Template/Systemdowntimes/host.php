@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -101,6 +104,16 @@
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <?php if (Plugin::isLoaded('DistributeModule') && $this->Acl->hasPermission('downtime', 'satellites', 'DistributeModule')): ?>
+                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesSatelliteController'}"
+                                class="nav-item">
+                                <a ui-sref="SystemdowntimesSatellite" class="nav-link active">
+                                    <i class="fas fa-satellite">&nbsp;</i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Satellite'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+
                     </ul>
                     <!-- Tabs end -->
                     <!-- header buttons start -->
@@ -135,6 +148,12 @@
                                 <a ui-sref="SystemdowntimesAddContainerdowntime" class="dropdown-item">
                                     <i class="fa fa-link"></i>
                                     <?php echo __('Create container downtime'); ?>
+                                </a>
+                            <?php endif; ?>
+                            <?php if (Plugin::isLoaded('DistributeModule') && $this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+                                <a ui-sref="SystemdowntimesAddSatelliteDowntime" class="dropdown-item">
+                                    <i class="fas fa-satellite"></i>
+                                    <?php echo __('Create satellite downtime'); ?>
                                 </a>
                             <?php endif; ?>
                         </div>

@@ -88,6 +88,15 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
+            //clean up services and service templates -> remove not visible ids
+            $scope.post.Servicegroup.services._ids = _.intersection(
+                _.map($scope.services, 'key'),
+                $scope.post.Servicegroup.services._ids
+            );
+            $scope.post.Servicegroup.servicetemplates._ids = _.intersection(
+                _.map($scope.servicetemplates, 'key'),
+                $scope.post.Servicegroup.servicetemplates._ids
+            );
             $http.post("/servicegroups/add.json?angular=true",
                 $scope.post
             ).then(function(result){

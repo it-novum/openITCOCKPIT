@@ -184,6 +184,9 @@ class HostsController extends AppController {
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
+        $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
+        $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
@@ -255,10 +258,30 @@ class HostsController extends AppController {
                 $satellite_id = $Host->getSatelliteId();
             }
 
+            $downtime = [];
+            if ($HostControllerRequest->includeDowntimeInformation() && $Hoststatus->isInDowntime()) {
+                $downtime = $DowntimehistoryHostsTable->byHostUuid($Host->getUuid());
+                if (!empty($downtime)) {
+                    $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
+                    $downtime = $Downtime->toArray();
+                }
+            }
+
+            $acknowledgement = [];
+            if ($HostControllerRequest->includeAcknowledgementInformation() && $Hoststatus->isAcknowledged()) {
+                $acknowledgement = $AcknowledgementHostsTable->byHostUuid($Host->getUuid());
+                if (!empty($acknowledgement)) {
+                    $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime, $allowEdit);
+                    $acknowledgement = $Acknowledgement->toArray();
+                }
+            }
+
             $tmpRecord = [
                 'Host'                 => $Host->toArray(),
                 'Hoststatus'           => $Hoststatus->toArray(),
-                'ServicestatusSummary' => $serviceStateSummary
+                'ServicestatusSummary' => $serviceStateSummary,
+                'Downtime'             => $downtime,
+                'Acknowledgement'      => $acknowledgement
             ];
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
@@ -493,7 +516,8 @@ class HostsController extends AppController {
             $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
 
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
-            $HostComparisonForSave = new HostComparisonForSave($this->request->getData(), $hosttemplate, true);
+            $requestData = $this->request->getData();
+            $HostComparisonForSave = new HostComparisonForSave($requestData, $hosttemplate, true);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
             $hostData['uuid'] = UUID::v4();
 
@@ -515,7 +539,7 @@ class HostsController extends AppController {
                 //No errors
 
                 $User = new User($this->getUser());
-                $requestData = $this->request->getData();
+
 
                 $extDataForChangelog = $HostsTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
@@ -587,6 +611,8 @@ class HostsController extends AppController {
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
         if (!$HostsTable->existsById($id)) {
             throw new NotFoundException(__('Host not found'));
@@ -1614,6 +1640,7 @@ class HostsController extends AppController {
 
                     /** @var \App\Model\Entity\Host $sourceHost */
                     $sourceHost = $HostsTable->getHostDetailsForCopy($host2copyData['Source']['id']);
+
                     $hostDefaultValues = $sourceHost->extract([
                             'command_id',
                             'hosttemplate_id',
@@ -1643,7 +1670,9 @@ class HostsController extends AppController {
                             'tags',
                             'active_checks_enabled',
                             'satellite_id',
-                            'notifications_enabled'
+                            'notifications_enabled',
+                            'freshness_checks_enabled',
+                            'freshness_threshold'
                         ]
                     );
                     /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
@@ -1668,7 +1697,9 @@ class HostsController extends AppController {
                         $containerIds[] = $container->get('id');
                     }
                     foreach ($sourceHost->get('parenthosts') as $parenthost) {
-                        $parenthostsIds[] = $parenthost->get('id');
+                        if ($sourceHost->get('satellite_id') === 0 || $sourceHost->get('satellite_id') === $parenthost->get('satellite_id')) {
+                            $parenthostsIds[] = $parenthost->get('id');
+                        }
                     }
                     foreach ($sourceHost->get('contacts') as $contact) {
                         $contactsIds[] = $contact->get('id');
@@ -1720,7 +1751,6 @@ class HostsController extends AppController {
 
                     $tmpHost->hostcommandargumentvalues = $hostcommandargumentvalues;
                     $tmpHost->customvariables = $customvariables;
-
 
                     $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
                     $mergedHost = $HostMergerForView->getDataForView();
@@ -1977,6 +2007,15 @@ class HostsController extends AppController {
         }
 
         $host = $HostsTable->getHostForBrowser($id);
+        if (!empty($host['parenthosts']) && $host['satellite_id'] > 0) {
+            $parentHostsFiltered = [];
+            foreach ($host['parenthosts'] as $parentHost) {
+                if ($parentHost['satellite_id'] === 0 || $parentHost['satellite_id'] === $host['satellite_id']) {
+                    $parentHostsFiltered[] = $parentHost;
+                }
+            }
+            $host['parenthosts'] = $parentHostsFiltered;
+        }
 
         //Check permissions
         $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
@@ -2466,6 +2505,8 @@ class HostsController extends AppController {
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
+        $offset = $UserTime->getUserTimeToServerOffset();
+
 
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(true));
@@ -2477,6 +2518,11 @@ class HostsController extends AppController {
 
         $start = $this->request->getQuery('start', -1);
         $end = $this->request->getQuery('end', -1);
+
+        if ($start > 0 && $end > 0) {
+            $start -= $offset;
+            $end -= $offset;
+        }
 
 
         if (!is_numeric($start) || $start < 0) {
@@ -2510,58 +2556,79 @@ class HostsController extends AppController {
         $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState()
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->lastHardStateChange();
+
+        $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
+
         //Query state history records for host
         /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
         $statehistories = $StatehistoryHostsTable->getStatehistoryIndex($Conditions);
+        $statehistoriesHost = [];
 
-        $statehistoryRecords = [];
 
         //Host has no state history record for selected time range
+
         //Get last available state history record for this host
         $record = $StatehistoryHostsTable->getLastRecord($Conditions);
         if (!empty($record)) {
-            $record->set('state_time', $start);
-            $StatehistoryHost = new StatehistoryHost($record->toArray());
-            $statehistoryRecords[] = $StatehistoryHost;
-        }
-
-        if (empty($statehistories) && empty($record)) {
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()
-                ->currentState()
-                ->isHardstate()
-                ->lastStateChange()
-                ->lastHardStateChange();
-
-            $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
             if (!empty($hoststatus)) {
-                $isHardstate = false;
-                if (isset($hoststatus['Hoststatus']['state_type'])) {
-                    $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
+                $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+                $hostStatusLastStateChange = $Hoststatus->getLastStateChange();
+                if ($record->get('state_time') < $hostStatusLastStateChange && $hostStatusLastStateChange <= $start) {
+                    $stateHistoryHostTmp = [
+                        'StatehistoryHost' => [
+                            'state_time'      => $start,
+                            'state'           => $Hoststatus->currentState(),
+                            'last_state'      => $Hoststatus->currentState(),
+                            'last_hard_state' => $Hoststatus->getLastHardState(),
+                            'state_type'      => (int)$Hoststatus->isHardState()
+                        ]
+                    ];
+
+                    $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                    $statehistoriesHost[] = $StatehistoryHost;
+                } else {
+                    $record->set('state_time', $start);
+                    $StatehistoryHost = new StatehistoryHost($record->toArray());
+                    $statehistoriesHost[] = $StatehistoryHost;
                 }
-
-                if (isset($hoststatus['Hoststatus']['is_hardstate'])) {
-                    $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
-                }
-
-                $record = [
-                    'state_time' => $hoststatus['Hoststatus']['last_state_change'],
-                    'state'      => $hoststatus['Hoststatus']['current_state'],
-                    'state_type' => $isHardstate,
-                ];
-
-                $StatehistoryHost = new StatehistoryHost($record);
-                $statehistoryRecords[] = $StatehistoryHost;
             }
         }
-        foreach ($statehistories as $statehistory) {
-            $StatehistoryHost = new StatehistoryHost($statehistory);
-            $statehistoryRecords[] = $StatehistoryHost;
+
+        if (empty($statehistoriesHost) && !empty($hoststatus)) {
+            $isHardstate = false;
+            if (isset($hoststatus['Hoststatus']['state_type'])) {
+                $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
+            }
+
+            if (isset($hoststatus['Hoststatus']['is_hardstate'])) {
+                $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
+            }
+
+            $record = [
+                'state_time' => $hoststatus['Hoststatus']['last_state_change'],
+                'state'      => $hoststatus['Hoststatus']['current_state'],
+                'state_type' => $isHardstate,
+            ];
+
+            $StatehistoryHost = new StatehistoryHost($record);
+            $statehistoriesHost[] = $StatehistoryHost;
         }
 
-        $StatehistorySerializer = new StatehistorySerializer($statehistoryRecords, $UserTime, $end, 'host');
+        foreach ($statehistories as $statehistory) {
+            $StatehistoryHost = new StatehistoryHost($statehistory);
+            $statehistoriesHost[] = $StatehistoryHost;
+        }
+
+
+        $StatehistorySerializer = new StatehistorySerializer($statehistoriesHost, $UserTime, $end, 'host');
         $this->set('statehistory', $StatehistorySerializer->serialize());
-        unset($StatehistorySerializer, $statehistoryRecords);
+        unset($StatehistorySerializer, $statehistoriesHost);
 
         /*************  HOST DOWNTIMES *************/
         $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
@@ -2627,6 +2694,9 @@ class HostsController extends AppController {
 
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
         $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
+
+        $start += $offset;
+        $end += $offset;
 
         $this->set('start', $start);
         $this->set('end', $end);
@@ -2778,8 +2848,16 @@ class HostsController extends AppController {
         $hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $hosttemplateType);
         $hosttemplates = Api::makeItJavaScriptAble($hosttemplates);
 
-        $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
-        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        if ($containerId == ROOT_CONTAINER) {
+            // ITC-2819
+            // Hosts in the /root container can be a member of any host group
+            $hostgroups = $HostgroupsTable->getHostgroupsAsList();
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        } else {
+            $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        }
+
 
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
@@ -3002,6 +3080,7 @@ class HostsController extends AppController {
         $selected = $this->request->getQuery('selected');
         $hostId = $this->request->getQuery('hostId');
         $containerId = $this->request->getQuery('containerId');
+        $satelliteId = $this->request->getQuery('satellite_id');
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
             /** @var $ContainersTable ContainersTable */
@@ -3026,6 +3105,7 @@ class HostsController extends AppController {
                 'Hosts.id IN' => $hostId
             ]);
         }
+        $HostCondition->setSatelliteId($satelliteId);
         $hosts = Api::makeItJavaScriptAble(
             $HostsTable->getHostsForAngular($HostCondition, $selected)
         );

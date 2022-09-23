@@ -31,7 +31,7 @@
         <?php if ($hasSubscription === false): ?>
             <div class="header-icon padding-left-10 padding-right-5">
                 <a class="btn btn-outline-danger waves-effect waves-themed"
-                   href="https://openitcockpit.io/#Subscription"
+                   href="https://openitcockpit.io/editions/"
                    target="_blank"
                    data-original-title="<?= __('No active subscription'); ?>"
                    data-placement="bottom"
@@ -44,7 +44,7 @@
         <?php if ($hasSubscription === true && $isCommunityEdition === true): ?>
             <div class="header-icon padding-left-10 padding-right-5">
                 <a class="btn btn-outline-primary waves-effect waves-themed"
-                   href="https://openitcockpit.io/#Subscription"
+                   href="https://openitcockpit.io/editions/"
                    target="_blank"
                    data-original-title="<?= __('Community Edition'); ?>"
                    data-placement="bottom"

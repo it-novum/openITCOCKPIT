@@ -1824,6 +1824,7 @@ class ServicesTable extends Table {
                 'Hosts.description',
                 'Hosts.address',
                 'Hosts.disabled',
+                'Hosts.notes'
             ])
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
@@ -1993,7 +1994,8 @@ class ServicesTable extends Table {
                 'Hosts.description',
                 'Hosts.address',
                 'Hosts.disabled',
-                'Hosts.satellite_id'
+                'Hosts.satellite_id',
+                'Hosts.notes'
             ])
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
@@ -4373,6 +4375,7 @@ class ServicesTable extends Table {
      */
     public function getServicesWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
         $query = $this->find();
+        $where = [];
         $query
             ->select([
                 'Services.host_id',
@@ -4448,7 +4451,7 @@ class ServicesTable extends Table {
             ]);
         }
 
-        if (isset($where['Services.keywords rlike'])) {
+        if (isset($conditions['Services.keywords rlike'])) {
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
                 $where['Services.keywords rlike'],
@@ -4458,7 +4461,7 @@ class ServicesTable extends Table {
             unset($where['Services.keywords rlike']);
         }
 
-        if (isset($where['Services.not_keywords not rlike'])) {
+        if (isset($conditions['Services.not_keywords not rlike'])) {
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
                 $where['Services.not_keywords not rlike'],
@@ -4468,7 +4471,24 @@ class ServicesTable extends Table {
             unset($where['Services.not_keywords not rlike']);
         }
 
-        $where = [];
+        if (!empty($conditions['Service']['keywords'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $conditions['Service']['keywords'],
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($conditions['Service']['not_keywords'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $conditions['Service']['not_keywords'],
+                'string',
+                'NOT RLIKE'
+            );
+        }
+
         if (!empty($conditions['Service']['servicename'])) {
             $query->having([
                 'servicename LIKE' => $conditions['Service']['servicename']
@@ -4477,6 +4497,7 @@ class ServicesTable extends Table {
         if (!empty($conditions['Host']['name'])) {
             $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
         }
+
         $query->andWhere($where);
         $query->group('Services.id');
 
@@ -4649,5 +4670,114 @@ class ServicesTable extends Table {
         }
 
         return $list;
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array|int $selected
+     * @param bool $returnEmptyArrayIfMyRightsIsEmpty
+     * @return array|null
+     * @deprecated since ITC-2819
+     * See https://github.com/it-novum/openITCOCKPIT/pull/1377/files?diff=split&w=0 how to restore <= 4.4.1 behavior
+     */
+    public function getServicesForServicegroupForAngular(ServiceConditions $ServiceConditions, $selected = [], $returnEmptyArrayIfMyRightsIsEmpty = false) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+        $selected = array_filter($selected);
+
+        if (empty($ServiceConditions->getContainerIds())) {
+            return [];
+        }
+
+
+        $where = $ServiceConditions->getConditions();
+
+        if (!empty($selected)) {
+            $where['NOT'] = [
+                'Services.id IN' => $selected
+            ];
+        }
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
+        $query = $this->find();
+        $query
+            ->innerJoinWith('Hosts', function (Query $q) use ($ServiceConditions) {
+                return $q->where([
+                    'Hosts.container_id IN ' => $ServiceConditions->getContainerIds()
+                ]);
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->select([
+                'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                'Services.id',
+                'Services.disabled',
+                'Hosts.name'
+            ])
+            ->where(
+                $where
+            );
+        if (!empty($having)) {
+            $query->having($having);
+        }
+        $query->order([
+            'servicename' => 'asc'
+        ])
+            ->limit(ITN_AJAX_LIMIT)
+            ->disableHydration()
+            ->all();
+
+        $servicesWithLimit = [];
+        $selectedServices = [];
+        $results = $this->emptyArrayIfNull($query->toArray());
+
+        foreach ($results as $result) {
+            $servicesWithLimit[$result['id']] = $result;
+        }
+
+        if (!empty($selected)) {
+            $query = $this->find();
+            $query
+                ->innerJoinWith('Hosts', function (Query $q) use ($ServiceConditions) {
+                    return $q->where([
+                        'Hosts.container_id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                })
+                ->innerJoinWith('Servicetemplates')
+                ->select([
+                    'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                    'Services.id',
+                    'Services.disabled',
+                    'Hosts.name'
+                ])
+                ->where([
+                    'Services.id IN' => $selected
+                ])
+                ->order([
+                    'servicename' => 'asc'
+                ])
+                ->disableHydration()
+                ->all();
+            $results = $this->emptyArrayIfNull($query->toArray());
+            foreach ($results as $result) {
+                $selectedServices[$result['id']] = $result;
+            }
+
+        }
+        $services = $servicesWithLimit + $selectedServices;
+        $serviceIds = array_keys($services);
+
+        array_multisort(
+            array_column($services, 'servicename'), SORT_ASC, SORT_NATURAL, $services, $serviceIds
+        );
+        $services = array_combine($serviceIds, $services);
+        return $services;
     }
 }

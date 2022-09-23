@@ -639,6 +639,11 @@ class NagiosConfigGenerator {
             }
 
             /* Freshness checks starts */
+            $activeChecksEnabled = $host->get('active_checks_enabled');
+            if ($activeChecksEnabled === null) {
+                $activeChecksEnabled = $hosttemplate->get('active_checks_enabled');
+            }
+
             $freshnessChecksEnabled = $host->get('freshness_checks_enabled');
             if ($freshnessChecksEnabled === null) {
                 $freshnessChecksEnabled = $hosttemplate->get('freshness_checks_enabled');
@@ -650,12 +655,22 @@ class NagiosConfigGenerator {
 
             if ($host->isSatelliteHost() === true) {
                 // Host is checked by a satellite system
-                // Add freshness check on the master instance
-                $content .= $this->addContent('check_freshness', 1, 1);
-                if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
-                    $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
-                } else {
-                    $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                // Do we need to add the freshness check on the master instance?
+                if ($activeChecksEnabled) {
+                    $content .= $this->addContent('check_freshness', 1, 1);
+                    if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                        // Active check with configured freshness + freshness_threshold_addition on the master for "service is no longer current"
+                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                    } else {
+                        // Only active check, add freshness check on the master for "service is no longer current"
+                        $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                    }
+                }else{
+                    if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                        // Passive host with enabled freshness checking
+                        $content .= $this->addContent('check_freshness', 1, 1);
+                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                    }
                 }
             } else {
                 // Host is in the master instance
@@ -1104,12 +1119,14 @@ class NagiosConfigGenerator {
                 $content .= PHP_EOL;
                 $content .= $this->addContent(';Event handler:', 1);
 
+                $commandUuid = $this->CommandUuidsCache->get($servicetemplate->get('eventhandler_command_id'));
+
                 if ($servicetemplate->hasServicetemplateeventcommandargumentvalues()) {
-                    $content .= $this->addContent('check_command', 1, $this->escapeLastBackslash(
-                        $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg()
+                    $content .= $this->addContent('event_handler', 1, $this->escapeLastBackslash(
+                        $commandUuid . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg()
                     ));
                 } else {
-                    $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid'));
+                    $content .= $this->addContent('event_handler', 1, $commandUuid);
                 }
             }
 
@@ -1307,6 +1324,11 @@ class NagiosConfigGenerator {
                 }
 
                 /* Freshness checks starts */
+                $activeChecksEnabled = $service->get('active_checks_enabled');
+                if ($activeChecksEnabled === null) {
+                    $activeChecksEnabled = $servicetemplate->get('active_checks_enabled');
+                }
+
                 $freshnessChecksEnabled = $service->get('freshness_checks_enabled');
                 if ($freshnessChecksEnabled === null) {
                     $freshnessChecksEnabled = $servicetemplate->get('freshness_checks_enabled');
@@ -1325,13 +1347,22 @@ class NagiosConfigGenerator {
 
                 if ($host->isSatelliteHost() === true) {
                     // Service is checked by a satellite system
-                    // Add freshness check on the master instance
-
-                    $content .= $this->addContent('check_freshness', 1, 1);
-                    if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
-                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                    // Do we need to add the freshness check on the master instance?
+                    if ($activeChecksEnabled) {
+                        $content .= $this->addContent('check_freshness', 1, 1);
+                        if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                            // Active check with configured freshness + freshness_threshold_addition on the master for "service is no longer current"
+                            $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                        } else {
+                            // Only active check, add freshness check on the master for "service is no longer current"
+                            $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                        }
                     } else {
-                        $content .= $this->addContent('freshness_threshold', 1, $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                        if ($freshnessChecksEnabled > 0 && $freshnessThreshold > 0) {
+                            // Passive service with enabled freshness checking
+                            $content .= $this->addContent('check_freshness', 1, 1);
+                            $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                        }
                     }
                 } else {
                     // Service is in the master instance

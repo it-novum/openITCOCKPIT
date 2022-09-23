@@ -222,7 +222,7 @@ class DebugConfigNagiosTask {
      * @param null|string $TableName
      * @param $confName
      */
-    public function debug($TableName = null, $confName) {
+    public function debug(?string $TableName, string $confName) {
         if ($TableName !== null && is_array($this->tablesToSeach) && isset($this->tablesToSeach[$TableName])) {
 
             /** @var Table $Table */
@@ -534,12 +534,32 @@ class DebugConfigNagiosTask {
         }
     }
 
-    public function translateStdin() {
+    /**
+     * @param bool $replaceTimestamps
+     * @return void
+     */
+    public function translateStdin($replaceTimestamps = false) {
         $ConsoleInput = new ConsoleInput();
         while ($ConsoleInput->dataAvailable()) {
             $result = $ConsoleInput->read();
+
+            if ($result === null) {
+                // End-of-file
+                break;
+            }
+
             if ($result !== false) {
-                $this->io->out($this->searchUuids($result));
+                $line = $this->searchUuids($result);
+
+                if ($replaceTimestamps === true) {
+                    $timestamp = null;
+                    preg_match('#\d{10,11}#', $line, $timestamp);
+                    if (isset($timestamp[0]) && is_numeric($timestamp[0])) {
+                        $line = preg_replace('#\d{10,11}#', '<comment>' . date('d.m.Y - H:i:s', $timestamp[0]) . '</comment>', $line);
+                    }
+                }
+
+                $this->io->out($line);
             }
         }
     }

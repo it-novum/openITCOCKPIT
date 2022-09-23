@@ -74,7 +74,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div class="help-block">
-                                <a href="https://openitcockpit.io/#Subscription" target="_blank">
+                                <a href="https://openitcockpit.io/editions/" target="_blank">
                                     <i class="fas fa-external-link-alt"></i>
                                     <?php echo __('Get your openITCOCKPIT Enterprise Subscription today'); ?>
                                 </a>

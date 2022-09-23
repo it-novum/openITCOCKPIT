@@ -53,6 +53,10 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                     <span class="fw-300"><i>{{post.Command.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
+                        UUID: {{post.Command.uuid}}
+                    </div>
+
                     <button ng-click="showDefaultMacros()"
                             class="btn btn-xs btn-primary mr-1 shadow-0">
                         <i class="fa fa-usd"></i>

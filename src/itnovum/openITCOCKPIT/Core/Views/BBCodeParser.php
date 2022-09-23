@@ -81,6 +81,9 @@ class BBCodeParser {
      * @since  3.0
      */
     public function asHtml($bbcode, $nl2br = true) {
+        if(is_null($bbcode)){
+            $bbcode = '';
+        }
         $this->bbparser->parse(htmlentities($bbcode));
         if ($nl2br === true) {
             return $this->nagiosNl2br(nl2br($this->bbparser->getAsHtml()));

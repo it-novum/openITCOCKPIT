@@ -166,7 +166,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Create host group'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='HostgroupsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='HostgroupsIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

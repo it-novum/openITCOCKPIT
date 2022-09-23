@@ -2456,6 +2456,43 @@ msgstr ""
 msgid "Reset Filter"
 msgstr ""
 
+#: src/Template/Hosts/index.php:474
+#: src/Template/Hosts/index.php:482
+#: src/Template/Services/index.php:494
+#: src/Template/Services/index.php:502
+msgid "Filter Bookmarks"
+msgstr ""
+
+#: src/Template/Hosts/index.php:506
+#: src/Template/Services/index.php:526
+msgid "Set as default"
+msgstr ""
+
+#: src/Template/Hosts/index.php:510
+#: src/Template/Services/index.php:530
+msgid "Save filter as bookmark"
+msgstr ""
+
+#: src/Template/Hosts/index.php:519
+#: src/Template/Services/index.php:539
+msgid "Delete bookmark"
+msgstr ""
+
+#: src/Template/Hosts/index.php:522
+#: src/Template/Services/index.php:542
+msgid "Show bookmark URL"
+msgstr ""
+
+#: src/Template/Hosts/index.php:533
+#: src/Template/Services/index.php:542
+msgid "Copy to clipboard"
+msgstr ""
+
+#: src/Template/Hosts/index.php:540
+#: src/Template/Services/index.php:568
+msgid "Saved bookmarks"
+msgstr ""
+
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:144
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:153
 msgid "Not synchronized"
@@ -10642,6 +10679,49 @@ msgstr ""
 #: src/Template/Hosts/not_monitored.php:141
 #: src/Template/Hosts/not_monitored.php:192
 msgid "Instance"
+msgstr ""
+
+#: src/Template/Browsers/index.php:567
+#: src/Template/Browsers/index.php:438
+#: src/Template/Hosts/index.php:641
+#: src/Template/Hosts/index.php:510
+msgid "Host notes"
+msgstr ""
+
+#: src/Template/Browsers/index.php:415
+msgid "Column configuration"
+msgstr ""
+
+#: src/Template/Browsers/index.php:419
+msgid "Columns"
+msgstr ""
+
+#: src/Template/Browsers/index.php:466
+msgid "Save Columns configuration in browser"
+msgstr ""
+
+#: src/Template/Angular/columns_config_import.php:33
+msgid "Import configuration"
+msgstr ""
+
+#: src/Template/Angular/columns_config_import.php:42
+msgid "Import column configuration"
+msgstr ""
+
+#: src/Template/Angular/columns_config_import.php:54
+msgid "Paste a column configuration string"
+msgstr ""
+
+#: src/Template/Angular/columns_config_export.php:33
+msgid "Share configuration"
+msgstr ""
+
+#: src/Template/Angular/columns_config_export.php:43
+msgid "Share column configuration"
+msgstr ""
+
+#: src/Template/Angular/columns_config_export.php:51
+msgid "Share this column configuration string"
 msgstr ""
 
 #: src/Template/Browsers/index.php:492

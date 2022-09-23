@@ -107,7 +107,9 @@ Maximum = 30
 ## Flush Bulk messages every X seconds dispite number of cached messages
 FlushInterval = 1
 ## List of queue identifier which should be created as bulk message. This is a global option for all connections
-Queues = ["HostStatus", "HostCheck", "ServiceStatus", "ServiceCheck", "ServicePerfData", "StateChange", "LogData"]
+{% set OCHPBulk = sstatusengine_enable_ochp ? ', "OCHP"' : '' %}
+{% set OCSPBulk = statusengine_enable_ocsp ? ', "OCSP"' : '' %}
+Queues = ["HostStatus", "HostCheck", "ServiceStatus", "ServiceCheck", "ServicePerfData", "StateChange", "LogData"{{OCHPBulk|raw}}{{OCSPBulk|raw}}]
 
 [Log]
 #Level = Warning

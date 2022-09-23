@@ -539,28 +539,28 @@ class InstantreportsTable extends Table {
                             }
                         }
                     }
-
-                    if (!empty($hostgroup['hosttemplates']['hosts'])) {
-                        foreach ($hostgroup['hosttemplates']['hosts'] as $host) {
-                            if (isset($instantReportObjects['Hosts'][$host['id']])) {
-                                continue;
-                            }
-                            $instantReportObjects['Hosts'][$host['id']] = [
-                                'id'   => $host['id'],
-                                'uuid' => $host['uuid'],
-                                'name' => $host['name']
-                            ];
-                            if (!empty($host['services'])) {
-
-                                foreach ($host['services'] as $service) {
-                                    if (isset($instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']])) {
-                                        continue;
+                    if (!empty($hostgroup['hosttemplates'])) {
+                        foreach ($hostgroup['hosttemplates'] as $hosttemplate) {
+                            foreach ($hosttemplate['hosts'] as $host) {
+                                if (isset($instantReportObjects['Hosts'][$host['id']])) {
+                                    continue;
+                                }
+                                $instantReportObjects['Hosts'][$host['id']] = [
+                                    'id'   => $host['id'],
+                                    'uuid' => $host['uuid'],
+                                    'name' => $host['name']
+                                ];
+                                if (!empty($host['services'])) {
+                                    foreach ($host['services'] as $service) {
+                                        if (isset($instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']])) {
+                                            continue;
+                                        }
+                                        $instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']] = [
+                                            'id'   => $service['id'],
+                                            'uuid' => $service['uuid'],
+                                            'name' => ($service['name']) ? $service['name'] : $service['servicetemplate']['name']
+                                        ];
                                     }
-                                    $instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']] = [
-                                        'id'   => $service['id'],
-                                        'uuid' => $service['uuid'],
-                                        'name' => ($service['name']) ? $service['name'] : $service['servicetemplate']['name']
-                                    ];
                                 }
                             }
                         }
@@ -934,7 +934,7 @@ class InstantreportsTable extends Table {
 
         $list = [];
         foreach ($result as $row) {
-            $list[$row[$index]] =  $row['name'];
+            $list[$row[$index]] = $row['name'];
         }
 
         return $list;

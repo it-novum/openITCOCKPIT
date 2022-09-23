@@ -567,8 +567,15 @@ class HosttemplatesController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
-        $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
-        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        if ($container_id == ROOT_CONTAINER) {
+            // ITC-2819
+            // Hosts in the /root container can be a member of any host group
+            $hostgroups = $HostgroupsTable->getHostgroupsAsList();
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        } else {
+            $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        }
 
         $exporters = [];
         if (Plugin::isLoaded('PrometheusModule')) {

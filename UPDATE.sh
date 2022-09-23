@@ -281,6 +281,14 @@ oitc agent --migrate
 echo "Checking that a server certificate for the openITCOCKPIT Monitoring Agent exists"
 oitc agent --generate-server-ca
 
+# ITC-2800 ITC-2819
+#echo "Apply strict checking of host group assignments by container permissions"
+#oitc HostgroupContainerPermissions
+
+# ITC-1911
+echo "Cleanup for invalid parent hosts on satellite instance"
+oitc ParentHostsVisibilityCleaning
+
 NORESTART=false
 NOSYSTEMFILES=false
 for i in "$@"; do
@@ -339,6 +347,7 @@ PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 if [[ "$NOSYSTEMFILES" == "false" ]]; then
   echo "Copy required system files"
   rsync -K -a ${APPDIR}/system/etc/. /etc/
+  chown root:root /etc
   cp -r ${APPDIR}/system/lib/. /lib/
   cp -r ${APPDIR}/system/usr/. /usr/
   cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
@@ -527,4 +536,3 @@ chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
 chmod u+s /opt/openitc/nagios/libexec/check_icmp
 chmod u+s /opt/openitc/nagios/libexec/check_dhcp
-

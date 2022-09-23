@@ -188,6 +188,61 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
     background-color: #4285F4 !important;
 }
 
+/** Border Colors **/
+
+.border-ok, .border-up {
+    border-color: #00C851 !important;
+}
+
+.border-ok-soft, .border-up-soft {
+    border-color: #00ea5f !important;
+}
+
+.border-warning {
+    border-color: #ffbb33 !important;
+}
+
+.border-warning-soft {
+    border-color: #f9d180 !important;
+}
+
+.border-critical, .border-down {
+    border-color: #CC0000 !important;
+}
+
+.border-critical-soft, .border-down-soft {
+    border-color: #ff4444 !important;
+}
+
+.border-unknown, .border-unreachable {
+    border-color: #727b84 !important;
+}
+
+.border-unknown-soft, .border-unreachable-soft {
+    border-color: #CFCFCF !important;
+}
+
+.border-downtime {
+    border-color: #337ab7 !important;
+}
+
+.border-downtime-cancelled {
+    border-color: #00c4d8 !important;
+}
+
+.border-ack {
+    border-color: #3c00ff !important;
+}
+
+.border-color-black {
+    border-color: #000000;
+}
+
+.border-not-monitored {
+    border-color: #4285F4 !important;
+}
+
+/** End Border **/
 
 /* TEXT COLOR */
 
@@ -1049,17 +1104,32 @@ div.packetmanager-selection > span::selection {
 }
 
 .calendar-card-shadow {
-    box-shadow:inset 0 0 12px 12px #dbdeed, inset 0 0 3px 2px #312727,2px 0 3px -2px #888;
+    box-shadow: inset 0 0 12px 12px #dbdeed, inset 0 0 3px 2px #312727, 2px 0 3px -2px #888;
 }
 
-.bg-white-transparent{
+.bg-white-transparent {
     background: #ffffffbb;
 }
 
-.lock-icon-gradient{
+.lock-icon-gradient {
     background: -webkit-linear-gradient(to bottom, #cccccc 0%, #cccccc 50%, #ffbb33 50%, #ffbb33 100%);
     background: -moz-linear-gradient(to bottom, #cccccc 0%, #cccccc 50%, #ffbb33 50%, #ffbb33 100%);
     background: linear-gradient(to bottom, #cccccc 0%, #cccccc 50%, #ffbb33 50%, #ffbb33 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.dropdown-menu-columns {
+    width: 400px;
+}
+
+@media (min-width: 768px) {
+    .dropdown-menu-columns {
+        width: 700px;
+    }
+}
+
+.new-flame-bg {
+    background-color: #ff0000;
+    background: linear-gradient(0deg, #f00 0%, #ffa700 100%) !important;
 }

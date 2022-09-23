@@ -60,6 +60,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/flot/jquery.flot.resize.js',
         'node_modules/flot/jquery.flot.threshold.js',
         'node_modules/flot/jquery.flot.selection.js',
+        'js/lib/jquery.flot.curvedLines.js',
         //'node_modules/jquery-nestable/jquery.nestable.js',
         //webroot/legacy/smartadmin/js/plugin/jquery-nestable/jquery.nestable.js
         'js/lib/jquery-nestable/jquery.nestable.js',
@@ -82,6 +83,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/rangyinputs/rangyinputs-jquery.js',
         'node_modules/angular-gridster/dist/angular-gridster.min.js',
         'js/lib/GraphDefaults.js',
+        'js/lib/uPlotGraphDefaults.js',
         'js/lib/jqconsole.min.js',
         'node_modules/jquery-blockui/jquery.blockUI.js',
         'js/lib/jquery-jvectormap-1.2.2.min.js',
@@ -106,7 +108,9 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/canvas-gauges/gauge.min.js',
         'node_modules/tsparticles/tsparticles.min.js',
         'node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js',
-        'node_modules/lodash/lodash.min.js'
+        'node_modules/lodash/lodash.min.js',
+        'node_modules/luxon/build/global/luxon.min.js',
+        'node_modules/uplot/dist/uPlot.iife.min.js'
     ];
 
     /**
@@ -136,7 +140,8 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
         '/node_modules/font-logos/assets/font-logos.css',
-        '/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css'
+        '/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css',
+        '/node_modules/uplot/dist/uPlot.min.css'
     ];
 
     /**

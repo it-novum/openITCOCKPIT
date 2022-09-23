@@ -44,7 +44,17 @@ use Cake\Core\Configure\Engine\PhpConfig;
 use Cake\Database\TypeFactory;
 use Cake\Datasource\ConnectionManager;
 use Cake\Error\ConsoleErrorHandler;
+
+// CakePHP 4.3.x (for php 7.2, bionic)
 use Cake\Error\ErrorHandler;
+
+// CakePHP 4.3.x (for php 7.2, bionic)
+use Cake\Error\ErrorTrap;
+
+// CakePHP 4.4.x (requires php 7.4)
+use Cake\Error\ExceptionTrap;
+
+// CakePHP 4.4.x (requires php 7.4)
 use Cake\Http\ServerRequest;
 use Cake\Log\Log;
 use Cake\Mailer\Email;
@@ -143,11 +153,22 @@ ini_set('intl.default_locale', Configure::read('App.defaultLocale'));
  * Register application error and exception handlers.
  */
 $isCli = PHP_SAPI === 'cli';
-if ($isCli) {
-    (new ConsoleErrorHandler(Configure::read('Error')))->register();
+if (class_exists('\Cake\Error\ErrorTrap')) {
+    // CakePHP 4.4 / php >=  7.4
+    if ($isCli) {
+        (new ErrorTrap(Configure::read('Error')))->register();
+    } else {
+        (new ExceptionTrap(Configure::read('Error')))->register();
+    }
 } else {
-    (new ErrorHandler(Configure::read('Error')))->register();
+    // CakePHP 4.3.x / php 7.2
+    if ($isCli) {
+        (new ConsoleErrorHandler(Configure::read('Error')))->register();
+    } else {
+        (new ErrorHandler(Configure::read('Error')))->register();
+    }
 }
+
 
 /*
  * Include the CLI bootstrap overrides.

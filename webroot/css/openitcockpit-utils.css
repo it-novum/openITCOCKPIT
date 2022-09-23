@@ -518,6 +518,24 @@ openITCOCKPIT v4 Utilities
     padding-bottom: 0.1rem;
 }
 
+.dropdown-item-xs:hover, .dropdown-item-xs:focus {
+    color: #16181b;
+    text-decoration: none;
+    background-color: #e9ecef;
+}
+
+.dropdown-item-xs.active, .dropdown-item-xs:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #007bff;
+}
+
+.dropdown-item-xs.disabled, .dropdown-item-xs:disabled {
+    color: #adb5bd;
+    pointer-events: none;
+    background-color: transparent;
+}
+
 /* marquee-like animation */
 @keyframes moveme {
     0% {
@@ -1129,8 +1147,9 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     position: relative;
 
 }
+
 .arrowd-vertical-on-left:after {
-    content:"\02939";
+    content: "\02939";
     position: absolute;
     top: 20%;
     left: 0;
@@ -1143,8 +1162,9 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     position: relative;
 
 }
+
 .arrowd-vertical-on-right:after {
-    content:"\2938";
+    content: "\2938";
     position: absolute;
     top: -10px;
     right: 0;
@@ -1156,12 +1176,14 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     border-left: 3px solid #4285F4;
     border-radius: 7px;
 }
+
 .hr-sect {
     display: flex;
     flex-basis: 100%;
     align-items: center;
     color: #4285F488;
 }
+
 .hr-sect:before,
 .hr-sect:after {
     content: "";
@@ -1171,4 +1193,65 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     font-size: 0px;
     line-height: 0px;
     margin: 0px 8px;
+}
+
+.groups-to-remove {
+    text-decoration: line-through #CC0000;
+}
+
+.dropzone .dz-preview .dz-image img {
+    margin: auto; /* center the image inside the thumbnail */
+}
+
+.dropzone .dz-preview .dz-error-message {
+    top: 140px; /* move the tooltip below the "Remove" link */
+}
+
+.dropzone .dz-preview .dz-error-message:after {
+    left: 30px; /* move the tooltip's arrow to the left of the "Remove" link */
+    top: -18px;
+    border-bottom-width: 18px;
+}
+
+.dropzone .dz-preview .dz-remove {
+    margin-top: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.flame {
+    background-color: #ff0000;
+    background-image: linear-gradient(0deg, #ff0000 0%, #ffed00 74%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 100% 200%;
+    -webkit-animation: burn 6s ease infinite;
+    animation: burn 6s alternate infinite;
+}
+
+@keyframes burn {
+    0% {
+        background-position: 90% 100%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.was-validated textarea.form-control:invalid, textarea.form-control.is-invalid {
+    padding-right: calc(1.5em + 0.75rem);
+    background-position: top calc(0.375em + 0.1875rem) right calc(1.0em + 0.1875rem);
+}
+
+.font-5-rem{
+    font-size:5rem;
 }

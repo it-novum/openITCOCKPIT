@@ -44,124 +44,130 @@
     <div class="col-xl-12">
         <div id="widget-container" class="panel">
             <div class="panel-hdr">
-                <h2>
-                    <?php echo __('Dashboard'); ?>
-                </h2>
-                <div class="panel-toolbar">
-                    <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
-                        <li class="nav-item ui-sortable-handle" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
-                            ng-class="{'active':activeTab === tab.id}">
-                            <a class="nav-link"
-                               href="javascript:void(0);"
-                               ng-if="activeTab !== tab.id"
-                               role="tab">
+                <div class="row w-100">
+                    <div class="col-xl-9 col-lg-9 col-md-6 col-sm-12 col-xs-12">
+                        <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean h-100" role="tablist">
+                            <li class="padding-right-20">
+                                <h2>
+                                    <?php echo __('Dashboard'); ?>
+                                </h2>
+                            </li>
+                            <li class="nav-item ui-sortable-handle" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
+                                ng-class="{'active':activeTab === tab.id}">
+                                <a class="nav-link"
+                                   href="javascript:void(0);"
+                                   ng-if="activeTab !== tab.id"
+                                   role="tab">
                                 <span class="text" ng-click="loadTabContent(tab.id)"
                                       ng-class="{ 'text-primary': tab.shared === true}">
                                     {{tab.name}}
                                 </span>
-                            </a>
+                                </a>
 
-                            <a href="javascript:void(0);"
-                               class="dropdown-toggle nav-link active"
-                               data-toggle="dropdown"
-                               aria-expanded="false"
-                               ng-if="activeTab === tab.id"
-                               ng-class="{ 'text-primary': tab.shared}">
-                            <span class="text"
-                                  ng-class="{ 'text-primary': tab.shared === true}">
-                                {{tab.name}}
-                            </span>
-                                <b class="caret"></b>
-                            </a>
-                            <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}">
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item"
-                                       ng-click="triggerRenameTabModal(tab.name)">
-                                        <i class="fa fa-pencil-square-o"></i>
-                                        <?php echo __('Rename'); ?>
-                                    </a>
-                                </li>
-                                <li ng-hide="tab.shared">
-                                    <a href="javascript:void(0);" class="dropdown-item"
-                                       ng-click="startSharing(tab.id)">
-                                        <i class="fa fa-code-fork"></i>
-                                        <?php echo __('Start sharing'); ?>
-                                    </a>
-                                </li>
-                                <li ng-show="tab.shared">
-                                    <a href="javascript:void(0);" class="dropdown-item"
-                                       ng-click="stopSharing(tab.id)">
-                                        <i class="fa fa-code-fork"></i>
-                                        <?php echo __('Stop sharing'); ?>
-                                    </a>
-                                </li>
-                                <div class="dropdown-divider"></div>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item txt-color-red"
-                                       ng-click="deleteTab(tab.id)">
-                                        <i class="fa fa-trash"></i>
-                                        <?php echo __('Delete'); ?>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-
-
-                    <button class="btn btn-xs mr-1 shadow-0 btn-primary"
-                            title="<?php echo __('Setup tab rotation'); ?>"
-                            data-toggle="modal" data-target="#tabRotationModal">
-                        <i class="fa fa-spinner"></i>
-                    </button>
-                    <button class="btn btn-xs mr-1 shadow-0"
-                            ng-class="{ 'btn-danger': dashboardIsLocked, 'btn-primary': !dashboardIsLocked }"
-                            title="<?php echo __('Lock for edit'); ?>"
-                            ng-click="lockOrUnlockDashboard()">
-                        <i class="fa fa-lock"
-                           ng-class="{ 'fa-lock': dashboardIsLocked, 'fa-unlock': !dashboardIsLocked }"></i>
-                    </button>
-
-
-                    <div class="btn-group btn-group-xs margin-right-5">
-                        <button class="btn btn-success dropdown-toggle waves-effect waves-themed" type="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="dashboardIsLocked">
-                            <?php echo __('Add Widget'); ?>
-                        </button>
-                        <div class="dropdown-menu" x-placement="bottom-start"
-                             style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
-                            <a href="javascript:void(0);" ng-repeat="availableWidget in availableWidgets"
-                               ng-click="addWidgetToTab(availableWidget.type_id)" class="dropdown-item dropdown-item-xs">
-                                <i class="{{availableWidget.icon}}"></i>&nbsp;
-                                {{availableWidget.title}}
-                            </a>
-
-                            <div class="dropdown-divider"></div>
-                            <a href="javascript:void(0);"
-                               ng-click="restoreDefault()"
-                               class="dropdown-item dropdown-item-xs">
-                                <i class="fa fa-recycle"></i>
-                                <?php echo __('Restore default'); ?>
-                            </a>
-                        </div>
+                                <a href="javascript:void(0);"
+                                   class="dropdown-toggle nav-link active"
+                                   data-toggle="dropdown"
+                                   aria-expanded="false"
+                                   ng-if="activeTab === tab.id"
+                                   ng-class="{ 'text-primary': tab.shared}">
+                                    <span class="text"
+                                          ng-class="{ 'text-primary': tab.shared === true}">
+                                        {{tab.name}}
+                                    </span>
+                                    <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}">
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item"
+                                           ng-click="triggerRenameTabModal(tab.name)">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                            <?php echo __('Rename'); ?>
+                                        </a>
+                                    </li>
+                                    <li ng-hide="tab.shared">
+                                        <a href="javascript:void(0);" class="dropdown-item"
+                                           ng-click="startSharing(tab.id)">
+                                            <i class="fa fa-code-fork"></i>
+                                            <?php echo __('Start sharing'); ?>
+                                        </a>
+                                    </li>
+                                    <li ng-show="tab.shared">
+                                        <a href="javascript:void(0);" class="dropdown-item"
+                                           ng-click="stopSharing(tab.id)">
+                                            <i class="fa fa-code-fork"></i>
+                                            <?php echo __('Stop sharing'); ?>
+                                        </a>
+                                    </li>
+                                    <div class="dropdown-divider"></div>
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item txt-color-red"
+                                           ng-click="deleteTab(tab.id)">
+                                            <i class="fa fa-trash"></i>
+                                            <?php echo __('Delete'); ?>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
                     </div>
+                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-xs-12 panel-toolbar pl-0 pr-0 pt-2 d-inline">
+                        <button class="btn btn-xs mr-1 shadow-0 btn-primary"
+                                title="<?php echo __('Setup tab rotation'); ?>"
+                                data-toggle="modal" data-target="#tabRotationModal">
+                            <i class="fa fa-spinner"></i>
+                        </button>
+                        <button class="btn btn-xs mr-1 shadow-0"
+                                ng-class="{ 'btn-danger': dashboardIsLocked, 'btn-primary': !dashboardIsLocked }"
+                                title="<?php echo __('Lock for edit'); ?>"
+                                ng-click="lockOrUnlockDashboard()">
+                            <i class="fa fa-lock"
+                               ng-class="{ 'fa-lock': dashboardIsLocked, 'fa-unlock': !dashboardIsLocked }"></i>
+                        </button>
 
-                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="refresh()"
-                            title="<?php echo __('Refresh'); ?>">
-                        <i class="fa fa-refresh"></i>
-                        <?php echo __('Refresh'); ?>
-                    </button>
 
-                    <button class="btn btn-xs btn-success mr-1 shadow-0"
-                            title="<?php echo __('Add tab'); ?>"
-                            data-toggle="modal" data-target="#addNewTabModal"
-                            ng-click="loadSharedTabs()">
-                        <i class="fa fa-plus"></i>
-                    </button>
+                        <div class="btn-group btn-group-xs margin-right-5">
+                            <button class="btn btn-success dropdown-toggle waves-effect waves-themed" type="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                    ng-disabled="dashboardIsLocked">
+                                <?php echo __('Add Widget'); ?>
+                            </button>
+                            <div class="dropdown-menu" x-placement="bottom-start"
+                                 style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+                                <a href="javascript:void(0);" ng-repeat="availableWidget in availableWidgets"
+                                   ng-click="addWidgetToTab(availableWidget.type_id)"
+                                   class="dropdown-item dropdown-item-xs">
+                                    <i class="{{availableWidget.icon}}"></i>&nbsp;
+                                    {{availableWidget.title}}
+                                </a>
 
-                    <button class="btn btn-xs btn-success shadow-0" ng-click="toggleFullscreenMode()"
-                            title="<?php echo __('Fullscreen mode'); ?>">
-                        <i class="fa fa-expand-arrows-alt"></i>
-                    </button>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0);"
+                                   ng-click="restoreDefault()"
+                                   class="dropdown-item dropdown-item-xs">
+                                    <i class="fa fa-recycle"></i>
+                                    <?php echo __('Restore default'); ?>
+                                </a>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="refresh()"
+                                title="<?php echo __('Refresh'); ?>">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <button class="btn btn-xs btn-success mr-1 shadow-0"
+                                title="<?php echo __('Add tab'); ?>"
+                                data-toggle="modal" data-target="#addNewTabModal"
+                                ng-click="loadSharedTabs()">
+                            <i class="fa fa-plus"></i>
+                        </button>
+
+                        <button class="btn btn-xs btn-success shadow-0" ng-click="toggleFullscreenMode()"
+                                title="<?php echo __('Fullscreen mode'); ?>">
+                            <i class="fa fa-expand-arrows-alt"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="panel-container show">
@@ -192,44 +198,55 @@
                                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="fas fa-palette"></i>
                                             </button>
-                                            <div class="dropdown-menu dropdown-menu-right flex-wrap" style="width: 10.2rem; padding: 0.5rem">
-                                                <button type="button" class="btn d-inline-block bg-widget-statusGreen-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                            <div class="dropdown-menu dropdown-menu-right flex-wrap"
+                                                 style="width: 10.2rem; padding: 0.5rem">
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-statusGreen-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-statusGreen-gradient"
                                                         ng-click="widget.color='widget-statusGreen'"
                                                         style="margin:1px;"></button>
-                                                <button type="button" class="btn d-inline-block bg-widget-statusYellow-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-statusYellow-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-statusYellow-gradient"
                                                         ng-click="widget.color='widget-statusYellow'"
                                                         style="margin:1px;"></button>
-                                                <button type="button" class="btn d-inline-block bg-widget-statusRed-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-statusRed-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-statusRed-gradient"
                                                         ng-click="widget.color='widget-statusRed'"
                                                         style="margin:1px;"></button>
-                                                <button type="button" class="btn d-inline-block bg-widget-statusGrey-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-statusGrey-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-statusGrey-gradient"
                                                         ng-click="widget.color='widget-statusGrey'"
                                                         style="margin:1px;"></button>
-                                                <button type="button" class="btn d-inline-block bg-widget-default width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-default width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-default"
                                                         ng-click="widget.color='widget-default'"
                                                         style="margin:1px;"></button>
-                                                <button type="button" class="btn d-inline-block bg-widget-white width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-white width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-white"
                                                         ng-click="widget.color='widget-white'"
                                                         style="margin:1px;"></button>
-                                                <button type="button" class="btn d-inline-block bg-widget-black-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-black-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-black-gradient"
                                                         ng-click="widget.color='widget-black'"
                                                         style="margin:1px;"></button>
-                                                <button type="button" class="btn d-inline-block bg-widget-anthracite-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-anthracite-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-anthracite-gradient"
                                                         ng-click="widget.color='widget-anthracite'"
                                                         style="margin:1px;"></button>
-                                                <button type="button" class="btn d-inline-block bg-widget-colorbomb-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-colorbomb-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-colorbomb-gradient"
                                                         ng-click="widget.color='widget-colorbomb'"
                                                         style="margin:1px;"></button>
-                                                <button type="button" class="btn d-inline-block bg-widget-colorbomb2-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                <button type="button"
+                                                        class="btn d-inline-block bg-widget-colorbomb2-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                         data-panel-setstyle="bg-widget-colorbomb2-gradient"
                                                         ng-click="widget.color='widget-colorbomb2'"
                                                         style="margin:1px;"></button>
@@ -376,8 +393,6 @@
 </div>
 
 
-
-
 <!-- Tab rotation modal -->
 <div id="tabRotationModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
@@ -425,7 +440,6 @@
 </div>
 
 
-
 <!-- Rename tab modal -->
 <div id="renameTabModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
@@ -466,8 +480,6 @@
         </div>
     </div>
 </div>
-
-
 
 
 <!-- Update available modal -->
@@ -557,8 +569,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-

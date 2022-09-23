@@ -313,7 +313,7 @@ class ServicegroupsController extends AppController {
             return;
         }
 
-        if($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)){
+        if ($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 /** @var  ChangelogsTable $ChangelogsTable */
@@ -345,7 +345,7 @@ class ServicegroupsController extends AppController {
             $this->response = $this->response->withStatus(500);
             $this->set('success', false);
             $this->viewBuilder()->setOption('serialize', ['success']);
-        }else{
+        } else {
             $this->response = $this->response->withStatus(500);
             $this->set('success', false);
             $this->set('message', __('Container is not empty'));
@@ -824,7 +824,7 @@ class ServicegroupsController extends AppController {
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_SERVICEGROUP]);
-        }else if ($containerId !== ROOT_CONTAINER && $resolveContainerIds) {
+        } else if ($containerId !== ROOT_CONTAINER && $resolveContainerIds) {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true, [CT_SERVICEGROUP]);
             $containerIds = array_merge($containerIds, [ROOT_CONTAINER, $containerId]);
         }

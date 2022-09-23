@@ -258,8 +258,7 @@ class ProfileController extends AppController {
                 $Apikey = new Apikey($apikey);
                 $Apikey = $Apikey->toArray();
 
-                $qr = new QrCodeGenerator();
-                $qr->setContent($Apikey['apikey']);
+                $qr = new QrCodeGenerator($Apikey['apikey']);
                 $qrcode = $qr->getQrCodeAsBase64();
 
                 $this->set('apikey', $Apikey);
@@ -331,8 +330,7 @@ class ProfileController extends AppController {
             $session = $this->request->getSession();
             $session->write('latest_api_key', $newApiKey);
 
-            $qr = new QrCodeGenerator();
-            $qr->setContent($apikey);
+            $qr = new QrCodeGenerator($apikey);
             $qrcode = $qr->getQrCodeAsBase64();
 
             $this->set('apikey', $apikey);

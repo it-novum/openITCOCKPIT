@@ -42,6 +42,7 @@ angular.module('openITCOCKPIT')
                     });
                 });
                 $scope.post.Command.name = $scope.command.name;
+                $scope.post.Command.uuid = $scope.command.uuid;
                 $scope.post.Command.command_type = String($scope.command.command_type);
                 $scope.post.Command.command_line = $scope.command.command_line;
                 $scope.post.Command.description = $scope.command.description;

@@ -223,8 +223,8 @@ class ChangelogsTable extends Table {
                 'Hosttemplate.customvariables'                   => '{n}.{(id|name|value)}',
                 'Hosttemplate.hosttemplatecommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                        => '{n}.{(id|name)}',
-                'Contactgroup'                                   => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
-                'Hostgroup'                                      => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Contactgroup'                                   => '{n}.{(id|name)}',
+                'Hostgroup'                                      => '{n}.{(id|name)}'
             ],
             'servicetemplate'      => [
                 'Servicetemplate'                                           => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_|notifications_enabled$).*}',
@@ -236,8 +236,8 @@ class ChangelogsTable extends Table {
                 'Servicetemplate.servicetemplatecommandargumentvalues'      => '{n}.{(id|value)}',
                 'Servicetemplate.servicetemplateeventcommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                                   => '{n}.{(id|name)}',
-                'Contactgroup'                                              => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
-                'Servicegroup'                                              => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Contactgroup'                                              => '{n}.{(id|name)}',
+                'Servicegroup'                                              => '{n}.{(id|name)}',
             ],
             'servicegroup'         => [
                 'Servicegroup'           => '{(description|servicegroup_url)}',

@@ -764,11 +764,6 @@ class ContainersTable extends Table {
      * @return array
      */
     public function getContainerWithAllChildren($containerId, $MY_RIGHTS = []) {
-        $containersMap = [
-            'nodes' => [],
-            'edges' => []
-        ];
-
         $parentContainer = $this->getContainerById($containerId);
 
         $query = $this->find('children', ['for' => $containerId]);
@@ -1197,5 +1192,41 @@ class ContainersTable extends Table {
             }
         }
         return false;
+    }
+
+    /**
+     * @param $containerId
+     * @return array
+     * @deprecated since ITC-2819
+     * See https://github.com/it-novum/openITCOCKPIT/pull/1377/files?diff=split&w=0 how to restore <= 4.4.1 behavior
+     */
+    public function resolveContainerIdForGroupPermissions($containerId): array {
+        $visibleContainerIds = [$containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            return $visibleContainerIds;
+        }
+        $visibleContainerIds = $this->resolveChildrenOfContainerIds(
+            $containerId,
+            false,
+            [CT_TENANT, CT_LOCATION, CT_NODE]
+        );
+
+        $path = $this->getPathById($containerId);
+        if (isset($path[1]) && $path[1]['containertype_id'] == CT_TENANT) {
+            $tenantContainerId = $path[1]['id'];
+            if ($tenantContainerId != $containerId) {
+                $visibleContainerIds[] = $tenantContainerId;
+            }
+        }
+
+        //remove ROOT_CONTAINER from result
+        $visibleContainerIds = array_filter(
+            $visibleContainerIds,
+            function ($v) {
+                return $v > 1;
+            }, ARRAY_FILTER_USE_BOTH
+        );
+        sort($visibleContainerIds);
+        return $visibleContainerIds;
     }
 }

@@ -152,6 +152,10 @@ angular.module('openITCOCKPIT')
                     $scope.priorities[i] = true;
                 }
 
+                if($scope.selectedTab === 'tab3'){
+                    $scope.loadTimelineData();
+                }
+
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
                 $scope.loadAdditionalInformation();
