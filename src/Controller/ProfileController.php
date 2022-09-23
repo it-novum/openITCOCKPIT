@@ -77,7 +77,8 @@ class ProfileController extends AppController {
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('maxUploadLimit', $FileUploadSize->toArray());
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'maxUploadLimit']);
+            $this->set('newDesktopApi', true);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'maxUploadLimit', 'newDesktopApi']);
             return;
         }
 
