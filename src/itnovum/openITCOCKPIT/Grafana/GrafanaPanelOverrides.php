@@ -3,6 +3,7 @@
 namespace App\itnovum\openITCOCKPIT\Grafana;
 
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 
 /**
  * Grafana Panel overrides contains the overrides for the new panel structure as of Grafana 9
@@ -85,6 +86,12 @@ class GrafanaPanelOverrides {
             $properties = [];
             $properties[] = $this->getColor($grafanaTarget);
             $properties[] = $this->getUnitPerMetric($grafanaTarget);
+            $properties[] = $this->getThresholds($grafanaTarget);
+
+            if(!empty($this->getThresholds($grafanaTarget))){
+                $properties[] = $this->getThresholdsStyle();
+            }
+
             return $properties;
         }
         return [];
@@ -134,5 +141,39 @@ class GrafanaPanelOverrides {
             "value" => "right"
         ];
         return $axisPlacement;
+    }
+
+    /**
+     * @param $grafanaTarget
+     * @return array
+     */
+    private function getThresholds($grafanaTarget): array {
+        if (!empty($grafanaTarget->getThresholds())) {
+            $grafanaThreshold = new GrafanaThresholdCollection($grafanaTarget);
+
+            return [
+                "id"    => "thresholds",
+                "value" => [
+                    "mode"  => "absolute",//or percentage
+                    "steps" => $grafanaThreshold->getThresholdsAsArray()
+                ]
+            ];
+        }
+        return [];
+    }
+
+    /**
+     * defines the threshold style like lines and regions
+     * mode options are:
+     * "line", "area", "line+area"
+     * @return array
+     */
+    private function getThresholdsStyle(): array {
+        return [
+            "id"    => "custom.thresholdsStyle",
+            "value" => [
+                "mode" => "line"
+            ]
+        ];
     }
 }

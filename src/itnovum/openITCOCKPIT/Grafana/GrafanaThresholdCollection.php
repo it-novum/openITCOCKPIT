@@ -26,13 +26,12 @@
 
 namespace itnovum\openITCOCKPIT\Grafana;
 
-
 class GrafanaThresholdCollection {
 
     /**
      * @var GrafanaTargetCollection
      */
-    private $targetCollection;
+    private $target;
 
     /**
      * @var null|int
@@ -44,32 +43,27 @@ class GrafanaThresholdCollection {
      */
     private $critical = null;
 
-    public function __construct(GrafanaTargetCollection $targetCollection) {
-        $this->targetCollection = $targetCollection;
+    public function __construct(GrafanaTargetInterface $target) {
+        $this->target = $target;
         $this->warning = $this->getWarningThreshold();
         $this->critical = $this->getCriticalsThreshold();
+
     }
 
     /**
      * @return bool
      */
-    public function canDisplayWarningThreshold() {
+    private function canDisplayWarningThreshold(): bool {
         return !(is_null($this->warning));
     }
 
     /**
-     * @return null|int
+     * @return int|null
      */
-    public function getWarningThreshold() {
-        $warnings = [];
-        foreach ($this->targetCollection->getTargets() as $target) {
-            /** @var GrafanaTargetInterface $target */
-            if ($target->getThresholds()->hasWarning()) {
-                $warnings[$target->getThresholds()->getWarning()] = true;
-            }
-        }
-        if (sizeof($warnings) === 1) {
-            return array_keys($warnings)[0];
+    private function getWarningThreshold() {
+        /** @var GrafanaTargetInterface $target */
+        if ($this->target->getThresholds()->hasWarning()) {
+            return $this->target->getThresholds()->getWarning();
         }
         return null;
     }
@@ -77,23 +71,17 @@ class GrafanaThresholdCollection {
     /**
      * @return bool
      */
-    public function canDisplayCriticalThreshold() {
+    private function canDisplayCriticalThreshold(): bool {
         return !(is_null($this->critical));
     }
 
     /**
-     * @return null|int
+     * @return int|null
      */
-    public function getCriticalsThreshold() {
-        $criticals = [];
-        foreach ($this->targetCollection->getTargets() as $target) {
-            /** @var GrafanaTargetInterface $target */
-            if ($target->getThresholds()->hasCritical()) {
-                $criticals[$target->getThresholds()->getCritical()] = true;
-            }
-        }
-        if (sizeof($criticals) === 1) {
-            return array_keys($criticals)[0];
+    private function getCriticalsThreshold() {
+        /** @var GrafanaTargetInterface $target */
+        if ($this->target->getThresholds()->hasCritical()) {
+            return $this->target->getThresholds()->getCritical();
         }
         return null;
     }
@@ -101,7 +89,7 @@ class GrafanaThresholdCollection {
     /**
      * @return bool
      */
-    public function isInvertedThresholds() {
+    private function isInvertedThresholds() {
         if ($this->warning === null || $this->critical === null) {
             return false;
         }
@@ -112,27 +100,20 @@ class GrafanaThresholdCollection {
     /**
      * @return array
      */
-    public function getThresholdsAsArray() {
+    public function getThresholdsAsArray(): array {
         $thresholds = [];
-
         if ($this->isInvertedThresholds() === false) {
             if ($this->canDisplayWarningThreshold()) {
                 $thresholds[] = [
-                    "colorMode" => "warning",
-                    "fill"      => true,
-                    "line"      => true,
-                    "op"        => "gt",
-                    "value"     => $this->warning
+                    "color" => "yellow",
+                    "value" => $this->warning
                 ];
             }
 
             if ($this->canDisplayCriticalThreshold()) {
                 $thresholds[] = [
-                    "colorMode" => "critical",
-                    "fill"      => true,
-                    "line"      => true,
-                    "op"        => "gt",
-                    "value"     => $this->critical
+                    "color" => "red",
+                    "value" => $this->critical
                 ];
             }
         }
@@ -140,25 +121,27 @@ class GrafanaThresholdCollection {
         if ($this->isInvertedThresholds() === true) {
             if ($this->canDisplayCriticalThreshold()) {
                 $thresholds[] = [
-                    "colorMode" => "critical",
-                    "fill"      => true,
-                    "line"      => true,
-                    "op"        => "lt",
-                    "value"     => $this->critical
+                    "color" => "red",
+                    "value" => $this->critical
                 ];
             }
 
             if ($this->canDisplayWarningThreshold()) {
                 $thresholds[] = [
-                    "colorMode" => "warning",
-                    "fill"      => true,
-                    "line"      => true,
-                    "op"        => "lt",
+                    "color" => "yellow",
                     "value"     => $this->warning
                 ];
             }
         }
 
+        if(!empty($thresholds)){
+            //prepend green base to the thresholds
+            $thresholdBaseStep = [
+                "color" => "green",
+                "value" => null,
+            ];
+            array_unshift($thresholds, $thresholdBaseStep);
+        }
         return $thresholds;
     }
 }

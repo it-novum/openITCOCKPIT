@@ -776,7 +776,6 @@ class GrafanaUserdashboardsController extends AppController {
                         $GrafanaTargetCollection,
                         new GrafanaSeriesOverrides($GrafanaTargetCollection),
                         new GrafanaYAxes($GrafanaTargetCollection),
-                        new GrafanaThresholdCollection($GrafanaTargetCollection),
                         new GrafanaPanelOverrides($GrafanaTargetCollection),
                         $GrafanaFieldConfigDefaults
                     );

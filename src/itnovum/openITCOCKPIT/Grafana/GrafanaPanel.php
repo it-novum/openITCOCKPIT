@@ -63,11 +63,6 @@ class GrafanaPanel {
     private $YAxes;
 
     /**
-     * @var GrafanaThresholdCollection
-     */
-    private $ThresholdCollection;
-
-    /**
      * @var int
      */
     private $span = 6;
@@ -324,8 +319,6 @@ class GrafanaPanel {
         }
 
         $this->panel_merged['yaxes'] = $this->YAxes->getAxesAsArray(); // defines the format (eg. ms, percent etc.) of the yaxis
-        $this->panel_merged['thresholds'] = $this->ThresholdCollection->getThresholdsAsArray();
-        //print_r($this->ThresholdCollection->getThresholdsAsArray());
         return $this->panel_merged;
     }
 
@@ -340,13 +333,11 @@ class GrafanaPanel {
      * @param GrafanaTargetCollection $grafanaTargetCollection
      * @param GrafanaSeriesOverrides $SeriesOverrides
      * @param GrafanaYAxes $YAxes
-     * @param GrafanaThresholdCollection $ThresholdCollection
      */
     public function addTargets(
         GrafanaTargetCollection    $grafanaTargetCollection,
         GrafanaSeriesOverrides     $SeriesOverrides,
         GrafanaYAxes               $YAxes,
-        GrafanaThresholdCollection $ThresholdCollection,
         GrafanaPanelOverrides      $GrafanaPanelOverrides,
         GrafanaFieldConfigDefaults $GrafanaFieldConfigDefaults
     ) {
@@ -354,7 +345,6 @@ class GrafanaPanel {
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
         $this->SeriesOverrides = $SeriesOverrides;
         $this->YAxes = $YAxes;
-        $this->ThresholdCollection = $ThresholdCollection;
 
         // Adaptions to new structure
         $this->panelOverrides = $GrafanaPanelOverrides->getOverrides();

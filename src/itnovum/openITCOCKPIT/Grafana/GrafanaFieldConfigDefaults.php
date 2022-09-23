@@ -2,11 +2,11 @@
 
 namespace App\itnovum\openITCOCKPIT\Grafana;
 
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
+
 /**
  * build up the fieldConfig structure of the new Grafana Panels
  * this includes also the fieldConfig["defaults"]["custom"] values
- *
- * @TODO set thresholds and thresholdsStyle
  */
 class GrafanaFieldConfigDefaults {
     /**
@@ -48,14 +48,6 @@ class GrafanaFieldConfigDefaults {
         "mode"  => "none" // "normal" activates stacking
     ];
 
-    private $thresholdsStyle = [
-        "mode" => "line"
-    ];
-
-    private $thresholds = [];
-
-
-
     /**
      * @return array
      */
@@ -69,16 +61,14 @@ class GrafanaFieldConfigDefaults {
      */
     private function getFieldConfigDefaultConfiguration() {
         $this->fieldConfigDefaults = [
-            "custom" => [
+            "custom"     => [
                 "drawStyle"       => $this->drawStyle,
                 "spanNulls"       => $this->spanNulls, //connect null values
                 "showPoints"      => $this->showPoints,
                 "fillOpacity"     => $this->fillOpacity,
                 "stacking"        => $this->stacking,
-                "thresholdsStyle" => $this->thresholdsStyle,
             ],
-            "unit"   => $this->unit,
-            "thresholds" => $this->thresholds
+            "unit"       => $this->unit,
         ];
     }
 
@@ -138,40 +128,5 @@ class GrafanaFieldConfigDefaults {
      */
     public function setUnit(string $unit): void {
         $this->unit = $unit;
-    }
-
-    /**
-     * @TODO set thresholds like in the example structure
-     *
-     * @param string[] $thresholdsStyle
-     */
-    public function setThresholdsStyle(array $thresholdsStyle): void {
-        /**
-         "thresholds": {
-            "mode": "percentage",
-            "steps": [
-                {
-                    "color": "green",
-                    "value": null
-                },
-                {
-                    "color": "#EAB839",
-                    "value": 70
-                },
-                {
-                    "color": "red",
-                    "value": 80
-                }
-            ]
-        },
-         */
-        $this->thresholdsStyle = $thresholdsStyle;
-    }
-
-    /**
-     * @param array $thresholds
-     */
-    public function setThresholds(array $thresholds): void {
-        $this->thresholds = $thresholds;
     }
 }

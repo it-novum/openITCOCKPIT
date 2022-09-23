@@ -333,6 +333,8 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                     )
                 );
             }
+
+
             $GrafanaFieldConfigDefaults = new GrafanaFieldConfigDefaults();
             //$GrafanaFieldConfigDefaults->setUnit($panel['unit']);
 
@@ -340,7 +342,6 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                 $grafanaTargetCollection,
                 new GrafanaSeriesOverrides($grafanaTargetCollection),
                 new GrafanaYAxes($grafanaTargetCollection),
-                new GrafanaThresholdCollection($grafanaTargetCollection),
                 new GrafanaPanelOverrides($grafanaTargetCollection),
                 $GrafanaFieldConfigDefaults
             );
