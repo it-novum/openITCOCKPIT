@@ -299,7 +299,6 @@ class ContactsController extends AppController {
                 }
             }
 
-            debug($contactEntity);
             $this->set('contact', $contactEntity);
             $this->viewBuilder()->setOption('serialize', ['contact']);
         }
