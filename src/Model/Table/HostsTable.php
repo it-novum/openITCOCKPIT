@@ -4752,7 +4752,7 @@ class HostsTable extends Table {
         ]);
         $where = [];
         $where[] = ['Hoststatus.current_state IN' => $conditions['filter[Hoststatus.current_state][]']];
-        if($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignored') {
+        if($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignore') {
             $where[] = ['Hoststatus.problem_has_been_acknowledged' => $conditions['filter[Hoststatus.problem_has_been_acknowledged]']];
         }
         if($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === true) {
@@ -4769,7 +4769,6 @@ class HostsTable extends Table {
                 'RLIKE'
             );
         }
-        $x = $conditions['filter[Hosts.not_keywords][]'];
         if (!empty($conditions['filter[Hosts.not_keywords][]'])) {
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',

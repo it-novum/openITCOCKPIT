@@ -4829,7 +4829,7 @@ class ServicesTable extends Table {
         }
         $where = [];
         $where[] = ['Servicestatus.current_state IN' => $conditions['filter[Servicestatus.current_state][]']];
-        if($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignored') {
+        if($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignore') {
             $where[] = ['Servicestatus.problem_has_been_acknowledged' => $conditions['filter[Servicestatus.problem_has_been_acknowledged]']];
         }
         if($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === true) {
