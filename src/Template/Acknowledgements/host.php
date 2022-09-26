@@ -27,7 +27,8 @@
 <host-browser-menu
     ng-if="hostBrowserMenuConfig"
     config="hostBrowserMenuConfig"
-    last-load-date="0"></host-browser-menu>
+    last-load-date="0"
+    root-copy-to-clipboard="rootCopyToClipboard"></host-browser-menu>
 
 <div class="row">
     <div class="col-xl-12">

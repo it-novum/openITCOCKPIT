@@ -42,7 +42,8 @@ use Cake\Core\Plugin;
 <host-browser-menu
     ng-if="hostBrowserMenuConfig"
     config="hostBrowserMenuConfig"
-    last-load-date="lastLoadDate"></host-browser-menu>
+    last-load-date="lastLoadDate"
+    root-copy-to-clipboard="rootCopyToClipboard"></host-browser-menu>
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>

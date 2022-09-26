@@ -27,7 +27,8 @@
 <host-browser-menu
     ng-if="type === 'host' && hostBrowserMenuConfig"
     config="hostBrowserMenuConfig"
-    last-load-date="0"></host-browser-menu>
+    last-load-date="0"
+    root-copy-to-clipboard="rootCopyToClipboard"></host-browser-menu>
 
 <service-browser-menu
     ng-if="type === 'service' && serviceBrowserMenuConfig"
