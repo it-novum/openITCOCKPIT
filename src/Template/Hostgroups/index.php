@@ -140,7 +140,13 @@
                                            ng-show="hostgroup.allowEdit">
                                 </td>
                                 <td>
-                                    {{ hostgroup.container.name }}
+                                    <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
+                                        <a ui-sref="HostgroupsExtended({id: hostgroup.id})">
+                                            {{ hostgroup.container.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ hostgroup.container.name }}
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     {{ hostgroup.description }}
