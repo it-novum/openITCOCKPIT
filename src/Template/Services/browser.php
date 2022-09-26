@@ -987,30 +987,28 @@ use Cake\Core\Plugin;
                                             </tr>
                                             <tr>
                                                 <td><?php echo __('Host UUID'); ?></td>
-                                                <td>
+                                                <td class="copy-to-clipboard-container-text">
                                                     <code>{{ host.Host.uuid }}</code>
-                                                    <span
-                                                        class="btn btn-default btn-xs"
-                                                        onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
-                                                        title="<?php echo __('Copy to clipboard'); ?>">
-                                                            <i class="fa fa-copy"></i>
-                                                        </span>
-                                                    <input type="text" style="display:none;" id="host-uuid-copy"
-                                                           value="{{ host.Host.uuid }}"
+                                                    <span ng-click="rootCopyToClipboard(host.Host.uuid, $event)"
+                                                          class="copy-action-visibility text-primary animated"
+                                                          data-copied="<?= __('Copied'); ?>"
+                                                          data-copy="<?= __('Copy'); ?>"
+                                                    >
+                                                        <?= __('Copy'); ?>
+                                                    </span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td><?php echo __('Service UUID'); ?></td>
-                                                <td>
+                                                <td class="copy-to-clipboard-container-text">
                                                     <code>{{ mergedService.uuid }}</code>
-                                                    <span
-                                                        class="btn btn-default btn-xs"
-                                                        onclick="$('#service-uuid-copy').show().select();document.execCommand('copy');$('#service-uuid-copy').hide();"
-                                                        title="<?php echo __('Copy to clipboard'); ?>">
-                                                            <i class="fa fa-copy"></i>
-                                                        </span>
-                                                    <input type="text" style="display:none;" id="service-uuid-copy"
-                                                           value="{{ mergedService.uuid }}"
+                                                    <span ng-click="rootCopyToClipboard(mergedService.uuid, $event)"
+                                                          class="copy-action-visibility text-primary animated"
+                                                          data-copied="<?= __('Copied'); ?>"
+                                                          data-copy="<?= __('Copy'); ?>"
+                                                    >
+                                                        <?= __('Copy'); ?>
+                                                    </span>
                                                 </td>
                                             </tr>
                                             <tr>
