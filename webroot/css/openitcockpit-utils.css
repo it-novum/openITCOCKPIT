@@ -1271,4 +1271,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     user-select: none;
 }
 
+.copy-action-top-right {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
 /* Copy to clipboard as text styles END */

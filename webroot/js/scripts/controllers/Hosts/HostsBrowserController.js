@@ -669,10 +669,6 @@ angular.module('openITCOCKPIT')
         };
         /*** End of service mass change methods ***/
 
-        $scope.clipboardCommand = function(){
-            navigator.clipboard.writeText($scope.mergedHost.hostCommandLine);
-        };
-
         //Disable interval if object gets removed from DOM.
         $scope.$on('$destroy', function(){
             if($scope.interval !== null){

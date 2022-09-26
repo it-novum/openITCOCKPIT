@@ -424,27 +424,20 @@ use Cake\Core\Plugin;
 
                                                 <tr>
                                                     <td><?php echo __('Command line'); ?></td>
-                                                    <td class="copy-to-clipboard-container"
+                                                    <td class="copy-to-clipboard-container-text"
                                                         style="display: block; position: relative;">
                                                         <code
                                                             class="no-background <?php echo $blurryCommandLine ? 'unblur-on-hover' : '' ?>">
                                                             {{ mergedHost.hostCommandLine }}
                                                         </code>
 
-                                                        <div
-                                                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
-                                                            rel="tooltip"
-                                                            data-toggle="tooltip"
-                                                            data-trigger="click"
-                                                            data-placement="left"
-                                                            data-original-title="<?= __('Copied'); ?>">
-                                                            <div
-                                                                class="btn btn-default btn-xs waves-effect waves-themed"
-                                                                ng-click="clipboardCommand()"
-                                                                title="<?php echo __('Copy to clipboard'); ?>">
-                                                                <i class="fa fa-copy"></i>
-                                                            </div>
-                                                        </div>
+                                                        <span ng-click="rootCopyToClipboard(mergedHost.hostCommandLine, $event)"
+                                                              class="copy-action text-primary animated copy-action-top-right"
+                                                              data-copied="<?= __('Copied'); ?>"
+                                                              data-copy="<?= __('Copy'); ?>"
+                                                        >
+                                                            <?= __('Copy'); ?>
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             <?php endif; ?>
