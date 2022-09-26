@@ -164,6 +164,7 @@
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="hosts"
+                                    callback="loadHosts"
                                     multiple
                                     ng-options="host.key as host.value for host in hosts"
                                     ng-model="post.Statuspages.hosts._ids">
@@ -185,6 +186,7 @@
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="services"
+                                    callback="loadServices"
                                     multiple
                                     ng-options="(service.value.Service.id) as service.value.Host.name + '/' +service.value.Service.servicename group by service.value.Host.name for service in services"
                                     ng-model="post.Statuspages.services._ids">
@@ -206,6 +208,7 @@
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="hostgroups"
+                                    callback="loadHostgroups"
                                     multiple
                                     ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
                                     ng-model="post.Statuspages.hostgroups._ids">
@@ -227,6 +230,7 @@
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="servicegroups"
+                                    callback="loadServicegroups"
                                     multiple
                                     ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
                                     ng-model="post.Statuspages.servicegroups._ids">

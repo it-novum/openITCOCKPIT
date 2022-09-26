@@ -153,12 +153,12 @@
                                     <i class="fa" ng-class="getSortClass('Statuspages.name')"></i>
                                     <?php echo __('Status page name'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Satuspages.description')">
-                                    <i class="fa" ng-class="getSortClass('Satuspages.description')"></i>
+                                <th class="no-sort" ng-click="orderBy('Statuspages.description')">
+                                    <i class="fa" ng-class="getSortClass('Statuspages.description')"></i>
                                     <?php echo __('Description'); ?>
                                 </th>
-                                <th class="no-sort width-95" ng-click="orderBy('Satuspages.public')">
-                                    <i class="fa" ng-class="getSortClass('Satuspages.public')"></i>
+                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.public')">
+                                    <i class="fa" ng-class="getSortClass('Statuspages.public')"></i>
                                     <?php echo __('Public'); ?>
                                 </th>
                                 <th class="no-sort text-center">
@@ -262,7 +262,7 @@
                             </tr>
                             </tbody>
                         </table>
-                        <div class="margin-top-10" ng-show="statuspage.length == 0">
+                        <div class="margin-top-10" ng-show="statuspages.length == 0">
                             <div class="text-center text-danger italic">
                                 <?php echo __('No entries match the selection'); ?>
                             </div>

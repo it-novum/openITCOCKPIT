@@ -34,8 +34,8 @@ $logo = new Logo();
         <div class="d-flex justify-content-center ">
             <div class="jumbotron w-100 bg-white padding-bottom-2 margin-bottom-25"
                  style="border: 1px solid rgba(0,0,0,.125);">
-                <h1 class="display-4"><?= $Statuspage['statuspage']['name']; ?></h1>
-                <p class="lead"><?= $Statuspage['statuspage']['description']; ?></p>
+                <h1 class="display-4"><?= h($Statuspage['statuspage']['name']); ?></h1>
+                <p class="lead"><?= h($Statuspage['statuspage']['description']); ?></p>
                 <hr class="my-4">
                 <?php if ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'up' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'ok'): ?>
                     <div class="alert alert-success" role="alert">
@@ -156,7 +156,7 @@ $logo = new Logo();
                                     <h5 class="card-text d-flex">
                                         <span class="text-wrap"><a
                                                 href="<?php printf('/#!/%s', $internalLink); ?>"
-                                                class="color-black"><?= $obj['name'] ?></a></span>
+                                                class="color-black"><?= h($obj['name']); ?></a></span>
                                         <div class="ml-auto">
                                             <?php if ($obj['inDowntime']): ?>
                                                 <i class="fa fa-power-off fa-xl"></i>
@@ -176,7 +176,7 @@ $logo = new Logo();
                                         </div>
                                     </h5>
 
-                                    <p class="card-text"><?= $statusmessage; ?>
+                                    <p class="card-text"><?= h($statusmessage); ?>
                                     </p>
                                 </div>
                             </div>
@@ -221,10 +221,10 @@ $logo = new Logo();
                                             $displayName = $history['name'];
                                             $displayType = $history['selfType'];
                                             if ($history['type'] == 'acknowledgement') {
-                                                $message = __($displayName . ' is acknowledged');
+                                                $message = __(h($displayName) . ' is acknowledged');
                                             }
                                             if ($history['type'] == 'downtime') {
-                                                $message = __($displayName . ' is in downtime');
+                                                $message = __(h($displayName) . ' is in downtime');
                                             }
                                         }
                                         if (!empty($history['parentType']) && !empty($history['parentName'])) {
@@ -239,7 +239,7 @@ $logo = new Logo();
                                             }
                                         }
 
-                                        echo ucfirst($history['type']) . ': ' . $displayType . ' "' . $displayName . '"';
+                                        echo ucfirst($history['type']) . ': ' . $displayType . ' "' . h($displayName) . '"';
                                         ?>
                                     </h2>
 
@@ -248,12 +248,12 @@ $logo = new Logo();
                                         <?php if ($Statuspage['statuspage']['showComments']): ?>
                                             <span>
                                                 <footer class="padding-left-10 blockquote-footer">
-                                                    Type: <span><?= $message; ?></span>
+                                                    Type: <span><?= h($message); ?></span>
                                                 </footer>
                                             </span>
                                             <span>
                                                 <footer class="padding-left-10 blockquote-footer">
-                                                    Comment: <span><?= $history['comment_data']; ?></span>
+                                                    Comment: <span><?= h($history['comment_data']); ?></span>
                                                 </footer>
                                             </span>
                                             <?php if ($history['type'] == 'downtime'): ?>
@@ -271,7 +271,7 @@ $logo = new Logo();
                                         <?php else: ?>
                                             <span>
                                                 <footer class="padding-left-10 blockquote-footer">
-                                                    Comment: <span><?= $message; ?></span>
+                                                    Comment: <span><?= h($message); ?></span>
                                                 </footer>
                                             </span>
                                             <?php if ($history['type'] == 'downtime'): ?>

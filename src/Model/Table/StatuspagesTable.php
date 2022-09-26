@@ -106,6 +106,13 @@ class StatuspagesTable extends Table {
      */
     public function validationDefault(Validator $validator): Validator {
         $validator
+            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->allowEmptyString('containers', null, false)
+            ->multipleOptions('containers', [
+                'min' => 1
+            ], __('You have to choose at least one option.'));
+
+        $validator
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
@@ -125,6 +132,15 @@ class StatuspagesTable extends Table {
             ->boolean('show_comments')
             ->notEmptyString('show_comments');
 
+        return $validator;
+    }
+
+
+    /**
+     * @param Validator $validator
+     * @return Validator
+     */
+    public function  validationStepTwo(Validator $validator): Validator {
         return $validator;
     }
 
@@ -716,7 +732,7 @@ class StatuspagesTable extends Table {
         }
         //will be set true if the worst state of a host is determined by its services (e.g. host state = 0 hosts service state = 2)
         $isCumulatedServiceState = false;
-        if(isset($servicesOfHosts) && isset($tmpStates['hosts']) && $servicesOfHosts['hosts'] > $tmpStates['hosts']){
+        if(!empty($servicesOfHosts) && isset($tmpStates['hosts']) && $servicesOfHosts['hosts'] > $tmpStates['hosts']){
             $tmpStates['hosts'] = $servicesOfHosts['hosts'];
             $isCumulatedServiceState = true;
         }

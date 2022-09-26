@@ -16,7 +16,7 @@ $logo = new Logo();
             <a href="/"
                class="page-logo-link press-scale-down d-flex align-items-center position-relative">
                 <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="SmartAdmin WebApp" aria-roledescription="logo">
-                <span class="page-logo-text mr-1" style="color: #000;"><?= $systemname; ?></span>
+                <span class="page-logo-text mr-1" style="color: #000;"><?= h($systemname); ?></span>
                 <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2"></span>
             </a>
         </div>
@@ -29,8 +29,8 @@ $logo = new Logo();
         <div class="d-flex justify-content-center ">
             <div class="jumbotron w-100 bg-white padding-bottom-2 margin-bottom-25"
                  style="border: 1px solid rgba(0,0,0,.125);">
-                <h1 class="display-4"><?= $Statuspage['statuspage']['name']; ?></h1>
-                <p class="lead"><?= $Statuspage['statuspage']['description']; ?></p>
+                <h1 class="display-4"><?= h($Statuspage['statuspage']['name']); ?></h1>
+                <p class="lead"><?= h($Statuspage['statuspage']['description']); ?></p>
                 <hr class="my-4">
                 <?php if ($Statuspage['statuspage']['cumulatedState']['humanState'] == 'up' || $Statuspage['statuspage']['cumulatedState']['humanState'] == 'ok'): ?>
                     <div class="alert alert-success" role="alert">
@@ -78,13 +78,13 @@ $logo = new Logo();
                                     $ackMessage = __('There is a acknowledged service');
                                 }
                                 if ($obj['acknowledged']) {
-                                    $ackMessage = __($obj['name'] . ' is acknowledged');
+                                    $ackMessage = __(h($obj['name']) . ' is acknowledged');
                                 }
                                 if ($obj['serviceInDowntime']) {
                                     $downtimeMessage = __('There is a service in downtime');
                                 }
                                 if ($obj['inDowntime']) {
-                                    $downtimeMessage = __($obj['name'] . ' is in downtime');
+                                    $downtimeMessage = __(h($obj['name']) . ' is in downtime');
                                 }
 
                                 $statusmessage = $ackMessage;
@@ -94,10 +94,10 @@ $logo = new Logo();
                                 break;
                             case 'services':
                                 if ($obj['acknowledged']) {
-                                    $ackMessage = __($obj['name'] . ' is acknowledged');
+                                    $ackMessage = __(h($obj['name']) . ' is acknowledged');
                                 }
                                 if ($obj['inDowntime']) {
-                                    $downtimeMessage = __($obj['name'] . ' is in downtime');
+                                    $downtimeMessage = __(h($obj['name']) . ' is in downtime');
                                 }
 
                                 $statusmessage = $ackMessage;
@@ -107,10 +107,10 @@ $logo = new Logo();
                                 break;
                             case 'hostgroups':
                                 if ($obj['acknowledged']) {
-                                    $ackMessage = __('Hosts of Hostgroup: ' . $obj['name'] . ' are acknowledged');
+                                    $ackMessage = __('Hosts of Hostgroup: ' . h($obj['name']) . ' are acknowledged');
                                 }
                                 if ($obj['inDowntime']) {
-                                    $downtimeMessage = __('Hosts of Hostgroup: ' . $obj['name'] . ' are in downtime');
+                                    $downtimeMessage = __('Hosts of Hostgroup: ' . h($obj['name']) . ' are in downtime');
                                 }
 
                                 $statusmessage = $ackMessage;
@@ -120,10 +120,10 @@ $logo = new Logo();
                                 break;
                             case 'servicegroups':
                                 if ($obj['acknowledged']) {
-                                    $ackMessage = __('Hosts of Servicegroup: ' . $obj['name'] . ' are acknowledged');
+                                    $ackMessage = __('Hosts of Servicegroup: ' . h($obj['name']) . ' are acknowledged');
                                 }
                                 if ($obj['inDowntime']) {
-                                    $downtimeMessage = __('Hosts of Servicegroup: ' . $obj['name'] . ' are in downtime');
+                                    $downtimeMessage = __('Hosts of Servicegroup: ' . h($obj['name']) . ' are in downtime');
                                 }
 
                                 $statusmessage = $ackMessage;
@@ -137,7 +137,7 @@ $logo = new Logo();
                             <div class="card" style="min-height: 95px;">
                                 <div class="card-body">
                                     <h5 class="card-text d-flex">
-                                        <span class="text-wrap"><?= $obj['name'] ?></span>
+                                        <span class="text-wrap"><?= h($obj['name']) ?></span>
                                         <div class="ml-auto">
                                             <?php if ($obj['inDowntime']): ?>
                                                 <i class="fa fa-power-off fa-xl"></i>
@@ -156,7 +156,7 @@ $logo = new Logo();
                                             <?php endif; ?>
                                         </div>
                                     </h5>
-                                    <p class="card-text"><?= $statusmessage; ?>
+                                    <p class="card-text"><?= h($statusmessage); ?>
                                     </p>
                                 </div>
                             </div>
@@ -220,7 +220,7 @@ $logo = new Logo();
 
                                         }
 
-                                        echo $displayType . ': ' . $displayName;
+                                        echo $displayType . ': ' . h($displayName);
                                         ?>
                                     </h2>
 
@@ -228,7 +228,7 @@ $logo = new Logo();
                                         class="blockquote changelog-blockquote-primary statuspage-history-checkmarks">
                                         <span>
                                             <footer class="padding-left-10 blockquote-footer">
-                                                Comment: <span><?= $message; ?></span>
+                                                Comment: <span><?= h($message); ?></span>
                                             </footer>
                                         </span>
                                         <?php if ($history['type'] == 'downtime'): ?>

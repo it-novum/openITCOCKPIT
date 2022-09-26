@@ -10,6 +10,7 @@ use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\StatuspagesTable;
 use Cake\Event\EventInterface;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -147,7 +148,8 @@ class StatuspagesController extends AppController {
         /** @var $StatuspagesTable StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
-            throw new NotFoundException('Statuspage not found');
+            //throw new ForbiddenException('403 Forbidden');
+            return $this->redirect('/');
         }
 
         /** @var $SystemsettingsTable SystemsettingsTable */
@@ -339,10 +341,10 @@ class StatuspagesController extends AppController {
                     'Servicegroups'
                 ]
             ]);
-
             $statuspageData = $this->request->getData();
-            $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData);
-
+            $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData, [
+                'validate' => 'stepTwo'
+            ]);
             $StatuspagesTable->save($statuspage);
             if ($statuspage->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -444,14 +446,16 @@ class StatuspagesController extends AppController {
         $containerIds = $this->request->getQuery('containerIds');
 
         $ServiceFilter = new ServiceFilter($this->request);
-
         $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
         $containerIds = array_unique($containerIds);
 
 
         // as $ServiceCondition->setIncludeDisabled(false); has no function at all we need to exclude the disabled services here
-        $conditions = ['Services.disabled' => 0];
-        $ServiceCondition = new ServiceConditions($conditions);
+        $serviceConditions = ['Services.disabled' => 0];
+        if(!empty($ServiceFilter->indexFilter())){
+            $serviceConditions = array_merge($ServiceFilter->indexFilter(), $serviceConditions);
+        }
+        $ServiceCondition = new ServiceConditions($serviceConditions);
         $ServiceCondition->setContainerIds($containerIds);
         //$ServiceCondition->setIncludeDisabled(false); // this has no function
 

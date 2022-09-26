@@ -119,4 +119,8 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
 
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
     });
