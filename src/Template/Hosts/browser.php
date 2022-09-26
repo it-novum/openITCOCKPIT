@@ -834,16 +834,15 @@ use Cake\Core\Plugin;
                                             </tr>
                                             <tr>
                                                 <td><?php echo __('UUID'); ?></td>
-                                                <td>
+                                                <td class="copy-to-clipboard-container-text">
                                                     <code>{{ mergedHost.uuid }}</code>
-                                                    <span
-                                                        class="btn btn-default btn-xs"
-                                                        onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
-                                                        title="<?php echo __('Copy to clipboard'); ?>">
-                                                        <i class="fa fa-copy"></i>
+                                                    <span ng-click="rootCopyToClipboard(mergedHost.uuid, $event)"
+                                                          class="copy-action-visibility text-primary animated"
+                                                          data-copied="<?= __('Copied'); ?>"
+                                                          data-copy="<?= __('Copy'); ?>"
+                                                    >
+                                                        <?= __('Copy'); ?>
                                                     </span>
-                                                    <input type="text" style="display:none;" id="host-uuid-copy"
-                                                           value="{{ mergedHost.uuid }}"
                                                 </td>
                                             </tr>
                                         </table>

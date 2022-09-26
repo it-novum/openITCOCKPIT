@@ -1265,8 +1265,13 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     display: none;
 }
 
-.copy-to-clipboard-container-text:hover .copy-action {
+.copy-to-clipboard-container-text .copy-action-visibility {
+    visibility: hidden;
+}
+
+.copy-to-clipboard-container-text:hover .copy-action, .copy-to-clipboard-container-text:hover .copy-action-visibility {
     display: inline;
+    visibility: visible;
     cursor: pointer;
     user-select: none;
 }
