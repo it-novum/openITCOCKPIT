@@ -13,41 +13,41 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
 
         /*** Filter Settings ***/
-        //filterId = QueryStringService.getStateValue($stateParams, 'filter');
+            //filterId = QueryStringService.getStateValue($stateParams, 'filter');
         var defaultFilter = function(){
-            $scope.filter = {
-                Servicestatus: {
-                    current_state: QueryStringService.servicestate($stateParams),
-                    acknowledged: QueryStringService.getStateValue($stateParams, 'has_been_acknowledged', false) == '1',
-                    not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) == '1',
-                    in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) == '1',
-                    not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
-                    passive: QueryStringService.getStateValue($stateParams, 'passive', false) == '1',
-                    active: QueryStringService.getValue('active', false) === '1',
-                    notifications_enabled: QueryStringService.getStateValue($stateParams, 'notifications_not_enabled', false) == '1',
-                    output: ''
-                },
-                Services: {
-                    id: QueryStringService.getStateValue($stateParams, 'id', []),
-                    name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
-                    keywords: '',
-                    not_keywords: '',
-                    servicedescription: '',
-                    priority: {
-                        1: false,
-                        2: false,
-                        3: false,
-                        4: false,
-                        5: false
+                $scope.filter = {
+                    Servicestatus: {
+                        current_state: QueryStringService.servicestate($stateParams),
+                        acknowledged: QueryStringService.getStateValue($stateParams, 'has_been_acknowledged', false) == '1',
+                        not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) == '1',
+                        in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) == '1',
+                        not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
+                        passive: QueryStringService.getStateValue($stateParams, 'passive', false) == '1',
+                        active: QueryStringService.getValue('active', false) === '1',
+                        notifications_enabled: QueryStringService.getStateValue($stateParams, 'notifications_not_enabled', false) == '1',
+                        output: ''
+                    },
+                    Services: {
+                        id: QueryStringService.getStateValue($stateParams, 'id', []),
+                        name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
+                        keywords: '',
+                        not_keywords: '',
+                        servicedescription: '',
+                        priority: {
+                            1: false,
+                            2: false,
+                            3: false,
+                            4: false,
+                            5: false
+                        }
+                    },
+                    Hosts: {
+                        id: QueryStringService.getStateValue($stateParams, 'host_id', []),
+                        name: QueryStringService.getStateValue($stateParams, 'hostname', ''),
+                        satellite_id: []
                     }
-                },
-                Hosts: {
-                    id: QueryStringService.getStateValue($stateParams, 'host_id', []),
-                    name: QueryStringService.getStateValue($stateParams, 'hostname', ''),
-                    satellite_id: []
-                }
+                };
             };
-        };
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
@@ -136,7 +136,7 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter;
-            if($scope.showFilter === true) {
+            if($scope.showFilter === true){
             }
         };
 
@@ -280,7 +280,7 @@ angular.module('openITCOCKPIT')
             if(typeof filter !== "undefined"){
                 $scope.init = true; //Disable $watch to avoid two HTTP requests
                 $scope.filter = filter;
-            } else {
+            }else{
                 $scope.init = true;
                 $scope.resetFilter();
             }
@@ -294,7 +294,7 @@ angular.module('openITCOCKPIT')
             $scope.currentPage = 1;
             $scope.undoSelection();
             $scope.load();
-        }
+        };
 
 
         //Fire on page load
