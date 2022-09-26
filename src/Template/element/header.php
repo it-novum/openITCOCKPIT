@@ -144,6 +144,8 @@
 
 <script>
     $(document).ready(function(){
-        jQuery(document).find("[rel=tooltip]").tooltip();
+        setTimeout(function(){
+            jQuery(document).find("[rel=tooltip]").tooltip();
+        }, 150);
     });
 </script>

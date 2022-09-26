@@ -57,17 +57,6 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.showFilter = false;
 
-       /* $scope.bookmark = {
-            name: '',
-            default: false,
-            filter: $scope.filter ?? {}
-        } */
-      //  $scope.bookmark_selects = [];
-        //$scope.bookmarks = [];
-       // $scope.select = 0;
-       // $scope.filterUrl = '';
-       // $scope.showFilterUrl = false;
-      //  $scope.bookmarkError = '';
         $scope.showBookmarkFilter = false;
 
         $scope.loadTimezone = function(){
