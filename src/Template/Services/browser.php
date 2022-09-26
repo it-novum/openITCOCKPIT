@@ -41,7 +41,8 @@ use Cake\Core\Plugin;
 <service-browser-menu
     ng-if="serviceBrowserMenuConfig"
     config="serviceBrowserMenuConfig"
-    last-load-date="lastLoadDate"></service-browser-menu>
+    last-load-date="lastLoadDate"
+    root-copy-to-clipboard="rootCopyToClipboard"></service-browser-menu>
 
 
 <reschedule-service callback="showFlashMsg"></reschedule-service>

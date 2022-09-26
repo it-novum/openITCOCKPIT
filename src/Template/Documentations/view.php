@@ -33,7 +33,8 @@
 <service-browser-menu
     ng-if="type === 'service' && serviceBrowserMenuConfig"
     config="serviceBrowserMenuConfig"
-    last-load-date="0"></service-browser-menu>
+    last-load-date="0"
+    root-copy-to-clipboard="rootCopyToClipboard"></service-browser-menu>
 
 <div class="row" ng-if="type === 'hosttemplate'">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
