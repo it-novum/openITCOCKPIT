@@ -4838,19 +4838,19 @@ class ServicesTable extends Table {
         if($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === false) {
             $where[] = ['Servicestatus.scheduled_downtime_depth' => 0];
         }
-        if (!empty($conditions['filter[Servicestatus.keywords][]'])) {
+        if (!empty($conditions['filter[Services.keywords][]'])) {
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                implode(',',$conditions['filter[Servicestatus.keywords][]']),
+                implode(',',$conditions['filter[Services.keywords][]']),
                 'string',
                 'RLIKE'
             );
         }
 
-        if (!empty($conditions['filter[Servicestatus.not_keywords][]'])) {
+        if (!empty($conditions['filter[Services.not_keywords][]'])) {
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                implode(',',$conditions['filter[Servicestatus.not_keywords][]']),
+                implode(',',$conditions['filter[Services.not_keywords][]']),
                 'string',
                 'NOT RLIKE'
             );
