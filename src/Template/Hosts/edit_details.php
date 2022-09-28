@@ -60,7 +60,7 @@
                 <div class="panel-content">
                     <div class="card margin-bottom-10">
                         <div class="card-header">
-                            <i class="fa fa-magic"></i>
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
                             <?php echo __('Basic configuration'); ?>
                         </div>
                         <div class="card-body">

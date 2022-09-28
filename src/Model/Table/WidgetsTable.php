@@ -373,7 +373,7 @@ class WidgetsTable extends Table {
             $widgets[] = [
                 'type_id'   => 19,
                 'title'     => __('Auto Map'),
-                'icon'      => 'fa fa-magic',
+                'icon'      => 'fa-solid fa-wand-magic-sparkles',
                 'directive' => 'automap-widget',
                 'width'     => 12,
                 'height'    => 13

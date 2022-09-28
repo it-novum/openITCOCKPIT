@@ -74,7 +74,7 @@
                         <!-- BASIC CONFIGURATION START -->
                         <div class="card margin-bottom-10">
                             <div class="card-header">
-                                <i class="fa fa-magic"></i> <?php echo __('Basic configuration'); ?>
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Basic configuration'); ?>
                             </div>
                             <div class="card-body">
                                 <div class="form-group required" ng-class="{'has-error': errors.container_id}">
