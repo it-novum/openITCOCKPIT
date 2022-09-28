@@ -3665,15 +3665,6 @@ class ServicesTable extends Table {
             ];
         }
 
-        if (Plugin::isLoaded('SLAModule')) {
-            $types[SLA_SERVICE] = [
-                'title' => __('SLA service'),
-                'color' => 'text-sla',
-                'class' => 'border-sla',
-                'icon'  => 'fas fa-file-medical-alt'
-            ];
-        }
-
         if (Plugin::isLoaded('CheckmkModule')) {
             $types[MK_SERVICE] = [
                 'title' => __('Checkmk service'),
