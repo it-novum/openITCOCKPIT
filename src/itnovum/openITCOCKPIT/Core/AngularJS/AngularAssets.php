@@ -148,6 +148,7 @@ class AngularAssets implements AngularAssetsInterface {
      * @var array
      */
     protected $cssFiles = [
+        '/css/roboto.css',
         '/css/timeline.css',
         '/css/changelog.css',
         '/smartadmin4/dist/css/vendors.bundle.css',
