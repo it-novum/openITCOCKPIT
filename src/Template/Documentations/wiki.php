@@ -57,13 +57,13 @@
                         </div>
                         <div class="col-lg-12">
                             <?php echo __('We recommend every new user to read our'); ?>
-                            <a href="https://openitcockpit.io/beginners/" target="_blank">
+                            <a href="https://docs.openitcockpit.io/en/beginners/beginners/" target="_blank">
                                 <?php echo __('beginners guide.'); ?>
                             </a>
                             <?php echo __('This guide provides information about the basic concept of openITCOCKPIT and how to monitor your first host.'); ?>
                         </div>
                         <div class="col-lg-12 text-center">
-                            <a href="https://openitcockpit.io/beginners/" class="btn btn-default" target="_blank">
+                            <a href="https://docs.openitcockpit.io/en/beginners/beginners/" class="btn btn-default" target="_blank">
                                 <i class="fas fa-external-link-alt"></i>
                                 <?php echo __('Beginners guide.'); ?>
                             </a>
@@ -79,14 +79,9 @@
                         </div>
                         <div class="col-lg-12 text-center">
                             <div class="btn-group" role="group">
-                                <a href="https://docs.it-novum.com/display/ODE" class="btn btn-default" target="_blank">
+                                <a href="https://openitcockpit.io/documentation/" class="btn btn-default" target="_blank">
                                     <i class="fas fa-external-link-alt"></i>
-                                    <?php echo __('Technical documentation (EN)'); ?>
-                                </a>
-
-                                <a href="https://docs.it-novum.com/display/ODD" class="btn btn-default" target="_blank">
-                                    <i class="fas fa-external-link-alt"></i>
-                                    <?php echo __('Technische Dokumentation (DE)'); ?>
+                                    <?php echo __('Documentation'); ?>
                                 </a>
                             </div>
                         </div>
