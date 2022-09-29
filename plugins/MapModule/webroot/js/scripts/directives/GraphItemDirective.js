@@ -254,7 +254,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     // https://github.com/MichaelZinsmaier/CurvedLines
                     curvedLines: {
                         apply: true,
-                        //monotonicFit: true
+                        monotonicFit: true
                     }
                 });
                 var options = GraphDefaultsObj.getDefaultOptions();

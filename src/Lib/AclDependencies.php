@@ -137,7 +137,7 @@ class AclDependencies {
             ->allow('Angular', 'thresholds')
             ->allow('Angular', 'mass_delete_acknowledgements')
             ->allow('Angular', 'message_of_the_day')
-            ->allow('Angular', 'regexHelpTooltip')
+            ->allow('Angular', 'regexHelperTooltip')
             ->allow('Angular', 'wizardFilter')
             ->allow('Angular', 'wizardInterfaceFilter')
             ->allow('Angular', 'columns_config_import')
