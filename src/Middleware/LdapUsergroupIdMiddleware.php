@@ -61,10 +61,10 @@ class LdapUsergroupIdMiddleware implements MiddlewareInterface {
             if (!empty($samaccountname)) {
 
                 if (!empty($identity->get('samaccountname'))) {
-                    $cacheKey = 'permissions_ldap_usergroup_id_for_' . $identity->get('id');
+                    $cacheKey = 'ltc_ldap_usergroup_id_for_' . $identity->get('id');
                 }
 
-                if (Cache::read($cacheKey, 'permissions') === null) {
+                if (Cache::read($cacheKey, 'long_time_cache') === null) {
                     // Query LDAP Server to get current LDAP Groups
 
                     /** @var SystemsettingsTable $SystemsettingsTable */
@@ -80,18 +80,18 @@ class LdapUsergroupIdMiddleware implements MiddlewareInterface {
                         if (isset($usergroupLdap['id'])) {
                             // Use the usergroup_id (user role) via LDAP group matching
                             // Use the LDAP based usergroup_id
-                            Cache::write($cacheKey, $usergroupLdap['id'], 'permissions');
+                            Cache::write($cacheKey, $usergroupLdap['id'], 'long_time_cache');
                         } else {
                             // No LDAP usergroup matching found - cache the "fallback" usergroup_id from the users table
                             // to not stress the LDAP server on every request
                             // Most customers do not have any LDAP group assignments
-                            Cache::write($cacheKey, $identity->get('usergroup_id'), 'permissions');
+                            Cache::write($cacheKey, $identity->get('usergroup_id'), 'long_time_cache');
                         }
                     }
                 }
 
                 $currentUsergroupId = (int)$identity->get('usergroup_id');
-                $cachedUsergroupId = (int)Cache::read($cacheKey, 'permissions');
+                $cachedUsergroupId = (int)Cache::read($cacheKey, 'long_time_cache');
                 if ($currentUsergroupId !== $cachedUsergroupId) {
                     // Overwrite the fallback usergroup_id from the users table, with the usergroup_id via the LDAP groups mapping
                     $identity->overwriteUsergroupId($cachedUsergroupId);
