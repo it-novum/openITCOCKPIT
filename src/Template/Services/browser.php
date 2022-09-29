@@ -1296,6 +1296,19 @@ use Cake\Core\Plugin;
                 </h2>
                 <div class="panel-toolbar">
                     <div class="panel-toolbar">
+
+                        <div class="form-group panelToolbarInput">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="ServiceGraphSmoothInterpolation"
+                                       ng-model="graph.smoothInterpolation">
+                                <label class="custom-control-label no-margin" for="ServiceGraphSmoothInterpolation">
+                                    <?php echo __('Smooth'); ?>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="form-group panelToolbarInput">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox"
