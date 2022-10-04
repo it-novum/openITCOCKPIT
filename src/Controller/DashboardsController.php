@@ -1861,6 +1861,9 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    /*************************************************
+     *       openITCOCKPIT Desktop App METHODS       *
+     *************************************************/
     public function desktopWidget() {
         $queryData = [];
         if ($this->request->is('post')) {
