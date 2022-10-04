@@ -36,6 +36,8 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 
@@ -412,17 +414,24 @@ class RolesCommand extends Command {
             $io->info(__('Re-Enable default permissions for user group "{0}" but keep custom changes.', $userRoleName), 0);
 
             //Get current Aros and Acos of the user usergroup
-            $usergroup = $UsergroupsTable->find()
-                ->contain([
-                    'Aros' => [
-                        'Acos'
-                    ]
-                ])
-                ->where([
-                    'Usergroups.name' => $userRoleName
-                ])
-                ->disableHydration()
-                ->firstOrFail();
+            try {
+                $usergroup = $UsergroupsTable->find()
+                    ->contain([
+                        'Aros' => [
+                            'Acos'
+                        ]
+                    ])
+                    ->where([
+                        'Usergroups.name' => $userRoleName
+                    ])
+                    ->disableHydration()
+                    ->firstOrFail();
+            }catch (RecordNotFoundException $e){
+                // Usergroup "Viewer" not found. Got renamed?
+                Log::error(sprintf('Usergroup "%s" not found', $userRoleName));
+                Log::error($e->getMessage());
+                continue;
+            }
 
             //Create an list of current AcoId => 0/1
             $selectedAcos = [];
