@@ -37,8 +37,17 @@
 
             <i class="fa fa-desktop fa-fw"></i>
             {{ config.hostName }}
-            <span>
-                ({{ config.hostAddress }})
+            <span class="copy-to-clipboard-container-text">
+                (
+                {{ config.hostAddress }}
+                <span ng-click="rootCopyToClipboard(config.hostAddress, $event)"
+                      class="copy-action text-primary animated"
+                      data-copied="<?= __('Copied'); ?>"
+                      data-copy="<?= __('Copy'); ?>"
+                >
+                    <?= __('Copy'); ?>
+                </span>
+                )
             </span>
         </h1>
     </div>
