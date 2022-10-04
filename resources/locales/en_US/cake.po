@@ -4,8 +4,8 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: CakePHP 4.1.0\n"
-"POT-Creation-Date: 2020-07-10 14:02+0200\n"
+"Project-Id-Version: CakePHP 4.4.5\n"
+"POT-Creation-Date: 2022-10-04 09:53+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -14,23 +14,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: src/Template/Error/error400.php:36
-#: src/Template/Error/error500.php:40
-#: src/Template/Errors/error400.php:18
-#: src/Template/Errors/error500.php:18
+#: ./src/Template/Error/error400.php:36
+#: ./src/Template/Error/error500.php:40
+#: ./src/Template/Errors/error400.php:18
+#: ./src/Template/Errors/error500.php:18
 msgid "Error"
 msgstr ""
 
-#: src/Template/Error/error400.php:37
-#: src/Template/Errors/error400.php:20
+#: ./src/Template/Error/error400.php:37
+#: ./src/Template/Errors/error400.php:20
 msgid "The requested address {0} was not found on this server."
 msgstr ""
 
-#: src/Template/Error/error500.php:38
+#: ./src/Template/Error/error500.php:38
 msgid "An Internal Error Has Occurred"
 msgstr ""
 
-#: src/Template/Errors/error500.php:19
+#: ./src/Template/Errors/error500.php:19
 msgid "An Internal Error Has Occurred."
 msgstr ""
 

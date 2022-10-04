@@ -140,7 +140,13 @@
                                            ng-show="servicegroup.allow_edit">
                                 </td>
                                 <td>
-                                    {{ servicegroup.container.name }}
+                                    <?php if ($this->Acl->hasPermission('extended', 'servicegroups')): ?>
+                                        <a ui-sref="ServicegroupsExtended({id: servicegroup.id})">
+                                            {{ servicegroup.container.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ servicegroup.container.name }}
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     {{ servicegroup.description }}

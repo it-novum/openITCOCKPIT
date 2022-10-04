@@ -34,7 +34,7 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClientErrors; ?>
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fas fa-magic"></i> <?php echo __('Wizard'); ?>
+        <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Wizard'); ?>
     </li>
 </ol>
 

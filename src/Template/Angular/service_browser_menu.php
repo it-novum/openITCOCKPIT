@@ -40,7 +40,19 @@
             <span>
                 <?php echo __('on'); ?>
                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                    <a ui-sref="HostsBrowser({id:config.hostId})">{{ config.hostName }} ({{ config.hostAddress }})</a>
+                    <a ui-sref="HostsBrowser({id:config.hostId})">{{ config.hostName }}</a>
+                    (
+                    <span class="copy-to-clipboard-container-text">
+                        {{ config.hostAddress }}
+                        <span ng-click="rootCopyToClipboard(config.hostAddress, $event)"
+                              class="copy-action text-primary animated"
+                              data-copied="<?= __('Copied'); ?>"
+                              data-copy="<?= __('Copy'); ?>"
+                        >
+                            <?= __('Copy'); ?>
+                        </span>
+                    </span>
+                    )
                 <?php else: ?>
                     {{ config.hostName }} ({{ config.hostAddress }})
                 <?php endif; ?>

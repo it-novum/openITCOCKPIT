@@ -35,7 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-magic"></i> <?php echo __('Generate'); ?>
+        <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Generate'); ?>
     </li>
 </ol>
 

@@ -116,8 +116,9 @@
                                 </label>
                                 <input
                                     class="form-control"
-                                    type="text"
+                                    type="time"
                                     ng-model="post.Systemdowntime.from_time"
+                                    ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}"
                                     placeholder="<?php echo __('hh:mm'); ?>">
                                 <div ng-repeat="error in errors.from_time">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -199,7 +200,7 @@
                                     <input
                                         id="ServicedowntimeFromDate"
                                         class="form-control col-lg-2"
-                                        type="text"
+                                        type="date"
                                         ng-model="post.Systemdowntime.from_date"
                                         placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.from_date">
@@ -210,8 +211,9 @@
                                     </div>
                                     <input
                                         class="form-control col"
-                                        type="text"
+                                        type="time"
                                         ng-model="post.Systemdowntime.from_time"
+                                        ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}"
                                         placeholder="<?php echo __('hh:mm'); ?>">
                                     <div ng-repeat="error in errors.from_time">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -232,7 +234,7 @@
                                     <input
                                         id="ServicedowntimeToDate"
                                         class="form-control col-lg-2"
-                                        type="text"
+                                        type="date"
                                         ng-model="post.Systemdowntime.to_date"
                                         placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.to_date">
@@ -243,8 +245,9 @@
                                     </div>
                                     <input
                                         class="form-control col"
-                                        type="text"
+                                        type="time"
                                         ng-model="post.Systemdowntime.to_time"
+                                        ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}"
                                         placeholder="<?php echo __('hh:mm'); ?>">
                                     <div ng-repeat="error in errors.to_time">
                                         <div class="help-block text-danger">{{ error }}</div>

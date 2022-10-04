@@ -34,7 +34,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fas fa-magic"></i> <?php echo __('Wizard'); ?>
+        <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Wizard'); ?>
     </li>
 </ol>
 
@@ -152,7 +152,7 @@
                                     <fieldset>
                                         <legend class="fs-md fieldset-legend-border-bottom margin-top-10">
                                             <h4 class="required">
-                                                <i class="fa fa-magic"></i>
+                                                <i class="fa-solid fa-wand-magic-sparkles"></i>
                                                 <?= __('Basic configuration'); ?>
                                             </h4>
                                         </legend>

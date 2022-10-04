@@ -4780,4 +4780,91 @@ class ServicesTable extends Table {
         $services = array_combine($serviceIds, $services);
         return $services;
     }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getServicesForDesktopWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.host_id',
+                'Services.id',
+                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                'Servicestatus.current_state',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.problem_has_been_acknowledged'
+            ]);
+        $query->where([
+            'Services.disabled' => 0
+        ])
+            ->join([
+                'b'                => [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_description = Services.uuid',
+                ],
+                'servicetemplates' => [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplates',
+                    'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
+                ]
+            ])->contain([
+                'Hosts'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            });
+        }
+        $where = [];
+        $where[] = ['Servicestatus.current_state IN' => $conditions['filter[Servicestatus.current_state][]']];
+        if($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignore') {
+            $where[] = ['Servicestatus.problem_has_been_acknowledged' => $conditions['filter[Servicestatus.problem_has_been_acknowledged]']];
+        }
+        if($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === true) {
+            $where[] = ['Servicestatus.scheduled_downtime_depth >' => 0];
+        }
+        if($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === false) {
+            $where[] = ['Servicestatus.scheduled_downtime_depth' => 0];
+        }
+        if (!empty($conditions['filter[Services.keywords][]'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                implode(',',$conditions['filter[Services.keywords][]']),
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($conditions['filter[Services.not_keywords][]'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                implode(',',$conditions['filter[Services.not_keywords][]']),
+                'string',
+                'NOT RLIKE'
+            );
+        }
+        $query->andWhere($where);
+        $query->group('Services.id');
+
+        $query->disableHydration();
+        $result = $query->all();
+        if ($result === null) {
+            return [];
+        }
+
+        return $result->toArray();
+
+    }
 }

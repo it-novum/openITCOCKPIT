@@ -27,6 +27,12 @@ angular.module('openITCOCKPIT')
                 isRunning: false,
                 hideExpired: true
             };
+            var from = new Date(now.getTime() - (3600 * 24 * 30 * 1000));
+            from.setSeconds(0);
+            var to = new Date(now.getTime() + (3600 * 24 * 30 * 2 * 1000));
+            to.setSeconds(0);
+            $scope.from_time = from;
+            $scope.to_time = to;
         };
         /*** Filter end ***/
 
@@ -158,5 +164,18 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
+
+        $scope.$watch('from_time', function(dateObject){
+            if(dateObject !== undefined && dateObject instanceof Date){
+                var dateString = date('d.m.Y H:i', dateObject.getTime() / 1000);
+                $scope.filter.from = dateString;
+            }
+        });
+        $scope.$watch('to_time', function(dateObject){
+            if(dateObject !== undefined && dateObject instanceof Date){
+                var dateString = date('d.m.Y H:i', dateObject.getTime() / 1000);
+                $scope.filter.to = dateString;
+            }
+        });
 
     });

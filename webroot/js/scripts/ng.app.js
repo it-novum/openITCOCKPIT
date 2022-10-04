@@ -1731,5 +1731,22 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             SortService.triggerReload();
         };
 
+        $rootScope.rootCopyToClipboard = function(str, $event){
+            navigator.clipboard.writeText(str);
+            event.preventDefault();
+
+            var $target = $($event.target);
+            var copyText = $target.data('copy');
+            var copiedText = $target.data('copied');
+
+            //$target.addClass('fadeOut');
+            $target.text(copiedText);
+
+            setTimeout(function(){
+                //$target.removeClass('fadeOut');
+                $target.text(copyText);
+            }, 1000);
+        };
+
     })
 ;

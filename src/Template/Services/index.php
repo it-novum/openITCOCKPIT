@@ -496,17 +496,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <filter-bookmark
-                        phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
-                        phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
-                        phpaction="<?= $this->getRequest()->getParam('action', '') ?>"
-                        filter="filter"
-                        load-callback="triggerLoadByBookmark"
-                        state-name="ServicesIndex"
-                        ng-show="showBookmarkFilter"
-                    >
-                    </filter-bookmark>
                     <!-- End Filter -->
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
@@ -589,15 +578,29 @@
                             <tbody>
                             <tr ng-repeat-start="service in services"
                                 ng-if="services[$index-1].Host.uuid !== service.Host.uuid">
-                                <td colspan="13" class="service_table_host_header">
+                                <td colspan="14" class="service_table_host_header">
 
                                     <hoststatusicon host="service"></hoststatusicon>
 
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <a class="padding-left-5 txt-color-blueDark"
                                            ui-sref="HostsBrowser({id: service.Host.id})">
-                                            {{service.Host.hostname}} ({{service.Host.address}})
+                                            {{service.Host.hostname}}
                                         </a>
+
+                                        <span class="copy-to-clipboard-container-text">
+                                            (
+                                            {{service.Host.address}}
+                                            <span ng-click="rootCopyToClipboard(service.Host.address, $event)"
+                                                  class="copy-action text-primary animated"
+                                                  data-copied="<?= __('Copied'); ?>"
+                                                  data-copy="<?= __('Copy'); ?>"
+                                            ><?= __('Copy'); ?>
+                                            </span>
+                                            )
+                                        </span>
+
+
                                         <div class="badge border border-info text-info"
                                              ng-hide="service.Host.is_satellite_host">
                                             <i class="fas fa-home "></i>

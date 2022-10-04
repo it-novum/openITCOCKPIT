@@ -35,11 +35,11 @@ use Cake\Core\Plugin;
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="WizardsIndex">
-            <i class="fas fa-magic"></i> <?php echo __('Wizards'); ?>
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Wizards'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fas fa-magic"></i> {{title}}
+        <i class="fa-solid fa-wand-magic-sparkles"></i> {{title}}
     </li>
 </ol>
 
@@ -79,7 +79,7 @@ use Cake\Core\Plugin;
                         <div class="step-content">
                             <div class="card margin-top-20 margin-bottom-10">
                                 <div class="card-header">
-                                    <i class="fa fa-magic"></i> <?php echo __('Basic configuration'); ?>
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Basic configuration'); ?>
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group padding-top-10">

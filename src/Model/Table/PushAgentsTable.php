@@ -37,6 +37,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
@@ -279,7 +280,7 @@ class PushAgentsTable extends Table {
             'PushAgents.ipaddress',
             'PushAgents.remote_address',
             'PushAgents.http_x_forwarded_for',
-            'PushAgents.checkresults',
+            //'PushAgents.checkresults', // The Agent check result is not necessary, slows down the query and uses A LOT of memory with large paginator limits
             'PushAgents.last_update'
         ])
             ->leftJoin(

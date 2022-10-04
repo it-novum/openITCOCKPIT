@@ -41,7 +41,8 @@ use Cake\Core\Plugin;
 <service-browser-menu
     ng-if="serviceBrowserMenuConfig"
     config="serviceBrowserMenuConfig"
-    last-load-date="lastLoadDate"></service-browser-menu>
+    last-load-date="lastLoadDate"
+    root-copy-to-clipboard="rootCopyToClipboard"></service-browser-menu>
 
 
 <reschedule-service callback="showFlashMsg"></reschedule-service>
@@ -511,27 +512,20 @@ use Cake\Core\Plugin;
 
                                                 <tr>
                                                     <td><?php echo __('Command line'); ?></td>
-                                                    <td class="copy-to-clipboard-container"
+                                                    <td class="copy-to-clipboard-container-text"
                                                         style="display: block; position: relative;">
                                                         <code
                                                             class="no-background <?php echo $blurryCommandLine ? 'unblur-on-hover' : '' ?>">
                                                             {{ mergedService.serviceCommandLine }}
                                                         </code>
 
-                                                        <div
-                                                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
-                                                            rel="tooltip"
-                                                            data-toggle="tooltip"
-                                                            data-trigger="click"
-                                                            data-placement="left"
-                                                            data-original-title="<?= __('Copied'); ?>">
-                                                            <div
-                                                                class="btn btn-default btn-xs waves-effect waves-themed"
-                                                                ng-click="clipboardCommand()"
-                                                                title="<?php echo __('Copy to clipboard'); ?>">
-                                                                <i class="fa fa-copy"></i>
-                                                            </div>
-                                                        </div>
+                                                        <span ng-click="rootCopyToClipboard(mergedService.serviceCommandLine, $event)"
+                                                              class="copy-action text-primary animated copy-action-top-right"
+                                                              data-copied="<?= __('Copied'); ?>"
+                                                              data-copy="<?= __('Copy'); ?>"
+                                                        >
+                                                            <?= __('Copy'); ?>
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             <?php endif; ?>
@@ -993,30 +987,28 @@ use Cake\Core\Plugin;
                                             </tr>
                                             <tr>
                                                 <td><?php echo __('Host UUID'); ?></td>
-                                                <td>
+                                                <td class="copy-to-clipboard-container-text">
                                                     <code>{{ host.Host.uuid }}</code>
-                                                    <span
-                                                        class="btn btn-default btn-xs"
-                                                        onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
-                                                        title="<?php echo __('Copy to clipboard'); ?>">
-                                                            <i class="fa fa-copy"></i>
-                                                        </span>
-                                                    <input type="text" style="display:none;" id="host-uuid-copy"
-                                                           value="{{ host.Host.uuid }}"
+                                                    <span ng-click="rootCopyToClipboard(host.Host.uuid, $event)"
+                                                          class="copy-action-visibility text-primary animated"
+                                                          data-copied="<?= __('Copied'); ?>"
+                                                          data-copy="<?= __('Copy'); ?>"
+                                                    >
+                                                        <?= __('Copy'); ?>
+                                                    </span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td><?php echo __('Service UUID'); ?></td>
-                                                <td>
+                                                <td class="copy-to-clipboard-container-text">
                                                     <code>{{ mergedService.uuid }}</code>
-                                                    <span
-                                                        class="btn btn-default btn-xs"
-                                                        onclick="$('#service-uuid-copy').show().select();document.execCommand('copy');$('#service-uuid-copy').hide();"
-                                                        title="<?php echo __('Copy to clipboard'); ?>">
-                                                            <i class="fa fa-copy"></i>
-                                                        </span>
-                                                    <input type="text" style="display:none;" id="service-uuid-copy"
-                                                           value="{{ mergedService.uuid }}"
+                                                    <span ng-click="rootCopyToClipboard(mergedService.uuid, $event)"
+                                                          class="copy-action-visibility text-primary animated"
+                                                          data-copied="<?= __('Copied'); ?>"
+                                                          data-copy="<?= __('Copy'); ?>"
+                                                    >
+                                                        <?= __('Copy'); ?>
+                                                    </span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -1296,6 +1288,19 @@ use Cake\Core\Plugin;
                 </h2>
                 <div class="panel-toolbar">
                     <div class="panel-toolbar">
+
+                        <div class="form-group panelToolbarInput">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="ServiceGraphSmoothInterpolation"
+                                       ng-model="graph.smoothInterpolation">
+                                <label class="custom-control-label no-margin" for="ServiceGraphSmoothInterpolation">
+                                    <?php echo __('Smooth'); ?>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="form-group panelToolbarInput">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox"

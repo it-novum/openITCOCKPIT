@@ -82,7 +82,7 @@ After successful registration you can install the free community modules at Syst
 * LDAP authentication
 * Multitenancy
 * Object permissions
-* [Distributed Monitoring](http://www.it-novum.com/blog/distributed-monitoring-mit-openitcockpit-phpnsta/)
+* [Distributed Monitoring](https://docs.openitcockpit.io/en/configuration/distribute-module/)
 * [Mod-Gearman](http://mod-gearman.org/)
 * [Statusengine](http://statusengine.org/)
 * And much more to discover...
@@ -103,10 +103,10 @@ After successful registration you can install the free community modules at Syst
 # Developers welcome
 openITCOCKPIT's development is publicly available in GitHub. Everybody is welcome to join :-)
 
-- [Setup an openITCOCKPIT development system](https://docs.it-novum.com/display/ODE/Creating+a+openITCOCKPIT+Development+System)
-- [Create your own translation](https://docs.it-novum.com/display/ODE/Create+your+own+openITCOCKPIT+translation)
-- [Creating a new openITCOCKPIT module](https://docs.it-novum.com/display/ODE/Creating+a+new+openITCOCKPIT+Module)
-- [Creating a new check plugin](https://docs.it-novum.com/display/ODE/Creating+a+new+openITCOCKPIT+check+plugin)
+- [Creating an openITCOCKPIT development environment¶](https://docs.openitcockpit.io/en/development/setup-dev-env/)
+- [Create your own translation](https://github.com/it-novum/openITCOCKPIT/issues/1248)
+- [Creating a new openITCOCKPIT module](https://docs.openitcockpit.io/en/development/create-new-module/introduction/)
+- [Creating a new check plugin](https://docs.openitcockpit.io/en/development/new-check-plugin/)
 
 # Need help or support?
 * Official [Discord Server](https://discord.gg/G8KhxKuQ9G)

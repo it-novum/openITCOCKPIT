@@ -118,6 +118,15 @@ return [
             'port'      => 6379
         ],
 
+        'long_time_cache'   => [
+            'className' => \Cake\Cache\Engine\RedisEngine::class,
+            'serialize' => true,
+            'prefix'    => 'ltc_',
+            'duration'  => '+24 hours',
+            'host'      => '127.0.0.1',
+            'port'      => 6379
+        ],
+
         /**
          * Configure the cache used for general framework caching.
          * Translation cache files are stored with this configuration.

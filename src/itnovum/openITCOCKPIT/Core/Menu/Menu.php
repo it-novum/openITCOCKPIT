@@ -96,7 +96,7 @@ class Menu {
                         'automaps',
                         'index',
                         '',
-                        'fa fa-magic',
+                        'fa-solid fa-wand-magic-sparkles',
                         ['automaps', 'auto', 'map'],
                         2
                     ))
@@ -206,7 +206,7 @@ class Menu {
                 'wizards',
                 'index',
                 '',
-                'fas fa-magic',
+                'fa-solid fa-wand-magic-sparkles',
                 [],
                 3
             ))
@@ -604,7 +604,7 @@ class Menu {
                     'agentconnector',
                     'wizard',
                     '',
-                    'fa fa-magic',
+                    'fa-solid fa-wand-magic-sparkles',
                     [],
                     1
                 ))
@@ -710,7 +710,7 @@ class Menu {
                     'wizards',
                     'assignments',
                     '',
-                    'fas fa-magic',
+                    'fa-solid fa-wand-magic-sparkles',
                     [],
                     6
                 ))

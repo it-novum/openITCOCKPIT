@@ -6,6 +6,7 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
         controller: function($scope){
 
             $scope.doDowntime = false;
+
             $scope.downtimeModal = {
                 comment: '',
                 from_date: '',
@@ -38,18 +39,38 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                         'angular': true
                     }
                 }).then(function(result){
-                    $scope.downtimeModal.from_date = result.data.defaultValues.from_date;
-                    $scope.downtimeModal.from_time = result.data.defaultValues.from_time;
-                    $scope.downtimeModal.to_date = result.data.defaultValues.to_date;
-                    $scope.downtimeModal.to_time = result.data.defaultValues.to_time;
+                    var fromDate = $scope.parseDateTime(result.data.defaultValues.js_from);
+                    $scope.downtimeModal.from_date = fromDate;
+                    $scope.downtimeModal.from_time = fromDate;
+                    var toDate = $scope.parseDateTime(result.data.defaultValues.js_to);
+                    $scope.downtimeModal.to_date = toDate;
+                    $scope.downtimeModal.to_time = toDate;
                 });
+            };
+
+            $scope.parseDateTime = function(jsStringData) {
+                var splitData = jsStringData.split(',');
+                var date = new Date(splitData[0], splitData[1] - 1, splitData[2]);
+                date.setHours(splitData[3], splitData[4], 0);
+                return date;
             };
 
             $scope.doServiceDowntime = function(){
 
+                var POSTParams = {
+                    comment: $scope.downtimeModal.comment,
+                    //from_date: $scope.downtimeModal.from_date.toLocaleDateString('de-DE', {day:"2-digit", month: "2-digit", year:"numeric"}),
+                    //from_time: $scope.downtimeModal.from_time.toLocaleTimeString('de-DE', {hour:"2-digit", minute: "2-digit"}),
+                    //to_date: $scope.downtimeModal.to_date.toLocaleDateString('de-DE', {day:"2-digit", month: "2-digit", year:"numeric"}),
+                    //to_time: $scope.downtimeModal.to_time.toLocaleTimeString('de-DE', {hour:"2-digit", minute: "2-digit"}),
+                    from_date: date('d.m.Y',$scope.downtimeModal.from_date.getTime() / 1000),
+                    from_time: date('H:i', $scope.downtimeModal.from_time.getTime() / 1000),
+                    to_date: date('d.m.Y',$scope.downtimeModal.to_date.getTime() / 1000),
+                    to_time: date('H:i', $scope.downtimeModal.to_time.getTime() / 1000),
+                };
 
                 $http.post("/downtimes/validateDowntimeInputFromAngular.json?angular=true",
-                    $scope.downtimeModal
+                    POSTParams
                 ).then(function(result){
                     var count = Object.keys(objects).length;
                     var i = 0;
