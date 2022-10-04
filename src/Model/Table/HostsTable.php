@@ -4705,4 +4705,87 @@ class HostsTable extends Table {
         asort($hosts, SORT_FLAG_CASE | SORT_NATURAL);
         return $hosts;
     }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHostsForDesktopWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
+        $query = $this->find();
+        $query
+            ->select([
+                'Hosts.id',
+                'Hoststatus.current_state',
+                'Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.problem_has_been_acknowledged'
+            ]);
+        $query->where([
+            'Hosts.disabled' => 0
+        ])
+            ->join([
+                'b'             => [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Hosts.uuid',
+                ],
+                'hosttemplates' => [
+                    'table'      => 'hosttemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hosttemplates',
+                    'conditions' => 'Hosttemplates.id = Hosts.hosttemplate_id',
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+        $where = [];
+        $where[] = ['Hoststatus.current_state IN' => $conditions['filter[Hoststatus.current_state][]']];
+        if($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignore') {
+            $where[] = ['Hoststatus.problem_has_been_acknowledged' => $conditions['filter[Hoststatus.problem_has_been_acknowledged]']];
+        }
+        if($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === true) {
+            $where[] = ['Hoststatus.scheduled_downtime_depth >' => 0];
+        }
+        if($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === false) {
+            $where[] = ['Hoststatus.scheduled_downtime_depth' => 0];
+        }
+        if (!empty($conditions['filter[Hosts.keywords][]'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                implode(',',$conditions['filter[Hosts.keywords][]']),
+                'string',
+                'RLIKE'
+            );
+        }
+        if (!empty($conditions['filter[Hosts.not_keywords][]'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                implode(',',$conditions['filter[Hosts.not_keywords][]']),
+                'string',
+                'NOT RLIKE'
+            );
+        }
+
+        $query->andWhere($where);
+        $query->group('Hosts.id');
+        $query->disableHydration();
+        $result = $query->all();
+        if ($result === null) {
+            return [];
+        }
+
+        return $result->toArray();
+    }
 }

@@ -24115,9 +24115,9 @@ msgstr "Container fehlt"
 msgid "No service template groups and service templates defined"
 msgstr ""
 
-#: .-modules/ImportModule/src/Model/Table/ImportersTable.php:130
-msgid "External system can not be blank if data source is i-doit."
-msgstr "Das Feld \"Externes System\" darf nicht leer sein, wenn die Datenquelle i-doit ist."
+#: ImportModule/src/Model/Table/ImportersTable.php:127
+msgid "External system can not be blank if data source is i-doit / iTop."
+msgstr "Das Feld \"Externes System\" darf nicht leer sein, wenn die Datenquelle i-doit /iTop ist."
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:20
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:19
@@ -24187,10 +24187,10 @@ msgstr "Objekttypeinstellungen"
 msgid "Please select all object types you want to import or leave them blank to include all available object types."
 msgstr "Bitte wählen Sie alle Objekttypen aus, die Sie importieren möchten, oder lassen Sie sie leer, um alle verfügbaren Objekttypen einzuschließen."
 
-#: .-modules/ImportModule/templates/ExternalSystems/add.php:268
-#: .-modules/ImportModule/templates/ExternalSystems/edit.php:266
-msgid "Load i-doit object types for import"
-msgstr "i-doit-Objekttypen für den Import laden"
+#: ImportModule/templates/ExternalSystems/add.php:268
+#: ImportModule/templates/ExternalSystems/edit.php:266
+msgid "Load object types for import"
+msgstr "Objekttypen für den Import laden"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:271
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:269
@@ -26568,4 +26568,3 @@ msgstr ""
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:96
 msgid "VMware Snapshot services"
 msgstr ""
-

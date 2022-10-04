@@ -242,7 +242,8 @@ class AclDependencies {
             ->allow('Dashboards', 'tacticalOverviewWidget')
             ->allow('Dashboards', 'tacticalOverviewHostsWidget')
             ->allow('Dashboards', 'tacticalOverviewServicesWidget')
-            ->allow('Dashboards', 'calendarWidget');
+            ->allow('Dashboards', 'calendarWidget')
+            ->allow('Dashboards', 'desktopWidget');
 
         $this
             ->allow('FilterBookmarks', 'index')
@@ -637,14 +638,14 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'PhpFpmOitc');
 
         $this
-            ->dependency('Wizards', 'index', 'Wizards', 'mysqlserver')
-            ->dependency('Wizards', 'index', 'Wizards', 'linuxserverssh')
-            ->dependency('Wizards', 'index', 'Wizards', 'agent')
-            ->dependency('Wizards', 'agent', 'Wizards', 'wizardHostConfiguration')
-            ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular')
-            ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadElementsByContainerId')
-            ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadHostsByString')
-            ->dependency('Wizards', 'linuxserverssh', 'Wizards', 'loadServicetemplatesByWizardType');
+            ->dependency('Services', 'add', 'Wizards', 'mysqlserver')
+            ->dependency('Services', 'add', 'Wizards', 'linuxserverssh')
+            ->dependency('Services', 'add', 'Wizards', 'agent')
+            ->dependency('Services', 'add', 'Wizards', 'wizardHostConfiguration')
+            ->dependency('Services', 'add', 'Wizards', 'validateInputFromAngular')
+            ->dependency('Services', 'add', 'Wizards', 'loadElementsByContainerId')
+            ->dependency('Services', 'add', 'Wizards', 'loadHostsByString')
+            ->dependency('Services', 'add', 'Wizards', 'loadServicetemplatesByWizardType');
 
 
         $this

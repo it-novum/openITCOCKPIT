@@ -24115,9 +24115,15 @@ msgstr "Контейнер відсутній"
 msgid "No service template groups and service templates defined"
 msgstr ""
 
+<<<<<<< HEAD
 #: .-modules/ImportModule/src/Model/Table/ImportersTable.php:130
 msgid "External system can not be blank if data source is i-doit."
 msgstr "Зовнішня система не може бути порожньою, якщо джерелом даних є i-doit."
+=======
+#: ImportModule/src/Model/Table/ImportersTable.php:127
+msgid "External system can not be blank if data source is i-doit / iTop.."
+msgstr "Зовнішня система не може бути порожньою, якщо джерелом даних є i-doit / iTop."
+>>>>>>> f3f385b8bd3fc575aa1fee19dc19a3c81eafe6f9
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:20
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:19
@@ -24190,7 +24196,7 @@ msgstr "Виберіть усі типи об’єктів, які потріб�
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:268
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:266
 msgid "Load i-doit object types for import"
-msgstr "Завантажте типи об’єктів i-doit для імпорту"
+msgstr "Завантажте типи об’єктів для імпорту"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:271
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:269

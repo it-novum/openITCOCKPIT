@@ -1860,4 +1860,47 @@ class DashboardsController extends AppController {
         }
         throw new MethodNotAllowedException();
     }
+
+    /*************************************************
+     *       openITCOCKPIT Desktop App METHODS       *
+     *************************************************/
+    public function desktopWidget() {
+        $queryData = [];
+        if ($this->request->is('post')) {
+           $queryData = $this->request->getData();
+        }
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        }
+
+        $hostsConfig = $queryData['hostFilters'];
+        $servicesConfig = $queryData['serviceFilters'];
+        $hoststatus = [];
+        $servicestatus = [];
+        if ($this->DbBackend->isNdoUtils()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+        if ($this->DbBackend->isStatusengine3()) {
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            $hoststatus = $HostsTable->getHostsForDesktopWithStatusByConditionsStatusengine3($MY_RIGHTS, $hostsConfig);
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $servicestatus = $ServicesTable->getServicesForDesktopWithStatusByConditionsStatusengine3($MY_RIGHTS, $servicesConfig);
+
+        }
+        $hoststatusSummary = $HostsTable->getHostStateSummary($hoststatus, false);
+        $servicestatusSummary = $ServicesTable->getServiceStateSummary($servicestatus, false);
+
+        $this->set('hoststatusSummary', $hoststatusSummary);
+        $this->set('servicestatusSummary', $servicestatusSummary);
+        $this->viewBuilder()->setOption('serialize', ['hoststatusSummary', 'servicestatusSummary']);
+    }
 }

@@ -440,7 +440,7 @@ class WizardsController extends AppController {
     /**
      * @param bool $onlyHostsWithWritePermission
      */
-    public function loadHostsByString($onlyHostsWithWritePermission = false) {
+    public function loadHostsByString($onlyHostsWithWritePermission = true) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
