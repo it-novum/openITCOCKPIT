@@ -242,7 +242,8 @@ class AclDependencies {
             ->allow('Dashboards', 'tacticalOverviewWidget')
             ->allow('Dashboards', 'tacticalOverviewHostsWidget')
             ->allow('Dashboards', 'tacticalOverviewServicesWidget')
-            ->allow('Dashboards', 'calendarWidget');
+            ->allow('Dashboards', 'calendarWidget')
+            ->allow('Dashboards', 'desktopWidget');
 
         $this
             ->allow('FilterBookmarks', 'index')
