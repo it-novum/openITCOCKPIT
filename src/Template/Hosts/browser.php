@@ -116,7 +116,7 @@ use Cake\Core\Plugin;
                             <li class="nav-item pointer" ng-show="AdditionalInformationExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab6'; hideTimeline()"
                                    role="tab">
-                                    <i class="fas fa-database">&nbsp;</i> <?php echo __('i-doit'); ?>
+                                    <i class="fas fa-database">&nbsp;</i> <?php echo __('CMDB'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
@@ -969,7 +969,11 @@ use Cake\Core\Plugin;
                                             </span>
                                             <span ng-show="failureDurationInPercent">
                                                 {{(failureDurationInPercent) ? failureDurationInPercent + ' %' :
-                                                    '<?= __('No data available!'); ?>'}}
+                                                    '<?= __('
+                                                No
+                                                data
+                                                available
+                                                !'); ?>'}}
                                             </span>
                                         </h3>
                                     </div>
@@ -1072,9 +1076,9 @@ use Cake\Core\Plugin;
                     <!-- Import Module start -->
                     <div ng-show="selectedTab == 'tab6'" ng-if="AdditionalInformationExists && selectedTab == 'tab6'">
                         <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
-                            <idoit-additional-information-element host-id="{{mergedHost.id}}">
+                            <cmdb-additional-information-element host-id="{{mergedHost.id}}">
 
-                            </idoit-additional-information-element>
+                            </cmdb-additional-information-element>
                         <?php else: ?>
                             <label class="text-danger">
                                 <?php echo __('No permissions'); ?>

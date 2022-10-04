@@ -22866,8 +22866,8 @@ msgid "No service template groups defined"
 msgstr "Группы шаблонов служб не определены"
 
 #: ImportModule/src/Model/Table/ImportersTable.php:127
-msgid "External system can not be blank if data source is i-doit."
-msgstr "Внешняя система не может быть пустой, если источником данных является i-doit."
+msgid "External system can not be blank if data source is i-doit / iTop."
+msgstr "Внешняя система не может быть пустой, если источником данных является i-doit / iTop."
 
 #: ImportModule/templates/ExternalSystems/add.php:20
 #: ImportModule/templates/ExternalSystems/edit.php:19
@@ -22939,8 +22939,8 @@ msgstr "Выберите все типы объектов, которые вы �
 
 #: ImportModule/templates/ExternalSystems/add.php:268
 #: ImportModule/templates/ExternalSystems/edit.php:266
-msgid "Load i-doit object types for import"
-msgstr "Загрузить типы объектов i-doit для импорта"
+msgid "Load object types for import"
+msgstr "Загрузить типы объектов для импорта"
 
 #: ImportModule/templates/ExternalSystems/add.php:271
 #: ImportModule/templates/ExternalSystems/edit.php:269
