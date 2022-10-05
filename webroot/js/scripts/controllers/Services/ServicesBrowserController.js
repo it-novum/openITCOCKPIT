@@ -1028,9 +1028,6 @@ angular.module('openITCOCKPIT')
             graphAutoRefreshIntervalId = null;
         };
 
-        $scope.clipboardCommand = function(){
-            navigator.clipboard.writeText($scope.mergedService.serviceCommandLine);
-        };
 
         // Fire on page load
 

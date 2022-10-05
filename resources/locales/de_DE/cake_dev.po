@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-03-10 11:30+0100\n"
+"POT-Creation-Date: 2022-10-04 09:53+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -14,8 +14,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: src/itnovum/openITCOCKPIT/Core/Security/CSRF.php:176
-#: src/itnovum/openITCOCKPIT/Core/Security/CSRF.php:176
+#: ./src/itnovum/openITCOCKPIT/Core/Security/CSRF.php:176
+#: ./src/itnovum/openITCOCKPIT/Core/Security/CSRF.php:176
 msgid "The request has been black-holed"
 msgstr "Die Anfrage wurde black-holed"
 

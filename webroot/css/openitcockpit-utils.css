@@ -791,52 +791,32 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     text-shadow: 1px 1px #00C851;
 }
 
-.hr-text,
-.hr-text-brands {
-    line-height: 1em;
-    position: relative;
-    outline: 0;
-    border: 0;
-    color: #4285F4;
-    text-align: left;
-    height: 1.5em;
-    padding-left: 10px;
-    opacity: 0.8;
+.hr-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
 }
 
-.hr-text:before,
-.hr-text-brands:before {
+/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+.hr-separator::before {
     content: '';
-    background: #4285F4;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 100%;
-    height: 1px;
+    border-bottom: 1px solid var(--primary);;
+    flex-basis: 0.75rem;
 }
 
-.hr-text:after {
-    font-family: "FontAwesome";
-    content: attr(data-content);
-    position: relative;
-    display: inline-block;
-    padding: 0 .5em;
-    line-height: 1.5em;
-    color: #FFFFFF;
-    background-color: #4285F4;
-    border-radius: 4px;
+.hr-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--primary);;
 }
 
-.hr-text-brands:after {
-    font-family: "Font Awesome 5 Brands";
-    content: attr(data-content);
-    position: relative;
-    display: inline-block;
-    padding: 0 .5em;
-    line-height: 1.5em;
-    color: #FFFFFF;
-    background-color: #4285F4;
+.hr-separator span {
+    margin-left: .25em;
+    margin-right: .25em;
+    background: var(--primary);
     border-radius: 4px;
+    color: #FFFFFF;
+    padding: 2px 5px;
 }
 
 .chosen-container .chosen-drop {
@@ -1230,6 +1210,14 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 
 .flame {
     background-color: #ff0000;
+    background-image: linear-gradient(0deg, #f00 0%, #ffa700 100%) !important;;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 100% 200%;
+}
+
+.flame-animated {
+    background-color: #ff0000;
     background-image: linear-gradient(0deg, #ff0000 0%, #ffed00 74%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1252,6 +1240,34 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     background-position: top calc(0.375em + 0.1875rem) right calc(1.0em + 0.1875rem);
 }
 
-.font-5-rem{
-    font-size:5rem;
+.font-5-rem {
+    font-size: 5rem;
 }
+
+/* Copy to clipboard as text styles */
+.copy-to-clipboard-container-text {
+
+}
+
+.copy-to-clipboard-container-text .copy-action {
+    display: none;
+}
+
+.copy-to-clipboard-container-text .copy-action-visibility {
+    visibility: hidden;
+}
+
+.copy-to-clipboard-container-text:hover .copy-action, .copy-to-clipboard-container-text:hover .copy-action-visibility {
+    display: inline;
+    visibility: visible;
+    cursor: pointer;
+    user-select: none;
+}
+
+.copy-action-top-right {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+/* Copy to clipboard as text styles END */

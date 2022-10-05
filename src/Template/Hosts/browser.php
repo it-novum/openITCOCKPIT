@@ -42,7 +42,8 @@ use Cake\Core\Plugin;
 <host-browser-menu
     ng-if="hostBrowserMenuConfig"
     config="hostBrowserMenuConfig"
-    last-load-date="lastLoadDate"></host-browser-menu>
+    last-load-date="lastLoadDate"
+    root-copy-to-clipboard="rootCopyToClipboard"></host-browser-menu>
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
@@ -116,7 +117,7 @@ use Cake\Core\Plugin;
                             <li class="nav-item pointer" ng-show="AdditionalInformationExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab6'; hideTimeline()"
                                    role="tab">
-                                    <i class="fas fa-database">&nbsp;</i> <?php echo __('i-doit'); ?>
+                                    <i class="fas fa-database">&nbsp;</i> <?php echo __('CMDB'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
@@ -423,27 +424,20 @@ use Cake\Core\Plugin;
 
                                                 <tr>
                                                     <td><?php echo __('Command line'); ?></td>
-                                                    <td class="copy-to-clipboard-container"
+                                                    <td class="copy-to-clipboard-container-text"
                                                         style="display: block; position: relative;">
                                                         <code
                                                             class="no-background <?php echo $blurryCommandLine ? 'unblur-on-hover' : '' ?>">
                                                             {{ mergedHost.hostCommandLine }}
                                                         </code>
 
-                                                        <div
-                                                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
-                                                            rel="tooltip"
-                                                            data-toggle="tooltip"
-                                                            data-trigger="click"
-                                                            data-placement="left"
-                                                            data-original-title="<?= __('Copied'); ?>">
-                                                            <div
-                                                                class="btn btn-default btn-xs waves-effect waves-themed"
-                                                                ng-click="clipboardCommand()"
-                                                                title="<?php echo __('Copy to clipboard'); ?>">
-                                                                <i class="fa fa-copy"></i>
-                                                            </div>
-                                                        </div>
+                                                        <span ng-click="rootCopyToClipboard(mergedHost.hostCommandLine, $event)"
+                                                              class="copy-action text-primary animated copy-action-top-right"
+                                                              data-copied="<?= __('Copied'); ?>"
+                                                              data-copy="<?= __('Copy'); ?>"
+                                                        >
+                                                            <?= __('Copy'); ?>
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             <?php endif; ?>
@@ -840,16 +834,15 @@ use Cake\Core\Plugin;
                                             </tr>
                                             <tr>
                                                 <td><?php echo __('UUID'); ?></td>
-                                                <td>
+                                                <td class="copy-to-clipboard-container-text">
                                                     <code>{{ mergedHost.uuid }}</code>
-                                                    <span
-                                                        class="btn btn-default btn-xs"
-                                                        onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
-                                                        title="<?php echo __('Copy to clipboard'); ?>">
-                                                        <i class="fa fa-copy"></i>
+                                                    <span ng-click="rootCopyToClipboard(mergedHost.uuid, $event)"
+                                                          class="copy-action-visibility text-primary animated"
+                                                          data-copied="<?= __('Copied'); ?>"
+                                                          data-copy="<?= __('Copy'); ?>"
+                                                    >
+                                                        <?= __('Copy'); ?>
                                                     </span>
-                                                    <input type="text" style="display:none;" id="host-uuid-copy"
-                                                           value="{{ mergedHost.uuid }}"
                                                 </td>
                                             </tr>
                                         </table>
@@ -969,7 +962,11 @@ use Cake\Core\Plugin;
                                             </span>
                                             <span ng-show="failureDurationInPercent">
                                                 {{(failureDurationInPercent) ? failureDurationInPercent + ' %' :
-                                                    '<?= __('No data available!'); ?>'}}
+                                                    '<?= __('
+                                                No
+                                                data
+                                                available
+                                                !'); ?>'}}
                                             </span>
                                         </h3>
                                     </div>
@@ -1072,9 +1069,9 @@ use Cake\Core\Plugin;
                     <!-- Import Module start -->
                     <div ng-show="selectedTab == 'tab6'" ng-if="AdditionalInformationExists && selectedTab == 'tab6'">
                         <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
-                            <idoit-additional-information-element host-id="{{mergedHost.id}}">
+                            <cmdb-additional-information-element host-id="{{mergedHost.id}}">
 
-                            </idoit-additional-information-element>
+                            </cmdb-additional-information-element>
                         <?php else: ?>
                             <label class="text-danger">
                                 <?php echo __('No permissions'); ?>

@@ -27,7 +27,8 @@
 <service-browser-menu
     ng-if="serviceBrowserMenuConfig"
     config="serviceBrowserMenuConfig"
-    last-load-date="0"></service-browser-menu>
+    last-load-date="0"
+    root-copy-to-clipboard="rootCopyToClipboard"></service-browser-menu>
 
 <div class="row">
     <div class="col-xl-12">
