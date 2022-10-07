@@ -148,6 +148,11 @@
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.Host.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -174,6 +179,11 @@
                                                    placeholder="<?php echo __('Filter by IP address'); ?>"
                                                    ng-model="filter.Host.address"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                   <span class="input-group-text pt-0 pb-0">
+                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -492,7 +502,8 @@
                                     <i class="fas fa-columns"></i>
                                     <?php echo __('Columns'); ?>
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-columns" aria-labelledby="dropdownMenuButton">
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-columns"
+                                     aria-labelledby="dropdownMenuButton">
                                     <div class="row">
                                         <?php $list = [
                                             __('Hoststatus'),
@@ -765,11 +776,11 @@
 
                                 <td ng-show="fields[9]" class="copy-to-clipboard-container-text">
                                     {{ host.Host.address }}
-                                        <span ng-click="rootCopyToClipboard(host.Host.address, $event)"
-                                              class="copy-action text-primary animated"
-                                              data-copied="<?= __('Copied'); ?>"
-                                              data-copy="<?= __('Copy'); ?>"
-                                        >
+                                    <span ng-click="rootCopyToClipboard(host.Host.address, $event)"
+                                          class="copy-action text-primary animated"
+                                          data-copied="<?= __('Copied'); ?>"
+                                          data-copy="<?= __('Copy'); ?>"
+                                    >
                                             <?= __('Copy'); ?>
                                         </span>
                                 </td>

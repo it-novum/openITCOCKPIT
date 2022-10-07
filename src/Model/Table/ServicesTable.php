@@ -699,7 +699,20 @@ class ServicesTable extends Table {
             unset($where['servicename LIKE']);
         }
 
+
         $query = $this->find();
+
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
+
+
         $query
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
@@ -1495,7 +1508,6 @@ class ServicesTable extends Table {
         if ($ServiceConditions->getHostId()) {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
-
         $query = $this->find();
         $query
             ->select([
@@ -1526,6 +1538,16 @@ class ServicesTable extends Table {
                 }
                 return $q;
             })->innerJoinWith('Servicetemplates');
+
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
 
         if (!empty($where)) {
             $query->where($where);
@@ -1712,6 +1734,16 @@ class ServicesTable extends Table {
                 'Servicestatus.service_description = Services.uuid'
             ])
             ->whereNull('Servicestatus.service_description');
+
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
 
         if (!empty($where)) {
             $query->where($where);
@@ -1924,7 +1956,6 @@ class ServicesTable extends Table {
      */
     public function getServiceIndexStatusengine3(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
         $where = $ServiceConditions->getConditions();
-
         $where['Services.disabled'] = 0;
         if ($ServiceConditions->getServiceIds()) {
             $serviceIds = $ServiceConditions->getServiceIds();
@@ -2011,6 +2042,15 @@ class ServicesTable extends Table {
                 'Servicestatus.service_description = Services.uuid'
             ]);
 
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
         if (isset($where['keywords rlike'])) {
             $query->where(new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
@@ -4829,19 +4869,19 @@ class ServicesTable extends Table {
         }
         $where = [];
         $where[] = ['Servicestatus.current_state IN' => $conditions['filter[Servicestatus.current_state][]']];
-        if($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignore') {
+        if ($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignore') {
             $where[] = ['Servicestatus.problem_has_been_acknowledged' => $conditions['filter[Servicestatus.problem_has_been_acknowledged]']];
         }
-        if($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === true) {
+        if ($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === true) {
             $where[] = ['Servicestatus.scheduled_downtime_depth >' => 0];
         }
-        if($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === false) {
+        if ($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === false) {
             $where[] = ['Servicestatus.scheduled_downtime_depth' => 0];
         }
         if (!empty($conditions['filter[Services.keywords][]'])) {
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                implode(',',$conditions['filter[Services.keywords][]']),
+                implode(',', $conditions['filter[Services.keywords][]']),
                 'string',
                 'RLIKE'
             );
@@ -4850,7 +4890,7 @@ class ServicesTable extends Table {
         if (!empty($conditions['filter[Services.not_keywords][]'])) {
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                implode(',',$conditions['filter[Services.not_keywords][]']),
+                implode(',', $conditions['filter[Services.not_keywords][]']),
                 'string',
                 'NOT RLIKE'
             );

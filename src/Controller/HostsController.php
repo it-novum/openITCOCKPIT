@@ -402,7 +402,6 @@ class HostsController extends AppController {
         }
 
         $HostFilter = new HostFilter($this->request);
-        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
         $HostCondition->setIncludeDisabled(false);
         $HostCondition->setContainerIds($this->MY_RIGHTS);
