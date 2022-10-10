@@ -4472,30 +4472,18 @@ class ServicesTable extends Table {
         }
 
         if (!empty($conditions['Service']['keywords'])) {
-            $compareValue = $conditions['Service']['keywords'];
-            if (is_string($compareValue)) {
-                $compareValue = explode(',', $compareValue);
-            }
-            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                $compareValue,
-               // $conditions['Service']['keywords'],
+                $conditions['Service']['keywords'],
                 'string',
                 'RLIKE'
             );
         }
 
         if (!empty($conditions['Service']['not_keywords'])) {
-            $compareValue = $conditions['Service']['not_keywords'];
-            if (is_string($compareValue)) {
-                $compareValue = explode(',', $compareValue);
-            }
-            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                //$conditions['Service']['not_keywords'],
-                $compareValue,
+                $conditions['Service']['not_keywords'],
                 'string',
                 'NOT RLIKE'
             );
@@ -4877,13 +4865,13 @@ class ServicesTable extends Table {
 
         $where = [];
         $where[] = ['Servicestatus.current_state IN' => $conditions['filter[Servicestatus.current_state][]']];
-        if($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignore') {
+        if ($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignore') {
             $where[] = ['Servicestatus.problem_has_been_acknowledged' => $conditions['filter[Servicestatus.problem_has_been_acknowledged]']];
         }
-        if($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === true) {
+        if ($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === true) {
             $where[] = ['Servicestatus.scheduled_downtime_depth >' => 0];
         }
-        if($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === false) {
+        if ($conditions['filter[Servicestatus.scheduled_downtime_depth]'] === false) {
             $where[] = ['Servicestatus.scheduled_downtime_depth' => 0];
         }
         if (!empty($conditions['filter[Services.keywords][]'])) {

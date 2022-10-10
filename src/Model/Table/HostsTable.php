@@ -4436,30 +4436,18 @@ class HostsTable extends Table {
         }
 
         if (!empty($conditions['Host']['keywords'])) {
-            $compareValue = $conditions['Host']['keywords'];
-            if (is_string($compareValue)) {
-                $compareValue = explode(',', $compareValue);
-            }
-            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-                //$conditions['Host']['keywords'],
-                $compareValue,
+                $conditions['Host']['keywords'],
                 'string',
                 'RLIKE'
             );
         }
 
         if (!empty($conditions['Host']['not_keywords'])) {
-            $compareValue = $conditions['Host']['not_keywords'];
-            if (is_string($compareValue)) {
-                $compareValue = explode(',', $compareValue);
-            }
-            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-                //$conditions['Host']['not_keywords'],
-                $compareValue,
+                $conditions['Host']['not_keywords'],
                 'string',
                 'NOT RLIKE'
             );
