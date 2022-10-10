@@ -4436,18 +4436,30 @@ class HostsTable extends Table {
         }
 
         if (!empty($conditions['Host']['keywords'])) {
+            $compareValue = $conditions['Host']['keywords'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-                $conditions['Host']['keywords'],
+                //$conditions['Host']['keywords'],
+                $compareValue,
                 'string',
                 'RLIKE'
             );
         }
 
         if (!empty($conditions['Host']['not_keywords'])) {
+            $compareValue = $conditions['Host']['not_keywords'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-                $conditions['Host']['not_keywords'],
+                //$conditions['Host']['not_keywords'],
+                $compareValue,
                 'string',
                 'NOT RLIKE'
             );
@@ -4750,6 +4762,42 @@ class HostsTable extends Table {
         $query->contain([
             'HostsToContainersSharing'
         ]);
+
+        if (!empty($conditions['Hostgroup']['_ids'])) {
+            $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
+            $query->select([
+                'hostgroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
+                'count'         => $query->newExpr(
+                    'SELECT COUNT(hostgroups.id)
+                                FROM hostgroups
+                                WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
+                                AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
+            ]);
+            $query->join([
+                'hosts_to_hostgroups'         => [
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HostToHostgroups',
+                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
+                ],
+                'hosttemplates_to_hostgroups' => [
+                    'table'      => 'hosttemplates_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HosttemplatesToHostgroups',
+                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
+                ]
+            ]);
+            $query->having([
+                'hostgroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+        }
+
         $where = [];
         $where[] = ['Hoststatus.current_state IN' => $conditions['filter[Hoststatus.current_state][]']];
         if($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignore') {
@@ -4762,17 +4810,29 @@ class HostsTable extends Table {
             $where[] = ['Hoststatus.scheduled_downtime_depth' => 0];
         }
         if (!empty($conditions['filter[Hosts.keywords][]'])) {
+            $compareValue = $conditions['filter[Hosts.keywords][]'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-                implode(',',$conditions['filter[Hosts.keywords][]']),
+                //implode(',',$conditions['filter[Hosts.keywords][]']),
+                $compareValue,
                 'string',
                 'RLIKE'
             );
         }
         if (!empty($conditions['filter[Hosts.not_keywords][]'])) {
+            $compareValue = $conditions['filter[Hosts.not_keywords][]'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-                implode(',',$conditions['filter[Hosts.not_keywords][]']),
+                //implode(',',$conditions['filter[Hosts.not_keywords][]']),
+                $compareValue,
                 'string',
                 'NOT RLIKE'
             );
