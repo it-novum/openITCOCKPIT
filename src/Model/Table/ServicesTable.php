@@ -4890,7 +4890,7 @@ class ServicesTable extends Table {
         }
 
         if (!empty($conditions['filter[Services.not_keywords][]'])) {
-            $compareValue = $conditions['filter[Services.keywords][]'];
+            $compareValue = $conditions['filter[Services.not_keywords][]'];
             if (is_string($compareValue)) {
                 $compareValue = explode(',', $compareValue);
             }
