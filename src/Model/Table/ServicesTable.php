@@ -585,6 +585,17 @@ class ServicesTable extends Table {
         }
 
         $query = $this->find();
+
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
+
         $query
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {

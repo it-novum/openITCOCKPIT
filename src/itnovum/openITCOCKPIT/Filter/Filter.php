@@ -74,7 +74,7 @@ abstract class Filter {
                             $value = $this->getQueryFieldValue($field, true);
                             if ($value) {
                                 if (!is_array($value)) {
-                                    $value = [$value];
+                                    $value = [preg_quote($value)];
                                 }
                                 $conditions[sprintf('%s rlike', $field)] = sprintf('.*(%s).*', implode('|', $value));
                             }
@@ -83,7 +83,7 @@ abstract class Filter {
                             $value = $this->getQueryFieldValue($field, true);
                             if ($value) {
                                 if (!is_array($value)) {
-                                    $value = [$value];
+                                    $value = [preg_quote($value)];
                                 }
                                 $conditions[sprintf('%s not rlike', $field)] = sprintf('.*(%s).*', implode('|', $value));
                             }
