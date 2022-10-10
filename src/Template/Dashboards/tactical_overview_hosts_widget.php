@@ -225,7 +225,7 @@ $hasHostIndexPermissions = $this->Acl->hasPermission('index', 'hosts', '');
                                     <input type="text"
                                            class="form-control form-control-sm"
                                            data-role="tagsinput"
-                                           id="HostsKeywordsInput"
+                                           id="HostsKeywordsInput{{widget.id}}"
                                            placeholder="<?php echo __('Filter by tags'); ?>"
                                            ng-model="filter.Host.keywords"
                                            ng-model-options="{debounce: 500}"
@@ -241,7 +241,7 @@ $hasHostIndexPermissions = $this->Acl->hasPermission('index', 'hosts', '');
                                 <div class="col tagsinputFilter">
                                     <input type="text" class="input-sm"
                                            data-role="tagsinput"
-                                           id="HostsNotKeywordsInput"
+                                           id="HostsNotKeywordsInput{{widget.id}}"
                                            placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                            ng-model="filter.Host.not_keywords"
                                            ng-model-options="{debounce: 500}">
