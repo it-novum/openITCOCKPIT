@@ -25,11 +25,11 @@
 <div style="padding: 5px 10px;">
     <div class="row">
         <div class="col-sm-6">
-            <button class="btn btn-primary btn-xs" ng-click="changeMode(false)" ng-show="useScroll">
+            <button class="btn btn-primary btn-xs" ng-click="changeMode(false)" ng-show="useScroll" type="button">
                 <?php echo __('Switch to Paginator Mode'); ?>
             </button>
 
-            <button class="btn btn-primary btn-xs" ng-click="changeMode(true)" ng-hide="useScroll">
+            <button class="btn btn-primary btn-xs" ng-click="changeMode(true)" ng-hide="useScroll" type="button">
                 <?php echo __('Switch to Scroll Mode'); ?>
             </button>
         </div>
