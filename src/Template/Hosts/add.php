@@ -1021,6 +1021,54 @@
                             <!-- PROMETHEUS CONFIGURATION END -->
                         <?php endif; ?>
 
+                        <?php if (\Cake\Core\Plugin::isLoaded('SLAModule')): ?>
+                            <!-- SLA CONFIGURATION START -->
+                            <div class="card margin-bottom-10">
+                                <div class="card-header">
+                                    <i class="fa-solid fa-award"></i> <?= __('Service Level Agreement'); ?>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group" ng-class="{'has-error': errors.slas}">
+                                        <label class="control-label" for="SlasSelect">
+                                            <?php if ($this->Acl->hasPermission('edit', 'slas', 'SLAModule')): ?>
+                                                <a ui-sref="SlasEdit({id:post.Host.sla_id})"
+                                                   ng-show="post.Host.sla_id">
+                                                    <?= __('Service class'); ?>
+                                                </a>
+                                                <span ng-hide="post.Host.sla_id">
+                                                        <?= __('Service class'); ?>
+                                                    </span>
+                                            <?php else: ?>
+                                                <?= __('Service class'); ?>
+                                            <?php endif; ?>
+                                        </label>
+                                        <div class="input-group" style="width: 100%;">
+                                            <select
+                                                id="SlasSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="slas"
+                                                ng-options="sla.key as sla.value for sla in slas"
+                                                ng-model="post.Host.sla_id">
+                                                <option></option>
+                                            </select>
+                                            <template-diff ng-show="post.Host.hosttemplate_id"
+                                                           value="post.Host.sla_id"
+                                                           template-value="hosttemplate.Hosttemplate.sla_id"></template-diff>
+                                        </div>
+
+                                        <div class="help-block">
+                                            <?= __('You can define service levels for this host.'); ?>
+                                        </div>
+                                        <div ng-repeat="error in errors.slas">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- SLA CONFIGURATION END -->
+                        <?php endif; ?>
+
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">

@@ -585,6 +585,14 @@ class HosttemplatesController extends AppController {
             $exporters = $PrometheusExportersTable->getExportersByContainerId($containerIds, 'list', 'id');
             $exporters = Api::makeItJavaScriptAble($exporters);
         }
+        $slas = [];
+        if (Plugin::isLoaded('SLAModule')) {
+            /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+
+            $slas = $SlasTable->getSlasByContainerId($containerIds, 'list', 'id');
+            $slas = Api::makeItJavaScriptAble($slas);
+        }
 
         $this->set('timeperiods', $timeperiods);
         $this->set('checkperiods', $checkperiods);
@@ -592,7 +600,16 @@ class HosttemplatesController extends AppController {
         $this->set('contactgroups', $contactgroups);
         $this->set('hostgroups', $hostgroups);
         $this->set('exporters', $exporters);
-        $this->viewBuilder()->setOption('serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups', 'exporters']);
+        $this->set('slas', $slas);
+        $this->viewBuilder()->setOption('serialize', [
+            'timeperiods',
+            'checkperiods',
+            'contacts',
+            'contactgroups',
+            'hostgroups',
+            'exporters',
+            'slas'
+        ]);
     }
 
     /**

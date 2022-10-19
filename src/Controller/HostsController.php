@@ -1672,7 +1672,8 @@ class HostsController extends AppController {
                             'satellite_id',
                             'notifications_enabled',
                             'freshness_checks_enabled',
-                            'freshness_threshold'
+                            'freshness_threshold',
+                            'sla_id'
                         ]
                     );
                     /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
@@ -1751,7 +1752,6 @@ class HostsController extends AppController {
 
                     $tmpHost->hostcommandargumentvalues = $hostcommandargumentvalues;
                     $tmpHost->customvariables = $customvariables;
-
                     $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
                     $mergedHost = $HostMergerForView->getDataForView();
                     $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost);
@@ -2892,6 +2892,15 @@ class HostsController extends AppController {
             $exporters = Api::makeItJavaScriptAble($exporters);
         }
 
+        $slas = [];
+        if (Plugin::isLoaded('SLAModule')) {
+            /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+
+            $slas = $SlasTable->getSlasByContainerId($containerIds, 'list', 'id');
+            $slas = Api::makeItJavaScriptAble($slas);
+        }
+
         $this->set('hosttemplates', $hosttemplates);
         $this->set('hostgroups', $hostgroups);
         $this->set('timeperiods', $timeperiods);
@@ -2901,6 +2910,7 @@ class HostsController extends AppController {
         $this->set('satellites', $satellites);
         $this->set('sharingContainers', $sharingContainers);
         $this->set('exporters', $exporters);
+        $this->set('slas', $slas);
 
         $this->viewBuilder()->setOption('serialize', [
             'hosttemplates',
@@ -2911,7 +2921,8 @@ class HostsController extends AppController {
             'contactgroups',
             'satellites',
             'sharingContainers',
-            'exporters'
+            'exporters',
+            'slas'
         ]);
     }
 
