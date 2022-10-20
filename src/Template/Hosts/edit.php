@@ -1079,7 +1079,7 @@
                                     <div class="form-group" ng-class="{'has-error': errors.slas}">
                                         <label class="control-label" for="SlasSelect">
                                             <?php if ($this->Acl->hasPermission('edit', 'slas', 'SLAModule')): ?>
-                                                <a ui-sref="SlasEdit({id:post.Hosttemplate.sla_id})"
+                                                <a ui-sref="SlasEdit({id:post.Host.sla_id})"
                                                    ng-show="post.Host.sla_id">
                                                     <?= __('Service class'); ?>
                                                 </a>
