@@ -141,7 +141,8 @@ class AclDependencies {
             ->allow('Angular', 'wizardFilter')
             ->allow('Angular', 'wizardInterfaceFilter')
             ->allow('Angular', 'columns_config_import')
-            ->allow('Angular', 'columns_config_export');
+            ->allow('Angular', 'columns_config_export')
+            ->allow('Angular', 'autoRefresher');
 
         $this
             ->allow('Agentconnector', 'register_agent')
