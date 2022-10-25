@@ -214,14 +214,14 @@ class Downtime {
      * @return int
      */
     public function getActualEndTime() {
-        if(!is_numeric($this->scheduledEndTime)){
-            if($this->actualdEndTime instanceof FrozenTime){
-                $this->actualdEndTime = $this->actualdEndTime->timestamp;
+        if(!is_numeric($this->actualEndTime)){
+            if($this->actualEndTime instanceof FrozenTime){
+                $this->actualEndTime = $this->actualEndTime->timestamp;
             }else{
-                $this->actualdEndTime = strtotime($this->actualdEndTime);
+                $this->actualEndTime = strtotime($this->actualEndTime);
             }
         }
-        return $this->actualdEndTime;
+        return $this->actualEndTime;
     }
 
     /**
