@@ -96,11 +96,6 @@ class Downtime {
     private $UserTime;
 
     /**
-     * @var int
-     */
-    private $actualdEndTime = 0;
-
-    /**
      * Downtime constructor.
      * @param $downtime
      * @param bool $allowEdit
