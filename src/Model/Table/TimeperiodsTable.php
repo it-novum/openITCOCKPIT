@@ -62,6 +62,12 @@ class TimeperiodsTable extends Table {
             'foreignKey'   => 'timeperiod_id',
             'saveStrategy' => 'replace'
         ])->setDependent(true);
+
+
+        $this->hasOne('Calendars', [
+            'foreignKey' => 'container_id',
+            'joinType'   => 'INNER'
+        ]);
     }
 
     /**
