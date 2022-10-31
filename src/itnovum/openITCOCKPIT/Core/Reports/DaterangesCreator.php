@@ -31,9 +31,9 @@ class DaterangesCreator {
 
 
     /**
-     * @param string $date_start_timestamp
-     * @param string $date_end_timestamp
-     * @param array $time_ranges
+     * @param $date_start_timestamp
+     * @param $date_end_timestamp
+     * @param $time_ranges
      * @return array
      */
     public static function createDateRanges($date_start_timestamp, $date_end_timestamp, $time_ranges = []) {
@@ -48,18 +48,16 @@ class DaterangesCreator {
 
         $time_ranges = Hash::combine($time_ranges, '{n}.id', '{n}', '{n}.day');//group by day
         for ($week = 0; $week <= $week_count; $week++) {
-            $current_day_timestamp = strtotime(date('m.d.Y 00:00', $first_monday_in_week) . '+  ' . $week . ' week');
             if (!$default_week_created) {
                 for ($day = 0; $day < 7; $day++) {
                     //start is always 00:00
                     $current_day_timestamp = strtotime('+ ' . $day . ' day', $first_monday_in_week);
                     $day_of_week = date('N', $current_day_timestamp);
                     if (array_key_exists($day_of_week, $time_ranges)) {
-                        foreach ($time_ranges[$day_of_week] as $day_in_time_range => $time_range) {
+                        foreach ($time_ranges[$day_of_week] as $time_range) {
                             if ($time_range['end'] == '24:00') {
                                 $time_range['end'] = '23:59:59';
                             }
-                            $start = strtotime(date('d.m.Y ', $current_day_timestamp) . ' ' . $time_range['start']);
                             $duration_in_seconds = (strtotime($time_range['end']) - strtotime($time_range['start']));
                             $time_slices_default[] = [
                                 'start' => strtotime(date('d.m.Y ', $current_day_timestamp) . ' ' . $time_range['start']),
