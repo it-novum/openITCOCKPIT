@@ -1723,6 +1723,25 @@ class DashboardsController extends AppController {
                 $data = json_decode($widget->get('json_data'), true);
             }
             $config = $TacticalOverviewJson->standardizedData($data);
+
+            $conditions = $config;
+            // Migrate keyword / tags from JSON string to SQL RLIKE query string
+            foreach (['Host', 'Service'] as $tableName) {
+                foreach (['keywords', 'not_keywords'] as $field) {
+                    if (empty($conditions[$tableName][$field])) {
+                        $conditions[$tableName][$field] = [];
+                    }
+
+                    if (isset($conditions[$tableName][$field]) && is_string($conditions[$tableName][$field])) {
+                        $arr = explode(',', $conditions[$tableName][$field]);
+                        $conditions[$tableName][$field] = [];
+                        if (!empty($arr)) {
+                            $conditions[$tableName][$field] = sprintf('.*(%s).*', implode('|', $arr));
+                        }
+                    }
+                }
+            }
+
             $hoststatusSummary = [];
             $servicestatusSummary = [];
             switch ($type) {
@@ -1731,7 +1750,7 @@ class DashboardsController extends AppController {
                     if ($this->DbBackend->isNdoUtils()) {
                         /** @var HostsTable $HostsTable */
                         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                        $hoststatus = $HostsTable->getHostsWithStatusByConditions($MY_RIGHTS, $config);
+                        $hoststatus = $HostsTable->getHostsWithStatusByConditions($MY_RIGHTS, $conditions);
                     }
 
                     if ($this->DbBackend->isCrateDb()) {
@@ -1741,7 +1760,7 @@ class DashboardsController extends AppController {
                     if ($this->DbBackend->isStatusengine3()) {
                         /** @var HostsTable $HostsTable */
                         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                        $hoststatus = $HostsTable->getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $config);
+                        $hoststatus = $HostsTable->getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions);
                     }
                     $hoststatusSummary = $HostsTable->getHostStateSummary($hoststatus, true);
 
@@ -1751,7 +1770,7 @@ class DashboardsController extends AppController {
                     if ($this->DbBackend->isNdoUtils()) {
                         /** @var ServicesTable $ServicesTable */
                         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                        $servicestatus = $ServicesTable->getServicesWithStatusByConditions($MY_RIGHTS, $config);
+                        $servicestatus = $ServicesTable->getServicesWithStatusByConditions($MY_RIGHTS, $conditions);
                     }
 
                     if ($this->DbBackend->isCrateDb()) {
@@ -1761,7 +1780,7 @@ class DashboardsController extends AppController {
                     if ($this->DbBackend->isStatusengine3()) {
                         /** @var ServicesTable $ServicesTable */
                         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                        $servicestatus = $ServicesTable->getServicesWithStatusByConditionsStatusengine3($MY_RIGHTS, $config);
+                        $servicestatus = $ServicesTable->getServicesWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions);
                     }
                     $servicestatusSummary = $ServicesTable->getServiceStateSummary($servicestatus, true);
                     break;
@@ -1867,7 +1886,7 @@ class DashboardsController extends AppController {
     public function desktopWidget() {
         $queryData = [];
         if ($this->request->is('post')) {
-           $queryData = $this->request->getData();
+            $queryData = $this->request->getData();
         }
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {

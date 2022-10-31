@@ -276,7 +276,7 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                     <input type="text"
                                            class="form-control form-control-sm"
                                            data-role="tagsinput"
-                                           id="ServicesKeywordsInput"
+                                           id="ServicesKeywordsInput{{widget.id}}"
                                            placeholder="<?php echo __('Filter by tags'); ?>"
                                            ng-model="filter.Service.keywords"
                                            ng-model-options="{debounce: 500}"
@@ -292,7 +292,7 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                 <div class="col tagsinputFilter">
                                     <input type="text" class="input-sm"
                                            data-role="tagsinput"
-                                           id="ServicesNotKeywordsInput"
+                                           id="ServicesNotKeywordsInput{{widget.id}}"
                                            placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                            ng-model="filter.Service.not_keywords"
                                            ng-model-options="{debounce: 500}">
