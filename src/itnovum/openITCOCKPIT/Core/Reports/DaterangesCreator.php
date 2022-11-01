@@ -87,7 +87,7 @@ class DaterangesCreator {
      * @param $time_slices array
      * @return array
      */
-    private static function removeUselessTimeslices($date_start, $date_end, $time_slices) {
+    public static function removeUselessTimeslices($date_start, $date_end, $time_slices) {
         $time_slices_new = [];
         foreach ($time_slices as $time_slice) {
             $current_time_slice_start = date('Ymd', $time_slice['start']);
