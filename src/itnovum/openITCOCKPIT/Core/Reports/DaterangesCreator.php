@@ -465,7 +465,7 @@ class DaterangesCreator {
      * @param $numberOfQuarter
      * @return \DateTime
      */
-    private static function firstDayOfQuarter(\DateTime $date, $numberOfQuarter) {
+    public static function firstDayOfQuarter(\DateTime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
             case 1:
                 $date->modify('first day of january 00:00:00');
@@ -488,7 +488,7 @@ class DaterangesCreator {
      * @param $numberOfQuarter
      * @return \DateTime
      */
-    private static function lastDayOfQuarter(\DateTime $date, $numberOfQuarter) {
+    public static function lastDayOfQuarter(\DateTime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
             case 1:
                 $date->modify('last day of march');
@@ -510,7 +510,7 @@ class DaterangesCreator {
      * @param $date
      * @return float
      */
-    private static function getNumberFromQuarter($date) {
+    public static function getNumberFromQuarter($date) {
         $currentMonth = date('m', $date);
         return ceil($currentMonth / 3);
     }
