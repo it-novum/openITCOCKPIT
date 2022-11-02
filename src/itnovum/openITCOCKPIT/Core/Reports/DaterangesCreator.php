@@ -270,7 +270,7 @@ class DaterangesCreator {
                 return $dateTimeSlices;
                 break;
             case 'WEEK':
-                $w = date('W', $lastUpdateDate); // ISO-8601 week number of year, weeks starting on Monday(=1)
+                $w = date('w', $lastUpdateDate); // ISO-8601 week number of year, weeks starting on Monday(=1)
                 if ($h == 0 && $m == 0 && $s == 0 && $w == 1) {
                     $initialEntryType = 'new'; //midnight and monday -> new day detected
                 }
