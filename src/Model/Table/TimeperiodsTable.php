@@ -64,7 +64,7 @@ class TimeperiodsTable extends Table {
         ])->setDependent(true);
 
         $this->belongsTo('Calendars', [
-            'joinType'   => 'INNER'
+            'joinType'   => 'LEFT'
         ]);
     }
 
