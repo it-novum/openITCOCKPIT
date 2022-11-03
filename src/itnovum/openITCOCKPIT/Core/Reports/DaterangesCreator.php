@@ -507,7 +507,7 @@ class DaterangesCreator {
     }
 
     /**
-     * @param $date
+     * @param int $date
      * @return float
      */
     public static function getNumberFromQuarter($date) {
