@@ -66,7 +66,7 @@ class StatehistoryConverter {
                     break;
                 }
                 if ($stateTimeTimestamp <= $timeSlice['start']) {
-                    if ($stateHistory['state'] == 0 || !$hardStateOnly  || ($hardStateOnly && $stateHistory['is_hardstate'])) {
+                    if ($stateHistory['state'] == 0 || !$hardStateOnly || ($hardStateOnly && $stateHistory['is_hardstate'])) {
                         $currentState = $stateHistory['state'];
                     }
                     unset($stateHistoryArray[$key]);
@@ -99,7 +99,7 @@ class StatehistoryConverter {
      * @param bool $outagesSummary
      * @return mixed
      */
-    public static function generateReportDataWithOutages(array $timeSlices, array $stateHistoryArray, $hardStateOnly, bool $isHost = false) {
+    public static function generateReportDataWithOutages(array $timeSlices, array $stateHistoryArray, $hardStateOnly, bool $isHost = false, bool $keepDetails = false) {
         $stateArray = array_fill(0, ($isHost) ? 3 : 4, 0); // host states => 0,1,2; service statea => 0,1,2,3
         $stateOk = 0;
         $stateUnknown = ($isHost) ? 2 : 3;//if the end of date in the future
@@ -110,6 +110,8 @@ class StatehistoryConverter {
         $setInitialState = false;
         $currentState = 0;
         $outageCounter = 0;
+        $lastOutput = null;
+        $lastIsHardstate = null;
         foreach ($timeSlices as $timeSliceKey => $timeSlice) {
             $time = $timeSlice['start'];
             if ($time > strtotime('today 24:00:00')) { // ignore time_slice in the future
@@ -119,6 +121,10 @@ class StatehistoryConverter {
             reset($stateHistoryArray);
             foreach ($stateHistoryArray as $key => $stateHistory) {
                 $stateTimeTimestamp = $stateHistory['state_time'];
+                if($stateHistory['state'] === $outageState){
+                    $lastOutput = $stateHistory['output'];
+                    $lastIsHardstate = $stateHistory['is_hardstate'];
+                }
                 if (!$setInitialState) {
                     $currentState = $stateHistory['last_state'];
                     if ($hardStateOnly && $stateHistory['last_state'] != 0) {
@@ -145,18 +151,22 @@ class StatehistoryConverter {
                     $evaluationData[0] += $stateTimeTimestamp - $time;
                     //$current_state = $state_ok;
                     $evaluationData['outages'][$outageCounter] = [
-                        'start'       => $time,
-                        'end'         => $stateTimeTimestamp,
-                        'is_downtime' => $isDowntime,
+                        'start'        => $time,
+                        'end'          => $stateTimeTimestamp,
+                        'is_downtime'  => $isDowntime,
+                        'output'       => $keepDetails ? $lastOutput : null,
+                        'is_hardstate' => $keepDetails ? $lastIsHardstate : null
                     ];
                     $outageCounter++;
                 } else {
                     $evaluationData[$currentState] += $stateTimeTimestamp - $time;
                     if ($currentState == $outageState && ($stateTimeTimestamp - $time) > 0) {
                         $evaluationData['outages'][$outageCounter] = [
-                            'start'       => $time,
-                            'end'         => $stateTimeTimestamp,
-                            'is_downtime' => $isDowntime,
+                            'start'        => $time,
+                            'end'          => $stateTimeTimestamp,
+                            'is_downtime'  => $isDowntime,
+                            'output'       => $keepDetails ? $lastOutput : null,
+                            'is_hardstate' => $keepDetails ? $lastIsHardstate : null
                         ];
                         $outageCounter++;
                     }
@@ -172,18 +182,22 @@ class StatehistoryConverter {
             if ($currentState == $outageState && $isDowntime) {
                 $evaluationData[$stateOk] += $timeSlice['end'] - $time;
                 $evaluationData['outages'][$outageCounter] = [
-                    'start'       => $time,
-                    'end'         => $timeSlice['end'],
-                    'is_downtime' => $isDowntime,
+                    'start'        => $time,
+                    'end'          => $timeSlice['end'],
+                    'is_downtime'  => $isDowntime,
+                    'output'       => $keepDetails ? $lastOutput : null,
+                    'is_hardstate' => $keepDetails ? $lastIsHardstate : null
                 ];
                 $outageCounter++;
             } else {
                 $evaluationData[$currentState] += $timeSlice['end'] - $time;
                 if ($currentState == $outageState) {
                     $evaluationData['outages'][$outageCounter] = [
-                        'start'       => $time,
-                        'end'         => $timeSlice['end'],
-                        'is_downtime' => $isDowntime,
+                        'start'        => $time,
+                        'end'          => $timeSlice['end'],
+                        'is_downtime'  => $isDowntime,
+                        'output'       => $keepDetails ? $lastOutput : null,
+                        'is_hardstate' => $keepDetails ? $lastIsHardstate : null
                     ];
                     $outageCounter++;
                 }
@@ -224,19 +238,34 @@ class StatehistoryConverter {
             if ($tmpOutageStart == 0 && $tmpOutageEnd == 0) {
                 $tmpOutageStart = $outageStart;
                 $tmpOutageEnd = $outageEnd;
-                $newOutagesArray[$arrayCounter] = ['start' => $outageStart, 'end' => $outageEnd];
+                $newOutagesArray[$arrayCounter] = [
+                    'start'        => $outageStart,
+                    'end'          => $outageEnd,
+                    'output'       => $outage['output'],
+                    'is_hardstate' => $outage['is_hardstate']
+                ];
                 continue;
             }
             if ($outageStart >= $tmpOutageStart && $outageEnd <= $tmpOutageEnd) {
                 continue;
             } else if ($outageStart >= $tmpOutageStart && $outageStart <= $tmpOutageEnd && $outageEnd > $tmpOutageEnd) {
                 $tmpOutageEnd = $outageEnd;
-                $newOutagesArray[$arrayCounter] = ['start' => $tmpOutageStart, 'end' => $outageEnd];
+                $newOutagesArray[$arrayCounter] = [
+                    'start'        => $tmpOutageStart,
+                    'end'          => $outageEnd,
+                    'output'       => $outage['output'],
+                    'is_hardstate' => $outage['is_hardstate']
+                ];
             } else if ($outageStart > $tmpOutageStart && $outageStart > $tmpOutageEnd) {
                 $arrayCounter++;
                 $tmpOutageStart = $outageStart;
                 $tmpOutageEnd = $outageEnd;
-                $newOutagesArray[$arrayCounter] = ['start' => $outageStart, 'end' => $outageEnd];
+                $newOutagesArray[$arrayCounter] = [
+                    'start'        => $outageStart,
+                    'end'          => $outageEnd,
+                    'output'       => $outage['output'],
+                    'is_hardstate' => $outage['is_hardstate']
+                ];
             }
         }
         return $newOutagesArray;
