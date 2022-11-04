@@ -118,6 +118,8 @@ mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-p
   --ignore-table=$dbc_dbname.statusengine_servicestatus \
   --ignore-table=$dbc_dbname.statusengine_tasks \
   --ignore-table=$dbc_dbname.statusengine_users \
+  --ignore-table=$dbc_dbname.customalerts \
+  --ignore-table=$dbc_dbname.customalert_statehistory \
   >$BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
 echo "---------------------------------------------------------------"

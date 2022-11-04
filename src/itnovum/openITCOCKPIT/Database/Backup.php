@@ -110,7 +110,10 @@ class Backup {
         'statusengine_servicechecks',
         'statusengine_servicestatus',
         'statusengine_tasks',
-        'statusengine_users'
+        'statusengine_users',
+
+        'customalerts',
+        'customalert_statehistory'
     ];
 
     /**
