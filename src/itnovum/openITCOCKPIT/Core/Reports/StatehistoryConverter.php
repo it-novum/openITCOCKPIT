@@ -121,7 +121,7 @@ class StatehistoryConverter {
             reset($stateHistoryArray);
             foreach ($stateHistoryArray as $key => $stateHistory) {
                 $stateTimeTimestamp = $stateHistory['state_time'];
-                if($stateHistory['state'] === $outageState){
+                if ($stateHistory['state'] === $outageState) {
                     $lastOutput = $stateHistory['output'];
                     $lastIsHardstate = $stateHistory['is_hardstate'];
                 }
@@ -241,6 +241,7 @@ class StatehistoryConverter {
                 $newOutagesArray[$arrayCounter] = [
                     'start'        => $outageStart,
                     'end'          => $outageEnd,
+                    'is_downtime'  => $outage['is_downtime'],
                     'output'       => $outage['output'],
                     'is_hardstate' => $outage['is_hardstate']
                 ];
@@ -253,6 +254,7 @@ class StatehistoryConverter {
                 $newOutagesArray[$arrayCounter] = [
                     'start'        => $tmpOutageStart,
                     'end'          => $outageEnd,
+                    'is_downtime'  => $outage['is_downtime'],
                     'output'       => $outage['output'],
                     'is_hardstate' => $outage['is_hardstate']
                 ];
@@ -263,6 +265,7 @@ class StatehistoryConverter {
                 $newOutagesArray[$arrayCounter] = [
                     'start'        => $outageStart,
                     'end'          => $outageEnd,
+                    'is_downtime'  => $outage['is_downtime'],
                     'output'       => $outage['output'],
                     'is_hardstate' => $outage['is_hardstate']
                 ];
