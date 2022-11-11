@@ -27,6 +27,7 @@ namespace Statusengine2Module\Model\Table;
 
 use App\Lib\Interfaces\StatehistoryServiceTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Http\Exception\NotImplementedException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -66,7 +67,7 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('nagios_statehistory');
@@ -89,7 +90,7 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         //Readonly table
         return $validator;
     }
@@ -101,7 +102,7 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         //Readonly table
         return $rules;
     }
@@ -118,7 +119,7 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
                 'Objects'
             ])
             ->where([
-                'Objects.name2'                  => $StatehistoryServiceConditions->getServiceUuid(),
+                'Objects.name2'                     => $StatehistoryServiceConditions->getServiceUuid(),
                 'StatehistoryServices.state_time >' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getFrom()),
                 'StatehistoryServices.state_time <' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getTo())
             ])
@@ -184,7 +185,7 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
                 'Objects'
             ])
             ->where([
-                'Objects.name2' => $StatehistoryServiceConditions->getServiceUuid(),
+                'Objects.name2'                      => $StatehistoryServiceConditions->getServiceUuid(),
                 'StatehistoryServices.state_time <=' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getFrom())
             ])
             ->order([
@@ -194,5 +195,13 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
             ->first();
 
         return $query;
+    }
+
+    /**
+     * @param StatehistoryServiceConditions $StatehistoryServiceConditions
+     * @return \itnovum\openITCOCKPIT\Core\Views\StatehistoryService[]
+     */
+    public function getRecordsForReporting(StatehistoryServiceConditions $StatehistoryServiceConditions) {
+        throw new NotImplementedException();
     }
 }

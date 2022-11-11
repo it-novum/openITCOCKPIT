@@ -166,4 +166,60 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
         return $query;
     }
 
+    /**
+     * @param StatehistoryServiceConditions StatehistoryServiceConditions
+     * @return \itnovum\openITCOCKPIT\Core\Views\StatehistoryService[]
+     */
+    public function getRecordsForReporting(StatehistoryServiceConditions $StatehistoryServiceConditions) {
+        $statehistoryRecords = [];
+        $query = $this->find()
+            ->where([
+                'StatehistoryServices.service_description' => $StatehistoryServiceConditions->getServiceUuid(),
+                'StatehistoryServices.state_time <='       => $StatehistoryServiceConditions->getFrom()
+            ]);
+        if ($StatehistoryServiceConditions->hardStateTypeAndOkState()) {
+            $query->andWhere([
+                'OR' => [
+                    'StatehistoryServices.is_hardstate' => 1,
+                    'StatehistoryServices.state'        => 0
+                ]
+            ]);
+        }
+        $query->order([
+            'StatehistoryServices.state_time' => 'DESC'
+        ])
+            ->disableHydration();
+
+        $result = $query->first();
+        if (!empty($result)) {
+            $statehistoryRecords[] = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($result);
+        }
+
+        $query = $this->find()
+            ->where([
+                'StatehistoryServices.service_description' => $StatehistoryServiceConditions->getServiceUuid(),
+                'StatehistoryServices.state_time >'        => $StatehistoryServiceConditions->getFrom()
+            ]);
+        if ($StatehistoryServiceConditions->hardStateTypeAndOkState()) {
+            $query->andWhere([
+                'OR' => [
+                    'StatehistoryServices.is_hardstate' => 1,
+                    'StatehistoryServices.state'        => 0
+                ]
+            ]);
+        }
+        $query->order([
+            'StatehistoryServices.state_time' => 'ASC'
+        ])
+            ->disableHydration();
+
+        $results = $query->all();
+
+        foreach ($results as $result) {
+            $statehistoryRecords[] = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($result);
+        }
+
+        return $statehistoryRecords;
+    }
+
 }
