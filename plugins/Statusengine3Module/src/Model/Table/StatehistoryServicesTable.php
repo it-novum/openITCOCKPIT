@@ -219,5 +219,4 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
 
         return $statehistoryRecords;
     }
-
 }
