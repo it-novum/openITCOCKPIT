@@ -122,3 +122,4 @@ plugins/ORACLEModule
 plugins/UPSModule
 plugins/VMwareSnapshotModule
 plugins/CustomalertModule
+plugins/SLAModule
