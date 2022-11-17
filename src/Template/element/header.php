@@ -25,11 +25,11 @@
 ?>
 <header id="header" class="page-header" role="banner">
     <menu-control></menu-control>
-    <div class="search" top-search=""></div>
+    <div class="search hidden-lg-down" top-search=""></div>
     <div class="ml-auto d-flex">
 
         <?php if ($hasSubscription === false): ?>
-            <div class="header-icon padding-left-10 padding-right-5">
+            <div class="header-icon padding-left-10 padding-right-5 hidden-md-down">
                 <a class="btn btn-outline-danger waves-effect waves-themed"
                    href="https://openitcockpit.io/editions/"
                    target="_blank"
@@ -42,7 +42,7 @@
         <?php endif; ?>
 
         <?php if ($hasSubscription === true && $isCommunityEdition === true): ?>
-            <div class="header-icon padding-left-10 padding-right-5">
+            <div class="header-icon padding-left-10 padding-right-5 hidden-md-down">
                 <a class="btn btn-outline-primary waves-effect waves-themed"
                    href="https://openitcockpit.io/editions/"
                    target="_blank"
@@ -55,13 +55,13 @@
         <?php endif; ?>
 
 
-        <div class="header-icon padding-left-5">
+        <div class="header-icon padding-left-5 hidden-md-down">
             <menustats></menustats>
         </div>
-        <div class="header-icon">
+        <div class="header-icon hidden-md-down">
             <system-health></system-health>
         </div>
-        <div class="header-icon">
+        <div class="header-icon hidden-md-down">
             <span id="global_ajax_loader" style="display: none;">
                 <div class="spinner-border spinner-border-sm" role="status">
                     <span class="sr-only">
@@ -97,7 +97,7 @@
                 <?php endif; ?>
             </span>
         </div>
-        <div class="header-icon padding-left-5">
+        <div class="header-icon padding-left-5 hidden-md-down">
             <version-check></version-check>
         </div>
         <div class="header-icon padding-left-5">
