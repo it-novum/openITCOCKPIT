@@ -31,6 +31,10 @@ fi
 if [[ "$OS_BASE" == "RHEL" ]]; then
     echo "Make RedHat look more like it's Debian ;)"
 
+    if [[ "$(LANG=c getenforce)" == "Enforcing" ]]; then
+        /usr/sbin/semanage permissive -a httpd_t
+    fi
+
     # sudo - allow root to use sudo
     # sudo is needed by the "oitc" command
     usermod -aG wheel root
@@ -73,6 +77,9 @@ if [[ "$OS_BASE" == "RHEL" ]]; then
         openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost"
         openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
         cat /etc/ssl/certs/dhparam.pem | tee -a /etc/ssl/certs/ssl-cert-snakeoil.pem
+        
+        chown root:nagios /etc/ssl/private/ssl-cert-snakeoil.key
+        chown root:nagios /etc/ssl/certs/ssl-cert-snakeoil.pem
     fi
 
     systemctl daemon-reload
