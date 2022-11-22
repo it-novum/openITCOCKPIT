@@ -80,6 +80,7 @@ if [[ "$OS_BASE" == "RHEL" ]]; then
         
         chown root:nagios /etc/ssl/private/ssl-cert-snakeoil.key
         chown root:nagios /etc/ssl/certs/ssl-cert-snakeoil.pem
+        chmod 640 /etc/ssl/private/ssl-cert-snakeoil.key
     fi
 
     systemctl daemon-reload
