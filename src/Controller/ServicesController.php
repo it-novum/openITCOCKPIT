@@ -1673,7 +1673,8 @@ class ServicesController extends AppController {
                         'warning'  => null,
                         'critical' => null,
                         'min'      => null,
-                        'max'      => null
+                        'max'      => null,
+                        'metric'   => $metric // ITC-2824 make classical metrics look the same
                     ];
                 }
 

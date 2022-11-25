@@ -168,16 +168,19 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                     var firstMetric = null;
 
                     for(var metricName in result.data.perfdata){
+                        var metric = result.data.perfdata[metricName];
+
                         if(firstMetric === null){
-                            firstMetric = metricName;
+                            firstMetric = metric.metric;
                         }
-                        metrics[metricName] = metricName;
+                        metrics[metric.metric] = metricName;
                     }
 
                     if($scope.metric === null){
                         $scope.metric = firstMetric;
                     }
                     $scope.metrics = metrics;
+                    console.log($scope.metrics);
                 });
             };
 

@@ -949,7 +949,7 @@ class ServicesTable extends Table {
     /**
      * @param int $id
      * @param bool $enableHydration
-     * @return array|\Cake\Datasource\EntityInterface|null
+     * @return Service|null
      */
     public function getServiceById($id, $enableHydration = true) {
         $query = $this->find()
