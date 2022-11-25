@@ -1450,7 +1450,6 @@ class ServicesController extends AppController {
         }
 
         $service = $ServicesTable->getServiceForBrowser($id);
-        $serviceObj = new Service($service);
 
         //Check permissions
         $host = $HostsTable->getHostForServiceEdit($service['host_id']);
@@ -1464,6 +1463,8 @@ class ServicesController extends AppController {
             $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $host['Host']['hosts_to_containers_sharing']['_ids']);
             $allowEdit = $ContainerPermissions->hasPermission();
         }
+
+        $serviceObj = new Service($service, $allowEdit);
 
         //Load required data to merge and display inheritance data
         $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsByIdForServiceBrowser($host['Host']['id']);
@@ -1635,43 +1636,52 @@ class ServicesController extends AppController {
         $servicestatus['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicestatus->getOutput(), true));
         $servicestatus['longOutputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicestatus->getLongOutput(), true));
 
-        //Add parsed perfdata information
-        $PerfdataChecker = new PerfdataChecker(
-            $hostObj,
-            $serviceObj,
-            $this->PerfdataBackend,
-            $Servicestatus,
-            $this->DbBackend,
-            $mergedService['service_type']
-        );
-        $mergedService['has_graph'] = $PerfdataChecker->hasPerfdata();
         $mergedService['allowEdit'] = $allowEdit;
 
-        if (empty($Servicestatus->getPerfdata()) && $mergedService['has_graph'] === true && $this->PerfdataBackend->isWhisper()) {
-            //Query graphite backend to get available metrics - used if perfdata string is empty for example on unknown state
-
-            $mergedService['Perfdata'] = [];
-
-            $GraphiteConfig = new GraphiteConfig();
-            $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
-            $metrics = $GraphiteLoader->findMetricsByUuid($hostObj->getUuid(), $serviceObj->getUuid());
-
-            foreach ($metrics as $metric) {
-                $mergedService['Perfdata'][$metric] = [
-                    'current'  => null,
-                    'unit'     => null,
-                    'warning'  => null,
-                    'critical' => null,
-                    'min'      => null,
-                    'max'      => null
-                ];
-            }
-
+        //Add parsed perfdata information
+        if (Plugin::isLoaded('PrometheusModule') && $serviceObj->getServiceType() === PROMETHEUS_SERVICE) {
+            // Query Prometheus to get all metrics
+            /** @var PrometheusModule\Model\Table\PrometheusAlertRulesTable $PrometheusAlertRulesTable */
+            $PrometheusAlertRulesTable = TableRegistry::getTableLocator()->get('PrometheusModule.PrometheusAlertRules');
         } else {
-            //Parse perfdata string from database to get metrics - this is the default
-            $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
-            $mergedService['Perfdata'] = $PerfdataParser->parse();
+            // "Normal" Naemon service (not a PROMETHEUS_SERVICE!)
+            $PerfdataChecker = new PerfdataChecker(
+                $hostObj,
+                $serviceObj,
+                $this->PerfdataBackend,
+                $Servicestatus,
+                $this->DbBackend,
+                $mergedService['service_type']
+            );
+            $mergedService['has_graph'] = $PerfdataChecker->hasPerfdata();
+
+            if (empty($Servicestatus->getPerfdata()) && $mergedService['has_graph'] === true && $this->PerfdataBackend->isWhisper()) {
+                //Query graphite backend to get available metrics - used if perfdata string is empty for example on unknown state
+
+                $mergedService['Perfdata'] = [];
+
+                $GraphiteConfig = new GraphiteConfig();
+                $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
+                $metrics = $GraphiteLoader->findMetricsByUuid($hostObj->getUuid(), $serviceObj->getUuid());
+
+                foreach ($metrics as $metric) {
+                    $mergedService['Perfdata'][$metric] = [
+                        'current'  => null,
+                        'unit'     => null,
+                        'warning'  => null,
+                        'critical' => null,
+                        'min'      => null,
+                        'max'      => null
+                    ];
+                }
+
+            } else {
+                //Parse perfdata string from database to get metrics - this is the default
+                $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
+                $mergedService['Perfdata'] = $PerfdataParser->parse();
+            }
         }
+
 
         $systemsettingsEntity = $SystemsettingsTable->getSystemsettingByKey('TICKET_SYSTEM.URL');
         $ticketSystem = $systemsettingsEntity->get('value');
