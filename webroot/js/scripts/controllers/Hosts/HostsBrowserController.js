@@ -159,6 +159,7 @@ angular.module('openITCOCKPIT')
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
                 $scope.loadAdditionalInformation();
+                $scope.loadSlaInformation();
 
 
                 if(typeof $scope.hostBrowserMenuConfig === "undefined"){
@@ -612,6 +613,18 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.AdditionalInformationExists = result.data.AdditionalInformationExists;
+            });
+        };
+
+        $scope.loadSlaInformation = function(){
+            $http.get("/hosts/loadSlaInformation/.json", {
+                params: {
+                    'id': $scope.mergedHost.id,
+                    'sla_id': $scope.mergedHost.sla_id,
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.slaOverview = result.data.slaOverview;
             });
         };
 

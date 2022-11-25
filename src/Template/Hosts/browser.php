@@ -123,6 +123,17 @@ use Cake\Core\Plugin;
                         <?php endif; ?>
                     </ul>
                 </div>
+                <?php if (Plugin::isLoaded('SLAModule')): ?>
+                <div ng-show="slaOverview" ng-click="selectedTab = 'tab7'; hideTimeline()">
+                    <button class="btn btn-labeled btn-{{slaOverview.state}} btn-xs btn-w-m waves-effect waves-themed">
+                        <span class="btn-label-bootstrap-5">
+                            <i class="fa-lg" ng-class="{'fa fa-check':slaOverview.state === 'success',
+                            'fa-solid fa-triangle-exclamation':slaOverview.state === 'warning',
+                            'fa-solid fa-bolt': slaOverview.state === 'danger', 'fas fa-question': slaOverview.state === 'not_available' }"></i>
+                        </span>{{slaOverview.determined_availability_percent}} %
+                    </button>
+                </div>
+                <?php endif; ?>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
@@ -250,7 +261,6 @@ use Cake\Core\Plugin;
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div
                                 class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">

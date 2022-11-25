@@ -106,6 +106,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use SLAModule\Model\Table\SlasTable;
 
 
 /**
@@ -3242,5 +3243,68 @@ class HostsController extends AppController {
 
         $this->set('isHostnameInUse', $isHostnameInUse);
         $this->viewBuilder()->setOption('serialize', ['isHostnameInUse']);
+    }
+
+    public function loadSlaInformation() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+        $sla_id = $this->request->getQuery('sla_id');
+
+        $SlaInformation = false;
+        $slaOverview = false;
+
+        if (Plugin::isLoaded('SLAModule')) {
+            /** @var SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+            $SlaInformation = $SlasTable->getMinSlaStatusInformationByHostIdAndSlaId($id, $sla_id);
+            $slaOverview = [
+                'state'          => 'not_available',
+                'evaluation_end' => time()
+            ];
+
+
+            $currentlyAvailabilityHost = null;
+            $hostSlaStatusData = null;
+            $servicesSlaStatusData = null;
+            if (!empty($SlaInformation['hosts'][0]['sla_availability_status_host'])) {
+                $hostSlaStatusData = $SlaInformation['hosts'][0]['sla_availability_status_host'];
+                $currentlyAvailabilityHost = $hostSlaStatusData['determined_availability_percent'];
+            }
+            if (!empty($SlaInformation['hosts'][0]['services'][0]['sla_availability_status_service'])) {
+                $servicesSlaStatusData = $SlaInformation['hosts'][0]['services'][0]['sla_availability_status_service'];
+                $servicesSlaStatusData['determined_availability_percent'] = $SlaInformation['hosts'][0]['services'][0]['min_determined_services_availability_percent'];
+                if ($currentlyAvailabilityHost > $servicesSlaStatusData['determined_availability_percent']) {
+                    $currentlyAvailabilityHost = $servicesSlaStatusData['determined_availability_percent'];
+                }
+            }
+
+            if($currentlyAvailabilityHost){
+                $slaOverview = [
+                    'evaluation_end' => $hostSlaStatusData['evaluation_end'],
+                    'determined_availability_percent' => $currentlyAvailabilityHost,
+                    'warning_threshold' => $SlaInformation['warning_threshold'],
+                    'minimal_availability' => $SlaInformation['minimal_availability']
+                ];
+                $state = 'not_available';
+                if($currentlyAvailabilityHost < $SlaInformation['minimal_availability']){
+                    $state = 'danger';
+                }elseif (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] < $currentlyAvailabilityHost){
+                    $state = 'warning';
+                }else{
+                    $state = 'success';
+                    $slaOverview = [
+                        'state'          => 'success',
+                        'evaluation_end' => $hostSlaStatusData['evaluation_end']
+                    ];
+                }
+                $slaOverview['state'] = $state;
+            }
+        }
+
+        $this->set('slaOverview', $slaOverview);
+        $this->viewBuilder()->setOption('serialize', ['slaOverview']);
     }
 }
