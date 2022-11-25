@@ -62,6 +62,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use CustomalertModule\Model\Table\CustomalertsTable;
 use DistributeModule\Model\Table\SatellitesTable;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -1641,8 +1642,9 @@ class ServicesController extends AppController {
         //Add parsed perfdata information
         if (Plugin::isLoaded('PrometheusModule') && $serviceObj->getServiceType() === PROMETHEUS_SERVICE) {
             // Query Prometheus to get all metrics
-            /** @var PrometheusModule\Model\Table\PrometheusAlertRulesTable $PrometheusAlertRulesTable */
-            $PrometheusAlertRulesTable = TableRegistry::getTableLocator()->get('PrometheusModule.PrometheusAlertRules');
+            $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+            $mergedService['Perfdata'] = $PrometheusPerfdataLoader->getAvailableMetricsByService($serviceObj);
+            $mergedService['has_graph'] = !empty($mergedService['Perfdata']); // Usually a prometheus service has always a graph
         } else {
             // "Normal" Naemon service (not a PROMETHEUS_SERVICE!)
             $PerfdataChecker = new PerfdataChecker(

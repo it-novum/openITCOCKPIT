@@ -179,15 +179,6 @@ angular.module('openITCOCKPIT')
                     $scope.dataSources.push(dsName);
                 }
 
-                if($scope.mergedService.service_type === 32){ //This is a Prometheus Service
-                    //All Prometheus Services have perfdata available.
-                    //The name of the metric is always the name of the service
-                    // One Prometheus Services can also only have one metric (gauge or datasource named in Nagios universe)
-                    $scope.dataSources = [
-                        $scope.mergedService.name
-                    ];
-                }
-
                 if($scope.dataSources.length > 0){
                     $scope.currentDataSource = $scope.dataSources[0];
                 }
