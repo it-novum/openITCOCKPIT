@@ -3268,7 +3268,6 @@ class HostsController extends AppController {
 
             $currentlyAvailabilityHost = null;
             $hostSlaStatusData = null;
-            $servicesSlaStatusData = null;
             if (!empty($SlaInformation['hosts'][0]['sla_availability_status_host'])) {
                 $hostSlaStatusData = $SlaInformation['hosts'][0]['sla_availability_status_host'];
                 $currentlyAvailabilityHost = $hostSlaStatusData['determined_availability_percent'];
@@ -3288,17 +3287,12 @@ class HostsController extends AppController {
                     'warning_threshold' => $SlaInformation['warning_threshold'],
                     'minimal_availability' => $SlaInformation['minimal_availability']
                 ];
-                $state = 'not_available';
                 if($currentlyAvailabilityHost < $SlaInformation['minimal_availability']){
                     $state = 'danger';
-                }elseif (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] < $currentlyAvailabilityHost){
+                }elseif (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] > $currentlyAvailabilityHost){
                     $state = 'warning';
                 }else{
                     $state = 'success';
-                    $slaOverview = [
-                        'state'          => 'success',
-                        'evaluation_end' => $hostSlaStatusData['evaluation_end']
-                    ];
                 }
                 $slaOverview['state'] = $state;
             }
