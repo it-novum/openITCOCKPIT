@@ -45,7 +45,7 @@
         <div id="widget-container" class="panel">
             <div class="panel-hdr">
                 <div class="row w-100">
-                    <div class="col-xl-9 col-lg-9 col-md-6 col-sm-12 col-xs-12">
+                    <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12 col-xs-12">
                         <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean h-100" role="tablist">
                             <li class="padding-right-20">
                                 <h2>
@@ -110,7 +110,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-xs-12 panel-toolbar pl-0 pr-0 pt-2 d-inline">
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-xs-12 panel-toolbar pl-0 pr-0 pt-2 d-inline text-right">
                         <button class="btn btn-xs mr-1 shadow-0 btn-primary"
                                 title="<?php echo __('Setup tab rotation'); ?>"
                                 data-toggle="modal" data-target="#tabRotationModal">

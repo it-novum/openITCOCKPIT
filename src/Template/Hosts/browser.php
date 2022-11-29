@@ -431,11 +431,11 @@ use Cake\Core\Plugin;
                                                             {{ mergedHost.hostCommandLine }}
                                                         </code>
 
-                                                        <span ng-click="rootCopyToClipboard(mergedHost.hostCommandLine, $event)"
-                                                              class="copy-action text-primary animated copy-action-top-right"
-                                                              data-copied="<?= __('Copied'); ?>"
-                                                              data-copy="<?= __('Copy'); ?>"
-                                                        >
+                                                        <span
+                                                            ng-click="rootCopyToClipboard(mergedHost.hostCommandLine, $event)"
+                                                            class="copy-action text-primary animated copy-action-top-right"
+                                                            data-copied="<?= __('Copied'); ?>"
+                                                            data-copy="<?= __('Copy'); ?>">
                                                             <?= __('Copy'); ?>
                                                         </span>
                                                     </td>
@@ -1093,6 +1093,31 @@ use Cake\Core\Plugin;
                 <h2>
                     <?php echo __('Service'); ?>
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+
+                    <div ng-show="hoststatus.currentState > 0"
+                         class="badge badge-pill bg-primary-100 padding-0 font-weight-normal font-sm margin-left-5">
+                        <div class="d-flex align-items-center padding-right-10">
+                            <div class="alert-icon">
+                                <span class="icon-stack icon-stack-md">
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-warning-700"></i>
+                                    <i class="base base-7 icon-stack-1x opacity-100 color-warning-900"></i>
+                                    <i class="ni ni-bell icon-stack-1x opacity-100 color-white"></i>
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="bold">
+                                    <?= __('Problem with host detected.'); ?>
+                                </span>
+                                <span class="fw-300">
+                                    <u>
+                                        <?= __('Services output may not as expected!'); ?>
+                                    </u>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">

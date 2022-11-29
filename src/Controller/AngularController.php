@@ -1276,4 +1276,29 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
+    public function autoRefresher() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        if ($this->isAngularJsRequest()) {
+            $timeranges = [
+                'refresh_interval' => [
+                    0   => __('Disabled'),
+                    5   => __('Refresh every 5s'),
+                    10  => __('Refresh every 10s'),
+                    30  => __('Refresh every 30s'),
+                    60  => __('Refresh every 1m'),
+                    120 => __('Refresh every 2m'),
+                    300 => __('Refresh every 5m'),
+                    900 => __('Refresh every 15m')
+                ]
+            ];
+            $this->set('timeranges', $timeranges);
+            $this->viewBuilder()->setOption('serialize', ['timeranges']);
+        }
+
+    }
 }

@@ -141,7 +141,8 @@ class AclDependencies {
             ->allow('Angular', 'wizardFilter')
             ->allow('Angular', 'wizardInterfaceFilter')
             ->allow('Angular', 'columns_config_import')
-            ->allow('Angular', 'columns_config_export');
+            ->allow('Angular', 'columns_config_export')
+            ->allow('Angular', 'autoRefresher');
 
         $this
             ->allow('Agentconnector', 'register_agent')
@@ -788,12 +789,23 @@ class AclDependencies {
                                 //    $dependentPluginAction
                                 //));
 
+                                // Action exists in plugin ?
                                 if (isset($acos[$pluginName][$pluginController]['actions'][$pluginAction]['id'])) {
                                     if (isset($acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'])) {
                                         $acoId = $acos[$pluginName][$pluginController]['actions'][$pluginAction]['id'];
                                         $dependentAcoId = $acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'];
 
                                         $dependencyTree[$acoId][] = $dependentAcoId;
+                                    }
+                                } else {
+                                    // Action exists in core ?
+                                    if (isset($acos[$pluginController]['actions'][$pluginAction]['id'])) {
+                                        if (isset($acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'])) {
+                                            $acoId = $acos[$pluginController]['actions'][$pluginAction]['id'];
+                                            $dependentAcoId = $acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'];
+                                            $dependencyTree[$acoId][] = $dependentAcoId;
+
+                                        }
                                     }
                                 }
                             }
