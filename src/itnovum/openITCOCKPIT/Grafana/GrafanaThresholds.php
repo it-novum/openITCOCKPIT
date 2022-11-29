@@ -65,16 +65,28 @@ class GrafanaThresholds {
     }
 
     /**
+     * @param $asString
      * @return int|null
      */
-    public function getWarning() {
+    public function getWarning($asString = false) {
+        if ($asString) {
+            // php8.1 Implicit conversion from float 3.1 to int loses precision
+            return (string)$this->warning;
+        }
+
         return $this->warning;
     }
 
     /**
+     * @param $asString
      * @return int|null
      */
-    public function getCritical() {
+    public function getCritical($asString = false) {
+        if ($asString) {
+            // php8.1 Implicit conversion from float 3.1 to int loses precision
+            return (string)$this->critical;
+        }
+
         return $this->critical;
     }
 }

@@ -762,17 +762,35 @@ class GrafanaUserdashboardsController extends AppController {
                         } else {
                             //Prometheus Service
                             $promql = $metric['metric'];
-
                             if ($metric['metric'] === 'value') {
                                 // Before ITC-2824 openITCOCKPIT always used the value of
                                 // $metric['service']['prometheus_alert_rule']['promql']
                                 // as Datasource and in the DB table grafana_userdashboard_metrics was always "value" stored as metric
                                 // If the metric is "value" than we use the PromQL from the Alert Rule
                                 // Otherwise the user selected a specific metric provided by the PromQL, so we sync the user defined metric
-                                // This is only relevant for PromQL's whitch return more than one value/metric
+                                // This is only relevant for PromQL's which return more than one value/metric
                                 // Also this is described in detail (and german) in Jira (ITC-2824)
 
                                 $promql = $metric['service']['prometheus_alert_rule']['promql'];
+                            }
+
+                            $metricCount = 1;
+                            if (Plugin::isLoaded('PrometheusModule')) {
+                                // Query Prometheus to get all metrics
+                                $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                                $metricCount = $PrometheusPerfdataLoader->getMetricsCountByPromQl($metric['service']['prometheus_alert_rule']['promql']);
+                            }
+
+                            $alias = sprintf(
+                                '%s/%s',
+                                $this->replaceUmlauts($metric['Host']['hostname']),
+                                $this->replaceUmlauts($metric['Service']['servicename']),
+                            );
+
+                            if ($metricCount > 1) {
+                                // The given PromQL returns more than 1 metric
+                                // So we let Grafana generate a legend
+                                $alias = null;
                             }
 
                             $GrafanaTargetCollection->addTarget(
@@ -780,12 +798,7 @@ class GrafanaUserdashboardsController extends AppController {
                                     $promql,
                                     new GrafanaTargetUnit($panel['unit'], true),
                                     new GrafanaThresholds($metric['service']['prometheus_alert_rule']['warning_min'], $metric['service']['prometheus_alert_rule']['critical_min']),
-                                    sprintf(
-                                        '%s/%s/%s',
-                                        $this->replaceUmlauts($metric['Host']['hostname']),
-                                        $this->replaceUmlauts($metric['Service']['servicename']),
-                                        $promql
-                                    ),//Alias
+                                    $alias,
                                     $metric['color'] ?? null
                                 ));
                         }

@@ -65,7 +65,7 @@ class GrafanaThresholdCollection {
         foreach ($this->targetCollection->getTargets() as $target) {
             /** @var GrafanaTargetInterface $target */
             if ($target->getThresholds()->hasWarning()) {
-                $warnings[$target->getThresholds()->getWarning()] = true;
+                $warnings[$target->getThresholds()->getWarning(true)] = true;
             }
         }
         if (sizeof($warnings) === 1) {
@@ -89,7 +89,7 @@ class GrafanaThresholdCollection {
         foreach ($this->targetCollection->getTargets() as $target) {
             /** @var GrafanaTargetInterface $target */
             if ($target->getThresholds()->hasCritical()) {
-                $criticals[$target->getThresholds()->getCritical()] = true;
+                $criticals[$target->getThresholds()->getCritical(true)] = true;
             }
         }
         if (sizeof($criticals) === 1) {
