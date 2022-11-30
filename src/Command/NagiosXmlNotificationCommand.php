@@ -28,6 +28,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\itnovum\openITCOCKPIT\Core\EmailCharacters;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
@@ -230,6 +231,9 @@ class NagiosXmlNotificationCommand extends Command {
         $toName = null;
         if ($args->getOption('contactalias') !== '') {
             $toName = $args->getOption('contactalias');
+            if(!empty($toName) && is_string($toName)){
+                $toName = EmailCharacters::removeDangerousCharactersForToHeader($toName);
+            }
         }
         $Mailer->addTo($this->contactmail, $toName);
         $Mailer->setSubject($this->getHostSubject($Host, $HoststatusIcon));
@@ -278,6 +282,9 @@ class NagiosXmlNotificationCommand extends Command {
         $toName = null;
         if ($args->getOption('contactalias') !== '') {
             $toName = $args->getOption('contactalias');
+            if(!empty($toName) && is_string($toName)){
+                $toName = EmailCharacters::removeDangerousCharactersForToHeader($toName);
+            }
         }
         $Mailer->addTo($this->contactmail, $toName);
         $Mailer->setSubject($this->getServiceSubject(
