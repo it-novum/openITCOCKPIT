@@ -113,6 +113,27 @@ use Cake\Core\Plugin;
                         <?php endif; ?>
                     </ul>
                 </div>
+                <?php if (Plugin::isLoaded('SLAModule')): ?>
+                    <div ng-show="slaOverview" ng-click="selectedTab = 'tab6'; hideTimeline()">
+                        <button
+                            class="btn btn-labeled btn-{{slaOverview.state}} btn-xs btn-w-m waves-effect waves-themed"
+                            ng-hide="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fa-lg" ng-class="{'fa fa-check':slaOverview.state === 'success',
+                                'fa-solid fa-triangle-exclamation':slaOverview.state === 'warning',
+                                'fa-solid fa-bolt': slaOverview.state === 'danger'}"></i>
+                            </span>{{slaOverview.determined_availability_percent}} %
+                        </button>
+                        <button
+                            class="btn btn-labeled btn-primary btn-xs btn-w-m waves-effect waves-themed"
+                            ng-show="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fas fa-question fa-lg"></i>
+                            </span><?= __('Not available'); ?>
+                        </button>
+                    </div>
+                <?php endif; ?>
+
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
@@ -519,10 +540,11 @@ use Cake\Core\Plugin;
                                                             {{ mergedService.serviceCommandLine }}
                                                         </code>
 
-                                                        <span ng-click="rootCopyToClipboard(mergedService.serviceCommandLine, $event)"
-                                                              class="copy-action text-primary animated copy-action-top-right"
-                                                              data-copied="<?= __('Copied'); ?>"
-                                                              data-copy="<?= __('Copy'); ?>"
+                                                        <span
+                                                            ng-click="rootCopyToClipboard(mergedService.serviceCommandLine, $event)"
+                                                            class="copy-action text-primary animated copy-action-top-right"
+                                                            data-copied="<?= __('Copied'); ?>"
+                                                            data-copy="<?= __('Copy'); ?>"
                                                         >
                                                             <?= __('Copy'); ?>
                                                         </span>
@@ -1271,6 +1293,18 @@ use Cake\Core\Plugin;
                         </div>
                     </div>
                     <!-- Customalert tab end -->
+                    <!-- SLA Module start -->
+                    <div ng-show="selectedTab == 'tab6'" ng-if="slaOverview">
+                        <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaServiceInformation', 'Slas', 'SLAModule')): ?>
+                            <sla-service-information-element
+                                service-id="{{mergedService.id}}"></sla-service-information-element>
+                        <?php else: ?>
+                            <label class="text-danger">
+                                <?php echo __('No permissions'); ?>
+                            </label>
+                        <?php endif; ?>
+                    </div>
+                    <!-- SLA Module end -->
                 </div>
             </div>
         </div>
