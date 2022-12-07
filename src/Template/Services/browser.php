@@ -1294,7 +1294,7 @@ use Cake\Core\Plugin;
                     </div>
                     <!-- Customalert tab end -->
                     <!-- SLA Module start -->
-                    <div ng-show="selectedTab == 'tab6'" ng-if="slaOverview">
+                    <div ng-show="selectedTab == 'tab6'" ng-if="slaOverview && selectedTab == 'tab6'">
                         <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaServiceInformation', 'Slas', 'SLAModule')): ?>
                             <sla-service-information-element
                                 service-id="{{mergedService.id}}"></sla-service-information-element>

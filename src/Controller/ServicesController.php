@@ -2854,12 +2854,11 @@ class ServicesController extends AppController {
                 'evaluation_end' => time()
             ];
 
-
             $currentlyAvailabilityService = null;
             $serviceSlaStatusData = null;
-            if (!empty($SlaInformation['service'][0]['sla_availability_status_service'])) {
-                $serviceSlaStatusData = $SlaInformation['service'][0]['sla_availability_status_service'];
-                $currentlyAvailabilityHost = $serviceSlaStatusData['determined_availability_percent'];
+            if (!empty($SlaInformation['sla_availability_status_services'][0])) {
+                $serviceSlaStatusData = $SlaInformation['sla_availability_status_services'][0];
+                $currentlyAvailabilityService = $serviceSlaStatusData['determined_availability_percent'];
             }
 
 
