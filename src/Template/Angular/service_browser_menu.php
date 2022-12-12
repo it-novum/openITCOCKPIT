@@ -42,7 +42,8 @@
                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                     <a ui-sref="HostsBrowser({id:config.hostId})">{{ config.hostName }}</a>
                     (
-                    <span class="copy-to-clipboard-container-text">
+                    <span ng-click="rootCopyToClipboard(config.hostAddress, $event)"
+                          class="copy-to-clipboard-container-text pointer">
                         {{ config.hostAddress }}
                         <span ng-click="rootCopyToClipboard(config.hostAddress, $event)"
                               class="copy-action text-primary animated"

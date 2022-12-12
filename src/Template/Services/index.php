@@ -588,7 +588,8 @@
                                             {{service.Host.hostname}}
                                         </a>
 
-                                        <span class="copy-to-clipboard-container-text">
+                                        <span ng-click="rootCopyToClipboard(service.Host.address, $event)"
+                                              class="copy-to-clipboard-container-text pointer">
                                             (
                                             {{service.Host.address}}
                                             <span ng-click="rootCopyToClipboard(service.Host.address, $event)"

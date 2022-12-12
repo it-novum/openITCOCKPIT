@@ -223,7 +223,8 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td class="copy-to-clipboard-container-text">
+                                <td  ng-click="rootCopyToClipboard(host.Host.address, $event)"
+                                     class="copy-to-clipboard-container-text pointer">
                                     {{ host.Host.address }}
                                     <span ng-click="rootCopyToClipboard(host.Host.address, $event)"
                                           class="copy-action text-primary animated"

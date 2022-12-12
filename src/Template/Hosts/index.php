@@ -763,7 +763,8 @@
                                     {{ host.Host.description }}
                                 </td>
 
-                                <td ng-show="fields[9]" class="copy-to-clipboard-container-text">
+                                <td ng-show="fields[9]" class="copy-to-clipboard-container-text pointer"
+                                    ng-click="rootCopyToClipboard(host.Host.address, $event)">
                                     {{ host.Host.address }}
                                         <span ng-click="rootCopyToClipboard(host.Host.address, $event)"
                                               class="copy-action text-primary animated"
