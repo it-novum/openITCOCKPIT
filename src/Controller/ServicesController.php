@@ -2842,44 +2842,73 @@ class ServicesController extends AppController {
 
         $id = $this->request->getQuery('id');
 
-        $SlaInformation = false;
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+        $service = $ServicesTable->get($id, [
+            'contain' => [
+                'Hosts'
+            ]
+        ]);
+
+        if (!$HostsTable->existsById($service->get('host_id'))) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+            $this->render403();
+            return;
+        }
         $slaOverview = false;
 
         if (Plugin::isLoaded('SLAModule')) {
             /** @var SlasTable $SlasTable */
             $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
-            $SlaInformation = $SlasTable->getSlaStatusInformationByServiceId($id);
-            $slaOverview = [
-                'state'          => 'not_available',
-                'evaluation_end' => time()
-            ];
-
-            $currentlyAvailabilityService = null;
-            $serviceSlaStatusData = null;
-            if (!empty($SlaInformation['sla_availability_status_services'][0])) {
-                $serviceSlaStatusData = $SlaInformation['sla_availability_status_services'][0];
-                $currentlyAvailabilityService = $serviceSlaStatusData['determined_availability_percent'];
-            }
-
-
-            if ($currentlyAvailabilityService) {
-                $slaOverview = [
-                    'evaluation_end'                  => $serviceSlaStatusData['evaluation_end'],
-                    'determined_availability_percent' => $currentlyAvailabilityService,
-                    'warning_threshold'               => $SlaInformation['warning_threshold'],
-                    'minimal_availability'            => $SlaInformation['minimal_availability']
-                ];
-                if ($currentlyAvailabilityService < $SlaInformation['minimal_availability']) {
-                    $state = 'danger';
-                } else if (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] > $currentlyAvailabilityService) {
-                    $state = 'warning';
-                } else {
-                    $state = 'success';
+            $hostSlaId = $host['Host']['sla_id'];
+            if (!empty($hostSlaId)) {
+                if (!$SlasTable->exists($hostSlaId)) {
+                    throw new NotFoundException(__('Invalid sla'));
                 }
-                $slaOverview['state'] = $state;
-            }
-        }
+                $SlaInformation = $SlasTable->getSlaStatusInformationByServiceIdAndSlaId($id, $hostSlaId);
+                $slaOverview = [
+                    'state'          => 'not_available',
+                    'evaluation_end' => time()
+                ];
 
+                $currentlyAvailabilityService = null;
+                $serviceSlaStatusData = null;
+                if (!empty($SlaInformation['sla_availability_status_services'][0])) {
+                    $serviceSlaStatusData = $SlaInformation['sla_availability_status_services'][0];
+                    $currentlyAvailabilityService = $serviceSlaStatusData['determined_availability_percent'];
+                }
+
+                if ($currentlyAvailabilityService) {
+                    $slaOverview = [
+                        'evaluation_end'                  => $serviceSlaStatusData['evaluation_end'],
+                        'determined_availability_percent' => $currentlyAvailabilityService,
+                        'warning_threshold'               => $SlaInformation['warning_threshold'],
+                        'minimal_availability'            => $SlaInformation['minimal_availability']
+                    ];
+                    if ($currentlyAvailabilityService < $SlaInformation['minimal_availability']) {
+                        $state = 'danger';
+                    } else if (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] > $currentlyAvailabilityService) {
+                        $state = 'warning';
+                    } else {
+                        $state = 'success';
+                    }
+                    $slaOverview['state'] = $state;
+                }
+
+            }
+
+        }
         $this->set('slaOverview', $slaOverview);
         $this->viewBuilder()->setOption('serialize', ['slaOverview']);
     }

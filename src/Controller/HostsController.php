@@ -3251,14 +3251,27 @@ class HostsController extends AppController {
         }
 
         $id = $this->request->getQuery('id');
-        $sla_id = $this->request->getQuery('sla_id');
+        $sla_id = $this->request->getQuery('sla_id', null);
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostsTable->exists($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
 
         $SlaInformation = false;
         $slaOverview = false;
 
-        if (Plugin::isLoaded('SLAModule')) {
+        if (Plugin::isLoaded('SLAModule') && !empty($sla_id)) {
             /** @var SlasTable $SlasTable */
             $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+
+            if (!$SlasTable->exists($sla_id)) {
+                throw new NotFoundException(__('Invalid sla'));
+            }
+
+
             $SlaInformation = $SlasTable->getMinSlaStatusInformationByHostIdAndSlaId($id, $sla_id);
             $slaOverview = [
                 'state'          => 'not_available',
@@ -3280,18 +3293,18 @@ class HostsController extends AppController {
                 }
             }
 
-            if($currentlyAvailabilityHost){
+            if ($currentlyAvailabilityHost) {
                 $slaOverview = [
-                    'evaluation_end' => $hostSlaStatusData['evaluation_end'],
+                    'evaluation_end'                  => $hostSlaStatusData['evaluation_end'],
                     'determined_availability_percent' => $currentlyAvailabilityHost,
-                    'warning_threshold' => $SlaInformation['warning_threshold'],
-                    'minimal_availability' => $SlaInformation['minimal_availability']
+                    'warning_threshold'               => $SlaInformation['warning_threshold'],
+                    'minimal_availability'            => $SlaInformation['minimal_availability']
                 ];
-                if($currentlyAvailabilityHost < $SlaInformation['minimal_availability']){
+                if ($currentlyAvailabilityHost < $SlaInformation['minimal_availability']) {
                     $state = 'danger';
-                }elseif (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] > $currentlyAvailabilityHost){
+                } else if (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] > $currentlyAvailabilityHost) {
                     $state = 'warning';
-                }else{
+                } else {
                     $state = 'success';
                 }
                 $slaOverview['state'] = $state;
