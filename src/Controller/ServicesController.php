@@ -2856,7 +2856,6 @@ class ServicesController extends AppController {
                 'Hosts'
             ]
         ]);
-
         if (!$HostsTable->existsById($service->get('host_id'))) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -2873,9 +2872,10 @@ class ServicesController extends AppController {
             $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
             $hostSlaId = $host['Host']['sla_id'];
             if (!empty($hostSlaId)) {
-                if (!$SlasTable->exists($hostSlaId)) {
+                if (!$SlasTable->existsById($hostSlaId)) {
                     throw new NotFoundException(__('Invalid sla'));
                 }
+
                 $SlaInformation = $SlasTable->getSlaStatusInformationByServiceIdAndSlaId($id, $hostSlaId);
                 $slaOverview = [
                     'state'          => 'not_available',
