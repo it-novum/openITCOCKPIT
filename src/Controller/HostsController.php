@@ -1112,16 +1112,16 @@ class HostsController extends AppController {
 
                     if ($detailsToEdit['editContacts'] == 1) {
                         $newContacts = $detailsToEdit['Host']['contacts']['_ids'];
-                        $allContactsAreVisibleForUser = empty($mergedHost['Host']['contacts']) && empty($mergedHost['Host']['hosttemplate']['contacts']);
+                        $allContactsAreVisibleForUser = empty($mergedHost['Host']['contacts']) && empty($hosttemplate['Hosttemplate']['contacts']);
                         $contactsFromHost = [];
                         if (!empty($newContacts)) {
                             //Check user permissions for already exists contacts. Are all existing contacts visible for the user
-                            if (!empty($mergedHost['Host']['contacts']) || !empty($mergedHost['Host']['hosttemplate']['contacts'])) {
+                            if (!empty($mergedHost['Host']['contacts']) || !empty($hosttemplate['Hosttemplate']['contacts'])) {
                                 $contactsFromHost = $mergedHost['Host']['contacts']['_ids'];
 
                                 if (empty($contactsFromHost)) {
                                     // Host has no own contacts, use the contacts of the host template
-                                    $contactsFromHost = $mergedHost['Host']['hosttemplate']['contacts']['_ids'];
+                                    $contactsFromHost = $hosttemplate['Hosttemplate']['contacts']['_ids'];
                                 }
                                 if (!empty($contactsFromHost)) {
                                     foreach ($contactsFromHost as $contactId) {
@@ -1146,10 +1146,14 @@ class HostsController extends AppController {
                                 } else {
                                     $allContactsAreVisibleForUser = true; //nothing to do
                                 }
+                            } else {
+                                // This host AND hosttemplate has no contacts yet - no old contacts no permission check required.
+                                $allContactsAreVisibleForUser = true; // All contacts are from GET self::edit_details() which uses MY_RIGHTS
                             }
+
                             if ($allContactsAreVisibleForUser === true) {
                                 //Container permissions check for contacts
-                                // Host can use this contacts
+                                // Current User can use this contacts
                                 // Check if the contacts can be used by the host
                                 $contactsAfterContainerCheck = $ContactsTable->removeContactsWhichAreNotInContainer(
                                     $newContacts,
@@ -1160,8 +1164,13 @@ class HostsController extends AppController {
 
                                     if (empty($contactsFromHost)) {
                                         // Host has no own contacts, use the contacts of the host template
-                                        $contactsFromHost = $mergedHost['Host']['hosttemplate']['contacts']['_ids'];
+                                        $contactsFromHost = $hosttemplate['Hosttemplate']['contacts']['_ids'];
                                     }
+
+                                    if (!is_array($contactsFromHost)) {
+                                        $contactsFromHost = [];
+                                    }
+
                                     if ($detailsToEdit['keepContacts']) {
                                         $contactIds = array_unique(
                                             array_merge(
@@ -1175,19 +1184,26 @@ class HostsController extends AppController {
                                     $hasChanges = true;
                                 }
                             }
+                        } else {
+                            if (!$detailsToEdit['keepContacts']) {
+                                // User has tick "editContacts" and posted an empty array - so we remove all contacts from the hosts
+                                // as long as keepContacts is disabled
+                                $hostArray['Host']['contacts']['_ids'] = [];
+                                $hasChanges = true;
+                            }
                         }
                     }
 
                     if ($detailsToEdit['editContactgroups'] == 1) {
                         $newContactgroups = $detailsToEdit['Host']['contactgroups']['_ids'];
-                        $allContactGroupsAreVisibleForUser = empty($mergedHost['Host']['contactgroups']) && empty($mergedHost['Host']['hosttemplate']['contactgroups']);
+                        $allContactGroupsAreVisibleForUser = empty($mergedHost['Host']['contactgroups']) && empty($hosttemplate['Hosttemplate']['contactgroups']);
                         if (!empty($newContactgroups)) {
                             //Check user permissions for already exists contacts. Are all existing contact groups are visible for the user
-                            if (!empty($mergedHost['Host']['contactgroups']['_ids']) || !empty($mergedHost['Host']['hosttemplate']['contactgroups']['_ids'])) {
+                            if (!empty($mergedHost['Host']['contactgroups']['_ids']) || !empty($hosttemplate['Hosttemplate']['contactgroups']['_ids'])) {
                                 $contactgroupsFromHost = $mergedHost['Host']['contactgroups']['_ids'];
                                 if (empty($contactgroupsFromHost)) {
                                     // Host has no own contact groups, use the contact groups of the host template
-                                    $contactgroupsFromHost = $mergedHost['Host']['hosttemplate']['contactgroups']['_ids'];
+                                    $contactgroupsFromHost = $hosttemplate['Hosttemplate']['contactgroups']['_ids'];
                                 }
                                 if (!empty($contactgroupsFromHost)) {
                                     foreach ($contactgroupsFromHost as $contactgroupId) {
@@ -1212,10 +1228,14 @@ class HostsController extends AppController {
                                 } else {
                                     $allContactGroupsAreVisibleForUser = true; //nothing to do
                                 }
+                            } else {
+                                // This host AND hosttemplate has no contact groups yet - no old contact groups no permission check required.
+                                $allContactGroupsAreVisibleForUser = true; // All contact groups are from GET self::edit_details() which uses MY_RIGHTS
                             }
+
                             if ($allContactGroupsAreVisibleForUser === true) {
                                 // Container permissions check for contact groups
-                                // Host can use this contact groups
+                                // The current User can use this contact groups
                                 // Check if the contact groups can be used by the host
                                 $contactgroupssAfterContainerCheck = $ContactgroupsTable->removeContactgroupsWhichAreNotInContainer(
                                     $newContactgroups,
@@ -1225,10 +1245,15 @@ class HostsController extends AppController {
                                 if (!empty($contactgroupssAfterContainerCheck)) { // Only save the contact groups the host can "see"
                                     $contactgroupsFromHost = $mergedHost['Host']['contactgroups']['_ids'];
 
-                                    if (empty($contactsFromHost)) {
-                                        // Host has no own contacts, use the contacts of the host template
-                                        $contactgroupsFromHost = $mergedHost['Host']['hosttemplate']['contactgroups']['_ids'];
+                                    if (empty($contactgroupsFromHost)) {
+                                        // Host has no own contact groups, use the contacts of the host template
+                                        $contactgroupsFromHost = $hosttemplate['Hosttemplate']['contactgroups']['_ids'];
                                     }
+
+                                    if (!is_array($contactgroupsFromHost)) {
+                                        $contactgroupsFromHost = [];
+                                    }
+
                                     if ($detailsToEdit['keepContactgroups']) {
                                         $contactgroups =
                                             array_unique(
@@ -1243,6 +1268,13 @@ class HostsController extends AppController {
                                     $hostArray['Host']['contactgroups']['_ids'] = $contactgroups;
                                     $hasChanges = true;
                                 }
+                            }
+                        } else {
+                            if (!$detailsToEdit['keepContactgroups']) {
+                                // User has tick "editContactgroups" and posted an empty array - so we remove all contact groups from the hosts
+                                // as long as keepContactgroups is disabled
+                                $hostArray['Host']['contactgroups']['_ids'] = [];
+                                $hasChanges = true;
                             }
                         }
                     }
