@@ -161,7 +161,7 @@ class ChartRenderClient {
                 $response->getStatusCode(),
                 $response->getReasonPhrase()
             ));
-            debug(strip_tags($response->getBody()->getContents()));
+            //debug(strip_tags($response->getBody()->getContents()));
             $ErrorImage->setErrorText($response->getBody()->getContents());
 
             return $ErrorImage->getImageAsPngStream();
