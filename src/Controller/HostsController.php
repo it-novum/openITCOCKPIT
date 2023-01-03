@@ -3259,8 +3259,6 @@ class HostsController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
-
-        $SlaInformation = false;
         $slaOverview = false;
 
         if (Plugin::isLoaded('SLAModule') && !empty($sla_id)) {
@@ -3270,7 +3268,6 @@ class HostsController extends AppController {
             if (!$SlasTable->exists($sla_id)) {
                 throw new NotFoundException(__('Invalid sla'));
             }
-
 
             $SlaInformation = $SlasTable->getMinSlaStatusInformationByHostIdAndSlaId($id, $sla_id);
             $slaOverview = [
