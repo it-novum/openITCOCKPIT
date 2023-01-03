@@ -31,6 +31,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\WidgetsTable;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -1581,18 +1582,28 @@ class MapeditorsController extends AppController {
         }
 
         $service = $ServicesTable->get($serviceId)->toArray();
+        $perfdata = [];
 
-        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFields->perfdata();
-        $servicestatus = $ServicestatusTable->byUuid($service['uuid'], $ServicestatusFields);
+        if (Plugin::isLoaded('PrometheusModule') && $service['service_type'] === PROMETHEUS_SERVICE) {
+            // Query Prometheus to get all metrics
+            $ServiceObj = new Service($service);
 
-        if (!empty($servicestatus)) {
-            $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
-            $this->set('perfdata', $PerfdataParser->parse());
-            $this->viewBuilder()->setOption('serialize', ['perfdata']);
-            return;
+            $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+            $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj);
+        } else {
+            // Normal Service - use Servicestatus to get current perfdata information
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->perfdata();
+            $servicestatus = $ServicestatusTable->byUuid($service['uuid'], $ServicestatusFields);
+
+            if (!empty($servicestatus)) {
+                $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+                $perfdata = $PerfdataParser->parse();
+            }
         }
-        $this->set('perfdata', []);
+
+
+        $this->set('perfdata', $perfdata);
         $this->viewBuilder()->setOption('serialize', ['perfdata']);
     }
 

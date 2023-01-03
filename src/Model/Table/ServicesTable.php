@@ -1137,6 +1137,7 @@ class ServicesTable extends Table {
                 'Services.uuid',
                 'Services.servicetemplate_id',
                 'Services.service_url',
+                'Services.service_type'
             ])
             ->where([
                 'Services.id' => $id
