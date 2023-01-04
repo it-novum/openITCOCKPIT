@@ -5,6 +5,11 @@ if ! [ $(id -u) = 0 ]; then
     exit 1
 fi
 
+# Enable debug mode so that CakePHP will create missing folders
+# https://github.com/it-novum/openITCOCKPIT/issues/1446
+# https://github.com/cakephp/migrations/issues/565
+export OITC_DEBUG=1
+
 APPDIR="/opt/openitc/frontend"
 
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
