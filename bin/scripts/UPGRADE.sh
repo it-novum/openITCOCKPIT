@@ -5,6 +5,11 @@ if ! [ $(id -u) = 0 ]; then
     exit 1
 fi
 
+# Enable debug mode so that CakePHP will create missing folders
+# https://github.com/it-novum/openITCOCKPIT/issues/1446
+# https://github.com/cakephp/migrations/issues/565
+export OITC_DEBUG=1
+
 # Stop phpnsta-client after upgrading from V3 to V4
 if systemctl is-active phpnsta.service; then
     systemctl stop phpnsta.service
