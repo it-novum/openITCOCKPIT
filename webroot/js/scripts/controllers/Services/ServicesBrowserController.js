@@ -19,6 +19,7 @@ angular.module('openITCOCKPIT')
 
         $scope.dataSources = [];
         $scope.currentDataSource = null;
+        $scope.currentDataSourceKey = null;
 
         $scope.serverTimeDateObject = null;
 
@@ -175,12 +176,17 @@ angular.module('openITCOCKPIT')
                 //graphEnd = parseInt($scope.serverTimeDateObject.ts / 1000, 10);
 
                 $scope.dataSources = [];
-                for(var dsName in results[0].data.mergedService.Perfdata){
-                    $scope.dataSources.push(dsName);
+                for(var dsKey in results[0].data.mergedService.Perfdata){
+                    var dsDisplayName = results[0].data.mergedService.Perfdata[dsKey].metric
+                    $scope.dataSources.push({
+                        key: dsKey, // load this datasource - this is important for Prometheus metrics which have no __name__ like rate() or sum(). We can than load metric 0, 1 or 2...
+                        displayName: dsDisplayName // Name of the metric to display in select
+                    });
                 }
 
                 if($scope.dataSources.length > 0){
-                    $scope.currentDataSource = $scope.dataSources[0];
+                    $scope.currentDataSource = $scope.dataSources[0].displayName;
+                    $scope.currentDataSourceKey = $scope.dataSources[0].key;
                 }
 
                 if($scope.mergedService.has_graph){
@@ -326,7 +332,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changeDataSource = function(gaugeName){
-            $scope.currentDataSource = gaugeName;
+            $scope.currentDataSourceKey = gaugeName;
 
             //Reset unit - new datasource new unit - maybe
             $scope.currentGraphUnit = null;
@@ -388,7 +394,7 @@ angular.module('openITCOCKPIT')
                     start: start,
                     end: end,
                     jsTimestamp: 1,
-                    gauge: $scope.currentDataSource,
+                    gauge: $scope.currentDataSourceKey,
                     aggregation: $scope.currentAggregation
                 };
 

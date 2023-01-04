@@ -180,7 +180,7 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                         $scope.metric = firstMetric;
                     }
                     $scope.metrics = metrics;
-                    console.log($scope.metrics);
+                    //console.log($scope.metrics);
                 });
             };
 

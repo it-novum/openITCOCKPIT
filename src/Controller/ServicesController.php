@@ -1643,7 +1643,7 @@ class ServicesController extends AppController {
         if (Plugin::isLoaded('PrometheusModule') && $serviceObj->getServiceType() === PROMETHEUS_SERVICE) {
             // Query Prometheus to get all metrics
             $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
-            $mergedService['Perfdata'] = $PrometheusPerfdataLoader->getAvailableMetricsByService($serviceObj);
+            $mergedService['Perfdata'] = $PrometheusPerfdataLoader->getAvailableMetricsByService($serviceObj, false, true);
             $mergedService['has_graph'] = !empty($mergedService['Perfdata']); // Usually a prometheus service has always a graph
         } else {
             // "Normal" Naemon service (not a PROMETHEUS_SERVICE!)
