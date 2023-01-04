@@ -69,7 +69,17 @@ class ExportTasks implements PluginExportTasks {
                 if ($zipArchive->open($mapZipArchive, \ZipArchive::CREATE) !== true) {
                     Log::error('Cant create zip file');
                 } else {
+                    $directories = [];
+
                     foreach ($files as $filename => $file) {
+                        $path = pathinfo($filename)['dirname'];
+
+                        // Does directory already exists in zip?
+                        if (!isset($directories[$path])) {
+                            $zipArchive->addEmptyDir($path . DS);
+                            $directories[$path] = true;
+                        }
+
                         $zipArchive->addFile($file, $filename);
                     }
                     $zipArchive->close();
@@ -123,7 +133,14 @@ class ExportTasks implements PluginExportTasks {
         $iconsets = array_unique(Hash::extract($mapForSatellite, 'mapitems.{n}.iconset'));
         foreach ($iconsets as $iconset) {
             if (is_dir($basePath . 'items' . DS . $iconset)) {
-                $files['items' . DS . $iconset] = $basePath . 'items' . DS . $iconset;
+                // ITC-2906 Add all icons with pull path to the zip archive - not just the parent directory
+                foreach (scandir($basePath . 'items' . DS . $iconset) as $iconsetImageName) {
+                    if ($iconsetImageName === '.' || $iconsetImageName === '..') {
+                        continue;
+                    }
+                    $files['items' . DS . $iconset . DS . $iconsetImageName] = $basePath . 'items' . DS . $iconset . DS . $iconsetImageName;
+                }
+
             }
         }
 
