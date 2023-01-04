@@ -1589,7 +1589,7 @@ class MapeditorsController extends AppController {
             $ServiceObj = new Service($service);
 
             $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
-            $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj);
+            $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj, false, true);
         } else {
             // Normal Service - use Servicestatus to get current perfdata information
             $ServicestatusFields = new ServicestatusFields($this->DbBackend);

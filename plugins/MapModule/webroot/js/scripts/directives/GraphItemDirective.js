@@ -281,7 +281,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 options.series.threshold = thresholdAreas;
                 options.grid.markings = thresholdLines;
                 //options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
-                options.lines.fillColor.colors = [{ brightness: 1, opacity: 0.2 }, { brightness: 1, opacity: 0.2}];
+                options.lines.fillColor.colors = [{brightness: 1, opacity: 0.2}, {brightness: 1, opacity: 0.2}];
                 options.points = {
                     show: false,
                     radius: 2.5
@@ -307,8 +307,16 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                         $scope.perfdata = $scope.responsePerfdata[0];
                     }else{
                         for(var metricNo in $scope.responsePerfdata){
-                            if($scope.responsePerfdata[metricNo].datasource.name === $scope.item.metric){
-                                $scope.perfdata = $scope.responsePerfdata[metricNo];
+                            if(isNaN($scope.item.metric)){
+                                // Normal gauge from Whisper/Nagios or Prometheus
+                                if($scope.responsePerfdata[metricNo].datasource.metric === $scope.item.metric){
+                                    $scope.perfdata = $scope.responsePerfdata[metricNo];
+                                }
+                            }else{
+                                // Datasource is numeric - this is a workaround for non-unique Prometheus results like from rate() or sum()
+                                if(metricNo == $scope.item.metric){
+                                    $scope.perfdata = $scope.responsePerfdata[metricNo];
+                                }
                             }
                         }
                     }
