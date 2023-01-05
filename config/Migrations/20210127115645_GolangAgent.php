@@ -14,7 +14,7 @@ use Migrations\AbstractMigration;
  */
 class GolangAgent extends AbstractMigration {
 
-    public function up() {
+    public function up(): void {
         $this->table('agentconfigs')
             ->addColumn('use_autossl', 'boolean', [
                 'default' => '1',
@@ -43,7 +43,7 @@ class GolangAgent extends AbstractMigration {
             ->update();
     }
 
-    public function down() {
+    public function down(): void {
         $this->table('agentconfigs')
             ->removeColumn('use_autossl')
             ->removeColumn('autossl_successful')

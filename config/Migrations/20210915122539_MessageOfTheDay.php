@@ -22,7 +22,7 @@ class MessageOfTheDay extends AbstractMigration {
      */
     public $autoId = false;
 
-    public function change() {
+    public function change(): void {
         if (!$this->hasTable('messages_otd')) {
             $this->table('messages_otd')
                 ->addColumn('id', 'integer', [
@@ -82,7 +82,6 @@ class MessageOfTheDay extends AbstractMigration {
                     'limit'   => null,
                     'null'    => false,
                 ])
-
                 ->addIndex(['date'], ['unique' => true])
                 ->create();
 

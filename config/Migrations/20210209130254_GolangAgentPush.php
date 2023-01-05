@@ -26,7 +26,7 @@ class GolangAgentPush extends AbstractMigration {
      */
     public $autoId = false;
 
-    public function up() {
+    public function up(): void {
         if ($this->hasTable('agentconnector')) {
             $this->table('agentconnector')->drop()->save();
         }
@@ -113,7 +113,7 @@ class GolangAgentPush extends AbstractMigration {
 
     }
 
-    public function down() {
+    public function down(): void {
         if ($this->hasTable('push_agents')) {
             $this->table('push_agents')->drop()->save();
         }
