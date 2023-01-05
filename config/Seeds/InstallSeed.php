@@ -49,7 +49,7 @@ class InstallSeed extends AbstractSeed {
      * @return void
      * @throws Exception
      */
-    public function run() {
+    public function run():void {
         //       !!! IMPORTANT !!!
         // Make sure to keep the right order
         // Same as in DumpCommand
