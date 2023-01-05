@@ -57,7 +57,7 @@ class Initial extends AbstractMigration {
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-up-method
      * @return void
      */
-    public function up() {
+    public function up(): void {
         if (!$this->hasTable('grafana_configurations')) {
             $this->table('grafana_configurations')
                 ->addColumn('id', 'integer', [

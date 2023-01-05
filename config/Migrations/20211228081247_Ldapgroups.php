@@ -32,7 +32,7 @@ class Ldapgroups extends AbstractMigration {
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
      * @return void
      */
-    public function change() {
+    public function change(): void {
 
         $this->table('ldapgroups')
             ->addColumn('id', 'integer', [
