@@ -34,7 +34,7 @@ class RotationsTables extends AbstractMigration {
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-up-method
      * @return void
      */
-    public function up() {
+    public function up(): void {
         if (!$this->hasTable('rotations')) {
             $this->table('rotations')
                 ->addColumn('id', 'integer', [
@@ -107,7 +107,7 @@ class RotationsTables extends AbstractMigration {
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-down-method
      * @return void
      */
-    public function down() {
+    public function down(): void {
         $this->table('rotations')->drop()->save();
         $this->table('rotations_to_containers')->drop()->save();
     }
