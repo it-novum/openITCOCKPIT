@@ -9,6 +9,11 @@ if [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+# Enable debug mode so that CakePHP will create missing folders
+# https://github.com/it-novum/openITCOCKPIT/issues/1446
+# https://github.com/cakephp/migrations/issues/565
+export OITC_DEBUG=1
+
 APPDIR="/opt/openitc/frontend"
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
