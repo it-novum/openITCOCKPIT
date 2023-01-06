@@ -14,7 +14,7 @@ use Migrations\AbstractMigration;
  */
 class Agentconnector extends AbstractMigration {
 
-    public function up() {
+    public function up(): void {
         if (!$this->hasTable('agentconnector')) {
             $this->table('agentconnector')
                 ->addColumn('hostuuid', 'string', [
@@ -76,7 +76,7 @@ class Agentconnector extends AbstractMigration {
         }
     }
 
-    public function down() {
+    public function down(): void {
         if ($this->hasTable('agentconnector')) {
             $this->table('agentconnector')->drop()->save();
         }

@@ -17,7 +17,7 @@ class UpdateNotificationsEnabled extends AbstractMigration {
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
      * @return void
      */
-    public function up() {
+    public function up(): void {
         $this->execute('UPDATE hosttemplates SET hosttemplates.notifications_enabled = 1');
         $this->execute('UPDATE servicetemplates SET servicetemplates.notifications_enabled = 1');
     }

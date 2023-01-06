@@ -46,32 +46,32 @@ class CreateMattermostSettings extends AbstractMigration {
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
      * @return void
      */
-    public function change() {
+    public function change(): void {
         $table = $this->table('mattermost_settings');
 
         $table->addColumn('webhook_url', 'string', [
             'default' => '',
-            'limit' => 255,
-            'null' => false,
+            'limit'   => 255,
+            'null'    => false,
         ]);
         $table->addColumn('two_way', 'boolean', [
             'default' => 0
         ]);
         $table->addColumn('apikey', 'string', [
             'default' => '',
-            'limit' => 255,
-            'null' => false,
+            'limit'   => 255,
+            'null'    => false,
         ]);
         $table->addColumn('use_proxy', 'boolean', [
             'default' => 0
         ]);
         $table->addColumn('created', 'datetime', [
             'default' => null,
-            'null' => false,
+            'null'    => false,
         ]);
         $table->addColumn('modified', 'datetime', [
             'default' => null,
-            'null' => false,
+            'null'    => false,
         ]);
         $table->create();
     }

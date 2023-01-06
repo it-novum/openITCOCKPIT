@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use Migrations\AbstractMigration;
+
 /**
  * Class MapToSatellite
  *
@@ -33,7 +34,7 @@ class MapToSatellite extends AbstractMigration {
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
      * @return void
      */
-    public function change() {
+    public function change(): void {
         $this->table('maps_to_satellites')
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
