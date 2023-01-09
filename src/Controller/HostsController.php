@@ -813,6 +813,15 @@ class HostsController extends AppController {
 
                 }
 
+                // Update SLA tables
+                $oldSlaId = $hostForChangelog['Host']['sla_id'] ?? null;
+                $newSlaId = $dataForSave['sla_id'] ?? null;
+                if (intval($oldSlaId) !== intval($newSlaId) && Plugin::isLoaded('SLAModule')) {
+                    // SLA has changed - delete old SLA related records
+                    /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+                    $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+                    $SlasTable->deleteSlaRecordsByHostId($id);
+                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization

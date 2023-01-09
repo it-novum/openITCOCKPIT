@@ -288,6 +288,14 @@ class HosttemplatesController extends AppController {
                     $ChangelogsTable->save($changelogEntry);
                 }
 
+
+                // Update SLA tables
+                $oldSlaId = $hosttemplateForChangeLog['Hosttemplate']['sla_id'] ?? null;
+                $newSlaId = $hosttemplateEntity->get('sla_id');
+                if (intval($oldSlaId) !== intval($newSlaId) && Plugin::isLoaded('SLAModule')) {
+                    $HosttemplatesTable->deleteSlaRecords(intval($id));
+                }
+
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hosttemplateEntity); // REST API ID serialization
                     return;

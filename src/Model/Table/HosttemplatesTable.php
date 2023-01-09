@@ -16,6 +16,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
 /**
@@ -1326,5 +1327,49 @@ class HosttemplatesTable extends Table {
             ];
         }
         return $types;
+    }
+
+    /**
+     * Delete old SLA records because the SLA of the host template was changed
+     * So the SLA for all hosts that are using this host template has changed as well
+     * @param int $hosttemplateId
+     * @return bool
+     */
+    public function deleteSlaRecords(int $hosttemplateId) {
+        if (!Plugin::isLoaded('SLAModule')) {
+            return false;
+        }
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $query = $HostsTable->find()
+            ->select([
+                'Hosts.id'
+            ])
+            ->where([
+                'Hosts.hosttemplate_id' => $hosttemplateId,
+                'Hosts.sla_id IS NULL'
+            ]);
+
+        $hosts = $query
+            ->disableHydration()
+            ->all();
+
+        if (!empty($hosts)) {
+            $hosts = $hosts->toArray();
+        } else {
+            $hosts = [];
+        }
+
+        $hostIds = Hash::extract($hosts, '{n}.id');
+
+        if (!empty($hostIds)) {
+            /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+            $SlasTable->deleteSlaRecordsByHostIds($hostIds);
+        }
+
+        return true;
     }
 }
