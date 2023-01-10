@@ -569,6 +569,85 @@ class HostgroupsController extends AppController {
         );
     }
 
+    public function listToCsv() {
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var $HoststatusTable HoststatusTableInterface */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $MY_RIGHTS = [];
+        if (!$this->hasRootPrivileges) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $hostgroups = $HostgroupsTable->getHostgroupsIndex($HostgroupFilter, null, $MY_RIGHTS);
+
+
+        $User = new User($this->getUser());
+
+        $numberOfHostgroups = sizeof($hostgroups);
+        $numberOfHosts = 0;
+
+        $all_hostgroups = [];
+        foreach ($hostgroups as $hostgroup) {
+            /** @var Hostgroup $hostgroup */
+
+            $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'));
+
+            $HostFilter = new HostFilter($this->request);
+            $HostConditions = new HostConditions();
+
+            $HostConditions->setIncludeDisabled(false);
+            $HostConditions->setHostIds($hostIds);
+            $HostConditions->setContainerIds($this->MY_RIGHTS);
+
+            $hosts = [];
+            if (!empty($hostIds)) {
+                if ($this->DbBackend->isNdoUtils()) {
+                    $hosts = $HostsTable->getHostsIndex($HostFilter, $HostConditions);
+                }
+
+                if ($this->DbBackend->isStatusengine3()) {
+                    $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostConditions);
+                }
+
+                if ($this->DbBackend->isCrateDb()) {
+                    throw new MissingDbBackendException('MissingDbBackendException');
+                }
+            }
+
+            $numberOfHosts += sizeof($hosts);
+
+            $hostgroupHostUuids = Hash::extract($hosts, '{n}.Host.uuid');
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->wildcard();
+            $hoststatusOfHostgroup = $HoststatusTable->byUuids($hostgroupHostUuids, $HoststatusFields);
+
+            $all_hostgroups[] = [
+                'Hostgroup'  => $hostgroup->toArray(),
+                'Hosts'      => $hosts,
+                'Hoststatus' => $hoststatusOfHostgroup
+            ];
+        }
+
+        $this->set('hostgroups', $all_hostgroups);
+        $this->set('numberOfHostgroups', $numberOfHostgroups);
+        $this->set('numberOfHosts', $numberOfHosts);
+        $this->set('User', $User);
+
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'download' => true,
+                'filename' => __('Hostgroups_') . date('dmY_his') . '.pdf',
+            ]
+        );
+    }
+
     public function addHostsToHostgroup() {
         //Only ship template
         return;
