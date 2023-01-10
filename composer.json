@@ -48,6 +48,7 @@
         "erusev/parsedown-extra": "^0.8",
         "freedsx/ldap": "^0.5.0",
         "friendsofcake/cakepdf": "4.0.0-beta",
+        "friendsofcake/cakephp-csvview": "^4.0",
         "guiguiboy/php-cli-progress-bar": "^0.0.4",
         "guzzlehttp/guzzle": "^7.4",
         "itnovum/acl": "^0.7.2",
