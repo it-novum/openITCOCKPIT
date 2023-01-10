@@ -478,6 +478,7 @@ class AclDependencies {
 
         $this
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'listToPdf')
+            ->dependency('Servicegroups', 'index', 'Servicegroups', 'listToCsv')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'view')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByContainerId')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByString')
