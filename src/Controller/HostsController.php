@@ -2521,11 +2521,11 @@ class HostsController extends AppController {
         }
 
         $header = [
-            'hostname',
+            'host_name',
             'host_id',
             'host_uuid',
-            'address',
-            'description',
+            'host_address',
+            'host_description',
             'hosttemplate_id',
             'hosttemplate_name',
             'satellite_id',

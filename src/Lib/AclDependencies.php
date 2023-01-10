@@ -495,6 +495,7 @@ class AclDependencies {
         $this
             ->dependency('Services', 'deactivate', 'Services', 'mass_deactivate')
             ->dependency('Services', 'index', 'Services', 'listToPdf')
+            ->dependency('Services', 'index', 'Services', 'listToCsv')
             ->dependency('Services', 'index', 'Services', 'view')
             ->dependency('Services', 'index', 'Services', 'loadServicesByContainerId')
             ->dependency('Services', 'index', 'Services', 'loadServicesByString')
