@@ -3315,17 +3315,15 @@ class HostsController extends AppController {
                 'state'          => 'not_available',
                 'evaluation_end' => time()
             ];
-
-
             $currentlyAvailabilityHost = null;
             $hostSlaStatusData = null;
-            if (!empty($SlaInformation['hosts'][0]['sla_availability_status_host'])) {
-                $hostSlaStatusData = $SlaInformation['hosts'][0]['sla_availability_status_host'];
+            if (!empty($SlaInformation['sla_availability_status_hosts'][0])) {
+                $hostSlaStatusData = $SlaInformation['sla_availability_status_hosts'][0];
                 $currentlyAvailabilityHost = $hostSlaStatusData['determined_availability_percent'];
             }
-            if (!empty($SlaInformation['hosts'][0]['services'][0]['sla_availability_status_service'])) {
-                $servicesSlaStatusData = $SlaInformation['hosts'][0]['services'][0]['sla_availability_status_service'];
-                $servicesSlaStatusData['determined_availability_percent'] = $SlaInformation['hosts'][0]['services'][0]['min_determined_services_availability_percent'];
+            if (!empty($SlaInformation['sla_availability_status_hosts'][0]['host']['services'][0]['sla_availability_status_service'])) {
+                $servicesSlaStatusData = $SlaInformation['sla_availability_status_hosts'][0]['host']['services'][0]['sla_availability_status_service'];
+                $servicesSlaStatusData['determined_availability_percent'] = $SlaInformation['sla_availability_status_hosts'][0]['host']['services'][0]['min_determined_services_availability_percent'];
                 if ($currentlyAvailabilityHost > $servicesSlaStatusData['determined_availability_percent']) {
                     $currentlyAvailabilityHost = $servicesSlaStatusData['determined_availability_percent'];
                 }
