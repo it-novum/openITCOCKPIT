@@ -1929,6 +1929,141 @@ class ServicesController extends AppController {
         );
     }
 
+    public function listToCsv() {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $ServiceFilter = new ServiceFilter($this->request);
+        $User = new User($this->getUser());
+
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions(
+            $ServiceFilter->indexFilter()
+        );
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+        if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+        }
+
+        if ($ServiceControllerRequest->isRequestFromBrowser() === true) {
+            $browserContainerIds = $ServiceControllerRequest->getBrowserContainerIdsByRequest();
+            foreach ($browserContainerIds as $containerIdToCheck) {
+                if (!in_array($containerIdToCheck, $this->MY_RIGHTS)) {
+                    $this->render403();
+                    return;
+                }
+            }
+
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setContainerIds($browserContainerIds);
+
+            if ($User->isRecursiveBrowserEnabled()) {
+                //get recursive container ids
+                $containerIdToResolve = $browserContainerIds;
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = Hash::extract($children, '{n}.id');
+                $recursiveContainerIds = [];
+                foreach ($containerIds as $containerId) {
+                    if (in_array($containerId, $this->MY_RIGHTS)) {
+                        $recursiveContainerIds[] = $containerId;
+                    }
+                }
+                $ServiceConditions->setContainerIds(array_merge($ServiceConditions->getContainerIds(), $recursiveContainerIds));
+            }
+        }
+
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
+            'Hosts.name'  => 'asc',
+            'servicename' => 'asc'
+        ]));
+
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $services = $ServicesTable->getServiceIndex($ServiceConditions);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions);
+        }
+
+        $all_services = [];
+        $UserTime = $User->getUserTime();
+        foreach ($services as $service) {
+            $Host = new Host($service['_matchingData']['Hosts']);
+            $Service = new Service($service);
+            $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
+
+            $all_services[] = [
+                $Service->getServicename(),
+                $Service->getId(),
+                $Service->getUuid(),
+                $Service->getDescription(),
+                $service['_matchingData']['Servicetemplates']['id'],
+                $service['_matchingData']['Servicetemplates']['name'],
+
+                $Host->getHostname(),
+                $Host->getId(),
+                $Host->getUuid(),
+                $Host->getAddress(),
+                $Host->getSatelliteId(),
+
+                $Servicestatus->currentState(),
+                $Servicestatus->isAcknowledged() ? 1 : 0,
+                $Servicestatus->isInDowntime() ? 1 : 0,
+                $Servicestatus->getLastCheck(),
+                $Servicestatus->getNextCheck(),
+                $Servicestatus->isActiveChecksEnabled() ? 1 : 0,
+                $Servicestatus->getOutput()
+            ];
+        }
+
+        $header = [
+            'service_name',
+            'service_id',
+            'service_uuid',
+            'service_description',
+            'servicetemplate_id',
+            'servicetemplate_name',
+
+            'host_name',
+            'host_id',
+            'host_uuid',
+            'host_address',
+            'satellite_id',
+
+            'current_state',
+            'problem_has_been_acknowledged',
+            'in_downtime',
+            'last_check',
+            'next_check',
+            'active_checks_enabled',
+            'output'
+        ];
+
+        $this->set('data', $all_services);
+
+        $filename = __('Services_') . date('dmY_his') . '.csv';
+        $this->setResponse($this->getResponse()->withDownload($filename));
+        $this->viewBuilder()
+            ->setClassName('CsvView.Csv')
+            ->setOptions([
+                'delimiter' => ';', // Excel prefers ; over ,
+                'bom'       => true, // Fix UTF-8 umlauts in Excel
+                'serialize' => 'data',
+                'header'    => $header,
+            ]);
+    }
+
     /**
      * For ACL only
      */
