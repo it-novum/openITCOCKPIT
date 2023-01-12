@@ -137,15 +137,16 @@ class PerfdataLoader {
                     );
 
                     $datasource = [
-                        'ds'    => $metricName,
-                        'name'  => $metricName,
-                        'label' => $metricName,
-                        'unit'  => $metric['unit'],
-                        'act'   => $metric['current'],
-                        'warn'  => $metric['warning'],
-                        'crit'  => $metric['critical'],
-                        'min'   => $metric['min'],
-                        'max'   => $metric['max'],
+                        'ds'     => $metricName,
+                        'name'   => $metricName,
+                        'label'  => $metricName,
+                        'metric' => $metricName, // ITC-2824 make classical metrics look the same
+                        'unit'   => $metric['unit'],
+                        'act'    => $metric['current'],
+                        'warn'   => $metric['warning'],
+                        'crit'   => $metric['critical'],
+                        'min'    => $metric['min'],
+                        'max'    => $metric['max'],
                     ];
 
                     if ($metric['unit'] === 'c') {

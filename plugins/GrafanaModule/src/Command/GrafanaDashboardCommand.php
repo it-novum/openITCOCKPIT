@@ -276,7 +276,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         $grafanaDashboard->setTitle($host['uuid']);
         $grafanaDashboard->setEditable(false);
         $grafanaDashboard->setTags($this->tag);
-        $grafanaDashboard->setTags('🖥️ '.$host['name']);
+        $grafanaDashboard->setTags('🖥️ ' . $host['name']);
         $grafanaDashboard->setHideControls(true);
         $panelId = 1;
         $grafanaRow = new GrafanaRow();
@@ -319,7 +319,21 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                     );
                 }
             } else {
-                //Prometheus services have only one metric per service
+                //Prometheus service
+                $metricCount = 1;
+                if (Plugin::isLoaded('PrometheusModule')) {
+                    // Query Prometheus to get all metrics
+                    $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $metricCount = $PrometheusPerfdataLoader->getMetricsCountByPromQl($service['prometheus_alert_rule']['promql']);
+                }
+
+                $alias = $serviceName;
+                if ($metricCount > 1) {
+                    // The given PromQL returns more than 1 metric
+                    // So we let Grafana generate a legend
+                    $alias = null;
+                }
+
                 $grafanaPanel = new GrafanaPanel($panelId, 6);
                 $grafanaPanel->setTitle(sprintf('%s - %s', $host['name'], $serviceName));
                 $grafanaTargetCollection->addTarget(
@@ -327,7 +341,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                         $service['prometheus_alert_rule']['promql'],
                         new GrafanaTargetUnit($service['prometheus_alert_rule']['unit']),
                         new GrafanaThresholds($service['prometheus_alert_rule']['warning_min'], $service['prometheus_alert_rule']['critical_min']),
-                        $serviceName
+                        $alias
                     )
                 );
             }

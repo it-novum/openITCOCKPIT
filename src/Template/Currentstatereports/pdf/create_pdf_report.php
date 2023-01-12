@@ -121,10 +121,7 @@ if (sizeof($all_services) > 0):
                     <div class="row">
                         <div class="col-12">
                             <?php
-                            foreach ($currentStateObjectData['Services'] as $serviceData):
-                                $PerfdataParser = new \Statusengine\PerfdataParser($serviceData['Servicestatus']['perfdata']);
-                                $perfdata = $PerfdataParser->parse();
-                                ?>
+                            foreach ($currentStateObjectData['Services'] as $serviceData): ?>
                                 <div class="row padding-top-5 no-padding" style="border-bottom: 1px solid #e1e1e1;">
                                     <div class="col-3" style="font-size: 65%!important;">
                                         <i class="fa fa-square <?= h($serviceData['Servicestatus']['textClass']); ?>"> </i>
@@ -137,7 +134,7 @@ if (sizeof($all_services) > 0):
                                         <?= h($serviceData['Servicestatus']['output']); ?>
                                     </div>
                                     <div class="col-2">
-                                        <?php foreach ($perfdata as $label => $gauge): ?>
+                                        <?php foreach ($serviceData['Servicestatus']['perfdataArray'] as $label => $gauge): ?>
                                             <div class="col-12 text-center" style="font-size: 65%!important;">
                                                 <?= h($label); ?>
                                             </div>
