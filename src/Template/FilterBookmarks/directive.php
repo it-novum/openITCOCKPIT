@@ -85,7 +85,7 @@
 <!-- End Filter -->
 
 <!-- Confirm delete bookmark model -->
-<div class="modal fade" id="deleteBookmarkModal" role="dialog" aria-hidden="true">
+<div class="modal" id="deleteBookmarkModal" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-color-danger txt-color-white">
@@ -115,7 +115,7 @@
 <!-- End confirm delete bookmark model -->
 
 <!-- Show Filter URL Model -->
-<div class="modal fade" id="showBookmarkModal" role="dialog" aria-hidden="true">
+<div class="modal" id="showBookmarkModal" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-info txt-color-white">
@@ -152,7 +152,7 @@
 <!-- End Filter URL Model -->
 
 <!-- Edit filter modal -->
-<div class="modal fade" id="editBookmarkModal" role="dialog" aria-hidden="true">
+<div class="modal" id="editBookmarkModal" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary txt-color-white">
@@ -210,7 +210,7 @@
 <!-- End edit filter modal -->
 
 <!-- Save as new filter modal -->
-<div class="modal fade" id="createNewBookmarkModal" role="dialog" aria-hidden="true">
+<div class="modal" id="createNewBookmarkModal" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-ok txt-color-white">

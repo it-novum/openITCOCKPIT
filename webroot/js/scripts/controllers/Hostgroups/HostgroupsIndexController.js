@@ -91,8 +91,11 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
-        $scope.linkForPdf = function(){
+        $scope.linkFor = function(format){
             var baseUrl = '/hostgroups/listToPdf.pdf';
+            if(format === 'csv'){
+                baseUrl = '/hostgroups/listToCsv';
+            }
             baseUrl += '?filter[Containers.name]=' + encodeURI($scope.filter.containers.name);
             baseUrl += '&filter[Hostgroups.description]=' + encodeURI($scope.filter.hostgroups.description);
             return baseUrl;

@@ -208,9 +208,11 @@ angular.module('openITCOCKPIT')
             return ids.join(',');
         };
 
-        $scope.linkForPdf = function(){
-
+        $scope.linkFor = function(format){
             var baseUrl = '/services/listToPdf.pdf?';
+            if(format === 'csv'){
+                baseUrl = '/services/listToCsv?';
+            }
 
             var hasBeenAcknowledged = '';
             var inDowntime = '';

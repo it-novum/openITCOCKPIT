@@ -1286,3 +1286,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     background: rgba(0, 0, 0, 0.15);
     border-radius: 3px 0 0 3px;
 }
+
+.word-wrap-anywhere{
+    word-wrap: anywhere;
+}

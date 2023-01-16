@@ -1383,9 +1383,9 @@ use Cake\Core\Plugin;
                             <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
                                  style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
 
-                                <a class="dropdown-item dropdown-item-xs" ng-repeat="dsName in dataSources"
-                                   ng-click="changeDataSource(dsName)" href="javascript:void(0);">
-                                    {{dsName}}
+                                <a class="dropdown-item dropdown-item-xs" ng-repeat="ds in dataSources"
+                                   ng-click="changeDataSource(ds.key)" href="javascript:void(0);">
+                                    {{ds.displayName}}
                                 </a>
                             </div>
                         </div>

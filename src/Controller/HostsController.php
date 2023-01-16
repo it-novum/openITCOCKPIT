@@ -2422,6 +2422,151 @@ class HostsController extends AppController {
         );
     }
 
+    public function listToCsv() {
+        $User = new User($this->getUser());
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+        $satellites = [];
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
+        $HostCondition = new HostConditions();
+        if ($HostControllerRequest->isRequestFromBrowser() === false) {
+            $HostCondition->setIncludeDisabled(false);
+            $HostCondition->setContainerIds($this->MY_RIGHTS);
+        }
+
+        if ($HostControllerRequest->isRequestFromBrowser() === true) {
+            $browserContainerIds = $HostControllerRequest->getBrowserContainerIdsByRequest();
+            foreach ($browserContainerIds as $containerIdToCheck) {
+                if (!in_array($containerIdToCheck, $this->MY_RIGHTS)) {
+                    $this->render403();
+                    return;
+                }
+            }
+
+            $HostCondition->setIncludeDisabled(false);
+            $HostCondition->setContainerIds($browserContainerIds);
+
+            if ($User->isRecursiveBrowserEnabled()) {
+                //get recursive container ids
+                $containerIdToResolve = $browserContainerIds;
+
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = Hash::extract($children, '{n}.id');
+                $recursiveContainerIds = [];
+                foreach ($containerIds as $containerId) {
+                    if (in_array($containerId, $this->MY_RIGHTS)) {
+                        $recursiveContainerIds[] = $containerId;
+                    }
+                }
+                $HostCondition->setContainerIds(array_merge($HostCondition->getContainerIds(), $recursiveContainerIds));
+            }
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $hosts = $HostsTable->getHostsIndex($HostFilter, $HostCondition);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+            //$query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
+            //$modelName = 'Hoststatus';
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostCondition);
+        }
+
+        $all_hosts = [];
+        $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
+        foreach ($hosts as $host) {
+            $Host = new Host($host['Host']);
+            $Hosttemplate = new Hosttemplate($host);
+            $Hoststatus = new Hoststatus($host['Host']['Hoststatus'], $UserTime);
+
+            $satelliteName = $masterInstanceName;
+            if ($Host->isSatelliteHost()) {
+                $satelliteName = $satellites[$Host->getSatelliteId()];
+            }
+
+            $all_hosts[] = [
+                $Host->getHostname(),
+                $Host->getId(),
+                $Host->getUuid(),
+                $Host->getAddress(),
+                $Host->getDescription(),
+                $Host->getHosttemplateId(),
+                $Hosttemplate->getName(),
+                $Host->getSatelliteId(),
+                $satelliteName,
+                $Host->getContainerId(),
+                $Host->isDisabled() ? 1 : 0,
+
+                $Hoststatus->currentState(),
+                $Hoststatus->isAcknowledged() ? 1 : 0,
+                $Hoststatus->isInDowntime() ? 1 : 0,
+                $Hoststatus->getLastCheck(),
+                $Hoststatus->getNextCheck(),
+                $Hoststatus->isActiveChecksEnabled() ? 1 : 0,
+                $Hoststatus->getOutput()
+            ];
+        }
+
+        $header = [
+            'host_name',
+            'host_id',
+            'host_uuid',
+            'host_address',
+            'host_description',
+            'hosttemplate_id',
+            'hosttemplate_name',
+            'satellite_id',
+            'satellite_name',
+            'container_id',
+            'disabled',
+
+            'current_state',
+            'problem_has_been_acknowledged',
+            'in_downtime',
+            'last_check',
+            'next_check',
+            'active_checks_enabled',
+            'output'
+        ];
+
+
+        $this->set('data', $all_hosts);
+
+        $filename = __('Hosts_') . date('dmY_his') . '.csv';
+        $this->setResponse($this->getResponse()->withDownload($filename));
+        $this->viewBuilder()
+            ->setClassName('CsvView.Csv')
+            ->setOptions([
+                'delimiter' => ';', // Excel prefers ; over ,
+                'bom'       => true, // Fix UTF-8 umlauts in Excel
+                'serialize' => 'data',
+                'header'    => $header,
+            ]);
+    }
+
     //Only for ACLs
     public function checkcommand() {
         return null;

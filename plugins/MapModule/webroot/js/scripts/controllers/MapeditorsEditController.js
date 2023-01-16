@@ -1164,12 +1164,13 @@ angular.module('openITCOCKPIT')
 
                 var firstMetric = null;
 
-                for(var metricName in result.data.perfdata){
+                for(var metricKey in result.data.perfdata){
                     if(firstMetric === null){
-                        firstMetric = metricName;
+                        firstMetric = metricKey;
                     }
+                    var metricDisplayName = result.data.perfdata[metricKey].metric
 
-                    metrics[metricName] = metricName;
+                    metrics[metricKey] = metricDisplayName;
                 }
 
                 if($scope.currentItem.metric === null){

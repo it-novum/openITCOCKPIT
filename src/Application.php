@@ -76,6 +76,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 
         $this->addPlugin('PuppeteerPdf');
 
+        $this->addPlugin('CsvView');
+
         if (PHP_SAPI === 'cli') {
             try {
                 $this->addPlugin('Bake');

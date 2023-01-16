@@ -9,7 +9,6 @@ Type=simple
 Restart=on-failure
 ExecStart=/opt/openitc/frontend/bin/cake gearman_worker
 LimitNOFILE=10000
-LimitNOFILESoft=10000
 RestartSec=30
 
 [Install]
