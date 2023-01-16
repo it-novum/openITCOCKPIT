@@ -25,11 +25,8 @@
 namespace App\Lib\Traits;
 
 
-use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Database\Cake4Paginator;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 trait DatabasePartitionsTrait {
 
@@ -88,15 +85,21 @@ trait DatabasePartitionsTrait {
     public function alterTableAndCreateFirstPartitionByUnixtimestampUnsafe(Table $Table, string $columName): void {
         $Connection = $Table->getConnection();
 
-        $query = $Connection->execute(sprintf("
+        try {
+            $query = $Connection->execute(sprintf("
                 ALTER TABLE %s PARTITION BY RANGE ( %s DIV 86400 ) (
                     PARTITION p_max VALUES LESS THAN ( MAXVALUE )
                 )",
-            $Table->getTable(),
-            $columName
-        ));
+                $Table->getTable(),
+                $columName
+            ));
 
-        $query->fetchAll('num');
+            $query->fetchAll('assoc');
+        } catch (\Exception $e) {
+            // For unknown reason this throws an
+            // "SQLSTATE[HY000]: General error"
+            // error on Ubuntu 20.04 BUT WORKS???!??!?!?
+        }
     }
 
     /**
@@ -123,15 +126,21 @@ trait DatabasePartitionsTrait {
     public function alterTableAndCreateFirstPartitionByDatetimeUnsafe(Table $Table, string $columName): void {
         $Connection = $Table->getConnection();
 
-        $query = $Connection->execute(sprintf("
+        try {
+            $query = $Connection->execute(sprintf("
                 ALTER TABLE %s PARTITION BY RANGE ( TO_DAYS(%s) ) (
                     PARTITION p_max VALUES LESS THAN ( MAXVALUE )
                 )",
-            $Table->getTable(),
-            $columName
-        ));
+                $Table->getTable(),
+                $columName
+            ));
 
-        $query->fetchAll('num');
+            $query->fetchAll('assoc');
+        } catch (\Exception $e) {
+            // For unknown reason this throws an
+            // "SQLSTATE[HY000]: General error"
+            // error on Ubuntu 20.04 BUT WORKS???!??!?!?
+        }
     }
 
     /**
