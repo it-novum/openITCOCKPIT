@@ -34,7 +34,7 @@ use itnovum\openITCOCKPIT\Database\ScrollIndex;
 trait DatabasePartitionsTrait {
 
     /**
-     * Returns existing MySQL Paritions as array
+     * Returns existing MySQL Partitions as array
      * @param Table $Table
      * @return array
      */
@@ -62,6 +62,95 @@ trait DatabasePartitionsTrait {
         }
 
         return $partitions;
+    }
+
+    /**
+     * This method creates the first Partition into a Table which has no partitions yet.
+     * It is a more dynamic (or elegant) alternative to hardcoded table definitions like here:
+     * https://github.com/it-novum/openITCOCKPIT/blob/cdc26c67341b10389390ba4ae254e619877a980e/partitions_statusengine3.sql#L75-L77
+     *
+     * The idea is to use MySQL partitions and still be able to use cakephp/migrations to manage the schema
+     *
+     * This function can be used to create the initial partition by a column which stores a unix timestamp.
+     * DO NOT USE FOR DATETIME COLUMNS.
+     *
+     * This function is considered as unsafe because it is not using a prepared statement.
+     * NEVER PASS ANY USER INPUT TO THIS FUNCTION - IT'S A BAD IDEA ON DIFFERENT LEVELS
+     *
+     * From the MySQL docs:
+     * > In general, parameters are legal only in Data Manipulation Language (DML) statements, and not in Data Definition Language (DDL) statements.
+     * https://dev.mysql.com/doc/c-api/8.0/en/mysql-stmt-prepare.html
+     *
+     * @param Table $Table
+     * @param string $columName
+     * @return void
+     */
+    public function alterTableAndCreateFirstPartitionByUnixtimestampUnsafe(Table $Table, string $columName): void {
+        $Connection = $Table->getConnection();
+
+        $query = $Connection->execute(sprintf("
+                ALTER TABLE %s PARTITION BY RANGE ( %s DIV 86400 ) (
+                    PARTITION p_max VALUES LESS THAN ( MAXVALUE )
+                )",
+            $Table->getTable(),
+            $columName
+        ));
+
+        $query->fetchAll('num');
+    }
+
+    /**
+     * This method creates the first Partition into a Table which has no partitions yet.
+     * It is a more dynamic (or elegant) alternative to hardcoded table definitions like here:
+     * https://github.com/it-novum/openITCOCKPIT/blob/cdc26c67341b10389390ba4ae254e619877a980e/partitions_statusengine3.sql#L75-L77
+     *
+     * The idea is to use MySQL partitions and still be able to use cakephp/migrations to manage the schema
+     *
+     * This function can be used to create the initial partition by a column which stores a MySQL DATETIME.
+     * DO NOT USE FOR UNIX TIMESTAMP COLUMNS.
+     *
+     * This function is considered as unsafe because it is not using a prepared statement.
+     * NEVER PASS ANY USER INPUT TO THIS FUNCTION - IT'S A BAD IDEA ON DIFFERENT LEVELS
+     *
+     * From the MySQL docs:
+     * > In general, parameters are legal only in Data Manipulation Language (DML) statements, and not in Data Definition Language (DDL) statements.
+     * https://dev.mysql.com/doc/c-api/8.0/en/mysql-stmt-prepare.html
+     *
+     * @param Table $Table
+     * @param string $columName
+     * @return void
+     */
+    public function alterTableAndCreateFirstPartitionByDatetimeUnsafe(Table $Table, string $columName): void {
+        $Connection = $Table->getConnection();
+
+        $query = $Connection->execute(sprintf("
+                ALTER TABLE %s PARTITION BY RANGE ( TO_DAYS(%s) ) (
+                    PARTITION p_max VALUES LESS THAN ( MAXVALUE )
+                )",
+            $Table->getTable(),
+            $columName
+        ));
+
+        $query->fetchAll('num');
+    }
+
+    /**
+     * Drops a partition from the given MySQL table by running an unsafe SQL statement
+     *
+     * This function is considered as unsafe because it is not using a prepared statement.
+     * NEVER PASS ANY USER INPUT TO THIS FUNCTION - IT'S A BAD IDEA ON DIFFERENT LEVELS
+     *
+     * From the MySQL docs:
+     * > In general, parameters are legal only in Data Manipulation Language (DML) statements, and not in Data Definition Language (DDL) statements.
+     * https://dev.mysql.com/doc/c-api/8.0/en/mysql-stmt-prepare.html
+     *
+     * @param Table $Table
+     * @param string $partitionName
+     * @return \Cake\Database\StatementInterface
+     */
+    public function dropPartitionByNameUnsafe(Table $Table, string $partitionName) {
+        $Connection = $Table->getConnection();
+        return $Connection->execute("ALTER TABLE " . $Connection->config()['database'] . "." . $Table->getTable() . " DROP PARTITION " . $partitionName . ";");
     }
 
 }

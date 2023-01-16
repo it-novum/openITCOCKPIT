@@ -294,7 +294,7 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
                         $io->setStyle('red', ['text' => 'red', 'blink' => false]);
 
                         $io->out('<red>Drop partition ' . $partition . '</red>');
-                        $Connection->execute("ALTER TABLE " . $Connection->config()['database'] . "." . $Table->getTable() . " DROP PARTITION " . $partition . ";");
+                        $this->dropPartitionByNameUnsafe($Table, $partition);
                     }
                 }
             }
