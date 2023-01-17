@@ -113,7 +113,12 @@ class Backup {
         'statusengine_users',
 
         'customalerts',
-        'customalert_statehistory'
+        'customalert_statehistory',
+
+        'sla_availability_status_hosts_log',
+        'sla_availability_status_services_log',
+        'sla_host_outages',
+        'sla_service_outages'
     ];
 
     /**
