@@ -784,7 +784,7 @@ class GrafanaUserdashboardsController extends AppController {
                             $alias = sprintf(
                                 '%s/%s',
                                 $this->replaceUmlauts($metric['Host']['hostname']),
-                                $this->replaceUmlauts($metric['Service']['servicename']),
+                                $this->replaceUmlauts($metric['Service']['servicename'])
                             );
 
                             if ($metricCount > 1) {
