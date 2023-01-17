@@ -1129,6 +1129,7 @@ class ServicetemplatesTable extends Table {
             ->select([
                 'Servicetemplates.id',
                 'Servicetemplates.name',
+                'Servicetemplates.template_name',
                 'Servicetemplates.uuid'
             ]);
 
