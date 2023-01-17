@@ -68,6 +68,17 @@ class CronjobsCommand extends Command {
             'boolean' => true
         ]);
 
+        $parser->addOption('list', [
+            'short'   => 'l',
+            'help'    => __d('oitc_console', 'List all available cronjobs!'),
+            'boolean' => true
+        ]);
+
+        $parser->addOption('task', [
+            'short' => 't',
+            'help'  => __d('oitc_console', 'Only execute the given cronjob by Task name'),
+        ]);
+
         return $parser;
     }
 
@@ -79,7 +90,46 @@ class CronjobsCommand extends Command {
      * @return null|void|int The exit code or null for success
      */
     public function execute(Arguments $args, ConsoleIo $io) {
+        $listOnly = $args->getOption('list');
+        if ($listOnly === true) {
+            // Only list available cronjobs with some information and exit
+            /** @var CronjobsTable $CronjobsTable */
+            $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
+            $cronjobs = $CronjobsTable->getCronjobs();
 
+            $tableData = [
+                [
+                    'Task', 'Plugin', 'Interval', 'Last scheduled', 'Is currently running', 'Enabled'
+                ]
+            ];
+            foreach ($cronjobs as $cronjob) {
+                $isRunning = 'No';
+                if (isset($cronjob['Cronschedule']['is_running']) && $cronjob['Cronschedule']['is_running']) {
+                    $isRunning = 'Yes';
+                }
+
+                $enabled = '<error>✗</error>';
+                if ($cronjob['Cronjob']['enabled'] === true) {
+                    $enabled = '<success>✓</success>';
+                }
+
+                $tableData[] = [
+                    $cronjob['Cronjob']['task'],
+                    $cronjob['Cronjob']['plugin'],
+                    $cronjob['Cronjob']['interval'],
+                    $cronjob['Cronschedule']['start_time'] ?? 'n/a',
+                    $isRunning,
+                    $enabled,
+                ];
+            }
+
+            $io->helper('Table')->output($tableData);
+            exit(0);
+        }
+
+        $task = $args->getOption('task');
+
+        // Execute the cronjobs
         $io->info('Start openITCOCKPIT cronjobs...');
         $io->hr();
 
@@ -104,6 +154,14 @@ class CronjobsCommand extends Command {
 
         $this->cronjobsToExecute = [];
         foreach ($cronjobs as $cronjob) {
+            if (!empty($task)) {
+                // Only execute the given cronjob
+                if ($cronjob['Cronjob']['task'] !== $task) {
+                    $io->info(sprintf('Skipping cronjob %s.%s', $cronjob['Cronjob']['plugin'], $cronjob['Cronjob']['task']));
+                    continue;
+                }
+            }
+
             if (
                 !(isset($cronjob['Cronschedule']['start_time'])) ||
                 (time() >= (strtotime($cronjob['Cronschedule']['start_time']) + $this->m2s($cronjob['Cronjob']['interval'])) && $cronjob['Cronschedule']['is_running'] == 0) ||
