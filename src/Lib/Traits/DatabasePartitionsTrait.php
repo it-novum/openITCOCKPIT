@@ -58,7 +58,8 @@ trait DatabasePartitionsTrait {
             $partitions = Hash::extract($result, '{n}.PARTITION_NAME');
         }
 
-        return $partitions;
+        // Remove all empty values (MySQL 5.7 and MariaDB ) tend to return a null record
+        return array_filter($partitions);
     }
 
     /**
