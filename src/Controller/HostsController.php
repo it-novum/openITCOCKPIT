@@ -106,6 +106,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use SLAModule\Model\Table\SlasTable;
 
 
 /**
@@ -812,6 +813,15 @@ class HostsController extends AppController {
 
                 }
 
+                // Update SLA tables
+                $oldSlaId = $hostForChangelog['Host']['sla_id'] ?? null;
+                $newSlaId = $dataForSave['sla_id'] ?? null;
+                if (intval($oldSlaId) !== intval($newSlaId) && Plugin::isLoaded('SLAModule')) {
+                    // SLA has changed - delete old SLA related records
+                    /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+                    $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+                    $SlasTable->deleteSlaRecordsByHostId($id);
+                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization
@@ -1704,7 +1714,8 @@ class HostsController extends AppController {
                             'satellite_id',
                             'notifications_enabled',
                             'freshness_checks_enabled',
-                            'freshness_threshold'
+                            'freshness_threshold',
+                            'sla_id'
                         ]
                     );
                     /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
@@ -1783,7 +1794,6 @@ class HostsController extends AppController {
 
                     $tmpHost->hostcommandargumentvalues = $hostcommandargumentvalues;
                     $tmpHost->customvariables = $customvariables;
-
                     $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
                     $mergedHost = $HostMergerForView->getDataForView();
                     $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost);
@@ -3069,6 +3079,15 @@ class HostsController extends AppController {
             $exporters = Api::makeItJavaScriptAble($exporters);
         }
 
+        $slas = [];
+        if (Plugin::isLoaded('SLAModule')) {
+            /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+
+            $slas = $SlasTable->getSlasByContainerId($containerIds, 'list', 'id');
+            $slas = Api::makeItJavaScriptAble($slas);
+        }
+
         $this->set('hosttemplates', $hosttemplates);
         $this->set('hostgroups', $hostgroups);
         $this->set('timeperiods', $timeperiods);
@@ -3078,6 +3097,7 @@ class HostsController extends AppController {
         $this->set('satellites', $satellites);
         $this->set('sharingContainers', $sharingContainers);
         $this->set('exporters', $exporters);
+        $this->set('slas', $slas);
 
         $this->viewBuilder()->setOption('serialize', [
             'hosttemplates',
@@ -3088,7 +3108,8 @@ class HostsController extends AppController {
             'contactgroups',
             'satellites',
             'sharingContainers',
-            'exporters'
+            'exporters',
+            'slas'
         ]);
     }
 
@@ -3408,5 +3429,70 @@ class HostsController extends AppController {
 
         $this->set('isHostnameInUse', $isHostnameInUse);
         $this->viewBuilder()->setOption('serialize', ['isHostnameInUse']);
+    }
+
+    public function loadSlaInformation() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+        $sla_id = $this->request->getQuery('sla_id', null);
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostsTable->exists($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $slaOverview = false;
+
+        if (Plugin::isLoaded('SLAModule') && !empty($sla_id)) {
+            /** @var SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+
+            if (!$SlasTable->exists($sla_id)) {
+                throw new NotFoundException(__('Invalid sla'));
+            }
+
+            $SlaInformation = $SlasTable->getMinSlaStatusInformationByHostIdAndSlaId($id, $sla_id);
+            $slaOverview = [
+                'state'          => 'not_available',
+                'evaluation_end' => time()
+            ];
+            $currentlyAvailabilityHost = null;
+            $hostSlaStatusData = null;
+            if (!empty($SlaInformation['sla_availability_status_hosts'][0])) {
+                $hostSlaStatusData = $SlaInformation['sla_availability_status_hosts'][0];
+                $currentlyAvailabilityHost = $hostSlaStatusData['determined_availability_percent'];
+            }
+            if (!empty($SlaInformation['sla_availability_status_hosts'][0]['host']['services'][0]['sla_availability_status_service'])) {
+                $servicesSlaStatusData = $SlaInformation['sla_availability_status_hosts'][0]['host']['services'][0]['sla_availability_status_service'];
+                $servicesSlaStatusData['determined_availability_percent'] = $SlaInformation['sla_availability_status_hosts'][0]['host']['services'][0]['min_determined_services_availability_percent'];
+                if ($currentlyAvailabilityHost > $servicesSlaStatusData['determined_availability_percent']) {
+                    $currentlyAvailabilityHost = $servicesSlaStatusData['determined_availability_percent'];
+                }
+            }
+
+            if ($currentlyAvailabilityHost) {
+                $slaOverview = [
+                    'evaluation_end'                  => $hostSlaStatusData['evaluation_end'],
+                    'determined_availability_percent' => $currentlyAvailabilityHost,
+                    'warning_threshold'               => $SlaInformation['warning_threshold'],
+                    'minimal_availability'            => $SlaInformation['minimal_availability']
+                ];
+                if ($currentlyAvailabilityHost < $SlaInformation['minimal_availability']) {
+                    $state = 'danger';
+                } else if (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] > $currentlyAvailabilityHost) {
+                    $state = 'warning';
+                } else {
+                    $state = 'success';
+                }
+                $slaOverview['state'] = $state;
+            }
+        }
+
+        $this->set('slaOverview', $slaOverview);
+        $this->viewBuilder()->setOption('serialize', ['slaOverview']);
     }
 }

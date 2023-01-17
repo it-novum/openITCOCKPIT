@@ -198,6 +198,7 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.loadCustomAlerts();
+                $scope.loadSlaInformation();
 
                 if(typeof $scope.serviceBrowserMenuConfig === "undefined"){
                     $scope.serviceBrowserMenuConfig = {
@@ -987,6 +988,17 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.CustomalertsExists = result.data.CustomalertsExists;
+            });
+        };
+
+        $scope.loadSlaInformation = function(){
+            $http.get("/services/loadSlaInformation/.json", {
+                params: {
+                    'id': $scope.mergedService.id,
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.slaOverview = result.data.slaOverview;
             });
         };
 

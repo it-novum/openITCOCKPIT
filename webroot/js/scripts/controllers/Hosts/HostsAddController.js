@@ -50,6 +50,7 @@ angular.module('openITCOCKPIT')
                     container_id: 0,
                     host_url: '',
                     satellite_id: 0,
+                    sla_id: null,
                     contacts: {
                         _ids: []
                     },
@@ -118,7 +119,8 @@ angular.module('openITCOCKPIT')
                 'check_period_id',
                 'notify_period_id',
                 'tags',
-                'host_url'
+                'host_url',
+                'sla_id'
             ];
 
             for(var index in fields){
@@ -239,6 +241,7 @@ angular.module('openITCOCKPIT')
                 $scope.satellites = result.data.satellites;
                 $scope.sharingContainers = result.data.sharingContainers;
                 $scope.exporters = result.data.exporters;
+                $scope.slas = result.data.slas;
             });
         };
 
@@ -255,7 +258,7 @@ angular.module('openITCOCKPIT')
                     'filter[Hosts.name]': searchString,
                     'selected[]': $scope.post.Host.parenthosts._ids,
                     'containerId': containerId,
-                    'satellite_id': ($scope.post.Host.satellite_id > 0)?$scope.post.Host.satellite_id :null
+                    'satellite_id': ($scope.post.Host.satellite_id > 0) ? $scope.post.Host.satellite_id : null
                 }
             }).then(function(result){
                 $scope.parenthosts = result.data.hosts;

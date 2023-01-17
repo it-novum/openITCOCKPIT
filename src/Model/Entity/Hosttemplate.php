@@ -3,6 +3,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use SLAModule\Model\Entity\Sla;
 
 /**
  * Hosttemplate Entity
@@ -60,6 +61,7 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Hostgroup[] $hostgroups
  * @property \App\Model\Entity\Customvariable[] $customvariables
  * @property \PrometheusModule\Model\Entity\PrometheusExporter[] $prometheus_exporters
+ * @property Sla $sla
  */
 class Hosttemplate extends Entity {
 
@@ -128,7 +130,9 @@ class Hosttemplate extends Entity {
         'contactgroups'                     => true,
         'hostgroups'                        => true,
         //'check_command'                     => true
-        'prometheus_exporters'              => true
+        'prometheus_exporters'              => true,
+        'sla_id'                            => true,
+        'sla'                               => true
     ];
 
     /**

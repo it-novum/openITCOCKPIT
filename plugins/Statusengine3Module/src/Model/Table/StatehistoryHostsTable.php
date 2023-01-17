@@ -29,8 +29,6 @@ namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\StatehistoryHostTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
@@ -163,5 +161,61 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
             ->first();
 
         return $query;
+    }
+
+    /**
+     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @return \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost[]
+     */
+    public function getRecordsForReporting(StatehistoryHostConditions $StatehistoryHostConditions) {
+        $statehistoryRecords = [];
+        $query = $this->find()
+            ->where([
+                'StatehistoryHosts.hostname'      => $StatehistoryHostConditions->getHostUuid(),
+                'StatehistoryHosts.state_time <=' => $StatehistoryHostConditions->getFrom()
+            ]);
+        if ($StatehistoryHostConditions->hardStateTypeAndUpState()) {
+            $query->andWhere([
+                'OR' => [
+                    'StatehistoryHosts.is_hardstate' => 1,
+                    'StatehistoryHosts.state'      => 0
+                ]
+            ]);
+        }
+        $query->order([
+            'StatehistoryHosts.state_time' => 'DESC'
+        ])
+            ->disableHydration();
+
+        $result = $query->first();
+        if (!empty($result)) {
+            $statehistoryRecords[] = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($result);
+        }
+
+        $query = $this->find()
+            ->where([
+                'StatehistoryHosts.hostname'     => $StatehistoryHostConditions->getHostUuid(),
+                'StatehistoryHosts.state_time >' => $StatehistoryHostConditions->getFrom()
+            ]);
+        if ($StatehistoryHostConditions->hardStateTypeAndUpState()) {
+            $query->andWhere([
+                'OR' => [
+                    'StatehistoryHosts.is_hardstate' => 1,
+                    'StatehistoryHosts.state'      => 0
+                ]
+            ]);
+        }
+        $query->order([
+            'StatehistoryHosts.state_time' => 'ASC'
+        ])
+            ->disableHydration();
+
+        $results = $query->all();
+
+        foreach($results as $result){
+            $statehistoryRecords[] = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($result);
+        }
+
+        return $statehistoryRecords;
     }
 }

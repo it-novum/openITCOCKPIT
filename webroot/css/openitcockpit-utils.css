@@ -1272,6 +1272,21 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 
 /* Copy to clipboard as text styles END */
 
+.btn-labeled {
+    padding-top: 0;
+    padding-bottom: 0;
+    text-decoration: none;
+}
+
+.btn-label-bootstrap-5 {
+    position: relative;
+    left: -15px;
+    display: inline-block;
+    padding: 1px 12px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px 0 0 3px;
+}
+
 .word-wrap-anywhere{
     word-wrap: anywhere;
 }

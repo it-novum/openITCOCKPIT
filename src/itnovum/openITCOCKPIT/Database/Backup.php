@@ -110,7 +110,15 @@ class Backup {
         'statusengine_servicechecks',
         'statusengine_servicestatus',
         'statusengine_tasks',
-        'statusengine_users'
+        'statusengine_users',
+
+        'customalerts',
+        'customalert_statehistory',
+
+        'sla_availability_status_hosts_log',
+        'sla_availability_status_services_log',
+        'sla_host_outages',
+        'sla_service_outages'
     ];
 
     /**

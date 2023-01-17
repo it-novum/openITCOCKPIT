@@ -148,6 +148,7 @@ $weekdays = [
                                 chosen="calendars"
                                 ng-options="calendar.key as calendar.value for calendar in calendars"
                                 ng-model="post.Timeperiod.calendar_id">
+                                <option></option>
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
