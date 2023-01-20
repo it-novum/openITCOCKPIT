@@ -22,7 +22,8 @@ angular.module('openITCOCKPIT').directive('templateDiff', function($http, $inter
             };
 
             $scope.$watch('value', function(){
-                if($scope.templateValue === null){
+                if($scope.templateValue === null && $scope.value === null){
+                    $scope.hasDiff = false;
                     return;
                 }
                 switch(typeof $scope.templateValue){
@@ -49,6 +50,15 @@ angular.module('openITCOCKPIT').directive('templateDiff', function($http, $inter
                                 }
                             }
                         }
+
+                        if($scope.hasDiff === false){
+                            //typeof null is object
+                            //https://262.ecma-international.org/5.1/#sec-11.4.3
+                            if($scope.templateValue === null && $scope.value !== null){
+                                $scope.hasDiff = true;
+                            }
+                        }
+
                         if($scope.hasDiff === false){
                             var sizeOne = Object.keys($scope.value).length;
                             var sizeTow = Object.keys($scope.templateValue).length;
