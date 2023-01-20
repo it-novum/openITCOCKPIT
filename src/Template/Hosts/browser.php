@@ -123,6 +123,26 @@ use Cake\Core\Plugin;
                         <?php endif; ?>
                     </ul>
                 </div>
+                <?php if (Plugin::isLoaded('SLAModule')): ?>
+                    <div ng-show="slaOverview" ng-click="selectedTab = 'tab7'; hideTimeline()">
+                        <button
+                            class="btn btn-labeled btn-{{slaOverview.state}} btn-xs btn-w-m waves-effect waves-themed"
+                            ng-hide="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fa-lg" ng-class="{'fa fa-check':slaOverview.state === 'success',
+                                'fa-solid fa-triangle-exclamation':slaOverview.state === 'warning',
+                                'fa-solid fa-bolt': slaOverview.state === 'danger'}"></i>
+                            </span>{{slaOverview.determined_availability_percent}} %
+                        </button>
+                        <button
+                            class="btn btn-labeled btn-primary btn-xs btn-w-m waves-effect waves-themed"
+                            ng-show="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fas fa-question fa-lg"></i>
+                            </span><?= __('Not available'); ?>
+                        </button>
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
@@ -250,7 +270,6 @@ use Cake\Core\Plugin;
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div
                                 class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
@@ -1079,6 +1098,17 @@ use Cake\Core\Plugin;
                         <?php endif; ?>
                     </div>
                     <!-- Import Module end -->
+                    <!-- SLA Module start -->
+                    <div ng-show="selectedTab == 'tab7'" ng-if="slaOverview && selectedTab == 'tab7'">
+                        <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostInformation', 'Slas', 'SLAModule')): ?>
+                            <sla-host-information-element host-id="{{mergedHost.id}}"></sla-host-information-element>
+                        <?php else: ?>
+                            <label class="text-danger">
+                                <?php echo __('No permissions'); ?>
+                            </label>
+                        <?php endif; ?>
+                    </div>
+                    <!-- SLA Module end -->
                 </div>
             </div>
         </div>

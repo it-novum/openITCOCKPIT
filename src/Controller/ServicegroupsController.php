@@ -598,6 +598,124 @@ class ServicegroupsController extends AppController {
         );
     }
 
+    public function listToCsv() {
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $MY_RIGHTS = [];
+        if (!$this->hasRootPrivileges) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
+
+        $servicegroups = $ServicegroupsTable->getServicegroupsIndex($ServicegroupFilter, null, $MY_RIGHTS);
+
+
+        $all_servicegroups = [];
+        foreach ($servicegroups as $servicegroup) {
+            $serviceIds = $ServicegroupsTable->getServiceIdsByServicegroupId($servicegroup['id']);
+
+            $ServiceFilter = new ServiceFilter($this->request);
+            $ServiceConditions = new ServiceConditions($ServiceFilter->indexFilter());
+
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setServiceIds($serviceIds);
+            $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+            $services = [];
+            if (!empty($serviceIds)) {
+                if ($this->DbBackend->isNdoUtils()) {
+                    $services = $ServicesTable->getServiceIndex($ServiceConditions);
+                }
+
+                if ($this->DbBackend->isStatusengine3()) {
+                    $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions);
+                }
+
+                if ($this->DbBackend->isCrateDb()) {
+                    throw new MissingDbBackendException('MissingDbBackendException');
+                }
+            }
+
+
+            foreach ($services as $index => $service) {
+                $Servicestatus = new Servicestatus($service['Servicestatus']);
+
+                $all_servicegroups[] = [
+                    $servicegroup['container']['name'],
+                    $servicegroup['id'],
+                    $servicegroup['uuid'],
+                    $servicegroup['container']['parent_id'],
+
+                    $service['servicename'],
+                    $service['id'],
+                    $service['uuid'],
+                    $service['description'],
+                    $service['_matchingData']['Servicetemplates']['id'],
+                    $service['_matchingData']['Servicetemplates']['name'],
+
+                    $service['_matchingData']['Hosts']['name'],
+                    $service['_matchingData']['Hosts']['id'],
+                    $service['_matchingData']['Hosts']['uuid'],
+                    $service['_matchingData']['Hosts']['address'],
+                    $service['_matchingData']['Hosts']['satellite_id'],
+
+                    $Servicestatus->currentState(),
+                    $Servicestatus->isAcknowledged() ? 1 : 0,
+                    $Servicestatus->isInDowntime() ? 1 : 0,
+                    $Servicestatus->getLastCheck(),
+                    $Servicestatus->getNextCheck(),
+                    $Servicestatus->isActiveChecksEnabled() ? 1 : 0,
+                    $Servicestatus->getOutput()
+                ];
+            }
+        }
+
+
+        $header = [
+            'servicegroup_name',
+            'servicegroup_id',
+            'servicegroup_uuid',
+            'servicegroup_container_parent_id',
+
+            'service_name',
+            'service_id',
+            'service_uuid',
+            'service_description',
+            'servicetemplate_id',
+            'servicetemplate_name',
+
+            'host_name',
+            'host_id',
+            'host_uuid',
+            'host_address',
+            'satellite_id',
+
+            'current_state',
+            'problem_has_been_acknowledged',
+            'in_downtime',
+            'last_check',
+            'next_check',
+            'active_checks_enabled',
+            'output'
+        ];
+
+        $this->set('data', $all_servicegroups);
+
+        $filename = __('Servicegroups_') . date('dmY_his') . '.csv';
+        $this->setResponse($this->getResponse()->withDownload($filename));
+        $this->viewBuilder()
+            ->setClassName('CsvView.Csv')
+            ->setOptions([
+                'delimiter' => ';', // Excel prefers ; over ,
+                'bom'       => true, // Fix UTF-8 umlauts in Excel
+                'serialize' => 'data',
+                'header'    => $header,
+            ]);
+    }
+
     public function extended() {
         //Only ship template
         $User = new User($this->getUser());

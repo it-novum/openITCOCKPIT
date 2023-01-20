@@ -69,7 +69,7 @@ class Commands extends Importer {
             (int)1  => [
                 'id'               => '2',
                 'name'             => 'service-notify-by-email',
-                'command_line'     => '/opt/openitc/frontend/bin/cake nagios_notification -q --type Service --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --serviceoutput "$SERVICEOUTPUT$" --serviceackauthor "$NOTIFICATIONAUTHOR$" --serviceackcomment "$NOTIFICATIONCOMMENT$" --format "both"',
+                'command_line'     => '/opt/openitc/frontend/bin/cake nagios_notification -q --type Service --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --serviceoutput "$SERVICEOUTPUT$" --serviceackauthor "$NOTIFICATIONAUTHOR$" --serviceackcomment "$NOTIFICATIONCOMMENT$" --format "both" --servicelongoutput "$LONGSERVICEOUTPUT$"',
                 'command_type'     => '3',
                 'human_args'       => null,
                 'uuid'             => 'a517bbb6-f299-4b57-9865-a4e0b70597e4',

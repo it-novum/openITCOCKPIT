@@ -117,7 +117,8 @@ class HostMergerForBrowser {
             'tags',
             'active_checks_enabled',
             'host_url',
-            'notifications_enabled'
+            'notifications_enabled',
+            'sla_id'
         ];
 
         $data = [];

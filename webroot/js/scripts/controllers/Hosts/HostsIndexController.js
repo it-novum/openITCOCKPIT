@@ -75,26 +75,26 @@ angular.module('openITCOCKPIT')
          'Service Summary ',
          'Host notes'] ***/
         $scope.defaultColumns = function(){
-            $scope.fields = [true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,false];
+            $scope.fields = [true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, false];
             $window.localStorage.removeItem($scope.columnsTableKey);
         };
 
         $scope.saveColumns = function(){
             $window.localStorage.removeItem($scope.columnsTableKey);
-            $window.localStorage.setItem($scope.columnsTableKey,JSON.stringify($scope.fields));
+            $window.localStorage.setItem($scope.columnsTableKey, JSON.stringify($scope.fields));
 
         }
 
         $scope.loadColumns = function(){
-            var fields =  JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
-            if(typeof fields !== undefined && Array.isArray(fields)) {
+            var fields = JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
+            if(typeof fields !== undefined && Array.isArray(fields)){
                 $scope.fields = fields;
-            }else {
+            }else{
                 $scope.defaultColumns()
             }
         }
 
-        $scope.triggerLoadColumns= function(fields){
+        $scope.triggerLoadColumns = function(fields){
             $scope.fields = fields;
         };
         /*** end columns functions ***/
@@ -257,9 +257,11 @@ angular.module('openITCOCKPIT')
             return baseUrl + ids.join('/');
         };
 
-        $scope.linkForPdf = function(){
-
+        $scope.linkFor = function(format){
             var baseUrl = '/hosts/listToPdf.pdf?';
+            if(format === 'csv'){
+                baseUrl = '/hosts/listToCsv?';
+            }
 
             var hasBeenAcknowledged = '';
             var inDowntime = '';

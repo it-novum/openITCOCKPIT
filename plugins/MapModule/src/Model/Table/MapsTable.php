@@ -753,7 +753,18 @@ class MapsTable extends Table {
             $iconProperty = $this->ackAndDowntimeIcon;
         }
 
-        $perfdata = new PerfdataParser($servicestatus->getPerfdata());
+        $perfdata = [];
+        if (Plugin::isLoaded('PrometheusModule') && $serviceArray['service_type'] === PROMETHEUS_SERVICE) {
+            // Query Prometheus to get all metrics
+            $ServiceObj = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceArray);
+
+            $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+            $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj);
+        } else {
+            // Classic service - parse Naemon perfdata string to get current perfdata information
+            $PerfdataParser = new PerfdataParser($servicestatus->getPerfdata());
+            $perfdata = $PerfdataParser->parse();
+        }
 
         $tmpServicestatus = $servicestatus->toArray();
         if ($includeServiceOutput === true) {
@@ -771,7 +782,7 @@ class MapsTable extends Table {
             'background'     => $servicestatus->ServiceStatusBackgroundColor(),
             'Host'           => $HostView->toArray(),
             'Service'        => $ServiceView->toArray(),
-            'Perfdata'       => $perfdata->parse(),
+            'Perfdata'       => $perfdata,
             'Servicestatus'  => $tmpServicestatus
         ];
     }
@@ -1081,7 +1092,7 @@ class MapsTable extends Table {
 
             $serviceIdsByServicegroup = $query->all()->toArray();
             foreach ($serviceIdsByServicegroup as $serviceIdByServicegroup) {
-                $mapElementsByCategory['service'][] =  $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
+                $mapElementsByCategory['service'][] = $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
             }
         }
 

@@ -110,7 +110,9 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js',
         'node_modules/lodash/lodash.min.js',
         'node_modules/luxon/build/global/luxon.min.js',
-        'node_modules/uplot/dist/uPlot.iife.min.js'
+        'node_modules/uplot/dist/uPlot.iife.min.js',
+        'node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js',
+
     ];
 
     /**

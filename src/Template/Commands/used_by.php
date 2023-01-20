@@ -69,13 +69,13 @@
                         <table id="usedby_list" class="table table-striped m-0 table-bordered table-hover table-sm">
                             <tbody>
                             <tr ng-if="objects.Contacts.length > 0">
-                                <th class="bg-color-lightGray">
+                                <th colspan="2" class="bg-color-lightGray">
                                     <i class="fa fa-user"></i>
                                     <?php echo __('Contacts'); ?> ({{objects.Contacts.length}})
                                 </th>
                             </tr>
                             <tr ng-repeat="contact in objects.Contacts">
-                                <td>
+                                <td colspan="2">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
                                         <a ui-sref="ContactsEdit({id: contact.id})">
                                             {{ contact.name }}
@@ -88,13 +88,13 @@
 
 
                             <tr ng-if="objects.Hosttemplates.length > 0">
-                                <th class="bg-color-lightGray">
+                                <th colspan="2" class="bg-color-lightGray">
                                     <i class="fa fa-pencil-square-o"></i>
                                     <?php echo __('Host templates'); ?> ({{objects.Hosttemplates.length}})
                                 </th>
                             </tr>
                             <tr ng-repeat="hosttemplate in objects.Hosttemplates">
-                                <td>
+                                <td colspan="2">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
                                         <a ui-sref="HosttemplatesEdit({id: hosttemplate.id})">
                                             {{ hosttemplate.name }}
@@ -106,31 +106,34 @@
                             </tr>
 
                             <tr ng-if="objects.Servicetemplates.length > 0">
-                                <th class="bg-color-lightGray">
+                                <th colspan="2" class="bg-color-lightGray">
                                     <i class="fa fa-pencil-square-o"></i>
                                     <?php echo __('Service templates'); ?> ({{objects.Servicetemplates.length}})
                                 </th>
                             </tr>
                             <tr ng-repeat="servicetemplate in objects.Servicetemplates">
-                                <td>
+                                <td style="width:50%">
                                     <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
                                         <a ui-sref="ServicetemplatesEdit({id: servicetemplate.id})">
-                                            {{ servicetemplate.name }}
+                                            {{ servicetemplate.template_name }}
                                         </a>
                                     <?php else: ?>
-                                        {{ servicetemplate.name }}
+                                        {{ servicetemplate.template_name }}
                                     <?php endif; ?>
+                                </td>
+                                <td style="width:50%">
+                                    {{ servicetemplate.name }}
                                 </td>
                             </tr>
 
                             <tr ng-if="objects.Hosts.length > 0">
-                                <th class="bg-color-lightGray">
+                                <th colspan="2" class="bg-color-lightGray">
                                     <i class="fa fa-desktop"></i>
                                     <?php echo __('Hosts'); ?> ({{objects.Hosts.length}})
                                 </th>
                             </tr>
                             <tr ng-repeat="host in objects.Hosts">
-                                <td>
+                                <td colspan="2">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                         <a ui-sref="HostsEdit({id:host.id})">
                                             {{ host.name }}
@@ -142,13 +145,13 @@
                             </tr>
 
                             <tr ng-if="objects.Services.length > 0">
-                                <th class="bg-color-lightGray">
+                                <th colspan="2" class="bg-color-lightGray">
                                     <i class="fa fa-cog"></i>
                                     <?php echo __('Services'); ?> ({{objects.Services.length}})
                                 </th>
                             </tr>
                             <tr ng-repeat="service in objects.Services">
-                                <td>
+                                <td colspan="2">
                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                         <a ui-sref="ServicesEdit({id:service.id})">
                                             {{ service._matchingData.Hosts.name }} / {{ service.servicename }}

@@ -1129,6 +1129,7 @@ class ServicetemplatesTable extends Table {
             ->select([
                 'Servicetemplates.id',
                 'Servicetemplates.name',
+                'Servicetemplates.template_name',
                 'Servicetemplates.uuid'
             ]);
 
@@ -1332,15 +1333,6 @@ class ServicetemplatesTable extends Table {
                 'color' => 'text-evc',
                 'class' => 'border-evc',
                 'icon'  => 'fa fa-sitemap fa-rotate-90'
-            ];
-        }
-
-        if (Plugin::isLoaded('SLAModule')) {
-            $types[SLA_SERVICE] = [
-                'title' => __('SLA templates'),
-                'color' => 'text-sla',
-                'class' => 'border-sla',
-                'icon'  => 'fas fa-file-medical-alt'
             ];
         }
 

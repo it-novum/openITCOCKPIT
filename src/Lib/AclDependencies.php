@@ -379,6 +379,7 @@ class AclDependencies {
 
         $this
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'listToPdf')
+            ->dependency('Hostgroups', 'index', 'Hostgroups', 'listToCsv')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'view')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByString')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByContainerId')
@@ -398,6 +399,7 @@ class AclDependencies {
 
         $this
             ->dependency('Hosts', 'index', 'Hosts', 'listToPdf')
+            ->dependency('Hosts', 'index', 'Hosts', 'listToCsv')
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostsByContainerId')
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostsByString')
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostById')
@@ -405,6 +407,7 @@ class AclDependencies {
             ->dependency('Hosts', 'deactivate', 'Hosts', 'mass_deactivate')
             ->dependency('Hosts', 'browser', 'Hosts', 'getGrafanaIframeUrlForDatepicker')
             ->dependency('Hosts', 'browser', 'Hosts', 'loadAdditionalInformation')
+            ->dependency('Hosts', 'browser', 'Hosts', 'loadSlaInformation')
             ->dependency('Hosts', 'add', 'Hosts', 'loadContainers')
             ->dependency('Hosts', 'add', 'Hosts', 'loadCommands')
             ->dependency('Hosts', 'add', 'Hosts', 'loadElementsByContainerId')
@@ -476,6 +479,7 @@ class AclDependencies {
 
         $this
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'listToPdf')
+            ->dependency('Servicegroups', 'index', 'Servicegroups', 'listToCsv')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'view')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByContainerId')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByString')
@@ -494,6 +498,7 @@ class AclDependencies {
         $this
             ->dependency('Services', 'deactivate', 'Services', 'mass_deactivate')
             ->dependency('Services', 'index', 'Services', 'listToPdf')
+            ->dependency('Services', 'index', 'Services', 'listToCsv')
             ->dependency('Services', 'index', 'Services', 'view')
             ->dependency('Services', 'index', 'Services', 'loadServicesByContainerId')
             ->dependency('Services', 'index', 'Services', 'loadServicesByString')
@@ -508,7 +513,8 @@ class AclDependencies {
             ->dependency('Services', 'edit', 'Services', 'loadCommandArguments')
             ->dependency('Services', 'edit', 'Services', 'loadEventhandlerCommandArguments')
             ->dependency('Services', 'serviceList', 'Services', 'deleted')
-            ->dependency('Services', 'browser', 'Services', 'loadCustomalerts');
+            ->dependency('Services', 'browser', 'Services', 'loadCustomalerts')
+            ->dependency('Services', 'browser', 'Services', 'loadSlaInformation');
 
 
         $this

@@ -82,12 +82,12 @@
                                         <?php echo __('Container'); ?>
                                     </label>
                                     <select
-                                            id="HosttemplateContainer"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="containers"
-                                            ng-options="container.key as container.value for container in containers"
-                                            ng-model="post.Hosttemplate.container_id">
+                                        id="HosttemplateContainer"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="containers"
+                                        ng-options="container.key as container.value for container in containers"
+                                        ng-model="post.Hosttemplate.container_id">
                                     </select>
                                     <div ng-show="post.Hosttemplate.container_id < 1" class="warning-glow">
                                         <?php echo __('Please select a container.'); ?>
@@ -102,10 +102,10 @@
                                         <?php echo __('Template name'); ?>
                                     </label>
                                     <input
-                                            id="HosttemplateName"
-                                            class="form-control"
-                                            type="text"
-                                            ng-model="post.Hosttemplate.name">
+                                        id="HosttemplateName"
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="post.Hosttemplate.name">
                                     <div ng-repeat="error in errors.name">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -117,12 +117,12 @@
                                         <?php echo __('Template Type'); ?>
                                     </label>
                                     <select
-                                            id="HostHosttemplateSelect"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="hosttemplatetypes"
-                                            ng-options="templatetype.key as templatetype.value.title for templatetype in hosttemplatetypes"
-                                            ng-model="post.Hosttemplate.hosttemplatetype_id">
+                                        id="HostHosttemplateSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosttemplatetypes"
+                                        ng-options="templatetype.key as templatetype.value.title for templatetype in hosttemplatetypes"
+                                        ng-model="post.Hosttemplate.hosttemplatetype_id">
                                     </select>
                                     <div class="help-block">
                                         <?= __('Defines the type of the template. Use "Generic template" if you are not sure.') ?>
@@ -137,10 +137,10 @@
                                         <?php echo __('Description'); ?>
                                     </label>
                                     <input
-                                            id="HosttemplateDescription"
-                                            class="form-control"
-                                            type="text"
-                                            ng-model="post.Hosttemplate.description">
+                                        id="HosttemplateDescription"
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="post.Hosttemplate.description">
                                     <div ng-repeat="error in errors.description">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -151,13 +151,13 @@
                                         <?php echo __('Host groups'); ?>
                                     </label>
                                     <select
-                                            id="HosttemplateHostgroups"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="hostgroups"
-                                            multiple
-                                            ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                            ng-model="post.Hosttemplate.hostgroups._ids">
+                                        id="HosttemplateHostgroups"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hostgroups"
+                                        multiple
+                                        ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                        ng-model="post.Hosttemplate.hostgroups._ids">
                                     </select>
                                     <div ng-repeat="error in errors.hostgroups">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -212,12 +212,12 @@
                                         <?php endif; ?>
                                     </label>
                                     <select
-                                            id="CheckPeriodSelect"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="checkperiods"
-                                            ng-options="checkperiod.key as checkperiod.value for checkperiod in checkperiods"
-                                            ng-model="post.Hosttemplate.check_period_id">
+                                        id="CheckPeriodSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="checkperiods"
+                                        ng-options="checkperiod.key as checkperiod.value for checkperiod in checkperiods"
+                                        ng-model="post.Hosttemplate.check_period_id">
                                     </select>
                                     <div ng-repeat="error in errors.check_period_id">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -286,12 +286,12 @@
                                         <?php endif; ?>
                                     </label>
                                     <select
-                                            id="HostCheckCommandSelect"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="commands"
-                                            ng-options="command.key as command.value for command in commands"
-                                            ng-model="post.Hosttemplate.command_id">
+                                        id="HostCheckCommandSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="commands"
+                                        ng-options="command.key as command.value for command in commands"
+                                        ng-model="post.Hosttemplate.command_id">
                                     </select>
                                     <div class="help-block" ng-hide="post.Hosttemplate.active_checks_enabled">
                                         <?php echo __('Due to active checking is disabled, this command will only be used as freshness check command.'); ?>
@@ -309,9 +309,9 @@
                                     </label>
                                     <div class="col-xs-12 col-lg-8">
                                         <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="hosttemplatecommandargumentvalue.value">
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="hosttemplatecommandargumentvalue.value">
                                         <div ng-repeat="error in errors.hosttemplatecommandargumentvalues">
                                             <div class="help-block text-danger">{{ error }}</div>
                                         </div>
@@ -334,7 +334,7 @@
                                         <?php echo __('Check interval'); ?>
                                     </label>
                                     <interval-input-directive
-                                            interval="post.Hosttemplate.check_interval"></interval-input-directive>
+                                        interval="post.Hosttemplate.check_interval"></interval-input-directive>
                                     <div class="col-xs-12 col-lg-offset-2">
                                         <div ng-repeat="error in errors.check_interval">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -347,7 +347,7 @@
                                         <?php echo __('Retry interval'); ?>
                                     </label>
                                     <interval-input-directive
-                                            interval="post.Hosttemplate.retry_interval"></interval-input-directive>
+                                        interval="post.Hosttemplate.retry_interval"></interval-input-directive>
                                     <div class="col-xs-12 col-lg-offset-2">
                                         <div ng-repeat="error in errors.retry_interval">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -365,10 +365,10 @@
                                             <div class="btn-group flex-wrap">
                                                 <?php for ($i = 1; $i <= 10; $i++): ?>
                                                     <button
-                                                            type="button"
-                                                            class="btn btn-default"
-                                                            ng-click="post.Hosttemplate.max_check_attempts = <?php echo h($i) ?>"
-                                                            ng-class="{'active': post.Hosttemplate.max_check_attempts == <?php echo h($i); ?>}">
+                                                        type="button"
+                                                        class="btn btn-default"
+                                                        ng-click="post.Hosttemplate.max_check_attempts = <?php echo h($i) ?>"
+                                                        ng-class="{'active': post.Hosttemplate.max_check_attempts == <?php echo h($i); ?>}">
                                                         <?php echo h($i); ?>
                                                     </button>
                                                 <?php endfor; ?>
@@ -377,10 +377,10 @@
                                         <div class="col-xs-12 col-lg-3">
                                             <div class="input-group" style="width: 100%;">
                                                 <input
-                                                        class="form-control"
-                                                        type="number"
-                                                        min="0"
-                                                        ng-model="post.Hosttemplate.max_check_attempts">
+                                                    class="form-control"
+                                                    type="number"
+                                                    min="0"
+                                                    ng-model="post.Hosttemplate.max_check_attempts">
                                             </div>
                                         </div>
                                     </div>
@@ -391,7 +391,7 @@
                                         <div class="help-block">
                                             <?php echo __('Worst case time delay until notification command gets executed after state hits a non ok state: '); ?>
                                             <human-time-directive
-                                                    seconds="(post.Hosttemplate.check_interval + (post.Hosttemplate.max_check_attempts -1) * post.Hosttemplate.retry_interval)"></human-time-directive>
+                                                seconds="(post.Hosttemplate.check_interval + (post.Hosttemplate.max_check_attempts -1) * post.Hosttemplate.retry_interval)"></human-time-directive>
                                         </div>
                                         <div ng-repeat="error in errors.max_check_attempts">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -425,47 +425,48 @@
                                             <?php echo __('This option is used to determine whether or not notifications are enabled for this host.'); ?>
                                         </div>
                                     </div>
-                                <div class="form-group required" ng-class="{'has-error': errors.notify_period_id}">
-                                    <label class="control-label" for="NotifyPeriodSelect">
-                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
-                                            <a ui-sref="TimeperiodsEdit({id:post.Hosttemplate.notify_period_id})">
+                                    <div class="form-group required" ng-class="{'has-error': errors.notify_period_id}">
+                                        <label class="control-label" for="NotifyPeriodSelect">
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id:post.Hosttemplate.notify_period_id})">
+                                                    <?= __('Notification period'); ?>
+                                                </a>
+                                            <?php else: ?>
                                                 <?= __('Notification period'); ?>
-                                            </a>
-                                        <?php else: ?>
-                                            <?= __('Notification period'); ?>
-                                        <?php endif; ?>
-                                    </label>
-                                    <select
+                                            <?php endif; ?>
+                                        </label>
+                                        <select
                                             id="NotifyPeriodSelect"
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
                                             chosen="timeperiods"
                                             ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
                                             ng-model="post.Hosttemplate.notify_period_id">
-                                    </select>
-                                    <div ng-repeat="error in errors.notify_period_id">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group required" ng-class="{'has-error': errors.notification_interval}">
-                                    <label class="col-xs-12 col-lg-2 control-label">
-                                        <?php echo __('Notification interval'); ?>
-                                    </label>
-                                    <interval-input-directive
-                                            interval="post.Hosttemplate.notification_interval"></interval-input-directive>
-                                    <div class="col-xs-12 col-lg-offset-2">
-                                        <div ng-repeat="error in errors.notification_interval">
+                                        </select>
+                                        <div ng-repeat="error in errors.notify_period_id">
                                             <div class="help-block text-danger">{{ error }}</div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.contacts}">
-                                    <label class="control-label hintmark" for="ContactsPeriodSelect">
-                                        <?php echo __('Contacts'); ?>
-                                    </label>
-                                    <select
+                                    <div class="form-group required"
+                                         ng-class="{'has-error': errors.notification_interval}">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Notification interval'); ?>
+                                        </label>
+                                        <interval-input-directive
+                                            interval="post.Hosttemplate.notification_interval"></interval-input-directive>
+                                        <div class="col-xs-12 col-lg-offset-2">
+                                            <div ng-repeat="error in errors.notification_interval">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" ng-class="{'has-error': errors.contacts}">
+                                        <label class="control-label hintmark" for="ContactsPeriodSelect">
+                                            <?php echo __('Contacts'); ?>
+                                        </label>
+                                        <select
                                             id="ContactsPeriodSelect"
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
@@ -473,17 +474,17 @@
                                             multiple
                                             ng-options="contact.key as contact.value for contact in contacts"
                                             ng-model="post.Hosttemplate.contacts._ids">
-                                    </select>
-                                    <div ng-repeat="error in errors.contacts">
-                                        <div class="help-block text-danger">{{ error }}</div>
+                                        </select>
+                                        <div ng-repeat="error in errors.contacts">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.contactgroups}">
-                                    <label class="control-label hintmark" for="ContactgroupsSelect">
-                                        <?php echo __('Contact groups'); ?>
-                                    </label>
-                                    <select
+                                    <div class="form-group" ng-class="{'has-error': errors.contactgroups}">
+                                        <label class="control-label hintmark" for="ContactgroupsSelect">
+                                            <?php echo __('Contact groups'); ?>
+                                        </label>
+                                        <select
                                             id="ContactgroupsSelect"
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
@@ -491,243 +492,243 @@
                                             multiple
                                             ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
                                             ng-model="post.Hosttemplate.contactgroups._ids">
-                                    </select>
-                                    <div ng-repeat="error in errors.contactgroups">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-
-
-                                <?php
-                                $hostOptions = [
-                                    [
-                                        'field' => 'notify_on_recovery',
-                                        'class' => 'success',
-                                        'text'  => __('Recovery')
-                                    ],
-                                    [
-                                        'field' => 'notify_on_down',
-                                        'class' => 'danger',
-                                        'text'  => __('Down')
-                                    ],
-                                    [
-                                        'field' => 'notify_on_unreachable',
-                                        'class' => 'secondary',
-                                        'text'  => __('Unreachable')
-                                    ],
-                                    [
-                                        'field' => 'notify_on_flapping',
-                                        'class' => 'primary',
-                                        'text'  => __('Flapping')
-                                    ],
-                                    [
-                                        'field' => 'notify_on_downtime',
-                                        'class' => 'primary',
-                                        'text'  => __('Downtime')
-                                    ],
-                                ];
-                                ?>
-
-                                <fieldset>
-                                    <legend class="fs-sm"
-                                            ng-class="{'has-error-no-form': errors.notify_on_recovery}">
-                                        <div class="required">
-                                            <label class="fs-sm">
-                                                <?php echo __('Host notification options'); ?>
-                                            </label>
-
-                                            <div ng-repeat="error in errors.notify_on_recovery">
-                                                <div class="text-danger">{{ error }}</div>
-                                            </div>
+                                        </select>
+                                        <div ng-repeat="error in errors.contactgroups">
+                                            <div class="help-block text-danger">{{ error }}</div>
                                         </div>
-                                    </legend>
-                                    <div class="row">
-                                        <?php foreach ($hostOptions as $hostOption): ?>
-                                            <div
+                                    </div>
+
+
+                                    <?php
+                                    $hostOptions = [
+                                        [
+                                            'field' => 'notify_on_recovery',
+                                            'class' => 'success',
+                                            'text'  => __('Recovery')
+                                        ],
+                                        [
+                                            'field' => 'notify_on_down',
+                                            'class' => 'danger',
+                                            'text'  => __('Down')
+                                        ],
+                                        [
+                                            'field' => 'notify_on_unreachable',
+                                            'class' => 'secondary',
+                                            'text'  => __('Unreachable')
+                                        ],
+                                        [
+                                            'field' => 'notify_on_flapping',
+                                            'class' => 'primary',
+                                            'text'  => __('Flapping')
+                                        ],
+                                        [
+                                            'field' => 'notify_on_downtime',
+                                            'class' => 'primary',
+                                            'text'  => __('Downtime')
+                                        ],
+                                    ];
+                                    ?>
+
+                                    <fieldset>
+                                        <legend class="fs-sm"
+                                                ng-class="{'has-error-no-form': errors.notify_on_recovery}">
+                                            <div class="required">
+                                                <label class="fs-sm">
+                                                    <?php echo __('Host notification options'); ?>
+                                                </label>
+
+                                                <div ng-repeat="error in errors.notify_on_recovery">
+                                                    <div class="text-danger">{{ error }}</div>
+                                                </div>
+                                            </div>
+                                        </legend>
+                                        <div class="row">
+                                            <?php foreach ($hostOptions as $hostOption): ?>
+                                                <div
                                                     class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
                                                     ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
-                                                <input type="checkbox"
-                                                       class="custom-control-input"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0"
-                                                       id="<?php echo $hostOption['field']; ?>"
-                                                       ng-model="post.Hosttemplate.<?php echo $hostOption['field']; ?>">
-                                                <label for="<?php echo $hostOption['field']; ?>"
-                                                       class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostOption['class']; ?> padding-top-0 margin-right-10 ">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           id="<?php echo $hostOption['field']; ?>"
+                                                           ng-model="post.Hosttemplate.<?php echo $hostOption['field']; ?>">
+                                                    <label for="<?php echo $hostOption['field']; ?>"
+                                                           class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostOption['class']; ?> padding-top-0 margin-right-10 ">
                                                     <span
-                                                            class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
+                                                        class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
                                                         <?php echo $hostOption['text']; ?>
                                                     </span>
-                                                </label>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </fieldset>
+                                                    </label>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </fieldset>
+                                </div>
                             </div>
-                        </div>
-                        <!-- NOTIFICATION CONFIGURATION END -->
+                            <!-- NOTIFICATION CONFIGURATION END -->
 
-                        <!-- MISC CONFIGURATION START -->
-                        <div class="card margin-bottom-10">
-                            <div class="card-header">
-                                <i class="fa fa-wrench"></i> <?php echo __('Misc. configuration'); ?>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-group" ng-class="{'has-error': errors.host_url}">
-                                    <label class="control-label">
-                                        <?php echo __('Host URL'); ?>
-                                    </label>
-                                    <input
+                            <!-- MISC CONFIGURATION START -->
+                            <div class="card margin-bottom-10">
+                                <div class="card-header">
+                                    <i class="fa fa-wrench"></i> <?php echo __('Misc. configuration'); ?>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group" ng-class="{'has-error': errors.host_url}">
+                                        <label class="control-label">
+                                            <?php echo __('Host URL'); ?>
+                                        </label>
+                                        <input
                                             id="HosttemplateURL"
                                             class="form-control"
                                             placeholder="https://issues.example.org?host=$HOSTNAME$"
                                             type="text"
                                             ng-model="post.Hosttemplate.host_url">
-                                    <div class="help-block">
-                                        <?php echo __('The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'); ?>
+                                        <div class="help-block">
+                                            <?php echo __('The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'); ?>
+                                        </div>
+                                        <div ng-repeat="error in errors.host_url">
+                                            <div class="help-block text-danger">{{ name }}</div>
+                                        </div>
                                     </div>
-                                    <div ng-repeat="error in errors.host_url">
-                                        <div class="help-block text-danger">{{ name }}</div>
-                                    </div>
-                                </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.notes}">
-                                    <label class="control-label">
-                                        <?php echo __('Notes'); ?>
-                                    </label>
-                                    <input
+                                    <div class="form-group" ng-class="{'has-error': errors.notes}">
+                                        <label class="control-label">
+                                            <?php echo __('Notes'); ?>
+                                        </label>
+                                        <input
                                             id="HosttemplateNotes"
                                             class="form-control"
                                             type="text"
                                             ng-model="post.Hosttemplate.notes">
-                                    <div ng-repeat="error in errors.notes">
-                                        <div class="help-block text-danger">{{ name }}</div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group" ng-class="{'has-error': errors.flap_detection_enabled}">
-                                    <div class="custom-control custom-checkbox margin-bottom-10 "
-                                         ng-class="{'has-error': errors.flap_detection_enabled}">
-                                        <input type="checkbox"
-                                               id="flapDetectionEnabled"
-                                               class="custom-control-input"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
-                                               ng-model="post.Hosttemplate.flap_detection_enabled">
-                                        <label class="custom-control-label" for="flapDetectionEnabled">
-                                            <?php echo __('Flap detection enabled'); ?>
-                                        </label>
-                                    </div>
-                                </div>
-
-
-                                <?php
-                                $hostFlapOptions = [
-                                    [
-                                        'field' => 'flap_detection_on_up',
-                                        'class' => 'success',
-                                        'text'  => __('Recovery')
-                                    ],
-                                    [
-                                        'field' => 'flap_detection_on_down',
-                                        'class' => 'danger',
-                                        'text'  => __('Down')
-                                    ],
-                                    [
-                                        'field' => 'flap_detection_on_unreachable',
-                                        'class' => 'secondary',
-                                        'text'  => __('Unreachable')
-                                    ]
-                                ];
-                                ?>
-
-                                <fieldset ng-show="post.Hosttemplate.flap_detection_enabled">
-                                    <legend class="fs-sm"
-                                            ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
-                                        <div ng-class="{'required':post.Hosttemplate.flap_detection_enabled}">
-                                            <label class="fs-sm">
-                                                <?php echo __('Flap detection options'); ?>
-                                            </label>
-
-                                            <div ng-repeat="error in errors.flap_detection_on_up">
-                                                <div class="text-danger">{{ error }}</div>
-                                            </div>
+                                        <div ng-repeat="error in errors.notes">
+                                            <div class="help-block text-danger">{{ name }}</div>
                                         </div>
-                                    </legend>
-                                    <div class="row">
-                                        <?php foreach ($hostFlapOptions as $hostFlapOption): ?>
-                                            <div
+                                    </div>
+
+                                    <div class="form-group" ng-class="{'has-error': errors.flap_detection_enabled}">
+                                        <div class="custom-control custom-checkbox margin-bottom-10 "
+                                             ng-class="{'has-error': errors.flap_detection_enabled}">
+                                            <input type="checkbox"
+                                                   id="flapDetectionEnabled"
+                                                   class="custom-control-input"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0"
+                                                   ng-model="post.Hosttemplate.flap_detection_enabled">
+                                            <label class="custom-control-label" for="flapDetectionEnabled">
+                                                <?php echo __('Flap detection enabled'); ?>
+                                            </label>
+                                        </div>
+                                    </div>
+
+
+                                    <?php
+                                    $hostFlapOptions = [
+                                        [
+                                            'field' => 'flap_detection_on_up',
+                                            'class' => 'success',
+                                            'text'  => __('Recovery')
+                                        ],
+                                        [
+                                            'field' => 'flap_detection_on_down',
+                                            'class' => 'danger',
+                                            'text'  => __('Down')
+                                        ],
+                                        [
+                                            'field' => 'flap_detection_on_unreachable',
+                                            'class' => 'secondary',
+                                            'text'  => __('Unreachable')
+                                        ]
+                                    ];
+                                    ?>
+
+                                    <fieldset ng-show="post.Hosttemplate.flap_detection_enabled">
+                                        <legend class="fs-sm"
+                                                ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
+                                            <div ng-class="{'required':post.Hosttemplate.flap_detection_enabled}">
+                                                <label class="fs-sm">
+                                                    <?php echo __('Flap detection options'); ?>
+                                                </label>
+
+                                                <div ng-repeat="error in errors.flap_detection_on_up">
+                                                    <div class="text-danger">{{ error }}</div>
+                                                </div>
+                                            </div>
+                                        </legend>
+                                        <div class="row">
+                                            <?php foreach ($hostFlapOptions as $hostFlapOption): ?>
+                                                <div
                                                     class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
                                                     ng-class="{'has-error': errors.<?php echo $hostFlapOption['field']; ?>}">
-                                                <input type="checkbox" name="checkbox"
-                                                       class="custom-control-input"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0"
-                                                       ng-disabled="!post.Hosttemplate.flap_detection_enabled"
-                                                       id="<?php echo $hostFlapOption['field']; ?>"
-                                                       ng-model="post.Hosttemplate.<?php echo $hostFlapOption['field']; ?>">
-                                                <label for="<?php echo $hostFlapOption['field']; ?>"
-                                                       class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostFlapOption['class']; ?> padding-top-0 margin-right-10">
+                                                    <input type="checkbox" name="checkbox"
+                                                           class="custom-control-input"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           ng-disabled="!post.Hosttemplate.flap_detection_enabled"
+                                                           id="<?php echo $hostFlapOption['field']; ?>"
+                                                           ng-model="post.Hosttemplate.<?php echo $hostFlapOption['field']; ?>">
+                                                    <label for="<?php echo $hostFlapOption['field']; ?>"
+                                                           class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostFlapOption['class']; ?> padding-top-0 margin-right-10">
                                                     <span
-                                                            class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
+                                                        class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
                                                         <?php echo $hostFlapOption['text']; ?>
                                                     </span>
-                                                </label>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </fieldset>
-                            </div>
-                        </div>
-                        <!-- MISC CONFIGURATION END -->
-
-                        <!-- HOST MACRO CONFIGURATION START -->
-                        <div class="card margin-bottom-10">
-                            <div class="card-header">
-                                <i class="fa fa-usd"></i> <?php echo __('Host macro configuration'); ?>
-                            </div>
-                            <div class="card-body" ng-class="{'has-error-no-form': errors.customvariables_unique}">
-                                <div class="row">
-                                    <div ng-repeat="error in errors.customvariables_unique">
-                                        <div class=" col-lg-12 text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-
-                                <div class="row" ng-repeat="customvariable in post.Hosttemplate.customvariables">
-                                    <macros-directive macro="customvariable"
-                                                      macro-name="'<?php echo __('HOST'); ?>'"
-                                                      index="$index"
-                                                      callback="deleteMacroCallback"
-                                                      errors="getMacroErrors($index)"
-                                                      class="col-lg-12"
-                                    ></macros-directive>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-offset-2 padding-top-10 text-right">
-                                        <button type="button" class="btn btn-success btn-sm"
-                                                ng-click="addMacro()">
-                                            <i class="fa fa-plus"></i>
-                                            <?php echo __('Add new macro'); ?>
-                                        </button>
-                                    </div>
+                                                    </label>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </fieldset>
                                 </div>
                             </div>
-                        </div>
-                        <!-- HOST MACRO CONFIGURATION END -->
+                            <!-- MISC CONFIGURATION END -->
 
-                        <?php if (\Cake\Core\Plugin::isLoaded('PrometheusModule')): ?>
-                            <!-- PROMETHEUS CONFIGURATION START -->
+                            <!-- HOST MACRO CONFIGURATION START -->
                             <div class="card margin-bottom-10">
                                 <div class="card-header">
-                                    <i class="fas fa-broadcast-tower"></i> <?php echo __('Prometheus Exporters'); ?>
+                                    <i class="fa fa-usd"></i> <?php echo __('Host macro configuration'); ?>
                                 </div>
-                                <div class="card-body">
-                                    <div class="form-group" ng-class="{'has-error': errors.prometheus_exporters}">
-                                        <label class="control-label" for="ExportersSelect">
-                                            <?php echo __('Exporters'); ?>
-                                        </label>
-                                        <select
+                                <div class="card-body" ng-class="{'has-error-no-form': errors.customvariables_unique}">
+                                    <div class="row">
+                                        <div ng-repeat="error in errors.customvariables_unique">
+                                            <div class=" col-lg-12 text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" ng-repeat="customvariable in post.Hosttemplate.customvariables">
+                                        <macros-directive macro="customvariable"
+                                                          macro-name="'<?php echo __('HOST'); ?>'"
+                                                          index="$index"
+                                                          callback="deleteMacroCallback"
+                                                          errors="getMacroErrors($index)"
+                                                          class="col-lg-12"
+                                        ></macros-directive>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-offset-2 padding-top-10 text-right">
+                                            <button type="button" class="btn btn-success btn-sm"
+                                                    ng-click="addMacro()">
+                                                <i class="fa fa-plus"></i>
+                                                <?php echo __('Add new macro'); ?>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- HOST MACRO CONFIGURATION END -->
+
+                            <?php if (\Cake\Core\Plugin::isLoaded('PrometheusModule')): ?>
+                                <!-- PROMETHEUS CONFIGURATION START -->
+                                <div class="card margin-bottom-10">
+                                    <div class="card-header">
+                                        <i class="fas fa-broadcast-tower"></i> <?php echo __('Prometheus Exporters'); ?>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group" ng-class="{'has-error': errors.prometheus_exporters}">
+                                            <label class="control-label" for="ExportersSelect">
+                                                <?php echo __('Exporters'); ?>
+                                            </label>
+                                            <select
                                                 id="ExportersSelect"
                                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                                 class="form-control"
@@ -735,33 +736,75 @@
                                                 multiple
                                                 ng-options="exporter.key as exporter.value for exporter in exporters"
                                                 ng-model="post.Hosttemplate.prometheus_exporters._ids">
-                                        </select>
-                                        <div class="help-block">
-                                            <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
+                                            </select>
+                                            <div class="help-block">
+                                                <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
+                                            </div>
+                                            <div ng-repeat="error in errors.prometheus_exporters">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
                                         </div>
-                                        <div ng-repeat="error in errors.prometheus_exporters">
-                                            <div class="help-block text-danger">{{ error }}</div>
+
+                                    </div>
+                                </div>
+                                <!-- PROMETHEUS CONFIGURATION END -->
+                            <?php endif; ?>
+
+                            <?php if (\Cake\Core\Plugin::isLoaded('SLAModule')): ?>
+                                <!-- SLA CONFIGURATION START -->
+                                <div class="card margin-bottom-10">
+                                    <div class="card-header">
+                                        <i class="fa-solid fa-award"></i> <?= __('Service Level Agreement'); ?>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group" ng-class="{'has-error': errors.slas}">
+                                            <label class="control-label" for="SlasSelect">
+                                                <?php if ($this->Acl->hasPermission('edit', 'slas', 'SLAModule')): ?>
+                                                    <a ui-sref="SlasEdit({id:post.Hosttemplate.sla_id})"
+                                                       ng-show="post.Hosttemplate.sla_id">
+                                                        <?= __('Service class'); ?>
+                                                    </a>
+                                                    <span ng-hide="post.Hosttemplate.sla_id">
+                                                        <?= __('Service class'); ?>
+                                                    </span>
+                                                <?php else: ?>
+                                                    <?= __('Service class'); ?>
+                                                <?php endif; ?>
+                                            </label>
+                                            <select
+                                                id="SlasSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="slas"
+                                                ng-options="sla.key as sla.value for sla in slas"
+                                                ng-model="post.Hosttemplate.sla_id">
+                                                <option></option>
+                                            </select>
+                                            <div class="help-block">
+                                                <?= __('You can define service levels for all hosts using this host template.'); ?>
+                                            </div>
+                                            <div ng-repeat="error in errors.slas">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
+                                <!-- SLA CONFIGURATION END -->
+                            <?php endif; ?>
 
+                            <div class="card margin-top-10">
+                                <div class="card-body">
+                                    <div class="float-right">
+                                        <button class="btn btn-primary" type="submit">
+                                            <?php echo __('Update host template'); ?>
+                                        </button>
+                                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
+                                           class="btn btn-default">
+                                            <?php echo __('Cancel'); ?>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                            <!-- PROMETHEUS CONFIGURATION END -->
-                        <?php endif; ?>
-
-                        <div class="card margin-top-10">
-                            <div class="card-body">
-                                <div class="float-right">
-                                    <button class="btn btn-primary" type="submit">
-                                        <?php echo __('Update host template'); ?>
-                                    </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
-                                       class="btn btn-default">
-                                        <?php echo __('Cancel'); ?>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
                     </form>
                 </div>
             </div>

@@ -949,7 +949,7 @@ class ServicesTable extends Table {
     /**
      * @param int $id
      * @param bool $enableHydration
-     * @return array|\Cake\Datasource\EntityInterface|null
+     * @return Service|null
      */
     public function getServiceById($id, $enableHydration = true) {
         $query = $this->find()
@@ -1137,6 +1137,7 @@ class ServicesTable extends Table {
                 'Services.uuid',
                 'Services.servicetemplate_id',
                 'Services.service_url',
+                'Services.service_type'
             ])
             ->where([
                 'Services.id' => $id
@@ -2360,6 +2361,7 @@ class ServicesTable extends Table {
                 'Services.description',
                 'Services.disabled',
                 'Services.active_checks_enabled',
+                'Services.service_type',
                 'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.name',
@@ -2532,6 +2534,7 @@ class ServicesTable extends Table {
                 'Services.description',
                 'Services.disabled',
                 'Services.active_checks_enabled',
+                'Services.service_type',
                 'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.name',
@@ -3662,15 +3665,6 @@ class ServicesTable extends Table {
                 'color' => 'text-evc',
                 'class' => 'border-evc',
                 'icon'  => 'fa fa-sitemap fa-rotate-90'
-            ];
-        }
-
-        if (Plugin::isLoaded('SLAModule')) {
-            $types[SLA_SERVICE] = [
-                'title' => __('SLA service'),
-                'color' => 'text-sla',
-                'class' => 'border-sla',
-                'icon'  => 'fas fa-file-medical-alt'
             ];
         }
 

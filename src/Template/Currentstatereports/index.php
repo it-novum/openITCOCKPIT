@@ -416,7 +416,8 @@
                                         </td>
                                         <td>
                                             <span ng-if="serviceDetails.Servicestatus.perfdataArray"
-                                                  ng-repeat="(label, perfdata) in serviceDetails.Servicestatus.perfdataArray">
+                                                  ng-repeat="(label, perfdata) in serviceDetails.Servicestatus.perfdataArray"
+                                                  ng-attr-title="{{getProgressbarData(perfdata, label).perfdataString}}">
                                                 <span ng-if="$index === 0">
                                                     <div class="progress progress-md bg-primary position-relative"
                                                          style="margin-bottom: 0px;">

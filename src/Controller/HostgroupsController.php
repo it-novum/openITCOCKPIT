@@ -507,7 +507,6 @@ class HostgroupsController extends AppController {
 
         $hostgroups = $HostgroupsTable->getHostgroupsIndex($HostgroupFilter, null, $MY_RIGHTS);
 
-
         $User = new User($this->getUser());
 
         $numberOfHostgroups = sizeof($hostgroups);
@@ -567,6 +566,131 @@ class HostgroupsController extends AppController {
                 'filename' => __('Hostgroups_') . date('dmY_his') . '.pdf',
             ]
         );
+    }
+
+    public function listToCsv() {
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var $HoststatusTable HoststatusTableInterface */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $MY_RIGHTS = [];
+        if (!$this->hasRootPrivileges) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $hostgroups = $HostgroupsTable->getHostgroupsIndex($HostgroupFilter, null, $MY_RIGHTS);
+        $User = new User($this->getUser());
+
+
+        $all_hostgroups = [];
+        foreach ($hostgroups as $hostgroup) {
+            /** @var Hostgroup $hostgroup */
+
+            $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'));
+
+            $HostFilter = new HostFilter($this->request);
+            $HostConditions = new HostConditions();
+
+            $HostConditions->setIncludeDisabled(false);
+            $HostConditions->setHostIds($hostIds);
+            $HostConditions->setContainerIds($this->MY_RIGHTS);
+
+            $hosts = [];
+            if (!empty($hostIds)) {
+                if ($this->DbBackend->isNdoUtils()) {
+                    $hosts = $HostsTable->getHostsIndex($HostFilter, $HostConditions);
+                }
+
+                if ($this->DbBackend->isStatusengine3()) {
+                    $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostConditions);
+                }
+
+                if ($this->DbBackend->isCrateDb()) {
+                    throw new MissingDbBackendException('MissingDbBackendException');
+                }
+            }
+
+            $hostgroupHostUuids = Hash::extract($hosts, '{n}.Host.uuid');
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->wildcard();
+            $hoststatusOfHostgroup = $HoststatusTable->byUuids($hostgroupHostUuids, $HoststatusFields);
+
+            foreach ($hosts as $host) {
+                $statusdata = [];
+                if (isset($hoststatusOfHostgroup[$host['Host']['uuid']]['Hoststatus'])) {
+                    $statusdata = $hoststatusOfHostgroup[$host['Host']['uuid']]['Hoststatus'];
+                }
+                $Hoststatus = new Hoststatus($statusdata);
+
+
+                $all_hostgroups[] = [
+                    $hostgroup->container->name,
+                    $hostgroup->id,
+                    $hostgroup->uuid,
+                    $hostgroup->container->parent_id,
+
+                    $host['Host']['name'],
+                    $host['Host']['id'],
+                    $host['Host']['uuid'],
+                    $host['Host']['address'],
+                    $host['Host']['description'],
+                    $host['Hosttemplate']['id'],
+                    $host['Hosttemplate']['name'],
+                    $host['Host']['satellite_id'],
+                    $host['Host']['container_id'],
+
+                    $Hoststatus->currentState(),
+                    $Hoststatus->isAcknowledged() ? 1 : 0,
+                    $Hoststatus->isInDowntime() ? 1 : 0,
+                    $Hoststatus->getLastCheck(),
+                    $Hoststatus->getNextCheck(),
+                    $Hoststatus->isActiveChecksEnabled() ? 1 : 0,
+                    $Hoststatus->getOutput()
+                ];
+            }
+        }
+
+        $header = [
+            'hostgroup_name',
+            'hostgroup_id',
+            'hostgroup_uuid',
+            'hostgroup_container_parent_id',
+
+            'host_name',
+            'host_id',
+            'host_uuid',
+            'host_address',
+            'host_description',
+            'hosttemplate_id',
+            'hosttemplate_name',
+            'satellite_id',
+            'container_id',
+
+            'current_state',
+            'problem_has_been_acknowledged',
+            'in_downtime',
+            'last_check',
+            'next_check',
+            'active_checks_enabled',
+            'output'
+        ];
+
+        $this->set('data', $all_hostgroups);
+
+        $filename = __('Hostgroups_') . date('dmY_his') . '.csv';
+        $this->setResponse($this->getResponse()->withDownload($filename));
+        $this->viewBuilder()
+            ->setClassName('CsvView.Csv')
+            ->setOptions([
+                'delimiter' => ';', // Excel prefers ; over ,
+                'bom'       => true, // Fix UTF-8 umlauts in Excel
+                'serialize' => 'data',
+                'header'    => $header,
+            ]);
     }
 
     public function addHostsToHostgroup() {

@@ -27,6 +27,7 @@ namespace Statusengine2Module\Model\Table;
 
 use App\Lib\Interfaces\StatehistoryHostTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Http\Exception\NotImplementedException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -186,5 +187,13 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
             ->first();
 
         return $query;
+    }
+
+    /**
+     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @return \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost[]
+     */
+    public function getRecordsForReporting(StatehistoryHostConditions $StatehistoryHostConditions) {
+        throw new NotImplementedException();
     }
 }
