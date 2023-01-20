@@ -815,7 +815,8 @@ class HostsController extends AppController {
 
                 // Update SLA tables
                 $oldSlaId = $hostForChangelog['Host']['sla_id'] ?? null;
-                $newSlaId = $dataForSave['sla_id'] ?? null;
+                $newSlaId = ($dataForSave['sla_id'] === null) ? $hosttemplate['Hosttemplate']['sla_id'] : $dataForSave['sla_id'];
+
                 if (intval($oldSlaId) !== intval($newSlaId) && Plugin::isLoaded('SLAModule')) {
                     // SLA has changed - delete old SLA related records
                     /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
