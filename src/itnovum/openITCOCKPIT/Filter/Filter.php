@@ -74,18 +74,25 @@ abstract class Filter {
                             $value = $this->getQueryFieldValue($field, true);
                             if ($value) {
                                 if (!is_array($value)) {
-                                    $value = [preg_quote($value)];
+                                    $value = [$value];
                                 }
-                                $conditions[sprintf('%s rlike', $field)] = sprintf('.*(%s).*', implode('|', $value));
+                                $regularExpression = sprintf('.*(%s).*', implode('|', $value));
+                                if ($this->isValidRegularExpression($regularExpression)) {
+                                    $conditions[sprintf('%s rlike', $field)] = $regularExpression;
+                                }
+
                             }
                             break;
                         case 'notrlike':
                             $value = $this->getQueryFieldValue($field, true);
                             if ($value) {
                                 if (!is_array($value)) {
-                                    $value = [preg_quote($value)];
+                                    $value = [$value];
                                 }
-                                $conditions[sprintf('%s not rlike', $field)] = sprintf('.*(%s).*', implode('|', $value));
+                                $regularExpression = sprintf('.*(%s).*', implode('|', $value));
+                                if ($this->isValidRegularExpression($regularExpression)) {
+                                    $conditions[sprintf('%s not rlike', $field)] = $regularExpression;
+                                }
                             }
                             break;
                         case 'equals':
@@ -332,4 +339,11 @@ abstract class Filter {
         return $default;
     }
 
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    public function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
+    }
 }

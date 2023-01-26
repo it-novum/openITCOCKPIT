@@ -4788,13 +4788,13 @@ class HostsTable extends Table {
 
         $where = [];
         $where[] = ['Hoststatus.current_state IN' => $conditions['filter[Hoststatus.current_state][]']];
-        if($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignore') {
+        if ($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignore') {
             $where[] = ['Hoststatus.problem_has_been_acknowledged' => $conditions['filter[Hoststatus.problem_has_been_acknowledged]']];
         }
-        if($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === true) {
+        if ($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === true) {
             $where[] = ['Hoststatus.scheduled_downtime_depth >' => 0];
         }
-        if($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === false) {
+        if ($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === false) {
             $where[] = ['Hoststatus.scheduled_downtime_depth' => 0];
         }
         if (!empty($conditions['filter[Hosts.keywords][]'])) {
