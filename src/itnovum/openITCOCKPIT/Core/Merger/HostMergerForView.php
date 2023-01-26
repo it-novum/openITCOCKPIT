@@ -26,7 +26,6 @@ namespace itnovum\openITCOCKPIT\Core\Merger;
 
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\CustomVariableMerger;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * Class HostMergerForView
@@ -124,6 +123,7 @@ class HostMergerForView {
             'freshness_checks_enabled',
             'freshness_threshold',
             'notifications_enabled',
+            'sla_id'
         ];
 
         $data = [];

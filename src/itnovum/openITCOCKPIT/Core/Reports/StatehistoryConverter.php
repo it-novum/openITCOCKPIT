@@ -30,13 +30,13 @@ use Cake\Utility\Hash;
 class StatehistoryConverter {
 
     /**
-     * @param $timeSlices
-     * @param $stateHistoryArray
-     * @param $checkHardState
-     * @param $isHost
+     * @param array $timeSlices
+     * @param array $stateHistoryArray
+     * @param bool $hardStateOnly
+     * @param bool $isHost
      * @return array
      */
-    public static function generateReportData($timeSlices, $stateHistoryArray, $checkHardState, $isHost = false) {
+    public static function generateReportData(array $timeSlices, array $stateHistoryArray, $hardStateOnly, $isHost = false) {
         $evaluationData = array_fill(0, ($isHost) ? 3 : 4, 0); // host states => 0,1,2; service states => 0,1,2,3
 
         $stateOk = 0;
@@ -47,7 +47,7 @@ class StatehistoryConverter {
 
         foreach ($timeSlices as $timeSliceKey => $timeSlice) {
             $time = $timeSlice['start'];
-            if ($time > strtotime('today 23:59:59')) { // ignore time_slice in the future
+            if ($time > strtotime('today 24:00:00')) { // ignore time_slice in the future
                 $currentState = $stateUnknown;
             }
             reset($stateHistoryArray);
@@ -55,7 +55,7 @@ class StatehistoryConverter {
                 $stateTimeTimestamp = $stateHistory['state_time'];
                 if (!$setInitialState) {
                     $currentState = $stateHistory['last_state'];
-                    if ($checkHardState && $stateHistory['last_state'] != 0) {
+                    if ($hardStateOnly && $stateHistory['last_state'] != 0) {
                         $currentState = $stateHistory['last_hard_state'];
                     }
                     $currentState = ($currentState == -1) ? 0 : $currentState;
@@ -66,17 +66,21 @@ class StatehistoryConverter {
                     break;
                 }
                 if ($stateTimeTimestamp <= $timeSlice['start']) {
-                    $currentState = ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['is_hardstate']))) ? $stateHistory['state'] : $currentState;
+                    if ($stateHistory['state'] == 0 || !$hardStateOnly || ($hardStateOnly && $stateHistory['is_hardstate'])) {
+                        $currentState = $stateHistory['state'];
+                    }
                     unset($stateHistoryArray[$key]);
                     continue;
                 }
-                if ($stateTimeTimestamp > $timeSlice['start']) {
-                    //if outage in downtime add time for state "ok"
-                    $evaluationData[$currentState] += $stateTimeTimestamp - $time;
-                    $currentState = ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['is_hardstate']))) ? $stateHistory['state'] : $currentState;
-                    $time = $stateTimeTimestamp;
-                    unset($stateHistoryArray[$key]);
+
+                //if outage in downtime add time for state "ok"
+                $evaluationData[$currentState] += $stateTimeTimestamp - $time;
+                if ($stateHistory['state'] == 0 || !$hardStateOnly || ($hardStateOnly && $stateHistory['is_hardstate'])) {
+                    $currentState = $stateHistory['state'];
                 }
+                $time = $stateTimeTimestamp;
+                unset($stateHistoryArray[$key]);
+
             }
 
             $evaluationData[$currentState] += $timeSlice['end'] - $time;
@@ -88,14 +92,14 @@ class StatehistoryConverter {
 
 
     /**
-     * @param $timeSlices
-     * @param $stateHistoryArray
-     * @param $checkHardState
+     * @param array $timeSlices
+     * @param array $stateHistoryArray
+     * @param bool $hardStateOnly
      * @param bool $isHost
      * @param bool $outagesSummary
      * @return mixed
      */
-    public static function generateReportDataWithOutages($timeSlices, $stateHistoryArray, $checkHardState, $isHost = false) {
+    public static function generateReportDataWithOutages(array $timeSlices, array $stateHistoryArray, $hardStateOnly, bool $isHost = false, bool $keepDetails = false) {
         $stateArray = array_fill(0, ($isHost) ? 3 : 4, 0); // host states => 0,1,2; service statea => 0,1,2,3
         $stateOk = 0;
         $stateUnknown = ($isHost) ? 2 : 3;//if the end of date in the future
@@ -106,18 +110,24 @@ class StatehistoryConverter {
         $setInitialState = false;
         $currentState = 0;
         $outageCounter = 0;
+        $lastOutput = null;
+        $lastIsHardstate = null;
         foreach ($timeSlices as $timeSliceKey => $timeSlice) {
             $time = $timeSlice['start'];
-            if ($time > strtotime('today 23:59:59')) { // ignore time_slice in the future
+            if ($time > strtotime('today 24:00:00')) { // ignore time_slice in the future
                 $currentState = $stateUnknown;
             }
-            $isDowntime = $timeSlice['is_downtime'];
+            $isDowntime = $timeSlice['is_downtime'] ?? false;
             reset($stateHistoryArray);
             foreach ($stateHistoryArray as $key => $stateHistory) {
                 $stateTimeTimestamp = $stateHistory['state_time'];
+                if ($stateHistory['state'] === $outageState) {
+                    $lastOutput = $stateHistory['output'];
+                    $lastIsHardstate = $stateHistory['is_hardstate'];
+                }
                 if (!$setInitialState) {
                     $currentState = $stateHistory['last_state'];
-                    if ($checkHardState && $stateHistory['last_state'] != 0) {
+                    if ($hardStateOnly && $stateHistory['last_state'] != 0) {
                         $currentState = $stateHistory['last_hard_state'];
                     }
                     $currentState = ($currentState == -1) ? 0 : $currentState;
@@ -128,55 +138,66 @@ class StatehistoryConverter {
                     break;
                 }
                 if ($stateTimeTimestamp <= $timeSlice['start']) {
-                    $currentState = ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['is_hardstate']))) ? $stateHistory['state'] : $currentState;
+                    if ($stateHistory['state'] == 0 || !$hardStateOnly || ($hardStateOnly && $stateHistory['is_hardstate'])) {
+                        $currentState = $stateHistory['state'];
+                    }
+
                     unset($stateHistoryArray[$key]);
                     continue;
                 }
-                if ($stateTimeTimestamp > $timeSlice['start']) {
-                    //if outage in downtime add time for state "ok"
-                    if (($currentState == $outageState) && $isDowntime) {
-                        $evaluationData[0] += $stateTimeTimestamp - $time;
-                        //$current_state = $state_ok;
+
+                //if outage in downtime add time for state "ok"
+                if (($currentState == $outageState) && $isDowntime) {
+                    $evaluationData[0] += $stateTimeTimestamp - $time;
+                    //$current_state = $state_ok;
+                    $evaluationData['outages'][$outageCounter] = [
+                        'start'        => $time,
+                        'end'          => $stateTimeTimestamp,
+                        'is_downtime'  => $isDowntime,
+                        'output'       => $keepDetails ? $lastOutput : null,
+                        'is_hardstate' => $keepDetails ? $lastIsHardstate : null
+                    ];
+                    $outageCounter++;
+                } else {
+                    $evaluationData[$currentState] += $stateTimeTimestamp - $time;
+                    if ($currentState == $outageState && ($stateTimeTimestamp - $time) > 0) {
                         $evaluationData['outages'][$outageCounter] = [
-                            'start'       => $time,
-                            'end'         => $stateTimeTimestamp,
-                            'is_downtime' => $isDowntime,
+                            'start'        => $time,
+                            'end'          => $stateTimeTimestamp,
+                            'is_downtime'  => $isDowntime,
+                            'output'       => $keepDetails ? $lastOutput : null,
+                            'is_hardstate' => $keepDetails ? $lastIsHardstate : null
                         ];
                         $outageCounter++;
-                    } else {
-                        $evaluationData[$currentState] += $stateTimeTimestamp - $time;
-                        if ($currentState == $outageState && ($stateTimeTimestamp - $time) > 0) {
-                            $evaluationData['outages'][$outageCounter] = [
-                                'start'       => $time,
-                                'end'         => $stateTimeTimestamp,
-                                'is_downtime' => $isDowntime,
-                            ];
-                            $outageCounter++;
-                        }
                     }
-                    $currentState = ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['is_hardstate']))) ? $stateHistory['state'] : $currentState;
-                    $time = $stateTimeTimestamp;
-                    unset($stateHistoryArray[$key]);
                 }
+                if ($stateHistory['state'] == 0 || !$hardStateOnly || ($hardStateOnly && $stateHistory['is_hardstate'])) {
+                    $currentState = $stateHistory['state'];
+                }
+                $time = $stateTimeTimestamp;
+                unset($stateHistoryArray[$key]);
+
             }
             //if outage in downtime add time for state "ok"
             if ($currentState == $outageState && $isDowntime) {
                 $evaluationData[$stateOk] += $timeSlice['end'] - $time;
-                if ($currentState == $outageState) {
-                    $evaluationData['outages'][$outageCounter] = [
-                        'start'       => $time,
-                        'end'         => $timeSlice['end'],
-                        'is_downtime' => $isDowntime,
-                    ];
-                    $outageCounter++;
-                }
+                $evaluationData['outages'][$outageCounter] = [
+                    'start'        => $time,
+                    'end'          => $timeSlice['end'],
+                    'is_downtime'  => $isDowntime,
+                    'output'       => $keepDetails ? $lastOutput : null,
+                    'is_hardstate' => $keepDetails ? $lastIsHardstate : null
+                ];
+                $outageCounter++;
             } else {
                 $evaluationData[$currentState] += $timeSlice['end'] - $time;
                 if ($currentState == $outageState) {
                     $evaluationData['outages'][$outageCounter] = [
-                        'start'       => $time,
-                        'end'         => $timeSlice['end'],
-                        'is_downtime' => $isDowntime,
+                        'start'        => $time,
+                        'end'          => $timeSlice['end'],
+                        'is_downtime'  => $isDowntime,
+                        'output'       => $keepDetails ? $lastOutput : null,
+                        'is_hardstate' => $keepDetails ? $lastIsHardstate : null
                     ];
                     $outageCounter++;
                 }
@@ -212,25 +233,42 @@ class StatehistoryConverter {
         $tmpOutageEnd = 0;
         $arrayCounter = 0;
         foreach ($outageArray as $key => $outage) {
-            $set_end = false;
             $outageStart = $outage['start'];
             $outageEnd = $outage['end'];
             if ($tmpOutageStart == 0 && $tmpOutageEnd == 0) {
                 $tmpOutageStart = $outageStart;
                 $tmpOutageEnd = $outageEnd;
-                $newOutagesArray[$arrayCounter] = ['start' => $outageStart, 'end' => $outageEnd];
+                $newOutagesArray[$arrayCounter] = [
+                    'start'        => $outageStart,
+                    'end'          => $outageEnd,
+                    'is_downtime'  => $outage['is_downtime'],
+                    'output'       => $outage['output'],
+                    'is_hardstate' => $outage['is_hardstate']
+                ];
                 continue;
             }
             if ($outageStart >= $tmpOutageStart && $outageEnd <= $tmpOutageEnd) {
                 continue;
-            } else if ($outageStart >= $tmpOutageStart && $outageStart < $tmpOutageEnd && $outageEnd > $tmpOutageEnd) {
+            } else if ($outageStart >= $tmpOutageStart && $outageStart <= $tmpOutageEnd && $outageEnd > $tmpOutageEnd) {
                 $tmpOutageEnd = $outageEnd;
-                $newOutagesArray[$arrayCounter] = ['start' => $tmpOutageStart, 'end' => $outageEnd];
+                $newOutagesArray[$arrayCounter] = [
+                    'start'        => $tmpOutageStart,
+                    'end'          => $outageEnd,
+                    'is_downtime'  => $outage['is_downtime'],
+                    'output'       => $outage['output'],
+                    'is_hardstate' => $outage['is_hardstate']
+                ];
             } else if ($outageStart > $tmpOutageStart && $outageStart > $tmpOutageEnd) {
                 $arrayCounter++;
                 $tmpOutageStart = $outageStart;
                 $tmpOutageEnd = $outageEnd;
-                $newOutagesArray[$arrayCounter] = ['start' => $outageStart, 'end' => $outageEnd];
+                $newOutagesArray[$arrayCounter] = [
+                    'start'        => $outageStart,
+                    'end'          => $outageEnd,
+                    'is_downtime'  => $outage['is_downtime'],
+                    'output'       => $outage['output'],
+                    'is_hardstate' => $outage['is_hardstate']
+                ];
             }
         }
         return $newOutagesArray;

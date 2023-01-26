@@ -59,7 +59,8 @@ angular.module('openITCOCKPIT')
                 'check_period_id',
                 'notify_period_id',
                 'tags',
-                'host_url'
+                'host_url',
+                'sla_id'
             ];
 
             for(var index in fields){
@@ -220,6 +221,7 @@ angular.module('openITCOCKPIT')
                 $scope.satellites = result.data.satellites;
                 $scope.sharingContainers = result.data.sharingContainers;
                 $scope.exporters = result.data.exporters;
+                $scope.slas = result.data.slas;
             });
         };
 

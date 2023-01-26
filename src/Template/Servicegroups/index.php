@@ -228,9 +228,15 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ng-href="{{ linkForPdf() }}" class="a-clean" class="pointer">
+                                <a ng-href="{{ linkFor('pdf') }}" class="a-clean" class="pointer">
                                     <i class="fa fa-lg fa-file-pdf-o"></i>
                                     <?php echo __('List as PDF'); ?>
+                                </a>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ng-href="{{ linkFor('csv') }}" class="a-clean" class="pointer">
+                                    <i class="fa-solid fa-file-csv"></i>
+                                    <?php echo __('List as CSV'); ?>
                                 </a>
                             </div>
                             <?php if ($this->Acl->hasPermission('delete', 'servicegroups')): ?>

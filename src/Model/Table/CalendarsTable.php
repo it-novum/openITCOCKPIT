@@ -61,6 +61,11 @@ class CalendarsTable extends Table {
             'foreignKey'   => 'calendar_id',
             'saveStrategy' => 'replace'
         ])->setDependent(true);
+
+        $this->belongsTo('Timeperiods', [
+            'foreignKey' => 'calendar_id',
+            'joinType'   => 'LEFT'
+        ]);
     }
 
     /**

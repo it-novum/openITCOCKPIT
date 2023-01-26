@@ -16,7 +16,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                console.log(result.data);
                 $scope.maps = result.data.maps;
             });
         };
@@ -27,7 +26,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                console.log(result.data);
                 $scope.containers = result.data.containers;
             });
         };

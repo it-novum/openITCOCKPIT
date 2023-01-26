@@ -973,7 +973,7 @@ class ServicesTable extends Table {
     /**
      * @param int $id
      * @param bool $enableHydration
-     * @return array|\Cake\Datasource\EntityInterface|null
+     * @return Service|null
      */
     public function getServiceById($id, $enableHydration = true) {
         $query = $this->find()
@@ -1161,6 +1161,7 @@ class ServicesTable extends Table {
                 'Services.uuid',
                 'Services.servicetemplate_id',
                 'Services.service_url',
+                'Services.service_type'
             ])
             ->where([
                 'Services.id' => $id
@@ -2411,6 +2412,7 @@ class ServicesTable extends Table {
                 'Services.description',
                 'Services.disabled',
                 'Services.active_checks_enabled',
+                'Services.service_type',
                 'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.name',
@@ -2583,6 +2585,7 @@ class ServicesTable extends Table {
                 'Services.description',
                 'Services.disabled',
                 'Services.active_checks_enabled',
+                'Services.service_type',
                 'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.name',
@@ -3713,15 +3716,6 @@ class ServicesTable extends Table {
                 'color' => 'text-evc',
                 'class' => 'border-evc',
                 'icon'  => 'fa fa-sitemap fa-rotate-90'
-            ];
-        }
-
-        if (Plugin::isLoaded('SLAModule')) {
-            $types[SLA_SERVICE] = [
-                'title' => __('SLA service'),
-                'color' => 'text-sla',
-                'class' => 'border-sla',
-                'icon'  => 'fas fa-file-medical-alt'
             ];
         }
 
@@ -4878,6 +4872,42 @@ class ServicesTable extends Table {
                 return $q;
             });
         }
+
+        if (!empty($conditions['Servicegroup']['_ids'])) {
+            $servicegroupIds = explode(',', $conditions['Servicegroup']['_ids']);
+            $query->select([
+                'servicegroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
+                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                    GROUP_CONCAT(ServiceToServicegroups.servicegroup_id))'),
+                'count'            => $query->newExpr(
+                    'SELECT COUNT(servicegroups.id)
+                                FROM servicegroups
+                                WHERE FIND_IN_SET (servicegroups.id,IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
+                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                                GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
+                                AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
+            ]);
+            $query->join([
+                'services_to_servicegroups'         => [
+                    'table'      => 'services_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServiceToServicegroups',
+                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
+                ],
+                'servicetemplates_to_servicegroups' => [
+                    'table'      => 'servicetemplates_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServicetemplatesToServicegroups',
+                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
+                ]
+            ]);
+            $query->having([
+                'servicegroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+        }
+
         $where = [];
         $where[] = ['Servicestatus.current_state IN' => $conditions['filter[Servicestatus.current_state][]']];
         if ($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignore') {
@@ -4890,18 +4920,29 @@ class ServicesTable extends Table {
             $where[] = ['Servicestatus.scheduled_downtime_depth' => 0];
         }
         if (!empty($conditions['filter[Services.keywords][]'])) {
+            $compareValue = $conditions['filter[Services.keywords][]'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                implode(',', $conditions['filter[Services.keywords][]']),
+                //implode(',',$conditions['filter[Services.keywords][]']),
+                $compareValue,
                 'string',
                 'RLIKE'
             );
         }
 
         if (!empty($conditions['filter[Services.not_keywords][]'])) {
+            $compareValue = $conditions['filter[Services.not_keywords][]'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
             $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                implode(',', $conditions['filter[Services.not_keywords][]']),
+                $compareValue,
                 'string',
                 'NOT RLIKE'
             );

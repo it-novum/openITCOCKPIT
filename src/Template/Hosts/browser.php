@@ -123,6 +123,26 @@ use Cake\Core\Plugin;
                         <?php endif; ?>
                     </ul>
                 </div>
+                <?php if (Plugin::isLoaded('SLAModule')): ?>
+                    <div ng-show="slaOverview" ng-click="selectedTab = 'tab7'; hideTimeline()">
+                        <button
+                            class="btn btn-labeled btn-{{slaOverview.state}} btn-xs btn-w-m waves-effect waves-themed"
+                            ng-hide="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fa-lg" ng-class="{'fa fa-check':slaOverview.state === 'success',
+                                'fa-solid fa-triangle-exclamation':slaOverview.state === 'warning',
+                                'fa-solid fa-bolt': slaOverview.state === 'danger'}"></i>
+                            </span>{{slaOverview.determined_availability_percent}} %
+                        </button>
+                        <button
+                            class="btn btn-labeled btn-primary btn-xs btn-w-m waves-effect waves-themed"
+                            ng-show="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fas fa-question fa-lg"></i>
+                            </span><?= __('Not available'); ?>
+                        </button>
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
@@ -250,7 +270,6 @@ use Cake\Core\Plugin;
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div
                                 class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
@@ -431,11 +450,11 @@ use Cake\Core\Plugin;
                                                             {{ mergedHost.hostCommandLine }}
                                                         </code>
 
-                                                        <span ng-click="rootCopyToClipboard(mergedHost.hostCommandLine, $event)"
-                                                              class="copy-action text-primary animated copy-action-top-right"
-                                                              data-copied="<?= __('Copied'); ?>"
-                                                              data-copy="<?= __('Copy'); ?>"
-                                                        >
+                                                        <span
+                                                            ng-click="rootCopyToClipboard(mergedHost.hostCommandLine, $event)"
+                                                            class="copy-action text-primary animated copy-action-top-right"
+                                                            data-copied="<?= __('Copied'); ?>"
+                                                            data-copy="<?= __('Copy'); ?>">
                                                             <?= __('Copy'); ?>
                                                         </span>
                                                     </td>
@@ -1079,6 +1098,17 @@ use Cake\Core\Plugin;
                         <?php endif; ?>
                     </div>
                     <!-- Import Module end -->
+                    <!-- SLA Module start -->
+                    <div ng-show="selectedTab == 'tab7'" ng-if="slaOverview && selectedTab == 'tab7'">
+                        <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostInformation', 'Slas', 'SLAModule')): ?>
+                            <sla-host-information-element host-id="{{mergedHost.id}}"></sla-host-information-element>
+                        <?php else: ?>
+                            <label class="text-danger">
+                                <?php echo __('No permissions'); ?>
+                            </label>
+                        <?php endif; ?>
+                    </div>
+                    <!-- SLA Module end -->
                 </div>
             </div>
         </div>
@@ -1093,6 +1123,31 @@ use Cake\Core\Plugin;
                 <h2>
                     <?php echo __('Service'); ?>
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+
+                    <div ng-show="hoststatus.currentState > 0"
+                         class="badge badge-pill bg-primary-100 padding-0 font-weight-normal font-sm margin-left-5">
+                        <div class="d-flex align-items-center padding-right-10">
+                            <div class="alert-icon">
+                                <span class="icon-stack icon-stack-md">
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-warning-700"></i>
+                                    <i class="base base-7 icon-stack-1x opacity-100 color-warning-900"></i>
+                                    <i class="ni ni-bell icon-stack-1x opacity-100 color-white"></i>
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="bold">
+                                    <?= __('Problem with host detected.'); ?>
+                                </span>
+                                <span class="fw-300">
+                                    <u>
+                                        <?= __('Services output may not as expected!'); ?>
+                                    </u>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">

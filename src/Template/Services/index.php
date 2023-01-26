@@ -879,8 +879,11 @@
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
                                      style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
-                                    <a ng-href="{{ linkForPdf() }}" class="dropdown-item">
+                                    <a ng-href="{{ linkFor('pdf') }}" class="dropdown-item">
                                         <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
+                                    </a>
+                                    <a ng-href="{{ linkFor('csv') }}" class="dropdown-item">
+                                        <i class="fa-solid fa-file-csv"></i> <?php echo __('List as CSV'); ?>
                                     </a>
                                     <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
                                         <a

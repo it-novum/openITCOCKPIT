@@ -9,6 +9,11 @@ if [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+# Enable debug mode so that CakePHP will create missing folders
+# https://github.com/it-novum/openITCOCKPIT/issues/1446
+# https://github.com/cakephp/migrations/issues/565
+export OITC_DEBUG=1
+
 APPDIR="/opt/openitc/frontend"
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
@@ -118,6 +123,12 @@ mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-p
   --ignore-table=$dbc_dbname.statusengine_servicestatus \
   --ignore-table=$dbc_dbname.statusengine_tasks \
   --ignore-table=$dbc_dbname.statusengine_users \
+  --ignore-table=$dbc_dbname.customalerts \
+  --ignore-table=$dbc_dbname.customalert_statehistory \
+  --ignore-table=$dbc_dbname.sla_availability_status_hosts_log \
+  --ignore-table=$dbc_dbname.sla_availability_status_services_log \
+  --ignore-table=$dbc_dbname.sla_host_outages \
+  --ignore-table=$dbc_dbname.sla_service_outages \
   >$BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
 echo "---------------------------------------------------------------"

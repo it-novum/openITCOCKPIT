@@ -45,4 +45,10 @@ interface StatehistoryHostTableInterface {
      * @return Entity|array
      */
     public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions, $enableHydration = true);
+
+    /**
+     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @return \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost[]
+     */
+    public function getRecordsForReporting(StatehistoryHostConditions $StatehistoryHostConditions);
 }

@@ -149,6 +149,15 @@ abstract class Filter {
                             }
                             break;
 
+                        case 'range':
+                            $values = $this->getQueryFieldValue($field);
+                            if (is_array($values) && !empty($values) && sizeof($values) === 2) {
+                                $conditions[sprintf('%s >=', $field)] = $values[0];
+                                $conditions[sprintf('%s <=', $field)] = $values[1];
+                            }
+
+                            break;
+
                         default:
                             throw new \Cake\Http\Exception\NotImplementedException('This filter type is not implemented yet');
                     }

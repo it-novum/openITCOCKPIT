@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Lib\Traits\DatabasePartitionsTrait;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
@@ -45,6 +46,8 @@ use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
  * DatabaseCleanup command.
  */
 class DatabaseCleanupCommand extends Command implements CronjobInterface {
+
+    use DatabasePartitionsTrait;
 
     /**
      * @var array
@@ -136,29 +139,8 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
     public function checkAndCreatePartitionsMySQL(array $tables, ConsoleIo $io) {
         foreach ($tables as $Table) {
             /** @var Table $Table */
-
             $Connection = $Table->getConnection();
-            //debug($Connection->execute('SELECT partition_name FROM information_schema.partitions')->fetchAll('assoc'));
-
-            //Get existing partitions for this table out of MySQL's information_schema
-            $query = $Connection->execute("
-                SELECT partition_name
-                FROM information_schema.partitions
-                WHERE TABLE_SCHEMA = :databaseName
-                AND TABLE_NAME = :tableName", [
-                'databaseName' => $Connection->config()['database'],
-                'tableName'    => $Table->getTable()
-            ]);
-            $result = $query->fetchAll('assoc');
-
-            //MySQL 5.x
-            $partitions = Hash::extract($result, '{n}.partition_name');
-
-            //MySQL 8.x
-            if (isset($result['0']['PARTITION_NAME'])) {
-                //MySQL 8.x
-                $partitions = Hash::extract($result, '{n}.PARTITION_NAME');
-            }
+            $partitions = $this->getPartitionsByTable($Table);
 
             //Check if partition for current week exists
             $currentMysqlPartitionStartDate = date('Y-m-d H:i:s', strtotime('00:00:00 next monday'));
@@ -206,29 +188,8 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
     public function checkAndCreatePartitionsMySQLStatusengine3(array $tables, ConsoleIo $io) {
         foreach ($tables as $Table) {
             /** @var Table $Table */
-
             $Connection = $Table->getConnection();
-            //debug($Connection->execute('SELECT partition_name FROM information_schema.partitions')->fetchAll('assoc'));
-
-            //Get existing partitions for this table out of MySQL's information_schema
-            $query = $Connection->execute("
-                SELECT partition_name
-                FROM information_schema.partitions
-                WHERE TABLE_SCHEMA = :databaseName
-                AND TABLE_NAME = :tableName", [
-                'databaseName' => $Connection->config()['database'],
-                'tableName'    => $Table->getTable()
-            ]);
-            $result = $query->fetchAll('assoc');
-
-            //MySQL 5.x
-            $partitions = Hash::extract($result, '{n}.partition_name');
-
-            //MySQL 8.x
-            if (isset($result['0']['PARTITION_NAME'])) {
-                //MySQL 8.x
-                $partitions = Hash::extract($result, '{n}.PARTITION_NAME');
-            }
+            $partitions = $this->getPartitionsByTable($Table);
 
             //Check if partition for current week exists
             $currentMysqlPartitionStartDate = strtotime('00:00:00 next monday');
@@ -333,7 +294,7 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
                         $io->setStyle('red', ['text' => 'red', 'blink' => false]);
 
                         $io->out('<red>Drop partition ' . $partition . '</red>');
-                        $Connection->execute("ALTER TABLE " . $Connection->config()['database'] . "." . $Table->getTable() . " DROP PARTITION " . $partition . ";");
+                        $this->dropPartitionByNameUnsafe($Table, $partition);
                     }
                 }
             }
