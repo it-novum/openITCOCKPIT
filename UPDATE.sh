@@ -43,7 +43,12 @@ BACKUP_DIR='/opt/openitc/nagios/backup'
 mkdir -p $BACKUP_DIR
 #If you have mysql binlog enabled uses this command:
 #mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --master-data=1 --flush-logs --triggers --routines --events --hex-blob \
-mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --no-tablespaces --events --hex-blob \
+
+# ITC-2921
+# MySQL Bug: https://bugs.mysql.com/bug.php?id=109685
+# As with mysqldump 8.0.32 --single-transaction requires RELOAD or FLUSH_TABLES privilege(s) which the openitcockpit user does not have
+# So for now the workaround is to remove "--single-transaction"
+mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --triggers --routines --no-tablespaces --events --hex-blob \
   --ignore-table=$dbc_dbname.nagios_acknowledgements \
   --ignore-table=$dbc_dbname.nagios_commands \
   --ignore-table=$dbc_dbname.nagios_commenthistory \

@@ -146,7 +146,11 @@ class Backup {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $db = $SystemsettingsTable->getConnection()->config()['database'];
 
-        $baseCmd = 'mysqldump --defaults-extra-file=%s --databases %s --flush-privileges --single-transaction --triggers --routines --no-tablespaces --events --hex-blob \\%s %s > %s';
+        // ITC-2921
+        // MySQL Bug: https://bugs.mysql.com/bug.php?id=109685
+        // As with mysqldump 8.0.32 --single-transaction requires RELOAD or FLUSH_TABLES privilege(s) which the openitcockpit user does not have
+        // So for now the workaround is to remove "--single-transaction"
+        $baseCmd = 'mysqldump --defaults-extra-file=%s --databases %s --flush-privileges --triggers --routines --no-tablespaces --events --hex-blob \\%s %s > %s';
         $ignore = [];
         foreach ($this->ignore as $table) {
             $ignore[] = sprintf('--ignore-table=%s.%s \\%s', $db, $table, PHP_EOL);
