@@ -4534,13 +4534,29 @@ class ServicesTable extends Table {
             );
         }
 
-        if (!empty($conditions['Service']['servicename'])) {
-            $query->having([
-                'servicename LIKE' => $conditions['Service']['servicename']
-            ]);
-        }
         if (!empty($conditions['Host']['name'])) {
-            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+            if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                $where[] = new Comparison(
+                    'Hosts.name',
+                    $conditions['Host']['name'],
+                    'string',
+                    'RLIKE'
+                );
+            }
+
+        }
+
+        if (!empty($conditions['Service']['servicename'])) {
+            if ($this->isValidRegularExpression($conditions['Service']['servicename'])) {
+                $query->having([
+                    new Comparison(
+                        'servicename',
+                        $conditions['Service']['servicename'],
+                        'string',
+                        'RLIKE'
+                    )
+                ]);
+            }
         }
 
         $query->andWhere($where);
@@ -4958,5 +4974,13 @@ class ServicesTable extends Table {
 
         return $result->toArray();
 
+    }
+
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    private function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
     }
 }

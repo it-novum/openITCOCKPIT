@@ -4431,8 +4431,28 @@ class HostsTable extends Table {
         }
 
         $where = [];
+
         if (!empty($conditions['Host']['name'])) {
-            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+            if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                $where[] = new Comparison(
+                    'Hosts.name',
+                    $conditions['Host']['name'],
+                    'string',
+                    'RLIKE'
+                );
+            }
+
+        }
+
+        if (!empty($conditions['Host']['address'])) {
+            if ($this->isValidRegularExpression($conditions['Host']['address'])) {
+                $where[] = new Comparison(
+                    'Hosts.address',
+                    $conditions['Host']['address'],
+                    'string',
+                    'RLIKE'
+                );
+            }
         }
 
         if (!empty($conditions['Host']['keywords'])) {
@@ -4835,5 +4855,13 @@ class HostsTable extends Table {
         }
 
         return $result->toArray();
+    }
+
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    private function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
     }
 }
