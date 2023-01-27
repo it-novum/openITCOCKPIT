@@ -1998,7 +1998,12 @@ class ServicesTable extends Table {
                 'Hosts.satellite_id',
                 'Hosts.notes'
             ])
-            ->innerJoinWith('Hosts')
+            ->innerJoin(['Hosts' => 'hosts'], [
+                'Hosts.id = Services.host_id',
+            ])
+            ->innerJoin(['Hosttemplates' => 'hosttemplates'], [
+                'Hosttemplates.id = Hosts.hosttemplate_id',
+            ])
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
@@ -2013,23 +2018,63 @@ class ServicesTable extends Table {
             ]);
 
         if (isset($where['keywords rlike'])) {
-            $query->where(new Comparison(
+            $compareValue = $where['keywords rlike'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
+            $where[]  = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                $where['keywords rlike'],
+                $compareValue,
                 'string',
                 'rlike'
-            ));
+            );
             unset($where['keywords rlike']);
         }
 
         if (isset($where['not_keywords not rlike'])) {
-            $query->andWhere(new Comparison(
+            $compareValue = $where['not_keywords not rlike'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
+            $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                $where['not_keywords not rlike'],
+                $compareValue,
                 'string',
                 'not rlike'
-            ));
+            );
             unset($where['not_keywords not rlike']);
+        }
+
+        if (isset($where['Hosts.keywords rlike'])) {
+            $compareValue = $where['Hosts.keywords rlike'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $compareValue,
+                'string',
+                'rlike'
+            );
+            unset($where['Hosts.keywords rlike']);
+        }
+
+        if (isset($where['Hosts.not_keywords not rlike'])) {
+            $compareValue = $where['Hosts.not_keywords not rlike'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $compareValue,
+                'string',
+                'not rlike'
+            );
+            unset($where['Hosts.not_keywords not rlike']);
         }
 
         if (isset($where['servicepriority IN'])) {
@@ -2051,7 +2096,6 @@ class ServicesTable extends Table {
             );
             unset($where['servicedescription LIKE']);
         }
-
         if (!empty($where)) {
             $query->andWhere($where);
         }

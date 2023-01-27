@@ -39,7 +39,9 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                     output: ''
                 },
                 Host: {
-                    name: ''
+                    name: '',
+                    keywords: '',
+                    not_keywords: ''
                 },
                 Service: {
                     name: '',
@@ -52,6 +54,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                 $http.get("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
+                    $('#HostTags').tagsinput('add', $scope.filter.Host.keywords);
+                    $('#HostExcludedTags').tagsinput('add', $scope.filter.Host.not_keywords);
                     $('#ServiceTags').tagsinput('add', $scope.filter.Service.keywords);
                     $('#ServiceExcludedTags').tagsinput('add', $scope.filter.Service.not_keywords);
 
@@ -106,6 +110,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                     'direction': $scope.direction,
                     'includes[]': ['downtimes', 'acknowledgements'],
                     'filter[Hosts.name]': $scope.filter.Host.name,
+                    'filter[Hosts.keywords][]':  $scope.filter.Host.keywords.split(','),
+                    'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                     'filter[servicename]': $scope.filter.Service.name,
                     'filter[keywords][]': $scope.filter.Service.keywords.split(','),
                     'filter[not_keywords][]': $scope.filter.Service.not_keywords.split(','),

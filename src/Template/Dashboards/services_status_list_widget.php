@@ -186,12 +186,61 @@
                         <div class="col-xs-12 col-lg-6 margin-bottom-5">
                             <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="icon-prepend fa fa-filter"></i></span>
+                                    <span class="input-group-text">
+                                        <div class="icon-stack">
+                                            <i class="icon-prepend fa fa-filter"></i>
+                                            <i class="fas fa-desktop opacity-100 fa-xs text-primary cornered cornered-lr"></i>
+                                        </div>
+                                    </span>
                                 </div>
                                 <div class="col tagsinputFilter">
                                     <input class="form-control form-control-sm tagsinput"
                                            data-role="tagsinput"
-                                           placeholder="<?php echo __('Filter by tags'); ?>"
+                                           placeholder="<?php echo __('Filter by host tags'); ?>"
+                                           type="text"
+                                           id="HostTags"
+                                           ng-model="filter.Host.keywords">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <div class="icon-stack">
+                                            <i class="icon-prepend fa fa-filter"></i>
+                                            <i class="fas fa-desktop opacity-100 fa-xs text-danger cornered cornered-lr"></i>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="col tagsinputFilter">
+                                    <input class="form-control form-control-sm tagsinput"
+                                           data-role="tagsinput"
+                                           placeholder="<?php echo __('Filter by excluded host tags'); ?>"
+                                           type="text"
+                                           id="HostExcludedTags"
+                                           ng-model="filter.Host.not_keywords">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <div class="icon-stack">
+                                            <i class="icon-prepend fa fa-filter"></i>
+                                            <i class="fas fa-cog opacity-100 fa-xs text-primary cornered cornered-lr"></i>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="col tagsinputFilter">
+                                    <input class="form-control form-control-sm tagsinput"
+                                           data-role="tagsinput"
+                                           placeholder="<?php echo __('Filter by service tags'); ?>"
                                            type="text"
                                            id="ServiceTags"
                                            ng-model="filter.Service.keywords">
@@ -201,12 +250,17 @@
                         <div class="col-xs-12 col-lg-6 margin-bottom-5">
                             <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="icon-prepend fa fa-filter"></i></span>
+                                    <span class="input-group-text">
+                                        <div class="icon-stack">
+                                            <i class="icon-prepend fa fa-filter"></i>
+                                            <i class="fas fa-cog opacity-100 fa-xs text-danger cornered cornered-lr"></i>
+                                        </div>
+                                    </span>
                                 </div>
                                 <div class="col tagsinputFilter">
                                     <input class="form-control form-control-sm tagsinput"
                                            data-role="tagsinput"
-                                           placeholder="<?php echo __('Filter by excluded tags'); ?>"
+                                           placeholder="<?php echo __('Filter by excluded service tags'); ?>"
                                            type="text"
                                            id="ServiceExcludedTags"
                                            ng-model="filter.Service.not_keywords">
