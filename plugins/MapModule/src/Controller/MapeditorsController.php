@@ -2015,6 +2015,8 @@ class MapeditorsController extends AppController {
                     if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
                         $config['map_id'] = null;
                     }
+                } else if (empty($map)) {
+                    $config['map_id'] = null;
                 }
             }
 
