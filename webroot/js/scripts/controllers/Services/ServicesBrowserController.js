@@ -185,8 +185,10 @@ angular.module('openITCOCKPIT')
                 }
 
                 if($scope.dataSources.length > 0){
-                    $scope.currentDataSource = $scope.dataSources[0].displayName;
-                    $scope.currentDataSourceKey = $scope.dataSources[0].key;
+                    if($scope.currentDataSource === null){
+                        $scope.currentDataSource = $scope.dataSources[0].displayName;
+                        $scope.currentDataSourceKey = $scope.dataSources[0].key;
+                    }
                 }
 
                 if($scope.mergedService.has_graph){
@@ -411,6 +413,7 @@ angular.module('openITCOCKPIT')
                         //Did we got date from Server?
                         if(result.data.performance_data.length > 0){
                             //Use the first metrics the server gave us.
+                            $scope.currentDataSource = result.data.performance_data[0].datasource.metric;
                             $scope.perfdata = {
                                 datasource: result.data.performance_data[0].datasource,
                                 data: {}
@@ -442,6 +445,7 @@ angular.module('openITCOCKPIT')
                     if(appendData === true){
                         if(result.data.performance_data.length > 0){
                             //Append new data to current graph
+                            $scope.currentDataSource = result.data.performance_data[0].datasource.metric;
                             for(var timestamp in result.data.performance_data[0].data){
                                 var frontEndTimestamp = (parseInt(timestamp, 10));
                                 $scope.perfdata.data[frontEndTimestamp] = result.data.performance_data[0].data[timestamp];
