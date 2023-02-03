@@ -35,7 +35,7 @@ angular.module('openITCOCKPIT')
                 data.password = '';
                 data.confirm_password = '';
 
-                //Reformat data that it looks like the same like it looks in the add method...
+                //Reformat data that it looks like the same as it looks in the add method...
                 $scope.selectedUserContainers = data.containers._ids;
                 $scope.notPermittedContainerIds = result.data.notPermittedContainerIds;
                 delete data.containers;
@@ -187,7 +187,6 @@ angular.module('openITCOCKPIT')
             if(typeof $scope.post.User.usercontainerroles_ldap !== "undefined"){ //is undefined on initial page load
                 if($scope.post.User.usercontainerroles_ldap._ids.length === 0){
                     $scope.userContainerRoleContainerPermissionsLdap = {};
-                    return;
                 }
             }
 
@@ -197,7 +196,14 @@ angular.module('openITCOCKPIT')
                     'samaccountname': $scope.post.User.samaccountname
                 }
             }).then(function(result){
-                $scope.userContainerRoleContainerPermissionsLdap = result.data.ldapUser.userContainerRoleContainerPermissionsLdap;
+                var resultUserContainerRoleContainerPermissionsLdap = result.data.ldapUser.userContainerRoleContainerPermissionsLdap
+                if(Array.isArray(resultUserContainerRoleContainerPermissionsLdap)){
+                    if(resultUserContainerRoleContainerPermissionsLdap.length === 0){
+                        resultUserContainerRoleContainerPermissionsLdap = {}; // We want an empty object {} - not an array []
+                    }
+                }
+
+                $scope.userContainerRoleContainerPermissionsLdap = resultUserContainerRoleContainerPermissionsLdap;
                 $scope.ldapUser = result.data.ldapUser;
             });
         };
