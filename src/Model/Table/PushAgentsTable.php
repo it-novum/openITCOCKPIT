@@ -438,7 +438,7 @@ class PushAgentsTable extends Table {
         $query->disableHydration();
         $query->order('PushAgents.ipaddress', 'asc');
 
-        return $this->emptyArrayIfNull($query->toArray());;
+        return $this->emptyArrayIfNull($query->toArray());
     }
 
     /**
