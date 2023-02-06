@@ -927,11 +927,12 @@ class AgentconnectorController extends AppController {
             $newServiceIds = [];
             foreach ($servicesPost as $servicePost) {
                 $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicePost['servicetemplate_id']);
-
                 $servicename = $servicePost['name'];
 
                 $serviceData = ServiceComparisonForSave::getServiceSkeleton($servicePost['host_id'], $servicePost['servicetemplate_id'], OITC_AGENT_SERVICE);
                 $serviceData['name'] = $servicename;
+                $serviceData['command_id'] = $servicetemplate['Servicetemplate']['command_id'];
+
                 $serviceData['servicecommandargumentvalues'] = $servicePost['servicecommandargumentvalues'];
                 $ServiceComparisonForSave = new ServiceComparisonForSave(
                     ['Service' => $serviceData],
@@ -941,14 +942,12 @@ class AgentconnectorController extends AppController {
                 );
                 $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
                 $serviceData['uuid'] = UUID::v4();
-
                 //Add required fields for validation
                 $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
                 $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
                 $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
                 $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
                 $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
-
                 $service = $ServicesTable->newEntity($serviceData);
 
                 $ServicesTable->save($service);

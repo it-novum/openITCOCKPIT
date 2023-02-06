@@ -1364,7 +1364,7 @@ class Agent extends Importer {
             [
                 'uuid'                                      => 'be4c9649-8771-4704-b409-c56b5f67abc8',
                 'template_name'                             => 'OITC_AGENT_CPU_TOTAL_PERCENTAGE',
-                'name'                                      => 'Total CPU Percentage',
+                'name'                                      => 'CPU usage percentage',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
@@ -1432,7 +1432,7 @@ class Agent extends Importer {
             [
                 'uuid'                                      => '566a710f-a554-4fa6-b2a2-e46b1d937a64',
                 'template_name'                             => 'OITC_AGENT_SYSTEM_LOAD',
-                'name'                                      => 'System Load',
+                'name'                                      => 'CPU load',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
@@ -1500,7 +1500,7 @@ class Agent extends Importer {
             [
                 'uuid'                                      => '4052fe4f-50b1-443a-8be1-9dbca8d43ebd',
                 'template_name'                             => 'OITC_AGENT_MEMORY_USAGE',
-                'name'                                      => 'Memory Usage',
+                'name'                                      => 'Memory usage percentage',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
@@ -1568,7 +1568,7 @@ class Agent extends Importer {
             [
                 'uuid'                                      => 'f9d5e18a-8894-4324-b54a-497db87b6f4f',
                 'template_name'                             => 'OITC_AGENT_SWAP_USAGE',
-                'name'                                      => 'SWAP Usage',
+                'name'                                      => 'Swap usage percentage',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
