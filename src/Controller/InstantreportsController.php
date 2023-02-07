@@ -75,8 +75,10 @@ class InstantreportsController extends AppController {
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
             /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+            $MY_RIGHTS = $this->MY_RIGHTS;
         }
         $instantreports = $InstantreportsTable->getInstantreportsIndex($InstantreportFilter, $PaginateOMat, $MY_RIGHTS);
         foreach ($instantreports as $index => $instantreport) {
