@@ -65,7 +65,20 @@
                 </div>
             </div>
 
-            <div class="panel-container show" ng-if="gearmanReachable">
+            <div class="panel-container show" ng-if="!isGearmanWorkerRunning">
+                <div class="panel-content">
+                    <div class="col-lg-12">
+                        <div class="alert alert-danger alert-block">
+                            <h5 class="alert-heading">
+                                <i class="fa fa-warning"></i> <?= __('Critical error!'); ?>
+                            </h5>
+                            <?= __('Gearman Worker background daemon is not running. Please contact your system administrator.'); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-container show" ng-if="gearmanReachable && isGearmanWorkerRunning">
                 <div class="panel-content">
                     <div class="form-group" ng-class="{'has-error': errors.create_backup}">
                         <div class="custom-control custom-checkbox  margin-bottom-10"
