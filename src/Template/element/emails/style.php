@@ -495,11 +495,12 @@
         );
     }
 
-    .disabledEvcSummary:after {
-        content: "\f1e6";
-        font-family: FontAwesome;
-        color: #ff0000;
-        font-size: 11px;
+    .disabledEvcSummary:before {
+        content: "🔌";
+        position: absolute;
+        right:2px;
+        top:-2px;
+        font-size: 12px;
     }
 
     .gatter {
