@@ -24011,7 +24011,7 @@ msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Hostbe
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:98
 msgid "Column number (numbering begins with 0) of the CSV file which will be used as software assignment."
-msgstr "Spaltennummer (Nummerierung bgeginnt mit 0) der CSV-Datei, die als Softwarezuweisung verwendet wird."
+msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Softwarezuweisung verwendet wird."
 
 #: .-modules/ImportModule/src/Lib/ExternalSystemTypes.php:14
 msgid "i-doit System"
