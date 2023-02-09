@@ -205,6 +205,30 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-lg-6 margin-bottom-10">
+                                    <div class="form-group required">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                                            </div>
+                                            <select
+                                                id="ServiceType"
+                                                data-placeholder="<?php echo __('Filter by service types'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Services.service_type"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($types as $typeId => $typeName):
+                                                    printf('<option value="%s">%s</option>', h($typeId), h($typeName));
+                                                endforeach;
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="row">

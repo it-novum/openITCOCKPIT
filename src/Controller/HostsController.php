@@ -125,6 +125,9 @@ class HostsController extends AppController {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         $satellites = [];
 
         if (Plugin::isLoaded('DistributeModule')) {
@@ -138,6 +141,7 @@ class HostsController extends AppController {
         if (!$this->isApiRequest()) {
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
+            $this->set('types', $HostsTable->getHostTypes());
             //Only ship HTML template
             return;
         }
@@ -188,8 +192,6 @@ class HostsController extends AppController {
         $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
         $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
 
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if ($this->DbBackend->isNdoUtils()) {
             $hosts = $HostsTable->getHostsIndex($HostFilter, $HostCondition, $PaginateOMat);
@@ -212,6 +214,7 @@ class HostsController extends AppController {
 
         /** @var ServicesTable $ServiceTable */
         $ServiceTable = TableRegistry::getTableLocator()->get('Services');
+        $typesForView = $HostsTable->getHostTypesWithStyles();
 
         foreach ($hosts as $host) {
             $serviceUuids = $ServiceTable->find('list', [
@@ -288,6 +291,7 @@ class HostsController extends AppController {
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
+            $tmpRecord['Host']['type'] = $typesForView[$host['Host']['host_type']];
 
             $all_hosts[] = $tmpRecord;
         }

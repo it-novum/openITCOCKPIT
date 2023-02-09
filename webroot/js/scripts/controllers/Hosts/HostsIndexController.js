@@ -37,7 +37,8 @@ angular.module('openITCOCKPIT')
                             3: false,
                             4: false,
                             5: false
-                        }
+                        },
+                        host_type: []
                     }
                 };
             };
@@ -152,6 +153,7 @@ angular.module('openITCOCKPIT')
                     'Hosts.not_keywords': ($scope.filter.Host.not_keywords !== '' ? $scope.filter.Host.not_keywords.split(',') : []),
                     'Hosts.address': $scope.filter.Host.address,
                     'Hosts.satellite_id': $scope.filter.Host.satellite_id,
+                    'Hosts.host_type': $scope.filter.Host.host_type,
                     'hostdescription': $scope.filter.Host.hostdescription,
                     'Hoststatus.output': $scope.filter.Hoststatus.output,
                     'Hoststatus.current_state': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
@@ -286,7 +288,8 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
-                'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id
+                'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
+                'filter[Hosts.host_type][]': $scope.filter.Host.host_type
             };
             if(QueryStringService.hasValue('BrowserContainerId')){
                 params['BrowserContainerId'] = QueryStringService.getValue('BrowserContainerId');

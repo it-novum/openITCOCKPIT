@@ -26,7 +26,8 @@ angular.module('openITCOCKPIT')
                     name: QueryStringService.getValue('filter[Hosts.name]', ''),
                     keywords: '',
                     address: QueryStringService.getValue('filter[Hosts.address]', ''),
-                    satellite_id: []
+                    satellite_id: [],
+                    host_type: []
                 }
             };
         };
@@ -131,6 +132,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
+                'filter[Hosts.host_type][]': $scope.filter.Host.host_type,
                 'BrowserContainerId': $scope.containerId
             };
 
