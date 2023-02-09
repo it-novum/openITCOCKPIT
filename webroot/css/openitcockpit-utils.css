@@ -1290,3 +1290,18 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 .word-wrap-anywhere{
     word-wrap: anywhere;
 }
+
+.graph-placeholder{
+    width: 100%;
+    height: 150px;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: unset;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+}
