@@ -2698,9 +2698,24 @@ class ServicesTable extends Table {
 
         $services = $this->emptyArrayIfNull($query->toArray());
 
+
         foreach ($services as $index => $service) {
             if (!empty($service['servicecommandargumentvalues'])) {
                 //Arguments from service
+                $commandArgumentValuesDiff = array_diff(
+                    Hash::extract($service['servicetemplate']['servicetemplatecommandargumentvalues'], '{n}.commandargument_id'),
+                    Hash::extract($service['servicecommandargumentvalues'], '{n}.commandargument_id')
+                );
+                if (!empty($commandArgumentValuesDiff)) {
+                    //add missing (new) command argument values from service template to service command argument values
+                    foreach ($commandArgumentValuesDiff as $commandArgumentValueId) {
+                        $key = array_search(
+                            $commandArgumentValueId,
+                            array_column($service['servicetemplate']['servicetemplatecommandargumentvalues'], 'commandargument_id'), true
+                        );
+                        $service['servicecommandargumentvalues'][] = $service['servicetemplate']['servicetemplatecommandargumentvalues'][$key];
+                    }
+                }
                 $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
             } else {
                 //Use arguments from service template

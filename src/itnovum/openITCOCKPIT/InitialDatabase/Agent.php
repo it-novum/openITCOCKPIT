@@ -3370,11 +3370,18 @@ class Agent extends Importer {
                 }
             }
 
+            $updateServices = false;
             if ($updateTemplate === true) {
                 $servicetemplateEntity = $this->ServicetemplatesTable->get($servicetemplate['Servicetemplate']['id']);
                 $servicetemplateEntity = $this->ServicetemplatesTable->patchEntity($servicetemplateEntity, $servicetemplate['Servicetemplate']);
                 $this->ServicetemplatesTable->save($servicetemplateEntity);
+                if(!$servicetemplateEntity->hasErrors()){
+                    $updateServices = true;
+                }
             }
+
+            // Add new Command Argument to all services
+
         }
     }
 }
