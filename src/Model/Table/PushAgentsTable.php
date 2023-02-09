@@ -29,6 +29,8 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\PushAgent;
+use Cake\Controller\Exception\MissingComponentException;
+use Cake\Core\Plugin;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
@@ -36,6 +38,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use ImportModule\Model\Table\ImportedHostsTable;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -407,34 +410,49 @@ class PushAgentsTable extends Table {
     }
 
     /**
+     * This method will return all Agents running in Push Mode which are
+     * a) Not assigned to a host yet or
+     * b) Where assigned automatically via the Import Module
+     *
+     * This method will NOT return Agents, which where assigned manually by a user!
+     *
+     * @param int $importerId
      * @return array
      */
-    public function getAllPushAgents() {
-        // Yes - this query is from hell!
+    public function getAllPushAgentsForImport(int $importerId = 3) {
+        if (!Plugin::isLoaded('ImportModule')) {
+            throw new MissingComponentException(
+                'ImportModule is required for this action'
+            );
+        }
+
+        /** @var ImportedHostsTable $ImportedHostsTable */
+        $ImportedHostsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHosts');
 
         $query = $this->find();
+        $importedHostsSubSelect = $ImportedHostsTable->subquery()
+            ->select('ImportedHosts.id')
+            ->where([
+                'ImportedHosts.identifier = PushAgents.uuid',
+                'ImportedHosts.importer_id' => $importerId
+            ]);
+
         $query->select([
             'PushAgents.id',
             'PushAgents.uuid',
             'PushAgents.hostname',
-            'Hosts.name',
-            'Hosts.id',
-            'Agentconfigs.host_id',
             'PushAgents.ipaddress',
             'PushAgents.remote_address',
             'PushAgents.http_x_forwarded_for',
             'PushAgents.checkresults',
             'PushAgents.last_update'
         ])
-            ->leftJoin(
-                ['Agentconfigs' => 'agentconfigs'],
-                ['PushAgents.agentconfig_id = Agentconfigs.id']
-            )
-            ->leftJoin(
-                ['Hosts' => 'hosts'],
-                ['Agentconfigs.host_id = Hosts.id']
-            );
-
+            ->where([
+                'OR' => [
+                    'PushAgents.agentconfig_id IS NULL',
+                    $importedHostsSubSelect
+                ]
+            ]);
         $query->disableHydration();
         $query->order('PushAgents.ipaddress', 'asc');
 
