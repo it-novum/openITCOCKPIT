@@ -23993,21 +23993,25 @@ msgstr "Verwende die Adresse als Hostnamen"
 msgid "Use address as host name if host name column is empty or does not exists."
 msgstr "Verwende die Adresse als Hostnamen, wenn die Spalte Hostname leer ist oder nicht vorhanden ist."
 
+#: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:62
+msgid "Column number - numbering begins with 0 (first column) - of the CSV file which will be used as unique identifier for host. This column must be present in the CSV file."
+msgstr "Spaltennummer  - Nummerierung beginnt mit 0 (1. Spalte) - der CSV-Datei, die für die eindeutige Kennung der Hosts genutzt wird. Diese Spalte muss in der CSV Datei vorhanden sein."
+
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:71
-msgid "Column number of the CSV file which will be used as host name. This column must be present in the CSV file."
-msgstr "Spaltennummer der CSV-Datei, die als Hostname verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
+msgid "Column number (numbering begins with 0) of the CSV file which will be used as host name. This column must be present in the CSV file."
+msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Hostname verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:80
-msgid "Column number of the CSV file which will be used as host address. This column must be present in the CSV file."
-msgstr "Spaltennummer der CSV-Datei, die als Hostadresse verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
+msgid "Column number (numbering begins with 0) of the CSV file which will be used as host address. This column must be present in the CSV file."
+msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Hostadresse verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:89
-msgid "Column number of the CSV file which will be used as host description."
-msgstr "Spaltennummer der CSV-Datei, die als Hostbeschreibung verwendet wird."
+msgid "Column number (numbering begins with 0) of the CSV file which will be used as host description."
+msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Hostbeschreibung verwendet wird."
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:98
-msgid "Column number of the CSV file which will be used as software assignment."
-msgstr "Spaltennummer der CSV-Datei, die als Softwarezuweisung verwendet wird."
+msgid "Column number (numbering begins with 0) of the CSV file which will be used as software assignment."
+msgstr "Spaltennummer (Nummerierung bgeginnt mit 0) der CSV-Datei, die als Softwarezuweisung verwendet wird."
 
 #: .-modules/ImportModule/src/Lib/ExternalSystemTypes.php:14
 msgid "i-doit System"
