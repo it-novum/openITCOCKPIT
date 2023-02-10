@@ -54,7 +54,7 @@ angular.module('openITCOCKPIT')
 
         /*** column vars ***/
         $scope.fields = [];
-        $scope.columnsLength = 16;
+        $scope.columnsLength = 17;
         $scope.columnsTableKey = 'HostsIndexColumns';
 
         /*** columns functions
@@ -74,9 +74,10 @@ angular.module('openITCOCKPIT')
          'Host output',
          'Instance',
          'Service Summary ',
-         'Host notes'] ***/
+         'Host notes',
+         'Host type'] ***/
         $scope.defaultColumns = function(){
-            $scope.fields = [true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, false];
+            $scope.fields = [true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, false, false];
             $window.localStorage.removeItem($scope.columnsTableKey);
         };
 

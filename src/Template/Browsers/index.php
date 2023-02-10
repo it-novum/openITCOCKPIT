@@ -464,7 +464,8 @@
                                             __('Host output'),
                                             __('Instance'),
                                             __('Service Summary '),
-                                            __('Host notes')
+                                            __('Host notes'),
+                                            __('Host type')
                                         ];
                                         foreach (array_chunk($list, 6, true) as $chunk):
                                             echo '<div class="col-xs-12 col-md-12 col-lg-4">';
@@ -631,6 +632,10 @@
                                     <?php echo __('Host notes'); ?>
                                 </th>
 
+                                <th ng-show="fields[16]" class="text-center">
+                                    <?= __('Host type'); ?>
+                                </th>
+
                                 <th class="no-sort text-center editItemWidth"><i class="fa fa-gear"></i></th>
                             </tr>
                             </thead>
@@ -787,6 +792,13 @@
 
                                 <td ng-show="fields[15]">
                                     {{ host.Host.notes }}
+                                </td>
+
+                                <td ng-show="fields[16]">
+                                    <span class="badge border {{host.Host.type.class}} {{host.Host.type.color}}">
+                                        <i class="{{host.Host.type.icon}}"></i>
+                                        {{host.Host.type.title}}
+                                    </span>
                                 </td>
 
                                 <td class="width-50">
