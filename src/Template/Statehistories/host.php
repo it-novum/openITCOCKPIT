@@ -227,18 +227,23 @@
                                     StatehistoryHost.StatehistoryHost.max_check_attempts }}
                                 </td>
                                 <td class="text-center">
-                                        <span ng-show="StatehistoryHost.StatehistoryHost.is_hardstate">
-                                            <?php echo __('Hard'); ?>
-                                        </span>
-
-                                    <span ng-show="!StatehistoryHost.StatehistoryHost.is_hardstate">
-                                            <?php echo __('Soft'); ?>
-                                        </span>
-
+                                    <span class="badge text-uppercase"
+                                          ng-class="{'badge-success': StatehistoryHost.StatehistoryHost.state == 0,
+                                          'badge-danger': StatehistoryHost.StatehistoryHost.state == 1,
+                                          'badge-secondary': StatehistoryHost.StatehistoryHost.state == 2}"
+                                          ng-show="StatehistoryHost.StatehistoryHost.is_hardstate">
+                                        <?= __('Hard'); ?>
+                                    </span>
+                                    <span class="badge text-uppercase opacity-50"
+                                          ng-class="{'badge-success': StatehistoryHost.StatehistoryHost.state == 0,
+                                          'badge-danger': StatehistoryHost.StatehistoryHost.state == 1,
+                                          'badge-secondary': StatehistoryHost.StatehistoryHost.state == 2}"
+                                          ng-show="!StatehistoryHost.StatehistoryHost.is_hardstate">
+                                        <?= __('Soft'); ?>
+                                    </span>
                                 </td>
                                 <td>
-                                    <div
-                                            ng-bind-html="StatehistoryHost.StatehistoryHost.outputHtml | trustAsHtml"></div>
+                                    <div ng-bind-html="StatehistoryHost.StatehistoryHost.outputHtml | trustAsHtml"></div>
                                 </td>
                             </tr>
 

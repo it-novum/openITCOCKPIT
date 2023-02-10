@@ -25,10 +25,10 @@
 ?>
 
 <host-browser-menu
-        ng-if="hostBrowserMenuConfig"
-        config="hostBrowserMenuConfig"
-        last-load-date="0"
-        root-copy-to-clipboard="rootCopyToClipboard"></host-browser-menu>
+    ng-if="hostBrowserMenuConfig"
+    config="hostBrowserMenuConfig"
+    last-load-date="0"
+    root-copy-to-clipboard="rootCopyToClipboard"></host-browser-menu>
 
 <div class="row">
     <div class="col-xl-12">
@@ -61,8 +61,9 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span
-                                                        class="input-group-text filter-text"><?php echo __('From'); ?></span>
+                                                <span class="input-group-text filter-text">
+                                                    <?php echo __('From'); ?>
+                                                </span>
                                             </div>
                                             <input type="datetime-local" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
@@ -89,8 +90,9 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span
-                                                        class="input-group-text filter-text"><?php echo __('To'); ?></span>
+                                                <span class="input-group-text filter-text">
+                                                    <?php echo __('To'); ?>
+                                                </span>
                                             </div>
                                             <input type="datetime-local" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
@@ -116,7 +118,9 @@
                                                        ng-model="filter.Hostchecks.state.recovery"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label custom-control-label-up"
-                                                       for="statusFilterUp"><?php echo __('Up'); ?></label>
+                                                       for="statusFilterUp">
+                                                    <?php echo __('Up'); ?>
+                                                </label>
                                             </div>
 
                                             <div class="custom-control custom-checkbox">
@@ -228,18 +232,23 @@
                                     Hostcheck.Hostcheck.max_check_attempts }}
                                 </td>
                                 <td class="text-center">
-                                    <span ng-show="Hostcheck.Hostcheck.is_hardstate">
-                                        <?php echo __('Hard'); ?>
+                                    <span class="badge text-uppercase"
+                                          ng-class="{'badge-success': Hostcheck.Hostcheck.state == 0,
+                                          'badge-danger': Hostcheck.Hostcheck.state == 1,
+                                          'badge-secondary': Hostcheck.Hostcheck.state == 2}"
+                                          ng-show="Hostcheck.Hostcheck.is_hardstate">
+                                        <?= __('Hard'); ?>
                                     </span>
-
-                                    <span ng-show="!Hostcheck.Hostcheck.is_hardstate">
-                                        <?php echo __('Soft'); ?>
+                                    <span class="badge text-uppercase opacity-50"
+                                          ng-class="{'badge-success': Hostcheck.Hostcheck.state == 0,
+                                          'badge-danger': Hostcheck.Hostcheck.state == 1,
+                                          'badge-secondary': Hostcheck.Hostcheck.state == 2}"
+                                          ng-show="!Hostcheck.Hostcheck.is_hardstate">
+                                        <?= __('Soft'); ?>
                                     </span>
-
                                 </td>
                                 <td>
-                                    <div
-                                            ng-bind-html="Hostcheck.Hostcheck.outputHtml | trustAsHtml"></div>
+                                    <div ng-bind-html="Hostcheck.Hostcheck.outputHtml | trustAsHtml"></div>
                                 </td>
                             </tr>
 
