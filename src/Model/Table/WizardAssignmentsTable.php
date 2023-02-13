@@ -345,6 +345,13 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('These checks will allow you to monitor your HP server'),
                 'image'       => 'hp.svg',
                 'category'    => ['hardware'],
+            ],
+            'nutanix'                => [
+                'type_id'     => 'nutanix',
+                'title'       => __('Nutanix'),
+                'description' => __('Monitor your Nutanix infrastructure'),
+                'image'       => 'nutanix_logo.svg',
+                'category'    => ['virtualization', 'hardware'],
             ]
         ];
 
