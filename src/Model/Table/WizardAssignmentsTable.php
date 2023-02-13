@@ -345,6 +345,13 @@ class WizardAssignmentsTable extends Table {
                 'description' => __('These checks will allow you to monitor your HP server'),
                 'image'       => 'hp.svg',
                 'category'    => ['hardware'],
+            ],
+            'winrm'                  => [
+                'type_id'     => 'winrm',
+                'title'       => __('Windows Remote Management'),
+                'description' => __('Monitor a Windows host via WinRM (Windows Remote Management)'),
+                'image'       => 'winrm.png',
+                'category'    => ['windows', 'remote'],
             ]
         ];
 
