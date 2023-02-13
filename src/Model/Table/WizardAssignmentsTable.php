@@ -348,7 +348,7 @@ class WizardAssignmentsTable extends Table {
             ],
             'winrm'                  => [
                 'type_id'     => 'winrm',
-                'title'       => __('Windows Remote Management'),
+                'title'       => __('WinRM'),
                 'description' => __('Monitor a Windows host via WinRM (Windows Remote Management)'),
                 'image'       => 'winrm.png',
                 'category'    => ['windows', 'remote'],
