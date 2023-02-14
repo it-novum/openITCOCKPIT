@@ -73,8 +73,14 @@ class EvcContainerPermissions {
         foreach ($this->usedEvcContainerIdsGroupByHost as $hostId => $containers) {
             $usedEvcContainerIdsGroupByHost = $this->usedEvcContainerIdsGroupByHost;
 
-            if (isset($usedEvcContainerIdsGroupByHost[$hostId][ROOT_CONTAINER])) {
-                unset($usedEvcContainerIdsGroupByHost[$hostId][ROOT_CONTAINER]);
+
+            if (in_array(ROOT_CONTAINER, $usedEvcContainerIdsGroupByHost[$hostId], true)) {
+                // Remove root container from list
+                foreach($usedEvcContainerIdsGroupByHost[$hostId] as $i => $v){
+                    if($v === ROOT_CONTAINER){
+                        unset($usedEvcContainerIdsGroupByHost[$hostId][$i]);
+                    }
+                }
 
                 if (empty($usedEvcContainerIdsGroupByHost[$hostId])) {
                     //This host had only the ROOT_CONTAINER (allowed for everyone)
