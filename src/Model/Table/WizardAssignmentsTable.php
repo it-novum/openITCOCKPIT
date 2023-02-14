@@ -351,7 +351,7 @@ class WizardAssignmentsTable extends Table {
                 'title'       => __('Nutanix'),
                 'description' => __('Monitor your Nutanix infrastructure'),
                 'image'       => 'nutanix_logo.svg',
-                'category'    => ['virtualization', 'hardware'],
+                'category'    => ['virtualization', 'cloud'],
             ]
         ];
 
