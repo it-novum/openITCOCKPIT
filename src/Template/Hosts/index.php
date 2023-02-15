@@ -698,11 +698,11 @@
                                     </th>
                                 <?php endif; ?>
 
-                                <th ng-show="fields[15]" class="text-center"">
+                                <th ng-show="fields[15]" class="text-center">
                                 <?php echo __('Host notes'); ?>
                                 </th>
 
-                                <th ng-show="fields[16]" class="text-center"">
+                                <th ng-show="fields[16]" class="text-center">
                                 <?php echo __('Host type'); ?>
                                 </th>
 
