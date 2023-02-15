@@ -6,7 +6,7 @@ After=syslog.target network.target mysql.service
 User=root
 Group=www-data
 Type=simple
-Restart=on-failure
+Restart=always
 ExecStart=/opt/openitc/frontend/bin/cake Cmd
 RestartSec=30
 
