@@ -55,7 +55,8 @@ class ServiceFilter extends Filter {
                 'Services.id',
                 'Services.uuid',
                 'Services.disabled',
-                'servicepriority'
+                'servicepriority',
+                'Services.service_type',
             ],
             'downtime' => [
                 'Servicestatus.scheduled_downtime_depth',

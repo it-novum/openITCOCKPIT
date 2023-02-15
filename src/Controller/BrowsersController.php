@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TenantsTable;
 use Cake\Core\Plugin;
@@ -55,6 +56,8 @@ class BrowsersController extends AppController {
             $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
             $satellites = [];
 
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
             if (Plugin::isLoaded('DistributeModule')) {
                 /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
@@ -66,6 +69,7 @@ class BrowsersController extends AppController {
 
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
+            $this->set('types', $HostsTable->getHostTypes());
             //Only ship HTML template
             return;
         }
@@ -90,7 +94,7 @@ class BrowsersController extends AppController {
                     'name'             => $tenant['container']['name'],
                     'containertype_id' => $tenant['container']['containertype_id']
                 ];
-            }else{
+            } else {
                 $tenantsOfContainerNotVisibleForUser = true;
             }
         }

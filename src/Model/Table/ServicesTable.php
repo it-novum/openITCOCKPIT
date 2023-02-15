@@ -3651,6 +3651,14 @@ class ServicesTable extends Table {
     /**
      * @return array
      */
+    public function getServiceTypes() {
+        $types = $this->getServiceTypesWithStyles();
+        return array_combine(array_keys($types), Hash::extract($types, '{n}.title'));
+    }
+
+    /**
+     * @return array
+     */
     public function getServiceTypesWithStyles() {
         $types[GENERIC_SERVICE] = [
             'title' => __('Generic service'),

@@ -62,7 +62,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use CustomalertModule\Model\Table\CustomalertsTable;
 use DistributeModule\Model\Table\SatellitesTable;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -143,21 +142,21 @@ class ServicesController extends AppController {
             $satellites[0] = $masterInstanceName;
         }
 
-        if (!$this->isApiRequest()) {
-            $this->set('username', $User->getFullName());
-            $this->set('satellites', $satellites);
-
-            //Only ship HTML template
-            return;
-        }
-
-
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$this->isApiRequest()) {
+            $this->set('username', $User->getFullName());
+            $this->set('satellites', $satellites);
+            $this->set('types', $ServicesTable->getServiceTypes());
+
+            //Only ship HTML template
+            return;
+        }
 
         $ServiceFilter = new ServiceFilter($this->request);
 
@@ -223,8 +222,10 @@ class ServicesController extends AppController {
         }
 
         $hostContainers = [];
+        $typesForView = $ServicesTable->getServiceTypesWithStyles();
         foreach ($services as $index => $service) {
             $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+
         }
         if ($this->hasRootPrivileges === false) {
             if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {

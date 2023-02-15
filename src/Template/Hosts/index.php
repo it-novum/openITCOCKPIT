@@ -227,6 +227,30 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-lg-6 margin-bottom-10">
+                                    <div class="form-group required">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                                            </div>
+                                            <select
+                                                id="HostType"
+                                                data-placeholder="<?php echo __('Filter by host types'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Host.host_type"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($types as $typeId => $typeName):
+                                                    printf('<option value="%s">%s</option>', h($typeId), h($typeName));
+                                                endforeach;
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="row">
@@ -510,7 +534,8 @@
                                             __('Host output'),
                                             __('Instance'),
                                             __('Service Summary '),
-                                            __('Host notes')
+                                            __('Host notes'),
+                                            __('Host type')
                                         ];
                                         foreach (array_chunk($list, 6, true) as $chunk):
                                             echo '<div class="col-xs-12 col-md-12 col-lg-4">';
@@ -673,9 +698,12 @@
                                     </th>
                                 <?php endif; ?>
 
-                                <th ng-show="fields[15]" class="text-center"
-                                ">
+                                <th ng-show="fields[15]" class="text-center"">
                                 <?php echo __('Host notes'); ?>
+                                </th>
+
+                                <th ng-show="fields[16]" class="text-center"">
+                                <?php echo __('Host type'); ?>
                                 </th>
 
                                 <th class="no-sort text-center editItemWidth"><i class="fa fa-gear"></i></th>
@@ -840,6 +868,13 @@
 
                                 <td ng-show="fields[15]">
                                     {{ host.Host.notes }}
+                                </td>
+
+                                <td ng-show="fields[16]">
+                                    <span class="badge border {{host.Host.type.class}} {{host.Host.type.color}}">
+                                        <i class="{{host.Host.type.icon}}"></i>
+                                        {{host.Host.type.title}}
+                                    </span>
                                 </td>
 
                                 <td class="width-50">
