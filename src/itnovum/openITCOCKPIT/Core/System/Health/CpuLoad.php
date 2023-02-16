@@ -92,8 +92,8 @@ class CpuLoad {
             }
         }
 
-        if($this->model === 'Unknown'){
-            if(file_exists('/sys/firmware/devicetree/base/model')){
+        if ($this->model === 'Unknown') {
+            if (file_exists('/sys/firmware/devicetree/base/model')) {
                 // From: https://github.com/dylanaraps/neofetch/blob/master/neofetch#L1235-L1248
                 $this->model = trim(file_get_contents('/sys/firmware/devicetree/base/model'));
             }
@@ -110,18 +110,32 @@ class CpuLoad {
     }
 
     /**
-     * @return array
+     * @param $warning
+     * @param $critical
+     * @return array|float[]
      */
-    public function getLoadForSystemHealth() {
+    public function getLoadForSystemHealth($warning = null, $critical = null) {
         $load = $this->getLoad();
         $load['cores'] = $this->getNumberOfCores();
         $load['state'] = 'ok';
 
-        if ($load['load15'] > $load['cores'] - 2 && $load['load15'] > 1) {
-            $load['state'] = 'warning';
+        if (is_numeric($warning) && $warning > 0) {
+            if ($load['load15'] > $warning) {
+                $load['state'] = 'warning';
+            }
+        } else {
+            if ($load['load15'] > $load['cores'] - 2 && $load['load15'] > 1) {
+                $load['state'] = 'warning';
+            }
         }
-        if ($load['load15'] >= $load['cores'] && $load['load15'] > 1) {
-            $load['state'] = 'critical';
+        if (is_numeric($critical) && $critical > 0) {
+            if ($load['load15'] >= $critical) {
+                $load['state'] = 'critical';
+            }
+        } else {
+            if ($load['load15'] >= $load['cores'] && $load['load15'] > 1) {
+                $load['state'] = 'critical';
+            }
         }
         return $load;
     }
@@ -162,7 +176,7 @@ class CpuLoad {
     /**
      * @return string
      */
-    public function getArchitecture(){
+    public function getArchitecture() {
         return php_uname('m');
     }
 

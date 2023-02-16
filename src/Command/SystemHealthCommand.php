@@ -95,20 +95,44 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             'isNodeJsServerRunning'           => false
         ];
 
-        $CpuLoad = new CpuLoad();
-
-
-        $data['load'] = $CpuLoad->getLoadForSystemHealth();
-
-        $Disks = new Disks();
-        $data['disk_usage'] = $Disks->getDiskUsage();
-
-        $MemoryUsage = new MemoryUsage();
-        $data['memory_usage'] = $MemoryUsage->getMemoryUsage();
-
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsetting = $SystemsettingsTable->findAsArray();
+
+        /****** Cpu Load ******/
+        $CpuLoad = new CpuLoad();
+
+        $cpuLoadWarning = !empty($systemsetting['SYSTEM_HEALTH']['CPU.LOAD_WARNING']) ? $systemsetting['SYSTEM_HEALTH']['CPU.LOAD_WARNING'] : null;
+        $cpuLoadCritical = !empty($systemsetting['SYSTEM_HEALTH']['CPU.LOAD_CRITICAL']) ? $systemsetting['SYSTEM_HEALTH']['CPU.LOAD_CRITICAL'] : null;
+
+        $data['load'] = $CpuLoad->getLoadForSystemHealth($cpuLoadWarning, $cpuLoadCritical);
+
+        /****** Disks ******/
+        $Disks = new Disks();
+
+        $diskWarningInPercent = !empty($systemsetting['SYSTEM_HEALTH']['DISK.WARNING_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['DISK.WARNING_IN_PERCENT'] : null;
+        $diskCriticalInPercent = !empty($systemsetting['SYSTEM_HEALTH']['DISK.CRITICAL_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['DISK.CRITICAL_IN_PERCENT'] : null;
+
+        $data['disk_usage'] = $Disks->getDiskUsage($diskWarningInPercent, $diskCriticalInPercent);
+
+        /****** Memory ******/
+        $MemoryUsage = new MemoryUsage();
+
+        $memoryWarningInPercent = !empty($systemsetting['SYSTEM_HEALTH']['RAM.WARNING_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['RAM.WARNING_IN_PERCENT'] : null;
+        $memoryCriticalInPercent = !empty($systemsetting['SYSTEM_HEALTH']['RAM.CRITICAL_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['RAM.CRITICAL_IN_PERCENT'] : null;
+
+        $swapWarningInPercent = !empty($systemsetting['SYSTEM_HEALTH']['SWAP.WARNING_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['SWAP.WARNING_IN_PERCENT'] : null;
+        $swapCriticalInPercent = !empty($systemsetting['SYSTEM_HEALTH']['SWAP.CRITICAL_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['SWAP.CRITICAL_IN_PERCENT'] : null;
+
+
+        $data['memory_usage'] = $MemoryUsage->getMemoryUsage(
+            $memoryWarningInPercent,
+            $memoryCriticalInPercent,
+            $swapWarningInPercent,
+            $swapCriticalInPercent
+        );
+
+
         $errorRedirect = ' 2> /dev/null';
 
 
