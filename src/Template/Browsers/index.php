@@ -75,7 +75,8 @@
                                 <div ng-repeat="container in containers">
                                     <i class="fa fa-globe" ng-show="container.value.containertype_id === 1"></i>
                                     <i class="fa fa-home" ng-show="container.value.containertype_id === 2"></i>
-                                    <i class="fa fa-location-arrow" ng-show="container.value.containertype_id === 3"></i>
+                                    <i class="fa fa-location-arrow"
+                                       ng-show="container.value.containertype_id === 3"></i>
                                     <i class="fa fa-link" ng-show="container.value.containertype_id === 5"></i>
                                     <a ui-sref="BrowsersIndex({containerId: container.value.id})">
                                         {{container.value.name}}
@@ -291,13 +292,37 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-lg-6 margin-bottom-10">
+                                    <div class="form-group required">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                                            </div>
+                                            <select
+                                                id="HostType"
+                                                data-placeholder="<?php echo __('Filter by host types'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Host.host_type"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($types as $typeId => $typeName):
+                                                    printf('<option value="%s">%s</option>', h($typeId), h($typeName));
+                                                endforeach;
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="row">
 
                                 <div class="col-xs-12 col-lg-3">
                                     <fieldset>
-                                        <h5><?php echo __('Service status'); ?></h5>
+                                        <h5><?php echo __('Host status'); ?></h5>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox"
@@ -420,7 +445,8 @@
                                     <i class="fas fa-columns"></i>
                                     <?php echo __('Columns'); ?>
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-columns" aria-labelledby="dropdownMenuButton">
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-columns"
+                                     aria-labelledby="dropdownMenuButton">
                                     <div class="row">
                                         <?php $list = [
                                             __('Hoststatus'),
@@ -438,7 +464,8 @@
                                             __('Host output'),
                                             __('Instance'),
                                             __('Service Summary '),
-                                            __('Host notes')
+                                            __('Host notes'),
+                                            __('Host type')
                                         ];
                                         foreach (array_chunk($list, 6, true) as $chunk):
                                             echo '<div class="col-xs-12 col-md-12 col-lg-4">';
@@ -521,7 +548,8 @@
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th ng-show="fields[0]" colspan="2" class="no-sort width-95" ng-click="orderBy('Hoststatus.current_state')">
+                                <th ng-show="fields[0]" colspan="2" class="no-sort width-95"
+                                    ng-click="orderBy('Hoststatus.current_state')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.current_state')"></i>
                                     <?php echo __('Hoststatus'); ?>
                                 </th>
@@ -537,7 +565,8 @@
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
-                                <th ng-show="fields[3]" class="no-sort text-center" ng-click="orderBy('Hoststatus.notifications_enabled')">
+                                <th ng-show="fields[3]" class="no-sort text-center"
+                                    ng-click="orderBy('Hoststatus.notifications_enabled')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.notifications_enabled')"></i>
                                     <i class="fas fa-envelope" title="<?php echo __('Notifications enabled'); ?>">
                                     </i>
@@ -557,7 +586,7 @@
                                     </i>
                                 </th>
 
-                                <th  ng-show="fields[7]" class="no-sort" ng-click="orderBy('Hosts.name')">
+                                <th ng-show="fields[7]" class="no-sort" ng-click="orderBy('Hosts.name')">
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Host name'); ?>
                                 </th>
@@ -577,7 +606,8 @@
                                     <?php echo __('Last state change'); ?>
                                 </th>
 
-                                <th ng-show="fields[11]" class="no-sort tableStatewidth" ng-click="orderBy('Hoststatus.last_check')">
+                                <th ng-show="fields[11]" class="no-sort tableStatewidth"
+                                    ng-click="orderBy('Hoststatus.last_check')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.last_check')"></i>
                                     <?php echo __('Last check'); ?>
                                 </th>
@@ -600,6 +630,10 @@
 
                                 <th ng-show="fields[15]" class="text-center">
                                     <?php echo __('Host notes'); ?>
+                                </th>
+
+                                <th ng-show="fields[16]" class="text-center">
+                                    <?= __('Host type'); ?>
                                 </th>
 
                                 <th class="no-sort text-center editItemWidth"><i class="fa fa-gear"></i></th>
@@ -758,6 +792,13 @@
 
                                 <td ng-show="fields[15]">
                                     {{ host.Host.notes }}
+                                </td>
+
+                                <td ng-show="fields[16]">
+                                    <span class="badge border {{host.Host.type.class}} {{host.Host.type.color}}">
+                                        <i class="{{host.Host.type.icon}}"></i>
+                                        {{host.Host.type.title}}
+                                    </span>
                                 </td>
 
                                 <td class="width-50">
