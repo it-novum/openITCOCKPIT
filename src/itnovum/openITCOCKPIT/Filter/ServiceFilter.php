@@ -44,9 +44,11 @@ class ServiceFilter extends Filter {
                 'servicedescription'
             ],
             'rlike'    => [
+                'Hosts.keywords',
                 'keywords'
             ],
             'notrlike' => [
+                'Hosts.not_keywords',
                 'not_keywords'
             ],
             'equals'   => [
