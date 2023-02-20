@@ -1287,11 +1287,11 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     border-radius: 3px 0 0 3px;
 }
 
-.word-wrap-anywhere{
+.word-wrap-anywhere {
     word-wrap: anywhere;
 }
 
-.graph-placeholder{
+.graph-placeholder {
     width: 100%;
     height: 150px;
 }
@@ -1304,4 +1304,12 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     width: 100vw;
     height: 100vh;
     background-color: #000;
+}
+
+.rounded-left-only {
+    border-radius: 4px 0 0 4px;
+}
+
+.rounded-right-only {
+    border-radius: 0 4px 4px 0;
 }
