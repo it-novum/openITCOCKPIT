@@ -448,6 +448,7 @@
         -moz-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
         box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
         padding: 2px;
+        background: #d9534f; /* Outlook on Windows has no support for linear-gradient */
         background: linear-gradient(to right, #4c4f53 15px, #d9534f 2%); /* W3C */
 
     }
@@ -464,6 +465,7 @@
         box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
         padding: 5px;
         color: white;
+        background: #5cb85c; /* Outlook on Windows has no support for linear-gradient */
         background: linear-gradient(to right, #4c4f53 15px, #5cb85c 2%); /* W3C */
     }
 
@@ -473,6 +475,7 @@
         box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
         padding: 2px;
         color: white;
+        background: #888888; /* Outlook on Windows has no support for linear-gradient */
         background: linear-gradient(to right, #4c4f53 15px, #888888 2%); /* W3C */
     }
 
@@ -482,6 +485,7 @@
         box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
         padding: 2px;
         color: white;
+        background: #f0ad4e; /* Outlook on Windows has no support for linear-gradient */
         background: linear-gradient(to right, #4c4f53 15px, #f0ad4e 2%); /* W3C */
     }
 
@@ -495,11 +499,12 @@
         );
     }
 
-    .disabledEvcSummary:after {
-        content: "\f1e6";
-        font-family: FontAwesome;
-        color: #ff0000;
-        font-size: 11px;
+    .disabledEvcSummary:before {
+        content: "🔌";
+        position: absolute;
+        right:2px;
+        top:-2px;
+        font-size: 12px;
     }
 
     .gatter {
