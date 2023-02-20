@@ -193,7 +193,7 @@
                                            data-role="tagsinput"
                                            placeholder="<?php echo __('Filter by tags'); ?>"
                                            type="text"
-                                           id="HostTags"
+                                           id="HostTags-{{widget.id}}"
                                            ng-model="filter.Host.keywords">
                                 </div>
                             </div>
@@ -208,7 +208,7 @@
                                            data-role="tagsinput"
                                            placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                            type="text"
-                                           id="HostExcludedTags"
+                                           id="HostExcludedTags-{{widget.id}}"
                                            ng-model="filter.Host.not_keywords">
                                 </div>
                             </div>

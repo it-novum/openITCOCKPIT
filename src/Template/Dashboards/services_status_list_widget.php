@@ -198,7 +198,7 @@
                                            data-role="tagsinput"
                                            placeholder="<?php echo __('Filter by host tags'); ?>"
                                            type="text"
-                                           id="HostTags"
+                                           id="HostTags-{{widget.id}}"
                                            ng-model="filter.Host.keywords">
                                 </div>
                             </div>
@@ -218,7 +218,7 @@
                                            data-role="tagsinput"
                                            placeholder="<?php echo __('Filter by excluded host tags'); ?>"
                                            type="text"
-                                           id="HostExcludedTags"
+                                           id="HostExcludedTags-{{widget.id}}"
                                            ng-model="filter.Host.not_keywords">
                                 </div>
                             </div>
@@ -242,7 +242,7 @@
                                            data-role="tagsinput"
                                            placeholder="<?php echo __('Filter by service tags'); ?>"
                                            type="text"
-                                           id="ServiceTags"
+                                           id="ServiceTags-{{widget.id}}"
                                            ng-model="filter.Service.keywords">
                                 </div>
                             </div>
@@ -262,7 +262,7 @@
                                            data-role="tagsinput"
                                            placeholder="<?php echo __('Filter by excluded service tags'); ?>"
                                            type="text"
-                                           id="ServiceExcludedTags"
+                                           id="ServiceExcludedTags-{{widget.id}}"
                                            ng-model="filter.Service.not_keywords">
                                 </div>
                             </div>

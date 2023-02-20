@@ -47,8 +47,8 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
             $scope.loadWidgetConfig = function(){
                 $http.get("/dashboards/hostsStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
-                    $('#HostTags').tagsinput('add', $scope.filter.Host.keywords);
-                    $('#HostExcludedTags').tagsinput('add', $scope.filter.Host.not_keywords);
+                    $('#HostTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
+                    $('#HostExcludedTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
                     $scope.filter.Hoststatus = result.data.config.Hoststatus;
                     $scope.filter.Hoststatus.current_state.up = result.data.config.Hoststatus.current_state.up ? 1 : 0;
                     $scope.filter.Hoststatus.current_state.down = result.data.config.Hoststatus.current_state.down ? 1 : 0;

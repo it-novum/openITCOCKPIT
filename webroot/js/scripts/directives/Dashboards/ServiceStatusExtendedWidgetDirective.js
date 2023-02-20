@@ -54,10 +54,10 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                 $http.get("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
-                    $('#HostTags').tagsinput('add', $scope.filter.Host.keywords);
-                    $('#HostExcludedTags').tagsinput('add', $scope.filter.Host.not_keywords);
-                    $('#ServiceTags').tagsinput('add', $scope.filter.Service.keywords);
-                    $('#ServiceExcludedTags').tagsinput('add', $scope.filter.Service.not_keywords);
+                    $('#HostTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
+                    $('#HostExcludedTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
+                    $('#ServiceTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Service.keywords);
+                    $('#ServiceExcludedTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Service.not_keywords);
 
                     $scope.filter.Servicestatus = result.data.config.Servicestatus;
                     $scope.filter.Servicestatus.current_state.ok = result.data.config.Servicestatus.current_state.ok ? 1 : 0;
@@ -110,7 +110,7 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                     'direction': $scope.direction,
                     'includes[]': ['downtimes', 'acknowledgements'],
                     'filter[Hosts.name]': $scope.filter.Host.name,
-                    'filter[Hosts.keywords][]':  $scope.filter.Host.keywords.split(','),
+                    'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
                     'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                     'filter[servicename]': $scope.filter.Service.name,
                     'filter[keywords][]': $scope.filter.Service.keywords.split(','),
