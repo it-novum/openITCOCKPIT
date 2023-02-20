@@ -1288,6 +1288,7 @@ label.menu-open-button:hover {
 
 .system-health-item {
     white-space: normal;
+    word-break: break-word;
 }
 
 .container-table {
