@@ -489,18 +489,28 @@ class AgentResponseToServices {
         $services = [];
         if (isset($this->agentResponse['processes'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+            // ITC-2939 add support for process identifier via service template
+            $identifier = $servicetemplatecommandargumentvalues[8]['value'] ?? 'auto';
+            if (!in_array($identifier, ['cmdline', 'exec', 'name', 'auto'], true)) {
+                $identifier = 'auto';
+            }
+
             foreach ($this->agentResponse['processes'] as $item) {
-                $processName = $item['name'];
-                if (!empty($item['exec'])) {
-                    $processName = $item['exec'];
-                }
-                if (!empty($item['cmdline']) && is_array($item['cmdline'])) {
-                    // Agent 1.x
-                    $processName = implode(' ', $item['cmdline']);
-                }
-                if (!empty($item['cmdline']) && is_string($item['cmdline'])) {
-                    // Agent 3.x
-                    $processName = $item['cmdline'];
+                if ($identifier !== 'auto' && isset($item[$identifier])) {
+                    $processName = $item[$identifier];
+                } else {
+                    $processName = $item['name'];
+                    if (!empty($item['exec'])) {
+                        $processName = $item['exec'];
+                    }
+                    if (!empty($item['cmdline']) && is_array($item['cmdline'])) {
+                        // Agent 1.x
+                        $processName = implode(' ', $item['cmdline']);
+                    }
+                    if (!empty($item['cmdline']) && is_string($item['cmdline'])) {
+                        // Agent 3.x
+                        $processName = $item['cmdline'];
+                    }
                 }
 
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [6 => $this->shortCommandargumentValue($processName)])) {
