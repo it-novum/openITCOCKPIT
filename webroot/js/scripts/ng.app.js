@@ -1735,9 +1735,13 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             navigator.clipboard.writeText(str);
             event.preventDefault();
 
-            var $target = $($event.target);
-            var copyText = $target.data('copy');
-            var copiedText = $target.data('copied');
+            let $target = $($event.target);
+            // Find a possible nested <copy> button
+            if ($target.find('span').length >0) {
+                $target = $target.find('span.copy-action');
+            }
+            let copyText  = $target.data('copy'),
+                copiedText = $target.data('copied');
 
             //$target.addClass('fadeOut');
             $target.text(copiedText);
