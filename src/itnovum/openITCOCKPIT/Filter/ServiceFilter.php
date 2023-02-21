@@ -38,13 +38,13 @@ class ServiceFilter extends Filter {
                 'Servicestatus.active_checks_enabled'
             ],
             'like'     => [
-                'Hosts.name',
-                'servicename',
                 'Servicestatus.output',
                 'servicedescription'
             ],
             'rlike'    => [
                 'Hosts.keywords',
+                'Hosts.name',
+                'servicename',
                 'keywords'
             ],
             'notrlike' => [
@@ -76,7 +76,7 @@ class ServiceFilter extends Filter {
      */
     public function notMonitoredFilter() {
         $filters = [
-            'like'   => [
+            'rlike'  => [
                 'Hosts.name',
                 'servicename',
             ],
