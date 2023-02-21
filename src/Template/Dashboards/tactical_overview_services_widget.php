@@ -254,6 +254,11 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                        placeholder="<?php echo __('Filter by host name'); ?>"
                                        ng-model="filter.Host.name"
                                        ng-model-options="{debounce: 500}">
+                                <div class="input-group-append">
+                                    <span class="input-group-text pt-0 pb-0">
+                                        <regex-helper-tooltip></regex-helper-tooltip>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-lg-6 margin-bottom-5">
@@ -265,6 +270,11 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                        placeholder="<?php echo __('Filter by service name'); ?>"
                                        ng-model="filter.Service.servicename"
                                        ng-model-options="{debounce: 500}">
+                                <div class="input-group-append">
+                                    <span class="input-group-text pt-0 pb-0">
+                                        <regex-helper-tooltip></regex-helper-tooltip>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-lg-6 margin-bottom-5">

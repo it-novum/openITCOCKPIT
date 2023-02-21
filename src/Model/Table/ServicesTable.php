@@ -585,6 +585,17 @@ class ServicesTable extends Table {
         }
 
         $query = $this->find();
+
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
+
         $query
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
@@ -699,7 +710,20 @@ class ServicesTable extends Table {
             unset($where['servicename LIKE']);
         }
 
+
         $query = $this->find();
+
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
+
+
         $query
             ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
@@ -1496,7 +1520,6 @@ class ServicesTable extends Table {
         if ($ServiceConditions->getHostId()) {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
-
         $query = $this->find();
         $query
             ->select([
@@ -1527,6 +1550,16 @@ class ServicesTable extends Table {
                 }
                 return $q;
             })->innerJoinWith('Servicetemplates');
+
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
 
         if (!empty($where)) {
             $query->where($where);
@@ -1713,6 +1746,16 @@ class ServicesTable extends Table {
                 'Servicestatus.service_description = Services.uuid'
             ])
             ->whereNull('Servicestatus.service_description');
+
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
 
         if (!empty($where)) {
             $query->where($where);
@@ -1925,7 +1968,6 @@ class ServicesTable extends Table {
      */
     public function getServiceIndexStatusengine3(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
         $where = $ServiceConditions->getConditions();
-
         $where['Services.disabled'] = 0;
         if ($ServiceConditions->getServiceIds()) {
             $serviceIds = $ServiceConditions->getServiceIds();
@@ -2017,6 +2059,15 @@ class ServicesTable extends Table {
                 'Servicestatus.service_description = Services.uuid'
             ]);
 
+        if (isset($where['servicename rlike'])) {
+            $query->where(new Comparison(
+                'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                $where['servicename rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['servicename rlike']);
+        }
         if (isset($where['keywords rlike'])) {
             $compareValue = $where['keywords rlike'];
             if (is_string($compareValue)) {
@@ -4535,13 +4586,29 @@ class ServicesTable extends Table {
             );
         }
 
-        if (!empty($conditions['Service']['servicename'])) {
-            $query->having([
-                'servicename LIKE' => $conditions['Service']['servicename']
-            ]);
-        }
         if (!empty($conditions['Host']['name'])) {
-            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+            if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                $where[] = new Comparison(
+                    'Hosts.name',
+                    $conditions['Host']['name'],
+                    'string',
+                    'RLIKE'
+                );
+            }
+
+        }
+
+        if (!empty($conditions['Service']['servicename'])) {
+            if ($this->isValidRegularExpression($conditions['Service']['servicename'])) {
+                $query->having([
+                    new Comparison(
+                        'servicename',
+                        $conditions['Service']['servicename'],
+                        'string',
+                        'RLIKE'
+                    )
+                ]);
+            }
         }
 
         $query->andWhere($where);
@@ -4959,5 +5026,13 @@ class ServicesTable extends Table {
 
         return $result->toArray();
 
+    }
+
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    private function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
     }
 }
