@@ -33,10 +33,10 @@ class Groups {
 
         //group->id gets rendered as order to the frontend
         $this->groups = [
-            'acknowlegements'     => [
+            'acknowledgements'     => [
                 'id'   => 2,
                 'icon' => '<i class=\'fa fa-commenting\'></i>',
-                'text' => __('Acknowlegements')
+                'text' => __('Acknowledgements')
             ],
             'downtimes'           => [
                 'id'   => 3,
@@ -69,8 +69,8 @@ class Groups {
         return $this->groups['servicestatehistory']['id'];
     }
 
-    public function getAcknowlegementsId() {
-        return $this->groups['acknowlegements']['id'];
+    public function getAcknowledgementsId() {
+        return $this->groups['acknowledgements']['id'];
     }
 
     public function getDowntimesId() {
