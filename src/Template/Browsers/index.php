@@ -664,16 +664,32 @@
                                 <td ng-show="fields[1]" class="text-center">
                                     <i class="far fa-user"
                                        ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            data-toggle="popover" id="ackBrowsertip_{{host.Host.id}}"
+                                            ng-mouseover="getAckDetails(host.Host.id)"
+                                        <?php endif; ?>
                                        ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
 
                                     <i class="fas fa-user"
                                        ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                       ng-if="host.Hoststatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                       data-toggle="popover" id="ackBrowsertip_{{host.Host.id}}"
+                                       ng-mouseover="getAckDetails(host.Host.id)"
+                                       ng-if="host.Hoststatus.acknowledgement_type == 2">
+                                        <?php else: ?>
+                                        ng-if="host.Hoststatus.acknowledgement_type == 2"
+                                        title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        <?php endif; ?>
+                                    </i>
                                 </td>
 
                                 <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            data-toggle="popover"
+                                            id="downtimeBrowsertip_{{host.Host.id}}"
+                                            ng-mouseover="getDowntimeDetails(host.Host.id)"
+                                        <?php endif; ?>
                                        ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 

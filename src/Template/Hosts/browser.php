@@ -1358,16 +1358,32 @@ use Cake\Core\Plugin;
                                 <td class="text-center">
                                     <i class="far fa-user"
                                        ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            data-toggle="popover" id="ackServicetip_{{service.Service.id}}"
+                                            ng-mouseover="getAckDetails(service.Service.id)"
+                                        <?php endif; ?>
                                        ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
 
                                     <i class="fas fa-user"
                                        ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                       ng-if="service.Servicestatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                       data-toggle="popover" id="ackServicetip_{{service.Service.id}}"
+                                       ng-mouseover="getAckDetails(service.Service.id)"
+                                       ng-if="service.Servicestatus.acknowledgement_type == 2">
+                                        <?php else: ?>
+                                            ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                            title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        <?php endif; ?>
+                                    </i>
                                 </td>
 
                                 <td class="text-center">
                                     <i class="fa fa-power-off"
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            data-toggle="popover"
+                                            id="downtimeServicetip_{{service.Service.id}}"
+                                            ng-mouseover="getDowntimeDetails(service.Service.id)"
+                                        <?php endif; ?>
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
