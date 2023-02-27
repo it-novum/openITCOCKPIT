@@ -103,7 +103,7 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function(){
             //console.trace();
-            $('[data-toggle="tooltip"], .tooltip').tooltip("dispose");
+            $('[data-toggle="popover"]').popover('dispose');
             lastHostUuid = null;
             var hasBeenAcknowledged = '';
             var inDowntime = '';
@@ -373,12 +373,13 @@ angular.module('openITCOCKPIT')
                     text1 = "<h5>No Downtime</h5>";
                     title = html.concat(text1, end);
                 }
-                $('[data-toggle="popover"], .popover').popover("dispose");
+                $('[data-toggle="popover"]').popover('dispose');
                 $('#' + selector).popover({
-                    delay: 200,
+                   // delay: 200,
                     placement: "right",
+                    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
                     trigger: 'hover',
-                    title: title,
+                    content: title,
                     html: true
                 });
                 $('#' + selector).popover('show');
@@ -414,11 +415,12 @@ angular.module('openITCOCKPIT')
                     text1 = "<h4>Not acknowledeged</h4>";
                     title = html.concat(text1, end);
                 }
-                $('[data-toggle="popover"], .popover').popover("dispose");
+                $('[data-toggle="popover"]').popover('dispose');
                 $('#' + selector).popover({
-                    delay: 200,
+                    //delay: 200,
                     placement: "right",
-                    title: title,
+                    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                    content: title,
                     trigger: 'hover',
                     html: true
                 });
@@ -427,6 +429,10 @@ angular.module('openITCOCKPIT')
                 $('#' + selector).popover('dispose');
 
             });
+        };
+
+        $scope.delPopover = function(){
+            $('[data-toggle="popover"]').popover('dispose');
         };
 
         //Fire on page load
@@ -454,7 +460,7 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$on('$destroy', function() {
-            $('[data-toggle="popover"], .popover').popover("dispose");
+            $('[data-toggle="popover"]').popover('dispose');
         });
 
     });

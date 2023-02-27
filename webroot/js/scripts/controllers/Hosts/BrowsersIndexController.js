@@ -91,7 +91,7 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
         $scope.showFields = false;
         $scope.load = function(){
-
+            $('[data-toggle="popover"]').popover('dispose');
             $http.get("/browsers/index/" + $scope.containerId + ".json", {
                 params: {
                     angular: true
@@ -328,12 +328,13 @@ angular.module('openITCOCKPIT')
                     text1 = "<h5>No Downtime</h5>";
                     title = html.concat(text1, end);
                 }
-                $('[data-toggle="popover"], .popover').popover("dispose");
+                //$('[data-toggle="popover"]').popover('dispose');
                 $('#' + selector).popover({
                     delay: 200,
                     placement: "right",
+                    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
                     trigger: 'hover focus',
-                    title: title,
+                    content: title,
                     html: true
                 });
                 $('#' + selector).popover('show');
@@ -341,7 +342,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.getAckDetails = function(id){
-            console.log('ACK');
             var selector = 'ackBrowsertip_' + id;
             $http.get("/hosts/browser/" + Number(id) + ".json", {
                 params: {
@@ -370,11 +370,12 @@ angular.module('openITCOCKPIT')
                     text1 = "<h4>Not acknowledeged</h4>";
                     title = html.concat(text1, end);
                 }
-                $('[data-toggle="popover"], .popover').popover("dispose");
+                //$('[data-toggle="popover"], .popover').popover('dispose');
                 $('#' + selector).popover({
                     delay: 200,
                     placement: "right",
-                    title: title,
+                    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                    content: title,
                     trigger: 'hover focus',
                     html: true
                 });
@@ -384,9 +385,12 @@ angular.module('openITCOCKPIT')
 
             });
         };
+        $scope.delPopover = function(){
+            $('[data-toggle="popover"]').popover('dispose');
+        };
 
         $scope.$on('$destroy', function() {
-            $('[data-toggle="popover"], .popover').popover("dispose");
+            $('[data-toggle="popover"]').popover('dispose');
         });
 
     });

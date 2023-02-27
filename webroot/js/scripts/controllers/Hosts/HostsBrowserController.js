@@ -205,7 +205,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-            $('[data-toggle="popover"], .popover').popover("dispose");
+            $('[data-toggle="popover"], .popover').popover('dispose');
             switch($scope.activeTab){
                 case 'active':
                     $scope.loadActiveServices();
@@ -686,7 +686,7 @@ angular.module('openITCOCKPIT')
 
         //Disable interval if object gets removed from DOM.
         $scope.$on('$destroy', function(){
-            $('[data-toggle="popover"], .popover').popover("dispose");
+            $('[data-toggle="popover"]').popover('dispose');
             if($scope.interval !== null){
                 $interval.cancel($scope.interval);
             }
@@ -744,12 +744,13 @@ angular.module('openITCOCKPIT')
                     text1 = "<h4>No Downtime</h4>";
                     title = html.concat(text1, end);
                 }
-                $('[data-toggle="popover"], .popover').popover("dispose");
+                //$('[data-toggle="popover"], .popover').popover('dispose');
                 $('#' + selector).popover({
                     delay: 200,
                     placement: "right",
                     trigger: 'hover focus',
-                    title: title,
+                    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                    content: title,
                     html: true
                 });
                 $('#' + selector).popover('show');
@@ -788,18 +789,23 @@ angular.module('openITCOCKPIT')
                     text1 = "<h4>Not acknowledeged</h4>";
                     title = html.concat(text1, end);
                 }
-                $('[data-toggle="popover"], .popover').popover("dispose");
+                //$('[data-toggle="popover"], .popover').popover('dispose');
                 $('#' + selector).popover({
                     delay: 200,
                     placement: "right",
                     trigger: 'hover focus',
-                    title: title,
+                    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                    content: title,
                     html: true
                 });
                 $('#' + selector).popover('show');
             }, function errorCallback(result){
                 $('#' + selector).popover('dispose');
             });
+
+            $scope.delPopover = function(){
+                $('[data-toggle="popover"]').popover('dispose');
+            };
         };
 
 

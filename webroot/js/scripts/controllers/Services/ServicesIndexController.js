@@ -121,7 +121,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-            $('[data-toggle="popover"], .popover').popover("dispose");
+            $('[data-toggle="popover"]').popover("dispose");
             var hasBeenAcknowledged = '';
             var inDowntime = '';
             var notificationsEnabled = '';
@@ -404,22 +404,26 @@ angular.module('openITCOCKPIT')
                     title = html.concat(text1, text2, text3, text4, text5, end);
                 } else {
                     html = '<div>';
-                    text1 = "<h4>No Downtime</h4>";
+                    text1 = "<h4>No Downtime</h4><br/>Please refresh!";
                     title = html.concat(text1, end);
                 }
-                $('[data-toggle="popover"], .popover').popover("dispose");
+                //$('[data-toggle="popover"]').popover('dispose');
                 $('#' + selector).popover({
                     delay: 200,
                     placement: "right",
-                    trigger: 'hover focus',
-                    title: title,
+                    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                    trigger: 'hover',
+                    content: title,
                     html: true
                 });
                 $('#' + selector).popover('show');
             }, function errorCallback(result){
                 $('#' + selector).popover('dispose');
-
             });
+        };
+
+        $scope.delPopover = function(){
+            $('[data-toggle="popover"]').popover('dispose');
         };
 
         $scope.getAckDetails = function(id){
@@ -451,12 +455,13 @@ angular.module('openITCOCKPIT')
                     text1 = "<h4>Not acknowledeged</h4>";
                     title = html.concat(text1, end);
                 }
-                $('[data-toggle="popover"], .popover').popover("dispose");
+               // $('[data-toggle="popover"]').popover("dispose");
                 $('#' + selector).popover({
                     delay: 200,
                     placement: "right",
-                    trigger: 'hover focus',
-                    title: title,
+                    trigger: 'hover',
+                    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                    content: title,
                     html: true
                 });
                 $('#' + selector).popover('show');
@@ -465,8 +470,9 @@ angular.module('openITCOCKPIT')
             });
         };
 
+
         $scope.$on('$destroy', function() {
-            $('[data-toggle="popover"], .popover').popover("dispose");
+            $('[data-toggle="popover"]').popover('dispose');
         });
 
     });

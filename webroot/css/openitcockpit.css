@@ -1396,9 +1396,7 @@ div.form-group.chosen-small div.chosen-container.chosen-container-single a.chose
     white-space: pre;
     font-family: monospace;
 }
-
-.tooltip-inner {
+.popover-body {
     min-width: 100px;
-    max-width: 90%;
-    text-align: left!important;
+    max-width: 500px;
 }
