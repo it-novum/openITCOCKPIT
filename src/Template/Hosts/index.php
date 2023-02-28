@@ -737,15 +737,15 @@
                                         <i class="far fa-user"
                                            ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                            data-toggle="popover" id="ackTooltip_{{host.Host.id}}"
-                                           ng-mouseover="getAckDetails(host.Host.id)"
-                                           ng-mouseleave="delPopover"
+                                           ng-mouseenter="getAckDetails(host.Host.id)"
+                                           ng-mouseleave="delPopover()"
                                            ng-if="host.Hoststatus.acknowledgement_type == 1">
                                         </i>
                                         <i class="fas fa-user"
                                            ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                            data-toggle="popover" id="ackTooltip_{{host.Host.id}}"
-                                           ng-mouseover="getAckDetails(host.Host.id)"
-                                           ng-mouseleave="delPopover"
+                                           ng-mouseenter="getAckDetails(host.Host.id)"
+                                           ng-mouseleave="delPopover()"
                                            ng-if="host.Hoststatus.acknowledgement_type == 2">
                                         </i>
                                     <?php else: ?>
@@ -766,8 +766,8 @@
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                             data-toggle="popover"
                                             id="downtimeTooltip_{{host.Host.id}}"
-                                            ng-mouseover="getDowntimeDetails(host.Host.id)"
-                                            ng-mouseleave="delPopover"
+                                            ng-mouseenter="getDowntimeDetails(host.Host.id)"
+                                            ng-mouseleave="delPopover()"
                                         <?php endif; ?>
                                        ng-show="host.Hoststatus.scheduledDowntimeDepth > 0">
                                     </i>

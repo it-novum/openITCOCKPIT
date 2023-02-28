@@ -807,15 +807,15 @@
                                         <i class="far fa-user"
                                            ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                            data-toggle="popover" id="ackServicetip_{{service.Service.id}}"
-                                           ng-mouseover="getAckDetails(service.Service.id)"
-                                           ng-mouseleave="delPopover"
+                                           ng-mouseenter="getAckDetails(service.Service.id)"
+                                           ng-mouseleave="delPopover()"
                                            ng-if="service.Servicestatus.acknowledgement_type == 1">
                                         </i>
                                         <i class="fas fa-user"
                                            ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                            data-toggle="popover" id="ackServicetip_{{service.Service.id}}"
-                                           ng-mouseover="getAckDetails(service.Service.id)"
-                                           ng-mouseleave="delPopover"
+                                           ng-mouseenter="getAckDetails(service.Service.id)"
+                                           ng-mouseleave="delPopover()"
                                            ng-if="service.Servicestatus.acknowledgement_type == 2">
                                         </i>
                                     <?php else: ?>
@@ -836,8 +836,8 @@
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                             data-toggle="popover"
                                             id="downtimeServicetip_{{service.Service.id}}"
-                                            ng-mouseover="getDowntimeDetails(service.Service.id)"
-                                            ng-mouseleave="delPopover"
+                                            ng-mouseenter="getDowntimeDetails(service.Service.id)"
+                                            ng-mouseleave="delPopover()"
                                         <?php endif; ?>
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
