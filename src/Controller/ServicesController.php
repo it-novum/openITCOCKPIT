@@ -228,16 +228,14 @@ class ServicesController extends AppController {
 
         }
         if ($this->hasRootPrivileges === false) {
-            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                foreach ($services as $index => $service) {
-                    $hostId = $service['_matchingData']['Hosts']['id'];
-                    if (!isset($hostContainers[$hostId])) {
-                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
-                    }
-
-                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
-                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
+            foreach ($services as $index => $service) {
+                $hostId = $service['_matchingData']['Hosts']['id'];
+                if (!isset($hostContainers[$hostId])) {
+                    $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
                 }
+
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
             }
         }
 
