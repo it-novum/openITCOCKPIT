@@ -28,6 +28,8 @@ angular.module('openITCOCKPIT')
 
         $scope.interval = null;
 
+        $scope.popoverTimer = null;
+
         SortService.setSort('servicename');
         SortService.setDirection('asc');
 
@@ -713,5 +715,101 @@ angular.module('openITCOCKPIT')
                 jQuery('[data-toggle="tooltip"]').tooltip('hide');
             }, 1500);
         });
+
+        $scope.getDowntimeDetails = function (id) {
+            if ($scope.popoverTimer === null) {
+                $scope.popoverTimer = setTimeout(function () {
+                    var selector = 'downtimeServicetip_' + id;
+                    $http.get("/services/browser/" + Number(id) + ".json", {
+                        params: {
+                            'angular': true
+                        }
+                    }).then(function (result) {
+                        var html = '<div>';
+                        var text1 = '';
+                        var text2 = '';
+                        var text3 = '';
+                        var text4 = '';
+                        var text5 = '';
+                        var end = '</div>';
+                        var title = '';
+                        if (result.data.downtime.scheduledStartTime && result.data.downtime.scheduledEndTime) {
+                            text1 = "<h4>Downtime:</h4>";
+                            text2 = "Start: " + result.data.downtime.scheduledStartTime + "<br/>";
+                            text3 = "End: " + result.data.downtime.scheduledEndTime + "<br/>";
+                            text4 = "Comment: " + result.data.downtime.commentData + "<br/>";
+                            text5 = "Author: " + result.data.downtime.authorName + "<br/>";
+                            title = html.concat(text1, text2, text3, text4, text5, end);
+                        } else {
+                            html = '<div>';
+                            text1 = "<h4>No Downtime</h4>";
+                            title = html.concat(text1, end);
+                        }
+                        $('#' + selector).popover({
+                            placement: "right",
+                            template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                            content: title,
+                            html: true
+                        });
+                        $('#' + selector).popover('show');
+                    }, function errorCallback(result) {
+                        $('#' + selector).popover('dispose');
+                    });
+                }, 300);
+            }
+        };
+
+        $scope.getAckDetails = function (id) {
+            if ($scope.popoverTimer === null) {
+                $scope.popoverTimer = setTimeout(function () {
+                    var selector = 'ackServicetip_' + id;
+                    $http.get("/services/browser/" + Number(id) + ".json", {
+                        params: {
+                            'angular': true
+                        }
+                    }).then(function (result) {
+                        var html = '<div>';
+                        var text1 = '';
+                        var text2 = '';
+                        var text3 = '';
+                        var text4 = '';
+                        var end = '</div>';
+                        var title = '';
+                        if (result.data.acknowledgement.comment_data && result.data.acknowledgement.author_name && result.data.acknowledgement.entry_time) {
+                            if (result.data.acknowledgement.is_sticky) {
+                                text1 = "<h4>State of service is acknowledged(sticky)</h4>";
+                            } else {
+                                text1 = "<h4>State of service is acknowledged</h4>";
+                            }
+                            text2 = "Set by: " + result.data.acknowledgement.author_name + "<br/>";
+                            text3 = "Set at: " + result.data.acknowledgement.entry_time + "<br/>";
+                            text4 = "Comment: " + result.data.acknowledgement.comment_data + "<br/>";
+                            title = html.concat(text1, text2, text3, text4, end);
+                        } else {
+                            html = '<div>';
+                            text1 = "<h4>Not acknowledeged</h4>";
+                            title = html.concat(text1, end);
+                        }
+                        $('#' + selector).popover({
+                            placement: "right",
+                            template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                            content: title,
+                            html: true
+                        });
+                        $('#' + selector).popover('show');
+                    }, function errorCallback(result) {
+                        $('#' + selector).popover('dispose');
+                    });
+                }, 300);
+            }
+        };
+
+        $scope.delPopover = function(){
+            if($scope.popoverTimer !== null){
+                clearTimeout($scope.popoverTimer);
+                $scope.popoverTimer = null;
+            }
+            $('[data-toggle="popover"]').popover('dispose');
+        };
 
     });

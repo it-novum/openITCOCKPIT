@@ -662,19 +662,44 @@
                                 </td>
 
                                 <td ng-show="fields[1]" class="text-center">
-                                    <i class="far fa-user"
-                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                       ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
-
-                                    <i class="fas fa-user"
-                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                       ng-if="host.Hoststatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <i class="far fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           data-toggle="popover" id="ackBrowsertip_{{host.Host.id}}"
+                                           ng-mouseenter="getAckDetails(host.Host.id)"
+                                           ng-mouseleave="delPopover()"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           data-toggle="popover" id="ackBrowsertip_{{host.Host.id}}"
+                                           ng-mouseenter="getAckDetails(host.Host.id)"
+                                           ng-mouseleave="delPopover()"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 2">
+                                        </i>
+                                    <?php else: ?>
+                                        <i class="far fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 2"
+                                           title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        </i>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
-                                       ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            data-toggle="popover"
+                                            id="downtimeBrowsertip_{{host.Host.id}}"
+                                            ng-mouseenter="getDowntimeDetails(host.Host.id)"
+                                            ng-mouseleave="delPopover()"
+                                        <?php endif; ?>
+                                       ng-show="host.Hoststatus.scheduledDowntimeDepth > 0">
+                                    </i>
                                 </td>
 
                                 <td ng-show="fields[3]" class="text-center">
@@ -744,7 +769,7 @@
                                 </td>
 
                                 <td ng-show="fields[12]">
-                                    <div class="cropText"
+                                    <div class="word-break"
                                          ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
