@@ -252,16 +252,16 @@
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                             <i class="far fa-user"
                                                ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                               data-toggle="popover" id="ackServicetip_{{service.Service.id}}"
-                                               ng-mouseenter="getAckDetails(service.Service.id)"
-                                               ng-mouseleave="delPopover()"
+                                               id="ackServicetip_{{service.Service.id}}"
+                                               ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                               ng-mouseleave="leaveAckEl()"
                                                ng-if="service.Servicestatus.acknowledgement_type == 1">
                                             </i>
                                             <i class="fas fa-user"
                                                ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                               data-toggle="popover" id="ackServicetip_{{service.Service.id}}"
-                                               ng-mouseenter="getAckDetails(service.Service.id)"
-                                               ng-mouseleave="delPopover()"
+                                               id="ackServicetip_{{service.Service.id}}"
+                                               ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                               ng-mouseleave="leaveAckEl()"
                                                ng-if="service.Servicestatus.acknowledgement_type == 2">
                                             </i>
                                         <?php else: ?>
@@ -279,10 +279,8 @@
                                     <td class="text-center">
                                         <i class="fa fa-power-off"
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                data-toggle="popover"
-                                                id="downtimeServicetip_{{service.Service.id}}"
-                                                ng-mouseenter="getDowntimeDetails(service.Service.id)"
-                                                ng-mouseleave="delPopover()"
+                                                ng-mouseenter="enterDowntimeEl($event, 'services', service.Service.id)"
+                                                ng-mouseleave="leaveDowntimeEl()"
                                             <?php endif; ?>
                                            ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                     </td>
@@ -889,7 +887,8 @@
                     </div>
                 </div>
             </div>
-
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
             <div id="serviceGraphContainer" class="popup-graph-container">
                 <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
                     <i class="fa fa-refresh fa-4x fa-spin"></i>
