@@ -1356,18 +1356,41 @@ use Cake\Core\Plugin;
                                 </td>
 
                                 <td class="text-center">
-                                    <i class="far fa-user"
-                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                       ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
-
-                                    <i class="fas fa-user"
-                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                       ng-if="service.Servicestatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        <i class="far fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           id="ackServicetip_{{service.Service.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           id="ackServicetip_{{service.Service.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 2">
+                                        </i>
+                                    <?php else: ?>
+                                        <i class="far fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                           title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        </i>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td class="text-center">
                                     <i class="fa fa-power-off"
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            id="downtimeServicetip_{{service.Service.id}}"
+                                            ng-mouseenter="enterDowntimeEl($event, 'services', service.Service.id)"
+                                            ng-mouseleave="leaveDowntimeEl()"
+                                        <?php endif; ?>
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
@@ -1597,6 +1620,7 @@ use Cake\Core\Plugin;
                         <?php echo $this->element('paginator_or_scroll'); ?>
 
                         <popover-graph-directive></popover-graph-directive>
+
                     </div>
 
                     <div id="serviceTab2" class="tab-pane" ng-if="activeTab === 'notMonitored'">
@@ -1835,6 +1859,8 @@ use Cake\Core\Plugin;
                     </div>
                 </div>
             </div>
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
         </div>
     </div>
 </div>
@@ -1845,3 +1871,4 @@ use Cake\Core\Plugin;
 <enable-notifications></enable-notifications>
 <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
 <service-downtime author="<?php echo h($username); ?>"></service-downtime>
+

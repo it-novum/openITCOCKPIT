@@ -710,11 +710,11 @@
                                 <?php endif; ?>
 
                                 <th ng-show="fields[15]" class="text-center">
-                                <?php echo __('Host notes'); ?>
+                                    <?php echo __('Host notes'); ?>
                                 </th>
 
                                 <th ng-show="fields[16]" class="text-center">
-                                <?php echo __('Host type'); ?>
+                                    <?php echo __('Host type'); ?>
                                 </th>
 
                                 <th class="no-sort text-center editItemWidth"><i class="fa fa-gear"></i></th>
@@ -733,19 +733,43 @@
                                 </td>
 
                                 <td ng-show="fields[1]" class="text-center">
-                                    <i class="far fa-user"
-                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                       ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
-
-                                    <i class="fas fa-user"
-                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                       ng-if="host.Hoststatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <i class="far fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           id="ackTooltip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           id="ackTooltip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 2">
+                                        </i>
+                                    <?php else: ?>
+                                        <i class="far fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 2"
+                                           title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        </i>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
-                                       ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            id="downtimeTooltip_{{host.Host.id}}"
+                                            ng-mouseenter="enterDowntimeEl($event, 'hosts', host.Host.id)"
+                                            ng-mouseleave="leaveDowntimeEl()"
+                                        <?php endif; ?>
+                                       ng-show="host.Hoststatus.scheduledDowntimeDepth > 0">
+                                    </i>
                                 </td>
                                 <td ng-show="fields[3]" class="text-center">
                                     <div class="icon-stack margin-right-5"
@@ -1098,6 +1122,8 @@
                     </div>
                 </div>
             </div>
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
         </div>
     </div>
 </div>

@@ -11,6 +11,8 @@ angular.module('openITCOCKPIT')
         };
         $scope.recursiveBrowser = false;
 
+        $scope.popoverTimer = null;
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -91,7 +93,6 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
         $scope.showFields = false;
         $scope.load = function(){
-
             $http.get("/browsers/index/" + $scope.containerId + ".json", {
                 params: {
                     angular: true
