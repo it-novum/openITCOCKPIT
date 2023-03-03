@@ -23,7 +23,7 @@
 //  confirmation.
 ?>
 <div class="popup-tooltip-container" id="tooltipContainer-{{downtimePopoverId}}" role="tooltip">
-    <div style="color:black;">
+    <div>
     <h3 ng-if="displayType === 'service'"><?= __('The service is currently in a planned maintenance period'); ?></h3>
     <h3 ng-if="displayType === 'host'"><?= __('The host is currently in a planned maintenance period'); ?></h3>
     </div>

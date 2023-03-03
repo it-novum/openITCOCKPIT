@@ -23,7 +23,7 @@
 //  confirmation.
 ?>
 <div class="popup-tooltip-container" id="tooltipContainer-{{ackPopoverId}}">
-    <div style="color:black;">
+    <div>
     <h3 ng-if="displayType === 'service'"><?= __('State of service is acknowledged'); ?> <span ng-show="sticky">(<?php echo __('Sticky'); ?>)</span> </h3>
     <h3 ng-if="displayType === 'host'"><?= __('State of host is acknowledged'); ?> <span ng-show="sticky">(<?php echo __('Sticky'); ?>)</span> </h3>
     </div>
