@@ -126,6 +126,11 @@
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -139,6 +144,11 @@
                                                    placeholder="<?php echo __('Filter by service name'); ?>"
                                                    ng-model="filter.Services.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -202,6 +212,30 @@
                                                        ng-model="filter.Services.not_keywords"
                                                        ng-model-options="{debounce: 500}">
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 margin-bottom-10">
+                                    <div class="form-group required">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                                            </div>
+                                            <select
+                                                id="ServiceType"
+                                                data-placeholder="<?php echo __('Filter by service types'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Services.service_type"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($types as $typeId => $typeName):
+                                                    printf('<option value="%s">%s</option>', h($typeId), h($typeName));
+                                                endforeach;
+                                                ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -495,49 +529,157 @@
                                 </button>
                             </div>
                         </div>
+
+                        <!-- Filter card footer with column configuration-->
+                        <div class="card-footer" ng-show="showFilter">
+                            <i class="fa fa-list"></i> <?php echo __('Column configuration'); ?>
+
+                            <div class="dropdown mr-1 float-right">
+                                <button class="btn btn-xs btn-secondary dropdown-toggle" type="button"
+                                        data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-columns"></i>
+                                    <?php echo __('Columns'); ?>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-columns"
+                                     aria-labelledby="dropdownMenuButton">
+                                    <div class="row">
+                                        <?php $list = [
+                                            __('Servicestatus'),
+                                            __('is acknowledged'),
+                                            __('is in downtime'),
+                                            __('Notifications enabled'),
+                                            __('Charts'),
+                                            __('Passively transferred service'),
+                                            __('Priority'),
+                                            __('Service name'),
+                                            __('Service type'),
+                                            __('Service description'),
+                                            __('Last state change'),
+                                            __('Last check'),
+                                            __('Next check'),
+                                            __('Service output'),
+                                        ];
+                                        foreach (array_chunk($list, 6, true) as $chunk):
+                                            echo '<div class="col-xs-12 col-md-12 col-lg-4">';
+                                            foreach ($chunk as $index => $name):
+                                                if ($name == __('Service Summary ') && !$this->Acl->hasPermission('index', 'services')):
+                                                    continue;
+                                                endif;
+                                                ?>
+                                                <div class="dropdown-item-xs padding-left-10">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox"
+                                                               id="columnCheckbox<?= $index ?>"
+                                                               class="custom-control-input"
+                                                               name="checkbox"
+                                                               ng-checked="fields[<?= $index ?>]"
+                                                               ng-model="fields[<?= $index ?>]">
+                                                        <label class="custom-control-label noselect"
+                                                               for="columnCheckbox<?= $index ?>">
+                                                            <?= h($name) ?>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <?php
+                                            endforeach;
+                                            echo '</div>';
+                                        endforeach;
+                                        ?>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="btn-group w-100">
+                                            <button type="button"
+                                                    class="btn btn-primary btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Share configuration'); ?>"
+                                                    data-toggle="modal" data-target="#showFieldsModal">
+                                                <i class="fas fa-share-alt"></i>
+                                                <?= __('Share'); ?>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-secondary btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Import configuration'); ?>"
+                                                    data-toggle="modal" data-target="#importFieldsModal">
+                                                <i class="fas fa-file-import"></i>
+                                                <?= __('Import'); ?>
+                                            </button>
+
+                                            <button type="button"
+                                                    class="btn btn-default btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Reset to default'); ?>"
+                                                    ng-click="defaultColumns()">
+                                                <i class="fas fa-recycle"></i>
+                                                <?= __('Reset to default') ?>
+                                            </button>
+                                            <button class="btn btn-success btn-xs waves-effect waves-themed"
+                                                    title="<?= __('Save Columns configuration in browser'); ?>"
+                                                    ng-click="saveColumns()">
+                                                <?= __('Save'); ?>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <columns-config-import
+                                state-name="{{columnsTableKey}}"
+                                callback="triggerLoadColumns">
+                            </columns-config-import>
+                            <columns-config-export
+                                fields="fields"
+                                state-name="{{columnsTableKey}}">
+                            </columns-config-export>
+
+                        </div>
+                        <!-- end Footer-->
+
                     </div>
                     <!-- End Filter -->
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
+                                <th ng-show="fields[0]" colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.current_state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
+                                <th ng-hide="fields[0]">
+                                    <i class="fa fa-check-square"></i>
+                                </th>
 
-                                <th class="no-sort text-center">
+                                <th ng-show="fields[1]" class="no-sort text-center">
                                     <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th ng-show="fields[2]" class="no-sort text-center">
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
-                                <th class="no-sort text-center"
+                                <th ng-show="fields[3]" class="no-sort text-center"
                                     ng-click="orderBy('Servicestatus.notifications_enabled')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.notifications_enabled')"></i>
                                     <i class="fas fa-envelope" title="<?php echo __('Notifications enabled'); ?>">
                                     </i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th ng-show="fields[4]" class="no-sort text-center">
                                     <i class="fa fa-lg fa-area-chart" title="<?php echo __('Grapher'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th ng-show="fields[5]" class="no-sort text-center">
                                     <strong title="<?php echo __('Passively transferred service'); ?>">
                                         P
                                     </strong>
                                 </th>
 
-                                <th class="no-sort text-center" ng-click="orderBy('servicepriority')">
+                                <th ng-show="fields[6]" class="no-sort text-center" ng-click="orderBy('servicepriority')">
                                     <i class="fa" ng-class="getSortClass('servicepriority')"></i>
                                     <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
                                     </i>
                                 </th>
 
-                                <th class="no-sort">
+                                <th ng-show="fields[7]" class="no-sort">
                                     <span ng-click="orderBy('Hosts.name')">
                                         <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                         <?= __('Host'); ?> /
@@ -548,23 +690,31 @@
                                     </span>
                                 </th>
 
-                                <th class="no-sort tableStatewidth"
+                                <th ng-show="fields[8]"  class="no-sort">
+                                    <?= __('Service type'); ?>
+                                </th>
+
+                                <th ng-show="fields[9]"  class="no-sort">
+                                    <?= __('Service description'); ?>
+                                </th>
+
+                                <th ng-show="fields[10]" class="no-sort tableStatewidth"
                                     ng-click="orderBy('Servicestatus.last_state_change')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.last_state_change')"></i>
                                     <?php echo __('Last state change'); ?>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.last_check')">
+                                <th ng-show="fields[11]" class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.last_check')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.last_check')"></i>
                                     <?php echo __('Last check'); ?>
                                 </th>
 
-                                <th class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.next_check')">
+                                <th ng-show="fields[12]" class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.next_check')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.next_check')"></i>
                                     <?php echo __('Next check'); ?>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('Servicestatus.output')">
+                                <th ng-show="fields[13]" class="no-sort" ng-click="orderBy('Servicestatus.output')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.output')"></i>
                                     <?php echo __('Service output'); ?>
                                 </th>
@@ -578,7 +728,8 @@
                             <tbody>
                             <tr ng-repeat-start="service in services"
                                 ng-if="services[$index-1].Host.uuid !== service.Host.uuid">
-                                <td colspan="14" class="service_table_host_header">
+                                <td colspan="16" class="service_table_host_header">
+                                    {{hostnameColspan}}
 
                                     <hoststatusicon host="service"></hoststatusicon>
 
@@ -588,7 +739,8 @@
                                             {{service.Host.hostname}}
                                         </a>
 
-                                        <span class="copy-to-clipboard-container-text">
+                                        <span ng-click="rootCopyToClipboard(service.Host.address, $event)"
+                                              class="copy-to-clipboard-container-text pointer">
                                             (
                                             {{service.Host.address}}
                                             <span ng-click="rootCopyToClipboard(service.Host.address, $event)"
@@ -646,27 +798,49 @@
                                            ng-show="service.Service.allow_edit">
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[0]" class="text-center">
                                     <servicestatusicon service="service"></servicestatusicon>
                                 </td>
 
-                                <td class="text-center">
-                                    <i class="far fa-user"
-                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                       ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
-
-                                    <i class="fas fa-user"
-                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                       ng-if="service.Servicestatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                <td ng-show="fields[1]" class="text-center">
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        <i class="far fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           id="ackServicetip_{{service.Service.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 2">
+                                        </i>
+                                    <?php else: ?>
+                                        <i class="far fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                           title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        </i>
+                                    <?php endif; ?>
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            id="downtimeServicetip_{{service.Service.id}}"
+                                            ng-mouseenter="enterDowntimeEl($event, 'services', service.Service.id)"
+                                            ng-mouseleave="leaveDowntimeEl()"
+                                        <?php endif; ?>
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[3]" class="text-center">
                                     <div class="icon-stack margin-right-5"
                                          title="<?= __('Notifications enabled'); ?>"
                                          ng-show="service.Servicestatus.notifications_enabled">
@@ -681,7 +855,7 @@
                                     </div>
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[4]" class="text-center">
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                            class="txt-color-blueDark"
@@ -701,14 +875,14 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[5]" class="text-center">
                                     <strong title="<?php echo __('Passively transferred service'); ?>"
                                             ng-show="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                                         P
                                     </strong>
                                 </td>
 
-                                <td class="text-center">
+                                <td ng-show="fields[6]" class="text-center">
                                     <i class="fa fa-fire"
                                        ng-class="{'ok-soft' : service.Service.priority==1,
                                         'ok' : service.Service.priority==2, 'warning' : service.Service.priority==3,
@@ -716,7 +890,7 @@
                                     </i>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[7]">
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                             {{ service.Service.servicename }}
@@ -726,11 +900,23 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[8]">
+                                    <span
+                                        class="badge border margin-right-10 {{service.ServiceType.class}} {{service.ServiceType.color}}">
+                                            <i class="{{service.ServiceType.icon}}"></i>
+                                            {{service.ServiceType.title}}
+                                    </span>
+                                </td>
+
+                                <td ng-show="fields[9]">
+                                    {{ service.Service.description }}
+                                </td>
+
+                                <td ng-show="fields[10]">
                                     {{ service.Servicestatus.last_state_change }}
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[11]">
                                     <span
                                         ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
                                         service.Servicestatus.lastCheck }}</span>
@@ -739,7 +925,7 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[12]">
                                     <span
                                         ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
                                         service.Servicestatus.nextCheck }}</span>
@@ -749,7 +935,7 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                <td ng-show="fields[13]">
                                     <div class="word-break"
                                          ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                 </td>
@@ -921,6 +1107,7 @@
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>
+
                     </div>
                 </div>
             </div>
@@ -930,6 +1117,9 @@
             <enable-notifications></enable-notifications>
             <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
             <service-downtime author="<?php echo h($username); ?>"></service-downtime>
+
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
 
             <popover-graph-directive></popover-graph-directive>
 

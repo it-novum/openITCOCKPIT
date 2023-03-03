@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, NotyService){
+    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, NotyService, $window){
         $rootScope.lastObjectName = null;
         var startTimestamp = new Date().getTime();
 
@@ -11,6 +11,57 @@ angular.module('openITCOCKPIT')
         $scope.id = QueryStringService.getCakeId();
 
         $scope.useScroll = true;
+
+        $scope.popoverTimer = null;
+
+        /*** column vars ***/
+        $scope.fields = [];
+        $scope.columnsLength = 14;
+        $scope.columnsTableKey = 'ServicesIndexColumns';
+
+        /*** columns functions
+         columns:
+         [
+         'Servicestatus'
+         'is acknowledged'
+         'is in downtime'
+         'Notifications enabled'
+         'Charts'
+         'Passively transferred service'
+         'Priority'
+         'Service name'
+         'Service type'
+         'Service description'
+         'Last state change'
+         'Last check'
+         'Next check'
+         'Service output'
+         ] ***/
+        $scope.defaultColumns = function(){
+            $scope.fields = [true, true, true, true, true, true, true, true, false, false, true, true, true, true];
+            $window.localStorage.removeItem($scope.columnsTableKey);
+        };
+
+        $scope.saveColumns = function(){
+            $window.localStorage.removeItem($scope.columnsTableKey);
+            $window.localStorage.setItem($scope.columnsTableKey, JSON.stringify($scope.fields));
+
+        }
+
+        $scope.loadColumns = function(){
+            var fields = JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
+            if(typeof fields !== undefined && Array.isArray(fields)){
+                $scope.fields = fields;
+            }else{
+                $scope.defaultColumns()
+            }
+        }
+
+        $scope.triggerLoadColumns = function(fields){
+            $scope.fields = fields;
+        };
+        /*** end columns functions ***/
+
 
         /*** Filter Settings ***/
             //filterId = QueryStringService.getStateValue($stateParams, 'filter');
@@ -39,7 +90,8 @@ angular.module('openITCOCKPIT')
                             3: false,
                             4: false,
                             5: false
-                        }
+                        },
+                        service_type: []
                     },
                     Hosts: {
                         id: QueryStringService.getStateValue($stateParams, 'host_id', []),
@@ -70,7 +122,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-
             var hasBeenAcknowledged = '';
             var inDowntime = '';
             var notificationsEnabled = '';
@@ -107,6 +158,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hosts.name]': $scope.filter.Hosts.name,
                 'filter[Hosts.satellite_id][]': $scope.filter.Hosts.satellite_id,
                 'filter[Services.id][]': $scope.filter.Services.id,
+                'filter[Services.service_type][]': $scope.filter.Services.service_type,
                 'filter[servicename]': $scope.filter.Services.name,
                 'filter[servicedescription]': $scope.filter.Services.servicedescription,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
@@ -237,6 +289,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hosts.name]': $scope.filter.Hosts.name,
                 'filter[Hosts.satellite_id][]': $scope.filter.Hosts.satellite_id,
                 'filter[Services.id]': $scope.filter.Services.id,
+                'filter[Services.service_type][]': $scope.filter.Services.service_type,
                 'filter[servicename]': $scope.filter.Services.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
@@ -301,6 +354,7 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         defaultFilter();
+        $scope.loadColumns(); // load column config
         $scope.loadTimezone();
         SortService.setCallback($scope.load);
 

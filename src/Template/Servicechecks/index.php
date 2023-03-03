@@ -244,18 +244,25 @@
                                     Servicecheck.Servicecheck.max_check_attempts }}
                                 </td>
                                 <td class="text-center">
-                                    <span ng-show="Servicecheck.Servicecheck.is_hardstate">
-                                        <?php echo __('Hard'); ?>
+                                    <span class="badge text-uppercase text-white"
+                                          ng-class="{'badge-success': Servicecheck.Servicecheck.state == 0,
+                                          'badge-warning': Servicecheck.Servicecheck.state == 1,
+                                          'badge-danger': Servicecheck.Servicecheck.state == 2,
+                                          'badge-secondary': Servicecheck.Servicecheck.state == 3}"
+                                          ng-show="Servicecheck.Servicecheck.is_hardstate">
+                                        <?= __('Hard'); ?>
                                     </span>
-
-                                    <span ng-show="!Servicecheck.Servicecheck.is_hardstate">
-                                        <?php echo __('Soft'); ?>
+                                    <span class="badge text-uppercase opacity-50 text-white"
+                                          ng-class="{'badge-success': Servicecheck.Servicecheck.state == 0,
+                                          'badge-warning': Servicecheck.Servicecheck.state == 1,
+                                          'badge-danger': Servicecheck.Servicecheck.state == 2,
+                                          'badge-secondary': Servicecheck.Servicecheck.state == 3}"
+                                          ng-show="!Servicecheck.Servicecheck.is_hardstate">
+                                        <?= __('Soft'); ?>
                                     </span>
-
                                 </td>
                                 <td>
-                                    <div
-                                            ng-bind-html="Servicecheck.Servicecheck.outputHtml | trustAsHtml"></div>
+                                    <div ng-bind-html="Servicecheck.Servicecheck.outputHtml | trustAsHtml"></div>
                                 </td>
                                 <td>
                                     {{ Servicecheck.Servicecheck.perfdata }}

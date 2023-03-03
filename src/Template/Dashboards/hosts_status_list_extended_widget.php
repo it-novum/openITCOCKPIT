@@ -168,6 +168,11 @@
                                        placeholder="<?php echo __('Filter by host name'); ?>"
                                        ng-model="filter.Host.name"
                                        ng-model-options="{debounce: 500}">
+                                <div class="input-group-append">
+                                    <span class="input-group-text pt-0 pb-0">
+                                        <regex-helper-tooltip></regex-helper-tooltip>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-lg-6 margin-bottom-5">
@@ -193,7 +198,7 @@
                                            data-role="tagsinput"
                                            placeholder="<?php echo __('Filter by tags'); ?>"
                                            type="text"
-                                           id="HostTags"
+                                           id="HostTags-{{widget.id}}"
                                            ng-model="filter.Host.keywords">
                                 </div>
                             </div>
@@ -208,7 +213,7 @@
                                            data-role="tagsinput"
                                            placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                            type="text"
-                                           id="HostExcludedTags"
+                                           id="HostExcludedTags-{{widget.id}}"
                                            ng-model="filter.Host.not_keywords">
                                 </div>
                             </div>

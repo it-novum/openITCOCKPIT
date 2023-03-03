@@ -7422,6 +7422,7 @@ msgstr "Datum"
 #: ./src/Template/Acknowledgements/host.php:174
 #: ./src/Template/Acknowledgements/service.php:186
 #: ./src/Template/Systemfailures/add.php:75
+#: ./src/Template/Angular/downtime_tooltip.php:29
 msgid "Author"
 msgstr "Autor"
 
@@ -10094,6 +10095,14 @@ msgstr "Monitoring Engine läuft nicht!"
 #: ./src/Template/Angular/queryhandler.php:5
 msgid "File {{queryHandler.path}} does not exists"
 msgstr "Die Datei {{queryHandler.path}} existiert nicht"
+
+#: ./src/Template/Angular/ack_tooltip.php:29
+msgid "Set by"
+msgstr "Gesetzt von"
+
+#: ./src/Template/Angular/ack_tooltip.php:30
+msgid "Set at"
+msgstr "Gesetzt am"
 
 #: ./src/Template/Angular/regex_helper_tooltip.php:26
 msgid "RegEx Examples"
@@ -13102,6 +13111,7 @@ msgstr "Erstellt"
 #: ./src/Template/Timeperiods/add.php:186
 #: ./src/Template/Timeperiods/edit.php:197
 #: ./src/Template/Users/login.php:130
+#: ./src/Template/Angular/downtime_tooltip.php:30
 msgid "Start"
 msgstr "Start"
 
@@ -13111,6 +13121,7 @@ msgstr "Start"
 #: ./src/Template/Downtimes/service.php:333
 #: ./src/Template/Timeperiods/add.php:208
 #: ./src/Template/Timeperiods/edit.php:219
+#: ./src/Template/Angular/downtime_tooltip.php:31
 msgid "End"
 msgstr "Ende"
 
@@ -19676,7 +19687,7 @@ msgid " Cancelled"
 msgstr " Abgebrochen"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:39
-msgid "Acknowlegements"
+msgid "Acknowledgements"
 msgstr "Bestätigungen"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:54
@@ -23993,21 +24004,25 @@ msgstr "Verwende die Adresse als Hostnamen"
 msgid "Use address as host name if host name column is empty or does not exists."
 msgstr "Verwende die Adresse als Hostnamen, wenn die Spalte Hostname leer ist oder nicht vorhanden ist."
 
+#: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:62
+msgid "Column number - numbering begins with 0 (first column) - of the CSV file which will be used as unique identifier for host. This column must be present in the CSV file."
+msgstr "Spaltennummer  - Nummerierung beginnt mit 0 (1. Spalte) - der CSV-Datei, die für die eindeutige Kennung der Hosts genutzt wird. Diese Spalte muss in der CSV Datei vorhanden sein."
+
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:71
-msgid "Column number of the CSV file which will be used as host name. This column must be present in the CSV file."
-msgstr "Spaltennummer der CSV-Datei, die als Hostname verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
+msgid "Column number (numbering begins with 0) of the CSV file which will be used as host name. This column must be present in the CSV file."
+msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Hostname verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:80
-msgid "Column number of the CSV file which will be used as host address. This column must be present in the CSV file."
-msgstr "Spaltennummer der CSV-Datei, die als Hostadresse verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
+msgid "Column number (numbering begins with 0) of the CSV file which will be used as host address. This column must be present in the CSV file."
+msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Hostadresse verwendet wird. Diese Spalte muss in der CSV-Datei vorhanden sein."
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:89
-msgid "Column number of the CSV file which will be used as host description."
-msgstr "Spaltennummer der CSV-Datei, die als Hostbeschreibung verwendet wird."
+msgid "Column number (numbering begins with 0) of the CSV file which will be used as host description."
+msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Hostbeschreibung verwendet wird."
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:98
-msgid "Column number of the CSV file which will be used as software assignment."
-msgstr "Spaltennummer der CSV-Datei, die als Softwarezuweisung verwendet wird."
+msgid "Column number (numbering begins with 0) of the CSV file which will be used as software assignment."
+msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Softwarezuweisung verwendet wird."
 
 #: .-modules/ImportModule/src/Lib/ExternalSystemTypes.php:14
 msgid "i-doit System"

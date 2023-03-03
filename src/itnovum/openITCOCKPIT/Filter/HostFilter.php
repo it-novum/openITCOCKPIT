@@ -38,13 +38,13 @@ class HostFilter extends Filter {
                 'Hoststatus.active_checks_enabled'
             ],
             'like'     => [
-                'Hosts.name',
                 'Hosts.description',
                 'Hoststatus.output',
-                'Hosts.address',
                 'hostdescription'
             ],
             'rlike'    => [
+                'Hosts.name',
+                'Hosts.address',
                 'Hosts.keywords'
             ],
             'notrlike' => [
@@ -55,7 +55,8 @@ class HostFilter extends Filter {
                 'Hosts.uuid',
                 'Hosts.disabled',
                 'Hosts.satellite_id',
-                'hostpriority'
+                'hostpriority',
+                'Hosts.host_type'
             ],
             'downtime' => [
                 'Hoststatus.scheduled_downtime_depth',
@@ -92,7 +93,7 @@ class HostFilter extends Filter {
      */
     public function deletedFilter() {
         $filters = [
-            'like' => [
+            'rlike' => [
                 'DeletedHosts.name'
             ]
         ];
@@ -106,9 +107,11 @@ class HostFilter extends Filter {
     public function disabledFilter() {
         $filters = [
             'like'   => [
+                'Hosts.description',
+            ],
+            'rlike' => [
                 'Hosts.name',
                 'Hosts.address',
-                'Hosts.description',
             ],
             'equals' => [
                 'Hosts.id',

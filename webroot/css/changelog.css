@@ -168,12 +168,41 @@
     }
 }
 
+/* ITC-2900 */
+@media screen and (max-width: 100em) {
+    /* make text column wider */
+    .cbp_tmtimeline > li .cbp_tmtime {
+        width: 30%;
+        padding-right: 50px;
+    }
+
+    /** move the icon */
+    .cbp_tmtimeline > li .cbp_tmicon {
+        left: 30%;
+    }
+
+    /** move the vertical line between the icons */
+    .cbp_tmtimeline:before {
+        left: 30%;
+    }
+
+    /* move the speech bubble to the left */
+    .cbp_tmtimeline > li .cbp_tmlabel {
+        margin: 0 0 15px 34%;
+        background: rgba(238, 238, 238, 0.5);
+        padding: 1.2em;
+        position: relative;
+        border-radius: 5px;
+    }
+}
+
 @media screen and (max-width: 65.375em) {
     .cbp_tmtimeline > li .cbp_tmtime span:last-child {
         font-size: 12px;
     }
 }
 
+/* mobile view */
 @media screen and (max-width: 47.2em) {
     .cbp_tmtimeline:before {
         display: none;
@@ -211,6 +240,7 @@
         margin: -64px 5px 0 0px;
     }
 
+    /* arrow pointing on speech bubble in mobile view */
     .cbp_tmtimeline > li:nth-child(odd) .cbp_tmlabel:after {
         border-right-color: transparent;
         border-bottom-color: #f5f5f6;

@@ -242,18 +242,25 @@
                                     StatehistoryService.StatehistoryService.max_check_attempts }}
                                 </td>
                                 <td class="text-center">
-                                        <span ng-show="StatehistoryService.StatehistoryService.is_hardstate">
-                                            <?php echo __('Hard'); ?>
-                                        </span>
-
-                                    <span ng-show="!StatehistoryService.StatehistoryService.is_hardstate">
-                                            <?php echo __('Soft'); ?>
-                                        </span>
-
+                                    <span class="badge text-uppercase text-white"
+                                          ng-class="{'badge-success': StatehistoryService.StatehistoryService.state == 0,
+                                          'badge-warning': StatehistoryService.StatehistoryService.state == 1,
+                                          'badge-danger': StatehistoryService.StatehistoryService.state == 2,
+                                          'badge-secondary': StatehistoryService.StatehistoryService.state == 3}"
+                                          ng-show="StatehistoryService.StatehistoryService.is_hardstate">
+                                        <?= __('Hard'); ?>
+                                    </span>
+                                    <span class="badge text-uppercase opacity-50 text-white"
+                                          ng-class="{'badge-success': StatehistoryService.StatehistoryService.state == 0,
+                                          'badge-warning': StatehistoryService.StatehistoryService.state == 1,
+                                          'badge-danger': StatehistoryService.StatehistoryService.state == 2,
+                                          'badge-secondary': StatehistoryService.StatehistoryService.state == 3}"
+                                          ng-show="!StatehistoryService.StatehistoryService.is_hardstate">
+                                        <?= __('Soft'); ?>
+                                    </span>
                                 </td>
                                 <td>
-                                    <div
-                                            ng-bind-html="StatehistoryService.StatehistoryService.outputHtml | trustAsHtml"></div>
+                                    <div ng-bind-html="StatehistoryService.StatehistoryService.outputHtml | trustAsHtml"></div>
                                 </td>
                             </tr>
 

@@ -785,6 +785,7 @@ class HostsTable extends Table {
             'Hosts.tags',
             'Hosts.priority',
             'Hosts.notes',
+            'Hosts.host_type',
             'Hoststatus.current_state',
             'Hoststatus.last_check',
             'Hoststatus.next_check',
@@ -941,6 +942,7 @@ class HostsTable extends Table {
             //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
             //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
             'Hosts.notes',
+            'Hosts.host_type',
             'Hoststatus.current_state',
             'Hoststatus.last_check',
             'Hoststatus.next_check',
@@ -3971,6 +3973,14 @@ class HostsTable extends Table {
     /**
      * @return array
      */
+    public function getHostTypes() {
+        $types = $this->getHostTypesWithStyles();
+        return array_combine(array_keys($types), Hash::extract($types, '{n}.title'));
+    }
+
+    /**
+     * @return array
+     */
     public function getHostTypesWithStyles() {
         $types[GENERIC_HOST] = [
             'title' => __('Generic host'),
@@ -4431,8 +4441,28 @@ class HostsTable extends Table {
         }
 
         $where = [];
+
         if (!empty($conditions['Host']['name'])) {
-            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+            if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                $where[] = new Comparison(
+                    'Hosts.name',
+                    $conditions['Host']['name'],
+                    'string',
+                    'RLIKE'
+                );
+            }
+
+        }
+
+        if (!empty($conditions['Host']['address'])) {
+            if ($this->isValidRegularExpression($conditions['Host']['address'])) {
+                $where[] = new Comparison(
+                    'Hosts.address',
+                    $conditions['Host']['address'],
+                    'string',
+                    'RLIKE'
+                );
+            }
         }
 
         if (!empty($conditions['Host']['keywords'])) {
@@ -4788,13 +4818,13 @@ class HostsTable extends Table {
 
         $where = [];
         $where[] = ['Hoststatus.current_state IN' => $conditions['filter[Hoststatus.current_state][]']];
-        if($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignore') {
+        if ($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignore') {
             $where[] = ['Hoststatus.problem_has_been_acknowledged' => $conditions['filter[Hoststatus.problem_has_been_acknowledged]']];
         }
-        if($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === true) {
+        if ($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === true) {
             $where[] = ['Hoststatus.scheduled_downtime_depth >' => 0];
         }
-        if($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === false) {
+        if ($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === false) {
             $where[] = ['Hoststatus.scheduled_downtime_depth' => 0];
         }
         if (!empty($conditions['filter[Hosts.keywords][]'])) {
@@ -4835,5 +4865,13 @@ class HostsTable extends Table {
         }
 
         return $result->toArray();
+    }
+
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    private function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
     }
 }

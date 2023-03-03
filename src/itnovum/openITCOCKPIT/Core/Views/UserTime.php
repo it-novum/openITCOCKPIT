@@ -67,6 +67,13 @@ class UserTime {
      * @return string
      */
     public function format($t_time) {
+        if (gettype($t_time) === 'object') {
+            if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
+                /** @var FrozenTime $t_time */
+                $t_time = $t_time->timestamp;
+            }
+        }
+
         if (!is_numeric($t_time) && !is_null($t_time)) {
             $t_time = strtotime($t_time);
         }
@@ -83,6 +90,13 @@ class UserTime {
      * @return string
      */
     public function customFormat($format, $t_time) {
+        if (gettype($t_time) === 'object') {
+            if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
+                /** @var FrozenTime $t_time */
+                $t_time = $t_time->timestamp;
+            }
+        }
+
         if (!is_numeric($t_time) && !is_null($t_time)) {
             $t_time = strtotime($t_time);
         }
@@ -177,6 +191,13 @@ class UserTime {
      * @return string
      */
     public function timeAgoInWords($t_time, $options = []) {
+        if (gettype($t_time) === 'object') {
+            if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
+                /** @var FrozenTime $t_time */
+                $t_time = $t_time->timestamp;
+            }
+        }
+
         if (!is_numeric($t_time) && !is_null($t_time)) {
             $t_time = strtotime($t_time);
         }

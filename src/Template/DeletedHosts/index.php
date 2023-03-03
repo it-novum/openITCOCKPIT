@@ -109,6 +109,11 @@
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.DeletedHost.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

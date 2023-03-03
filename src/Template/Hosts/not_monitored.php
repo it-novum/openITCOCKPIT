@@ -118,6 +118,11 @@
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.Host.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -131,6 +136,11 @@
                                                    placeholder="<?php echo __('Filter by IP address'); ?>"
                                                    ng-model="filter.Host.address"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -223,7 +233,8 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td class="copy-to-clipboard-container-text">
+                                <td  ng-click="rootCopyToClipboard(host.Host.address, $event)"
+                                     class="copy-to-clipboard-container-text pointer">
                                     {{ host.Host.address }}
                                     <span ng-click="rootCopyToClipboard(host.Host.address, $event)"
                                           class="copy-action text-primary animated"

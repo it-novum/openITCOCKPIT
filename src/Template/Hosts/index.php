@@ -148,6 +148,11 @@
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.Host.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -174,6 +179,11 @@
                                                    placeholder="<?php echo __('Filter by IP address'); ?>"
                                                    ng-model="filter.Host.address"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                   <span class="input-group-text pt-0 pb-0">
+                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -224,6 +234,30 @@
                                                        ng-model="filter.Host.not_keywords"
                                                        ng-model-options="{debounce: 500}">
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 margin-bottom-10">
+                                    <div class="form-group required">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                                            </div>
+                                            <select
+                                                id="HostType"
+                                                data-placeholder="<?php echo __('Filter by host types'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Host.host_type"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($types as $typeId => $typeName):
+                                                    printf('<option value="%s">%s</option>', h($typeId), h($typeName));
+                                                endforeach;
+                                                ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -492,7 +526,8 @@
                                     <i class="fas fa-columns"></i>
                                     <?php echo __('Columns'); ?>
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-columns" aria-labelledby="dropdownMenuButton">
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-columns"
+                                     aria-labelledby="dropdownMenuButton">
                                     <div class="row">
                                         <?php $list = [
                                             __('Hoststatus'),
@@ -510,7 +545,8 @@
                                             __('Host output'),
                                             __('Instance'),
                                             __('Service Summary '),
-                                            __('Host notes')
+                                            __('Host notes'),
+                                            __('Host type')
                                         ];
                                         foreach (array_chunk($list, 6, true) as $chunk):
                                             echo '<div class="col-xs-12 col-md-12 col-lg-4">';
@@ -673,9 +709,12 @@
                                     </th>
                                 <?php endif; ?>
 
-                                <th ng-show="fields[15]" class="text-center"
-                                ">
-                                <?php echo __('Host notes'); ?>
+                                <th ng-show="fields[15]" class="text-center">
+                                    <?php echo __('Host notes'); ?>
+                                </th>
+
+                                <th ng-show="fields[16]" class="text-center">
+                                    <?php echo __('Host type'); ?>
                                 </th>
 
                                 <th class="no-sort text-center editItemWidth"><i class="fa fa-gear"></i></th>
@@ -694,19 +733,43 @@
                                 </td>
 
                                 <td ng-show="fields[1]" class="text-center">
-                                    <i class="far fa-user"
-                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                       ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
-
-                                    <i class="fas fa-user"
-                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                       ng-if="host.Hoststatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <i class="far fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           id="ackTooltip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           id="ackTooltip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 2">
+                                        </i>
+                                    <?php else: ?>
+                                        <i class="far fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 2"
+                                           title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        </i>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
-                                       ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            id="downtimeTooltip_{{host.Host.id}}"
+                                            ng-mouseenter="enterDowntimeEl($event, 'hosts', host.Host.id)"
+                                            ng-mouseleave="leaveDowntimeEl()"
+                                        <?php endif; ?>
+                                       ng-show="host.Hoststatus.scheduledDowntimeDepth > 0">
+                                    </i>
                                 </td>
                                 <td ng-show="fields[3]" class="text-center">
                                     <div class="icon-stack margin-right-5"
@@ -763,13 +826,14 @@
                                     {{ host.Host.description }}
                                 </td>
 
-                                <td ng-show="fields[9]" class="copy-to-clipboard-container-text">
+                                <td ng-show="fields[9]" class="copy-to-clipboard-container-text pointer"
+                                    ng-click="rootCopyToClipboard(host.Host.address, $event)">
                                     {{ host.Host.address }}
-                                        <span ng-click="rootCopyToClipboard(host.Host.address, $event)"
-                                              class="copy-action text-primary animated"
-                                              data-copied="<?= __('Copied'); ?>"
-                                              data-copy="<?= __('Copy'); ?>"
-                                        >
+                                    <span ng-click="rootCopyToClipboard(host.Host.address, $event)"
+                                          class="copy-action text-primary animated"
+                                          data-copied="<?= __('Copied'); ?>"
+                                          data-copy="<?= __('Copy'); ?>"
+                                    >
                                             <?= __('Copy'); ?>
                                         </span>
                                 </td>
@@ -840,6 +904,13 @@
 
                                 <td ng-show="fields[15]">
                                     {{ host.Host.notes }}
+                                </td>
+
+                                <td ng-show="fields[16]">
+                                    <span class="badge border {{host.Host.type.class}} {{host.Host.type.color}}">
+                                        <i class="{{host.Host.type.icon}}"></i>
+                                        {{host.Host.type.title}}
+                                    </span>
                                 </td>
 
                                 <td class="width-50">
@@ -1051,6 +1122,8 @@
                     </div>
                 </div>
             </div>
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
         </div>
     </div>
 </div>

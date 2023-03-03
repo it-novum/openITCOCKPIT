@@ -16,6 +16,7 @@ angular.module('openITCOCKPIT')
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';
         $scope.mouseout = true;
+        $scope.popoverTimer = null;
 
         $scope.activeTab = 'active';
 

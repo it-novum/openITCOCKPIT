@@ -24,6 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
+use App\Model\Entity\Commandargument;
+use App\Model\Entity\Servicetemplatecommandargumentvalue;
 use App\Model\Table\AgentchecksTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\HosttemplatesTable;
@@ -161,6 +163,10 @@ class Agent extends Importer {
                 }
             }
         }
+
+        // ITC-2939
+        // Add new Command arguments to existing commands and service templates
+        $this->updateRecords();
 
         return true;
     }
@@ -1364,7 +1370,7 @@ class Agent extends Importer {
             [
                 'uuid'                                      => 'be4c9649-8771-4704-b409-c56b5f67abc8',
                 'template_name'                             => 'OITC_AGENT_CPU_TOTAL_PERCENTAGE',
-                'name'                                      => 'Total CPU Percentage',
+                'name'                                      => 'CPU usage percentage',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
@@ -1432,7 +1438,7 @@ class Agent extends Importer {
             [
                 'uuid'                                      => '566a710f-a554-4fa6-b2a2-e46b1d937a64',
                 'template_name'                             => 'OITC_AGENT_SYSTEM_LOAD',
-                'name'                                      => 'System Load',
+                'name'                                      => 'CPU load',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
@@ -1500,7 +1506,7 @@ class Agent extends Importer {
             [
                 'uuid'                                      => '4052fe4f-50b1-443a-8be1-9dbca8d43ebd',
                 'template_name'                             => 'OITC_AGENT_MEMORY_USAGE',
-                'name'                                      => 'Memory Usage',
+                'name'                                      => 'Memory usage percentage',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
@@ -1568,7 +1574,7 @@ class Agent extends Importer {
             [
                 'uuid'                                      => 'f9d5e18a-8894-4324-b54a-497db87b6f4f',
                 'template_name'                             => 'OITC_AGENT_SWAP_USAGE',
-                'name'                                      => 'SWAP Usage',
+                'name'                                      => 'Swap usage percentage',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
@@ -3290,5 +3296,92 @@ class Agent extends Importer {
             'Servicetemplates' => $this->getServicetemplatesData(),
             'Agentchecks'      => $this->getAgentchecksData()
         ];
+    }
+
+    /**
+     * This function is used to update existing command or service templates
+     * For example to add a new commandargument value
+     * @return void
+     */
+    public function updateRecords() {
+        // ITC-2939
+        // Add identifier field to check_oitc_agent_process (629050dd-1359-4c8d-9f13-fc49fdab84dc) command
+        if ($this->CommandsTable->existsByUuid('629050dd-1359-4c8d-9f13-fc49fdab84dc')) {
+            $command = $this->CommandsTable->find()
+                ->where([
+                    'uuid' => '629050dd-1359-4c8d-9f13-fc49fdab84dc'
+                ])
+                ->contain([
+                    'Commandarguments'
+                ])
+                ->firstOrFail();
+
+            $hasIdentifierArgument = false;
+            if (sizeof($command->commandarguments) === 8) {
+                foreach ($command->commandarguments as $commandargument) {
+                    /** @var Commandargument $commandargument */
+                    if ($commandargument->name === '$ARG9$' && $commandargument->human_name === 'identifier') {
+                        $hasIdentifierArgument = true;
+                    }
+                }
+
+                if ($hasIdentifierArgument === false) {
+                    $commandArray = $command->toArray();
+
+                    $commandArray['description'] = "Checks if a custom process or many matching process(es) exceeds the given values for cpu, memory or amount.\n" .
+                        "CPU: Warning and critical percentage values (0-100) of cpu usage for the matching process(es).\n" .
+                        "Memory: Warning and critical percentage values (0-100) of memory usage for the matching process(es).\n" .
+                        "Amount: Warning and critical values (e.g. 5 or 10) as amount of matching processes.\n" .
+                        "Match: String that must match with the process command line (e.g. /sbin/init)\n" .
+                        "Strict: Decides if the match must be completely or just in a part (1/0).\n" .
+                        "Identifier: Field used for the match condition ('auto', 'cmdline', 'exec' or 'name').";
+
+                    $commandArray['commandarguments'][] = [
+                        'name'       => '$ARG9$',
+                        'human_name' => 'identifier'
+                    ];
+
+                    $entity = $this->CommandsTable->patchEntity($command, $commandArray);
+                    $this->CommandsTable->save($entity);
+                }
+            }
+        }
+
+        // Add identifier field to OITC_AGENT_PROCESSES (37a78eca-4a58-46cd-9fb1-6029724cab35) service template
+        if ($this->ServicetemplatesTable->existsByUuid('37a78eca-4a58-46cd-9fb1-6029724cab35')) {
+            $st = $this->ServicetemplatesTable->find()
+                ->select([
+                    'id'
+                ])
+                ->where([
+                    'uuid' => '37a78eca-4a58-46cd-9fb1-6029724cab35'
+                ])
+                ->firstOrFail();
+
+            $servicetemplate = $this->ServicetemplatesTable->getServicetemplateForEdit($st->id);
+
+            $updateTemplate = false;
+            if (sizeof($servicetemplate['Servicetemplate']['servicetemplatecommandargumentvalues']) === 9) {
+                foreach ($servicetemplate['Servicetemplate']['servicetemplatecommandargumentvalues'] as $index => $stcarg) {
+                    if ($stcarg['commandargument']['name'] === '$ARG9$' && $stcarg['commandargument']['human_name'] === 'identifier' && empty($stcarg['value'])) {
+                        $updateTemplate = true;
+                        $servicetemplate['Servicetemplate']['servicetemplatecommandargumentvalues'][$index]['value'] = 'auto';
+                    }
+                }
+            }
+
+            $updateServices = false;
+            if ($updateTemplate === true) {
+                $servicetemplateEntity = $this->ServicetemplatesTable->get($servicetemplate['Servicetemplate']['id']);
+                $servicetemplateEntity = $this->ServicetemplatesTable->patchEntity($servicetemplateEntity, $servicetemplate['Servicetemplate']);
+                $this->ServicetemplatesTable->save($servicetemplateEntity);
+                if(!$servicetemplateEntity->hasErrors()){
+                    $updateServices = true;
+                }
+            }
+
+            // Add new Command Argument to all services
+
+        }
     }
 }

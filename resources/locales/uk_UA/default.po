@@ -19676,7 +19676,7 @@ msgid " Cancelled"
 msgstr " Скасовано"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:39
-msgid "Acknowlegements"
+msgid "Acknowledgements"
 msgstr "Визнання"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:54

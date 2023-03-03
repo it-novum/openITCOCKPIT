@@ -11,6 +11,8 @@ angular.module('openITCOCKPIT')
         };
         $scope.recursiveBrowser = false;
 
+        $scope.popoverTimer = null;
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -26,7 +28,8 @@ angular.module('openITCOCKPIT')
                     name: QueryStringService.getValue('filter[Hosts.name]', ''),
                     keywords: '',
                     address: QueryStringService.getValue('filter[Hosts.address]', ''),
-                    satellite_id: []
+                    satellite_id: [],
+                    host_type: []
                 }
             };
         };
@@ -34,7 +37,7 @@ angular.module('openITCOCKPIT')
 
         /*** column vars ***/
         $scope.fields = [];
-        $scope.columnsLength = 16;
+        $scope.columnsLength = 17;
         $scope.columnsTableKey = 'HostsBrowserColumns';
 
         /*** columns functions
@@ -54,9 +57,10 @@ angular.module('openITCOCKPIT')
          'Host output',
          'Instance',
          'Service Summary ',
-         'Host notes'] ***/
+         'Host notes',
+         'Host type'] ***/
         $scope.defaultColumns = function(){
-            $scope.fields = [true,true,true,false,true,true,false,true,false,true,true,true,true,true,false,false];
+            $scope.fields = [true,true,true,false,true,true,false,true,false,true,true,true,true,true,false,false,false];
             $window.localStorage.removeItem($scope.columnsTableKey);
         };
 
@@ -89,7 +93,6 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
         $scope.showFields = false;
         $scope.load = function(){
-
             $http.get("/browsers/index/" + $scope.containerId + ".json", {
                 params: {
                     angular: true
@@ -131,6 +134,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
+                'filter[Hosts.host_type][]': $scope.filter.Host.host_type,
                 'BrowserContainerId': $scope.containerId
             };
 

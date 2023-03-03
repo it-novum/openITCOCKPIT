@@ -63,12 +63,24 @@ class ServicestatusConditions {
     }
 
     public function perfdataIsNotNull() {
-        $this->addCondition('Servicestatus.perfdata IS NOT NULL');
+        $this->addCondition(
+            sprintf(
+                '((Services.service_type !=%s AND Servicestatus.perfdata IS NOT NULL) OR (Services.service_type = %s))',
+                PROMETHEUS_SERVICE,
+                PROMETHEUS_SERVICE
+            )
+        );
         return $this;
     }
 
     public function perfdataIsNotEmpty() {
-        $this->addCondition('Servicestatus.perfdata <> ""');
+        $this->addCondition(
+            sprintf(
+                '((Services.service_type !=%s AND Servicestatus.perfdata <> "") OR (Services.service_type = %s))',
+                PROMETHEUS_SERVICE,
+                PROMETHEUS_SERVICE
+            )
+        );
         return $this;
     }
 

@@ -56,7 +56,7 @@ class AcknowledgementSerializer {
         $this->UserTime = $UserTime;
 
         $TimelineGroups = new Groups();
-        $this->groupId = $TimelineGroups->getAcknowlegementsId();
+        $this->groupId = $TimelineGroups->getAcknowledgementsId();
 
     }
 
