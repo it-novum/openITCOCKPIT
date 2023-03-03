@@ -665,16 +665,16 @@
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <i class="far fa-user"
                                            ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                           data-toggle="popover" id="ackBrowsertip_{{host.Host.id}}"
-                                           ng-mouseenter="getAckDetails(host.Host.id)"
-                                           ng-mouseleave="delPopover()"
+                                           id="ackBrowsertip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
                                            ng-if="host.Hoststatus.acknowledgement_type == 1">
                                         </i>
                                         <i class="fas fa-user"
                                            ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                           data-toggle="popover" id="ackBrowsertip_{{host.Host.id}}"
-                                           ng-mouseenter="getAckDetails(host.Host.id)"
-                                           ng-mouseleave="delPopover()"
+                                           id="ackBrowsertip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
                                            ng-if="host.Hoststatus.acknowledgement_type == 2">
                                         </i>
                                     <?php else: ?>
@@ -693,10 +693,9 @@
                                 <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                            data-toggle="popover"
                                             id="downtimeBrowsertip_{{host.Host.id}}"
-                                            ng-mouseenter="getDowntimeDetails(host.Host.id)"
-                                            ng-mouseleave="delPopover()"
+                                            ng-mouseenter="enterDowntimeEl($event, 'hosts', host.Host.id)"
+                                            ng-mouseleave="leaveDowntimeEl()"
                                         <?php endif; ?>
                                        ng-show="host.Hoststatus.scheduledDowntimeDepth > 0">
                                     </i>
@@ -1029,6 +1028,8 @@
             <enable-host-notifications></enable-host-notifications>
             <acknowledge-host author="<?php echo h($username); ?>"></acknowledge-host>
             <host-downtime author="<?php echo h($username); ?>"></host-downtime>
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
         </div>
     </div>
 </div>

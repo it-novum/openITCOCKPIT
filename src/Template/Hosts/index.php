@@ -736,16 +736,16 @@
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <i class="far fa-user"
                                            ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                           data-toggle="popover" id="ackTooltip_{{host.Host.id}}"
-                                           ng-mouseenter="getAckDetails(host.Host.id)"
-                                           ng-mouseleave="delPopover()"
+                                           id="ackTooltip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
                                            ng-if="host.Hoststatus.acknowledgement_type == 1">
                                         </i>
                                         <i class="fas fa-user"
                                            ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                           data-toggle="popover" id="ackTooltip_{{host.Host.id}}"
-                                           ng-mouseenter="getAckDetails(host.Host.id)"
-                                           ng-mouseleave="delPopover()"
+                                           id="ackTooltip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
                                            ng-if="host.Hoststatus.acknowledgement_type == 2">
                                         </i>
                                     <?php else: ?>
@@ -764,10 +764,9 @@
                                 <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                            data-toggle="popover"
                                             id="downtimeTooltip_{{host.Host.id}}"
-                                            ng-mouseenter="getDowntimeDetails(host.Host.id)"
-                                            ng-mouseleave="delPopover()"
+                                            ng-mouseenter="enterDowntimeEl($event, 'hosts', host.Host.id)"
+                                            ng-mouseleave="leaveDowntimeEl()"
                                         <?php endif; ?>
                                        ng-show="host.Hoststatus.scheduledDowntimeDepth > 0">
                                     </i>
@@ -1123,6 +1122,8 @@
                     </div>
                 </div>
             </div>
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
         </div>
     </div>
 </div>
