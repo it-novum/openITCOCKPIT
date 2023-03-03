@@ -2074,7 +2074,7 @@ class ServicesTable extends Table {
                 $compareValue = explode(',', $compareValue);
             }
             $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
-            $where[]  = new Comparison(
+            $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
                 $compareValue,
                 'string',
@@ -5049,5 +5049,26 @@ class ServicesTable extends Table {
      */
     private function isValidRegularExpression($regEx) {
         return @preg_match('`' . $regEx . '`', '') !== false;
+    }
+
+    /**
+     * @param $id
+     * @param bool $enableHydration
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getActiveServicesWithServicetemplateByHostId($id, $enableHydration = true) {
+        $query = $this->find();
+        $query->select([
+            'Services.id',
+            'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+        ])
+            ->contain('Servicetemplates')
+            ->where([
+                'Services.host_id'  => $id,
+                'Services.disabled' => 0
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+        return $query;
     }
 }
