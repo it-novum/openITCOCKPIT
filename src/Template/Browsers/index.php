@@ -662,19 +662,43 @@
                                 </td>
 
                                 <td ng-show="fields[1]" class="text-center">
-                                    <i class="far fa-user"
-                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                       ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
-
-                                    <i class="fas fa-user"
-                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                       ng-if="host.Hoststatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <i class="far fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           id="ackBrowsertip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           id="ackBrowsertip_{{host.Host.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'hosts', host.Host.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 2">
+                                        </i>
+                                    <?php else: ?>
+                                        <i class="far fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                           ng-if="host.Hoststatus.acknowledgement_type == 2"
+                                           title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        </i>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
-                                       ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            id="downtimeBrowsertip_{{host.Host.id}}"
+                                            ng-mouseenter="enterDowntimeEl($event, 'hosts', host.Host.id)"
+                                            ng-mouseleave="leaveDowntimeEl()"
+                                        <?php endif; ?>
+                                       ng-show="host.Hoststatus.scheduledDowntimeDepth > 0">
+                                    </i>
                                 </td>
 
                                 <td ng-show="fields[3]" class="text-center">
@@ -744,7 +768,7 @@
                                 </td>
 
                                 <td ng-show="fields[12]">
-                                    <div class="cropText"
+                                    <div class="word-break"
                                          ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
@@ -1004,6 +1028,8 @@
             <enable-host-notifications></enable-host-notifications>
             <acknowledge-host author="<?php echo h($username); ?>"></acknowledge-host>
             <host-downtime author="<?php echo h($username); ?>"></host-downtime>
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
         </div>
     </div>
 </div>

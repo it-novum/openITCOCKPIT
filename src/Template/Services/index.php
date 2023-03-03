@@ -803,18 +803,40 @@
                                 </td>
 
                                 <td ng-show="fields[1]" class="text-center">
-                                    <i class="far fa-user"
-                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                       ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
-
-                                    <i class="fas fa-user"
-                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                       ng-if="service.Servicestatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        <i class="far fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           id="ackServicetip_{{service.Service.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 2">
+                                        </i>
+                                    <?php else: ?>
+                                        <i class="far fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                           title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        </i>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td ng-show="fields[2]" class="text-center">
                                     <i class="fa fa-power-off"
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            id="downtimeServicetip_{{service.Service.id}}"
+                                            ng-mouseenter="enterDowntimeEl($event, 'services', service.Service.id)"
+                                            ng-mouseleave="leaveDowntimeEl()"
+                                        <?php endif; ?>
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
@@ -1085,6 +1107,7 @@
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>
+
                     </div>
                 </div>
             </div>
@@ -1094,6 +1117,9 @@
             <enable-notifications></enable-notifications>
             <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
             <service-downtime author="<?php echo h($username); ?>"></service-downtime>
+
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
 
             <popover-graph-directive></popover-graph-directive>
 

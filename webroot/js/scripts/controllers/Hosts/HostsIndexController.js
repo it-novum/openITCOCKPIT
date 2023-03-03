@@ -4,7 +4,7 @@ angular.module('openITCOCKPIT')
         SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Hoststatus.current_state'));
         SortService.setDirection(QueryStringService.getStateValue($stateParams, 'direction', 'desc'));
         $scope.currentPage = 1;
-
+        $scope.popoverTimer = null;
         $scope.useScroll = true;
         filterHostname = QueryStringService.getStateValue($stateParams, 'hostname');
         filterAddress = QueryStringService.getStateValue($stateParams, 'address');

@@ -28,6 +28,8 @@ angular.module('openITCOCKPIT')
 
         $scope.interval = null;
 
+        $scope.popoverTimer = null;
+
         SortService.setSort('servicename');
         SortService.setDirection('asc');
 
@@ -713,5 +715,4 @@ angular.module('openITCOCKPIT')
                 jQuery('[data-toggle="tooltip"]').tooltip('hide');
             }, 1500);
         });
-
     });

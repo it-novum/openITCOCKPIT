@@ -7422,6 +7422,7 @@ msgstr "Datum"
 #: ./src/Template/Acknowledgements/host.php:174
 #: ./src/Template/Acknowledgements/service.php:186
 #: ./src/Template/Systemfailures/add.php:75
+#: ./src/Template/Angular/downtime_tooltip.php:29
 msgid "Author"
 msgstr "Autor"
 
@@ -10094,6 +10095,14 @@ msgstr "Monitoring Engine läuft nicht!"
 #: ./src/Template/Angular/queryhandler.php:5
 msgid "File {{queryHandler.path}} does not exists"
 msgstr "Die Datei {{queryHandler.path}} existiert nicht"
+
+#: ./src/Template/Angular/ack_tooltip.php:29
+msgid "Set by"
+msgstr "Gesetzt von"
+
+#: ./src/Template/Angular/ack_tooltip.php:30
+msgid "Set at"
+msgstr "Gesetzt am"
 
 #: ./src/Template/Angular/regex_helper_tooltip.php:26
 msgid "RegEx Examples"
@@ -13102,6 +13111,7 @@ msgstr "Erstellt"
 #: ./src/Template/Timeperiods/add.php:186
 #: ./src/Template/Timeperiods/edit.php:197
 #: ./src/Template/Users/login.php:130
+#: ./src/Template/Angular/downtime_tooltip.php:30
 msgid "Start"
 msgstr "Start"
 
@@ -13111,6 +13121,7 @@ msgstr "Start"
 #: ./src/Template/Downtimes/service.php:333
 #: ./src/Template/Timeperiods/add.php:208
 #: ./src/Template/Timeperiods/edit.php:219
+#: ./src/Template/Angular/downtime_tooltip.php:31
 msgid "End"
 msgstr "Ende"
 

@@ -249,18 +249,39 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <i class="far fa-user"
-                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                           ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            <i class="far fa-user"
+                                               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                               id="ackServicetip_{{service.Service.id}}"
+                                               ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                               ng-mouseleave="leaveAckEl()"
+                                               ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                            </i>
+                                            <i class="fas fa-user"
+                                               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                               id="ackServicetip_{{service.Service.id}}"
+                                               ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                               ng-mouseleave="leaveAckEl()"
+                                               ng-if="service.Servicestatus.acknowledgement_type == 2">
+                                            </i>
+                                        <?php else: ?>
+                                            <i class="far fa-user"
+                                               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                               ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
 
-                                        <i class="fas fa-user"
-                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                           ng-if="service.Servicestatus.acknowledgement_type == 2"
-                                           title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                            <i class="fas fa-user"
+                                               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                               ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                               title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                            </i>
+                                        <?php endif; ?>
                                     </td>
-
                                     <td class="text-center">
                                         <i class="fa fa-power-off"
+                                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                ng-mouseenter="enterDowntimeEl($event, 'services', service.Service.id)"
+                                                ng-mouseleave="leaveDowntimeEl()"
+                                            <?php endif; ?>
                                            ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                     </td>
                                     <td class="text-center">
@@ -866,7 +887,8 @@
                     </div>
                 </div>
             </div>
-
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
             <div id="serviceGraphContainer" class="popup-graph-container">
                 <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
                     <i class="fa fa-refresh fa-4x fa-spin"></i>

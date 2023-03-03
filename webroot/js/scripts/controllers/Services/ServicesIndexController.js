@@ -12,6 +12,7 @@ angular.module('openITCOCKPIT')
 
         $scope.useScroll = true;
 
+        $scope.popoverTimer = null;
 
         /*** column vars ***/
         $scope.fields = [];
@@ -121,7 +122,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-
             var hasBeenAcknowledged = '';
             var inDowntime = '';
             var notificationsEnabled = '';
