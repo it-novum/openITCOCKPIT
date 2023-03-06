@@ -5060,7 +5060,7 @@ class ServicesTable extends Table {
         $query = $this->find();
         $query->select([
             'Services.id',
-            'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
         ])
             ->contain('Servicetemplates')
             ->where([
