@@ -5067,6 +5067,10 @@ class ServicesTable extends Table {
                 'Services.host_id'  => $id,
                 'Services.disabled' => 0
             ])
+            ->order([
+                'servicename',
+                'Services.id'
+            ])
             ->enableHydration($enableHydration)
             ->all();
         return $query;
