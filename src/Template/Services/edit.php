@@ -170,7 +170,7 @@
                                         <?php echo __('Service name'); ?>
                                     </label>
                                     <div class="input-group"
-                                         ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?>">
+                                         ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?> && post.Service.service_type !== <?php echo EXTERNAL_SERVICE; ?>">
                                         <input
                                                 id="ServiceName"
                                                 class="form-control"
@@ -190,6 +190,17 @@
                                         </div>
                                         <div class="help-block">
                                             <?php echo __('The name of CHECK_MK services can\'t be changed.'); ?>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="post.Service.service_type == <?php echo EXTERNAL_SERVICE; ?>">
+                                        <div class="input-group" style="width: 100%;">
+                                            <input class="form-control" type="text" disabled="disabled"
+                                                   readonly="readonly"
+                                                   ng-model="post.Service.name">
+                                        </div>
+                                        <div class="help-block">
+                                            <?php echo __('The name of external monitored services has to be changed on the external system itself.'); ?>
                                         </div>
                                     </div>
 
