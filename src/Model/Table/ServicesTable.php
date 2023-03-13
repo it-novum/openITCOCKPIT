@@ -435,7 +435,7 @@ class ServicesTable extends Table {
 
         $validator
             ->integer('freshness_threshold')
-            ->greaterThan('check_period_id', 0, __('This field cannot be 0'))
+            ->greaterThan('freshness_threshold', 0, __('This field cannot be 0'))
             ->allowEmptyString('freshness_threshold', null, true);
 
         return $validator;
