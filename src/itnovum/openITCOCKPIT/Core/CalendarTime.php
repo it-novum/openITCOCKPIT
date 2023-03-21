@@ -114,22 +114,25 @@ class CalendarTime {
             if ($i === 1 && $weekDay > 1) { //autofill weekdays at start of the week if first day is not monday
                 for ($j = 1; $j < $weekDay; $j++) {
                     $days[$weekNumber][] = [
-                        'day'     => null,
-                        'weekday' => null
+                        'day'       => null,
+                        'weekday'   => null,
+                        'timestamp' => null
                     ];
                 }
             }
             $days[$weekNumber][] = [
-                'day'     => $i,
-                'weekday' => $weekDay
+                'day'       => $i,
+                'weekday'   => $weekDay,
+                'timestamp' => $currentDay->getTimestamp()
             ];
             $currentDay = $currentDay->modify('+1 day');
 
             if ($i === $totalDays && $weekDay < 7) { //autofill weekdays at end of the week if last day is not sunday
                 for ($j = $weekDay; $j < 7; $j++) {
                     $days[$weekNumber][] = [
-                        'day'     => null,
-                        'weekday' => null
+                        'day'       => null,
+                        'weekday'   => null,
+                        'timestamp' => null
                     ];
                 }
             }
