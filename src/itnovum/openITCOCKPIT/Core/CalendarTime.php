@@ -92,9 +92,13 @@ class CalendarTime {
     public function getDateDetailsByTimestamp(int $timestamp, bool $extended = false) {
         $dayNumber = (int)date('j', $timestamp);
         $dateDetails = [
-            'dayNumber' => $dayNumber,
-            'weekday'   => $this->weekdays[date('N', $timestamp)],
-            'monthName' => $this->months[date('n', $timestamp)]
+            'dayNumber'       => $dayNumber,
+            'weekday'         => $this->weekdays[date('N', $timestamp)],
+            'monthName'       => $this->months[date('n', $timestamp)],
+            'start'           => date('d.m.Y H:i:s', strtotime('01' . date('.m.Y', $timestamp) . ' 00:00:00')),
+            'end'             => date('d.m.Y H:i:s', strtotime(date('t.m.Y', $timestamp) . ' 00:00:00')),
+            'start_timestamp' => strtotime('01' . date('.m.Y', $timestamp) . ' 00:00:00'),
+            'end_timestamp'   => strtotime(date('t.m.Y', $timestamp) . ' 00:00:00')
         ];
         if (!$extended) {
             return $dateDetails;
