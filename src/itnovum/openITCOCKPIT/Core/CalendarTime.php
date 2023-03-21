@@ -97,6 +97,7 @@ class CalendarTime {
             'monthName'       => $this->months[date('n', $timestamp)],
             'start'           => date('d.m.Y H:i:s', strtotime('01' . date('.m.Y', $timestamp) . ' 00:00:00')),
             'end'             => date('d.m.Y H:i:s', strtotime(date('t.m.Y', $timestamp) . ' 00:00:00')),
+            'today_timestamp' => strtotime(date('d.m.Y', $timestamp) . ' 00:00:00'),
             'start_timestamp' => strtotime('01' . date('.m.Y', $timestamp) . ' 00:00:00'),
             'end_timestamp'   => strtotime(date('t.m.Y', $timestamp) . ' 00:00:00')
         ];
