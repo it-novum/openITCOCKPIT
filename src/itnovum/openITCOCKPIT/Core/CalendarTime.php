@@ -92,14 +92,15 @@ class CalendarTime {
     public function getDateDetailsByTimestamp(int $timestamp, bool $extended = false) {
         $dayNumber = (int)date('j', $timestamp);
         $dateDetails = [
-            'dayNumber'       => $dayNumber,
-            'weekday'         => $this->weekdays[date('N', $timestamp)],
-            'monthName'       => $this->months[date('n', $timestamp)],
-            'start'           => date('d.m.Y H:i:s', strtotime('01' . date('.m.Y', $timestamp) . ' 00:00:00')),
-            'end'             => date('d.m.Y H:i:s', strtotime(date('t.m.Y', $timestamp) . ' 00:00:00')),
-            'today_timestamp' => strtotime(date('d.m.Y', $timestamp) . ' 00:00:00'),
-            'start_timestamp' => strtotime('01' . date('.m.Y', $timestamp) . ' 00:00:00'),
-            'end_timestamp'   => strtotime(date('t.m.Y', $timestamp) . ' 00:00:00')
+            'dayNumber'           => $dayNumber,
+            'weekday'             => $this->weekdays[date('N', $timestamp)],
+            'monthName'           => $this->months[date('n', $timestamp)],
+            'start'               => date('d.m.Y H:i:s', strtotime('01' . date('.m.Y', $timestamp) . ' 00:00:00')),
+            'end'                 => date('d.m.Y H:i:s', strtotime(date('t.m.Y', $timestamp) . ' 00:00:00')),
+            'today_timestamp'     => strtotime(date('d.m.Y', $timestamp) . ' 00:00:00'),
+            'yesterday_timestamp' => strtotime(date('d.m.Y', $timestamp) . ' 00:00:00 yesterday'),
+            'start_timestamp'     => strtotime('01' . date('.m.Y', $timestamp) . ' 00:00:00'),
+            'end_timestamp'       => strtotime(date('t.m.Y', $timestamp) . ' 00:00:00')
         ];
         if (!$extended) {
             return $dateDetails;
@@ -142,7 +143,17 @@ class CalendarTime {
                 }
             }
         }
-        $dateDetails['days'] = $days;
+
+        $dateDetails['days'] = [];
+        foreach ($days as $cw => $daysPerWeek) {
+            // Keep order in javascript (array not object)
+            $dateDetails['days'][] = [
+                'cw'   => $cw,
+                'days' => $daysPerWeek
+            ];
+        }
+
+        //$dateDetails['days'] = $days;
         $dateDetails['weekdayNames'] = $this->getWeekDaysShort();
 
         return $dateDetails;
