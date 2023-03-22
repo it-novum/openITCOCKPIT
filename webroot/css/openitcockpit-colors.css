@@ -903,6 +903,14 @@ fieldset[disabled] .btn-unknown.active {
     border-color: #A9B836 !important;
 }
 
+.text-external {
+    color: #FF9800;
+}
+
+.border-external {
+    border-color: #FB8C00 !important;
+}
+
 .text-mk {
     color: #607d8b;
 }
