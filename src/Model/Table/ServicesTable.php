@@ -5060,4 +5060,29 @@ class ServicesTable extends Table {
     private function isValidRegularExpression($regEx) {
         return @preg_match('`' . $regEx . '`', '') !== false;
     }
+
+    /**
+     * @param $id
+     * @param bool $enableHydration
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getActiveServicesWithServicetemplateByHostId($id, $enableHydration = true) {
+        $query = $this->find();
+        $query->select([
+            'Services.id',
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+        ])
+            ->contain('Servicetemplates')
+            ->where([
+                'Services.host_id'  => $id,
+                'Services.disabled' => 0
+            ])
+            ->order([
+                'servicename',
+                'Services.id'
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+        return $query;
+    }
 }

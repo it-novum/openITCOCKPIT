@@ -110,8 +110,8 @@ class StatehistoryConverter {
         $setInitialState = false;
         $currentState = 0;
         $outageCounter = 0;
-        $lastOutput = null;
-        $lastIsHardstate = null;
+        $lastOutput = '';
+        $lastIsHardstate = true;
         foreach ($timeSlices as $timeSliceKey => $timeSlice) {
             $time = $timeSlice['start'];
             if ($time > strtotime('today 24:00:00')) { // ignore time_slice in the future
