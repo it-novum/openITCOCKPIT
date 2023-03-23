@@ -131,6 +131,9 @@ class Servicestatus {
             $this->state_type = $data['is_hardstate'];
         }
 
+        // 0 = ACKNOWLEDGEMENT_NONE
+        // 1 = ACKNOWLEDGEMENT_NORMAL
+        // 2 = ACKNOWLEDGEMENT_STICKY
         if (isset($data['acknowledgement_type'])) {
             $this->acknowledgement_type = (int)$data['acknowledgement_type'];
         }
@@ -378,6 +381,17 @@ class Servicestatus {
     }
 
     /**
+     * In the statusengine_hoststatus and statusengine_servicestatus tables, this field describes if an acknowledgement
+     * is normal or sticky.
+     *
+     * 0 = ACKNOWLEDGEMENT_NONE
+     * 1 = ACKNOWLEDGEMENT_NORMAL
+     * 2 = ACKNOWLEDGEMENT_STICKY
+     *
+     * This is a different behavior than the statusengine_host_acknowledgements and statusengine_service_acknowledgements
+     * tables have.
+     * This is already a mess in the Naemon Core itself :(
+     *
      * @return int
      */
     public function getAcknowledgementType() {
