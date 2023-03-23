@@ -31,18 +31,27 @@
             timing-function="ease-in-out">
 
         <flippy-front class="fixFlippy">
-            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
-                <i class="fa fa-cog fa-sm"></i>
-            </a>
-            <span ng-show="map.map_id === null" class="text-info padding-left-20">
-            <?php echo __('No element selected'); ?>
-        </span>
-            <div
-                style="position: absolute;"
-                class="no-padding"
-                mapeditor-view=""
-                map-id="map.map_id"
-                ng-if="map.map_id"></div>
+            <div class="row">
+                <div class="col-12">
+                    <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark"
+                       ng-click="showConfig()">
+                        <i class="fa fa-cog fa-sm"></i>
+                    </a>
+                    <span ng-show="map.map_id === null" class="text-info padding-left-20">
+                        <?php echo __('No element selected'); ?>
+                    </span>
+                </div>
+            </div>
+            <div class="row pt-1">
+                <div class="col-12">
+                    <div
+                        class="no-padding"
+                        mapeditor-view=""
+                        map-id="map.map_id"
+                        ng-if="map.map_id">
+                    </div>
+                </div>
+            </div>
         </flippy-front>
         <flippy-back class="fixFlippy">
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
