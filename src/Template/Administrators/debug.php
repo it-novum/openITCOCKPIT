@@ -50,10 +50,20 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
     <div class="ml-auto mr-3" ng-show="interfaceInformation.oitc_is_debugging_mode">
         <div class="float-right">
-            <a ui-sref="AdministratorsQuerylog" class="btn btn-default btn-xl btn-block">
-                <i class="fa fa-database"></i>
-                <?php echo __('Show SQL query log'); ?>
-            </a>
+            <div class="btn-group" role="group">
+                <button class="btn btn-success btn-xl" ng-show="!hasXdebugCookie" ng-click="setXdebugCookie()">
+                    <i class="fa-solid fa-bug"></i>
+                    <?php echo __('Set XDEBUG_TRIGGER cookie'); ?>
+                </button>
+                <button class="btn btn-danger btn-xl" ng-show="hasXdebugCookie" ng-click="removeXdebugCookie()">
+                    <i class="fa-solid fa-bug-slash"></i>
+                    <?php echo __('Remove XDEBUG_TRIGGER cookie'); ?>
+                </button>
+                <a ui-sref="AdministratorsQuerylog" class="btn btn-default btn-xl">
+                    <i class="fa fa-database"></i>
+                    <?php echo __('Show SQL query log'); ?>
+                </a>
+            </div>
         </div>
     </div>
 </div>
