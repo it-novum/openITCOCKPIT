@@ -167,7 +167,7 @@ class AcknowledgePerMailCommand extends Command implements CronjobInterface {
                     'hostUuid' => $parsedValues['ACK_HOSTUUID'],
                     'author'   => $author,
                     'comment'  => __('Acknowledged per mail'),
-                    'sticky'   => 1,
+                    'sticky'   => 2, // 2 = sticky with Nagios Core, 1 = Sticky with Naemon Core, 2 works for both :)
                     'type'     => 'hostOnly'
                 ];
 
@@ -183,7 +183,7 @@ class AcknowledgePerMailCommand extends Command implements CronjobInterface {
                     'serviceUuid' => $parsedValues['ACK_SERVICEUUID'],
                     'author'      => $author,
                     'comment'     => __('Acknowledged per mail'),
-                    'sticky'      => 1
+                    'sticky'      => 2 // 2 = sticky with Nagios Core, 1 = Sticky with Naemon Core, 2 works for both :)
                 ];
 
                 Log::info('AcknowledgePerMailCommand: Service ack info: ' . json_encode($serviceAckArray));
