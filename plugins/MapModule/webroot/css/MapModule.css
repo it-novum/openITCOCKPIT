@@ -231,3 +231,7 @@
     background: repeating-linear-gradient(transparent, transparent 79px, #cccccc80 79px, #cccccc80 80px),
     repeating-linear-gradient(to right, transparent, transparent 79px, #cccccc80 79px, #cccccc80 80px);
 }
+
+.invalid-image-src {
+    color:#CC0000;
+}
