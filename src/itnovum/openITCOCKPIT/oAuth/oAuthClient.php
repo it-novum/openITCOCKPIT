@@ -138,6 +138,21 @@ class oAuthClient {
                     ]
                 ]);
 
+            case 'AzureActiveDirectory':
+                return new GenericProvider([
+                    'clientId'                => $config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
+                    'clientSecret'            => $config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
+                    'redirectUri'             => Router::url(['controller' => 'users', 'action' => 'login'], true), //Login screen of openITCOCKPIT itself
+                    'urlAuthorize'            => $config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
+                    'urlAccessToken'          => $config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
+                    //'urlResourceOwnerDetails' => $config['FRONTEND.SSO.USER_ENDPOINT'],    // Where to get user information from
+                    'urlResourceOwnerDetails' => '',    // Where to get user information from
+
+                    //'accessTokenResourceOwnerId' => 'id',
+                    'scopeSeparator'             => ' ',
+                    'scopes'                     => 'openid profile offline_access user.read'
+                ]);
+
             default:
                 return new GenericProvider([
                     'clientId'                => $config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider

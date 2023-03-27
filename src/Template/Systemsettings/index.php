@@ -195,6 +195,7 @@
                                                                 ng-model="systemsetting.value">
                                                             <option value="generic"><?php echo __('Generic'); ?></option>
                                                             <option value="PingIdentity"><?php echo __('Ping Identity'); ?></option>
+                                                            <option value="AzureActiveDirectory"><?php echo __('Azure Active Directory'); ?></option>
                                                         </select>
                                                     </div>
                                                     <div ng-switch-default>
