@@ -22,7 +22,8 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<img ng-src="/map_module/img/backgrounds/{{map.Map.background}}" ng-if="map.Map.background"/>
+<img ng-src="/map_module/img/backgrounds/{{map.Map.background}}" ng-if="map.Map.background" class="invalid-image-src"
+     alt="<?= __('{0} Map background image is not available!!!', '⚠'); ?>"/>
 
 
 <div ng-repeat="item in map.Mapitems"

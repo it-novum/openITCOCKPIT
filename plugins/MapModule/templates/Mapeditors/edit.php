@@ -134,7 +134,8 @@
                         <div style="overflow: auto; min-height: 600px;position: relative;"
                              ng-click="addNewObjectFunc($event)"
                              id="mainMapContainer">
-                            <div id="mapContent" ng-if="Mapeditor.helplines.enabled" ng-class="getHelplinesClass()"></div>
+                            <div id="mapContent" ng-if="Mapeditor.helplines.enabled"
+                                 ng-class="getHelplinesClass()"></div>
                             <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
                                  ng-if="map.Map.background"/>
                             <div ng-repeat="item in map.Mapitems" class="draggable" ng-dblclick="editItem(item)"
@@ -1063,6 +1064,59 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="row" ng-show="brokenImageDetected === true">
+                    <div class="col-lg-12">
+                        <div class="alert bg-warning-500 fade show"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <div class="alert-icon width-xs">
+                                    <div class="icon-stack icon-stack-xl">
+                                        <i class="fa-regular fa-image opacity-100"></i>
+                                        <i class="fa-solid fa-triangle-exclamation opacity-100 font-xs text-danger cornered cornered-lr"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="h5">
+                                        <?= __('Map background image is not available!'); ?>
+                                    </span>
+                                    <br>
+                                    <?= __('You can choose a new background or manually remove the orphaned link'); ?>
+                                </div>
+                                <button class="btn btn-primary btn-w-m fw-500 btn-sm waves-effect waves-themed"
+                                        type="button" ng-click="resetBackground()">
+                                    <?= __(' Remove the orphaned link'); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" ng-show="brokenImageDetected === false && map.Map.background !== null">
+                    <div class="col-lg-12">
+                        <div class="alert bg-primary-500 fade show"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <div class="alert-icon width-xs">
+                                    <div class="icon-stack icon-stack-xl">
+                                        <i class="fa-regular fa-image opacity-100"></i>
+                                        <i class="fa-solid fa-xmark opacity-100 font-xs text-danger cornered cornered-lr"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="h5">
+                                        <?= __('Remove background from map!'); ?>
+                                    </span>
+                                    <br>
+                                    <?= __('If no background image is desired, it can be removed here'); ?>
+                                </div>
+                                <button class="btn btn-danger btn-w-m fw-500 btn-sm waves-effect waves-themed"
+                                        type="button" ng-click="resetBackground()">
+                                    <?= __(' Remove background'); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-lg-12">
                         <?php echo __('Choose background image'); ?>
