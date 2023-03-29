@@ -139,7 +139,7 @@
                                  ng-repeat="servicetemplatecommandargumentvalue in sourceServicetemplate.Servicetemplate.servicetemplatecommandargumentvalues">
                                 <label
                                         for="Servicetemplate{{servicetemplatecommandargumentvalue.commandargument.human_name}}}Arg"
-                                        class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
+                                        class="col-xs-12 col-lg-offset-2 col-lg-10 control-label text-purple">
                                     {{servicetemplatecommandargumentvalue.commandargument.human_name}}
                                 </label>
                                 <div class="col-xs-12 col-lg-8">
