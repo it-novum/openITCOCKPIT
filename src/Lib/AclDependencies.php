@@ -464,7 +464,7 @@ class AclDependencies {
             ->dependency('Servicedependencies', 'add', 'Servicedependencies', 'loadContainers')
             ->dependency('Servicedependencies', 'add', 'Servicedependencies', 'loadElementsByContainerId')
             ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadContainers')
-            ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadElementsByContianerId');
+            ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadElementsByContainerId');
 
 
         $this
