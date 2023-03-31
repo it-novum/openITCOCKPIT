@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+/**
+ * @var boolean $isOAuth2
+ */
+
 $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 ?>
 <ol class="breadcrumb page-breadcrumb">
@@ -395,6 +400,24 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <?php echo __('Value imported from LDAP Server'); ?>
                             </div>
                         </div>
+
+                        <?php if ($isOAuth2): ?>
+                            <div class="form-group" ng-class="{'has-error': errors.is_oauth}">
+                                <div class="custom-control custom-checkbox  margin-bottom-10"
+                                     ng-class="{'has-error': errors.is_oauth}">
+
+                                    <input type="checkbox"
+                                           class="custom-control-input"
+                                           ng-true-value="1"
+                                           ng-false-value="0"
+                                           id="userIsOAuth"
+                                           ng-model="post.User.is_oauth">
+                                    <label class="custom-control-label" for="userIsOAuth">
+                                        <?php echo __('Enable login through oAuth2'); ?>
+                                    </label>
+                                </div>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="form-group" ng-class="{'has-error': errors.firstname}">
                             <label class="control-label">

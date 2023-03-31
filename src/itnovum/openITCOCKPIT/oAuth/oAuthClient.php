@@ -32,6 +32,8 @@ use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
+use Microsoft\Graph\Graph;
+use Microsoft\Graph\Model;
 
 class oAuthClient {
 
@@ -49,6 +51,11 @@ class oAuthClient {
     private $logoutUrl;
 
     /**
+     * @var array
+     */
+    private $config;
+
+    /**
      * oAuthClient constructor.
      * Basically just a wrapper class for League\OAuth2\Client\Provider\GenericProvider
      * to avoid copy&past of the Systemsettings stuff to different locations
@@ -58,14 +65,14 @@ class oAuthClient {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
-        $config = $SystemsettingsTable->getOAuthConfig();
+        $this->config = $SystemsettingsTable->getOAuthConfig();
 
         // Internal oAuth Test Server
         //$config = $this->getLocalTestConfig();
 
-        $this->Provider = $this->getAuthProvider($config);
+        $this->Provider = $this->getAuthProvider();
 
-        $this->logoutUrl = $config['FRONTEND.SSO.LOG_OFF_LINK'];
+        $this->logoutUrl = $this->config['FRONTEND.SSO.LOG_OFF_LINK'];
     }
 
     /**
@@ -111,24 +118,75 @@ class oAuthClient {
         return $this->Provider->getResourceOwner($token);
     }
 
+    /**
+     * @param AccessToken $accessToken
+     * @return mixed|string|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Microsoft\Graph\Exception\GraphException
+     */
+    public function getEmailAddressOfResourceOwner(AccessToken $accessToken) {
+        switch ($this->config['FRONTEND.SSO.AUTH_PROVIDER']) {
+            case 'AzureActiveDirectory':
+
+                $graph = new Graph();
+                $graph->setAccessToken($accessToken->getToken());
+
+                $azureUser = $graph->createRequest('GET', '/me?$select=displayName,mail,userPrincipalName')
+                    ->setReturnType(Model\User::class)
+                    ->execute();
+
+                /** @var \Microsoft\Graph\Model\User $azureUser */
+                // Returns "Max.Mustermann@it-novum.com"
+                return strtolower($azureUser->getMail());
+
+            default:
+                $resourceOwner = $this->getResourceOwner($accessToken);
+
+                $resourceOwner = $resourceOwner->toArray();
+
+                $emailFields = [
+                    'email',
+                    'mail',
+                    'e-mail'
+                ];
+
+                foreach ($emailFields as $emailField) {
+                    if (isset($resourceOwner[$emailField])) {
+                        return $resourceOwner[$emailField];
+                    }
+                }
+        }
+
+        throw new \Exception('oAuthClient::getEmailAddressOfResourceOwner() has not found a email address');
+    }
+
+    /**
+     * @return string
+     */
     public function getLogoutUrl() {
         return $this->logoutUrl;
     }
 
     /**
-     * @param array $config
+     * @return bool
+     */
+    public function hasLogoutUrl() {
+        return !empty($this->logoutUrl);
+    }
+
+    /**
      * @return GenericProvider
      */
-    protected function getAuthProvider(array $config) {
-        switch ($config['FRONTEND.SSO.AUTH_PROVIDER']) {
+    protected function getAuthProvider() {
+        switch ($this->config['FRONTEND.SSO.AUTH_PROVIDER']) {
             case 'PingIdentity':
                 return new GenericProvider([
-                    'clientId'                => $config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
-                    'clientSecret'            => $config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
+                    'clientId'                => $this->config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
+                    'clientSecret'            => $this->config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
                     'redirectUri'             => Router::url(['controller' => 'users', 'action' => 'login'], true), //Login screen of openITCOCKPIT itself
-                    'urlAuthorize'            => $config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
-                    'urlAccessToken'          => $config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
-                    'urlResourceOwnerDetails' => $config['FRONTEND.SSO.USER_ENDPOINT'],    // Where to get user information from
+                    'urlAuthorize'            => $this->config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
+                    'urlAccessToken'          => $this->config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
+                    'urlResourceOwnerDetails' => $this->config['FRONTEND.SSO.USER_ENDPOINT'],   // Where to get user information from
 
                     'accessTokenResourceOwnerId' => 'id',
                     'scopeSeparator'             => ' ',
@@ -140,27 +198,30 @@ class oAuthClient {
 
             case 'AzureActiveDirectory':
                 return new GenericProvider([
-                    'clientId'                => $config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
-                    'clientSecret'            => $config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
+                    'clientId'                => $this->config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
+                    'clientSecret'            => $this->config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
                     'redirectUri'             => Router::url(['controller' => 'users', 'action' => 'login'], true), //Login screen of openITCOCKPIT itself
-                    'urlAuthorize'            => $config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
-                    'urlAccessToken'          => $config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
-                    //'urlResourceOwnerDetails' => $config['FRONTEND.SSO.USER_ENDPOINT'],    // Where to get user information from
-                    'urlResourceOwnerDetails' => '',    // Where to get user information from
+                    'urlAuthorize'            => $this->config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
+                    'urlAccessToken'          => $this->config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
+                    'urlResourceOwnerDetails' => $this->config['FRONTEND.SSO.USER_ENDPOINT'],   // Where to get user information from
 
-                    //'accessTokenResourceOwnerId' => 'id',
-                    'scopeSeparator'             => ' ',
-                    'scopes'                     => 'openid profile offline_access user.read'
+                    'scopeSeparator' => ' ',
+                    'scopes'         => [
+                        'openid',
+                        'profile',
+                        'offline_access',
+                        'user.read'
+                    ]
                 ]);
 
             default:
                 return new GenericProvider([
-                    'clientId'                => $config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
-                    'clientSecret'            => $config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
+                    'clientId'                => $this->config['FRONTEND.SSO.CLIENT_ID'],       // The client ID assigned to you by the provider
+                    'clientSecret'            => $this->config['FRONTEND.SSO.CLIENT_SECRET'],   // The client password assigned to you by the provider
                     'redirectUri'             => Router::url(['controller' => 'users', 'action' => 'login'], true), //Login screen of openITCOCKPIT itself
-                    'urlAuthorize'            => $config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
-                    'urlAccessToken'          => $config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
-                    'urlResourceOwnerDetails' => $config['FRONTEND.SSO.USER_ENDPOINT']    // Where to get user information from
+                    'urlAuthorize'            => $this->config['FRONTEND.SSO.AUTH_ENDPOINT'],   //Login screen
+                    'urlAccessToken'          => $this->config['FRONTEND.SSO.TOKEN_ENDPOINT'],  //Where to get the access token from
+                    'urlResourceOwnerDetails' => $this->config['FRONTEND.SSO.USER_ENDPOINT']    // Where to get user information from
                 ]);
         }
     }

@@ -126,6 +126,7 @@
                                                                 value="session"><?php echo __('PHP session'); ?></option>
                                                             <option value="ldap"><?php echo __('PHP LDAP'); ?></option>
                                                             <option value="sso"><?php echo __('SSO oAuth2'); ?></option>
+                                                            <option value="sso_ldap"><?php echo __('SSO oAuth2 and LDAP'); ?></option>
                                                         </select>
                                                     </div>
                                                     <div ng-switch-when="FRONTEND.LDAP.TYPE">
