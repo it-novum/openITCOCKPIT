@@ -151,9 +151,16 @@ class Host {
             $this->hosttemplate_id = (int)$host['Host']['hosttemplate_id'];
         }
 
-        if (isset($host['Host']['active_checks_enabled'])) {
-            $this->active_checks_enabled = (bool)$host['Host']['active_checks_enabled'];
+        if (empty($host['Host']['active_checks_enabled']) && isset($host['Host']['hosttemplate']['active_checks_enabled'])) {
+            $this->active_checks_enabled = (bool)$host['Host']['hosttemplate']['active_checks_enabled'];
+        } else if (empty($host['Host']['active_checks_enabled']) && isset($host['Hosttemplate']['active_checks_enabled'])) {
+            $this->active_checks_enabled = (bool)$host['Hosttemplate']['active_checks_enabled'];
+        } else {
+            if (!empty($host['Host']['active_checks_enabled'])) {
+                $this->active_checks_enabled = (bool)$host['Host']['active_checks_enabled'];
+            }
         }
+
 
         if (isset($host['Host']['satellite_id'])) {
             $this->satelliteId = (int)$host['Host']['satellite_id'];
@@ -165,7 +172,7 @@ class Host {
 
         if (isset($host['Container'])) {
             //MySQL
-            $this->containerIds = \Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+            $this->containerIds = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
         }
 
         if (isset($host['HostsToContainers'])) {
@@ -178,7 +185,7 @@ class Host {
 
         if (isset($host['Host']['Container'])) {
             //MySQL belongsTo
-            $this->containerIds = \Hash::extract($host['Host']['Container'], '{n}.HostsToContainer.container_id');
+            $this->containerIds = Hash::extract($host['Host']['Container'], '{n}.HostsToContainer.container_id');
         }
 
         if (isset($host['Host']['container_ids'])) {
