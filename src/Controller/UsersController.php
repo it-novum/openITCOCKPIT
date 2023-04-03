@@ -246,11 +246,14 @@ class UsersController extends AppController {
             $user = $_user->toArray();
             $user['allow_edit'] = $this->hasRootPrivileges;
             if (!empty($user['samaccountname'])) {
-                $user['UserType'] = $types['LDAP_USER'];
+                $user['UserTypes'] = [$types['LDAP_USER']];
+                if ($user['is_oauth'] === true) {
+                    $user['UserTypes'][] = $types['OAUTH_USER'];
+                }
             } else if ($user['is_oauth'] === true) {
-                $user['UserType'] = $types['OAUTH_USER'];
+                $user['UserTypes'] = [$types['OAUTH_USER']];
             } else {
-                $user['UserType'] = $types['LOCAL_USER'];
+                $user['UserTypes'] = [$types['LOCAL_USER']];
             }
             if ($this->hasRootPrivileges === false) {
                 //Check permissions for non ROOT Users
@@ -374,19 +377,22 @@ class UsersController extends AppController {
 
         $types = $UsersTable->getUserTypesWithStyles();
         if ($isLdapUser) {
-            $UserType = $types['LDAP_USER'];
+            $UserTypes = [$types['LDAP_USER']];
+            if ($user['User']['is_oauth'] === true) {
+                $UserTypes[] = $types['OAUTH_USER'];
+            }
         } else if ($user['User']['is_oauth'] === true) {
-            $UserType = $types['OAUTH_USER'];
+            $UserTypes = [$types['OAUTH_USER']];
         } else {
-            $UserType = $types['LOCAL_USER'];
+            $UserTypes = [$types['LOCAL_USER']];
         }
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return user information
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
-            $this->set('UserType', $UserType);
+            $this->set('UserTypes', $UserTypes);
             $this->set('notPermittedContainerIds', $notPermittedContainerIds);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserType', 'notPermittedContainerIds']);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds']);
             return;
         }
 

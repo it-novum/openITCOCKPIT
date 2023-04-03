@@ -66,7 +66,7 @@ angular.module('openITCOCKPIT')
                     User: data
                 };
 
-                $scope.UserType = result.data.UserType;
+                $scope.UserTypes = result.data.UserTypes;
 
                 if($scope.isLdapUser){
                     // Load container permissions based on LDAP groups
