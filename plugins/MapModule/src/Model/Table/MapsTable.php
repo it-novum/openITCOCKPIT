@@ -2299,6 +2299,12 @@ class MapsTable extends Table {
                 'helplines'                       => [
                     'enabled' => true,
                     'size'    => 15
+                ],
+                'background'                      => [
+                    'position_x' => null,
+                    'position_y' => null,
+                    'width'      => null,
+                    'height'     => null
                 ]
             ]
         ];
@@ -2309,9 +2315,15 @@ class MapsTable extends Table {
      * @return array|mixed
      */
     public function getMapeditorSettings($config) {
+        $defaults = $this->getDefaultMapeditorSettings();
         if (empty($config)) {
-            return $this->getDefaultMapeditorSettings();
+            return $defaults;
         }
-        return json_decode($config, true);
+        $config = json_decode($config, true);
+
+        return Hash::merge(
+            $defaults,
+            $config
+        );
     }
 }

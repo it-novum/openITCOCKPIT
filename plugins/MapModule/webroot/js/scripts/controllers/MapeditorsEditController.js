@@ -24,7 +24,13 @@ angular.module('openITCOCKPIT')
                 enabled: true,
                 size: 15
             },
-            synchronizeGridAndHelplinesSize: true
+            synchronizeGridAndHelplinesSize: true,
+            background: {
+                position_x: null,
+                position_y: null,
+                width: null,
+                height: null
+            }
 
         };
 
@@ -1561,6 +1567,11 @@ angular.module('openITCOCKPIT')
                             $scope.saveSummaryItem('dragstop');
                             break;
 
+                        case 'mapBackground':
+                            $scope.Mapeditor.background.position_x = x;
+                            $scope.Mapeditor.background.position_y = y;
+                            break;
+
                         default:
                             console.log('Unknown map object type');
                             genericError();
@@ -1623,6 +1634,11 @@ angular.module('openITCOCKPIT')
                             $scope.saveSummaryItem('resizestop');
                             break;
 
+                        case 'mapBackground':
+                            $scope.Mapeditor.background.width = newWidth;
+                            $scope.Mapeditor.background.height = newHeight;
+                            break;
+
                         default:
                             console.log('Unknown map object type');
                             genericError();
@@ -1637,6 +1653,7 @@ angular.module('openITCOCKPIT')
                     var $this = $(this);
                     var id = $this.data('id');
                     var type = $this.data('type');
+                    console.log('test resizable-no-aspect-ratio');
 
                     var newWidth = parseInt(ui.size.width);
                     var newHeight = parseInt(ui.size.height);
@@ -1659,6 +1676,11 @@ angular.module('openITCOCKPIT')
                             $scope.saveGadget('resizestop');
                             break;
 
+                        case 'mapBackground':
+                            $scope.Mapeditor.background.width = newWidth;
+                            $scope.Mapeditor.background.height = newHeight;
+                            break;
+                            
                         default:
                             console.log('Unknown map object type');
                             genericError();

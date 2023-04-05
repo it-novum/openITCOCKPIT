@@ -235,3 +235,13 @@
 .invalid-image-src {
     color:#CC0000;
 }
+.resizable-background {
+    display: inline-block;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.resizable-background img {
+    width: 100%;
+    height: 100%;
+}

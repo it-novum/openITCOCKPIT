@@ -136,8 +136,12 @@
                              id="mainMapContainer">
                             <div id="mapContent" ng-if="Mapeditor.helplines.enabled"
                                  ng-class="getHelplinesClass()"></div>
-                            <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
-                                 ng-if="map.Map.background"/>
+                            <div class="resizable-no-aspect-ratio resizable-background draggable" ng-if="map.Map.background"
+                                 id="backgroundMap" data-type="mapBackground">
+                                <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
+                                     ng-if="map.Map.background"/>
+                            </div>
+
                             <div ng-repeat="item in map.Mapitems" class="draggable" ng-dblclick="editItem(item)"
                                  style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;"
                                  data-id="{{item.id}}" data-type="item" ng-show="item.display">
