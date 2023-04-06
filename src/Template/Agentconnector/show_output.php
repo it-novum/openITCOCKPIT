@@ -77,11 +77,8 @@
                                                 <?= __('openITCOCKPIT Monitoring Agent Output'); ?>
                                             </h4>
                                         </legend>
-                                        <div>
-                                            <textarea class="form-control code-font margin-top-10" readonly=""
-                                                      ng-model="outputAsJson"
-                                                      style="min-height: 580px; width: 100%;"></textarea>
-                                        </div>
+
+                                        <div id="jsoneditor" class="margin-top-10"></div>
                                     </fieldset>
                                 </div>
                             </div>
