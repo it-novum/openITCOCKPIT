@@ -22,9 +22,15 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<img ng-src="/map_module/img/backgrounds/{{map.Map.background}}" ng-if="map.Map.background" class="invalid-image-src"
-     alt="<?= __('{0} Map background image is not available!!!', '⚠'); ?>"/>
-
+<div ng-style="map.Mapeditor.background.width === null && {'width':'auto', 'height':'auto'}"
+     style="position:absolute; top: {{map.Mapeditor.background.position_y}}px; left: {{map.Mapeditor.background.position_x}}px;"
+     ng-if="map.Map.background"
+     id="backgroundMap" data-type="mapBackground">
+    <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
+         ng-style="map.Mapeditor.background.width !== null && {'width':map.Mapeditor.background.width+'px'}"
+         ng-if="map.Map.background" class="invalid-image-src"
+         alt="<?= __('{0} Map background image is not available!!!', '⚠'); ?>"/>
+</div>
 
 <div ng-repeat="item in map.Mapitems"
      style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}};"

@@ -2301,8 +2301,8 @@ class MapsTable extends Table {
                     'size'    => 15
                 ],
                 'background'                      => [
-                    'position_x' => null,
-                    'position_y' => null,
+                    'position_x' => 0,
+                    'position_y' => 0,
                     'width'      => null,
                     'height'     => null
                 ]

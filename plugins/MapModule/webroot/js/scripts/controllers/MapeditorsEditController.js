@@ -26,12 +26,11 @@ angular.module('openITCOCKPIT')
             },
             synchronizeGridAndHelplinesSize: true,
             background: {
-                position_x: null,
-                position_y: null,
+                position_x: 0,
+                position_y: 0,
                 width: null,
                 height: null
             }
-
         };
 
         $scope.helplines = {
@@ -1457,6 +1456,11 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.resetBackgroundSizeSettings = function(){
+            $scope.Mapeditor.background.width = null;
+            $scope.Mapeditor.background.height = null;
+        };
+
         var makeDraggable = function(){
             var options = {
                 grid: false,
@@ -1653,7 +1657,6 @@ angular.module('openITCOCKPIT')
                     var $this = $(this);
                     var id = $this.data('id');
                     var type = $this.data('type');
-                    console.log('test resizable-no-aspect-ratio');
 
                     var newWidth = parseInt(ui.size.width);
                     var newHeight = parseInt(ui.size.height);
@@ -1680,7 +1683,7 @@ angular.module('openITCOCKPIT')
                             $scope.Mapeditor.background.width = newWidth;
                             $scope.Mapeditor.background.height = newHeight;
                             break;
-                            
+
                         default:
                             console.log('Unknown map object type');
                             genericError();
