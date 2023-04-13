@@ -32,6 +32,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
+use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
 
 class CmdController extends AppController {
 
@@ -174,6 +175,86 @@ class CmdController extends AppController {
         $this->viewBuilder()->setOption('serialize', [
             'message',
             'args'
+        ]);
+    }
+
+    public function submit_bulk_naemon(){
+        if (!$this->request->is('post') && !$this->request->is('get')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->request->is('get')) {
+            $data = $this->request->getQueryParams();
+        }
+
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+        }
+
+        if (!isset($data)) {
+            throw new BadRequestException();
+        }
+        $externalNaemonCommands = new ExternalCommands();
+        foreach($data as $key => $value){
+            switch ($value['command']) {
+                case 'submitHoststateAck':
+                    $result =  $externalNaemonCommands->setHostAck(['hostUuid' => $value['hostUuid'], 'comment' => $value['comment'], 'author' => $value['author'], 'sticky' => $value['sticky'], 'type' => $value['hostAckType'], 'notify' => $value['notify']]);
+                    break;
+                case 'submitServicestateAck':
+                    $result =  $externalNaemonCommands->setServiceAck(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid'], 'comment' => $value['comment'], 'author' => $value['author'], 'sticky' => $value['sticky'], 'notify' => $value['notify']]);
+                    break;
+                case 'commitPassiveServiceResult':
+                    $result =  $externalNaemonCommands->passiveTransferServiceCheckresult(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid'], 'comment' => $value['plugin_output'], 'state' => $value['status_code'], 'forceHardstate' => $value['forceHardstate'], 'repetitions' => $value['maxCheckAttempts']]);
+                    break;
+                default:
+                    $result = false;
+                    break;
+            }
+            if(!$result) {
+                throw new BadRequestException('Could not send command');
+            }
+        }
+        $this->set('message', __('Commands added successfully to queue'));
+        $this->viewBuilder()->setOption('serialize', [
+            'message',
+        ]);
+    }
+
+    public function submit_naemon(){
+        if (!$this->request->is('post') && !$this->request->is('get')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->request->is('get')) {
+            $data = $this->request->getQueryParams();
+        }
+
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+        }
+
+        if (!isset($data)) {
+            throw new BadRequestException();
+        }
+
+        if (isset($data['apikey'])) {
+            unset($data['apikey']);
+        }
+        $externalNaemonCommands = new ExternalCommands();
+
+        switch ($data['command']) {
+            case 'submitHoststateAck':
+               $result =  $externalNaemonCommands->setHostAck(['hostUuid' => $data['hostUuid'], 'comment' => $data['comment'], 'author' => $data['author'], 'sticky' => $data['sticky'], 'type' => $data['hostAckType'], 'notify' => $data['notify']]);
+                break;
+            default:
+                break;
+        }
+        if(!$result) {
+            throw new BadRequestException('Could not send command');
+        }
+        $this->set('message', __('Command added successfully to queue'));
+        $this->viewBuilder()->setOption('serialize', [
+            'message',
         ]);
     }
 
