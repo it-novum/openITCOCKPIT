@@ -206,6 +206,9 @@ class CmdController extends AppController {
                 case 'commitPassiveServiceResult':
                     $result =  $externalNaemonCommands->passiveTransferServiceCheckresult(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid'], 'comment' => $value['plugin_output'], 'state' => $value['status_code'], 'forceHardstate' => $value['forceHardstate'], 'repetitions' => $value['maxCheckAttempts']]);
                     break;
+                case 'commitPassiveResult':
+                    $result =  $externalNaemonCommands->passiveTransferHostCheckresult(['uuid' => $value['hostUuid'], 'comment' => $value['plugin_output'], 'state' => $value['status_code'], 'forceHardstate' => $value['forceHardstate'], 'repetitions' => $value['maxCheckAttempts']]);
+                    break;
                 default:
                     $result = false;
                     break;
