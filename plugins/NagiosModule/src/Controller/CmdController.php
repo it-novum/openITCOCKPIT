@@ -220,44 +220,6 @@ class CmdController extends AppController {
         ]);
     }
 
-    public function submit_naemon(){
-        if (!$this->request->is('post') && !$this->request->is('get')) {
-            throw new MethodNotAllowedException();
-        }
-
-        if ($this->request->is('get')) {
-            $data = $this->request->getQueryParams();
-        }
-
-        if ($this->request->is('post')) {
-            $data = $this->request->getData();
-        }
-
-        if (!isset($data)) {
-            throw new BadRequestException();
-        }
-
-        if (isset($data['apikey'])) {
-            unset($data['apikey']);
-        }
-        $externalNaemonCommands = new ExternalCommands();
-
-        switch ($data['command']) {
-            case 'submitHoststateAck':
-               $result =  $externalNaemonCommands->setHostAck(['hostUuid' => $data['hostUuid'], 'comment' => $data['comment'], 'author' => $data['author'], 'sticky' => $data['sticky'], 'type' => $data['hostAckType'], 'notify' => $data['notify']]);
-                break;
-            default:
-                break;
-        }
-        if(!$result) {
-            throw new BadRequestException('Could not send command');
-        }
-        $this->set('message', __('Command added successfully to queue'));
-        $this->viewBuilder()->setOption('serialize', [
-            'message',
-        ]);
-    }
-
     /**
      * Used by OTRS
      * Only supported command is ACKNOWLEDGE_OTRS_HOST_SVC_PROBLEM.
