@@ -337,7 +337,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.servicetemplatecommandargumentvalue}"
                                      ng-repeat="servicetemplatecommandargumentvalue in post.Servicetemplate.servicetemplatecommandargumentvalues">
-                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-10 control-label text-purple">
                                         {{servicetemplatecommandargumentvalue.commandargument.human_name}}
                                     </label>
                                     <div class="col-xs-12 col-lg-8">
@@ -814,7 +814,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.servicetemplateeventcommandargumentvalue}"
                                      ng-repeat="servicetemplateeventcommandargumentvalue in post.Servicetemplate.servicetemplateeventcommandargumentvalues">
-                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-10 control-label text-purple">
                                         {{servicetemplateeventcommandargumentvalue.commandargument.human_name}}
                                     </label>
                                     <div class="col-xs-12 col-lg-8">

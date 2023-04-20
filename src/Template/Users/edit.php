@@ -54,7 +54,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <span class="badge border margin-right-10 {{UserType.class}} {{UserType.color}}">
+                    <span ng-repeat="UserType in UserTypes"
+                        class="badge border margin-right-10 {{UserType.class}} {{UserType.color}}">
                         {{UserType.title}}
                     </span>
 

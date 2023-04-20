@@ -309,7 +309,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.hosttemplatecommandargumentvalues}"
                                      ng-repeat="hosttemplatecommandargumentvalue in post.Hosttemplate.hosttemplatecommandargumentvalues">
-                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-10 control-label text-purple">
                                         {{hosttemplatecommandargumentvalue.commandargument.human_name}}
                                     </label>
                                     <div class="col-xs-12 col-lg-8">

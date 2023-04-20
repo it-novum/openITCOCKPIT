@@ -13,6 +13,8 @@ angular.module('openITCOCKPIT')
         $scope.maxZIndex = 0;
         $scope.clickCount = 1;
 
+        $scope.brokenImageDetected = false;
+
         $scope.Mapeditor = {
             grid: {
                 enabled: true,
@@ -69,6 +71,15 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.openChangeMapBackgroundModal = function(){
+            if($scope.map.Map.background !== null && $scope.map.Map.background.length > 0){
+                if($scope.backgrounds.length === 0){
+                    $scope.brokenImageDetected = true;
+                }else{
+                    $scope.brokenImageDetected = _.filter(
+                        $scope.backgrounds, (background) => background.image === $scope.map.Map.background).length === 0;
+                }
+            }
+
             $('#changeBackgroundModal').modal('show');
         };
 
@@ -318,6 +329,26 @@ angular.module('openITCOCKPIT')
                     text: text,
                     timeout: 3500
                 }).show();
+            });
+        };
+
+        $scope.resetBackground = function(){
+            $http.post("/map_module/mapeditors/resetBackground.json?angular=true",
+                {
+                    'Map': {
+                        id: $scope.id
+                    }
+                }
+            ).then(function(){
+                $scope.errors = {};
+                $scope.map.Map.background = null;
+                $scope.brokenImageDetected = false;
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
             });
         };
 

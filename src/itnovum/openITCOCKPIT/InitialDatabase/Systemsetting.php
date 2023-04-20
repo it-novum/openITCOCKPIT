@@ -861,6 +861,30 @@ class Systemsetting extends Importer {
                 'created'  => '2023-03-16 13:45:00',
                 'modified' => '2023-03-16 13:45:00'
             ],
+            (int)101  => [
+                'key'      => 'INIT.EVENT_COLLECTD_RESTART',
+                'value'    => 'systemctl restart event-collectd',
+                'info'     => 'Command to restart the Event-Collectd daemon of openITCOCKPIT',
+                'section'  => 'INIT',
+                'created'  => '2020-01-29 09:28:17',
+                'modified' => '2020-01-29 09:28:17'
+            ],
+            (int)102  => [
+                'key'      => 'INIT.EVENT_COLLECTD_RELOAD',
+                'value'    => 'systemctl reload event-collectd',
+                'info'     => 'Command to reload the the Event-Collectd daemon of openITCOCKPIT',
+                'section'  => 'INIT',
+                'created'  => '2020-01-29 09:28:17',
+                'modified' => '2020-01-29 09:28:17'
+            ],
+            (int)103  => [
+                'key'      => 'INIT.EVENT_COLLECTD_STATUS',
+                'value'    => 'systemctl status event-collectd',
+                'info'     => 'Command to get the current status of the Event-Collectd daemon of openITCOCKPIT',
+                'section'  => 'INIT',
+                'created'  => '2020-01-29 09:28:17',
+                'modified' => '2020-01-29 09:28:17'
+            ],
         ];
 
         return $data;

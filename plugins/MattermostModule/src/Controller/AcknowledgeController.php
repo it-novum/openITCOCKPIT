@@ -69,7 +69,7 @@ class AcknowledgeController extends AppController {
             'command'     => 'ACKNOWLEDGE_HOST_PROBLEM',
             'parameters'  => [
                 'hostUuid'   => $hostUuid,
-                'sticky'     => 1,
+                'sticky'     => 2, // 2 = sticky with Nagios Core, 1 = Sticky with Naemon Core, 2 works for both :)
                 'notify'     => 0, // do not enable - loop!
                 'persistent' => 1,
                 'author'     => $data['user_name'],
@@ -129,7 +129,7 @@ class AcknowledgeController extends AppController {
             'parameters'  => [
                 'hostUuid'    => $hostUuid,
                 'serviceUuid' => $serviceUuid,
-                'sticky'      => 1,
+                'sticky'      => 2, // 2 = sticky with Nagios Core, 1 = Sticky with Naemon Core, 2 works for both :)
                 'notify'      => 0, // do not enable - loop!
                 'persistent'  => 1,
                 'author'      => $data['user_name'],

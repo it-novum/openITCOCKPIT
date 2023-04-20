@@ -53,9 +53,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="(weekNumber, days) in dateDetails.days">
-                <th class="text-primary">{{weekNumber}}</th>
-                <td ng-repeat="dayDetail in days"
+            <tr ng-repeat="week in dateDetails.days">
+                <th class="text-primary">{{week.cw}}</th>
+                <td ng-repeat="dayDetail in week.days"
                     ng-class="{'bg-primary-20-alpha': dayDetail.weekday === 6, 'bg-primary-40-alpha': dayDetail.weekday === 7}">
                     <span ng-class="{'badge badge-primary': dayDetail.day === dateDetails.dayNumber}">
                         {{dayDetail.day}}

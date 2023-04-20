@@ -151,6 +151,9 @@
                                 <?php echo __('Service name'); ?>
                             </th>
 
+                            <td class="no-sort">
+                                <?php echo __('Service type'); ?>
+                            </td>
 
                             <th class="no-sort text-center editItemWidth width-50">
                                 <i class="fa fa-gear"></i>
@@ -205,6 +208,13 @@
                                 <?php endif; ?>
                             </td>
 
+                            <td>
+                                    <span
+                                        class="badge border margin-right-10 {{service.ServiceType.class}} {{service.ServiceType.color}}">
+                                            <i class="{{service.ServiceType.icon}}"></i>
+                                            {{service.ServiceType.title}}
+                                    </span>
+                            </td>
 
                             <td class="width-50">
                                 <div class="btn-group btn-group-xs" role="group">

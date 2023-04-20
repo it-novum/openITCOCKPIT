@@ -39,7 +39,32 @@
 </ol>
 
 <massdelete
-    help="<?= __('By deleting, the corresponding openITCOCKPIT Agent is not able to send data to the openITCOCKPIT server anymore.'); ?>"></massdelete>
+    help="<?= __('Warning! You also need to delete the corresponding record on the Satellite System!'); ?>"></massdelete>
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="alert alert-primary border-faded">
+            <div class="d-flex align-items-center">
+                <div class="alert-icon">
+                    <span class="icon-stack icon-stack-md">
+                        <i class="base-7 icon-stack-3x color-info-600"></i>
+                        <i class="fas fa-info icon-stack-1x text-white"></i>
+                    </span>
+                </div>
+                <div class="flex-1 color-info-600">
+                    <span class="h5 color-info-600">
+                        <?= __('Information may be not complete'); ?>
+                    </span>
+                    <br>
+                    <?= __('This list will only show openITCOCKPIT Monitoring Agents, which are running in push mode and are related to the Import Module.'); ?>
+                    <?= __('In case the Import Module is not in use, this list is probably empty.'); ?>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-xl-12">
@@ -47,7 +72,7 @@
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Agents overview'); ?>
-                    <span class="fw-300"><i><?php echo __('Push mode'); ?></i></span>
+                    <span class="fw-300"><i><?php echo __('Push mode via a Satellite system'); ?></i></span>
                 </h2>
 
                 <div class="panel-toolbar">
@@ -62,7 +87,7 @@
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('overview', 'agentconnector')): ?>
                             <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" ui-sref="AgentconnectorsPush" role="tab">
+                                <a class="nav-link" data-toggle="tab" ui-sref="AgentconnectorsPush" role="tab">
                                     <i class="fas fa-upload"></i>&nbsp;
                                     <?php echo __('Push'); ?>
                                 </a>
@@ -71,7 +96,7 @@
                         <?php if (\Cake\Core\Plugin::isLoaded('DistributeModule') && \Cake\Core\Plugin::isLoaded('ImportModule')): ?>
                             <?php if ($this->Acl->hasPermission('overview', 'agentconnector')): ?>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" ui-sref="AgentconnectorsPushSatellite"
+                                    <a class="nav-link active" data-toggle="tab" ui-sref="AgentconnectorsPushSatellite"
                                        role="tab">
                                         <div class="icon-stack">
                                             <i class="fas fa-satellite opacity-100 "></i>
@@ -173,26 +198,31 @@
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Assigned host'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('PushAgents.uuid')">
-                                    <i class="fa" ng-class="getSortClass('PushAgents.uuid')"></i>
+                                <th class="no-sort" ng-click="orderBy('SatellitePushAgents.uuid')">
+                                    <i class="fa" ng-class="getSortClass('SatellitePushAgents.uuid')"></i>
                                     <?php echo __('Agent UUID'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('PushAgents.hostname')">
-                                    <i class="fa" ng-class="getSortClass('PushAgents.hostname')"></i>
+                                <th class="no-sort" ng-click="orderBy('SatellitePushAgents.hostname')">
+                                    <i class="fa" ng-class="getSortClass('SatellitePushAgents.hostname')"></i>
                                     <?php echo __('Agent Hostname'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('PushAgents.ipaddress')">
-                                    <i class="fa" ng-class="getSortClass('PushAgents.ipaddress')"></i>
+                                <th class="no-sort" ng-click="orderBy('SatellitePushAgents.ipaddress')">
+                                    <i class="fa" ng-class="getSortClass('SatellitePushAgents.ipaddress')"></i>
                                     <?php echo __('Agent IP address'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('PushAgents.hostname')">
-                                    <i class="fa" ng-class="getSortClass('PushAgents.hostname')"></i>
+                                <th class="no-sort" ng-click="orderBy('SatellitePushAgents.hostname')">
+                                    <i class="fa" ng-class="getSortClass('SatellitePushAgents.hostname')"></i>
                                     <?php echo __('Remote address'); ?>
                                 </th>
 
-                                <th class="no-sort" ng-click="orderBy('PushAgents.last_update')">
-                                    <i class="fa" ng-class="getSortClass('PushAgents.last_update')"></i>
+                                <th class="no-sort" ng-click="orderBy('SatellitePushAgents.last_update')">
+                                    <i class="fa" ng-class="getSortClass('SatellitePushAgents.last_update')"></i>
                                     <?php echo __('Last update'); ?>
+                                </th>
+
+                                <th class="no-sort" ng-click="orderBy('SatellitePushAgents.satellite_id')">
+                                    <i class="fa" ng-class="getSortClass('SatellitePushAgents.satellite_id')"></i>
+                                    <?php echo __('Satellite'); ?>
                                 </th>
 
                                 <th class="no-sort text-center">
@@ -239,16 +269,19 @@
                                 <td>
                                     {{ agent.last_update}}
                                 </td>
+                                <td>
+                                    Herbert satellite
+                                </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                                            <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard({pushAgentId: agent.id})'}}"
-                                               ng-if="agent.allow_edit"
+                                            <a ui-sref="AgentconnectorsConfig({hostId: agent.Hosts.id})"
+                                               ng-if="agent.allow_edit && agent.Hosts.id"
                                                class="btn btn-default btn-lower-padding">
                                                 <i ng-class="{'fa fa-cog': agent.Hosts.id, 'fas fa-link': !agent.Hosts.id}"></i>
                                             </a>
                                             <a href="javascript:void(0);"
-                                               ng-if="!agent.allow_edit"
+                                               ng-if="!agent.allow_edit || !agent.Hosts.id"
                                                class="btn btn-default btn-lower-padding disabled">
                                                 <i class="fa fa-cog"></i>
                                             </a>
@@ -263,21 +296,8 @@
                                             <i class="caret"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
-                                            <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
-                                                <a ui-sref="{{agent.Hosts.id?'AgentconnectorsConfig({hostId: agent.Hosts.id})':'AgentconnectorsWizard({pushAgentId: agent.id})'}}"
-                                                   ng-if="agent.allow_edit"
-                                                   class="dropdown-item">
-                                                    <i ng-class="{'fa fa-cog': agent.Hosts.id, 'fas fa-link': !agent.Hosts.id}"></i>
-                                                    <span ng-show="agent.Hosts.id">
-                                                        <?php echo __('Edit'); ?>
-                                                    </span>
-                                                    <span ng-hide="agent.Hosts.id">
-                                                        <?php echo __('Assign to host'); ?>
-                                                    </span>
-                                                </a>
-                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('showOutput', 'agentconnector')): ?>
-                                                <a ui-sref="AgentconnectorsShowOutput({mode: 'push',id: agent.id})"
+                                                <a ui-sref="AgentconnectorsShowOutput({mode: 'push_satellite',id: agent.id})"
                                                    class="dropdown-item">
                                                     <i class="fab fa-js"></i>
                                                     <?php echo __('Show received data'); ?>

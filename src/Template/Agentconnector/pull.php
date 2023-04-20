@@ -39,7 +39,7 @@
 </ol>
 
 <massdelete
-        help="<?= __('Only the configuration for the openITCOCKPIT Agent will be deleted. Not the host itself.'); ?>"></massdelete>
+    help="<?= __('Only the configuration for the openITCOCKPIT Agent will be deleted. Not the host itself.'); ?>"></massdelete>
 
 <div class="row">
     <div class="col-xl-12">
@@ -67,6 +67,21 @@
                                     <?php echo __('Push'); ?>
                                 </a>
                             </li>
+                        <?php endif; ?>
+                        <?php if (\Cake\Core\Plugin::isLoaded('DistributeModule') && \Cake\Core\Plugin::isLoaded('ImportModule')): ?>
+                            <?php if ($this->Acl->hasPermission('overview', 'agentconnector')): ?>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" ui-sref="AgentconnectorsPushSatellite"
+                                       role="tab">
+                                        <div class="icon-stack">
+                                            <i class="fas fa-satellite opacity-100 "></i>
+                                            <i class="fas fa-upload opacity-100 fa-xs text-primary cornered cornered-lr"></i>
+                                        </div>
+                                        &nbsp;
+                                        <?php echo __('Push via Satellite (Import Module)'); ?>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </ul>
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">

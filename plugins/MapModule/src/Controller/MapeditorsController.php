@@ -1202,7 +1202,13 @@ class MapeditorsController extends AppController {
         $this->set('maxUploadLimit', $FileUploadSize->toArray());
         $this->set('max_z_index', $MapForAngular->getMaxZIndex());
         $this->set('layers', $MapForAngular->getLayers());
-        $this->viewBuilder()->setOption('serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers', 'config']);
+        $this->viewBuilder()->setOption('serialize', [
+            'map',
+            'maxUploadLimit',
+            'max_z_index',
+            'layers',
+            'config'
+        ]);
     }
 
     public function backgroundImages() {
@@ -1817,6 +1823,40 @@ class MapeditorsController extends AppController {
         ]);
 
         $this->viewBuilder()->setOption('serialize', ['Map']);
+    }
+
+    public function resetBackground() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var MapsTable $MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
+        $id = $this->request->getData('Map.id');
+        if (!$MapsTable->existsById($id)) {
+            throw new NotFoundException();
+        }
+        $map = $MapsTable->get($id, [
+            'contain' => [
+                'Containers',
+                'Mapgadgets',
+                'Mapicons',
+                'Mapitems',
+                'Maplines',
+                'Maptexts',
+                'Mapsummaryitems'
+            ]
+        ]);
+
+        $map->background = null;
+        $MapsTable->save($map);
+
+        if ($map->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $map->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+        }
     }
 
     public function getIcons() {

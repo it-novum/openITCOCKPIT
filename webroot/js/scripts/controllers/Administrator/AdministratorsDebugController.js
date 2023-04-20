@@ -17,6 +17,8 @@ angular.module('openITCOCKPIT')
 
         var reloadInterval = null;
 
+        $scope.hasXdebugCookie = $.cookie('XDEBUG_TRIGGER') !== undefined;
+
         var initTooltip = function(){
             var previousPoint = null;
             var $graph_data_tooltip = $('#graph_data_tooltip');
@@ -308,6 +310,16 @@ angular.module('openITCOCKPIT')
         $scope.$on('$destroy', function(){
             $scope.stop();
         });
+
+        $scope.setXdebugCookie = function(){
+            $.cookie('XDEBUG_TRIGGER', 'true');
+            $scope.hasXdebugCookie = true;
+        };
+
+        $scope.removeXdebugCookie = function(){
+            $.removeCookie('XDEBUG_TRIGGER');
+            $scope.hasXdebugCookie = false;
+        };
 
         //On page load
         $scope.loadTimezone();

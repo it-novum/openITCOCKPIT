@@ -125,6 +125,14 @@ abstract class Acknowledgement {
     }
 
     /**
+     * In the statusengine_host_acknowledgements and statusengine_service_acknowledgements tables the field acknowledgement_type
+     * determines if the acknowledgement corresponds to a host or service
+     * 0 = HOST_ACKNOWLEDGEMENT
+     * 1 = SERVICE_ACKNOWLEDGEMENT
+     *
+     * This is a different behavior than the statusengine_hoststatus and statusengine_servicestatus tables have
+     * This is already a mess in the Naemon Core itself :(
+     *
      * @return int
      */
     public function getAcknowledgementType() {
@@ -161,6 +169,8 @@ abstract class Acknowledgement {
     }
 
     /**
+     * This field is only available in the statusengine_host_acknowledgements and statusengine_service_acknowledgements tables
+     *
      * @return boolean
      */
     public function isSticky() {

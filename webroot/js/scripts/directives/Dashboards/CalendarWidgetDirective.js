@@ -23,6 +23,7 @@ angular.module('openITCOCKPIT').directive('calendarWidget', function($http){
                 }).then(function(result){
                     $scope.init = false;
                     $scope.dateDetails = result.data.dateDetails;
+
                 });
             };
 

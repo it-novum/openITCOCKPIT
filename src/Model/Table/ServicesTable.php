@@ -435,7 +435,7 @@ class ServicesTable extends Table {
 
         $validator
             ->integer('freshness_threshold')
-            ->greaterThan('check_period_id', 0, __('This field cannot be 0'))
+            ->greaterThan('freshness_threshold', 0, __('This field cannot be 0'))
             ->allowEmptyString('freshness_threshold', null, true);
 
         return $validator;
@@ -1718,6 +1718,7 @@ class ServicesTable extends Table {
                 'Services.host_id',
                 'Services.disabled',
                 'Services.active_checks_enabled',
+                'Services.service_type',
                 'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.id',
@@ -2074,7 +2075,7 @@ class ServicesTable extends Table {
                 $compareValue = explode(',', $compareValue);
             }
             $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
-            $where[]  = new Comparison(
+            $where[] = new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
                 $compareValue,
                 'string',
@@ -3811,6 +3812,15 @@ class ServicesTable extends Table {
             'icon'  => 'fa fa-user-secret'
         ];
 
+        if (Plugin::isLoaded('ImportModule')) {
+            $types[EXTERNAL_SERVICE] = [
+                'title' => __('External service'),
+                'color' => 'text-external',
+                'class' => 'border-external',
+                'icon'  => 'fa-solid fa-tower-observation'
+            ];
+        }
+
         return $types;
     }
 
@@ -5049,5 +5059,30 @@ class ServicesTable extends Table {
      */
     private function isValidRegularExpression($regEx) {
         return @preg_match('`' . $regEx . '`', '') !== false;
+    }
+
+    /**
+     * @param $id
+     * @param bool $enableHydration
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getActiveServicesWithServicetemplateByHostId($id, $enableHydration = true) {
+        $query = $this->find();
+        $query->select([
+            'Services.id',
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+        ])
+            ->contain('Servicetemplates')
+            ->where([
+                'Services.host_id'  => $id,
+                'Services.disabled' => 0
+            ])
+            ->order([
+                'servicename',
+                'Services.id'
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+        return $query;
     }
 }

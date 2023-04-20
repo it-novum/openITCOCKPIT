@@ -38,6 +38,7 @@ use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\PushAgentsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Core\Exception\MissingPluginException;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
@@ -53,6 +54,7 @@ use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -176,6 +178,56 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['agents']);
     }
 
+    public function push_satellite() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        if (!Plugin::isLoaded('DistributeModule') || !Plugin::isLoaded('ImportModule')) {
+            throw new MissingPluginException('DistributeModule or ImportModule is not loaded');
+        }
+
+        /** @var \ImportModule\Model\Table\SatellitePushAgentsTable $SatellitePushAgentsTable */
+        $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+
+
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Hosts.name'
+            ],
+            'bool' => [
+                'hasHostAssignment'
+            ]
+        ]);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $GenericFilter->getPage());
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        $agents = $SatellitePushAgentsTable->getSatellitePushAgents($GenericFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($agents as $index => $agent) {
+            $agents[$index]['last_update'] = $UserTime->format($agent['last_update']);
+            $agents[$index]['allow_edit'] = true;
+            if (!empty($agent['host']) && $this->hasRootPrivileges === false) {
+
+                $containerIds = explode(',', $agent['container_ids']);
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
+
+                $agents[$index]['allow_edit'] = $allowEdit;
+            }
+        }
+
+        $this->set('agents', $agents);
+        $this->viewBuilder()->setOption('serialize', ['agents']);
+    }
+
     /**
      * @param null $id
      */
@@ -271,13 +323,76 @@ class AgentconnectorController extends AppController {
         return;
     }
 
+    /**
+     * @param null $id
+     */
+    public function delete_satellite_push_agent($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!Plugin::isLoaded('DistributeModule') || !Plugin::isLoaded('ImportModule')) {
+            throw new MissingPluginException('DistributeModule or ImportModule is not loaded');
+        }
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        /** @var \ImportModule\Model\Table\SatellitePushAgentsTable $SatellitePushAgentsTable */
+        $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+
+
+        if (!$SatellitePushAgentsTable->existsById($id)) {
+            throw new NotFoundException(__('Satellite Push Agent config not found'));
+        }
+
+        $satellitePushAgent = $SatellitePushAgentsTable->get($id, [
+            'contain' => [
+                'Agentconfigs'
+            ]
+        ]);
+
+        if (!empty($satellitePushAgent->get('agentconfig'))) {
+            // SatellitePushAgent has a host assignment via the Agentconfig.
+            // Check permissions if the user is allowed to delete it.
+
+            $hostId = $satellitePushAgent->get('agentconfig')->get('host_id');
+            $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+
+            if (!$this->allowedByContainerId($host->getContainerIds(), true)) {
+                $this->render403();
+                return;
+            }
+        }
+
+        // If the SatellitePushAgent has no host assignment anyone can delete it
+        $agentConfig = $satellitePushAgent->get('agentconfig');
+
+        if ($SatellitePushAgentsTable->delete($satellitePushAgent)) {
+            if (!empty($agentConfig)) {
+                $AgentconfigsTable->delete($agentConfig);
+            }
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+
+            return;
+        }
+
+        $this->response = $this->response->withStatus(400);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        return;
+    }
+
     public function showOutput() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
         }
 
-        $isPullMode = $this->request->getQuery('mode', 'pull') === 'pull';
+        $mode = $this->request->getQuery('mode', 'pull');
         $id = $this->request->getQuery('id', 0);
 
         $host = [];
@@ -290,7 +405,7 @@ class AgentconnectorController extends AppController {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        if ($isPullMode === true) {
+        if ($mode === 'pull') {
             // The Agent is running in Pull mode so we have an host association and an agent config.
 
             $hostId = $id;
@@ -318,6 +433,45 @@ class AgentconnectorController extends AppController {
             $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
             $outputAsArray = $AgentHttpClient->getResults();
             $outputAsJson = json_encode($outputAsArray, JSON_PRETTY_PRINT);
+        } else if ($mode === 'push_satellite') {
+            // The Agent is running in Push mode from a satellite via the Import Module
+            // Agents from a Satellite (without the Import Module) are not handled by this
+            if (!Plugin::isLoaded('DistributeModule') || !Plugin::isLoaded('ImportModule')) {
+                throw new MissingPluginException('DistributeModule or ImportModule is not loaded');
+            }
+
+            /** @var \ImportModule\Model\Table\SatellitePushAgentsTable $SatellitePushAgentsTable */
+            $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+
+            $pushAgentId = $id;
+            if (!$SatellitePushAgentsTable->existsById($pushAgentId)) {
+                throw new NotFoundException();
+            }
+
+            $record = $SatellitePushAgentsTable->get($pushAgentId);
+
+            //Has this agent already a configuration?
+            if ($record->agentconfig_id !== null && $AgentconfigsTable->existsById($record->agentconfig_id)) {
+                $configEntity = $AgentconfigsTable->get($record->agentconfig_id);
+
+                /** @var Host $host */
+                $host = $HostsTable->getHostByIdForPermissionCheck($configEntity->host_id);
+                if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+                    $this->render403();
+                    return;
+                }
+
+                $AgentConfiguration = new AgentConfiguration();
+                $config = $AgentConfiguration->unmarshal($configEntity->config);
+            }
+
+            $checkresults = $record->checkresults;
+            if (empty($checkresults)) {
+                $checkresults = '[]';
+            }
+
+            $outputAsJson = json_encode(json_decode($checkresults, true), JSON_PRETTY_PRINT);
+
         } else {
             // Agent is running in Push mode. Maybe has no config and host yet
             /** @var PushAgentsTable $PushAgentsTable */
@@ -795,8 +949,9 @@ class AgentconnectorController extends AppController {
 
 
                 $pushAgentsForSelectbox[] = [
-                    'id'   => $pushAgent['id'],
-                    'name' => $name
+                    'id'         => $pushAgent['id'],
+                    'agent_uuid' => $pushAgent['uuid'],
+                    'name'       => $name
                 ];
             }
 
@@ -811,6 +966,7 @@ class AgentconnectorController extends AppController {
 
         if ($this->request->is('post')) {
             $pushAgentId = (int)$this->request->getData('pushagent.id', 0);
+            $agentUuid = $this->request->getData('pushagent.agent_uuid', 'Unknown');
             if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
                 // Send corresponding HostUuid to the Satellite so the satellite
                 // knows which Agent monitors which host.
@@ -836,6 +992,15 @@ class AgentconnectorController extends AppController {
                     'oitc_agent_assign_host',
                     $host->satellite_id,
                     $NSTAOptions);
+
+                if (Plugin::isLoaded('ImportModule') && UUID::is_valid($agentUuid)) {
+                    // ITC-2932
+                    // Save manual assigment in SatellitePushAgentsTable so that the Import Module knows, this Agent got assigned by a user
+                    /** @var \ImportModule\Model\Table\SatellitePushAgentsTable $SatellitePushAgentsTable */
+                    $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+                    $SatellitePushAgentsTable->manuallyAssignSatellitePushAgentIfExistsByUuid($agentUuid, $config->id);
+                }
+
 
                 $this->set('success', true);
                 $this->viewBuilder()->setOption('serialize', ['success']);

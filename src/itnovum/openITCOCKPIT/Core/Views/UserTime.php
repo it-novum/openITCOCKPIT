@@ -71,6 +71,9 @@ class UserTime {
             if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
                 /** @var FrozenTime $t_time */
                 $t_time = $t_time->timestamp;
+            } else if (get_class($t_time) === 'DateTime') {
+                /** @var DateTime $t_time */
+                $t_time = $t_time->getTimestamp();
             }
         }
 
@@ -90,10 +93,14 @@ class UserTime {
      * @return string
      */
     public function customFormat($format, $t_time) {
+
         if (gettype($t_time) === 'object') {
             if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
                 /** @var FrozenTime $t_time */
                 $t_time = $t_time->timestamp;
+            } else if (get_class($t_time) === 'DateTime') {
+                /** @var DateTime $t_time */
+                $t_time = $t_time->getTimestamp();
             }
         }
 
@@ -195,6 +202,9 @@ class UserTime {
             if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
                 /** @var FrozenTime $t_time */
                 $t_time = $t_time->timestamp;
+            } else if (get_class($t_time) === 'DateTime') {
+                /** @var DateTime $t_time */
+                $t_time = $t_time->getTimestamp();
             }
         }
 

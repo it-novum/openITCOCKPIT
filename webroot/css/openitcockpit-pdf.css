@@ -39,3 +39,8 @@
         transition: none;
     }
 }
+
+.break-inside-avoid {
+    /* https://developer.mozilla.org/en-US/docs/Web/CSS/break-inside */
+    break-inside: avoid !important;
+}
