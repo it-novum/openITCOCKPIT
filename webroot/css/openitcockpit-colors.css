@@ -1025,11 +1025,11 @@ fieldset[disabled] .btn-unknown.active {
 }
 
 .text-external {
-    color: #FF9800;
+    color: #607d8b;
 }
 
 .border-external {
-    border-color: #FB8C00 !important;
+    border-color: #455a64 !important;
 }
 
 .text-mk {
