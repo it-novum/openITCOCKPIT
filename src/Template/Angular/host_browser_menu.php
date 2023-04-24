@@ -161,6 +161,13 @@
                             <?php echo __('openITCOCKPIT Agent discovery'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('changelog', 'hosts')): ?>
+                        <a ui-sref="HostsChangelog({id: config.hostId})"
+                           class="dropdown-item">
+                            <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                            <?php echo __('Changelog'); ?>
+                        </a>
+                    <?php endif; ?>
                     <?php
                     $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                     echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'browser', 'list');

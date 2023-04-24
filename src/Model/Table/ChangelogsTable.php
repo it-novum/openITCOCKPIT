@@ -33,7 +33,8 @@ use itnovum\openITCOCKPIT\Filter\ChangelogsFilter;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class ChangelogsTable extends Table {
+class ChangelogsTable extends Table
+{
 
     use PaginationAndScrollIndexTrait;
 
@@ -43,7 +44,8 @@ class ChangelogsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config): void {
+    public function initialize(array $config): void
+    {
         parent::initialize($config);
 
         $this->setTable('changelogs');
@@ -67,7 +69,8 @@ class ChangelogsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator): Validator {
+    public function validationDefault(Validator $validator): Validator
+    {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -104,7 +107,8 @@ class ChangelogsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules): RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker
+    {
 
         // ITC-485 Export Finished has no user
         //$rules->add($rules->existsIn(['user_id'], 'Users'));
@@ -119,7 +123,8 @@ class ChangelogsTable extends Table {
      * @param bool $enableHydration
      * @return array
      */
-    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $enableHydration = true) {
+    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $enableHydration = true)
+    {
         $contain = ['Containers'];
         $select = [
             'id',
@@ -186,109 +191,110 @@ class ChangelogsTable extends Table {
     /**
      * @return array
      */
-    public function getCompareRules() {
+    public function getCompareRules()
+    {
         $_objectDefaults = [
-            'command'              => [
-                'Command'                  => '{(command_type|name|description|command_line)}',
+            'command' => [
+                'Command' => '{(command_type|name|description|command_line)}',
                 'Command.commandarguments' => '{n}.{(id|name|human_name)}',
             ],
-            'timeperiod'           => [
-                'Timeperiod'                       => '{(name|description)}',
+            'timeperiod' => [
+                'Timeperiod' => '{(name|description)}',
                 'Timeperiod.timeperiod_timeranges' => '{n}.{(id|day|start|end)}',
             ],
-            'contact'              => [
-                'Contact'                 => '{(name|description|email|phone|notify_).*}',
-                'HostTimeperiod'          => '{(id|name)}',
-                'ServiceTimeperiod'       => '{(id|name)}',
-                'HostCommands'            => '{n}.{(id|name)}',
-                'ServiceCommands'         => '{n}.{(id|name)}',
+            'contact' => [
+                'Contact' => '{(name|description|email|phone|notify_).*}',
+                'HostTimeperiod' => '{(id|name)}',
+                'ServiceTimeperiod' => '{(id|name)}',
+                'HostCommands' => '{n}.{(id|name)}',
+                'ServiceCommands' => '{n}.{(id|name)}',
                 'Contact.customvariables' => '{n}.{(id|name|value)}',
             ],
-            'contactgroup'         => [
-                'Contactgroup'           => '{(description)}',
+            'contactgroup' => [
+                'Contactgroup' => '{(description)}',
                 'Contactgroup.container' => '{(name)}',
-                'Contact'                => '{n}.{(id|name)}',
+                'Contact' => '{n}.{(id|name)}',
             ],
-            'hostgroup'            => [
-                'Hostgroup'           => '{(description|hostgroup_url)}',
+            'hostgroup' => [
+                'Hostgroup' => '{(description|hostgroup_url)}',
                 'Hostgroup.container' => '{(name)}',
-                'Host'                => '{n}.{(id|name)}',
-                'Hosttemplate'        => '{n}.{(id|name)}',
+                'Host' => '{n}.{(id|name)}',
+                'Hosttemplate' => '{n}.{(id|name)}',
             ],
-            'hosttemplate'         => [
-                'Hosttemplate'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|freshness_checks_enabled|freshness_threshold|notifications_enabled$).*}',
-                'CheckPeriod'                                    => '{(id|name)}',
-                'NotifyPeriod'                                   => '{(id|name)}',
-                'CheckCommand'                                   => '{(id|name)}',
-                'Hosttemplate.customvariables'                   => '{n}.{(id|name|value)}',
+            'hosttemplate' => [
+                'Hosttemplate' => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|freshness_checks_enabled|freshness_threshold|notifications_enabled$).*}',
+                'CheckPeriod' => '{(id|name)}',
+                'NotifyPeriod' => '{(id|name)}',
+                'CheckCommand' => '{(id|name)}',
+                'Hosttemplate.customvariables' => '{n}.{(id|name|value)}',
                 'Hosttemplate.hosttemplatecommandargumentvalues' => '{n}.{(id|value)}',
-                'Contact'                                        => '{n}.{(id|name)}',
-                'Contactgroup'                                   => '{n}.{(id|name)}',
-                'Hostgroup'                                      => '{n}.{(id|name)}'
+                'Contact' => '{n}.{(id|name)}',
+                'Contactgroup' => '{n}.{(id|name)}',
+                'Hostgroup' => '{n}.{(id|name)}'
             ],
-            'servicetemplate'      => [
-                'Servicetemplate'                                           => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_|notifications_enabled$).*}',
-                'CheckPeriod'                                               => '{(id|name)}',
-                'NotifyPeriod'                                              => '{(id|name)}',
-                'CheckCommand'                                              => '{(id|name)}',
-                'EventhandlerCommand'                                       => '{(id|name)}',
-                'Servicetemplate.customvariables'                           => '{n}.{(id|name|value)}',
-                'Servicetemplate.servicetemplatecommandargumentvalues'      => '{n}.{(id|value)}',
+            'servicetemplate' => [
+                'Servicetemplate' => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_|notifications_enabled$).*}',
+                'CheckPeriod' => '{(id|name)}',
+                'NotifyPeriod' => '{(id|name)}',
+                'CheckCommand' => '{(id|name)}',
+                'EventhandlerCommand' => '{(id|name)}',
+                'Servicetemplate.customvariables' => '{n}.{(id|name|value)}',
+                'Servicetemplate.servicetemplatecommandargumentvalues' => '{n}.{(id|value)}',
                 'Servicetemplate.servicetemplateeventcommandargumentvalues' => '{n}.{(id|value)}',
-                'Contact'                                                   => '{n}.{(id|name)}',
-                'Contactgroup'                                              => '{n}.{(id|name)}',
-                'Servicegroup'                                              => '{n}.{(id|name)}',
+                'Contact' => '{n}.{(id|name)}',
+                'Contactgroup' => '{n}.{(id|name)}',
+                'Servicegroup' => '{n}.{(id|name)}',
             ],
-            'servicegroup'         => [
-                'Servicegroup'           => '{(description|servicegroup_url)}',
+            'servicegroup' => [
+                'Servicegroup' => '{(description|servicegroup_url)}',
                 'Servicegroup.container' => '{(name)}',
-                'Service'                => '{n}.{(id|name)}',
-                'Servicetemplate'        => '{n}.{(id|name)}',
+                'Service' => '{n}.{(id|name)}',
+                'Servicetemplate' => '{n}.{(id|name)}',
             ],
             'servicetemplategroup' => [
-                'Servicetemplategroup'           => '{(description)}',
+                'Servicetemplategroup' => '{(description)}',
                 'Servicetemplategroup.container' => '{(name)}',
-                'Servicetemplate'                => '{n}.{(id|template_name)}',
+                'Servicetemplate' => '{n}.{(id|template_name)}',
             ],
-            'host'                 => [
-                'Host'                           => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|freshness_checks_enabled|freshness_threshold|notifications_enabled$).*}',
-                'Hosttemplate'                   => '{(id|name)}',
-                'CheckPeriod'                    => '{(id|name)}',
-                'NotifyPeriod'                   => '{(id|name)}',
-                'CheckCommand'                   => '{(id|name)}',
-                'Hostgroup'                      => '{n}.{(id|name)}',
-                'Parenthost'                     => '{n}.{(id|name)}',
-                'Host.customvariables'           => '{n}.{(id|name|value)}',
+            'host' => [
+                'Host' => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|freshness_checks_enabled|freshness_threshold|notifications_enabled$).*}',
+                'Hosttemplate' => '{(id|name)}',
+                'CheckPeriod' => '{(id|name)}',
+                'NotifyPeriod' => '{(id|name)}',
+                'CheckCommand' => '{(id|name)}',
+                'Hostgroup' => '{n}.{(id|name)}',
+                'Parenthost' => '{n}.{(id|name)}',
+                'Host.customvariables' => '{n}.{(id|name|value)}',
                 'Host.hostcommandargumentvalues' => '{n}.{(id|value)}',
-                'Contact'                        => '{n}.{(id|name)}',
-                'Contactgroup'                   => '{n}.{(id|name)}',
+                'Contact' => '{n}.{(id|name)}',
+                'Contactgroup' => '{n}.{(id|name)}',
             ],
-            'service'              => [
-                'Service'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_|notifications_enabled$).*}',
-                'Host'                                      => '{(id|name)}',
-                'Servicetemplate'                           => '{(id|name)}',
-                'CheckPeriod'                               => '{(id|name)}',
-                'NotifyPeriod'                              => '{(id|name)}',
-                'CheckCommand'                              => '{(id|name)}',
-                'Servicegroup'                              => '{n}.{(id|name)}',
-                'Service.customvariables'                   => '{n}.{(id|name|value)}',
-                'Service.servicecommandargumentvalues'      => '{n}.{(id|value)}',
+            'service' => [
+                'Service' => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_|notifications_enabled$).*}',
+                'Host' => '{(id|name)}',
+                'Servicetemplate' => '{(id|name)}',
+                'CheckPeriod' => '{(id|name)}',
+                'NotifyPeriod' => '{(id|name)}',
+                'CheckCommand' => '{(id|name)}',
+                'Servicegroup' => '{n}.{(id|name)}',
+                'Service.customvariables' => '{n}.{(id|name|value)}',
+                'Service.servicecommandargumentvalues' => '{n}.{(id|value)}',
                 'Service.serviceeventcommandargumentvalues' => '{n}.{(id|value)}',
-                'Contact'                                   => '{n}.{(id|name)}',
-                'Contactgroup'                              => '{n}.{(id|name)}',
+                'Contact' => '{n}.{(id|name)}',
+                'Contactgroup' => '{n}.{(id|name)}',
             ],
-            'map'                  => [
+            'map' => [
                 'Map' => '{(name|description)}',
             ],
-            'tenant'               => [
-                'tenant'           => '{(description|firstname|lastname|street|zipcode|city)}',
+            'tenant' => [
+                'tenant' => '{(description|firstname|lastname|street|zipcode|city)}',
                 'tenant.container' => '{(name)}'
             ],
-            'location'             => [
-                'location'           => '{(description|latitude|longitude|timezone)}',
+            'location' => [
+                'location' => '{(description|latitude|longitude|timezone)}',
                 'location.container' => '{(name)}'
             ],
-            'container'            => [
+            'container' => [
                 'container' => '{(name)}'
             ],
         ];
@@ -310,7 +316,8 @@ class ChangelogsTable extends Table {
      * @param array $currentSavedData
      * @return array|bool|false
      */
-    public function parseDataForChangelog($action, $controller, $object_id, $objecttype_id, $container_ids, $user_id, $name, $requestData, $currentSavedData = []) {
+    public function parseDataForChangelog($action, $controller, $object_id, $objecttype_id, $container_ids, $user_id, $name, $requestData, $currentSavedData = [])
+    {
         $data_array_keys = ['action', 'controller', 'object_id', 'objecttype_id', 'container_id', 'user_id', 'name', 'data'];
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -334,16 +341,16 @@ class ChangelogsTable extends Table {
                 }
 
                 return [
-                    'action'        => $action,
-                    'model'         => ucwords(Inflector::singularize($controller)),
-                    'object_id'     => $object_id,
+                    'action' => $action,
+                    'model' => ucwords(Inflector::singularize($controller)),
+                    'object_id' => $object_id,
                     'objecttype_id' => $objecttype_id,
-                    'containers'    => [
+                    'containers' => [
                         '_ids' => $container_ids
                     ],
-                    'user_id'       => $user_id,
-                    'name'          => $name,
-                    'data'          => serialize(Hash::filter($changes))
+                    'user_id' => $user_id,
+                    'name' => $name,
+                    'data' => serialize(Hash::filter($changes))
                 ];
                 break;
             case 'edit':
@@ -367,16 +374,16 @@ class ChangelogsTable extends Table {
                 if (!empty($changes)) {
 
                     return [
-                        'action'        => $action,
-                        'model'         => ucwords(Inflector::singularize($controller)),
-                        'object_id'     => $object_id,
+                        'action' => $action,
+                        'model' => ucwords(Inflector::singularize($controller)),
+                        'object_id' => $object_id,
                         'objecttype_id' => $objecttype_id,
-                        'containers'    => [
+                        'containers' => [
                             '_ids' => $container_ids
                         ],
-                        'user_id'       => $user_id,
-                        'name'          => $name,
-                        'data'          => serialize(Hash::filter($changes))
+                        'user_id' => $user_id,
+                        'name' => $name,
+                        'data' => serialize(Hash::filter($changes))
                     ];
                 }
                 break;
@@ -386,16 +393,16 @@ class ChangelogsTable extends Table {
             case 'activate':
             case 'export':
                 return [
-                    'action'        => $action,
-                    'model'         => ucwords(Inflector::singularize($controller)),
-                    'object_id'     => $object_id,
+                    'action' => $action,
+                    'model' => ucwords(Inflector::singularize($controller)),
+                    'object_id' => $object_id,
                     'objecttype_id' => $objecttype_id,
-                    'containers'    => [
+                    'containers' => [
                         '_ids' => $container_ids
                     ],
-                    'user_id'       => $user_id,
-                    'name'          => $name,
-                    'data'          => serialize([])
+                    'user_id' => $user_id,
+                    'name' => $name,
+                    'data' => serialize([])
                 ];
                 break;
         }
@@ -409,7 +416,8 @@ class ChangelogsTable extends Table {
      * @param $field_key
      * @return array
      */
-    public function getDiffAsArray($new_values, $old_values, $field_key) {
+    public function getDiffAsArray($new_values, $old_values, $field_key)
+    {
         $new_values = ($new_values === null) ? [] : $new_values;
         $old_values = ($old_values === null || empty(Hash::filter($old_values, [$this, 'filterNullValues']))) ? [] : $old_values;
         // compare the value of 2 array
@@ -418,8 +426,8 @@ class ChangelogsTable extends Table {
         // return the unique difference between value of 2 array
         $diff = [
             $field_key => [
-                'before'       => [],
-                'after'        => [],
+                'before' => [],
+                'after' => [],
                 'current_data' => $old_values,
             ],
         ];
@@ -476,7 +484,8 @@ class ChangelogsTable extends Table {
      *
      * @return boolean
      */
-    public static function filterNullValues($var) {
+    public static function filterNullValues($var)
+    {
         if ($var != null || $var === '0' || $var === '' || $var === 0) {
             return true;
         }
@@ -489,7 +498,8 @@ class ChangelogsTable extends Table {
      * @param int $objectId
      * @return bool
      */
-    public function recordExists(string $modelName, $objectId) {
+    public function recordExists(string $modelName, $objectId)
+    {
         $tableName = Inflector::pluralize($modelName);
 
         /** @var Table $Table */
@@ -508,7 +518,8 @@ class ChangelogsTable extends Table {
      * @param string $action
      * @return string
      */
-    public function getIconByAction(string $action) {
+    public function getIconByAction(string $action)
+    {
         switch ($action) {
             case 'add':
                 return 'fa fa-plus';
@@ -531,7 +542,8 @@ class ChangelogsTable extends Table {
      * @param string $action
      * @return string
      */
-    public function getColorByAction(string $action) {
+    public function getColorByAction(string $action)
+    {
         switch ($action) {
             case 'add':
                 return 'bg-up';
@@ -556,7 +568,8 @@ class ChangelogsTable extends Table {
         }
     }
 
-    public function replaceFieldValues($dataUnserialized) {
+    public function replaceFieldValues($dataUnserialized)
+    {
         $newDataUnserialized = [];
 
         /** @var CommandsTable $CommandsTable */
@@ -608,34 +621,35 @@ class ChangelogsTable extends Table {
      * @param array $dataUnserialized
      * @return array
      */
-    public function replaceTableNames($dataUnserialized) {
+    public function replaceTableNames($dataUnserialized)
+    {
         $tablesToReplace = [
             'Command.commandarguments' => __('Command arguments'),
 
             'Timeperiod.timeperiod_timeranges' => __('Time ranges'),
 
             'Contact.customvariables' => __('Custom variables'),
-            'Contactgroup.container'  => __('Container'),
+            'Contactgroup.container' => __('Container'),
 
             'Hostgroup.container' => __('Container'),
 
-            'Hosttemplate.customvariables'                   => __('Custom variables'),
+            'Hosttemplate.customvariables' => __('Custom variables'),
             'Hosttemplate.hosttemplatecommandargumentvalues' => __('Command arguments'),
 
-            'Servicetemplate.customvariables'                           => __('Custom variables'),
-            'Servicetemplate.servicetemplatecommandargumentvalues'      => __('Command arguments'),
+            'Servicetemplate.customvariables' => __('Custom variables'),
+            'Servicetemplate.servicetemplatecommandargumentvalues' => __('Command arguments'),
             'Servicetemplate.servicetemplateeventcommandargumentvalues' => __('Event handler command arguments'),
 
             'Servicegroup.container' => __('Container'),
 
             'Servicetemplategroup.container' => __('Container'),
 
-            'Host.customvariables'           => __('Custom variables'),
+            'Host.customvariables' => __('Custom variables'),
             'Host.hostcommandargumentvalues' => __('Command arguments'),
 
 
-            'Service.customvariables'                   => __('Custom variables'),
-            'Service.servicecommandargumentvalues'      => __('Command arguments'),
+            'Service.customvariables' => __('Custom variables'),
+            'Service.servicecommandargumentvalues' => __('Command arguments'),
             'Service.serviceeventcommandargumentvalues' => __('Event handler command arguments'),
 
             'tenant.container' => __('Container'),
@@ -662,16 +676,67 @@ class ChangelogsTable extends Table {
     }
 
     /**
+     * @param $hostId
+     * @param $includeUser
+     * @param ChangelogsFilter $changelogsFilter
+     * @return array
+     */
+    public function getChangelogByHostId($hostId, $includeUser, ChangelogsFilter $changelogsFilter): array
+    {
+        $query = $this->find();
+        if ($includeUser === true) {
+            $query->select([
+                    'user_id',
+                    'Users.id',
+                    'Users.firstname',
+                    'Users.lastname',
+                    'Users.email',
+                ]
+            )->contain([
+                'Users'
+            ]);
+        }
+        $query->select([
+            'id',
+            'model',
+            'action',
+            'object_id',
+            'objecttype_id',
+            'data',
+            'name',
+            'created'
+        ])->where([
+            'object_id' => $hostId,
+            'objecttype_id' => OBJECT_HOST
+        ])->whereNotInList(
+            'action', ['export']
+        )->where(
+            $changelogsFilter->indexFilter()
+        )->where([
+            'Changelogs.created >=' => date('Y-m-d H:i:s', $changelogsFilter->getFrom()),
+            'Changelogs.created <=' => date('Y-m-d H:i:s', $changelogsFilter->getTo())
+        ])->order(
+            ['Changelogs.id' => 'desc']
+        )->disableHydration();
+        $result = $query->all();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
+
+    /**
      * @param array $dataUnserialized
      * @param string $action
      * @return array
      */
-    public function formatDataForView(array $dataUnserialized, string $action): array {
+    public function formatDataForView(array $dataUnserialized, string $action): array
+    {
         foreach ($dataUnserialized as $index => $record) {
             foreach ($record as $tableName => $changes) {
                 if ($action !== 'edit') {
                     $dataUnserialized[$index][$tableName] = [
-                        'data'    => $changes['current_data'] ?? [],
+                        'data' => $changes['current_data'] ?? [],
                         'isArray' => Hash::dimensions($changes) === 3
                     ];
                 } else {
@@ -747,7 +812,7 @@ class ChangelogsTable extends Table {
                     }
 
                     $dataUnserialized[$index][$tableName] = [
-                        'data'    => $diffs,
+                        'data' => $diffs,
                         'isArray' => $isArray
                     ];
 

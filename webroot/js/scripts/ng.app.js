@@ -1209,6 +1209,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "HostsEditDetailsController"
             })
 
+            .state('HostsChangelog', {
+                url: '/hosts/changelog/:id',
+                templateUrl: "/hosts/changelog.html",
+                controller: "HostsChangelogController"
+            })
+
             .state('HostdependenciesIndex', {
                 url: '/hostdependencies/index',
                 params: {
