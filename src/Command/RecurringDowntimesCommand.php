@@ -233,7 +233,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         break;
                                     }
                                     try {
-                                        $hosts = $HostsTable->getHostBySatelliteId($systemdowntime->get('object_id'));
+                                        $hosts = $HostsTable->getHostsBySatelliteId($systemdowntime->get('object_id'));
                                         $hostUuids = Hash::extract($hosts, '{n}[disabled=0].uuid');
                                         //satellite has same options as container downtimes
                                         $ExternalCommands->setContainerDowntime([
@@ -369,7 +369,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         break;
                                     }
                                     try {
-                                        $hosts = $HostsTable->getHostBySatelliteId($systemdowntime->get('object_id'));
+                                        $hosts = $HostsTable->getHostsBySatelliteId($systemdowntime->get('object_id'));
                                         $hostUuids = Hash::extract($hosts, '{n}[disabled=0].uuid');
                                         //satellite has same options as container downtimes
                                         $ExternalCommands->setContainerDowntime([
@@ -505,7 +505,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         break;
                                     }
                                     try {
-                                        $hosts = $HostsTable->getHostBySatelliteId($systemdowntime->get('object_id'));
+                                        $hosts = $HostsTable->getHostsBySatelliteId($systemdowntime->get('object_id'));
                                         $hostUuids = Hash::extract($hosts, '{n}[disabled=0].uuid');
                                         //satellite has same options as container downtimes
 

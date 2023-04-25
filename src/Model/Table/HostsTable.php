@@ -3759,7 +3759,7 @@ class HostsTable extends Table {
      * @param int $satelliteId
      * @return array
      */
-    public function getHostBySatelliteId($satelliteId) {
+    public function getHostsBySatelliteId($satelliteId) {
         $query = $this->find()
             ->where([
                 'Hosts.satellite_id' => $satelliteId
@@ -3773,7 +3773,7 @@ class HostsTable extends Table {
      * @param int $satelliteId
      * @return array
      */
-    public function getHostBySatelliteIdForDelete($satelliteId) {
+    public function getHostsBySatelliteIdForDelete($satelliteId) {
         $query = $this->find()
             ->where([
                 'Hosts.satellite_id' => $satelliteId
