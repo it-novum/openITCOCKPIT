@@ -135,7 +135,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                         switch ((int)$systemdowntime->get('objecttype_id')) {
                             case OBJECT_HOST:
                                 try {
-                                    $host = $HostsTable->getHostById($systemdowntime->get('object_id'));
+                                    $host = $HostsTable->getHostByIdOrFail($systemdowntime->get('object_id'));
                                     $ExternalCommands->setHostDowntime([
                                         'hostUuid'     => $host->get('uuid'),
                                         'start'        => $systemdowntime->getScheduledStartTime(),
@@ -233,7 +233,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         break;
                                     }
                                     try {
-                                        $hosts = $HostsTable->getHostBySatelliteId($systemdowntime->get('object_id'));
+                                        $hosts = $HostsTable->getHostsBySatelliteId($systemdowntime->get('object_id'));
                                         $hostUuids = Hash::extract($hosts, '{n}[disabled=0].uuid');
                                         //satellite has same options as container downtimes
                                         $ExternalCommands->setContainerDowntime([
@@ -271,7 +271,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                         switch ((int)$systemdowntime->get('objecttype_id')) {
                             case OBJECT_HOST:
                                 try {
-                                    $host = $HostsTable->getHostById($systemdowntime->get('object_id'));
+                                    $host = $HostsTable->getHostByIdOrFail($systemdowntime->get('object_id'));
                                     $ExternalCommands->setHostDowntime([
                                         'hostUuid'     => $host->get('uuid'),
                                         'start'        => $systemdowntime->getScheduledStartTime(),
@@ -369,7 +369,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         break;
                                     }
                                     try {
-                                        $hosts = $HostsTable->getHostBySatelliteId($systemdowntime->get('object_id'));
+                                        $hosts = $HostsTable->getHostsBySatelliteId($systemdowntime->get('object_id'));
                                         $hostUuids = Hash::extract($hosts, '{n}[disabled=0].uuid');
                                         //satellite has same options as container downtimes
                                         $ExternalCommands->setContainerDowntime([
@@ -408,7 +408,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                             case OBJECT_HOST:
                                 try {
                                     //$hostUuid = $HostsTable->getHostUuidById($systemdowntime->get('object_id'));
-                                    $host = $HostsTable->getHostById($systemdowntime->get('object_id'));
+                                    $host = $HostsTable->getHostByIdOrFail($systemdowntime->get('object_id'));
                                     $ExternalCommands->setHostDowntime([
                                         'hostUuid'     => $host->get('uuid'),
                                         'start'        => $systemdowntime->getScheduledStartTime(),
@@ -505,7 +505,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                         break;
                                     }
                                     try {
-                                        $hosts = $HostsTable->getHostBySatelliteId($systemdowntime->get('object_id'));
+                                        $hosts = $HostsTable->getHostsBySatelliteId($systemdowntime->get('object_id'));
                                         $hostUuids = Hash::extract($hosts, '{n}[disabled=0].uuid');
                                         //satellite has same options as container downtimes
 
