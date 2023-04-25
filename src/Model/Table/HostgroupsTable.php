@@ -602,6 +602,7 @@ class HostgroupsTable extends Table {
     /**
      * @param int $id
      * @return string
+     * @throws RecordNotFoundException
      */
     public function getHostgroupUuidById($id) {
         $query = $this->find()

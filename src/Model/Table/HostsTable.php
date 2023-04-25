@@ -13,6 +13,7 @@ use App\Model\Entity\Hostescalation;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
 use Cake\Database\Expression\QueryExpression;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -496,6 +497,21 @@ class HostsTable extends Table {
             ])
             ->contain('HostsToContainersSharing')
             ->first();
+        return $query;
+    }
+
+    /**
+     * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     * @throws RecordNotFoundException
+     */
+    public function getHostByIdOrFail($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain('HostsToContainersSharing')
+            ->firstOrFail();
         return $query;
     }
 

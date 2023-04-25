@@ -135,7 +135,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                         switch ((int)$systemdowntime->get('objecttype_id')) {
                             case OBJECT_HOST:
                                 try {
-                                    $host = $HostsTable->getHostById($systemdowntime->get('object_id'));
+                                    $host = $HostsTable->getHostByIdOrFail($systemdowntime->get('object_id'));
                                     $ExternalCommands->setHostDowntime([
                                         'hostUuid'     => $host->get('uuid'),
                                         'start'        => $systemdowntime->getScheduledStartTime(),
@@ -271,7 +271,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                         switch ((int)$systemdowntime->get('objecttype_id')) {
                             case OBJECT_HOST:
                                 try {
-                                    $host = $HostsTable->getHostById($systemdowntime->get('object_id'));
+                                    $host = $HostsTable->getHostByIdOrFail($systemdowntime->get('object_id'));
                                     $ExternalCommands->setHostDowntime([
                                         'hostUuid'     => $host->get('uuid'),
                                         'start'        => $systemdowntime->getScheduledStartTime(),
@@ -408,7 +408,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                             case OBJECT_HOST:
                                 try {
                                     //$hostUuid = $HostsTable->getHostUuidById($systemdowntime->get('object_id'));
-                                    $host = $HostsTable->getHostById($systemdowntime->get('object_id'));
+                                    $host = $HostsTable->getHostByIdOrFail($systemdowntime->get('object_id'));
                                     $ExternalCommands->setHostDowntime([
                                         'hostUuid'     => $host->get('uuid'),
                                         'start'        => $systemdowntime->getScheduledStartTime(),
