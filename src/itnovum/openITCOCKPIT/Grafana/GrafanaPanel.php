@@ -50,9 +50,9 @@ class GrafanaPanel {
     private $panelId;
 
     /**
-     * @var GrafanaSeriesOverrides
+     * @var GrafanaOverrides
      */
-    private $SeriesOverrides;
+    private $Overrides;
 
     /**
      * @var GrafanaYAxes
@@ -77,62 +77,161 @@ class GrafanaPanel {
     /**
      * @var array
      */
+    /**  OLD Panel
+     * private $panel = [
+     * "aliasColors"     => [
+     * //Insert colors here
+     * ],
+     * "bars"            => false,
+     * //"datasource"      => null,
+     * "datasource"      => '-- Mixed --',
+     * "fill"            => 1,
+     * "id"              => null,
+     * "legend"          => [
+     * "alignAsTable" => true,
+     * "avg"          => true,
+     * "current"      => true,
+     * "hideEmpty"    => false,
+     * "hideZero"     => false,
+     * "max"          => true,
+     * "min"          => true,
+     * "show"         => true,
+     * "total"        => false,
+     * "values"       => true
+     * ],
+     * "lines"           => true,
+     * "linewidth"       => 1,
+     * "links"           => [],
+     * "nullPointMode"   => "connected",
+     * "percentage"      => false,
+     * "pointradius"     => 5,
+     * "points"          => false,
+     * "renderer"        => "flot",
+     * "overrides" => [],
+     * "span"            => 6,
+     * "stack"           => false,
+     * "steppedLine"     => false,
+     * "targets"         => [
+     * //Insert targets here
+     * ],
+     * "thresholds"      => [
+     * //Insert thresholds here
+     * ],
+     * "timeFrom"        => null,
+     * "timeShift"       => null,
+     * "title"           => "",
+     * "tooltip"         => [
+     * "shared"     => true,
+     * "sort"       => 0,
+     * "value_type" => "individual"
+     * ],
+     * "type"            => "graph",
+     * "xaxis"           => [
+     * "mode"   => "time",
+     * "name"   => null,
+     * "show"   => true,
+     * "values" => []
+     * ],
+     * "yaxes"           => [
+     * //Insert yaxes here
+     * ]
+     * ];
+     **/
+
+    /**
+     * @var array
+     */
     private $panel = [
-        "aliasColors"     => [
-            //Insert colors here
+        "id"         => null,
+        "type"       => "timeseries",
+        "title"      => "",
+        "datasource" => [
+            "uid"  => "-- Mixed --",
+            "type" => "datasource",
         ],
-        "bars"            => false,
-        //"datasource"      => null,
-        "datasource"      => '-- Mixed --',
-        "fill"            => 1,
-        "id"              => null,
-        "legend"          => [
-            "alignAsTable" => true,
-            "avg"          => true,
-            "current"      => true,
-            "hideEmpty"    => false,
-            "hideZero"     => false,
-            "max"          => true,
-            "min"          => true,
-            "show"         => true,
-            "total"        => false,
-            "values"       => true
-        ],
-        "lines"           => true,
-        "linewidth"       => 1,
-        "links"           => [],
-        "nullPointMode"   => "connected",
-        "percentage"      => false,
-        "pointradius"     => 5,
-        "points"          => false,
-        "renderer"        => "flot",
-        "seriesOverrides" => [],
-        "span"            => 6,
-        "stack"           => false,
-        "steppedLine"     => false,
-        "targets"         => [
+        "links"      => [],
+        "targets"    => [
             //Insert targets here
         ],
-        "thresholds"      => [
+        "options"    => [
+            "tooltip" => [
+                "shared"     => true,
+                "sort"       => 0,
+                "value_type" => "individual"
+            ],
+            "legend"  => [
+                "displayMode" => "table",
+                "placement"   => "bottom",
+                "calcs"       => [
+                    "mean"        => true,
+                    "lastNotNull" => true,
+                    "max"         => true,
+                    "min"         => true,
+                ]
+            ]
+        ],
+
+        "thresholds"  => [
             //Insert thresholds here
         ],
-        "timeFrom"        => null,
-        "timeShift"       => null,
-        "title"           => "",
-        "tooltip"         => [
-            "shared"     => true,
-            "sort"       => 0,
-            "value_type" => "individual"
-        ],
-        "type"            => "graph",
-        "xaxis"           => [
-            "mode"   => "time",
-            "name"   => null,
-            "show"   => true,
-            "values" => []
-        ],
-        "yaxes"           => [
-            //Insert yaxes here
+        "timeFrom"    => null,
+        "timeShift"   => null,
+        "fieldConfig" => [
+            "defaults"   => [
+                "custom" => [
+                    "drawStyle"         => "line",
+                    "lineInterpolation" => "linear",
+                    "barAlignment"      => 0,
+                    "lineWidth"         => 1,
+                    "fillOpacity"       => 50,
+                    "gradientMode"      => "opacity",
+                    "spanNulls"         => true,
+                    "showPoints"        => true,
+                    "pointSize"         => 6,
+                    "stacking"          => [
+                        "mode"  => "none",
+                        "group" => "A"
+                    ],
+
+                    "axisPlacement"     => "auto",
+                    "axisLabel"         => "",
+                    "axisColorMode"     => "text",
+                    "scaleDistribution" => [
+                        "type" => "linear"
+                    ],
+
+                    "axisCenteredZero" => false,
+                    "hideFrom"         => [
+                        "tooltip" => false,
+                        "viz"     => false,
+                        "legend"  => false,
+                        "graph"   => false
+
+                    ],
+
+                    "thresholdsStyle" => [
+                        "mode" => "off"
+                    ],
+                    "axisSoftMax"     => 60,
+                    "axisSoftMin"     => 0
+                ]
+            ],
+            "color"      => [
+                "mode" => "palette-classic"
+            ],
+            "mappings"   => [],
+            "thresholds" => [
+                "mode"  => "absolute",
+                "steps" => [
+                    "color" => "green",
+                    "value" => null
+                ],
+                [
+                    "color" => "red",
+                    "value" => 80
+                ]
+            ],
+            "unit"       => "short"
         ]
     ];
 
@@ -165,8 +264,8 @@ class GrafanaPanel {
         $this->panel['aliasColors'] = $this->color;
         $this->panel['span'] = $this->span;
 
-        if ($this->SeriesOverrides->hasOverrides()) {
-            $this->panel['seriesOverrides'] = $this->SeriesOverrides->getOverrides();
+        if ($this->Overrides->hasOverrides()) {
+            $this->panel['overrides'] = $this->Overrides->getOverrides();
         }
 
         $this->panel['yaxes'] = $this->YAxes->getAxesAsArray();
@@ -185,19 +284,19 @@ class GrafanaPanel {
 
     /**
      * @param GrafanaTargetCollection $grafanaTargetCollection
-     * @param GrafanaSeriesOverrides $SeriesOverrides
+     * @param GrafanaOverrides $Overrides
      * @param GrafanaYAxes $YAxes
      * @param GrafanaThresholdCollection $ThresholdCollection
      */
     public function addTargets(
-        GrafanaTargetCollection $grafanaTargetCollection,
-        GrafanaSeriesOverrides $SeriesOverrides,
-        GrafanaYAxes $YAxes,
+        GrafanaTargetCollection    $grafanaTargetCollection,
+        GrafanaOverrides           $Overrides,
+        GrafanaYAxes               $YAxes,
         GrafanaThresholdCollection $ThresholdCollection
     ) {
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
         $this->color = $grafanaTargetCollection->getColorsAsArray();
-        $this->SeriesOverrides = $SeriesOverrides;
+        $this->Overrides = $Overrides;
         $this->YAxes = $YAxes;
         $this->ThresholdCollection = $ThresholdCollection;
     }

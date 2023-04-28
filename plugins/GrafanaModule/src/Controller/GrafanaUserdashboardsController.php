@@ -52,7 +52,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
-use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
+use itnovum\openITCOCKPIT\Grafana\GrafanaOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
@@ -723,7 +723,6 @@ class GrafanaUserdashboardsController extends AppController {
             $GrafanaDashboard->setTitle($dashboard['name']);
             $GrafanaDashboard->setEditable(true);
             $GrafanaDashboard->setTags($tag->getTag());
-            $GrafanaDashboard->setHideControls(false);
             $GrafanaDashboard->setAutoRefresh('1m');
             $GrafanaDashboard->setTimeInHours('3');
 
@@ -805,7 +804,7 @@ class GrafanaUserdashboardsController extends AppController {
                     }
                     $GrafanaPanel->addTargets(
                         $GrafanaTargetCollection,
-                        new GrafanaSeriesOverrides($GrafanaTargetCollection),
+                        new GrafanaOverrides($GrafanaTargetCollection),
                         new GrafanaYAxes($GrafanaTargetCollection),
                         new GrafanaThresholdCollection($GrafanaTargetCollection)
                     );

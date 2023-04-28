@@ -29,7 +29,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
-use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
+use itnovum\openITCOCKPIT\Grafana\GrafanaOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
@@ -277,7 +277,6 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         $grafanaDashboard->setEditable(false);
         $grafanaDashboard->setTags($this->tag);
         $grafanaDashboard->setTags('🖥️ ' . $host['name']);
-        $grafanaDashboard->setHideControls(true);
         $panelId = 1;
         $grafanaRow = new GrafanaRow();
 
@@ -349,7 +348,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
 
             $grafanaPanel->addTargets(
                 $grafanaTargetCollection,
-                new GrafanaSeriesOverrides($grafanaTargetCollection),
+                new GrafanaOverrides($grafanaTargetCollection),
                 new GrafanaYAxes($grafanaTargetCollection),
                 new GrafanaThresholdCollection($grafanaTargetCollection)
             );

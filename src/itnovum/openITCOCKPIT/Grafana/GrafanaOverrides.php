@@ -27,7 +27,7 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
-class GrafanaSeriesOverrides {
+class GrafanaOverrides {
 
     /**
      * @var array
@@ -35,7 +35,7 @@ class GrafanaSeriesOverrides {
     private $overrides = [];
 
     /**
-     * GrafanaSeriesOverrides constructor.
+     * GrafanaOverrides constructor.
      * @param GrafanaTargetCollection $targetCollection
      */
     public function __construct(GrafanaTargetCollection $targetCollection) {
@@ -54,14 +54,19 @@ class GrafanaSeriesOverrides {
                 if ($target->getAlias()) {
                     $alias = str_replace('/', '\/', $target->getAlias());
                     $override = [
-                        'alias' => $alias,
-                        'yaxis' => $axisId
+                        'matcher' => [
+                            'id' => 'byName',
+                            'options' => $alias,
+                        ]
+
                     ];
                 } else {
                     $alias = str_replace('/', '\/', $target->getTarget());
                     $override = [
-                        'alias' => $alias,
-                        'yaxis' => $axisId
+                        'matcher' => [
+                            'id' => 'byName',
+                            'options' => $alias,
+                        ]
                     ];
                 }
 

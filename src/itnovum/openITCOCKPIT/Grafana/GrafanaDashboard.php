@@ -26,6 +26,8 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+
 class GrafanaDashboard {
 
     /**
@@ -43,10 +45,6 @@ class GrafanaDashboard {
      */
     private $editable = false;
 
-    /**
-     * @var bool
-     */
-    private $hideControls = true;
 
     /**
      * @var array
@@ -56,31 +54,79 @@ class GrafanaDashboard {
     /**
      * @var array
      */
+
+    /** OLD
+     * private $grafanaDashboardDataArray = [
+     * 'annotations'   => [
+     * 'list' => []
+     * ],
+     * "editable"      => false, // testing true
+     * "gnetId"        => null,
+     * "graphTooltip"  => 0,
+     * "hideControls"  => true, // testing false
+     * "id"            => null,
+     * "links"         => [],
+     * "rows"          => [
+     * //Insert rows here
+     * ],
+     * "schemaVersion" => 14,
+     * //"style" => "light",
+     * "tags"          => [],
+     * "templating"    => [
+     * "list" => []
+     * ],
+     * "time"          => [
+     * "from" => "now-6h",
+     * "to"   => "now"
+     * ],
+     *
+     * "timepicker" => [
+     * "refresh_intervals" => [
+     * "5s",
+     * "10s",
+     * "30s",
+     * "1m",
+     * "5m",
+     * "15m",
+     * "30m",
+     * "1h",
+     * "2h",
+     * "1d"
+     * ],
+     * "time_options"      => [
+     * "5m",
+     * "15m",
+     * "1h",
+     * "6h",
+     * "12h",
+     * "24h",
+     * "2d",
+     * "7d",
+     * "30d"
+     * ],
+     * ],
+     *
+     * "timezone" => "browser",
+     * "title"    => "",
+     * "version"  => 0,
+     * ];
+     *  */
+
     private $grafanaDashboardDataArray = [
-        'annotations'   => [
-            'list' => []
-        ],
-        "editable"      => false, // testing true
-        "gnetId"        => null,
-        "graphTooltip"  => 0,
-        "hideControls"  => true, // testing false
         "id"            => null,
-        "links"         => [],
-        "rows"          => [
-            //Insert rows here
-        ],
-        "schemaVersion" => 14,
-        //"style" => "light",
+        "uid"           => null,
+        "title"         => "",
         "tags"          => [],
-        "templating"    => [
-            "list" => []
-        ],
+        //"style" => "light",
+        "timezone"      => "browser",
+        "editable"      => true, // testing true
+        "graphTooltip"  => 0,
+        "panels"        => [],
         "time"          => [
             "from" => "now-6h",
             "to"   => "now"
         ],
-
-        "timepicker" => [
+        "timepicker"    => [
             "refresh_intervals" => [
                 "5s",
                 "10s",
@@ -105,10 +151,19 @@ class GrafanaDashboard {
                 "30d"
             ],
         ],
+        "templating"    => [
+            "list" => []
+        ],
+        'annotations'   => [
+            'list' => []
+        ],
+        "schemaVersion" => 12,
 
-        "timezone" => "browser",
-        "title"    => "",
-        "version"  => 0,
+        "links"   => [],
+        "rows"    => [
+            //Insert rows here
+        ],
+        "version" => 0,
     ];
 
     /**
@@ -118,9 +173,9 @@ class GrafanaDashboard {
         $this->grafanaDashboardDataArray['title'] = $this->title;
         $this->grafanaDashboardDataArray['rows'] = $this->rows;
         $this->grafanaDashboardDataArray['editable'] = $this->editable;
-        $this->grafanaDashboardDataArray['hideControls'] = $this->hideControls;
         $this->grafanaDashboardDataArray['tags'] = $this->tags;
-
+        FileDebugger::dump($this->grafanaDashboardDataArray);
+        FileDebugger::dump(json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/]/*, JSON_PRETTY_PRINT*/));
         return json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/]/*, JSON_PRETTY_PRINT*/);
     }
 
@@ -156,12 +211,5 @@ class GrafanaDashboard {
      */
     public function setEditable($editable) {
         $this->editable = $editable;
-    }
-
-    /**
-     * @param bool $hideControls
-     */
-    public function setHideControls($hideControls) {
-        $this->hideControls = $hideControls;
     }
 }
