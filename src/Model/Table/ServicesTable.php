@@ -1992,7 +1992,6 @@ class ServicesTable extends Table {
         if ($ServiceConditions->getHostId()) {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
-        debug($where);
         $query = $this->find();
         $query
             ->select([
@@ -2168,7 +2167,6 @@ class ServicesTable extends Table {
             )
         );
 
-FileDebugger::dieQuery($query);
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->emptyArrayIfNull($query->toArray());

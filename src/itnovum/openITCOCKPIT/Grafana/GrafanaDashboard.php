@@ -26,8 +26,6 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
-use itnovum\openITCOCKPIT\Core\FileDebugger;
-
 class GrafanaDashboard {
 
     /**
@@ -174,8 +172,6 @@ class GrafanaDashboard {
         $this->grafanaDashboardDataArray['rows'] = $this->rows;
         $this->grafanaDashboardDataArray['editable'] = $this->editable;
         $this->grafanaDashboardDataArray['tags'] = $this->tags;
-        FileDebugger::dump($this->grafanaDashboardDataArray);
-        FileDebugger::dump(json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/]/*, JSON_PRETTY_PRINT*/));
         return json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/]/*, JSON_PRETTY_PRINT*/);
     }
 

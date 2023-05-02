@@ -146,8 +146,8 @@ class GrafanaPanel {
         "type"       => "timeseries",
         "title"      => "",
         "datasource" => [
-            "uid"  => "-- Mixed --",
             "type" => "datasource",
+            "uid"  => "-- Mixed --"
         ],
         "links"      => [],
         "targets"    => [
@@ -155,39 +155,38 @@ class GrafanaPanel {
         ],
         "options"    => [
             "tooltip" => [
-                "shared"     => true,
-                "sort"       => 0,
-                "value_type" => "individual"
+                "mode" => "multi",
+                "sort" => "none"
             ],
             "legend"  => [
                 "displayMode" => "table",
                 "placement"   => "bottom",
                 "calcs"       => [
-                    "mean"        => true,
-                    "lastNotNull" => true,
-                    "max"         => true,
-                    "min"         => true,
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min",
                 ]
             ]
         ],
 
-        "thresholds"  => [
+        "thresholds"    => [
             //Insert thresholds here
         ],
-        "timeFrom"    => null,
-        "timeShift"   => null,
-        "fieldConfig" => [
+        "timeFrom"      => null,
+        "timeShift"     => null,
+        "fieldConfig"   => [
             "defaults"   => [
                 "custom" => [
                     "drawStyle"         => "line",
-                    "lineInterpolation" => "linear",
+                    "lineInterpolation" => "smooth",
                     "barAlignment"      => 0,
                     "lineWidth"         => 1,
                     "fillOpacity"       => 50,
                     "gradientMode"      => "opacity",
                     "spanNulls"         => true,
-                    "showPoints"        => true,
-                    "pointSize"         => 6,
+                    "showPoints"        => "never",
+                    "pointSize"         => 5,
                     "stacking"          => [
                         "mode"  => "none",
                         "group" => "A"
@@ -199,23 +198,18 @@ class GrafanaPanel {
                     "scaleDistribution" => [
                         "type" => "linear"
                     ],
-
-                    "axisCenteredZero" => false,
-                    "hideFrom"         => [
+                    "axisCenteredZero"  => false,
+                    "hideFrom"          => [
                         "tooltip" => false,
                         "viz"     => false,
-                        "legend"  => false,
-                        "graph"   => false
-
+                        "legend"  => false
                     ],
-
-                    "thresholdsStyle" => [
+                    "thresholdsStyle"   => [
                         "mode" => "off"
-                    ],
-                    "axisSoftMax"     => 60,
-                    "axisSoftMin"     => 0
+                    ]
                 ]
             ],
+            "overrides"  => [],
             "color"      => [
                 "mode" => "palette-classic"
             ],
@@ -230,9 +224,9 @@ class GrafanaPanel {
                     "color" => "red",
                     "value" => 80
                 ]
-            ],
-            "unit"       => "short"
-        ]
+            ]
+        ],
+        "pluginVersion" => "9.0.2"
     ];
 
     /**
@@ -265,10 +259,8 @@ class GrafanaPanel {
         $this->panel['span'] = $this->span;
 
         if ($this->Overrides->hasOverrides()) {
-            $this->panel['overrides'] = $this->Overrides->getOverrides();
+            $this->panel['fieldConfig']['overrides'] = $this->Overrides->getOverrides();
         }
-
-        $this->panel['yaxes'] = $this->YAxes->getAxesAsArray();
 
         $this->panel['thresholds'] = $this->ThresholdCollection->getThresholdsAsArray();
 

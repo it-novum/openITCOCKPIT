@@ -55,17 +55,28 @@ class GrafanaOverrides {
                     $alias = str_replace('/', '\/', $target->getAlias());
                     $override = [
                         'matcher' => [
-                            'id' => 'byName',
-                            'options' => $alias,
+                            'id'      => 'byName',
+                            'options' => $alias
+                        ],
+                        'properties' => [
+                            [
+                                'id'    => 'unit',
+                                'value' => $target->getUnit()
+                            ]
                         ]
-
                     ];
                 } else {
                     $alias = str_replace('/', '\/', $target->getTarget());
                     $override = [
                         'matcher' => [
-                            'id' => 'byName',
-                            'options' => $alias,
+                            'id'      => 'byName',
+                            'options' => $alias
+                        ],
+                        'properties' => [
+                            [
+                                'id'    => 'unit',
+                                'value' => $target->getUnit()
+                            ]
                         ]
                     ];
                 }
