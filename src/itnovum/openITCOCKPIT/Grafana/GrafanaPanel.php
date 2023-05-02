@@ -207,24 +207,14 @@ class GrafanaPanel {
                     "thresholdsStyle"   => [
                         "mode" => "off"
                     ]
-                ]
+                ],
+                "color"  => [
+                    "mode" => "palette-classic"
+                ],
             ],
             "overrides"  => [],
-            "color"      => [
-                "mode" => "palette-classic"
-            ],
             "mappings"   => [],
-            "thresholds" => [
-                "mode"  => "absolute",
-                "steps" => [
-                    "color" => "green",
-                    "value" => null
-                ],
-                [
-                    "color" => "red",
-                    "value" => 80
-                ]
-            ]
+            "thresholds" => []
         ],
         "pluginVersion" => "9.0.2"
     ];

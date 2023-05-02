@@ -155,8 +155,6 @@ class GrafanaDashboard {
         'annotations'   => [
             'list' => []
         ],
-        "schemaVersion" => 12,
-
         "links"   => [],
         "rows"    => [
             //Insert rows here

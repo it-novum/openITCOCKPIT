@@ -54,7 +54,7 @@ class GrafanaOverrides {
                 if ($target->getAlias()) {
                     $alias = str_replace('/', '\/', $target->getAlias());
                     $override = [
-                        'matcher' => [
+                        'matcher'    => [
                             'id'      => 'byName',
                             'options' => $alias
                         ],
@@ -63,12 +63,21 @@ class GrafanaOverrides {
                                 'id'    => 'unit',
                                 'value' => $target->getUnit()
                             ]
+                            /*
+                            [
+                                'id'    => 'color',
+                                'value' => [
+                                    'fixedColor' => 'red',
+                                    'mode'=> 'fixed'
+                                ]
+                            ]
+                            */
                         ]
                     ];
                 } else {
                     $alias = str_replace('/', '\/', $target->getTarget());
                     $override = [
-                        'matcher' => [
+                        'matcher'    => [
                             'id'      => 'byName',
                             'options' => $alias
                         ],
