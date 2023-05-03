@@ -199,6 +199,13 @@
                                                             <option value="AzureActiveDirectory"><?php echo __('Azure Active Directory'); ?></option>
                                                         </select>
                                                     </div>
+                                                    <div ng-switch-when="FRONTEND.LDAP.OAUTH_ALLOWED">
+                                                        <select class="form-control systemsetting-input"
+                                                                ng-model="systemsetting.value">
+                                                            <option value="1"><?php echo __('True'); ?></option>
+                                                            <option value="0"><?php echo __('False'); ?></option>
+                                                        </select>
+                                                    </div>
                                                     <div ng-switch-default>
                                                         <input type="text"
                                                                ng-model="systemsetting.value"

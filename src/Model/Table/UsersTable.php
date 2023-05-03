@@ -1010,15 +1010,25 @@ class UsersTable extends Table {
      * @return array|EntityInterface|null
      */
     public function getOAuthUserByEmailForLogin(string $email) {
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $query = $this->find();
-        return $query
+        if ($SystemsettingsTable->isLdapAllowedForOauth()) {
+            return $query
+            ->where([
+                            'Users.email'     => $email,
+                            'Users.is_active' => 1
+            ])
+            ->first();
+        } else {
+            return $query
             ->where([
                 'Users.email'     => $email,
                 'Users.is_active' => 1,
                 'Users.is_oauth'  => 1
             ])
             ->first();
-    }
+        }    
+    }     
 
     /**
      * May deprecated functions after fully moving to cakephp 4
