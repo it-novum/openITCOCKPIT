@@ -76,14 +76,16 @@ class HostFilter extends Filter {
      */
     public function notMonitoredFilter() {
         $filters = [
-            'like'   => [
-                'Hosts.name',
+            'like'          => [
                 'Hosts.description',
-                'Hosts.address'
             ],
-            'equals' => [
+            'equals'        => [
                 'Hosts.id',
                 'Hosts.satellite_id'
+            ],
+            'like_or_rlike' => [
+                'Hosts.name',
+                'Hosts.address',
             ]
         ];
 
@@ -95,7 +97,7 @@ class HostFilter extends Filter {
      */
     public function deletedFilter() {
         $filters = [
-            'rlike' => [
+            'like_or_rlike' => [
                 'DeletedHosts.name'
             ]
         ];
@@ -108,14 +110,14 @@ class HostFilter extends Filter {
      */
     public function disabledFilter() {
         $filters = [
-            'like'   => [
+            'like'          => [
                 'Hosts.description',
             ],
-            'rlike'  => [
+            'like_or_rlike' => [
                 'Hosts.name',
                 'Hosts.address',
             ],
-            'equals' => [
+            'equals'        => [
                 'Hosts.id',
                 'Hosts.satellite_id'
             ]

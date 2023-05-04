@@ -111,6 +111,13 @@
                                                    ng-model-options="{debounce: 500}">
                                             <div class="input-group-append">
                                                 <span class="input-group-text pt-0 pb-0">
+                                                        <label>
+                                                            <?= __('Enable RegEx'); ?>
+                                                            &nbsp;
+                                                            <input type="checkbox"
+                                                                   ng-model="filter.DeletedHost.name_regex">
+                                                        </label>
+                                                        &nbsp;
                                                     <regex-helper-tooltip></regex-helper-tooltip>
                                                 </span>
                                             </div>
