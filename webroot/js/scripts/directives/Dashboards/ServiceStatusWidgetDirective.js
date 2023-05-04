@@ -40,11 +40,13 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                 },
                 Host: {
                     name: '',
+                    name_regex: false,
                     keywords: '',
                     not_keywords: ''
                 },
                 Service: {
                     name: '',
+                    name_regex: false,
                     keywords: '',
                     not_keywords: ''
                 }
@@ -71,6 +73,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
+                    $scope.filter.Host.name_regex = result.data.config.Host.name_regex;
+                    $scope.filter.Service.name_regex = result.data.config.Service.name_regex;
                     var scrollInterval = parseInt(result.data.config.scroll_interval);
                     if(scrollInterval < 5000){
                         scrollInterval = 5000;
@@ -109,9 +113,11 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     'page': $scope.currentPage,
                     'direction': $scope.direction,
                     'filter[Hosts.name]': $scope.filter.Host.name,
+                    'filter[Hosts.name_regex]': $scope.filter.Host.name_regex,
                     'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
                     'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                     'filter[servicename]': $scope.filter.Service.name,
+                    'filter[servicename_regex]': $scope.filter.Service.name_regex,
                     'filter[keywords][]': $scope.filter.Service.keywords.split(','),
                     'filter[not_keywords][]': $scope.filter.Service.not_keywords.split(','),
                     'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,

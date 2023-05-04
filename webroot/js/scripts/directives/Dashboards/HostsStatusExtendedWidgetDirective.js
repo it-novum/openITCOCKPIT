@@ -39,6 +39,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
                 },
                 Host: {
                     name: '',
+                    name_regex: false,
                     keywords: '',
                     not_keywords: ''
                 }
@@ -57,6 +58,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
                     $scope.filter.Hoststatus.not_acknowledged = result.data.config.Hoststatus.not_acknowledged;
                     $scope.filter.Hoststatus.in_downtime = result.data.config.Hoststatus.in_downtime;
                     $scope.filter.Hoststatus.not_in_downtime = result.data.config.Hoststatus.not_in_downtime;
+                    $scope.filter.Host.name_regex = result.data.config.Host.name_regex;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
@@ -100,6 +102,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusExtendedWidget', function(
                     'includes[]': ['downtimes', 'acknowledgements'],
                     'direction': $scope.direction,
                     'filter[Hosts.name]': $scope.filter.Host.name,
+                    'filter[Hosts.name_regex]': $scope.filter.Host.name_regex,
                     'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
                     'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                     'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
