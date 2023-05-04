@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Filter;
 
 
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+
 class ServiceFilter extends Filter {
 
     /**
@@ -32,26 +34,24 @@ class ServiceFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'bool'     => [
+            'bool'          => [
                 'Servicestatus.problem_has_been_acknowledged',
                 'Servicestatus.notifications_enabled',
                 'Servicestatus.active_checks_enabled'
             ],
-            'like'     => [
+            'like'          => [
                 'Servicestatus.output',
                 'servicedescription'
             ],
-            'rlike'    => [
+            'rlike'         => [
                 'Hosts.keywords',
-                'Hosts.name',
-                'servicename',
                 'keywords'
             ],
-            'notrlike' => [
+            'notrlike'      => [
                 'Hosts.not_keywords',
                 'not_keywords'
             ],
-            'equals'   => [
+            'equals'        => [
                 'Hosts.id',
                 'Hosts.satellite_id',
                 'Services.id',
@@ -60,11 +60,15 @@ class ServiceFilter extends Filter {
                 'servicepriority',
                 'Services.service_type',
             ],
-            'downtime' => [
+            'downtime'      => [
                 'Servicestatus.scheduled_downtime_depth',
             ],
-            'state'    => [
+            'state'         => [
                 'Servicestatus.current_state'
+            ],
+            'like_or_rlike' => [
+                'Hosts.name',
+                'servicename'
             ]
         ];
 

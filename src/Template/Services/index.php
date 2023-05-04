@@ -128,6 +128,13 @@
                                                    ng-model-options="{debounce: 500}">
                                             <div class="input-group-append">
                                                 <span class="input-group-text pt-0 pb-0">
+                                                    <label>
+                                                        <?= __('Enable RegEx'); ?>
+                                                        &nbsp;
+                                                        <input type="checkbox"
+                                                               ng-model="filter.Hosts.name_regex">
+                                                    </label>
+                                                    &nbsp;
                                                     <regex-helper-tooltip></regex-helper-tooltip>
                                                 </span>
                                             </div>
@@ -146,12 +153,20 @@
                                                    ng-model-options="{debounce: 500}">
                                             <div class="input-group-append">
                                                 <span class="input-group-text pt-0 pb-0">
+                                                    <label>
+                                                        <?= __('Enable RegEx'); ?>
+                                                        &nbsp;
+                                                        <input type="checkbox"
+                                                           ng-model="filter.Services.name_regex">
+                                                    </label>
+                                                    &nbsp;
                                                     <regex-helper-tooltip></regex-helper-tooltip>
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">
                                         <div class="input-group">
@@ -640,7 +655,8 @@
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th ng-show="fields[0]" colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
+                                <th ng-show="fields[0]" colspan="2" class="no-sort"
+                                    ng-click="orderBy('Servicestatus.current_state')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.current_state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
@@ -673,7 +689,8 @@
                                     </strong>
                                 </th>
 
-                                <th ng-show="fields[6]" class="no-sort text-center" ng-click="orderBy('servicepriority')">
+                                <th ng-show="fields[6]" class="no-sort text-center"
+                                    ng-click="orderBy('servicepriority')">
                                     <i class="fa" ng-class="getSortClass('servicepriority')"></i>
                                     <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
                                     </i>
@@ -690,11 +707,11 @@
                                     </span>
                                 </th>
 
-                                <th ng-show="fields[8]"  class="no-sort">
+                                <th ng-show="fields[8]" class="no-sort">
                                     <?= __('Service type'); ?>
                                 </th>
 
-                                <th ng-show="fields[9]"  class="no-sort">
+                                <th ng-show="fields[9]" class="no-sort">
                                     <?= __('Service description'); ?>
                                 </th>
 
@@ -704,12 +721,14 @@
                                     <?php echo __('Last state change'); ?>
                                 </th>
 
-                                <th ng-show="fields[11]" class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.last_check')">
+                                <th ng-show="fields[11]" class="no-sort tableStatewidth"
+                                    ng-click="orderBy('Servicestatus.last_check')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.last_check')"></i>
                                     <?php echo __('Last check'); ?>
                                 </th>
 
-                                <th ng-show="fields[12]" class="no-sort tableStatewidth" ng-click="orderBy('Servicestatus.next_check')">
+                                <th ng-show="fields[12]" class="no-sort tableStatewidth"
+                                    ng-click="orderBy('Servicestatus.next_check')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.next_check')"></i>
                                     <?php echo __('Next check'); ?>
                                 </th>
