@@ -120,6 +120,13 @@
                                                    ng-model-options="{debounce: 500}">
                                             <div class="input-group-append">
                                                 <span class="input-group-text pt-0 pb-0">
+                                                      <label>
+                                                            <?= __('Enable RegEx'); ?>
+                                                            &nbsp;
+                                                            <input type="checkbox"
+                                                                   ng-model="filter.Host.name_regex">
+                                                        </label>
+                                                        &nbsp;
                                                     <regex-helper-tooltip></regex-helper-tooltip>
                                                 </span>
                                             </div>
@@ -138,6 +145,13 @@
                                                    ng-model-options="{debounce: 500}">
                                             <div class="input-group-append">
                                                 <span class="input-group-text pt-0 pb-0">
+                                                      <label>
+                                                            <?= __('Enable RegEx'); ?>
+                                                            &nbsp;
+                                                            <input type="checkbox"
+                                                                   ng-model="filter.Host.address_regex">
+                                                        </label>
+                                                        &nbsp;
                                                     <regex-helper-tooltip></regex-helper-tooltip>
                                                 </span>
                                             </div>
@@ -233,8 +247,8 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td  ng-click="rootCopyToClipboard(host.Host.address, $event)"
-                                     class="copy-to-clipboard-container-text pointer">
+                                <td ng-click="rootCopyToClipboard(host.Host.address, $event)"
+                                    class="copy-to-clipboard-container-text pointer">
                                     {{ host.Host.address }}
                                     <span ng-click="rootCopyToClipboard(host.Host.address, $event)"
                                           class="copy-action text-primary animated"
