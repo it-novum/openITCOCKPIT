@@ -4611,6 +4611,16 @@ class ServicesTable extends Table {
             );
         }
 
+        // ITC-2993 implement switch to disable regex search by default
+        //if (!empty($conditions['Service']['servicename'])) {
+        //    $query->having([
+        //        'servicename LIKE' => $conditions['Service']['servicename']
+        //    ]);
+        //}
+        //if (!empty($conditions['Host']['name'])) {
+        //    $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        //}
+
         if (!empty($conditions['Host']['name'])) {
             if ($this->isValidRegularExpression($conditions['Host']['name'])) {
                 $where[] = new Comparison(
