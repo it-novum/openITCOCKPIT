@@ -253,11 +253,9 @@ class GrafanaPanel {
             $this->panel['fieldConfig']['overrides'] = $this->Overrides->getOverrides();
         }
 
-        //$this->panel['thresholds'] = $this->ThresholdCollection->getThresholdsAsArray();
-
         $thresholdsAsArray = $this->ThresholdCollection->getThresholdsAsArray();
 
-        if (!empty($thresholdsAsArray)) {
+        if (!empty($thresholdsAsArray) && empty($this->panel['fieldConfig']['overrides'])) {
 
             $this->panel['fieldConfig']['defaults']['thresholds'] = [
                 'steps' => $thresholdsAsArray

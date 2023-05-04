@@ -117,7 +117,7 @@ class GrafanaThresholdCollection {
         $thresholdsTmp = [];
 
         if ($this->isInvertedThresholds() === false) {
-            if ($this->canDisplayWarningThreshold() && !is_null($this->warning) && is_numeric($this->warning)) {
+            if ($this->canDisplayWarningThreshold()) {
                 $thresholdsTmp[] = [
                     "color" => "#EAB839",
                     "value" => $this->warning
