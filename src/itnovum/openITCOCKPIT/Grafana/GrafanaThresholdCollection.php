@@ -114,47 +114,52 @@ class GrafanaThresholdCollection {
      */
     public function getThresholdsAsArray() {
         $thresholds = [];
+        $thresholdsTmp = [];
 
         if ($this->isInvertedThresholds() === false) {
-            if ($this->canDisplayWarningThreshold()) {
-                $thresholds[] = [
-                    "colorMode" => "warning",
-                    "fill"      => true,
-                    "line"      => true,
-                    "op"        => "gt",
-                    "value"     => $this->warning
+            if ($this->canDisplayWarningThreshold() && !is_null($this->warning) && is_numeric($this->warning)) {
+                $thresholdsTmp[] = [
+                    "color" => "#EAB839",
+                    "value" => $this->warning
                 ];
             }
 
             if ($this->canDisplayCriticalThreshold()) {
-                $thresholds[] = [
-                    "colorMode" => "critical",
-                    "fill"      => true,
-                    "line"      => true,
-                    "op"        => "gt",
-                    "value"     => $this->critical
+                $thresholdsTmp[] = [
+                    "color" => "red",
+                    "value" => $this->critical
                 ];
+            }
+            if (!empty($thresholdsTmp)) {
+                $thresholds[] = [
+                    'color' => 'green',
+                    'value' => null
+                ];
+                foreach ($thresholdsTmp as $threshold) {
+                    $thresholds[] = $threshold;
+                }
             }
         }
 
         if ($this->isInvertedThresholds() === true) {
             if ($this->canDisplayCriticalThreshold()) {
                 $thresholds[] = [
-                    "colorMode" => "critical",
-                    "fill"      => true,
-                    "line"      => true,
-                    "op"        => "lt",
-                    "value"     => $this->critical
+                    "color" => "red",
+                    "value" => $this->critical
                 ];
             }
 
             if ($this->canDisplayWarningThreshold()) {
                 $thresholds[] = [
-                    "colorMode" => "warning",
-                    "fill"      => true,
-                    "line"      => true,
-                    "op"        => "lt",
-                    "value"     => $this->warning
+                    "color" => "#EAB839",
+                    "value" => $this->warning
+                ];
+            }
+
+            if (!empty($thresholds)) {
+                $thresholds[] = [
+                    'color' => 'green',
+                    'value' => null
                 ];
             }
         }

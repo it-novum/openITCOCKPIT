@@ -111,20 +111,20 @@ class GrafanaDashboard {
      *  */
 
     private $grafanaDashboardDataArray = [
-        "id"            => null,
-        "uid"           => null,
-        "title"         => "",
-        "tags"          => [],
+        "id"           => null,
+        "uid"          => null,
+        "title"        => "",
+        "tags"         => [],
         //"style" => "light",
-        "timezone"      => "browser",
-        "editable"      => true, // testing true
-        "graphTooltip"  => 0,
-        "panels"        => [],
-        "time"          => [
+        "timezone"     => "browser",
+        "editable"     => true, // testing true
+        "graphTooltip" => 0,
+        "panels"       => [],
+        "time"         => [
             "from" => "now-6h",
             "to"   => "now"
         ],
-        "timepicker"    => [
+        "timepicker"   => [
             "refresh_intervals" => [
                 "5s",
                 "10s",
@@ -149,17 +149,17 @@ class GrafanaDashboard {
                 "30d"
             ],
         ],
-        "templating"    => [
+        "templating"   => [
             "list" => []
         ],
-        'annotations'   => [
+        'annotations'  => [
             'list' => []
         ],
-        "links"   => [],
-        "rows"    => [
+        "links"        => [],
+        "rows"         => [
             //Insert rows here
         ],
-        "version" => 0,
+        "version"      => 0,
     ];
 
     /**

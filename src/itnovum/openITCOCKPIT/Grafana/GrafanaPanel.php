@@ -176,8 +176,8 @@ class GrafanaPanel {
         "timeFrom"      => null,
         "timeShift"     => null,
         "fieldConfig"   => [
-            "defaults"   => [
-                "custom" => [
+            "defaults"  => [
+                "custom"     => [
                     "drawStyle"         => "line",
                     "lineInterpolation" => "smooth",
                     "barAlignment"      => 0,
@@ -208,13 +208,14 @@ class GrafanaPanel {
                         "mode" => "off"
                     ]
                 ],
-                "color"  => [
+                "color"      => [
                     "mode" => "palette-classic"
                 ],
+                "thresholds" => []
             ],
-            "overrides"  => [],
-            "mappings"   => [],
-            "thresholds" => []
+            "overrides" => [],
+            "mappings"  => []
+
         ],
         "pluginVersion" => "9.0.2"
     ];
@@ -252,7 +253,19 @@ class GrafanaPanel {
             $this->panel['fieldConfig']['overrides'] = $this->Overrides->getOverrides();
         }
 
-        $this->panel['thresholds'] = $this->ThresholdCollection->getThresholdsAsArray();
+        //$this->panel['thresholds'] = $this->ThresholdCollection->getThresholdsAsArray();
+
+        $thresholdsAsArray = $this->ThresholdCollection->getThresholdsAsArray();
+
+        if (!empty($thresholdsAsArray)) {
+
+            $this->panel['fieldConfig']['defaults']['thresholds'] = [
+                'steps' => $thresholdsAsArray
+            ];
+            $this->panel['fieldConfig']['defaults']['custom']['gradientMode'] = 'scheme';
+            $this->panel['fieldConfig']['defaults']['color']['mode'] = 'thresholds';
+
+        }
 
         return $this->panel;
     }
