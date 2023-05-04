@@ -80,11 +80,11 @@ class ServiceFilter extends Filter {
      */
     public function notMonitoredFilter() {
         $filters = [
-            'rlike'  => [
+            'like_or_rlike' => [
                 'Hosts.name',
                 'servicename',
             ],
-            'equals' => [
+            'equals'        => [
                 'Hosts.id',
                 'Services.uuid'
             ]
