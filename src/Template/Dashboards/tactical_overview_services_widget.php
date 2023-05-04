@@ -256,6 +256,12 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                        ng-model-options="{debounce: 500}">
                                 <div class="input-group-append">
                                     <span class="input-group-text pt-0 pb-0">
+                                       <label>
+                                        <?= __('Enable RegEx'); ?>
+                                        &nbsp;
+                                        <input type="checkbox"
+                                               ng-model="filter.Host.name_regex">
+                                        </label>
                                         <regex-helper-tooltip></regex-helper-tooltip>
                                     </span>
                                 </div>
@@ -272,6 +278,12 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                        ng-model-options="{debounce: 500}">
                                 <div class="input-group-append">
                                     <span class="input-group-text pt-0 pb-0">
+                                        <label>
+                                            <?= __('Enable RegEx'); ?>
+                                            &nbsp;
+                                            <input type="checkbox"
+                                                   ng-model="filter.Service.servicename_regex">
+                                        </label>
                                         <regex-helper-tooltip></regex-helper-tooltip>
                                     </span>
                                 </div>
