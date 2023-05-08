@@ -106,7 +106,7 @@ return [
             'prefix'    => 'oitc_',
             'duration'  => '+30 minute',
             'host'      => env('OITC_REDIS_HOST', '127.0.0.1'),
-            'port'      => env('OITC_REDIS_PORT', 6379)
+            'port'      => filter_var(env('OITC_REDIS_PORT', 6379), FILTER_VALIDATE_INT)
         ],
 
         'permissions'   => [
@@ -115,7 +115,7 @@ return [
             'prefix'    => 'permissions_',
             'duration'  => '+600 seconds',
             'host'      => env('OITC_REDIS_HOST', '127.0.0.1'),
-            'port'      => env('OITC_REDIS_PORT', 6379)
+            'port'      => filter_var(env('OITC_REDIS_PORT', 6379), FILTER_VALIDATE_INT)
         ],
 
         'long_time_cache'   => [
@@ -124,7 +124,7 @@ return [
             'prefix'    => 'ltc_',
             'duration'  => '+24 hours',
             'host'      => env('OITC_REDIS_HOST', '127.0.0.1'),
-            'port'      => env('OITC_REDIS_PORT', 6379)
+            'port'      => filter_var(env('OITC_REDIS_PORT', 6379), FILTER_VALIDATE_INT)
         ],
 
         /**
