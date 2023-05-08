@@ -27,12 +27,9 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
-class GrafanaPanel {
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 
-    /**
-     * @var string|null
-     */
-    private $datasource = null;
+class GrafanaPanel {
 
     /**
      * @var string
@@ -53,6 +50,10 @@ class GrafanaPanel {
      * @var GrafanaOverrides
      */
     private $Overrides;
+    /**
+     * @var GrafanaColorOverrides
+     */
+    private $ColorOverrides;
 
     /**
      * @var GrafanaYAxes
@@ -68,80 +69,12 @@ class GrafanaPanel {
      * @var int
      */
     private $span = 6;
-
-    /**
-     * @var array
-     */
-    private $color = [];
-
+    
     /**
      * @var int
      */
     private $metricCount = 1;
 
-    /**
-     * @var array
-     */
-    /**  OLD Panel
-     * private $panel = [
-     * "aliasColors"     => [
-     * //Insert colors here
-     * ],
-     * "bars"            => false,
-     * //"datasource"      => null,
-     * "datasource"      => '-- Mixed --',
-     * "fill"            => 1,
-     * "id"              => null,
-     * "legend"          => [
-     * "alignAsTable" => true,
-     * "avg"          => true,
-     * "current"      => true,
-     * "hideEmpty"    => false,
-     * "hideZero"     => false,
-     * "max"          => true,
-     * "min"          => true,
-     * "show"         => true,
-     * "total"        => false,
-     * "values"       => true
-     * ],
-     * "lines"           => true,
-     * "linewidth"       => 1,
-     * "links"           => [],
-     * "nullPointMode"   => "connected",
-     * "percentage"      => false,
-     * "pointradius"     => 5,
-     * "points"          => false,
-     * "renderer"        => "flot",
-     * "overrides" => [],
-     * "span"            => 6,
-     * "stack"           => false,
-     * "steppedLine"     => false,
-     * "targets"         => [
-     * //Insert targets here
-     * ],
-     * "thresholds"      => [
-     * //Insert thresholds here
-     * ],
-     * "timeFrom"        => null,
-     * "timeShift"       => null,
-     * "title"           => "",
-     * "tooltip"         => [
-     * "shared"     => true,
-     * "sort"       => 0,
-     * "value_type" => "individual"
-     * ],
-     * "type"            => "graph",
-     * "xaxis"           => [
-     * "mode"   => "time",
-     * "name"   => null,
-     * "show"   => true,
-     * "values" => []
-     * ],
-     * "yaxes"           => [
-     * //Insert yaxes here
-     * ]
-     * ];
-     **/
 
     /**
      * @var array
@@ -252,7 +185,6 @@ class GrafanaPanel {
         $this->panel['id'] = $this->panelId;
         $this->panel['title'] = $this->title;
         $this->panel['targets'] = $this->targets;
-        $this->panel['aliasColors'] = $this->color;
         $this->panel['span'] = $this->span;
 
         if ($this->Overrides->hasOverrides()) {
@@ -276,6 +208,9 @@ class GrafanaPanel {
                 $this->panel['fieldConfig']['defaults']['color']['mode'] = 'thresholds';
             }
         }
+        if ($this->ColorOverrides->hasOverrides()) {
+            $this->panel['fieldConfig']['overrides'] = $this->ColorOverrides->getOverrides();
+        }
 
         return $this->panel;
     }
@@ -296,12 +231,13 @@ class GrafanaPanel {
     public function addTargets(
         GrafanaTargetCollection    $grafanaTargetCollection,
         GrafanaOverrides           $Overrides,
+        GrafanaColorOverrides      $ColorOverrides,
         GrafanaYAxes               $YAxes,
         GrafanaThresholdCollection $ThresholdCollection
     ) {
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
-        $this->color = $grafanaTargetCollection->getColorsAsArray();
         $this->Overrides = $Overrides;
+        $this->ColorOverrides = $ColorOverrides;
         $this->YAxes = $YAxes;
         $this->ThresholdCollection = $ThresholdCollection;
     }

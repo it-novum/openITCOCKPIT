@@ -70,23 +70,6 @@ class GrafanaTargetCollection {
         return $targetsArray;
     }
 
-    /**
-     * @return array
-     */
-    public function getColorsAsArray() {
-        $colorsArray = [];
-        foreach ($this->targets as $key => $grafanaTarget) {
-            /**
-             * @var GrafanaTargetInterface $grafanaTarget
-             */
-            if ($grafanaTarget->getColor() !== null) {
-                $alias = str_replace("'", '', $grafanaTarget->getAlias());
-
-                $colorsArray[$alias] = $grafanaTarget->getColor();
-            }
-        }
-        return $colorsArray;
-    }
 
     /**
      * @return array

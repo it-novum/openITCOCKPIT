@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GrafanaModule\Command;
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ProxiesTable;
@@ -350,6 +351,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             $grafanaPanel->addTargets(
                 $grafanaTargetCollection,
                 new GrafanaOverrides($grafanaTargetCollection),
+                new GrafanaColorOverrides($grafanaTargetCollection),
                 new GrafanaYAxes($grafanaTargetCollection),
                 new GrafanaThresholdCollection($grafanaTargetCollection)
             );

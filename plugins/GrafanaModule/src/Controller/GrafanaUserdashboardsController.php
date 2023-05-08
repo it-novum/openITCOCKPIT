@@ -25,6 +25,7 @@
 
 namespace GrafanaModule\Controller;
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
@@ -805,6 +806,7 @@ class GrafanaUserdashboardsController extends AppController {
                     $GrafanaPanel->addTargets(
                         $GrafanaTargetCollection,
                         new GrafanaOverrides($GrafanaTargetCollection),
+                        new GrafanaColorOverrides($GrafanaTargetCollection),
                         new GrafanaYAxes($GrafanaTargetCollection),
                         new GrafanaThresholdCollection($GrafanaTargetCollection)
                     );

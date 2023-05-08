@@ -50,7 +50,7 @@ class GrafanaOverrides {
 
                 // Get Y-axis id for current metric / unit
                 $axisId = $unitsToAxis[$target->getUnit()];
-
+                $targetColor = $target->getColor();
                 if ($target->getAlias()) {
                     $alias = str_replace('/', '\/', $target->getAlias());
                     $override = [
@@ -63,15 +63,6 @@ class GrafanaOverrides {
                                 'id'    => 'unit',
                                 'value' => $target->getUnit()
                             ]
-                            /*
-                            [
-                                'id'    => 'color',
-                                'value' => [
-                                    'fixedColor' => 'red',
-                                    'mode'=> 'fixed'
-                                ]
-                            ]
-                            */
                         ]
                     ];
                 } else {
@@ -86,6 +77,15 @@ class GrafanaOverrides {
                                 'id'    => 'unit',
                                 'value' => $target->getUnit()
                             ]
+                        ]
+                    ];
+                }
+                if ($targetColor) {
+                    $override['properties'][] = [
+                        'id'    => 'color',
+                        'value' => [
+                            'mode'       => 'fixed',
+                            'fixedColor' => $targetColor
                         ]
                     ];
                 }
