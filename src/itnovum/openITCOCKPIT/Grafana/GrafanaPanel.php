@@ -267,7 +267,6 @@ class GrafanaPanel {
             ];
 
             if ($this->getMetricCount() > 1) {
-                //$this->panel['fieldConfig']['defaults']['custom']['gradientMode'] = 'none';
                 $this->panel['fieldConfig']['defaults']['custom']['thresholdsStyle'] = [
                     'mode' => 'line'
                 ];

@@ -141,25 +141,28 @@ class GrafanaThresholdCollection {
             }
         }
 
+        $currentValue = null;
         if ($this->isInvertedThresholds() === true) {
             if ($this->canDisplayCriticalThreshold()) {
                 $thresholds[] = [
-                    "color" => "red",
-                    "value" => $this->critical
+                    'color' => 'red',
+                    'value' => $currentValue
                 ];
+                $currentValue = $this->critical;
             }
 
             if ($this->canDisplayWarningThreshold()) {
                 $thresholds[] = [
-                    "color" => "#EAB839",
-                    "value" => $this->warning
+                    'color' => '#EAB839',
+                    'value' => $currentValue
                 ];
+                $currentValue = $this->warning;
             }
 
-            if (!empty($thresholds)) {
+            if (!empty($thresholds) && !is_null($currentValue)) {
                 $thresholds[] = [
                     'color' => 'green',
-                    'value' => null
+                    'value' => $currentValue
                 ];
             }
         }
