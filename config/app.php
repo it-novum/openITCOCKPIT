@@ -74,7 +74,7 @@ return [
      *   You should treat it as extremely sensitive data.
      */
     'Security' => [
-        'salt' => 'cf4515a2c1833f4aed69591f81598da0124cbd460449b2812495a64d8d70aadc'
+        'salt' => env('OITC_SECURITY_SALT', 'cf4515a2c1833f4aed69591f81598da0124cbd460449b2812495a64d8d70aadc')
     ],
 
     /**
@@ -105,8 +105,8 @@ return [
             'serialize' => true,
             'prefix'    => 'oitc_',
             'duration'  => '+30 minute',
-            'host'      => '127.0.0.1',
-            'port'      => 6379
+            'host'      => env('OITC_REDIS_HOST', '127.0.0.1'),
+            'port'      => env('OITC_REDIS_PORT', 6379)
         ],
 
         'permissions'   => [
@@ -114,8 +114,8 @@ return [
             'serialize' => true,
             'prefix'    => 'permissions_',
             'duration'  => '+600 seconds',
-            'host'      => '127.0.0.1',
-            'port'      => 6379
+            'host'      => env('OITC_REDIS_HOST', '127.0.0.1'),
+            'port'      => env('OITC_REDIS_PORT', 6379)
         ],
 
         'long_time_cache'   => [
@@ -123,8 +123,8 @@ return [
             'serialize' => true,
             'prefix'    => 'ltc_',
             'duration'  => '+24 hours',
-            'host'      => '127.0.0.1',
-            'port'      => 6379
+            'host'      => env('OITC_REDIS_HOST', '127.0.0.1'),
+            'port'      => env('OITC_REDIS_PORT', 6379)
         ],
 
         /**
@@ -203,7 +203,7 @@ return [
      */
     'Error'    => [
         'errorLevel'        => E_ALL,
-        'exceptionRenderer' => \Cake\Error\ExceptionRenderer::class,
+        'exceptionRenderer' => \Cake\Error\Renderer\WebExceptionRenderer::class,
         'skipLog'           => [],
         'log'               => true,
         'trace'             => true,
@@ -280,6 +280,6 @@ return [
      * To use database sessions, load the SQL file located at config/schema/sessions.sql
      */
     'Session'  => [
-        'defaults' => env('SESSION_DEFAULTS', 'php'),
+        'defaults' => env('OITC_SESSION_DEFAULTS', 'php'),
     ],
 ];
