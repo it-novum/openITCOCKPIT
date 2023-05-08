@@ -267,6 +267,7 @@ class GrafanaPanel {
             ];
 
             if ($this->getMetricCount() > 1) {
+                // show threshold lines in chart with more than one metric - can be used for all charts if needed
                 $this->panel['fieldConfig']['defaults']['custom']['thresholdsStyle'] = [
                     'mode' => 'line'
                 ];
@@ -274,8 +275,6 @@ class GrafanaPanel {
                 $this->panel['fieldConfig']['defaults']['custom']['gradientMode'] = 'scheme';
                 $this->panel['fieldConfig']['defaults']['color']['mode'] = 'thresholds';
             }
-
-
         }
 
         return $this->panel;

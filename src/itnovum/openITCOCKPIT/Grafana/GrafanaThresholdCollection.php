@@ -119,20 +119,20 @@ class GrafanaThresholdCollection {
         if ($this->isInvertedThresholds() === false) {
             if ($this->canDisplayWarningThreshold()) {
                 $thresholdsTmp[] = [
-                    "color" => "#EAB839",
+                    "color" => "#ffbb33", //warning
                     "value" => $this->warning
                 ];
             }
 
             if ($this->canDisplayCriticalThreshold()) {
                 $thresholdsTmp[] = [
-                    "color" => "red",
+                    "color" => "#CC0000", //critical
                     "value" => $this->critical
                 ];
             }
             if (!empty($thresholdsTmp)) {
                 $thresholds[] = [
-                    'color' => 'green',
+                    'color' => '#00C851', //success
                     'value' => null
                 ];
                 foreach ($thresholdsTmp as $threshold) {
@@ -145,7 +145,7 @@ class GrafanaThresholdCollection {
         if ($this->isInvertedThresholds() === true) {
             if ($this->canDisplayCriticalThreshold()) {
                 $thresholds[] = [
-                    'color' => 'red',
+                    "color" => "#CC0000", //critical
                     'value' => $currentValue
                 ];
                 $currentValue = $this->critical;
@@ -153,7 +153,7 @@ class GrafanaThresholdCollection {
 
             if ($this->canDisplayWarningThreshold()) {
                 $thresholds[] = [
-                    'color' => '#EAB839',
+                    "color" => "#ffbb33", //warning
                     'value' => $currentValue
                 ];
                 $currentValue = $this->warning;
@@ -161,7 +161,7 @@ class GrafanaThresholdCollection {
 
             if (!empty($thresholds) && !is_null($currentValue)) {
                 $thresholds[] = [
-                    'color' => 'green',
+                    'color' => '#00C851', //success
                     'value' => $currentValue
                 ];
             }
