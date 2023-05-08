@@ -42,7 +42,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
@@ -50,15 +49,15 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
+use itnovum\openITCOCKPIT\Grafana\GrafanaOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
-use itnovum\openITCOCKPIT\Grafana\GrafanaOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
 use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
@@ -791,6 +790,7 @@ class GrafanaUserdashboardsController extends AppController {
                                 // So we let Grafana generate a legend
                                 $alias = null;
                             }
+                            $GrafanaPanel->setMetricCount($metricCount);
 
                             $GrafanaTargetCollection->addTarget(
                                 new GrafanaTargetPrometheus(

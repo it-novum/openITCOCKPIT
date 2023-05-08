@@ -75,6 +75,11 @@ class GrafanaPanel {
     private $color = [];
 
     /**
+     * @var int
+     */
+    private $metricCount = 1;
+
+    /**
      * @var array
      */
     /**  OLD Panel
@@ -225,7 +230,7 @@ class GrafanaPanel {
      * @param $panelId
      * @param int $span
      */
-    public function __construct($panelId, $span = 6) {
+    public function __construct($panelId, int $span = 6, $metricCount = 1) {
         $this->panelId = $panelId;
         $span = (int)$span;
         if ($span <= 0) {
@@ -237,6 +242,7 @@ class GrafanaPanel {
         }
 
         $this->span = $span;
+        $this->metricCount = $metricCount;
     }
 
     /**
@@ -254,14 +260,22 @@ class GrafanaPanel {
         }
 
         $thresholdsAsArray = $this->ThresholdCollection->getThresholdsAsArray();
-
-        if (!empty($thresholdsAsArray) && empty($this->panel['fieldConfig']['overrides'])) {
+        if (!empty($thresholdsAsArray) && empty($this->panel['fieldConfig']['overrides']) && sizeof($this->panel['targets']) === 1) {
 
             $this->panel['fieldConfig']['defaults']['thresholds'] = [
                 'steps' => $thresholdsAsArray
             ];
-            $this->panel['fieldConfig']['defaults']['custom']['gradientMode'] = 'scheme';
-            $this->panel['fieldConfig']['defaults']['color']['mode'] = 'thresholds';
+
+            if ($this->getMetricCount() > 1) {
+                //$this->panel['fieldConfig']['defaults']['custom']['gradientMode'] = 'none';
+                $this->panel['fieldConfig']['defaults']['custom']['thresholdsStyle'] = [
+                    'mode' => 'line'
+                ];
+            } else {
+                $this->panel['fieldConfig']['defaults']['custom']['gradientMode'] = 'scheme';
+                $this->panel['fieldConfig']['defaults']['color']['mode'] = 'thresholds';
+            }
+
 
         }
 
@@ -292,5 +306,20 @@ class GrafanaPanel {
         $this->Overrides = $Overrides;
         $this->YAxes = $YAxes;
         $this->ThresholdCollection = $ThresholdCollection;
+    }
+
+    /**
+     * @param $metricCount
+     * @return void
+     */
+    public function setMetricCount($metricCount) {
+        $this->metricCount = $metricCount;
+    }
+
+    /**
+     * @return int|mixed
+     */
+    private function getMetricCount() {
+        return $this->metricCount;
     }
 }

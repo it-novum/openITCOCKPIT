@@ -335,6 +335,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
 
                 $grafanaPanel = new GrafanaPanel($panelId, 6);
                 $grafanaPanel->setTitle(sprintf('%s - %s', $host['name'], $serviceName));
+                $grafanaPanel->setMetricCount($metricCount);
                 $grafanaTargetCollection->addTarget(
                     new GrafanaTargetPrometheus(
                         $service['prometheus_alert_rule']['promql'],
