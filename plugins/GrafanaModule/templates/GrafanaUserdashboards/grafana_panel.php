@@ -94,7 +94,7 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="form-group col-lg-12">
+                    <div class="form-group col-lg-12 required" ng-class="{'has-error': errors.service_id}">
                         <label class="control-label">
                             <?php echo __('Select service'); ?>
                         </label>
@@ -106,9 +106,12 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                             ng-options="itemObject.key as itemObject.value for itemObject in services"
                             ng-model="currentServiceId">
                         </select>
+                        <div ng-repeat="error in errors.service_id">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
                     </div>
 
-                    <div class="form-group col-lg-12">
+                    <div class="form-group col-lg-12 required" ng-class="{'has-error': errors.metric}">
                         <label class="control-label">
                             <?php echo __('Select metric'); ?>
                         </label>
@@ -119,6 +122,9 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                             ng-options="key as value for (key , value) in metrics"
                             ng-model="currentServiceMetric">
                         </select>
+                        <div ng-repeat="error in errors.metric">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
                     </div>
                 </div>
                 <div class="row padding-top-10 padding-bottom-10">
