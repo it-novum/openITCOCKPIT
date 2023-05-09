@@ -23,6 +23,9 @@ OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
 OS_BASE="debian"
 
 echo "Copy required system files"
+rsync -K -a ${APPDIR}/system/etc/. /etc/ # we use rsync because the destination can be a symlink on RHEL
+chown root:root /etc
+cp -r ${APPDIR}/system/usr/. /usr/
 cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
 cp ${APPDIR}/system/nginx/ssl_cert.conf /etc/nginx/openitc/ssl_cert.conf
 echo "# This file will NOT be overwritten during an update" >> /etc/nginx/openitc/custom.conf
