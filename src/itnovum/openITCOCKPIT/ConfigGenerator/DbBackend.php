@@ -25,9 +25,10 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use App\itnovum\openITCOCKPIT\ConfigGenerator\ContainerConfigInterface;
 use Cake\Core\Configure;
 
-class DbBackend extends ConfigGenerator implements ConfigInterface {
+class DbBackend extends ConfigGenerator implements ConfigInterface, ContainerConfigInterface {
 
     protected $templateDir = 'config';
 
@@ -102,6 +103,15 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
         }
 
         return '';
+    }
+
+    public function getValuesFromEnvironment() {
+        return [
+            [
+                'key'   => 'dbbackend',
+                'value' => env('OITC_DB_BACKEND', 'Statusengine3'),
+            ]
+        ];
     }
 
     /**

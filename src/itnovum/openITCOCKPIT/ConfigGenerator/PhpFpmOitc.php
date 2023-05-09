@@ -4,9 +4,10 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use App\itnovum\openITCOCKPIT\ConfigGenerator\ContainerConfigInterface;
 use Cake\Core\Configure;
 
-class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
+class PhpFpmOitc extends ConfigGenerator implements ConfigInterface, ContainerConfigInterface {
     /** @var string */
     protected $templateDir = 'PhpFpmOitc';
     /** @var string */
@@ -84,6 +85,27 @@ class PhpFpmOitc extends ConfigGenerator implements ConfigInterface {
         }
 
         return '';
+    }
+
+    public function getValuesFromEnvironment() {
+        return [
+            [
+                'key'   => 'max_children',
+                'value' => env('OITC_PHP_FPM_PM_MAX_CHILDREN', 5),
+            ],
+            [
+                'key'   => 'start_servers',
+                'value' => env('OITC_PHP_FPM_PM_START_SERVERS', 2),
+            ],
+            [
+                'key'   => 'min_spare_servers',
+                'value' => env('OITC_PHP_FPM_PM_MIN_SPARE_SERVERS', 1),
+            ],
+            [
+                'key'   => 'max_spare_servers',
+                'value' => env('OITC_PHP_FPM_PM_MAX_SPARE_SERVERS', 3),
+            ]
+        ];
     }
 
     /**
