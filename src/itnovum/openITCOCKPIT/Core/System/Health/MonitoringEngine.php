@@ -138,6 +138,10 @@ class MonitoringEngine {
     private $delimiter = '|';
 
     public function __construct() {
+        if (IS_CONTAINER) {
+            // We always use Naemon for containers
+            return 'Naemon Core Container';
+        }
 
         Configure::load('nagios');
         exec(Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' --version | head -n 2', $output);
@@ -155,6 +159,11 @@ class MonitoringEngine {
      * @return bool
      */
     public function isNaemon() {
+        if (IS_CONTAINER) {
+            // We always use Naemon for containers
+            return true;
+        }
+
         $monitoringEngine = strtolower($this->monitoringEngine);
         if (preg_match('/naemon/', $monitoringEngine)) {
             return true;
@@ -187,12 +196,12 @@ class MonitoringEngine {
     /**
      * @return array|false
      */
-    public function runNagiostats(){
+    public function runNagiostats() {
         exec($this->getNagiostatsCommand(), $output);
 
-         // Nagios and Naemon add the delimiter also the the end of the string
-         // this is bad, because explode will create and empty value in the array
-         // and this throw a warning in array_combine
+        // Nagios and Naemon add the delimiter also the the end of the string
+        // this is bad, because explode will create and empty value in the array
+        // and this throw a warning in array_combine
         $result = explode($this->delimiter, $output[0]);
         $result_sizeof = sizeof($result);
         if (sizeof($this->MRTG) < $result_sizeof) {
