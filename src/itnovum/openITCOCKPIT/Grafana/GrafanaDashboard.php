@@ -53,63 +53,6 @@ class GrafanaDashboard {
      * @var array
      */
 
-    /** OLD
-     * private $grafanaDashboardDataArray = [
-     * 'annotations'   => [
-     * 'list' => []
-     * ],
-     * "editable"      => false, // testing true
-     * "gnetId"        => null,
-     * "graphTooltip"  => 0,
-     * "hideControls"  => true, // testing false
-     * "id"            => null,
-     * "links"         => [],
-     * "rows"          => [
-     * //Insert rows here
-     * ],
-     * "schemaVersion" => 14,
-     * //"style" => "light",
-     * "tags"          => [],
-     * "templating"    => [
-     * "list" => []
-     * ],
-     * "time"          => [
-     * "from" => "now-6h",
-     * "to"   => "now"
-     * ],
-     *
-     * "timepicker" => [
-     * "refresh_intervals" => [
-     * "5s",
-     * "10s",
-     * "30s",
-     * "1m",
-     * "5m",
-     * "15m",
-     * "30m",
-     * "1h",
-     * "2h",
-     * "1d"
-     * ],
-     * "time_options"      => [
-     * "5m",
-     * "15m",
-     * "1h",
-     * "6h",
-     * "12h",
-     * "24h",
-     * "2d",
-     * "7d",
-     * "30d"
-     * ],
-     * ],
-     *
-     * "timezone" => "browser",
-     * "title"    => "",
-     * "version"  => 0,
-     * ];
-     *  */
-
     private $grafanaDashboardDataArray = [
         "id"           => null,
         "uid"          => null,
@@ -117,7 +60,7 @@ class GrafanaDashboard {
         "tags"         => [],
         //"style" => "light",
         "timezone"     => "browser",
-        "editable"     => true, // testing true
+        "editable"     => false, // testing true
         "graphTooltip" => 0,
         "panels"       => [],
         "time"         => [
