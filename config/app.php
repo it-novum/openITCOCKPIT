@@ -18,6 +18,11 @@ return [
     'debug'    => filter_var(env('OITC_DEBUG', false), FILTER_VALIDATE_BOOLEAN),
 
     /**
+     * If set to true, openITCOCKPIT is running inside a container like Docker
+     */
+    'container'    => filter_var(env('IS_CONTAINER', false), FILTER_VALIDATE_BOOLEAN),
+
+    /**
      * Configure basic information about the application.
      *
      * - namespace - The namespace to find app classes under.

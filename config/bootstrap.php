@@ -112,6 +112,13 @@ if (!defined('ENVIRONMENT')) {
     }
 }
 
+if (!defined('IS_CONTAINER')) {
+    if (Configure::read('container') === true) {
+        define('IS_CONTAINER', true);
+    } else {
+        define('IS_CONTAINER', false);
+    }
+}
 
 /*
  * Load an environment local configuration file to provide overrides to your configuration.
