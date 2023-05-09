@@ -351,6 +351,7 @@ class ConfigGenerator {
 
         $FileHeader = new FileHeader();
         $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
+        $configToExport['IS_CONTAINER'] = IS_CONTAINER;
 
         $configDir = dirname($this->realOutfile);
         if (!is_dir($configDir)) {

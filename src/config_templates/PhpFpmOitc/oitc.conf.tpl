@@ -375,7 +375,11 @@ pm.max_spare_servers = {{max_spare_servers}}
 ; Setting to "no" will make all environment variables available to PHP code
 ; via getenv(), $_ENV and $_SERVER.
 ; Default Value: yes
+{% if IS_CONTAINER %}
+clear_env = no
+{% else %}
 ;clear_env = no
+{% endif %}
 
 ; Limits the extensions of the main script FPM will allow to parse. This can
 ; prevent configuration mistakes on the web server side. You should only limit
