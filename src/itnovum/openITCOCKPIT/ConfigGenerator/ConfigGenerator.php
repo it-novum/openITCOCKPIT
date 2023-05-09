@@ -300,6 +300,13 @@ class ConfigGenerator {
     private function flatDbResult($dbResult) {
         $result = [];
         foreach ($dbResult as $record) {
+            // ITC-2986 make default settings from environment variable look like from the database
+            if(!isset($record['ConfigurationFile'])){
+                $record = [
+                    'ConfigurationFile' => $record
+                ];
+            }
+
             $result[$record['ConfigurationFile']['key']] = $record['ConfigurationFile']['value'];
         }
         return $result;

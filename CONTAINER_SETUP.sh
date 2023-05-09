@@ -17,12 +17,6 @@ INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 BASHCONF=/opt/openitc/etc/mysql/bash.conf
 
-DEBIANCNF=/etc/mysql/debian.cnf
-
-MYSQL_USER="openitcockpit"
-MYSQL_DATABASE="openitcockpit"
-MYSQL_PASSWORD=$(pwgen -s -1 16)
-
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
 OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
