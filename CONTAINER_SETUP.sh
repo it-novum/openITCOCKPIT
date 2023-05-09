@@ -50,6 +50,34 @@ if [[ -d /opt/openitc/frontend/plugins/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
 fi
 
+# It is important that the statusengine-worker container is already up and running and has created all
+# the Statusengine related MySQL tables, because the setup will add partitions to the tables
+echo "Checking if Statusengine Tables where already created..."
+COUNTER=0
+MYSQL_ONLINE=0
+
+set +e
+while [ "$COUNTER" -lt 30 ]; do
+    #Is Grafana Server Online?
+    OUTPUT=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT 1 FROM statusengine_nodes;" -B -s 2>/dev/null)
+
+    if [ "$OUTPUT" ]; then
+        echo "Tables are present."
+        MYSQL_ONLINE=1
+        break
+    fi
+    echo "Waiting for Statusengine to create tables..."
+    COUNTER=$((COUNTER + 1))
+    sleep 1
+done
+
+if [[ "$MYSQL_ONLINE" == 0 ]]; then
+    echo "ERROR!"
+    echo "Statusengine tables are missing! ABORT!"
+    exit 1
+fi
+set -e
+
 #mkdir -p /opt/openitc/var/prometheus
 #chown nagios:nagios /opt/openitc/var/prometheus
 #mkdir -p /opt/openitc/var/prometheus/victoria-metrics
