@@ -80,6 +80,7 @@ class GeneratorRegistry {
             new DbBackend(),
             new PerfdataBackend(),
             new Gearman(),
+            new GraphiteWeb(),
             new NSTAMaster(),
             new PhpFpmOitc()
         ];
