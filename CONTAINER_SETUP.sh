@@ -126,8 +126,6 @@ oitc config_generator_shell --generate-container
 echo "---------------------------------------------------------------"
 echo "Configure Grafana"
 
-ADMIN_PASSWORD=$(cat /opt/openitc/etc/grafana/admin_password)
-
 if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
     echo "Create new Grafana API Key for openITCOCKPIT"
     COUNTER=0
