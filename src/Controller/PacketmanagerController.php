@@ -91,26 +91,35 @@ class PacketmanagerController extends AppController {
 
             $installedModules = [];
             $output = [];
-            $LsbRelease = new LsbRelease();
-            if ($LsbRelease->isDebianBased()) {
-                exec('dpkg -l |grep openitcockpit-module', $output, $rc);
-                //$output = $this->getTestDpkgOutput();
-            }
-
-            if ($LsbRelease->isRhelBased()) {
-                exec('dnf list installed | grep openitcockpit-module', $output, $rc);
-                //$output = $this->getTestDnfOutput();
-            }
-
-            foreach ($output as $line) {
-                preg_match_all('/(openitcockpit\-module\-\w+)/', $line, $matches);
-                if (isset($matches[0][0])) {
-                    $module = $matches[0][0];
-                    $installedModules[$module] = true;
+            if (!IS_CONTAINER) {
+                $LsbRelease = new LsbRelease();
+                if ($LsbRelease->isDebianBased()) {
+                    exec('dpkg -l |grep openitcockpit-module', $output, $rc);
+                    //$output = $this->getTestDpkgOutput();
                 }
 
-                if (isset($matches)) {
-                    unset($matches);
+                if ($LsbRelease->isRhelBased()) {
+                    exec('dnf list installed | grep openitcockpit-module', $output, $rc);
+                    //$output = $this->getTestDnfOutput();
+                }
+
+                foreach ($output as $line) {
+                    preg_match_all('/(openitcockpit\-module\-\w+)/', $line, $matches);
+                    if (isset($matches[0][0])) {
+                        $module = $matches[0][0];
+                        $installedModules[$module] = true;
+                    }
+
+                    if (isset($matches)) {
+                        unset($matches);
+                    }
+                }
+            } else {
+                // Container based version of openITCOCKPIT have always all modules enabled
+                if (isset($result['data']['modules'])) {
+                    foreach ($result['data']['modules'] as $module) {
+                        $installedModules[$module['Module']['apt_name']] = true;
+                    }
                 }
             }
 
