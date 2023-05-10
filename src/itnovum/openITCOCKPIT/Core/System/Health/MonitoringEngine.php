@@ -140,7 +140,8 @@ class MonitoringEngine {
     public function __construct() {
         if (IS_CONTAINER) {
             // We always use Naemon for containers
-            return 'Naemon Core Container';
+            $this->monitoringEngine =  'Naemon Core Container';
+            return;
         }
 
         Configure::load('nagios');
