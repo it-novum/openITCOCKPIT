@@ -69,7 +69,7 @@ class GrafanaPanel {
      * @var int
      */
     private $span = 6;
-    
+
     /**
      * @var int
      */
@@ -149,7 +149,9 @@ class GrafanaPanel {
                 "color"      => [
                     "mode" => "palette-classic"
                 ],
-                "thresholds" => []
+                "thresholds" => [
+                    "steps" => []
+                ]
             ],
             "overrides" => [],
             "mappings"  => []
