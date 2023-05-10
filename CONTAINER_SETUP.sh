@@ -119,10 +119,7 @@ echo "Create new WebSocket Key"
 WEBSOCKET_KEY=$(php -r "echo bin2hex(openssl_random_pseudo_bytes(80, \$cstrong));")
 mysql "--defaults-extra-file=${INIFILE}" -e "UPDATE systemsettings SET \`systemsettings\`.\`value\`='${WEBSOCKET_KEY}' WHERE \`key\`='SUDO_SERVER.API_KEY';"
 
-if [ ! -f /opt/openitc/etc/grafana/admin_password ]; then
-    echo "Generate new Grafana password for user 'admin'"
-    pwgen 10 1 > /opt/openitc/etc/grafana/admin_password
-fi
+echo $OITC_GRAFANA_ADMIN_PASSWORD > /opt/openitc/etc/grafana/admin_password
 
 oitc config_generator_shell --generate-container
 
@@ -139,10 +136,10 @@ if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
     while [ "$COUNTER" -lt 30 ]; do
         echo "Try to connect to Grafana API..."
         #Is Grafana Server Online?
-        STATUSCODE=$(curl --noproxy 'grafana' "http://$OITC_GRAFANA_URL/api/admin/stats" -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+        STATUSCODE=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/admin/stats" -XGET -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 
         if [ "$STATUSCODE" == "200" ]; then
-            API_KEY=$(curl --noproxy 'grafana' "http://$OITC_GRAFANA_URL/api/auth/keys" -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{"role":"Editor","name":"openITCOCKPIT"}' | jq -r '.key')
+            API_KEY=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/auth/keys" -XPOST -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{"role":"Editor","name":"openITCOCKPIT"}' | jq -r '.key')
             echo "$API_KEY" >/opt/openitc/etc/grafana/api_key
             break
         fi
@@ -158,10 +155,10 @@ if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
 fi
 
 echo "Check if Graphite Datasource exists in Grafana"
-DS_STATUSCODE=$(curl --noproxy 'grafana' "http://$OITC_GRAFANA_URL/api/datasources/name/Graphite" -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+DS_STATUSCODE=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/datasources/name/Graphite" -XGET -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 if [ "$DS_STATUSCODE" == "404" ]; then
     echo "Create Graphite as default Datasource for Grafana"
-    RESPONSE=$(curl --noproxy 'grafana' "http://$OITC_GRAFANA_URL/api/datasources" -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+    RESPONSE=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/datasources" -XPOST -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
       "name":"Graphite",
       "type":"graphite",
       "url":"http://graphite-web:8080",
@@ -177,10 +174,10 @@ fi
 echo "Ok: Graphite datasource exists."
 
 echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
-DS_STATUSCODE=$(curl --noproxy 'grafana' "http://$OITC_GRAFANA_URL/api/datasources/name/Prometheus" -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+DS_STATUSCODE=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/datasources/name/Prometheus" -XGET -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 if [ "$DS_STATUSCODE" == "404" ]; then
     echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
-    RESPONSE=$(curl --noproxy 'grafana' "http://$OITC_GRAFANA_URL/api/datasources" -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+    RESPONSE=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/datasources" -XPOST -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
       "name":"Prometheus",
       "type":"prometheus",
       "url":"http://victoriametrics:8428",
