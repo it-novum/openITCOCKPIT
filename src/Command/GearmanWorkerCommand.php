@@ -30,6 +30,7 @@ namespace App\Command;
 
 use App\itnovum\openITCOCKPIT\Database\Backup;
 use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
+use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use App\Model\Entity\Changelog;
 use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\ChangelogsTable;
@@ -1332,16 +1333,34 @@ class GearmanWorkerCommand extends Command {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $SystemsettingsTable->findAsArray();
 
-        $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
-        $naemonCfg = Configure::read('nagios.nagios_cfg');
-        $cmd = sprintf(
-            'sudo -u %s %s -v %s',
-            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-            $naemonBin,
-            $naemonCfg
-        );
-        $output = null;
-        exec($cmd, $output, $returncode);
+        $Supervisorctl = new Supervisorctl();
+
+        if(IS_CONTAINER){
+            // Naemon is running inside a container - query remote supervisor to run "naemon -v naemon.cfg"
+            try {
+                $Supervisorctl->start('naemon-verify');
+                sleep(2);
+                $result = $Supervisorctl->status('naemon-verify');
+                debug($result);
+
+                $returncode = $result['exitstatus'] ?? 1;
+            }catch (\Exception $e){
+                Log::error($e->getMessage());
+                $returncode = 1;
+            }
+        }else {
+            // Local running Naemon
+            $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
+            $naemonCfg = Configure::read('nagios.nagios_cfg');
+            $cmd = sprintf(
+                'sudo -u %s %s -v %s',
+                escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                $naemonBin,
+                $naemonCfg
+            );
+            $output = null;
+            exec($cmd, $output, $returncode);
+        }
         $verifyEntity->set('finished', 1);
         if ($returncode === 0) {
             //New configuration is valid :-)
@@ -1350,85 +1369,133 @@ class GearmanWorkerCommand extends Command {
             $ExportsTable->save($verifyEntity);
 
             //Reloading the monitoring system
-
-            //Check if Naemon/Nagios is running.
-            //If Nagios is running, we reload the config, if not we need to restart
-            $entity = $ExportsTable->newEntity([
-                'task' => 'is_monitoring_engine_running',
-                'text' => __('Check if monitoring engine is running')
-            ]);
-            $ExportsTable->save($entity);
-            exec($systemsettings['MONITORING']['MONITORING.STATUS'], $statusOutput, $statusRc);
-            $entity->set('finished', 1);
-            $entity->set('successfully', 1);
-            $ExportsTable->save($entity);
-            unset($entity);
-
-            $isMonitoringRunning = false;
-            if ($statusRc === 0) {
-                //Nagios/Naemon is running (reload)
+            if(!IS_CONTAINER) {
+                //Check if Naemon/Nagios is running.
+                //If Nagios is running, we reload the config, if not we need to restart
                 $entity = $ExportsTable->newEntity([
-                    'task' => 'export_reload_monitoring',
-                    'text' => __('Reloading monitoring engine')
+                    'task' => 'is_monitoring_engine_running',
+                    'text' => __('Check if monitoring engine is running')
                 ]);
                 $ExportsTable->save($entity);
-                exec($systemsettings['MONITORING']['MONITORING.RELOAD'], $reloadOutput, $reloadRc);
+                exec($systemsettings['MONITORING']['MONITORING.STATUS'], $statusOutput, $statusRc);
                 $entity->set('finished', 1);
-                $entity->set('successfully', 0);
-                if ($reloadRc === 0) {
-                    $entity->set('successfully', 1);
-                    $isMonitoringRunning = true;
-                }
+                $entity->set('successfully', 1);
                 $ExportsTable->save($entity);
                 unset($entity);
-            } else {
-                //Nagios/Naemon is stopped (restart)
-                $entity = $ExportsTable->newEntity([
-                    'task' => 'export_restart_monitoring',
-                    'text' => __('Restarting monitoring engine')
-                ]);
-                $ExportsTable->save($entity);
-                exec($systemsettings['MONITORING']['MONITORING.RESTART'], $restartOutput, $restartRc);
-                $entity->set('finished', 1);
-                $entity->set('successfully', 0);
-                if ($restartRc === 0) {
-                    $entity->set('successfully', 1);
-                    $isMonitoringRunning = true;
+
+                $isMonitoringRunning = false;
+                if ($statusRc === 0) {
+                    //Nagios/Naemon is running (reload)
+                    $entity = $ExportsTable->newEntity([
+                        'task' => 'export_reload_monitoring',
+                        'text' => __('Reloading monitoring engine')
+                    ]);
+                    $ExportsTable->save($entity);
+                    exec($systemsettings['MONITORING']['MONITORING.RELOAD'], $reloadOutput, $reloadRc);
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 0);
+                    if ($reloadRc === 0) {
+                        $entity->set('successfully', 1);
+                        $isMonitoringRunning = true;
+                    }
+                    $ExportsTable->save($entity);
+                    unset($entity);
+                } else {
+                    //Nagios/Naemon is stopped (restart)
+                    $entity = $ExportsTable->newEntity([
+                        'task' => 'export_restart_monitoring',
+                        'text' => __('Restarting monitoring engine')
+                    ]);
+                    $ExportsTable->save($entity);
+                    exec($systemsettings['MONITORING']['MONITORING.RESTART'], $restartOutput, $restartRc);
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 0);
+                    if ($restartRc === 0) {
+                        $entity->set('successfully', 1);
+                        $isMonitoringRunning = true;
+                    }
+                    $ExportsTable->save($entity);
+                    unset($entity);
                 }
-                $ExportsTable->save($entity);
-                unset($entity);
-            }
 
 
-            if ($isMonitoringRunning) {
-                //Run After Export command
-                $entity = $ExportsTable->newEntity([
-                    'task' => 'export_after_export_command',
-                    'text' => __('Execute after export command')
-                ]);
-                $output = null;
-                exec($systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'], $output, $returncode);
+                if ($isMonitoringRunning) {
+                    //Run After Export command
+                    $entity = $ExportsTable->newEntity([
+                        'task' => 'export_after_export_command',
+                        'text' => __('Execute after export command')
+                    ]);
+                    $output = null;
+                    exec($systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'], $output, $returncode);
 
-                // Avoid "MySQL server has gone away"
-                $connection = $SystemsettingsTable->getConnection();
-                $connection->disconnect();
-                $connection->connect();
+                    // Avoid "MySQL server has gone away"
+                    $connection = $SystemsettingsTable->getConnection();
+                    $connection->disconnect();
+                    $connection->connect();
 
-                $entity->set('finished', 1);
-                $entity->set('successfully', 0);
-                if ($returncode == 0) {
-                    $entity->set('successfully', 1);
-                    $this->distributedMonitoringAfterExportCommand();
-                    $this->importModuleAfterExportCommand();
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 0);
+                    if ($returncode == 0) {
+                        $entity->set('successfully', 1);
+                        $this->distributedMonitoringAfterExportCommand();
+                        $this->importModuleAfterExportCommand();
+                    } else {
+                        $successfully = 0;
+                    }
+
+                    $ExportsTable->save($entity);
+                    unset($entity);
+
                 } else {
                     $successfully = 0;
                 }
-
+            }else{
+                // Containerized openITCOCKPIT
+                // Restart remote Naemon
+                $entity = $ExportsTable->newEntity([
+                    'task' => 'export_restart_monitoring',
+                    'text' => __('Restarting containerized monitoring engine')
+                ]);
                 $ExportsTable->save($entity);
-                unset($entity);
+                $result = $Supervisorctl->restart('naemon');
+                debug($result);
+                $entity->set('finished', 1);
+                $entity->set('successfully', 0);
+                if($result === true){
+                    $entity->set('successfully', 1);
+                    $isMonitoringRunning = true;
+                }
 
-            } else {
-                $successfully = 0;
+                if ($isMonitoringRunning) {
+                    //Run After Export command
+                    $entity = $ExportsTable->newEntity([
+                        'task' => 'export_after_export_command',
+                        'text' => __('Execute after export command')
+                    ]);
+                    $output = null;
+                    exec($systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'], $output, $returncode);
+
+                    // Avoid "MySQL server has gone away"
+                    $connection = $SystemsettingsTable->getConnection();
+                    $connection->disconnect();
+                    $connection->connect();
+
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 0);
+                    if ($returncode == 0) {
+                        $entity->set('successfully', 1);
+                        $this->distributedMonitoringAfterExportCommand();
+                        $this->importModuleAfterExportCommand();
+                    } else {
+                        $successfully = 0;
+                    }
+
+                    $ExportsTable->save($entity);
+                    unset($entity);
+
+                } else {
+                    $successfully = 0;
+                }
             }
         } else {
             //Error with new configuration :-(

@@ -60,6 +60,7 @@ class Supervisorctl {
 
         switch ($serviceName) {
             case 'naemon':
+            case 'naemon-verify':
                 // Tell the Naemon Container to start|stop|restart Naemon
                 $url = sprintf(
                     'http://%s:%s/RPC2',

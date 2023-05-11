@@ -70,6 +70,7 @@ class SupervisorCommand extends Command {
 
                 // Monitoring Engines
                 'naemon',
+                'naemon-verify',
                 'prometheus',
                 'nsta',
 
