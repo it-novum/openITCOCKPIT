@@ -753,26 +753,50 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'export_verify_config':
+                if(!IS_CONTAINER) {
+                    // Normal installation of openITCOCKPIT via apt, dnf or git
+                    /** @var SystemsettingsTable $SystemsettingsTable */
+                    $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                    $systemsettings = $SystemsettingsTable->findAsArray();
 
-                /** @var SystemsettingsTable $SystemsettingsTable */
-                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-                $systemsettings = $SystemsettingsTable->findAsArray();
+                    $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
+                    $naemonCfg = Configure::read('nagios.nagios_cfg');
 
-                $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
-                $naemonCfg = Configure::read('nagios.nagios_cfg');
+                    $cmd = sprintf(
+                        'sudo -u %s %s -v %s',
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                        $naemonBin,
+                        $naemonCfg
+                    );
 
-                $cmd = sprintf(
-                    'sudo -u %s %s -v %s',
-                    escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                    $naemonBin,
-                    $naemonCfg
-                );
+                    exec($cmd, $output, $returncode);
+                    $return = [
+                        'output'     => $output,
+                        'returncode' => $returncode,
+                    ];
+                }else{
+                    // openITCOCKPIT is running in a container like docker
+                    $Supervisorctl = new Supervisorctl();
+                    // Naemon is running in a remote container, so we can only communicate through the XML RCP API of Supervisor
+                    $SupervisorApiEndpoint = $Supervisorctl->getSupervisorApiEndpointByServiceName('naemon-verify');
 
-                exec($cmd, $output, $returncode);
-                $return = [
-                    'output'     => $output,
-                    'returncode' => $returncode,
-                ];
+                    // Clear any old logs
+                    $SupervisorApiEndpoint->clearAllProcessLogs();
+
+                    //Run naemon-verify
+                    $Supervisorctl->start('naemon-verify');
+                    sleep(1);
+                    $result = $Supervisorctl->status('naemon-verify');
+                    $returncode = $result['exitstatus'];
+                    $output = [
+                        $SupervisorApiEndpoint->readProcessStdoutLog('naemon-verify', 0,(1024*1000))
+                    ];
+
+                    $return = [
+                        'output'     => $output ?? ['Unknown'],
+                        'returncode' => $returncode ?? 1,
+                    ];
+                }
                 break;
 
             case 'export_verify_prometheus_config':
