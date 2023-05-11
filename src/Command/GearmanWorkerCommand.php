@@ -1341,8 +1341,6 @@ class GearmanWorkerCommand extends Command {
                 $Supervisorctl->start('naemon-verify');
                 sleep(2);
                 $result = $Supervisorctl->status('naemon-verify');
-                debug($result);
-
                 $returncode = $result['exitstatus'] ?? 1;
             }catch (\Exception $e){
                 Log::error($e->getMessage());
@@ -1458,13 +1456,13 @@ class GearmanWorkerCommand extends Command {
                 ]);
                 $ExportsTable->save($entity);
                 $result = $Supervisorctl->restart('naemon');
-                debug($result);
                 $entity->set('finished', 1);
                 $entity->set('successfully', 0);
                 if($result === true){
                     $entity->set('successfully', 1);
                     $isMonitoringRunning = true;
                 }
+                $ExportsTable->save($entity);
 
                 if ($isMonitoringRunning) {
                     //Run After Export command
