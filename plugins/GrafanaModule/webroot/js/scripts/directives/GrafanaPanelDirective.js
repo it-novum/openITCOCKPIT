@@ -74,6 +74,77 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
 
             };
 
+            $scope.loadMetric = function(metric){
+                $http.get("/grafana_module/grafana_userdashboards/editMetricFromPanel/" + metric.id + ".json",
+                    {
+                        params: {
+                            'angular': true
+                        }
+                    }
+                ).then(function(result){
+                    $scope.metric = result.data.metric;
+                    $scope.panelId = $scope.metric.panel_id;
+                    $scope.currentServiceId = $scope.metric.service_id;
+                    $scope.currentServiceMetric = $scope.metric.metric;
+                    $scope.currentMetricColor = $scope.metric.color;
+                    loadServices('', $scope.currentServiceMetric);
+                }, function errorCallback(result){
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'error',
+                        text: 'Error while loading metric',
+                        timeout: 3500
+                    }).show();
+
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+            };
+
+            $scope.updateMetric = function(metricId){
+
+                var data = {
+                    GrafanaUserdashboardMetric: {
+                        row: parseInt($scope.rowId, 10), //int
+                        panel_id: parseInt($scope.panelId, 10), //int
+                        service_id: $scope.currentServiceId, //int
+                        metric: $scope.currentServiceMetric, //String
+                        color: $scope.currentMetricColor, //String or null
+                        userdashboard_id: $scope.id //int
+                    }
+                };
+
+                $http.post("/grafana_module/grafana_userdashboards/editMetricFromPanel/" + metricId + ".json?angular=true", data
+                ).then(function(result){
+                    $scope.errors = {};
+                    if(result.data.hasOwnProperty('metric')){
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'success',
+                            text: 'Metric updated successfully',
+                            timeout: 3500
+                        }).show();
+                        var index = _.findIndex($scope.panel.metrics, {id: metricId});
+                        if(index > -1){
+                            $scope.panel.metrics[index] = result.data.metric;
+                        }
+                        $('#addMetricToPanelModal_' + $scope.rowId + '_' + $scope.panelId).modal('hide');
+                    }
+                }, function errorCallback(result){
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'error',
+                        text: 'Error while adding metric',
+                        timeout: 3500
+                    }).show();
+
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+            };
+
             $scope.removeMetric = function(metric){
                 $http.post("/grafana_module/grafana_userdashboards/removeMetricFromPanel.json?angular=true",
                     {
@@ -180,7 +251,6 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                         $scope.metric = firstMetric;
                     }
                     $scope.metrics = metrics;
-                    //console.log($scope.metrics);
                 });
             };
 

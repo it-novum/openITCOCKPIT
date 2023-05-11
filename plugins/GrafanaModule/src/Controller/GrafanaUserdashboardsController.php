@@ -526,6 +526,64 @@ class GrafanaUserdashboardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['metric']);
     }
 
+    /**
+     * @param int|null $id
+     */
+    public function editMetricFromPanel($id = null) {
+        if (!$this->request->is('get') && !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var GrafanaUserdashboardMetricsTable $GrafanaUserdashboardMetricsTable */
+        $GrafanaUserdashboardMetricsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardMetrics');
+
+        if (!$GrafanaUserdashboardMetricsTable->existsById($id)) {
+            throw new NotFoundException(__('Metric not found'));
+        }
+
+        $metric = $GrafanaUserdashboardMetricsTable->get($id);
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            $this->set('metric', $metric);
+            $this->viewBuilder()->setOption('serialize', ['metric']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $metric = $GrafanaUserdashboardMetricsTable->patchEntity(
+                $metric,
+                $this->request->getData('GrafanaUserdashboardMetric', [])
+            );
+
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $service = $ServicesTable->getServiceById($this->request->getData('GrafanaUserdashboardMetric.service_id', 0));
+
+            $GrafanaUserdashboardMetricsTable->save($metric);
+            if ($metric->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $metric->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+            $Host = new Host($service->get('host'));
+            $Service = new Service($service->toArray());
+
+            $metric = $metric->toArray();
+            $metric['Host'] = $Host->toArray();
+            $metric['Service'] = $Service->toArray();
+
+            $this->set('success', true);
+            $this->set('metric', $metric);
+            $this->viewBuilder()->setOption('serialize', ['success', 'metric']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+    }
+
     public function removeMetricFromPanel() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

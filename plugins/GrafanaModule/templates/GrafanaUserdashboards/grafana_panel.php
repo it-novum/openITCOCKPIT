@@ -34,7 +34,7 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
     </div>
 
     <div class="padding-2 row margin-5 slightBorder" ng-repeat="metric in panel.metrics">
-        <ol class="breadcrumb breadcrumb-seperator-1 noWordBreak col-10"
+        <ol class="breadcrumb breadcrumb-seperator-1 noWordBreak col-9 ellipsis"
             style="padding-top: 0px; padding-bottom: 0px; margin-bottom: 0px;">
             <li class="breadcrumb-item">
                 <?php if ($this->Acl->hasPermission('browser', 'hosts', '')): ?>
@@ -54,16 +54,18 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                     {{metric.Service.servicename}}
                 <?php endif; ?>
             </li>
-            <li class="breadcrumb-item">
+            <li class="breadcrumb-item" title="{{metric.metric}}">
                 {{metric.metric}}
             </li>
         </ol>
-        <div class="actions col-1">
+        <div class="actions col-1 no-padding">
             <div ng-if="metric.color"
                  class="grafana-child-color" style="background-color: {{metric.color}};"></div>
         </div>
-        <div class="actions col-1" style="padding-top: 4px;">
-            <i class="fa fa-trash text-danger float-right pointer"
+        <div class="actions col-2 no-padding text-right">
+            <i class="fa-solid fa-pencil text-primary pointer"
+               ng-click="loadMetric(metric)"></i>
+            <i class="fa fa-trash text-danger pointer px-1"
                ng-click="removeMetric(metric)"></i>
         </div>
     </div>
@@ -86,7 +88,12 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
             <div class="modal-header">
                 <h5 class="modal-title">
                     <i class="fas fa-pencil-alt"></i>
-                    <?php echo __('Add new metric'); ?>
+                    <span ng-hide="metric.id">
+                        <?php echo __('Add new metric'); ?>
+                    </span>
+                    <span ng-show="metric.id">
+                        <?php echo __('Update metric'); ?>
+                    </span>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="fa fa-times"></i></span>
@@ -162,8 +169,11 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" ng-click="saveMetric()">
+                <button type="button" class="btn btn-success" ng-click="saveMetric()" ng-hide="metric.id">
                     <?php echo __('Add metric'); ?>
+                </button>
+                <button type="button" class="btn btn-success" ng-click="updateMetric(metric.id)" ng-show="metric.id">
+                    <?php echo __('Update metric'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
