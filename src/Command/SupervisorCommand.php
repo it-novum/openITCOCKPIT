@@ -27,11 +27,13 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use App\itnovum\openITCOCKPIT\Supervisor\XMLRPCApi;
 use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use http\Exception\RuntimeException;
 
 /**
  * Supervisor command.
@@ -47,6 +49,38 @@ class SupervisorCommand extends Command {
     public function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser {
         $parser = parent::buildOptionParser($parser);
 
+        $parser->addArgument('command', [
+            'help'     => 'Command to execute',
+            'required' => true,
+            'choices'  => ['start', 'stop', 'restart', 'status'],
+        ]);
+
+        $parser->addArgument('service_name', [
+            'help'     => 'Command to execute',
+            'required' => true,
+            'choices'  => [
+                // openITCOCKPIT background
+                'oitc_cmd',
+                'sudo_server',
+                'gearman_worker',
+                'event-collectd',     //todo
+                'push_notification',
+                'prometheus_bridge',  //todo
+                'customalert_worker', //todo
+
+                // Monitoring Engines
+                'naemon',
+                'prometheus',
+                'nsta',
+
+                // System
+                'nginx',
+                'php-fpm',
+                'snmptrapd',
+                'snmptt',
+            ],
+        ]);
+
         return $parser;
     }
 
@@ -58,23 +92,69 @@ class SupervisorCommand extends Command {
      * @return null|void|int The exit code or null for success
      */
     public function execute(Arguments $args, ConsoleIo $io) {
+        $command = $args->getArgument('command');
+        $serviceName = $args->getArgument('service_name');
 
-        $SupervisorApi = new XMLRPCApi('supervisord', 'password', 'http://127.0.0.1:9001/RPC2');
+        $Supervisorctl = new Supervisorctl();
 
-        try {
-            debug($SupervisorApi->getApiVersion());
-            debug($SupervisorApi->getSupervisorVersion());
-            debug($SupervisorApi->getIdentification());
-            debug($SupervisorApi->getState());
-            debug($SupervisorApi->getPID());
-            debug($SupervisorApi->readLog());
-            debug($SupervisorApi->listMethods());
-            debug($SupervisorApi->methodHelp('supervisor.stopAllProcesses'));
-            debug($SupervisorApi->methodSignature('supervisor.stopAllProcesses'));
-            debug($SupervisorApi->getProcessInfo('sudo_server'));
-            debug($SupervisorApi->getAllProcessInfo());
-        }catch (\Exception $e){
-            debug($e->getMessage());
+        switch ($command) {
+            case 'start':
+                $result = $Supervisorctl->start($serviceName);
+                if ($result === true) {
+                    $io->out(sprintf('Service %s started ', $serviceName), 0);
+                    $io->success('successfully.', 1);
+                    break;
+                }
+
+                print_r($result);
+                break;
+
+            case 'stop':
+                $result = $Supervisorctl->stop($serviceName);
+                if ($result === true) {
+                    $io->out(sprintf('Service %s stopped ', $serviceName), 0);
+                    $io->success('successfully.', 1);
+                    break;
+                }
+
+                print_r($result);
+                break;
+
+            case 'restart':
+                $result = $Supervisorctl->stop($serviceName);
+                if ($result === true) {
+                    $io->out(sprintf('Service %s stopped ', $serviceName), 0);
+                    $io->success('successfully.', 1);
+                } else {
+                    print_r($result);
+                }
+
+                $result = $Supervisorctl->start($serviceName);
+                if ($result === true) {
+                    $io->out(sprintf('Service %s started ', $serviceName), 0);
+                    $io->success('successfully.', 1);
+                } else {
+                    print_r($result);
+                }
+                break;
+
+            default:
+                $result = $Supervisorctl->status($serviceName);
+                if ($result['statename'] === 'RUNNING') {
+                    $io->out(sprintf('Service %s is ', $serviceName), 0);
+                    $io->success('running. ', 0);
+                    $io->out($result['description']);
+                    break;
+                }
+
+                if ($result['statename'] === 'STOPPED') {
+                    $io->out(sprintf('Service %s is ', $serviceName), 0);
+                    $io->error('stopped.');
+                    break;
+                }
+
+                // Unknown state
+                print_r($result);
         }
 
     }

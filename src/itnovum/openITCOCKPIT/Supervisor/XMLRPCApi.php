@@ -51,16 +51,22 @@ class XMLRPCApi {
      */
     private $url;
 
+    /**
+     * Connection timeout in seconds
+     * @var
+     */
+    private $timeout;
 
     /**
      * @param string $username
      * @param string $password
      * @param string $url Full API url with protocol and port like http://127.0.0.1:9001/RPC2
      */
-    public function __construct(string $username, string $password, string $url = 'http://127.0.0.1:9001/RPC2') {
+    public function __construct(string $username, string $password, string $url = 'http://127.0.0.1:9001/RPC2', $timeout = 60) {
         $this->username = $username;
         $this->password = $password;
         $this->url = $url;
+        $this->timeout = $timeout;
     }
 
     /**
@@ -80,7 +86,7 @@ class XMLRPCApi {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, false);
@@ -95,10 +101,10 @@ class XMLRPCApi {
 
         if (curl_errno($ch)) {
             throw new ApiException(curl_error($ch));
-        } else {
-            curl_close($ch);
-            return xmlrpc_decode($data);
         }
+
+        curl_close($ch);
+        return xmlrpc_decode($data);
     }
 
     /**
