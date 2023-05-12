@@ -103,9 +103,11 @@ class Supervisorctl {
         try {
             $SupervisorApi = $this->getSupervisorApiEndpointByServiceName($serviceName);
             $result = $SupervisorApi->getProcessInfo($serviceName);
-            if (isset($result['statename']) && $result['statename'] === 'STARTING' || $result['statename'] === 'RUNNING') {
-                // We consider STARTING as running is this case as the process itself is started
-                return true;
+            if (isset($result['statename'])) {
+                if($result['statename'] === 'STARTING' || $result['statename'] === 'RUNNING') {
+                    // We consider STARTING as running is this case as the process itself is started
+                    return true;
+                }
             }
         } catch (\Exception $e) {
             Log::error($e->getMessage());

@@ -134,7 +134,7 @@ class SystemHealthCommand extends Command implements CronjobInterface {
 
         $errorRedirect = ' 2> /dev/null';
 
-        if(IS_CONTAINER === false) {
+        if (IS_CONTAINER === false) {
             // Normal installation of openITCOCKPIT via apt, dnf or git
             exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
             if ($returncode == 0) {
@@ -198,7 +198,7 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             //        }
             //    }
             //}
-        }else{
+        } else {
             // openITCOCKPIT is running inside a container like docker
             $Supervisorctl = new Supervisorctl();
             $data = [
@@ -228,8 +228,12 @@ class SystemHealthCommand extends Command implements CronjobInterface {
 
     public function saveToCache($data) {
         $data['update'] = time();
+
+        $redisHost = env('OITC_REDIS_HOST', '127.0.0.1');
+        $redisPort = filter_var(env('OITC_REDIS_PORT', 6379), FILTER_VALIDATE_INT);
+
         $Redis = new \Redis();
-        $Redis->connect('127.0.0.1', 6379);
+        $Redis->connect($redisHost, $redisPort);
         $Redis->setex('permissions_system_health', 60 * 3, serialize($data));
     }
 }
