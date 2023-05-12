@@ -205,8 +205,10 @@ class MonitoringEngine {
             // Naemon is running inside a container - query remote supervisor to run "naemon -v naemon.cfg"
             try {
                 $Supervisorctl = new Supervisorctl();
-                $SupervisorEndpoint = $Supervisorctl->getSupervisorApiEndpointByServiceName('naemon-state');
-                $SupervisorEndpoint->clearProcessLogs('naemon-stats');
+                $SupervisorEndpoint = $Supervisorctl->getSupervisorApiEndpointByServiceName('naemon-stats');
+                // https://github.com/Supervisor/supervisor/issues/804
+                //$SupervisorEndpoint->clearProcessLogs('naemon-stats');
+                $SupervisorEndpoint->clearAllProcessLogs();
                 $Supervisorctl->start('naemon-stats');
                 $output = [
                     $SupervisorEndpoint->readProcessStdoutLog('naemon-stats', 0, (1024 * 1000))
