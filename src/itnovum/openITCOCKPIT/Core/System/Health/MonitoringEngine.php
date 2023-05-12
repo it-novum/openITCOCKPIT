@@ -25,7 +25,9 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use Cake\Core\Configure;
+use Cake\Log\Log;
 
 class MonitoringEngine {
 
@@ -140,7 +142,7 @@ class MonitoringEngine {
     public function __construct() {
         if (IS_CONTAINER) {
             // We always use Naemon for containers
-            $this->monitoringEngine =  'Naemon Core Container';
+            $this->monitoringEngine = 'Naemon Core Container';
             return;
         }
 
@@ -198,9 +200,26 @@ class MonitoringEngine {
      * @return array|false
      */
     public function runNagiostats() {
-        exec($this->getNagiostatsCommand(), $output);
+        $output = [];
+        if (IS_CONTAINER) {
+            // Naemon is running inside a container - query remote supervisor to run "naemon -v naemon.cfg"
+            try {
+                $Supervisorctl = new Supervisorctl();
+                $SupervisorEndpoint = $Supervisorctl->getSupervisorApiEndpointByServiceName('naemon-state');
+                $SupervisorEndpoint->clearProcessLogs('naemon-stats');
+                $Supervisorctl->start('naemon-stats');
+                $output = [
+                    $SupervisorEndpoint->readProcessStdoutLog('naemon-stats', 0, (1024 * 1000))
+                ];
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+            }
+        } else {
+            // Local running Naemon
+            exec($this->getNagiostatsCommand(), $output);
+        }
 
-        // Nagios and Naemon add the delimiter also the the end of the string
+        // Nagios and Naemon add the delimiter also to the end of the string
         // this is bad, because explode will create and empty value in the array
         // and this throw a warning in array_combine
         $result = explode($this->delimiter, $output[0]);

@@ -972,7 +972,7 @@ class GearmanWorkerCommand extends Command {
                     // openITCOCKPIT is running inside a container like docker
                     $Supervisorctl = new Supervisorctl();
                     $state = [
-                        'isNagiosRunning'           => false,
+                        'isNagiosRunning'           => $Supervisorctl->isRunning('naemon'),
                         'isNdoRunning'              => false,
                         'isStatusengineRunning'     => $Supervisorctl->isRunning('statusengine'),
                         'isNpcdRunning'             => false,
