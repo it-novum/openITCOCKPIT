@@ -2720,8 +2720,12 @@ class NagiosConfigGenerator {
 
         //Restart oitc CMD to wipe old cached information
         if (IS_CONTAINER) {
-            $Supervisorctl = new Supervisorctl();
-            $Supervisorctl->restart('oitc_cmd');
+            try {
+                $Supervisorctl = new Supervisorctl();
+                $Supervisorctl->restart('oitc_cmd');
+            } catch (\Exception $e) {
+                Log::error('NagiosConfigGenerator: ' . $e->getMessage());
+            }
         } else {
             exec('systemctl restart oitc_cmd');
         }
