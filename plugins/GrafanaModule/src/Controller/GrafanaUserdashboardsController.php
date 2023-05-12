@@ -626,11 +626,12 @@ class GrafanaUserdashboardsController extends AppController {
         }
 
         $this->set('panel', [
-            'id'               => $panel->get('id'),
-            'row'              => $panel->get('row'),
-            'userdashboard_id' => $panel->get('userdashboard_id'),
-            'unit'             => '',
-            'metrics'          => []
+            'id'                 => $panel->get('id'),
+            'row'                => $panel->get('row'),
+            'userdashboard_id'   => $panel->get('userdashboard_id'),
+            'unit'               => '',
+            'visualization_type' => $panel->get('visualization_type'),
+            'metrics'            => []
         ]);
         $this->viewBuilder()->setOption('serialize', ['panel']);
     }

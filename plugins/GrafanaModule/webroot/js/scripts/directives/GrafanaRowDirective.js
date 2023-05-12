@@ -15,7 +15,8 @@ angular.module('openITCOCKPIT').directive('grafanaRow', function($http){
                 var data = {
                     GrafanaUserdashboardPanel: {
                         row: parseInt($scope.rowId, 10), //int
-                        userdashboard_id: $scope.id //int
+                        userdashboard_id: $scope.id, //int
+                        visualization_type: 'time-series'
                     }
                 };
 
