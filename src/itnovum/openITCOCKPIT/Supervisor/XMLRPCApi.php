@@ -291,6 +291,19 @@ class XMLRPCApi {
      *     'description' => 'unknown error making dispatchers for 'sudo_server': ENXIO'
      * ]
      *
+     * Process States
+     * | Statename | Code | Description                                                                             |
+     * |-----------|------|-----------------------------------------------------------------------------------------|
+     * | STOPPED   | 0    | The process has been stopped due to a stop request or has never been started.           |
+     * | STARTING  | 10   | The process is starting due to a start request.                                         |
+     * | RUNNING   | 20   | The process is running.                                                                 |
+     * | BACKOFF   | 30   | The process entered the STARTING state but subsequently exited too quickly              |
+     * |           |      | (before the time defined in startsecs) to move to the RUNNING state.                    |
+     * | STOPPING  | 40   | The process is stopping due to a stop request.                                          |
+     * | EXITED    | 100  | The process exited from the RUNNING state (expectedly or unexpectedly).                 |
+     * | FATAL     | 200  | The process could not be started successfully.                                          |
+     * | UNKNOWN   | 1000 | The process is in an unknown state (supervisord programming error).                     |
+     *
      * @see http://supervisord.org/api.html#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getProcessInfo
      * @param string $name The name of the process (or ‘group:name’)
      * @return array  result A structure containing data about the process

@@ -2,6 +2,8 @@
 
 namespace App\itnovum\openITCOCKPIT\Supervisor;
 
+use Cake\Log\Log;
+
 /**
  * Wrapper class that has the goal to provide simmilar features such as `systemctl status nginx`
  * but via supervisor
@@ -55,6 +57,9 @@ class Supervisorctl {
      * @throws \RuntimeException
      */
     public function getSupervisorApiEndpointByServiceName(string $serviceName): XMLRPCApi {
+        // If you edit this like, also make sure to edit
+        // SupervisorCommand::buildOptionParser()
+
         $username = env('SUPERVISOR_USER', 'supervisord');
         $password = env('SUPERVISOR_PASSWORD', 'password');
 
@@ -65,6 +70,16 @@ class Supervisorctl {
                 $url = sprintf(
                     'http://%s:%s/RPC2',
                     env('OITC_NAEMON_HOSTNAME', 'naemon'),
+                    env('SUPERVISOR_PORT', 9001)
+                );
+                $SupervisorApi = new XMLRPCApi($username, $password, $url);
+                break;
+
+            case 'statusengine':
+                // Tell the Naemon Container to start|stop|restart Naemon
+                $url = sprintf(
+                    'http://%s:%s/RPC2',
+                    env('OITC_STATUSENGINE_WORKER_HOSTNAME', 'statusengine-worker'),
                     env('SUPERVISOR_PORT', 9001)
                 );
                 $SupervisorApi = new XMLRPCApi($username, $password, $url);
@@ -81,6 +96,21 @@ class Supervisorctl {
         }
 
         return $SupervisorApi;
+    }
+
+    public function isRunning(string $serviceName): bool {
+        try {
+            $SupervisorApi = $this->getSupervisorApiEndpointByServiceName($serviceName);
+            $result = $SupervisorApi->getProcessInfo($serviceName);
+            if (isset($result['statename']) && $result['statename'] === 'STARTING' || $result['statename'] === 'RUNNING') {
+                // We consider STARTING as running is this case as the process itself is started
+                return true;
+            }
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
+
+        return false;
     }
 
 }

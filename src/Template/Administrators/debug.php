@@ -433,6 +433,9 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                             <dt><?php echo __('Kernel'); ?>:</dt>
                             <dd>{{serverInformation.kernel}}</dd>
 
+                            <dt><?php echo __('Containerized'); ?>:</dt>
+                            <dd>{{serverInformation.containerized}}</dd>
+
                             <dt><?php echo __('PHP version'); ?>:</dt>
                             <dd>{{serverInformation.php_version}}</dd>
 

@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
@@ -133,69 +134,90 @@ class SystemHealthCommand extends Command implements CronjobInterface {
 
         $errorRedirect = ' 2> /dev/null';
 
+        if(IS_CONTAINER === false) {
+            // Normal installation of openITCOCKPIT via apt, dnf or git
+            exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
+            if ($returncode == 0) {
+                $data['isNagiosRunning'] = true;
+            }
 
-        exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
-        if ($returncode == 0) {
-            $data['isNagiosRunning'] = true;
+            exec($systemsetting['INIT']['INIT.NDO_STATUS'] . $errorRedirect, $output, $returncode);
+            if ($returncode == 0) {
+                $data['isNdoRunning'] = true;
+            }
+
+            exec($systemsetting['INIT']['INIT.STATUSENIGNE_STATUS'] . $errorRedirect, $output, $returncode);
+            if ($returncode == 0) {
+                $data['isStatusengineRunning'] = true;
+            }
+
+            exec($systemsetting['INIT']['INIT.NPCD_STATUS'] . $errorRedirect, $output, $returncode);
+            if ($returncode == 0) {
+                $data['isNpcdRunning'] = true;
+            }
+
+            exec($systemsetting['INIT']['INIT.OITC_CMD_STATUS'] . $errorRedirect, $output, $returncode);
+            if ($returncode == 0) {
+                $data['isOitcCmdRunning'] = true;
+            }
+
+            exec($systemsetting['INIT']['INIT.SUDO_SERVER_STATUS'] . $errorRedirect, $output, $returncode);
+            if ($returncode == 0) {
+                $data['isSudoServerRunning'] = true;
+            }
+
+            exec($systemsetting['INIT']['INIT.NSTA_STATUS'] . $errorRedirect, $output, $returncode);
+            if ($returncode == 0) {
+                $data['isNstaRunning'] = true;
+            }
+
+            exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);
+            if ($returncode == 0) {
+                $data['isPushNotificationRunning'] = true;
+            }
+
+            exec($systemsetting['INIT']['INIT.OPENITCOCKPIT_NODE'] . $errorRedirect, $output, $returncode);
+            if ($returncode == 0) {
+                $data['isNodeJsServerRunning'] = true;
+            }
+
+            if (file_exists('/opt/openitc/nagios/bin/ndo2db')) {
+                $data['isNdoInstalled'] = true;
+            }
+
+            //if (file_exists('/opt/openitc/statusengine2/cakephp/app/Console/Command/StatusengineLegacyShell.php')) {
+            //    $data['isStatusengineInstalled'] = true;
+            //}
+
+            //$statusengineConfig = '/opt/openitc/statusengine2/cakephp/app/Config/Statusengine.php';
+            //if (file_exists($statusengineConfig)) {
+            //    require_once $statusengineConfig;
+            //    if (isset($config['process_perfdata'])) {
+            //        if ($config['process_perfdata'] === true) {
+            //            $data['isStatusenginePerfdataProcessor'] = true;
+            //        }
+            //    }
+            //}
+        }else{
+            // openITCOCKPIT is running inside a container like docker
+            $Supervisorctl = new Supervisorctl();
+            $data = [
+                'isNagiosRunning'                 => $Supervisorctl->isRunning('naemon'),
+                'isNdoRunning'                    => false,
+                'isStatusengineRunning'           => $Supervisorctl->isRunning('statusengine'),
+                'isNpcdRunning'                   => false,
+                'isOitcCmdRunning'                => $Supervisorctl->isRunning('oitc_cmd'),
+                'isSudoServerRunning'             => $Supervisorctl->isRunning('sudo_server'),
+                'isNstaRunning'                   => $Supervisorctl->isRunning('nsta'),
+                'isGearmanWorkerRunning'          => $Supervisorctl->isRunning('gearman_worker'),
+                'isNdoInstalled'                  => false,
+                'isStatusengineInstalled'         => true, //NDOUtils are not supported anymore
+                'isStatusenginePerfdataProcessor' => true, //NPCD is not supported anymore
+                'isDistributeModuleInstalled'     => false,
+                'isPushNotificationRunning'       => $Supervisorctl->isRunning('push_notification'),
+                'isNodeJsServerRunning'           => $Supervisorctl->isRunning('openitcockpit-node')
+            ];
         }
-
-        exec($systemsetting['INIT']['INIT.NDO_STATUS'] . $errorRedirect, $output, $returncode);
-        if ($returncode == 0) {
-            $data['isNdoRunning'] = true;
-        }
-
-        exec($systemsetting['INIT']['INIT.STATUSENIGNE_STATUS'] . $errorRedirect, $output, $returncode);
-        if ($returncode == 0) {
-            $data['isStatusengineRunning'] = true;
-        }
-
-        exec($systemsetting['INIT']['INIT.NPCD_STATUS'] . $errorRedirect, $output, $returncode);
-        if ($returncode == 0) {
-            $data['isNpcdRunning'] = true;
-        }
-
-        exec($systemsetting['INIT']['INIT.OITC_CMD_STATUS'] . $errorRedirect, $output, $returncode);
-        if ($returncode == 0) {
-            $data['isOitcCmdRunning'] = true;
-        }
-
-        exec($systemsetting['INIT']['INIT.SUDO_SERVER_STATUS'] . $errorRedirect, $output, $returncode);
-        if ($returncode == 0) {
-            $data['isSudoServerRunning'] = true;
-        }
-
-        exec($systemsetting['INIT']['INIT.NSTA_STATUS'] . $errorRedirect, $output, $returncode);
-        if ($returncode == 0) {
-            $data['isNstaRunning'] = true;
-        }
-
-        exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);
-        if ($returncode == 0) {
-            $data['isPushNotificationRunning'] = true;
-        }
-
-        exec($systemsetting['INIT']['INIT.OPENITCOCKPIT_NODE'] . $errorRedirect, $output, $returncode);
-        if ($returncode == 0) {
-            $data['isNodeJsServerRunning'] = true;
-        }
-
-        if (file_exists('/opt/openitc/nagios/bin/ndo2db')) {
-            $data['isNdoInstalled'] = true;
-        }
-
-        //if (file_exists('/opt/openitc/statusengine2/cakephp/app/Console/Command/StatusengineLegacyShell.php')) {
-        //    $data['isStatusengineInstalled'] = true;
-        //}
-
-        //$statusengineConfig = '/opt/openitc/statusengine2/cakephp/app/Config/Statusengine.php';
-        //if (file_exists($statusengineConfig)) {
-        //    require_once $statusengineConfig;
-        //    if (isset($config['process_perfdata'])) {
-        //        if ($config['process_perfdata'] === true) {
-        //            $data['isStatusenginePerfdataProcessor'] = true;
-        //        }
-        //    }
-        //}
 
         if (Plugin::isLoaded('DistributeModule')) {
             $data['isDistributeModuleInstalled'] = true;

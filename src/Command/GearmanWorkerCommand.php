@@ -753,7 +753,7 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'export_verify_config':
-                if(!IS_CONTAINER) {
+                if (!IS_CONTAINER) {
                     // Normal installation of openITCOCKPIT via apt, dnf or git
                     /** @var SystemsettingsTable $SystemsettingsTable */
                     $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -774,7 +774,7 @@ class GearmanWorkerCommand extends Command {
                         'output'     => $output,
                         'returncode' => $returncode,
                     ];
-                }else{
+                } else {
                     // openITCOCKPIT is running in a container like docker
                     $Supervisorctl = new Supervisorctl();
                     // Naemon is running in a remote container, so we can only communicate through the XML RCP API of Supervisor
@@ -789,7 +789,7 @@ class GearmanWorkerCommand extends Command {
                     $result = $Supervisorctl->status('naemon-verify');
                     $returncode = $result['exitstatus'];
                     $output = [
-                        $SupervisorApiEndpoint->readProcessStdoutLog('naemon-verify', 0,(1024*1000))
+                        $SupervisorApiEndpoint->readProcessStdoutLog('naemon-verify', 0, (1024 * 1000))
                     ];
 
                     $return = [
@@ -922,49 +922,68 @@ class GearmanWorkerCommand extends Command {
                     'isNodeJsServerRunning'     => false
                 ];
 
-                exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNagiosRunning'] = true;
-                }
+                if (IS_CONTAINER === false) {
+                    // Normal installation of openITCOCKPIT via apt, dnf or git
+                    exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNagiosRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.NDO_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNdoRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.NDO_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNdoRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.STATUSENIGNE_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isStatusengineRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.STATUSENIGNE_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isStatusengineRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.NPCD_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNpcdRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.NPCD_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNpcdRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.OITC_CMD_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isOitcCmdRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.OITC_CMD_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isOitcCmdRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.SUDO_SERVER_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isSudoServerRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.SUDO_SERVER_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isSudoServerRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.NSTA_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNstaRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.NSTA_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNstaRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isPushNotificationRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isPushNotificationRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.OPENITCOCKPIT_NODE'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNodeJsServerRunning'] = true;
+                    exec($systemsetting['INIT']['INIT.OPENITCOCKPIT_NODE'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNodeJsServerRunning'] = true;
+                    }
+                } else {
+                    // openITCOCKPIT is running inside a container like docker
+                    $Supervisorctl = new Supervisorctl();
+                    $state = [
+                        'isNagiosRunning'           => false,
+                        'isNdoRunning'              => false,
+                        'isStatusengineRunning'     => $Supervisorctl->isRunning('statusengine'),
+                        'isNpcdRunning'             => false,
+                        'isOitcCmdRunning'          => $Supervisorctl->isRunning('oitc_cmd'),
+                        'isSudoServerRunning'       => $Supervisorctl->isRunning('sudo_server'),
+                        'isNstaRunning'             => $Supervisorctl->isRunning('nsta'),
+                        'isGearmanWorkerRunning'    => true,
+                        'isPushNotificationRunning' => $Supervisorctl->isRunning('push_notification'),
+                        'isNodeJsServerRunning'     => $Supervisorctl->isRunning('openitcockpit-node')
+                    ];
+
                 }
 
                 $return = $state;
@@ -1359,18 +1378,18 @@ class GearmanWorkerCommand extends Command {
 
         $Supervisorctl = new Supervisorctl();
 
-        if(IS_CONTAINER){
+        if (IS_CONTAINER) {
             // Naemon is running inside a container - query remote supervisor to run "naemon -v naemon.cfg"
             try {
                 $Supervisorctl->start('naemon-verify');
                 sleep(2);
                 $result = $Supervisorctl->status('naemon-verify');
                 $returncode = $result['exitstatus'] ?? 1;
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
                 Log::error($e->getMessage());
                 $returncode = 1;
             }
-        }else {
+        } else {
             // Local running Naemon
             $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
             $naemonCfg = Configure::read('nagios.nagios_cfg');
@@ -1391,7 +1410,7 @@ class GearmanWorkerCommand extends Command {
             $ExportsTable->save($verifyEntity);
 
             //Reloading the monitoring system
-            if(!IS_CONTAINER) {
+            if (!IS_CONTAINER) {
                 //Check if Naemon/Nagios is running.
                 //If Nagios is running, we reload the config, if not we need to restart
                 $entity = $ExportsTable->newEntity([
@@ -1471,7 +1490,7 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $successfully = 0;
                 }
-            }else{
+            } else {
                 // Containerized openITCOCKPIT
                 // Restart remote Naemon
                 $entity = $ExportsTable->newEntity([
@@ -1482,7 +1501,7 @@ class GearmanWorkerCommand extends Command {
                 $result = $Supervisorctl->restart('naemon');
                 $entity->set('finished', 1);
                 $entity->set('successfully', 0);
-                if($result === true){
+                if ($result === true) {
                     $entity->set('successfully', 1);
                     $isMonitoringRunning = true;
                 }

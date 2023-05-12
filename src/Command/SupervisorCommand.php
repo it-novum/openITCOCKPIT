@@ -28,12 +28,10 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
-use App\itnovum\openITCOCKPIT\Supervisor\XMLRPCApi;
 use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
-use http\Exception\RuntimeException;
 
 /**
  * Supervisor command.
@@ -59,6 +57,9 @@ class SupervisorCommand extends Command {
             'help'     => 'Command to execute',
             'required' => true,
             'choices'  => [
+                // If you edit this like, also make sure to edit
+                // Supervisorctl::getSupervisorApiEndpointByServiceName()
+
                 // openITCOCKPIT background
                 'oitc_cmd',
                 'sudo_server',
@@ -73,6 +74,12 @@ class SupervisorCommand extends Command {
                 'naemon-verify',
                 'prometheus',
                 'nsta',
+
+                // Statusengine
+                'statusengine',
+
+                // puppeteer / PDF generation
+                'openitcockpit-node',
 
                 // System
                 'nginx',

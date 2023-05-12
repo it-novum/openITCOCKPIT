@@ -127,6 +127,15 @@ class AdministratorsController extends AppController {
         //NPCD is not supported anymore!
         $isStatusenginePerfdataProcessor = true;
 
+        if (IS_CONTAINER) {
+            // We are running inside a container and are therefore a recent version of openITCOCKPIT.
+            // NDO and NPCD support was dropped with openITCOCKPIT 3.x (at least 2 years before container support)
+            // so there is absolutely no way we have one of those two installed.
+            // Honestly speaking the checking for NDO and NPCD should be removed anyway!
+            $isStatusengineInstalled = true;
+            $isStatusenginePerfdataProcessor = true;
+        }
+
         $processInformation = [
             'gearmanReachable'                => $gearmanReachable,
             'isGearmanWorkerRunning'          => $isGearmanWorkerRunning,
@@ -139,9 +148,9 @@ class AdministratorsController extends AppController {
 
         //Collect server information
         $LsbRelease = new LsbRelease();
-        if($LsbRelease->isDebianBased()){
+        if ($LsbRelease->isDebianBased()) {
             $osVersion = sprintf('%s %s (%s)', $LsbRelease->getVendor(), $LsbRelease->getVersion(), $LsbRelease->getCodename());
-        }else{
+        } else {
             $osVersion = $LsbRelease->getCodename();
         }
 
@@ -159,7 +168,8 @@ class AdministratorsController extends AppController {
             'php_version'            => PHP_VERSION,
             'php_memory_limit'       => str_replace('M', '', get_cfg_var('memory_limit')) . 'MB',
             'php_max_execution_time' => ini_get('max_execution_time'),
-            'php_extensions'         => get_loaded_extensions()
+            'php_extensions'         => get_loaded_extensions(),
+            'containerized'          => (IS_CONTAINER) ? __('Yes') : __('No')
         ];
 
         //Collect CPU load history
@@ -200,7 +210,7 @@ class AdministratorsController extends AppController {
         $gearmanStatus = [];
         $output = null;
         if ($gearmanReachable) {
-            exec('gearadmin --status', $output);
+            exec('gearadmin --status -h ' . escapeshellarg(env('OITC_GEARMAN_ADDRESS', 'localhost')), $output);
             //Parse output
             $trash = array_pop($output);
             foreach ($output as $line) {
@@ -357,8 +367,8 @@ class AdministratorsController extends AppController {
             $Mailer->setEmailFormat('both');
             $Mailer->setAttachments([
                 'logo.png' => [
-                    'file' => $Logo->getSmallLogoDiskPath(),
-                    'mimetype' => 'image/png',
+                    'file'      => $Logo->getSmallLogoDiskPath(),
+                    'mimetype'  => 'image/png',
                     'contentId' => '100'
                 ]
             ]);
