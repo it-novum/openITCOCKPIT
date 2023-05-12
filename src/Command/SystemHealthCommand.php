@@ -96,6 +96,27 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             'isNodeJsServerRunning'           => false
         ];
 
+        if (IS_CONTAINER) {
+            // openITCOCKPIT is running inside a container like docker
+            $Supervisorctl = new Supervisorctl();
+            $data = [
+                'isNagiosRunning'                 => $Supervisorctl->isRunning('naemon'),
+                'isNdoRunning'                    => false,
+                'isStatusengineRunning'           => $Supervisorctl->isRunning('statusengine'),
+                'isNpcdRunning'                   => false,
+                'isOitcCmdRunning'                => $Supervisorctl->isRunning('oitc_cmd'),
+                'isSudoServerRunning'             => $Supervisorctl->isRunning('sudo_server'),
+                'isNstaRunning'                   => $Supervisorctl->isRunning('nsta'),
+                'isGearmanWorkerRunning'          => $Supervisorctl->isRunning('gearman_worker'),
+                'isNdoInstalled'                  => false,
+                'isStatusengineInstalled'         => true, //NDOUtils are not supported anymore
+                'isStatusenginePerfdataProcessor' => true, //NPCD is not supported anymore
+                'isDistributeModuleInstalled'     => false,
+                'isPushNotificationRunning'       => $Supervisorctl->isRunning('push_notification'),
+                'isNodeJsServerRunning'           => $Supervisorctl->isRunning('openitcockpit-node')
+            ];
+        }
+
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsetting = $SystemsettingsTable->findAsArray();
@@ -198,25 +219,6 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             //        }
             //    }
             //}
-        } else {
-            // openITCOCKPIT is running inside a container like docker
-            $Supervisorctl = new Supervisorctl();
-            $data = [
-                'isNagiosRunning'                 => $Supervisorctl->isRunning('naemon'),
-                'isNdoRunning'                    => false,
-                'isStatusengineRunning'           => $Supervisorctl->isRunning('statusengine'),
-                'isNpcdRunning'                   => false,
-                'isOitcCmdRunning'                => $Supervisorctl->isRunning('oitc_cmd'),
-                'isSudoServerRunning'             => $Supervisorctl->isRunning('sudo_server'),
-                'isNstaRunning'                   => $Supervisorctl->isRunning('nsta'),
-                'isGearmanWorkerRunning'          => $Supervisorctl->isRunning('gearman_worker'),
-                'isNdoInstalled'                  => false,
-                'isStatusengineInstalled'         => true, //NDOUtils are not supported anymore
-                'isStatusenginePerfdataProcessor' => true, //NPCD is not supported anymore
-                'isDistributeModuleInstalled'     => false,
-                'isPushNotificationRunning'       => $Supervisorctl->isRunning('push_notification'),
-                'isNodeJsServerRunning'           => $Supervisorctl->isRunning('openitcockpit-node')
-            ];
         }
 
         if (Plugin::isLoaded('DistributeModule')) {
