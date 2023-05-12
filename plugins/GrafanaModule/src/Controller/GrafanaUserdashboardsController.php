@@ -721,6 +721,7 @@ class GrafanaUserdashboardsController extends AppController {
         $id = $this->request->getData('id', 0);
         $unit = $this->request->getData('unit', 'none');
         $title = $this->request->getData('title', '');
+        $visualization_type = $this->request->getData('visualization_type', '');
 
         /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
         $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
@@ -730,6 +731,7 @@ class GrafanaUserdashboardsController extends AppController {
             $panel = $GrafanaUserdashboardPanelsTable->get($id);
             $panel->set('title', $title);
             $panel->set('unit', $unit);
+            $panel->set('visualization_type', $visualization_type);
 
             if ($GrafanaUserdashboardPanelsTable->save($panel)) {
                 $this->set('success', true);

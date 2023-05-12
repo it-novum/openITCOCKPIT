@@ -34,7 +34,7 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
     </div>
 
     <div class="padding-2 row margin-5 slightBorder" ng-repeat="metric in panel.metrics">
-        <ol class="breadcrumb breadcrumb-seperator-1 noWordBreak col-9 ellipsis"
+        <ol class="breadcrumb breadcrumb-seperator-1 noWordBreak col-8 ellipsis no-padding"
             style="padding-top: 0px; padding-bottom: 0px; margin-bottom: 0px;">
             <li class="breadcrumb-item">
                 <?php if ($this->Acl->hasPermission('browser', 'hosts', '')): ?>
@@ -58,9 +58,32 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                 {{metric.metric}}
             </li>
         </ol>
-        <div class="actions col-1 no-padding">
-            <div ng-if="metric.color"
-                 class="grafana-child-color" style="background-color: {{metric.color}};"></div>
+        <div class="actions col-2 no-padding text-right">
+            <span class="fa-stack fa-xs" ng-if="metric.color">
+                <i class="fa-solid fa-circle fa-stack-2x" style="color: {{metric.color}};"></i>
+                <i class="fa-solid fa-terminal fa-stack-1x" style="color: {{metric.color}};"></i>
+            </span>
+            <span class="fa-stack fa-xs" ng-switch="panel.visualization_type">
+                <i class="fa-solid fa-circle fa-stack-2x"></i>
+
+                <i class="fa-solid fa-chart-column fa-stack-1x fa-inverse" title=" <?= __('Bar chart'); ?>"
+                   ng-switch-when="bar-chart"></i>
+
+                <i class="fa-solid fa-terminal fa-stack-1x fa-inverse" title=" <?= __('Stat'); ?>"
+                   ng-switch-when="stat"></i>
+
+                <i class="fa-solid fa-gauge-high fa-stack-1x fa-inverse" title=" <?= __('Gauge'); ?>"
+                   ng-switch-when="gauge"></i>
+
+                <i class="fa-solid fa-chart-simple fa-rotate-90 fa-stack-1x fa-inverse" title=" <?= __('Bar gauge'); ?>"
+                   ng-switch-when="bar-gauge"></i>
+
+                <i class="fa-solid fa-bars fa-stack-1x fa-inverse" title=" <?= __('Bar gauge (Retro LCD)'); ?>"
+                   ng-switch-when="bar-gauge-retro"></i>
+
+                <i class="fa-solid fa-chart-area fa-stack-1x fa-inverse" title=" <?= __('Time series'); ?>"
+                   ng-switch-default></i>
+            </span>
         </div>
         <div class="actions col-2 no-padding text-right">
             <i class="fa-solid fa-pencil text-primary pointer"
@@ -232,6 +255,63 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                                 </optgroup>
                             <?php endforeach;; ?>
                         </select>
+                    </div>
+                </div>
+                <div class="row p-2">
+                    <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
+                        <button type="button"
+                                class="btn btn-outline-primary waves-effect waves-themed w-100"
+                                ng-click="changeVisualizationType('time-series')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'time-series'}">
+                            <i class="fa-solid fa-chart-area"></i>
+                            <?= __('Time series'); ?>
+                        </button>
+                    </div>
+                    <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
+                        <button type="button"
+                                class="btn btn-outline-primary waves-effect waves-themed w-100"
+                                ng-click="changeVisualizationType('bar-chart')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'bar-chart'}">
+                            <i class="fa-solid fa-chart-column"></i>
+                            <?= __('Bar chart'); ?>
+                        </button>
+                    </div>
+                    <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
+                        <button type="button"
+                                class="btn btn-outline-primary waves-effect waves-themed w-100"
+                                ng-click="changeVisualizationType('stat')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'stat'}">
+                            <i class="fa-solid fa-terminal"></i>
+                            <?= __('Stat'); ?>
+                        </button>
+                    </div>
+                    <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
+                        <button type="button"
+                                class="btn btn-outline-primary waves-effect waves-themed w-100"
+                                ng-click="changeVisualizationType('gauge')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'gauge'}">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            <?= __('Gauge'); ?>
+                        </button>
+                    </div>
+                    <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
+                        <button type="button"
+                                class="btn btn-outline-primary waves-effect waves-themed w-100"
+                                ng-click="changeVisualizationType('bar-gauge')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'bar-gauge'}">
+                            <i class="fa-solid fa-chart-simple fa-rotate-90"></i>
+                            <?= __('Bar gauge'); ?>
+                        </button>
+                    </div>
+                    <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
+                        <button type="button"
+                                class="btn btn-outline-primary waves-effect waves-themed w-100"
+                                ng-click="changeVisualizationType('bar-gauge-retro')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'bar-gauge-retro'}">
+                            <i class="fa-solid fa-bars"></i>
+                            <?= __('Bar gauge'); ?>
+                            <sub><?= __('Retro LCD'); ?></sub>
+                        </button>
                     </div>
                 </div>
                 <div class="row">

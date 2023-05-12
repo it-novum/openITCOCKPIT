@@ -37,6 +37,7 @@ use Cake\ORM\Entity;
  * @property int $row
  * @property string $unit
  * @property string $title
+ * @property string $visualization_type
  *
  * @property GrafanaUserdashboard $grafana_userdashboard
  * @property GrafanaUserdashboardMetric[] $grafana_userdashboard_metrics
@@ -56,6 +57,7 @@ class GrafanaUserdashboardPanel extends Entity {
         'row'                           => true,
         'unit'                          => true,
         'title'                         => true,
+        'visualization_type'            => true,
         'grafana_userdashboard'         => true,
         'grafana_userdashboard_metrics' => true
     ];

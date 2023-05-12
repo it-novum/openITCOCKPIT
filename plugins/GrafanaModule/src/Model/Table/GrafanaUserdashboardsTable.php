@@ -37,7 +37,6 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use GrafanaModule\Model\Entity\GrafanaUserdashboard;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 
@@ -277,12 +276,13 @@ class GrafanaUserdashboardsTable extends Table {
         $rowsWithPanelsAndMetrics = [];
         foreach ($findResult['grafana_userdashboard_panels'] as $k => $panel) {
             $rowsWithPanelsAndMetrics[$panel['row']][$k] = [
-                'id'               => $panel['id'],
-                'userdashboard_id' => $panel['userdashboard_id'],
-                'row'              => $panel['row'],
-                'unit'             => $panel['unit'],
-                'title'            => $panel['title'],
-                'metrics'          => []
+                'id'                 => $panel['id'],
+                'userdashboard_id'   => $panel['userdashboard_id'],
+                'row'                => $panel['row'],
+                'unit'               => $panel['unit'],
+                'title'              => $panel['title'],
+                'visualization_type' => $panel['visualization_type'],
+                'metrics'            => []
             ];
             foreach ($panel['grafana_userdashboard_metrics'] as $metric) {
                 $metric['servicetemplate'] = [];

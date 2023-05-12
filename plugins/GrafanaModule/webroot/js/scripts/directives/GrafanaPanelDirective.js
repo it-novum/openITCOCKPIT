@@ -263,6 +263,10 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                 $('#panelOptionsModal_' + $scope.rowId + '_' + $scope.panelId).modal('show');
             };
 
+            $scope.changeVisualizationType = function(visualisationType){
+                $scope.panel.visualization_type = visualisationType;
+            };
+
             var removeMetricFromPanel = function(metricId){
                 var metrics = [];
                 metricId = parseInt(metricId, 10);
@@ -279,7 +283,8 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                     {
                         id: parseInt($scope.panel.id, 10),
                         unit: $scope.panel.unit,
-                        title: $scope.panel.title
+                        title: $scope.panel.title,
+                        visualization_type: $scope.panel.visualization_type
                     }
                 ).then(function(result){
                     if(result.data.success){
@@ -312,7 +317,7 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                 loadMetrics();
             });
 
-            $scope.$watchGroup(['panel.unit', 'panel.title'], function(){
+            $scope.$watchGroup(['panel.unit', 'panel.title', 'panel.visualization_type'], function(){
                 for(var i in $scope.grafanaUnits){
                     if($scope.grafanaUnits[i].hasOwnProperty($scope.panel.unit)){
                         $scope.humanUnit = $scope.grafanaUnits[i][$scope.panel.unit];
