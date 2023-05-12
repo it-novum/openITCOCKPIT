@@ -49,7 +49,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     </li>
 </ol>
 
-<?php if (IS_CONTAINER === true): ?>
+<?php if (IS_CONTAINER === false): ?>
     <!-- openITCOCKPIT is installed via apt dnf or git -->
     <?php echo $this->element('repository_checker'); ?>
 
