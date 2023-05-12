@@ -210,6 +210,7 @@ class MonitoringEngine {
                 //$SupervisorEndpoint->clearProcessLogs('naemon-stats');
                 $SupervisorEndpoint->clearAllProcessLogs();
                 $Supervisorctl->start('naemon-stats');
+                sleep(1);
                 $output = [
                     $SupervisorEndpoint->readProcessStdoutLog('naemon-stats', 0, (1024 * 1000))
                 ];
@@ -227,7 +228,7 @@ class MonitoringEngine {
         $result = explode($this->delimiter, $output[0]);
         $result_sizeof = sizeof($result);
         if (sizeof($this->MRTG) < $result_sizeof) {
-            if ($result[$result_sizeof - 1] == '') {
+            if (trim($result[$result_sizeof - 1]) == '') {
                 unset($result[$result_sizeof - 1]);
             }
         }
