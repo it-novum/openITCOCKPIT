@@ -197,6 +197,18 @@ class CmdController extends AppController {
         $externalNaemonCommands = new ExternalCommands();
         foreach($data as $key => $value){
             switch ($value['command']) {
+                case 'rescheduleHost':
+                    $result =  $externalNaemonCommands->rescheduleHost(['uuid' => $value['hostUuid'], 'type' =>$value['type'], 'satellite_id' => $value['satelliteId']]);
+                    break;
+                case 'rescheduleService':
+                    $result =  $externalNaemonCommands->rescheduleService(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid'], 'satellite_id' => $value['satelliteId']]);
+                    break;
+                case 'submitHostDowntime':
+                    $result =  $externalNaemonCommands->setHostDowntime(['hostUuid' => $value['hostUuid'], 'start' => $value['start'], 'end' => $value['end'], 'comment' => $value['comment'], 'author' => $value['author'], 'downtimetype' => $value['downtimetype']]);
+                    break;
+                case 'submitServiceDowntime':
+                    $result =  $externalNaemonCommands->setServiceDowntime(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid'], 'start' => $value['start'], 'end' => $value['end'], 'comment' => $value['comment'], 'author' => $value['author']]);
+                    break;
                 case 'submitHoststateAck':
                     $result =  $externalNaemonCommands->setHostAck(['hostUuid' => $value['hostUuid'], 'comment' => $value['comment'], 'author' => $value['author'], 'sticky' => $value['sticky'], 'type' => $value['hostAckType'], 'notify' => $value['notify']]);
                     break;
@@ -211,6 +223,27 @@ class CmdController extends AppController {
                     break;
                 case 'sendCustomServiceNotification':
                     $result =  $externalNaemonCommands->sendCustomServiceNotification(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid'], 'type' => $value['options'], 'author' => $value['author'], 'comment' => $value['comment']]);
+                    break;
+                case 'sendCustomHostNotification':
+                    $result = $externalNaemonCommands->sendCustomHostNotification(['hostUuid' => $value['hostUuid'], 'type' => $value['options'], 'author' => $value['author'], 'comment' => $value['comment']]);
+                    break;
+                case 'enableOrDisableHostFlapdetection':
+                    $result = $externalNaemonCommands->enableOrDisableHostFlapdetection(['uuid' => $value['hostUuid'], 'condition' => $value['condition']]);
+                    break;
+                case 'enableOrDisableServiceFlapdetection':
+                    $this->ExternalCommands->enableOrDisableServiceFlapdetection(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid'], 'condition' => $value['condition']]);
+                    break;
+                case 'submitEnableHostNotifications':
+                    $result = $externalNaemonCommands->enableHostNotifications(['uuid' => $value['hostUuid'], 'type' => $value['type']]);
+                    break;
+                case 'submitDisableHostNotifications':
+                    $result = $externalNaemonCommands->disableHostNotifications(['uuid' => $value['hostUuid'], 'type' => $value['type']]);
+                    break;
+                case 'submitDisableServiceNotifications':
+                    $result = $externalNaemonCommands->disableServiceNotifications(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid']]);
+                    break;
+                case 'submitEnableServiceNotifications':
+                    $result = $externalNaemonCommands->enableServiceNotifications(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid']]);
                     break;
                 default:
                     $result = false;

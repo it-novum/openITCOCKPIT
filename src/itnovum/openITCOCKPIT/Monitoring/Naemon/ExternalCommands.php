@@ -52,7 +52,7 @@ class ExternalCommands {
 
         if (empty($host)) {
             // Host not found
-            return;
+            return false;
         }
 
         if ($options['type'] == 'hostOnly') {
@@ -101,7 +101,7 @@ class ExternalCommands {
                 }
             }
         }
-
+        return true;
     }
 
     /**
@@ -297,7 +297,7 @@ class ExternalCommands {
                 'Data'    => sprintf('ENABLE_HOST_FLAP_DETECTION;%s', $options['uuid'])
             ];
             $this->toQueue($payload, 0);
-            return;
+            return true;
         }
 
         $payload = [
@@ -305,6 +305,7 @@ class ExternalCommands {
             'Data'    => sprintf('DISABLE_HOST_FLAP_DETECTION;%s', $options['uuid'])
         ];
         $this->toQueue($payload, 0);
+        return true;
     }
 
     /**
@@ -336,6 +337,7 @@ class ExternalCommands {
             'Data'    => sprintf('DISABLE_SVC_FLAP_DETECTION;%s;%s', $options['hostUuid'], $options['serviceUuid'])
         ];
         $this->toQueue($payload, 0);
+        return true;
     }
 
     /**
@@ -360,7 +362,7 @@ class ExternalCommands {
         $service = $ServicesTable->getServiceForRescheduling($options['serviceUuid']);
         if (empty($service)) {
             // Service not found
-            return;
+            return false;
         }
 
         if ($service->getValueOf('active_checks_enabled')) {
@@ -374,6 +376,7 @@ class ExternalCommands {
             ];
             $this->toQueue($payload, $options['satellite_id']);
         }
+        return true;
     }
 
     /**
@@ -402,6 +405,7 @@ class ExternalCommands {
             )
         ];
         $this->toQueue($payload, 0);
+        return true;
     }
 
     /**
@@ -432,6 +436,7 @@ class ExternalCommands {
             )
         ];
         $this->toQueue($payload, 0);
+        return true;
     }
 
     /**
@@ -948,6 +953,7 @@ class ExternalCommands {
             ];
             $this->toQueue($payload, 0);
         }
+        return true;
     }
 
     /**
@@ -979,7 +985,9 @@ class ExternalCommands {
                 )
             ];
             $this->toQueue($payload, 0);
+
         }
+        return true;
     }
 
     /**
@@ -1001,6 +1009,7 @@ class ExternalCommands {
             )
         ];
         $this->toQueue($payload, 0);
+        return true;
     }
 
     /**
