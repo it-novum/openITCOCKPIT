@@ -132,7 +132,7 @@ class GrafanaPanel {
                     "barAlignment"      => 0,
                     "lineWidth"         => 1,
                     "fillOpacity"       => 50,
-                    "gradientMode"      => "opacity",
+                    "gradientMode"      => "hue",
                     "spanNulls"         => true,
                     "showPoints"        => "never",
                     "pointSize"         => 5,
