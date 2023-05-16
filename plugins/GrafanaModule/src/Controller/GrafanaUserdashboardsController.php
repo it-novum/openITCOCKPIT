@@ -777,7 +777,6 @@ class GrafanaUserdashboardsController extends AppController {
 
         $dashboard = $GrafanaUserdashboardsTable->getGrafanaUserDashboardEdit($id);
         $rows = $GrafanaUserdashboardsTable->extractRowsWithPanelsAndMetricsFromFindResult($dashboard);
-
         if ($client instanceof Client) {
             $tag = new GrafanaTag();
             $GrafanaDashboard = new GrafanaDashboard();
@@ -795,6 +794,7 @@ class GrafanaUserdashboardsController extends AppController {
                     $SpanSize = 12 / sizeof($row);
                     $GrafanaPanel = new GrafanaPanel($panel['id'], $SpanSize);
                     $GrafanaPanel->setTitle($panel['title']);
+                    $GrafanaPanel->setVisualizationType($panel['visualization_type']);
 
                     foreach ($panel['metrics'] as $metric) {
                         if ($metric['service']['service_type'] !== PROMETHEUS_SERVICE) {

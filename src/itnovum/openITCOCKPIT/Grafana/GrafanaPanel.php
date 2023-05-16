@@ -75,6 +75,11 @@ class GrafanaPanel {
      */
     private $metricCount = 1;
 
+    /**
+     * @var string
+     */
+    private $visualization_type = 'timeseries';
+
 
     /**
      * @var array
@@ -92,11 +97,17 @@ class GrafanaPanel {
             //Insert targets here
         ],
         "options"    => [
-            "tooltip" => [
+            "xTickLabelRotation" => 0,
+            "xTickLabelSpacing"  => 100,
+            "text"               => [
+                "titleSize" => 12
+            ],
+            "barWidth"           => 1,
+            "tooltip"            => [
                 "mode" => "multi",
                 "sort" => "none"
             ],
-            "legend"  => [
+            "legend"             => [
                 "displayMode" => "table",
                 "placement"   => "bottom",
                 "calcs"       => [
@@ -189,6 +200,13 @@ class GrafanaPanel {
         $this->panel['targets'] = $this->targets;
         $this->panel['span'] = $this->span;
 
+        $this->panel['type'] = $this->visualization_type;
+        if ($this->visualization_type === 'bargaugeretro') {
+            $this->panel['type'] = 'bargauge';
+            $this->panel['options']['displayMode'] = 'lcd';
+
+        }
+
         if ($this->Overrides->hasOverrides()) {
             $this->panel['fieldConfig']['overrides'] = $this->Overrides->getOverrides();
         }
@@ -200,7 +218,7 @@ class GrafanaPanel {
                 'steps' => $thresholdsAsArray
             ];
 
-            if ($this->getMetricCount() > 1) {
+            if ($this->getMetricCount() > 1 && in_array($this->visualization_type, ['timeseries'])) {
                 // show threshold lines in chart with more than one metric - can be used for all charts if needed
                 $this->panel['fieldConfig']['defaults']['custom']['thresholdsStyle'] = [
                     'mode' => 'line'
@@ -210,7 +228,7 @@ class GrafanaPanel {
                 $this->panel['fieldConfig']['defaults']['color']['mode'] = 'thresholds';
             }
         }
-        if ($this->ColorOverrides->hasOverrides()) {
+        if ($this->ColorOverrides->hasOverrides() && in_array($this->visualization_type, ['timeseries', 'bargauge'])) {
             $this->panel['fieldConfig']['overrides'] = $this->ColorOverrides->getOverrides();
         }
 
@@ -222,6 +240,13 @@ class GrafanaPanel {
      */
     public function setTitle($title) {
         $this->title = $title;
+    }
+
+    /**
+     * @param $visualizationType
+     */
+    public function setVisualizationType($visualizationType) {
+        $this->visualization_type = $visualizationType;
     }
 
     /**

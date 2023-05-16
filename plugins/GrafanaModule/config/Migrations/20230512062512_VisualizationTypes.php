@@ -25,7 +25,7 @@ class VisualizationTypes extends AbstractMigration {
 
         $this->table('grafana_userdashboard_panels')
             ->addColumn('visualization_type', 'string', [
-                'default' => 'time-series',
+                'default' => 'timeseries',
                 'limit'   => 255,
                 'null'    => false,
                 'after'   => 'title'

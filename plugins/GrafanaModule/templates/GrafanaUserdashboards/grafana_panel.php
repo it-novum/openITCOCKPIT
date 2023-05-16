@@ -67,7 +67,7 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                 <i class="fa-solid fa-circle fa-stack-2x"></i>
 
                 <i class="fa-solid fa-chart-column fa-stack-1x fa-inverse" title=" <?= __('Bar chart'); ?>"
-                   ng-switch-when="bar-chart"></i>
+                   ng-switch-when="barchart"></i>
 
                 <i class="fa-solid fa-terminal fa-stack-1x fa-inverse" title=" <?= __('Stat'); ?>"
                    ng-switch-when="stat"></i>
@@ -76,10 +76,10 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                    ng-switch-when="gauge"></i>
 
                 <i class="fa-solid fa-chart-simple fa-rotate-90 fa-stack-1x fa-inverse" title=" <?= __('Bar gauge'); ?>"
-                   ng-switch-when="bar-gauge"></i>
+                   ng-switch-when="bargauge"></i>
 
                 <i class="fa-solid fa-bars fa-stack-1x fa-inverse" title=" <?= __('Bar gauge (Retro LCD)'); ?>"
-                   ng-switch-when="bar-gauge-retro"></i>
+                   ng-switch-when="bargaugeretro"></i>
 
                 <i class="fa-solid fa-chart-area fa-stack-1x fa-inverse" title=" <?= __('Time series'); ?>"
                    ng-switch-default></i>
@@ -261,8 +261,8 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                     <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
                         <button type="button"
                                 class="btn btn-outline-primary waves-effect waves-themed w-100"
-                                ng-click="changeVisualizationType('time-series')"
-                                ng-class="{'btn-primary text-white': panel.visualization_type === 'time-series'}">
+                                ng-click="changeVisualizationType('timeseries')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'timeseries'}">
                             <i class="fa-solid fa-chart-area"></i>
                             <?= __('Time series'); ?>
                         </button>
@@ -270,8 +270,8 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                     <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
                         <button type="button"
                                 class="btn btn-outline-primary waves-effect waves-themed w-100"
-                                ng-click="changeVisualizationType('bar-chart')"
-                                ng-class="{'btn-primary text-white': panel.visualization_type === 'bar-chart'}">
+                                ng-click="changeVisualizationType('barchart')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'barchart'}">
                             <i class="fa-solid fa-chart-column"></i>
                             <?= __('Bar chart'); ?>
                         </button>
@@ -297,8 +297,8 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                     <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
                         <button type="button"
                                 class="btn btn-outline-primary waves-effect waves-themed w-100"
-                                ng-click="changeVisualizationType('bar-gauge')"
-                                ng-class="{'btn-primary text-white': panel.visualization_type === 'bar-gauge'}">
+                                ng-click="changeVisualizationType('bargauge')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'bargauge'}">
                             <i class="fa-solid fa-chart-simple fa-rotate-90"></i>
                             <?= __('Bar gauge'); ?>
                         </button>
@@ -306,8 +306,8 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                     <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
                         <button type="button"
                                 class="btn btn-outline-primary waves-effect waves-themed w-100"
-                                ng-click="changeVisualizationType('bar-gauge-retro')"
-                                ng-class="{'btn-primary text-white': panel.visualization_type === 'bar-gauge-retro'}">
+                                ng-click="changeVisualizationType('bargaugeretro')"
+                                ng-class="{'btn-primary text-white': panel.visualization_type === 'bargaugeretro'}">
                             <i class="fa-solid fa-bars"></i>
                             <?= __('Bar gauge'); ?>
                             <sub><?= __('Retro LCD'); ?></sub>
