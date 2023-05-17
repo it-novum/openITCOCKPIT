@@ -30,6 +30,7 @@ namespace App\Command;
 
 use App\itnovum\openITCOCKPIT\Database\Backup;
 use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
+use App\itnovum\openITCOCKPIT\Supervisor\Binarydctl;
 use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use App\Model\Entity\Changelog;
 use App\Model\Table\AgentconfigsTable;
@@ -776,21 +777,20 @@ class GearmanWorkerCommand extends Command {
                     ];
                 } else {
                     // openITCOCKPIT is running in a container like docker
-                    $Supervisorctl = new Supervisorctl();
+                    $Binarydctl = new Binarydctl();
                     // Naemon is running in a remote container, so we can only communicate through the XML RCP API of Supervisor
-                    $SupervisorApiEndpoint = $Supervisorctl->getSupervisorApiEndpointByServiceName('naemon-verify');
-
-                    // Clear any old logs
-                    $SupervisorApiEndpoint->clearAllProcessLogs();
+                    $BinarydEndpoint = $Binarydctl->getBinarydApiEndpointByServiceName('naemon-verify');
 
                     //Run naemon-verify
-                    $Supervisorctl->start('naemon-verify');
-                    sleep(1);
-                    $result = $Supervisorctl->status('naemon-verify');
-                    $returncode = $result['exitstatus'];
-                    $output = [
-                        $SupervisorApiEndpoint->readProcessStdoutLog('naemon-verify', 0, (1024 * 1000))
-                    ];
+                    try{
+                        $result = $BinarydEndpoint->executeJson('naemon-verify');
+                        $returncode = $result['rc'] ?? 1;
+                        $output = [
+                            $result['stdout'] ?? ''
+                        ];
+                    }catch (\Exception $e){
+                        Log::error($e->getMessage());
+                    }
 
                     $return = [
                         'output'     => $output ?? ['Unknown'],
@@ -1380,14 +1380,20 @@ class GearmanWorkerCommand extends Command {
 
         if (IS_CONTAINER) {
             // Naemon is running inside a container - query remote supervisor to run "naemon -v naemon.cfg"
-            try {
-                $Supervisorctl->start('naemon-verify');
-                sleep(2);
-                $result = $Supervisorctl->status('naemon-verify');
-                $returncode = $result['exitstatus'] ?? 1;
-            } catch (\Exception $e) {
+            // openITCOCKPIT is running in a container like docker
+            $Binarydctl = new Binarydctl();
+            // Naemon is running in a remote container, so we can only communicate through the XML RCP API of Supervisor
+            $BinarydEndpoint = $Binarydctl->getBinarydApiEndpointByServiceName('naemon-verify');
+
+            //Run naemon-verify
+            try{
+                $result = $BinarydEndpoint->executeJson('naemon-verify');
+                $returncode = $result['rc'] ?? 1;
+                $output = [
+                    $result['stdout'] ?? ''
+                ];
+            }catch (\Exception $e){
                 Log::error($e->getMessage());
-                $returncode = 1;
             }
         } else {
             // Local running Naemon

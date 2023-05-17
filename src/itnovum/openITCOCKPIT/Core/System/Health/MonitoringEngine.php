@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use App\itnovum\openITCOCKPIT\Supervisor\Binarydctl;
 use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use Cake\Core\Configure;
 use Cake\Log\Log;
@@ -204,16 +205,10 @@ class MonitoringEngine {
         if (IS_CONTAINER) {
             // Naemon is running inside a container - query remote supervisor to run "naemon -v naemon.cfg"
             try {
-                $Supervisorctl = new Supervisorctl();
-                $SupervisorEndpoint = $Supervisorctl->getSupervisorApiEndpointByServiceName('naemon-stats');
-                // https://github.com/Supervisor/supervisor/issues/804
-                //$SupervisorEndpoint->clearProcessLogs('naemon-stats');
-                $SupervisorEndpoint->clearAllProcessLogs();
-                $Supervisorctl->start('naemon-stats');
-                sleep(1);
-                $output = [
-                    $SupervisorEndpoint->readProcessStdoutLog('naemon-stats', 0, (1024 * 1000))
-                ];
+                $Binarydctl = new Binarydctl();
+                $BinarydEndpoint = $Binarydctl->getBinarydApiEndpointByServiceName('naemon-stats');
+                $result = $BinarydEndpoint->execute('naemon-stats');
+                $output = [$result];
             } catch (\Exception $e) {
                 Log::error($e->getMessage());
             }
