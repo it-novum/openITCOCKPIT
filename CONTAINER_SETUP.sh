@@ -17,8 +17,6 @@ INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 BASHCONF=/opt/openitc/etc/mysql/bash.conf
 
-PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
-
 OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
 OS_BASE="debian"
 

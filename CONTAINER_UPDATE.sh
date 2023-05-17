@@ -17,6 +17,9 @@ INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 BASHCONF=/opt/openitc/etc/mysql/bash.conf
 
+OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+OS_BASE="debian"
+
 if [[ ! -f "$BASHCONF" ]]; then
   MYSQL_USER=openitcockpit
   MYSQL_DATABASE=openitcockpit
@@ -305,7 +308,7 @@ if getent group ssl-cert &>/dev/null; then
     fi
 fi
 
-oitc config_generator_shell --generate
+oitc config_generator_shell --generate-container
 oitc nagios_export --resource
 
 if [[ -d "/opt/openitc/nagios/rollout" ]]; then
