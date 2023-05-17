@@ -80,6 +80,11 @@ class GrafanaPanel {
      */
     private $visualization_type = 'timeseries';
 
+    /**
+     * @var string
+     */
+    private $stacking_mode = 'none';
+
 
     /**
      * @var array
@@ -137,7 +142,7 @@ class GrafanaPanel {
                     "showPoints"        => "never",
                     "pointSize"         => 5,
                     "stacking"          => [
-                        "mode"  => "none",
+                        "mode"  => "none", //normal, percent, none
                         "group" => "A"
                     ],
 
@@ -204,7 +209,10 @@ class GrafanaPanel {
         if ($this->visualization_type === 'bargaugeretro') {
             $this->panel['type'] = 'bargauge';
             $this->panel['options']['displayMode'] = 'lcd';
+        }
 
+        if ($this->stacking_mode) {
+            $this->panel['fieldConfig']['defaults']['custom']['stacking']['mode'] = $this->stacking_mode;
         }
 
         if ($this->Overrides->hasOverrides()) {
@@ -247,6 +255,13 @@ class GrafanaPanel {
      */
     public function setVisualizationType($visualizationType) {
         $this->visualization_type = $visualizationType;
+    }
+
+    /**
+     * @param $stackingMode
+     */
+    public function setStackingMode($stackingMode) {
+        $this->stacking_mode = $stackingMode;
     }
 
     /**

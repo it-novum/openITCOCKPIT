@@ -4,7 +4,7 @@ declare(strict_types=1);
 use Migrations\AbstractMigration;
 
 /**
- * Class Colors
+ * Class VisualizationTypes
  *
  * Created via:
  * oitc migrations create -p GrafanaModule VisualizationTypes
@@ -31,6 +31,5 @@ class VisualizationTypes extends AbstractMigration {
                 'after'   => 'title'
             ])
             ->update();
-
     }
 }

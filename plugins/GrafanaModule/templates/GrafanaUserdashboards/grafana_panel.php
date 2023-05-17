@@ -257,7 +257,12 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                         </select>
                     </div>
                 </div>
-                <div class="row p-2">
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <label class="control-label">
+                            <?= __('Visualization type'); ?>
+                        </label>
+                    </div>
                     <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
                         <button type="button"
                                 class="btn btn-outline-primary waves-effect waves-themed w-100"
@@ -314,6 +319,44 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
                         </button>
                     </div>
                 </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <label class="control-label">
+                            <?= __('Stack series'); ?>
+                            <span class="help-block">
+                                <?= __('only available for time series and bar charts'); ?>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
+                        <button type="button"
+                                class="btn btn-xs waves-effect waves-themed w-100"
+                                ng-click="changeStackingMode('none')"
+                                ng-disabled="(!(panel.visualization_type === 'timeseries' || panel.visualization_type === 'barchart'))"
+                                ng-class="{'btn-primary': panel.stacking_mode === 'none', 'btn-outline-primary': panel.stacking_mode !== 'none'}">
+                            <?= __('Off'); ?>
+                        </button>
+
+                    </div>
+                    <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
+                        <button type="button"
+                                class="btn btn-xs waves-effect waves-themed w-100"
+                                ng-click="changeStackingMode('normal')"
+                                ng-disabled="(!(panel.visualization_type === 'timeseries' || panel.visualization_type === 'barchart'))"
+                                ng-class="{'btn-primary': panel.stacking_mode === 'normal', 'btn-outline-primary': panel.stacking_mode !== 'normal'}">
+                            <?= __('Normal'); ?>
+                        </button>
+                    </div>
+                    <div class="col-xs-12 col-md-4 col-lg-4 my-1 px-1">
+                        <button type="button"
+                                class="btn btn-xs waves-effect waves-themed w-100"
+                                ng-click="changeStackingMode('percent')"
+                                ng-disabled="(!(panel.visualization_type === 'timeseries' || panel.visualization_type === 'barchart'))"
+                                ng-class="{'btn-primary': panel.stacking_mode === 'percent', 'btn-outline-primary': panel.stacking_mode !== 'percent'}">
+                            <?= __('100%'); ?>
+                        </button>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-lg-12 text-info">
                         <i class="fa fa-info-circle"></i>
@@ -328,86 +371,83 @@ $GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
             </div>
         </div>
     </div>
-</div>
 
-
-<!-- Panel options modal -->
-<div id="panelOptionsModal_{{rowId}}_{{panelId}}" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
-                    <i class="fa fa-wrench fa-flip-horizontal"></i>
-                    <?php echo __('Panel options'); ?>
-                </h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="row">
-
-                    <div class="col-xs-12">
-                        <div class="form-group smart-form">
-                            <?php echo __('Panel title'); ?>
+    <!-- Panel options modal -->
+    <div id="panelOptionsModal_{{rowId}}_{{panelId}}" class="modal" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <i class="fa fa-wrench fa-flip-horizontal"></i>
+                        <?php echo __('Panel options'); ?>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group smart-form">
+                                <?php echo __('Panel title'); ?>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 smart-form">
-                        <div class="form-group smart-form">
-                            <label class="input"> <b class="icon-prepend">
-                                    <i class="fa fa-pencil"></i>
-                                </b>
-                                <input type="text" class="input-sm"
-                                       ng-model="panel.title"
-                                       ng-model-options="{debounce: 500}">
-                            </label>
+                        <div class="col-xs-12 smart-form">
+                            <div class="form-group smart-form">
+                                <label class="input"> <b class="icon-prepend">
+                                        <i class="fa fa-pencil"></i>
+                                    </b>
+                                    <input type="text" class="input-sm"
+                                           ng-model="panel.title"
+                                           ng-model-options="{debounce: 500}">
+                                </label>
+                            </div>
                         </div>
+                        <br/>
+
+                        <div class="col-xs-12 padding-top-5">
+                            <div class="form-group smart-form">
+                                <?php echo __('Panel unit'); ?>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <!-- Date comes from API and PHP. PHP is required for the optgroup API data is used to tell Angular to render the chosen box-->
+                                <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="grafanaUnits"
+                                    ng-init="panel.unit = panel.unit || 'none'"
+                                    ng-model="panel.unit"
+                                    ng-model-options="{debounce: 500}">
+                                    <?php foreach ($allGrafanaUnits as $category => $units): ?>
+                                        <optgroup label="<?php echo h($category); ?>">
+                                            <?php foreach ($units as $unitKey => $unitName): ?>
+                                                <option
+                                                    value="<?php echo h($unitKey); ?>"><?php echo h($unitName); ?></option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endforeach;; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <br/>
                     </div>
                     <br/>
 
-                    <div class="col-xs-12 padding-top-5">
-                        <div class="form-group smart-form">
-                            <?php echo __('Panel unit'); ?>
+                    <div class="row">
+                        <div class="col-xs-12 text-info">
+                            <i class="fa fa-info-circle"></i>
+                            <?php echo __('Changes will be saved automatically.'); ?>
                         </div>
                     </div>
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <!-- Date comes from API and PHP. PHP is required for the optgroup API data is used to tell Angular to render the chosen box-->
-                            <select
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="grafanaUnits"
-                                ng-init="panel.unit = panel.unit || 'none'"
-                                ng-model="panel.unit"
-                                ng-model-options="{debounce: 500}">
-                                <?php foreach ($allGrafanaUnits as $category => $units): ?>
-                                    <optgroup label="<?php echo h($category); ?>">
-                                        <?php foreach ($units as $unitKey => $unitName): ?>
-                                            <option
-                                                value="<?php echo h($unitKey); ?>"><?php echo h($unitName); ?></option>
-                                        <?php endforeach; ?>
-                                    </optgroup>
-                                <?php endforeach;; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <br/>
-                </div>
-                <br/>
 
-                <div class="row">
-                    <div class="col-xs-12 text-info">
-                        <i class="fa fa-info-circle"></i>
-                        <?php echo __('Changes will be saved automatically.'); ?>
-                    </div>
+
                 </div>
 
-
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Close'); ?>
-                </button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <?php echo __('Close'); ?>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

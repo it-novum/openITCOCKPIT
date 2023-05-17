@@ -282,6 +282,7 @@ class GrafanaUserdashboardsTable extends Table {
                 'unit'               => $panel['unit'],
                 'title'              => $panel['title'],
                 'visualization_type' => $panel['visualization_type'],
+                'stacking_mode'      => $panel['stacking_mode'],
                 'metrics'            => []
             ];
             foreach ($panel['grafana_userdashboard_metrics'] as $metric) {

@@ -631,6 +631,7 @@ class GrafanaUserdashboardsController extends AppController {
             'userdashboard_id'   => $panel->get('userdashboard_id'),
             'unit'               => '',
             'visualization_type' => $panel->get('visualization_type'),
+            'stacking_mode'      => $panel->get('stacking_mode'),
             'metrics'            => []
         ]);
         $this->viewBuilder()->setOption('serialize', ['panel']);
@@ -723,6 +724,7 @@ class GrafanaUserdashboardsController extends AppController {
         $unit = $this->request->getData('unit', 'none');
         $title = $this->request->getData('title', '');
         $visualization_type = $this->request->getData('visualization_type', '');
+        $stacking_mode = $this->request->getData('stacking_mode', '');
 
         /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
         $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
@@ -733,6 +735,7 @@ class GrafanaUserdashboardsController extends AppController {
             $panel->set('title', $title);
             $panel->set('unit', $unit);
             $panel->set('visualization_type', $visualization_type);
+            $panel->set('stacking_mode', $stacking_mode);
 
             if ($GrafanaUserdashboardPanelsTable->save($panel)) {
                 $this->set('success', true);
@@ -795,6 +798,7 @@ class GrafanaUserdashboardsController extends AppController {
                     $GrafanaPanel = new GrafanaPanel($panel['id'], $SpanSize);
                     $GrafanaPanel->setTitle($panel['title']);
                     $GrafanaPanel->setVisualizationType($panel['visualization_type']);
+                    $GrafanaPanel->setStackingMode($panel['stacking_mode']);
 
                     foreach ($panel['metrics'] as $metric) {
                         if ($metric['service']['service_type'] !== PROMETHEUS_SERVICE) {
