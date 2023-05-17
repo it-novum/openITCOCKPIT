@@ -62,6 +62,7 @@ Statusengine3Module.uninstall(){
 }
 
 Statusengine3Module.finish(){
+    echo "Statusengine3Module.finish"
     #if [ $(system.moduleSrcDirExists $(Statusengine3Module.property name)) == 1 ]; then
     #    if systemctl is-active --quiet statusengine.service; then
     #        echo "Restart service: statusengine.service"

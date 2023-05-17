@@ -61,6 +61,7 @@ NagiosModule.installIfNeeded() {
 }
 
 NagiosModule.install() {
+    echo "NagiosModule.install"
     #if [ -f "/opt/openitc/etc/nagios/nagios.cfg" ]; then
     #    echo "Start service: nagios.service"
     #    systemctl start nagios.service
