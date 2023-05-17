@@ -358,11 +358,6 @@ if [ -f /opt/openitc/etc/grafana/api_key ]; then
     set -e
 fi
 
-oitc supervisor restart sudo_server
-oitc supervisor restart oitc_cmd
-oitc supervisor restart gearman_worker
-oitc supervisor restart push_notification
-
 echo "Restart monitoring engine"
 oitc supervisor restart naemon
 
@@ -373,9 +368,6 @@ oitc supervisor restart naemon
 #    systemctl restart $srv
 #  fi
 #done
-
-oitc supervisor restart nginx
-oitc supervisor restart php-fpm
 
 set +e
 systemctl is-enabled --quiet php${PHPVersion}-fpm.service &>/dev/null
