@@ -369,16 +369,7 @@ fi
 echo "Restart monitoring engine"
 oitc supervisor restart naemon
 
-# Restart services if they are running
-#for srv in openitcockpit-graphing.service nginx.service nsta.service event-collectd.service; do
-#  if systemctl is-active --quiet $srv; then
-#    echo "Restart service: $srv"
-#    systemctl restart $srv
-#  fi
-#done
-
 set +e
-systemctl is-enabled --quiet php${PHPVersion}-fpm.service &>/dev/null
 
 for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
     if [ "$Module" != "system" ]; then
