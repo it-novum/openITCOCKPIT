@@ -107,12 +107,10 @@
                                                 <span class="input-group-text pt-0 pb-0">
                                                        <label>
                                                             <?= __('Enable RegEx'); ?>
-                                                            &nbsp;
                                                             <input type="checkbox"
                                                                    ng-model="filter.Hosts.name_regex">
                                                         </label>
-                                                        &nbsp;
-                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                    <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
                                                 </span>
                                             </div>
                                         </div>
@@ -132,12 +130,10 @@
                                                 <span class="input-group-text pt-0 pb-0">
                                                        <label>
                                                             <?= __('Enable RegEx'); ?>
-                                                            &nbsp;
                                                             <input type="checkbox"
                                                                    ng-model="filter.Services.name_regex">
                                                         </label>
-                                                        &nbsp;
-                                                    <regex-helper-tooltip></regex-helper-tooltip>
+                                                    <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
                                                 </span>
                                             </div>
                                         </div>
