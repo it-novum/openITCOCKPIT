@@ -37,6 +37,13 @@ fi
 
 . /opt/openitc/etc/mysql/bash.conf
 
+echo "Copy required system files"
+rsync -K -a ${APPDIR}/system/etc/. /etc/ # we use rsync because the destination can be a symlink on RHEL
+chown root:root /etc
+cp -r ${APPDIR}/system/usr/. /usr/
+cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
+cp ${APPDIR}/system/nginx/ssl_cert.conf /etc/nginx/openitc/ssl_cert.conf
+chmod +x /usr/bin/oitc
 
 echo "Create mysqldump of your current database"
 BACKUP_TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
