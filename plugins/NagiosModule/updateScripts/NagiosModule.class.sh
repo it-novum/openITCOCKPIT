@@ -61,12 +61,10 @@ NagiosModule.installIfNeeded() {
 }
 
 NagiosModule.install() {
-    if [ -f "/opt/openitc/etc/nagios/nagios.cfg" ]; then
-        if [ ! -z IS_CONTAINER ]; then
-            echo "Start service: nagios.service"
-            systemctl start nagios.service
-        fi
-    fi
+    #if [ -f "/opt/openitc/etc/nagios/nagios.cfg" ]; then
+    #    echo "Start service: nagios.service"
+    #    systemctl start nagios.service
+    #fi
 }
 
 NagiosModule.uninstall() {
