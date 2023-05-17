@@ -370,7 +370,9 @@ echo "Restart monitoring engine"
 oitc supervisor restart naemon
 
 echo "Enabling webserver configuration"
-ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
+if [[ ! -f "/etc/nginx/sites-enabled/openitc" ]]; then
+    ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
+fi
 rm -f /etc/nginx/sites-enabled/default
 
 set +e
