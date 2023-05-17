@@ -253,8 +253,6 @@ for i in "$@"; do
     rm -rf /opt/openitc/frontend/tmp/cache/models/*
     echo "Clear out CLI Model Cache /opt/openitc/frontend/tmp/cli/cache/cli/models/"
     rm -rf /opt/openitc/frontend/tmp/cli/cache/cli/models/*
-    echo "Clear out Nagios Model Cache /opt/openitc/frontend/tmp/nagios/cache/nagios/models/"
-    rm -rf /opt/openitc/frontend/tmp/nagios/cache/nagios/models/*
     ;;
 
   --rights)
@@ -398,5 +396,4 @@ chown www-data:www-data /opt/openitc/frontend/
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
-chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
 

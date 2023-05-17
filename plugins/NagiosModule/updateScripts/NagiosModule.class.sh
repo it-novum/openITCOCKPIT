@@ -32,9 +32,15 @@ NagiosModule.initialize() {
 
 NagiosModule.installIfNeeded() {
     echo "Run $(NagiosModule.property name) update"
-    chown nagios:www-data -R /opt/openitc/nagios/etc
-    chown nagios:www-data -R /opt/openitc/nagios/var
-    chown nagios:www-data -R /opt/openitc/nagios/share
+    if [ -d "/opt/openitc/nagios/etc" ]; then
+        chown nagios:www-data -R /opt/openitc/nagios/etc
+    fi
+    if [ -d "/opt/openitc/nagios/var" ]; then
+        chown nagios:www-data -R /opt/openitc/nagios/var
+    fi
+    if [ -d "/opt/openitc/nagios/share" ]; then
+        chown nagios:www-data -R /opt/openitc/nagios/share
+    fi
     system.lock $(NagiosModule.property name) "installed" $(NagiosModule.property disableFileLock)
 
     if [ $(NagiosModule.property disableFileLock) == 1 ]; then
@@ -56,8 +62,10 @@ NagiosModule.installIfNeeded() {
 
 NagiosModule.install() {
     if [ -f "/opt/openitc/etc/nagios/nagios.cfg" ]; then
-        echo "Start service: nagios.service"
-        systemctl start nagios.service
+        if [ ! -z IS_CONTAINER ]; then
+            echo "Start service: nagios.service"
+            systemctl start nagios.service
+        fi
     fi
 }
 
