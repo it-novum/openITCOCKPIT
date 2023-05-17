@@ -369,6 +369,10 @@ fi
 echo "Restart monitoring engine"
 oitc supervisor restart naemon
 
+echo "Enabling webserver configuration"
+ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
+rm -f /etc/nginx/sites-enabled/default
+
 set +e
 
 # todo fix this
