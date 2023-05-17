@@ -371,20 +371,21 @@ oitc supervisor restart naemon
 
 set +e
 
-for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
-    if [ "$Module" != "system" ]; then
-        if type "${Module}" &> /dev/null; then
-            # create class object
-            ${Module} module
-
-            # set required variables
-            module.property name = "${Module}"
-            module.property dbIniFile = "${Module}"
-
-            module.finish
-        fi
-    fi
-done
+# todo fix this
+#for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
+#    if [ "$Module" != "system" ]; then
+#        if type "${Module}" &> /dev/null; then
+#            # create class object
+#            ${Module} module
+#
+#            # set required variables
+#            module.property name = "${Module}"
+#            module.property dbIniFile = "${Module}"
+#
+#            module.finish
+#        fi
+#    fi
+#done
 
 # Set filesystem permissions after all is done - again
 chown www-data:www-data /opt/openitc/logs/frontend
