@@ -388,11 +388,12 @@ set +e
 #done
 
 # Set filesystem permissions after all is done - again
-chown www-data:www-data /opt/openitc/logs/frontend
-oitc rights
-chown nagios:nagios /opt/openitc/logs/frontend/nagios
-chown www-data:www-data /opt/openitc/frontend/
-chmod 775 /opt/openitc/logs/frontend
-chmod 775 /opt/openitc/logs/frontend/nagios
-chown www-data:www-data /opt/openitc/frontend/tmp
+#todo fix if realy required
+#chown www-data:www-data /opt/openitc/logs/frontend
+#oitc rights
+#chown nagios:nagios /opt/openitc/logs/frontend/nagios
+#chown www-data:www-data /opt/openitc/frontend/
+#chmod 775 /opt/openitc/logs/frontend
+#chmod 775 /opt/openitc/logs/frontend/nagios
+#chown www-data:www-data /opt/openitc/frontend/tmp
 
