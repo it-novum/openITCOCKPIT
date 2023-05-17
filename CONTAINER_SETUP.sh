@@ -222,41 +222,9 @@ echo "Enabling webserver configuration"
 ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
 rm -f /etc/nginx/sites-enabled/default
 
-#systemctl restart\
-# statusengine.service\
-# nagios.service\
-# nginx.service\
-# sudo_server.service\
-# oitc_cmd.service\
-# gearman_worker.service\
-# push_notification.service\
-# openitcockpit-node.service\
-# oitc_cronjobs.timer
-
-#echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
-#
-#set +e
-#systemctl is-enabled --quiet php${PHPVersion}-fpm.service &>/dev/null
-#RC=$?
-#if [ $RC -eq 0 ]; then
-#    #Is it php7.3-fpm-service ?
-#    systemctl restart php${PHPVersion}-fpm.service
-#else
-#    # Is it just php-fpm.service?
-#    systemctl is-enabled --quiet php-fpm.service
-#    RC=$?
-#    if [ $RC -eq 0 ]; then
-#        systemctl restart php-fpm.service
-#    else
-#        echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
-#    fi
-#fi
-#set -e
-
 #Set default permissions, check for always allowed permissions and dependencies
 oitc roles --enable-defaults --admin
 
-date > /opt/openitc/etc/.installation_done
+date > /opt/openitc/var/.installation_done
 
-#/opt/openitc/frontend/UPDATE.sh
 
