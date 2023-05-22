@@ -47,6 +47,7 @@ class HostStatusListJson extends DashboardJsonStandardizer {
         ],
         'Host'            => [
             'name'         => '',
+            'name_regex'   => false,
             'keywords'     => '',
             'not_keywords' => ''
         ],

@@ -81,6 +81,7 @@ angular.module('openITCOCKPIT')
                     Services: {
                         id: QueryStringService.getStateValue($stateParams, 'id', []),
                         name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
+                        name_regex: false,
                         keywords: '',
                         not_keywords: '',
                         servicedescription: '',
@@ -96,6 +97,7 @@ angular.module('openITCOCKPIT')
                     Hosts: {
                         id: QueryStringService.getStateValue($stateParams, 'host_id', []),
                         name: QueryStringService.getStateValue($stateParams, 'hostname', ''),
+                        name_regex: false,
                         satellite_id: []
                     }
                 };
@@ -156,10 +158,12 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Hosts.id]': $scope.filter.Hosts.id,
                 'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[Hosts.name_regex]': $scope.filter.Hosts.name_regex,
                 'filter[Hosts.satellite_id][]': $scope.filter.Hosts.satellite_id,
                 'filter[Services.id][]': $scope.filter.Services.id,
                 'filter[Services.service_type][]': $scope.filter.Services.service_type,
                 'filter[servicename]': $scope.filter.Services.name,
+                'filter[servicename_regex]': $scope.filter.Services.name_regex,
                 'filter[servicedescription]': $scope.filter.Services.servicedescription,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),

@@ -19,10 +19,12 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Hosts: {
-                    name: ''
+                    name: '',
+                    name_regex: false
                 },
                 Services: {
-                    name: ''
+                    name: '',
+                    name_regex: ''
                 }
             };
         };
@@ -45,7 +47,9 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Hosts.name]': $scope.filter.Hosts.name,
-                'filter[servicename]': $scope.filter.Services.name
+                'filter[Hosts.name_regex]': $scope.filter.Hosts.name_regex,
+                'filter[servicename]': $scope.filter.Services.name,
+                'filter[servicename_regex]': $scope.filter.Services.name_regex
             };
 
 

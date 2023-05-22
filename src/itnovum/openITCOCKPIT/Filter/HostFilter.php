@@ -32,25 +32,23 @@ class HostFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'bool'     => [
+            'bool'          => [
                 'Hoststatus.problem_has_been_acknowledged',
                 'Hoststatus.notifications_enabled',
                 'Hoststatus.active_checks_enabled'
             ],
-            'like'     => [
+            'like'          => [
                 'Hosts.description',
                 'Hoststatus.output',
                 'hostdescription'
             ],
-            'rlike'    => [
-                'Hosts.name',
-                'Hosts.address',
+            'rlike'         => [
                 'Hosts.keywords'
             ],
-            'notrlike' => [
+            'notrlike'      => [
                 'Hosts.not_keywords'
             ],
-            'equals'   => [
+            'equals'        => [
                 'Hosts.id',
                 'Hosts.uuid',
                 'Hosts.disabled',
@@ -58,11 +56,15 @@ class HostFilter extends Filter {
                 'hostpriority',
                 'Hosts.host_type'
             ],
-            'downtime' => [
+            'downtime'      => [
                 'Hoststatus.scheduled_downtime_depth',
             ],
-            'state'    => [
+            'state'         => [
                 'Hoststatus.current_state'
+            ],
+            'like_or_rlike' => [
+                'Hosts.name',
+                'Hosts.address',
             ]
         ];
 
@@ -74,14 +76,16 @@ class HostFilter extends Filter {
      */
     public function notMonitoredFilter() {
         $filters = [
-            'like'   => [
-                'Hosts.name',
+            'like'          => [
                 'Hosts.description',
-                'Hosts.address'
             ],
-            'equals' => [
+            'equals'        => [
                 'Hosts.id',
                 'Hosts.satellite_id'
+            ],
+            'like_or_rlike' => [
+                'Hosts.name',
+                'Hosts.address',
             ]
         ];
 
@@ -93,7 +97,7 @@ class HostFilter extends Filter {
      */
     public function deletedFilter() {
         $filters = [
-            'rlike' => [
+            'like_or_rlike' => [
                 'DeletedHosts.name'
             ]
         ];
@@ -106,14 +110,14 @@ class HostFilter extends Filter {
      */
     public function disabledFilter() {
         $filters = [
-            'like'   => [
+            'like'          => [
                 'Hosts.description',
             ],
-            'rlike' => [
+            'like_or_rlike' => [
                 'Hosts.name',
                 'Hosts.address',
             ],
-            'equals' => [
+            'equals'        => [
                 'Hosts.id',
                 'Hosts.satellite_id'
             ]

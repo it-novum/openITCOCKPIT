@@ -19,9 +19,11 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewServicesWidget', func
             $scope.filter = {
                 Host: {
                     name: '',
+                    name_regex: false
                 },
                 Service: {
                     servicename: '',
+                    servicename_regex: false,
                     keywords: '',
                     not_keywords: ''
                 },

@@ -59,7 +59,8 @@ angular.module('openITCOCKPIT')
                 output: ''
             },
             Service: {
-                name: QueryStringService.getValue('filter[Service.servicename]', '')
+                name: QueryStringService.getValue('filter[Service.servicename]', ''),
+                name_regex: false
             }
         };
 
@@ -231,6 +232,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Hosts.id]': $scope.id,
                 'filter[servicename]': $scope.activeServiceFilter.Service.name,
+                'filter[servicename_regex]': $scope.activeServiceFilter.Service.name_regex,
                 'filter[Servicestatus.output]': $scope.activeServiceFilter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.activeServiceFilter.Servicestatus.current_state),
                 'filter[Service.disabled]': false

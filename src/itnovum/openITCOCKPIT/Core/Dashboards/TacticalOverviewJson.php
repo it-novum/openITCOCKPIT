@@ -34,15 +34,18 @@ class TacticalOverviewJson extends DashboardJsonStandardizer {
      */
     protected $fields = [
         'Host'         => [
-            'name'         => '',
-            'address'      => '',
-            'keywords'     => '',
-            'not_keywords' => ''
+            'name'          => '',
+            'name_regex'    => false,
+            'address'       => '',
+            'address_regex' => false,
+            'keywords'      => '',
+            'not_keywords'  => ''
         ],
         'Service'      => [
-            'servicename'  => '',
-            'keywords'     => '',
-            'not_keywords' => ''
+            'servicename'       => '',
+            'servicename_regex' => false,
+            'keywords'          => '',
+            'not_keywords'      => ''
         ],
         'Hostgroup'    => [
             '_ids' => ''

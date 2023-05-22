@@ -26,8 +26,10 @@ angular.module('openITCOCKPIT')
                 },
                 Host: {
                     name: QueryStringService.getValue('filter[Hosts.name]', ''),
+                    name_regex: false,
                     keywords: '',
                     address: QueryStringService.getValue('filter[Hosts.address]', ''),
+                    address_regex: false,
                     satellite_id: [],
                     host_type: []
                 }
@@ -42,7 +44,7 @@ angular.module('openITCOCKPIT')
 
         /*** columns functions
          columns:
-          ['Hoststatus',
+         ['Hoststatus',
          'is acknowledged',
          'is in downtime',
          'Notifications enabled',
@@ -60,26 +62,26 @@ angular.module('openITCOCKPIT')
          'Host notes',
          'Host type'] ***/
         $scope.defaultColumns = function(){
-            $scope.fields = [true,true,true,false,true,true,false,true,false,true,true,true,true,true,false,false,false];
+            $scope.fields = [true, true, true, false, true, true, false, true, false, true, true, true, true, true, false, false, false];
             $window.localStorage.removeItem($scope.columnsTableKey);
         };
 
         $scope.saveColumns = function(){
             $window.localStorage.removeItem($scope.columnsTableKey);
-            $window.localStorage.setItem($scope.columnsTableKey,JSON.stringify($scope.fields));
+            $window.localStorage.setItem($scope.columnsTableKey, JSON.stringify($scope.fields));
 
         }
 
         $scope.loadColumns = function(){
-            var fields =  JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
-            if(typeof fields !== undefined && Array.isArray(fields)) {
+            var fields = JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
+            if(typeof fields !== undefined && Array.isArray(fields)){
                 $scope.fields = fields;
-            }else {
+            }else{
                 $scope.defaultColumns()
             }
         }
 
-        $scope.triggerLoadColumns= function(fields){
+        $scope.triggerLoadColumns = function(fields){
             $scope.fields = fields;
         };
         /*** end columns functions ***/
@@ -127,12 +129,14 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Hosts.name]': $scope.filter.Host.name,
+                'filter[Hosts.name_regex]': $scope.filter.Host.name_regex,
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                 'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
+                'filter[Hosts.address_regex]': $scope.filter.Host.address_regex,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
                 'filter[Hosts.host_type][]': $scope.filter.Host.host_type,
                 'BrowserContainerId': $scope.containerId
