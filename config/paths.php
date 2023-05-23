@@ -74,9 +74,13 @@ define('TESTS', ROOT . DS . 'tests' . DS);
  * Path to the temporary files directory.
  */
 
-if(!isset($_SERVER['USER'])){
+if (!isset($_SERVER['USER'])) {
     // Must be inside a container or some other scatchy setup
     $_SERVER['USER'] = 'root';
+    if (getmyuid() > 0) {
+        // Probably we are nagios?
+        $_SERVER['USER'] = 'nagios';
+    }
 }
 
 if ($isWorkhorseContainer === false) {
@@ -165,7 +169,7 @@ if ($isWorkhorseContainer === false) {
             define('CACHE', TMP . 'cache' . DS . 'cli' . DS);
         }
     }
-}else{
+} else {
     // This openITCOCKPIT is running inside a workhorse container like mod_gearman
     // The primary job of this container is only to provide the openITCOCKPIT CLI backend to be able
     // to execute notification commands or the evc check plugin
