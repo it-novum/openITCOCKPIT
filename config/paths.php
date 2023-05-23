@@ -61,6 +61,10 @@ if (!defined('WWW_ROOT')) {
 
 $isCli = PHP_SAPI === 'cli';
 
+// This var determins if openITCOCKPIT is running inside a workhorse container like mod_gearman
+// It yes, we use different path for logfiles and caching to avoid permission issues
+$isWorkhorseContainer = filter_var(env('IS_WORKHORSE_CONTAINER', false), FILTER_VALIDATE_BOOLEAN);
+
 /*
  * Path to the tests directory.
  */
@@ -69,47 +73,107 @@ define('TESTS', ROOT . DS . 'tests' . DS);
 /*
  * Path to the temporary files directory.
  */
-if ($isCli === false) {
-    // www-data
-    define('TMP', ROOT . DS . 'tmp' . DS);
-} else {
-    // root or nagios
-    if ($_SERVER['USER'] !== 'root') {
-        //nagios user or so
-        define('TMP', ROOT . DS . 'tmp' . DS . 'nagios' . DS);
+if ($isWorkhorseContainer === false) {
+    // Default installation of openITCOCKPIT via apt, dnf or git
+    // Also used if openITCOCKPIT is running inside a container like docker
+    if ($isCli === false) {
+        // www-data
+        define('TMP', ROOT . DS . 'tmp' . DS);
     } else {
-        //root user
-        define('TMP', ROOT . DS . 'tmp' . DS . 'cli' . DS);
+        // root or nagios
+        if ($_SERVER['USER'] !== 'root') {
+            //nagios user or so
+            define('TMP', ROOT . DS . 'tmp' . DS . 'nagios' . DS);
+        } else {
+            //root user
+            define('TMP', ROOT . DS . 'tmp' . DS . 'cli' . DS);
+        }
+    }
+} else {
+    // This openITCOCKPIT is running inside a workhorse container like mod_gearman
+    // The primary job of this container is only to provide the openITCOCKPIT CLI backend to be able
+    // to execute notification commands or the evc check plugin
+    if ($isCli === false) {
+        // www-data
+        define('TMP', DS . 'tmp' . DS . 'openitcockpit' . DS . 'tmp'); // /tmp/openitcockpit/tmp/
+    } else {
+        // root or nagios
+        if ($_SERVER['USER'] !== 'root') {
+            //nagios user or so
+            define('TMP', DS . 'tmp' . DS . 'openitcockpit' . DS . 'tmp' . DS . 'nagios' . DS); // /tmp/openitcockpit/tmp/nagios
+        } else {
+            //root user
+            define('TMP', DS . 'tmp' . DS . 'openitcockpit' . DS . 'tmp' . DS . 'cli' . DS); // /tmp/openitcockpit/tmp/cli
+        }
     }
 }
+
 
 /*
  * Path to the logs directory.
  */
-if ($isCli === false) {
-    //www-data
-    define('LOGS', ROOT . DS . 'logs' . DS);
-} else {
-    if ($_SERVER['USER'] !== 'root') {
-        define('LOGS', ROOT . DS . 'logs' . DS . 'nagios' . DS);
-    } else {
+if ($isWorkhorseContainer === false) {
+    // Default installation of openITCOCKPIT via apt, dnf or git
+    // Also used if openITCOCKPIT is running inside a container like docker
+    if ($isCli === false) {
+        //www-data
         define('LOGS', ROOT . DS . 'logs' . DS);
+    } else {
+        if ($_SERVER['USER'] !== 'root') {
+            define('LOGS', ROOT . DS . 'logs' . DS . 'nagios' . DS);
+        } else {
+            define('LOGS', ROOT . DS . 'logs' . DS);
+        }
+    }
+} else {
+    // This openITCOCKPIT is running inside a workhorse container like mod_gearman
+    // The primary job of this container is only to provide the openITCOCKPIT CLI backend to be able
+    // to execute notification commands or the evc check plugin
+    if ($isCli === false) {
+        //www-data
+        define('LOGS', DS . 'tmp' . DS . 'openitcockpit' . DS . 'logs' . DS); // /tmp/openitcockpit/logs/
+    } else {
+        if ($_SERVER['USER'] !== 'root') {
+            define('LOGS', DS . 'tmp' . DS . 'openitcockpit' . DS . 'logs' . DS . 'nagios' . DS); // /tmp/openitcockpit/logs/nagios
+        } else {
+            define('LOGS', DS . 'tmp' . DS . 'openitcockpit' . DS . 'logs' . DS); // /tmp/openitcockpit/logs/
+        }
     }
 }
 
 /*
  * Path to the cache files directory. It can be shared between hosts in a multi-server setup.
  */
-if ($isCli === false) {
-    //www-data
-    define('CACHE', TMP . 'cache' . DS);
-} else {
-    if ($_SERVER['USER'] !== 'root') {
-        //nagios user or so
-        define('CACHE', TMP . 'cache' . DS . 'nagios' . DS);
+if ($isWorkhorseContainer === false) {
+    // Default installation of openITCOCKPIT via apt, dnf or git
+    // Also used if openITCOCKPIT is running inside a container like docker
+    if ($isCli === false) {
+        //www-data
+        define('CACHE', TMP . 'cache' . DS);
     } else {
-        //root user
-        define('CACHE', TMP . 'cache' . DS . 'cli' . DS);
+        if ($_SERVER['USER'] !== 'root') {
+            //nagios user or so
+            define('CACHE', TMP . 'cache' . DS . 'nagios' . DS);
+        } else {
+            //root user
+            define('CACHE', TMP . 'cache' . DS . 'cli' . DS);
+        }
+    }
+}else{
+    // This openITCOCKPIT is running inside a workhorse container like mod_gearman
+    // The primary job of this container is only to provide the openITCOCKPIT CLI backend to be able
+    // to execute notification commands or the evc check plugin
+    if ($isCli === false) {
+        //www-data
+        define('CACHE', DS . 'tmp' . DS . 'openitcockpit' . DS . 'cache' . DS); // /tmp/openitcockpit/cache/
+    } else {
+        if ($_SERVER['USER'] !== 'root') {
+            //nagios user or so
+            define('CACHE', DS . 'tmp' . DS . 'openitcockpit' . DS . 'cache' . DS . 'nagios' . DS); // /tmp/openitcockpit/cache/nagios/
+        } else {
+            //root user
+            define('CACHE', DS . 'tmp' . DS . 'openitcockpit' . DS . 'cache' . DS . 'cli' . DS); // /tmp/openitcockpit/cache/cli/
+        }
     }
 }
 
