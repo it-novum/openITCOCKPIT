@@ -230,6 +230,7 @@ class MapeditorsController extends AppController {
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         $properties = [];
+        $allowView = false;
 
         switch ($type) {
             case 'host':
