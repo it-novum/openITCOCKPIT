@@ -817,20 +817,22 @@ class ServicegroupsController extends AppController {
         $ServiceConditions->setServiceIds($serviceIds);
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
 
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
+
         $all_services = [];
         $services = [];
 
         if (!empty($serviceIds)) {
             if ($this->DbBackend->isNdoUtils()) {
                 /** @var $ServicesTable ServicesTable */
-                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services', $PaginateOMat);
                 $services = $ServicesTable->getServiceIndex($ServiceConditions);
             }
 
             if ($this->DbBackend->isStatusengine3()) {
                 /** @var $ServicesTable ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions);
+                $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions, $PaginateOMat);
             }
 
             if ($this->DbBackend->isCrateDb()) {

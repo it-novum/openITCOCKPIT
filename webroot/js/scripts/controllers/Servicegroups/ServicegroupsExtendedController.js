@@ -10,6 +10,9 @@ angular.module('openITCOCKPIT')
         $scope.mouseout = true;
         $scope.interval = null;
 
+        $scope.currentPage = 1;
+        $scope.useScroll = true;
+
         $scope.filter = {
             servicename: ''
         };
@@ -63,10 +66,14 @@ angular.module('openITCOCKPIT')
                 $http.get("/servicegroups/loadServicegroupWithServicesById/" + $scope.post.Servicegroup.id + ".json", {
                     params: {
                         'angular': true,
+                        'scroll': $scope.useScroll,
+                        'page': $scope.currentPage,
                         'filter[servicename]': $scope.filter.servicename,
                     }
                 }).then(function(result){
                     $scope.servicegroup = result.data.servicegroup;
+                    $scope.paging = result.data.paging;
+                    $scope.scroll = result.data.scroll;
                     $scope.servicegroupsStateFilter = {
                         0: true,
                         1: true,
@@ -144,6 +151,18 @@ angular.module('openITCOCKPIT')
                     $scope.showFlashSuccess = false;
                 }
             }, 1000);
+        };
+
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
         //Disable interval if object gets removed from DOM.
