@@ -73,6 +73,12 @@ define('TESTS', ROOT . DS . 'tests' . DS);
 /*
  * Path to the temporary files directory.
  */
+
+if(!isset($_SERVER['USER'])){
+    // Must be inside a container or some other scatchy setup
+    $_SERVER['USER'] = 'root';
+}
+
 if ($isWorkhorseContainer === false) {
     // Default installation of openITCOCKPIT via apt, dnf or git
     // Also used if openITCOCKPIT is running inside a container like docker
