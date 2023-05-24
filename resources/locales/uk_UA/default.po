@@ -24115,15 +24115,9 @@ msgstr "Контейнер відсутній"
 msgid "No service template groups and service templates defined"
 msgstr ""
 
-<<<<<<< HEAD
-#: .-modules/ImportModule/src/Model/Table/ImportersTable.php:130
-msgid "External system can not be blank if data source is i-doit."
-msgstr "Зовнішня система не може бути порожньою, якщо джерелом даних є i-doit."
-=======
 #: ImportModule/src/Model/Table/ImportersTable.php:127
 msgid "External system can not be blank if data source is i-doit / iTop.."
 msgstr "Зовнішня система не може бути порожньою, якщо джерелом даних є i-doit / iTop."
->>>>>>> f3f385b8bd3fc575aa1fee19dc19a3c81eafe6f9
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:20
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:19
@@ -26574,4 +26568,3 @@ msgstr ""
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:96
 msgid "VMware Snapshot services"
 msgstr ""
-
