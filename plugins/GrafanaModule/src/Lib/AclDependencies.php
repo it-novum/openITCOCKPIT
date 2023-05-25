@@ -37,8 +37,8 @@ class AclDependencies extends PluginAclDependencies {
             ->dependency('GrafanaUserdashboards', 'add', 'GrafanaUserdashboards', 'loadContainers')
             ->dependency('GrafanaUserdashboards', 'edit', 'GrafanaUserdashboards', 'loadContainers')
             ->dependency('GrafanaUserdashboards', 'view', 'GrafanaUserdashboards', 'getViewIframeUrl')
-
             ->dependency('GrafanaUserdashboards', 'editor', 'GrafanaUserdashboards', 'addMetricToPanel')
+            ->dependency('GrafanaUserdashboards', 'editor', 'GrafanaUserdashboards', 'editMetricToPanel')
             ->dependency('GrafanaUserdashboards', 'editor', 'GrafanaUserdashboards', 'removeMetricFromPanel')
             ->dependency('GrafanaUserdashboards', 'editor', 'GrafanaUserdashboards', 'addPanel')
             ->dependency('GrafanaUserdashboards', 'editor', 'GrafanaUserdashboards', 'removePanel')

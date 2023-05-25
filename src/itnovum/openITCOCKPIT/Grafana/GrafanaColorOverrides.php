@@ -24,10 +24,13 @@
 //	confirmation.
 
 
-namespace itnovum\openITCOCKPIT\Grafana;
+namespace App\itnovum\openITCOCKPIT\Grafana;
 
 
-class GrafanaSeriesOverrides {
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetInterface;
+
+class GrafanaColorOverrides {
 
     /**
      * @var array
@@ -35,36 +38,35 @@ class GrafanaSeriesOverrides {
     private $overrides = [];
 
     /**
-     * GrafanaSeriesOverrides constructor.
+     * GrafanaOverrides constructor.
      * @param GrafanaTargetCollection $targetCollection
      */
     public function __construct(GrafanaTargetCollection $targetCollection) {
-        if ($targetCollection->canDisplayUnits() && sizeof($targetCollection->getUnits()) === 2) {
-
-            foreach ($targetCollection->getUnits() as $index => $unit) {
-                $unitsToAxis[$unit] = $index + 1;
-            }
-
-            foreach ($targetCollection->getTargets() as $target) {
-                /** @var GrafanaTargetInterface $target */
-
-                // Get Y-axis id for current metric / unit
-                $axisId = $unitsToAxis[$target->getUnit()];
-
+        foreach ($targetCollection->getTargets() as $target) {
+            /** @var GrafanaTargetInterface $target */
+            $targetColor = $target->getColor();
+            if ($targetColor) {
                 if ($target->getAlias()) {
-                    $alias = str_replace('/', '\/', $target->getAlias());
-                    $override = [
-                        'alias' => $alias,
-                        'yaxis' => $axisId
-                    ];
+                    $alias = $target->getAlias();
                 } else {
-                    $alias = str_replace('/', '\/', $target->getTarget());
-                    $override = [
-                        'alias' => $alias,
-                        'yaxis' => $axisId
-                    ];
+                    $alias = $target->getTarget();
                 }
 
+                $override = [
+                    'matcher'    => [
+                        'id'      => 'byName',
+                        'options' => $alias
+                    ],
+                    'properties' => [
+                        [
+                            'id'    => 'color',
+                            'value' => [
+                                'mode'       => 'fixed',
+                                'fixedColor' => $targetColor
+                            ]
+                        ]
+                    ]
+                ];
                 $this->overrides[] = $override;
             }
         }
@@ -77,11 +79,11 @@ class GrafanaSeriesOverrides {
         return !empty($this->overrides);
     }
 
+
     /**
      * @return array
      */
     public function getOverrides() {
         return $this->overrides;
     }
-
 }

@@ -25,6 +25,7 @@
 
 namespace GrafanaModule\Controller;
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
@@ -42,7 +43,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
@@ -50,15 +50,15 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
+use itnovum\openITCOCKPIT\Grafana\GrafanaOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
-use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
 use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
@@ -526,6 +526,64 @@ class GrafanaUserdashboardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['metric']);
     }
 
+    /**
+     * @param int|null $id
+     */
+    public function editMetricFromPanel($id = null) {
+        if (!$this->request->is('get') && !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var GrafanaUserdashboardMetricsTable $GrafanaUserdashboardMetricsTable */
+        $GrafanaUserdashboardMetricsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardMetrics');
+
+        if (!$GrafanaUserdashboardMetricsTable->existsById($id)) {
+            throw new NotFoundException(__('Metric not found'));
+        }
+
+        $metric = $GrafanaUserdashboardMetricsTable->get($id);
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            $this->set('metric', $metric);
+            $this->viewBuilder()->setOption('serialize', ['metric']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $metric = $GrafanaUserdashboardMetricsTable->patchEntity(
+                $metric,
+                $this->request->getData('GrafanaUserdashboardMetric', [])
+            );
+
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $service = $ServicesTable->getServiceById($this->request->getData('GrafanaUserdashboardMetric.service_id', 0));
+
+            $GrafanaUserdashboardMetricsTable->save($metric);
+            if ($metric->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $metric->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+            $Host = new Host($service->get('host'));
+            $Service = new Service($service->toArray());
+
+            $metric = $metric->toArray();
+            $metric['Host'] = $Host->toArray();
+            $metric['Service'] = $Service->toArray();
+
+            $this->set('success', true);
+            $this->set('metric', $metric);
+            $this->viewBuilder()->setOption('serialize', ['success', 'metric']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+    }
+
     public function removeMetricFromPanel() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -568,11 +626,13 @@ class GrafanaUserdashboardsController extends AppController {
         }
 
         $this->set('panel', [
-            'id'               => $panel->get('id'),
-            'row'              => $panel->get('row'),
-            'userdashboard_id' => $panel->get('userdashboard_id'),
-            'unit'             => '',
-            'metrics'          => []
+            'id'                 => $panel->get('id'),
+            'row'                => $panel->get('row'),
+            'userdashboard_id'   => $panel->get('userdashboard_id'),
+            'unit'               => '',
+            'visualization_type' => $panel->get('visualization_type'),
+            'stacking_mode'      => $panel->get('stacking_mode'),
+            'metrics'            => []
         ]);
         $this->viewBuilder()->setOption('serialize', ['panel']);
     }
@@ -663,6 +723,8 @@ class GrafanaUserdashboardsController extends AppController {
         $id = $this->request->getData('id', 0);
         $unit = $this->request->getData('unit', 'none');
         $title = $this->request->getData('title', '');
+        $visualization_type = $this->request->getData('visualization_type', '');
+        $stacking_mode = $this->request->getData('stacking_mode', '');
 
         /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
         $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
@@ -672,6 +734,8 @@ class GrafanaUserdashboardsController extends AppController {
             $panel = $GrafanaUserdashboardPanelsTable->get($id);
             $panel->set('title', $title);
             $panel->set('unit', $unit);
+            $panel->set('visualization_type', $visualization_type);
+            $panel->set('stacking_mode', $stacking_mode);
 
             if ($GrafanaUserdashboardPanelsTable->save($panel)) {
                 $this->set('success', true);
@@ -716,14 +780,12 @@ class GrafanaUserdashboardsController extends AppController {
 
         $dashboard = $GrafanaUserdashboardsTable->getGrafanaUserDashboardEdit($id);
         $rows = $GrafanaUserdashboardsTable->extractRowsWithPanelsAndMetricsFromFindResult($dashboard);
-
         if ($client instanceof Client) {
             $tag = new GrafanaTag();
             $GrafanaDashboard = new GrafanaDashboard();
             $GrafanaDashboard->setTitle($dashboard['name']);
             $GrafanaDashboard->setEditable(true);
             $GrafanaDashboard->setTags($tag->getTag());
-            $GrafanaDashboard->setHideControls(false);
             $GrafanaDashboard->setAutoRefresh('1m');
             $GrafanaDashboard->setTimeInHours('3');
 
@@ -735,6 +797,8 @@ class GrafanaUserdashboardsController extends AppController {
                     $SpanSize = 12 / sizeof($row);
                     $GrafanaPanel = new GrafanaPanel($panel['id'], $SpanSize);
                     $GrafanaPanel->setTitle($panel['title']);
+                    $GrafanaPanel->setVisualizationType($panel['visualization_type']);
+                    $GrafanaPanel->setStackingMode($panel['stacking_mode']);
 
                     foreach ($panel['metrics'] as $metric) {
                         if ($metric['service']['service_type'] !== PROMETHEUS_SERVICE) {
@@ -792,6 +856,7 @@ class GrafanaUserdashboardsController extends AppController {
                                 // So we let Grafana generate a legend
                                 $alias = null;
                             }
+                            $GrafanaPanel->setMetricCount($metricCount);
 
                             $GrafanaTargetCollection->addTarget(
                                 new GrafanaTargetPrometheus(
@@ -805,7 +870,8 @@ class GrafanaUserdashboardsController extends AppController {
                     }
                     $GrafanaPanel->addTargets(
                         $GrafanaTargetCollection,
-                        new GrafanaSeriesOverrides($GrafanaTargetCollection),
+                        new GrafanaOverrides($GrafanaTargetCollection),
+                        new GrafanaColorOverrides($GrafanaTargetCollection),
                         new GrafanaYAxes($GrafanaTargetCollection),
                         new GrafanaThresholdCollection($GrafanaTargetCollection)
                     );
