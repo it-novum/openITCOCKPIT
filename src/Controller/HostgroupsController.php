@@ -387,6 +387,8 @@ class HostgroupsController extends AppController {
         $HostConditions->setHostIds($hostIds);
         $HostConditions->setContainerIds($this->MY_RIGHTS);
 
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
+
         $all_hosts = [];
         $hosts = [];
 
@@ -400,7 +402,7 @@ class HostgroupsController extends AppController {
             if ($this->DbBackend->isStatusengine3()) {
                 /** @var $HostsTable HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostConditions);
+                $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostConditions, $PaginateOMat);
             }
 
             if ($this->DbBackend->isCrateDb()) {
