@@ -221,7 +221,7 @@ class ExportsController extends AppController {
             'export',
             'exports',
             1,
-            OBJECT_HOST,
+            OBJECT_EXPORT,
             ROOT_CONTAINER,
             $User->getId(),
             __('Refresh of monitoring configuration started'),
