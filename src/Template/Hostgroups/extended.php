@@ -101,7 +101,8 @@
                         </div>
 
                         <div class="col-lg-2">
-                            <div class="btn-group btn-group-sm" style="padding-top:23px;" ng-show="hostgroup.Hostgroup.allowEdit">
+                            <div class="btn-group btn-group-sm" style="padding-top:23px;"
+                                 ng-show="hostgroup.Hostgroup.allowEdit">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
                                     <?php echo __('Action'); ?>
@@ -418,6 +419,9 @@
                             </tbody>
                         </table>
                     </div>
+                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <?php echo $this->element('paginator_or_scroll'); ?>
                 </div>
             </div>
         </div>
