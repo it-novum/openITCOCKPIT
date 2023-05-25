@@ -43,7 +43,7 @@
                 </div>
             </div>
             <div class="row pt-1">
-                <div class="col-12">
+                <div class="col-12 no-padding">
                     <div
                         class="no-padding"
                         mapeditor-view=""
