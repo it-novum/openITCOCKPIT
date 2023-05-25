@@ -186,7 +186,7 @@
                                                        ng-model="servicegroupsStateFilter[$index]"
                                                        ng-value="$index">
                                                 <label
-                                                    class="custom-control-label custom-control-label-{{state}} no-margin"
+                                                    class="extended-list custom-control-label custom-control-label-{{state}} no-margin"
                                                     for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
                                             </div>
                                         </div>
