@@ -41,6 +41,7 @@
         "jquery-sparkline": "^2.4.0",
         "jquery-ui-dist": "^1.12.1",
         "jquery.cookie": "^1.4.1",
+        "jsoneditor": "^9.10.0",
         "keycharm": "^0.3.0",
         "lodash": "^4.17.21",
         "luxon": "^3.0.1",

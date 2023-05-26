@@ -112,7 +112,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/luxon/build/global/luxon.min.js',
         'node_modules/uplot/dist/uPlot.iife.min.js',
         'node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js',
-
+        'node_modules/jsoneditor/dist/jsoneditor.min.js'
     ];
 
     /**
@@ -143,7 +143,8 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
         '/node_modules/font-logos/assets/font-logos.css',
         '/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css',
-        '/node_modules/uplot/dist/uPlot.min.css'
+        '/node_modules/uplot/dist/uPlot.min.css',
+        '/node_modules/jsoneditor/dist/jsoneditor.min.css'
     ];
 
     /**

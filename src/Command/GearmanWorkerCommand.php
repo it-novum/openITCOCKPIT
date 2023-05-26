@@ -1419,6 +1419,7 @@ class GearmanWorkerCommand extends Command {
                 if ($returncode == 0) {
                     $entity->set('successfully', 1);
                     $this->distributedMonitoringAfterExportCommand();
+                    $this->importModuleAfterExportCommand();
                 } else {
                     $successfully = 0;
                 }
@@ -1522,7 +1523,7 @@ class GearmanWorkerCommand extends Command {
             'export',
             'exports',
             1,
-            OBJECT_HOST,
+            OBJECT_EXPORT,
             ROOT_CONTAINER,
             0,
             __('Refresh of monitoring configuration finished {0}', $successfullyMsg),
@@ -1676,6 +1677,71 @@ class GearmanWorkerCommand extends Command {
             if ($restartRc === 0) {
                 $entity->set('successfully', 1);
                 $isNstaRunning = true;
+            }
+            $ExportsTable->save($entity);
+            unset($entity);
+        }
+    }
+
+    public function importModuleAfterExportCommand() {
+        if (!Plugin::isLoaded('ImportModule')) {
+            // ImportModule not loaded
+            return;
+        }
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        /** @var ExportsTable $ExportsTable */
+        $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+
+        $eventCollectdReloadCommand = $SystemsettingsTable->getSystemsettingByKey('INIT.EVENT_COLLECTD_RELOAD');
+        $eventCollectdRestartCommand = $SystemsettingsTable->getSystemsettingByKey('INIT.EVENT_COLLECTD_RESTART');
+        $eventCollectdStatusCommand = $SystemsettingsTable->getSystemsettingByKey('INIT.EVENT_COLLECTD_STATUS');
+
+
+        //Check if event-collectd is running.
+        //If event-collectd is running, we reload the config, if not we need to restart
+        $entity = $ExportsTable->newEntity([
+            'task' => 'is_event-collectd_running',
+            'text' => __('Check if Event-Collectd daemon is running')
+        ]);
+        $ExportsTable->save($entity);
+        exec($eventCollectdStatusCommand->get('value'), $statusOutput, $statusRc);
+        $entity->set('finished', 1);
+        $entity->set('successfully', 1);
+        $ExportsTable->save($entity);
+        unset($entity);
+
+        $isEventCollectdRunning = false;
+        if ($statusRc === 0) {
+            //event-collectd is running (reload)
+            $entity = $ExportsTable->newEntity([
+                'task' => 'export_reload_event-collectd',
+                'text' => __('Reloading Event-Collectd daemon')
+            ]);
+            $ExportsTable->save($entity);
+            exec($eventCollectdReloadCommand->get('value'), $reloadOutput, $reloadRc);
+            $entity->set('finished', 1);
+            $entity->set('successfully', 0);
+            if ($reloadRc === 0) {
+                $entity->set('successfully', 1);
+                $isEventCollectdRunning = true;
+            }
+            $ExportsTable->save($entity);
+            unset($entity);
+        } else {
+            //event-collectd is stopped (restart)
+            $entity = $ExportsTable->newEntity([
+                'task' => 'export_restart_event-collectd',
+                'text' => __('Restarting Event-Collectd daemon')
+            ]);
+            $ExportsTable->save($entity);
+            exec($eventCollectdRestartCommand->get('value'), $restartOutput, $restartRc);
+            $entity->set('finished', 1);
+            $entity->set('successfully', 0);
+            if ($restartRc === 0) {
+                $entity->set('successfully', 1);
+                $isEventCollectdRunning = true;
             }
             $ExportsTable->save($entity);
             unset($entity);

@@ -31,6 +31,7 @@ use Authentication\Identifier\AbstractIdentifier;
 use Authentication\Identifier\IdentifierInterface;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\oAuth\oAuthClient;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
@@ -57,29 +58,15 @@ class oAuthIdentifier extends AbstractIdentifier implements IdentifierInterface 
                 'code' => $_GET['code']
             ]);
 
-            // Using the access token, we may look up details about the
-            // resource owner.
-            $resourceOwner = $oAuthClient->getResourceOwner($accessToken);
+            // Using the access token, we may look up details about the resource owner.
+            $emailAddress = $oAuthClient->getEmailAddressOfResourceOwner($accessToken);
 
-            $resourceOwner = $resourceOwner->toArray();
-            $emailFields = [
-                'email',
-                'mail',
-                'e-mail'
-            ];
-
-            foreach ($emailFields as $emailField) {
-                if (isset($resourceOwner[$emailField])) {
-                    $emailAddress = $resourceOwner[$emailField];
-
-                    $identity = $this->_findIdentity($emailAddress);
-                    if ($identity === null) {
-                        //$this->_errors[] = __('No user found in local database with email address: ' . $emailAddress);
-                        Log::error('No oAuth user found for email: ' . $emailAddress);
-                    }
-                    return $identity;
-                }
+            $identity = $this->_findIdentity($emailAddress);
+            if ($identity === null) {
+                //$this->_errors[] = __('No user found in local database with email address: ' . $emailAddress);
+                Log::error('No oAuth user found for email: ' . $emailAddress);
             }
+            return $identity;
 
 
         } catch (IdentityProviderException $e) {

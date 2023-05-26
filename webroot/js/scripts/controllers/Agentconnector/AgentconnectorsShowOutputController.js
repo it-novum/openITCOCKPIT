@@ -3,6 +3,18 @@ angular.module('openITCOCKPIT')
 
         $scope.mode = $stateParams.mode || 'pull';
 
+        var renderJsoneditor = function(){
+            var container = document.getElementById('jsoneditor');
+
+            var options = {
+                mode: 'view',
+                colorPicker: false,
+                timestampTag: false
+            };
+
+            $scope.editor = new JSONEditor(container, options, JSON.parse($scope.outputAsJson));
+        };
+
         $scope.load = function(searchString, selected){
             $http.get("/agentconnector/showOutput.json", {
                 params: {
@@ -15,6 +27,7 @@ angular.module('openITCOCKPIT')
                 $scope.host = result.data.host;
                 $scope.outputAsJson = result.data.outputAsJson;
                 $scope.pushAgentUuid = result.data.pushAgentUuid;
+                renderJsoneditor();
             });
         };
 

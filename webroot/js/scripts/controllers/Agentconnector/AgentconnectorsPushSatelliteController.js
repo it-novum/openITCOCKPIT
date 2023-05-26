@@ -1,54 +1,58 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsDisabledController', function($scope, $http, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
+    .controller('AgentconnectorsPushSatelliteController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService){
+
         SortService.setSort(QueryStringService.getValue('sort', 'Hosts.name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
         $scope.currentPage = 1;
+
         $scope.useScroll = true;
 
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Host: {
-                    name: QueryStringService.getValue('filter[Host.name]', ''),
-                    name_regex: false,
-                    description: QueryStringService.getValue('filter[Host.description]', ''),
-                    address: '',
-                    address_regex: false,
-                    satellite_id: []
-                }
+                Hosts: {
+                    name: ''
+                },
+                host_assignment: false,
+                no_host_assignment: false
             };
         };
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
-        $scope.deleteUrl = '/hosts/delete/';
-        $scope.activateUrl = '/hosts/enable/';
-
+        $scope.deleteUrl = '/agentconnector/delete_satellite_push_agent/';
 
         $scope.init = true;
         $scope.showFilter = false;
 
 
+        var buildUrl = function(baseUrl){
+            var ids = Object.keys(MassChangeService.getSelected());
+            return baseUrl + ids.join('/');
+        };
+
+
         $scope.load = function(){
+            var hasHostAssignment = '';
+            if($scope.filter.host_assignment ^ $scope.filter.no_host_assignment){
+                hasHostAssignment = $scope.filter.host_assignment === true;
+            }
+
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Hosts.name]': $scope.filter.Host.name,
-                'filter[Hosts.name_regex]': $scope.filter.Host.name_regex,
-                'filter[Hosts.description]': $scope.filter.Host.description,
-                'filter[Hosts.address]': $scope.filter.Host.address,
-                'filter[Hosts.address_regex]': $scope.filter.Host.address_regex,
-                'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id
+                'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[hasHostAssignment]': hasHostAssignment
             };
 
-            $http.get("/hosts/disabled.json", {
+            $http.get("/agentconnector/push_satellite.json", {
                 params: params
             }).then(function(result){
-                $scope.hosts = result.data.all_hosts;
+                $scope.agents = result.data.agents;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
@@ -64,12 +68,11 @@ angular.module('openITCOCKPIT')
             $scope.undoSelection();
         };
 
-
         $scope.selectAll = function(){
-            if($scope.hosts){
-                for(var key in $scope.hosts){
-                    if($scope.hosts[key].Host.allow_edit){
-                        var id = $scope.hosts[key].Host.id;
+            if($scope.agents){
+                for(var key in $scope.agents){
+                    if($scope.agents[key].allow_edit === true){
+                        var id = $scope.agents[key].id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -82,30 +85,35 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(host){
+        $scope.getObjectForDelete = function(agent){
             var object = {};
-            object[host.Host.id] = host.Host.hostname;
+            if(agent.Hosts.name !== null){
+                object[agent.id] = agent.Hosts.name;
+            }else{
+                object[agent.id] = agent.uuid;
+            }
             return object;
         };
 
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.hosts){
+            for(var key in $scope.agents){
                 for(var id in selectedObjects){
-                    if(id == $scope.hosts[key].Host.id){
-                        objects[id] = $scope.hosts[key].Host.hostname;
+                    if(id == $scope.agents[key].id){
+                        if($scope.agents[key].allow_edit === true){
+                            if($scope.agents[key].Hosts.name !== null){
+                                objects[id] = $scope.agents[key].Hosts.name;
+                            }else{
+                                objects[id] = $scope.agents[key].uuid;
+                            }
+                        }
                     }
                 }
             }
             return objects;
         };
 
-
-        var buildUrl = function(baseUrl){
-            var ids = Object.keys(MassChangeService.getSelected());
-            return baseUrl + ids.join('/');
-        };
 
         $scope.changepage = function(page){
             $scope.undoSelection();
@@ -119,7 +127,6 @@ angular.module('openITCOCKPIT')
             $scope.useScroll = val;
             $scope.load();
         };
-
 
         //Fire on page load
         defaultFilter();

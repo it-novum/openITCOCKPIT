@@ -141,7 +141,8 @@ class Constants {
             'OBJECT_HOSTESCALATION'       => 1 << 17,
             'OBJECT_SERVICEESCALATION'    => 1 << 18,
             'OBJECT_HOSTDEPENDENCY'       => 1 << 19,
-            'OBJECT_SERVICEDEPENDENCY'    => 1 << 20
+            'OBJECT_SERVICEDEPENDENCY'    => 1 << 20,
+            'OBJECT_EXPORT'               => 1 << 21
         ]);
     }
 
@@ -180,7 +181,8 @@ class Constants {
             'SLA_SERVICE'        => 1 << 2, //4
             'MK_SERVICE'         => 1 << 3, //8
             'OITC_AGENT_SERVICE' => 1 << 4, //16
-            'PROMETHEUS_SERVICE' => 1 << 5  //32
+            'PROMETHEUS_SERVICE' => 1 << 5, //32
+            'EXTERNAL_SERVICE'   => 1 << 6  //64
         ];
     }
 
@@ -251,4 +253,3 @@ class Constants {
         }
     }
 }
-

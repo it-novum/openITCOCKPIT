@@ -23,10 +23,22 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
+
+            // ITC-2879 & ITC-2932
+            // Send back the agent_uuid to the server
+            // so that openITCOCKPIT can update the record in the satellite_push_agents table (Import Module)
+            var agentUuid = 'Unknown';
+            for(var i in $scope.pushAgents){
+                if($scope.pushAgents[i].id === $scope.selectedPushAgentId){
+                    agentUuid = $scope.pushAgents[i].agent_uuid;
+                }
+            }
+
             $http.post("/agentconnector/select_agent.json", {
                     pushagent: {
                         id: $scope.selectedPushAgentId,
-                        host_id: $scope.hostId
+                        host_id: $scope.hostId,
+                        agent_uuid: agentUuid
                     }
                 }
             ).then(function(result){

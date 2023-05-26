@@ -602,6 +602,7 @@ class HostgroupsTable extends Table {
     /**
      * @param int $id
      * @return string
+     * @throws RecordNotFoundException
      */
     public function getHostgroupUuidById($id) {
         $query = $this->find()
@@ -815,6 +816,65 @@ class HostgroupsTable extends Table {
             ->firstOrFail();
 
         return $hostgroup;
+    }
+
+    /**
+     * @param $id
+     * @param $MY_RIGHTS
+     * @return array
+     */
+    public function getHostsIdsByHostgroupForMaps($id, $MY_RIGHTS = []) {
+        $where = [
+            'Hostgroups.id' => $id
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        $hostgroup = $this->find()
+            ->select([
+                'Hostgroups.id'
+            ])
+            ->contain([
+                'Containers',
+                'Hosts'         => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'Hosts.id'
+
+                        ])
+                        ->contain(['HostsToContainersSharing']);
+                },
+                'Hosttemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.hosttemplate_id'
+                                    ])
+                                    ->contain(['HostsToContainersSharing']);
+                                $query
+                                    ->leftJoinWith('Hostgroups')
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
+                }
+            ])
+            ->where($where)
+            ->disableHydration()
+            ->firstOrFail();
+
+        return array_unique(array_merge(
+            Hash::extract($hostgroup, 'hosts.{n}.id'),
+            Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.id')
+        ));
     }
 
 

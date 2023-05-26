@@ -158,7 +158,12 @@
                                        ng-model-options="{debounce: 500}">
                                 <div class="input-group-append">
                                     <span class="input-group-text pt-0 pb-0">
-                                        <regex-helper-tooltip></regex-helper-tooltip>
+                                        <label>
+                                            <?= __('Enable RegEx'); ?>
+                                            <input type="checkbox"
+                                                   ng-model="filter.Host.name_regex">
+                                        </label>
+                                        <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
                                     </span>
                                 </div>
                             </div>
@@ -174,7 +179,12 @@
                                        ng-model-options="{debounce: 500}">
                                 <div class="input-group-append">
                                     <span class="input-group-text pt-0 pb-0">
-                                        <regex-helper-tooltip></regex-helper-tooltip>
+                                        <label>
+                                            <?= __('Enable RegEx'); ?>
+                                            <input type="checkbox"
+                                                   ng-model="filter.Service.name_regex">
+                                        </label>
+                                        <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
                                     </span>
                                 </div>
                             </div>

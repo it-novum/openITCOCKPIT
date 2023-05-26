@@ -442,6 +442,7 @@ class ServicesController extends AppController {
         $all_services = [];
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
+        $serviceTypes = $ServicesTable->getServiceTypesWithStyles();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
             $Host = new Host($service['_matchingData']['Hosts'], $allowEdit);
@@ -453,9 +454,10 @@ class ServicesController extends AppController {
             $Service = new Service($service, null, $allowEdit);
 
             $tmpRecord = [
-                'Service'    => $Service->toArray(),
-                'Host'       => $Host->toArray(),
-                'Hoststatus' => $Hoststatus->toArray()
+                'Service'     => $Service->toArray(),
+                'ServiceType' => $serviceTypes[$service['service_type']],
+                'Host'        => $Host->toArray(),
+                'Hoststatus'  => $Hoststatus->toArray()
             ];
             $all_services[] = $tmpRecord;
         }

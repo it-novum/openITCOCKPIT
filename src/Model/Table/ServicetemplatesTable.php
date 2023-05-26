@@ -920,13 +920,17 @@ class ServicetemplatesTable extends Table {
     /**
      * @param array $containerIds
      * @param string $type
-     * @param int $servicetemplateType
+     * @param int|array $servicetemplateTypes
      * @param bool $ignoreType
      * @return array
      */
-    public function getServicetemplatesByContainerId($containerIds = [], $type = 'all', $servicetemplateType = GENERIC_SERVICE, $ignoreType = false) {
+    public function getServicetemplatesByContainerId($containerIds = [], $type = 'all', $servicetemplateTypes = GENERIC_SERVICE, $ignoreType = false) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
+        }
+
+        if (!is_array($servicetemplateTypes)) {
+            $servicetemplateTypes = [$servicetemplateTypes];
         }
 
         //Lookup for the tenant container of $container_id
@@ -962,7 +966,7 @@ class ServicetemplatesTable extends Table {
             'Servicetemplates.container_id IN' => $containerIds,
         ];
         if (!$ignoreType) {
-            $where['Servicetemplates.servicetemplatetype_id'] = $servicetemplateType;
+            $where['Servicetemplates.servicetemplatetype_id IN'] = $servicetemplateTypes;
         }
 
 
@@ -1360,6 +1364,15 @@ class ServicetemplatesTable extends Table {
             'class' => 'border-agent',
             'icon'  => 'fa fa-user-secret'
         ];
+
+        if (Plugin::isLoaded('ImportModule')) {
+            $types[EXTERNAL_SERVICE] = [
+                'title' => __('External templates'),
+                'color' => 'text-external',
+                'class' => 'border-external',
+                'icon'  => 'fa-solid fa-tower-observation'
+            ];
+        }
 
         return $types;
     }

@@ -122,7 +122,7 @@
                                  ng-repeat="hosttemplatecommandargumentvalue in sourceHosttemplate.Hosttemplate.hosttemplatecommandargumentvalues">
                                 <label
                                         for="Hosttemplate{{hosttemplatecommandargumentvalue.commandargument.human_name}}Arg"
-                                        class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
+                                        class="col-xs-12 col-lg-offset-2 col-lg-10 control-label text-purple">
                                     {{hosttemplatecommandargumentvalue.commandargument.human_name}}
                                 </label>
                                 <div class="col-xs-12 col-lg-8">

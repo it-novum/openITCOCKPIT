@@ -230,8 +230,9 @@
                                 </td>
                                 <td>
                                     <span
-                                        class="badge border margin-right-10 {{user.UserType.class}} {{user.UserType.color}}">
-                                        {{user.UserType.title}}
+                                        ng-repeat="UserType in user.UserTypes"
+                                        class="badge border margin-right-10 {{UserType.class}} {{UserType.color}}">
+                                        {{UserType.title}}
                                     </span>
                                 </td>
                                 <td>{{user.usergroup.name}}</td>

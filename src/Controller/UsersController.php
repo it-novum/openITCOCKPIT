@@ -77,7 +77,7 @@ class UsersController extends AppController {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
-        $isSsoEnabled = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.AUTH_METHOD')->get('value') === 'sso';
+        $isSsoEnabled = $SystemsettingsTable->isOAuth2();
         $redirectToSsoLoginPage = $this->request->getQuery('redirect_sso', null) === 'true';
 
         $forceRedirectSsousersToLoginScreen = false;
@@ -113,10 +113,11 @@ class UsersController extends AppController {
             $hasValidSslCertificate = $this->getUser() !== null;
         }
 
-        $isLoggedIn = $identy = $this->getUser() !== null;
+        $isLoggedIn = $this->getUser() !== null;
         $errorMessages = [];
 
         if ($this->request->is('GET') && $this->request->getQuery('code', null) !== null && $isSsoEnabled) {
+            //FileDebugger::dump($this->request->getQuery());
             // The user came back from the oAuth login page.
             // Check if we have any errors during the oAuth login
             $result = $this->Authentication->getResult();
@@ -124,11 +125,11 @@ class UsersController extends AppController {
                 if ($result->getStatus() === 'FAILURE_IDENTITY_NOT_FOUND') {
 
                     // The browser fires two requests.
-                    // One is is GET request, when the user gets redirrected from the oAuth Login Page back to openITCOCKPIT.
-                    // This is the request where the oauth Login happens.
+                    // One is a GET request, when the user gets redirected from the oAuth Login Page back to openITCOCKPIT.
+                    // This is the request where the oAuth Login happens.
                     //
                     // The second request is also a GET Request done by Angular to query status information.
-                    // S we need to store any errors to the session that we can return errors for angularjs
+                    // So we need to store any errors to the session that we can return errors for angularjs
                     $Session = $this->request->getSession();
                     try {
                         $oauth_error = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.NO_EMAIL_MESSAGE')->get('value');
@@ -201,7 +202,9 @@ class UsersController extends AppController {
 
         if ($isOAuthLogin === true) {
             $oAuthClient = new oAuthClient();
-            $this->redirect($oAuthClient->getLogoutUrl());
+            if ($oAuthClient->hasLogoutUrl()) {
+                $this->redirect($oAuthClient->getLogoutUrl());
+            }
             return;
         }
 
@@ -243,11 +246,14 @@ class UsersController extends AppController {
             $user = $_user->toArray();
             $user['allow_edit'] = $this->hasRootPrivileges;
             if (!empty($user['samaccountname'])) {
-                $user['UserType'] = $types['LDAP_USER'];
+                $user['UserTypes'] = [$types['LDAP_USER']];
+                if ($user['is_oauth'] === true) {
+                    $user['UserTypes'][] = $types['OAUTH_USER'];
+                }
             } else if ($user['is_oauth'] === true) {
-                $user['UserType'] = $types['OAUTH_USER'];
+                $user['UserTypes'] = [$types['OAUTH_USER']];
             } else {
-                $user['UserType'] = $types['LOCAL_USER'];
+                $user['UserTypes'] = [$types['LOCAL_USER']];
             }
             if ($this->hasRootPrivileges === false) {
                 //Check permissions for non ROOT Users
@@ -371,19 +377,22 @@ class UsersController extends AppController {
 
         $types = $UsersTable->getUserTypesWithStyles();
         if ($isLdapUser) {
-            $UserType = $types['LDAP_USER'];
+            $UserTypes = [$types['LDAP_USER']];
+            if ($user['User']['is_oauth'] === true) {
+                $UserTypes[] = $types['OAUTH_USER'];
+            }
         } else if ($user['User']['is_oauth'] === true) {
-            $UserType = $types['OAUTH_USER'];
+            $UserTypes = [$types['OAUTH_USER']];
         } else {
-            $UserType = $types['LOCAL_USER'];
+            $UserTypes = [$types['LOCAL_USER']];
         }
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return user information
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
-            $this->set('UserType', $UserType);
+            $this->set('UserTypes', $UserTypes);
             $this->set('notPermittedContainerIds', $notPermittedContainerIds);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserType', 'notPermittedContainerIds']);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds']);
             return;
         }
 
@@ -547,6 +556,10 @@ class UsersController extends AppController {
     public function addFromLdap() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->set('isOAuth2', $SystemsettingsTable->isOAuth2());
             return;
         }
 
@@ -557,7 +570,7 @@ class UsersController extends AppController {
 
             $data = $this->request->getData('User', []);
 
-            if(empty($data['samaccountname'])){
+            if (empty($data['samaccountname'])) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', [
                     'samaccountname' => [

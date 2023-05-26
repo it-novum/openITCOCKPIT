@@ -27,12 +27,9 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
-class GrafanaPanel {
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 
-    /**
-     * @var string|null
-     */
-    private $datasource = null;
+class GrafanaPanel {
 
     /**
      * @var string
@@ -50,9 +47,13 @@ class GrafanaPanel {
     private $panelId;
 
     /**
-     * @var GrafanaSeriesOverrides
+     * @var GrafanaOverrides
      */
-    private $SeriesOverrides;
+    private $Overrides;
+    /**
+     * @var GrafanaColorOverrides
+     */
+    private $ColorOverrides;
 
     /**
      * @var GrafanaYAxes
@@ -70,70 +71,109 @@ class GrafanaPanel {
     private $span = 6;
 
     /**
-     * @var array
+     * @var int
      */
-    private $color = [];
+    private $metricCount = 1;
+
+    /**
+     * @var string
+     */
+    private $visualization_type = 'timeseries';
+
+    /**
+     * @var string
+     */
+    private $stacking_mode = 'none';
+
 
     /**
      * @var array
      */
     private $panel = [
-        "aliasColors"     => [
-            //Insert colors here
+        "id"         => null,
+        "type"       => "timeseries",
+        "title"      => "",
+        "datasource" => [
+            "type" => "datasource",
+            "uid"  => "-- Mixed --"
         ],
-        "bars"            => false,
-        //"datasource"      => null,
-        "datasource"      => '-- Mixed --',
-        "fill"            => 1,
-        "id"              => null,
-        "legend"          => [
-            "alignAsTable" => true,
-            "avg"          => true,
-            "current"      => true,
-            "hideEmpty"    => false,
-            "hideZero"     => false,
-            "max"          => true,
-            "min"          => true,
-            "show"         => true,
-            "total"        => false,
-            "values"       => true
-        ],
-        "lines"           => true,
-        "linewidth"       => 1,
-        "links"           => [],
-        "nullPointMode"   => "connected",
-        "percentage"      => false,
-        "pointradius"     => 5,
-        "points"          => false,
-        "renderer"        => "flot",
-        "seriesOverrides" => [],
-        "span"            => 6,
-        "stack"           => false,
-        "steppedLine"     => false,
-        "targets"         => [
+        "links"      => [],
+        "targets"    => [
             //Insert targets here
         ],
-        "thresholds"      => [
+        "options"    => [
+            "xTickLabelRotation" => 0,
+            "xTickLabelSpacing"  => 100,
+            "text"               => [
+                "titleSize" => 12
+            ],
+            "barWidth"           => 1,
+            "tooltip"            => [
+                "mode" => "multi",
+                "sort" => "none"
+            ],
+            "legend"             => [
+                "displayMode" => "table",
+                "placement"   => "bottom",
+                "calcs"       => [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min",
+                ]
+            ]
+        ],
+
+        "thresholds"    => [
             //Insert thresholds here
         ],
-        "timeFrom"        => null,
-        "timeShift"       => null,
-        "title"           => "",
-        "tooltip"         => [
-            "shared"     => true,
-            "sort"       => 0,
-            "value_type" => "individual"
+        "timeFrom"      => null,
+        "timeShift"     => null,
+        "fieldConfig"   => [
+            "defaults"  => [
+                "custom"     => [
+                    "drawStyle"         => "line",
+                    "lineInterpolation" => "smooth",
+                    "barAlignment"      => 0,
+                    "lineWidth"         => 1,
+                    "fillOpacity"       => 50,
+                    "gradientMode"      => "hue",
+                    "spanNulls"         => true,
+                    "showPoints"        => "never",
+                    "pointSize"         => 5,
+                    "stacking"          => [
+                        "mode"  => "none", //normal, percent, none
+                        "group" => "A"
+                    ],
+
+                    "axisPlacement"     => "auto",
+                    "axisLabel"         => "",
+                    "axisColorMode"     => "text",
+                    "scaleDistribution" => [
+                        "type" => "linear"
+                    ],
+                    "axisCenteredZero"  => false,
+                    "hideFrom"          => [
+                        "tooltip" => false,
+                        "viz"     => false,
+                        "legend"  => false
+                    ],
+                    "thresholdsStyle"   => [
+                        "mode" => "off"
+                    ]
+                ],
+                "color"      => [
+                    "mode" => "palette-classic"
+                ],
+                "thresholds" => [
+                    "steps" => []
+                ]
+            ],
+            "overrides" => [],
+            "mappings"  => []
+
         ],
-        "type"            => "graph",
-        "xaxis"           => [
-            "mode"   => "time",
-            "name"   => null,
-            "show"   => true,
-            "values" => []
-        ],
-        "yaxes"           => [
-            //Insert yaxes here
-        ]
+        "pluginVersion" => "9.0.2"
     ];
 
     /**
@@ -141,7 +181,7 @@ class GrafanaPanel {
      * @param $panelId
      * @param int $span
      */
-    public function __construct($panelId, $span = 6) {
+    public function __construct($panelId, int $span = 6, $metricCount = 1) {
         $this->panelId = $panelId;
         $span = (int)$span;
         if ($span <= 0) {
@@ -153,6 +193,7 @@ class GrafanaPanel {
         }
 
         $this->span = $span;
+        $this->metricCount = $metricCount;
     }
 
     /**
@@ -162,16 +203,42 @@ class GrafanaPanel {
         $this->panel['id'] = $this->panelId;
         $this->panel['title'] = $this->title;
         $this->panel['targets'] = $this->targets;
-        $this->panel['aliasColors'] = $this->color;
         $this->panel['span'] = $this->span;
 
-        if ($this->SeriesOverrides->hasOverrides()) {
-            $this->panel['seriesOverrides'] = $this->SeriesOverrides->getOverrides();
+        $this->panel['type'] = $this->visualization_type;
+        if ($this->visualization_type === 'bargaugeretro') {
+            $this->panel['type'] = 'bargauge';
+            $this->panel['options']['displayMode'] = 'lcd';
         }
 
-        $this->panel['yaxes'] = $this->YAxes->getAxesAsArray();
+        if ($this->stacking_mode) {
+            $this->panel['fieldConfig']['defaults']['custom']['stacking']['mode'] = $this->stacking_mode;
+        }
 
-        $this->panel['thresholds'] = $this->ThresholdCollection->getThresholdsAsArray();
+        if ($this->Overrides->hasOverrides()) {
+            $this->panel['fieldConfig']['overrides'] = $this->Overrides->getOverrides();
+        }
+
+        $thresholdsAsArray = $this->ThresholdCollection->getThresholdsAsArray();
+        if (!empty($thresholdsAsArray) && empty($this->panel['fieldConfig']['overrides']) && sizeof($this->panel['targets']) === 1) {
+
+            $this->panel['fieldConfig']['defaults']['thresholds'] = [
+                'steps' => $thresholdsAsArray
+            ];
+
+            if ($this->getMetricCount() > 1 && in_array($this->visualization_type, ['timeseries'])) {
+                // show threshold lines in chart with more than one metric - can be used for all charts if needed
+                $this->panel['fieldConfig']['defaults']['custom']['thresholdsStyle'] = [
+                    'mode' => 'line'
+                ];
+            } else {
+                $this->panel['fieldConfig']['defaults']['custom']['gradientMode'] = 'scheme';
+                $this->panel['fieldConfig']['defaults']['color']['mode'] = 'thresholds';
+            }
+        }
+        if ($this->ColorOverrides->hasOverrides() && in_array($this->visualization_type, ['timeseries', 'bargauge'])) {
+            $this->panel['fieldConfig']['overrides'] = $this->ColorOverrides->getOverrides();
+        }
 
         return $this->panel;
     }
@@ -184,21 +251,51 @@ class GrafanaPanel {
     }
 
     /**
+     * @param $visualizationType
+     */
+    public function setVisualizationType($visualizationType) {
+        $this->visualization_type = $visualizationType;
+    }
+
+    /**
+     * @param $stackingMode
+     */
+    public function setStackingMode($stackingMode) {
+        $this->stacking_mode = $stackingMode;
+    }
+
+    /**
      * @param GrafanaTargetCollection $grafanaTargetCollection
-     * @param GrafanaSeriesOverrides $SeriesOverrides
+     * @param GrafanaOverrides $Overrides
      * @param GrafanaYAxes $YAxes
      * @param GrafanaThresholdCollection $ThresholdCollection
      */
     public function addTargets(
-        GrafanaTargetCollection $grafanaTargetCollection,
-        GrafanaSeriesOverrides $SeriesOverrides,
-        GrafanaYAxes $YAxes,
+        GrafanaTargetCollection    $grafanaTargetCollection,
+        GrafanaOverrides           $Overrides,
+        GrafanaColorOverrides      $ColorOverrides,
+        GrafanaYAxes               $YAxes,
         GrafanaThresholdCollection $ThresholdCollection
     ) {
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
-        $this->color = $grafanaTargetCollection->getColorsAsArray();
-        $this->SeriesOverrides = $SeriesOverrides;
+        $this->Overrides = $Overrides;
+        $this->ColorOverrides = $ColorOverrides;
         $this->YAxes = $YAxes;
         $this->ThresholdCollection = $ThresholdCollection;
+    }
+
+    /**
+     * @param $metricCount
+     * @return void
+     */
+    public function setMetricCount($metricCount) {
+        $this->metricCount = $metricCount;
+    }
+
+    /**
+     * @return int|mixed
+     */
+    private function getMetricCount() {
+        return $this->metricCount;
     }
 }

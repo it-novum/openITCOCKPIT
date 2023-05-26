@@ -13,6 +13,7 @@ use App\Model\Entity\Hostescalation;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
 use Cake\Database\Expression\QueryExpression;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -496,6 +497,21 @@ class HostsTable extends Table {
             ])
             ->contain('HostsToContainersSharing')
             ->first();
+        return $query;
+    }
+
+    /**
+     * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     * @throws RecordNotFoundException
+     */
+    public function getHostByIdOrFail($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain('HostsToContainersSharing')
+            ->firstOrFail();
         return $query;
     }
 
@@ -3743,7 +3759,7 @@ class HostsTable extends Table {
      * @param int $satelliteId
      * @return array
      */
-    public function getHostBySatelliteId($satelliteId) {
+    public function getHostsBySatelliteId($satelliteId) {
         $query = $this->find()
             ->where([
                 'Hosts.satellite_id' => $satelliteId
@@ -3757,7 +3773,7 @@ class HostsTable extends Table {
      * @param int $satelliteId
      * @return array
      */
-    public function getHostBySatelliteIdForDelete($satelliteId) {
+    public function getHostsBySatelliteIdForDelete($satelliteId) {
         $query = $this->find()
             ->where([
                 'Hosts.satellite_id' => $satelliteId
@@ -4442,26 +4458,35 @@ class HostsTable extends Table {
 
         $where = [];
 
-        if (!empty($conditions['Host']['name'])) {
-            if ($this->isValidRegularExpression($conditions['Host']['name'])) {
-                $where[] = new Comparison(
-                    'Hosts.name',
-                    $conditions['Host']['name'],
-                    'string',
-                    'RLIKE'
-                );
-            }
 
+        if (!empty($conditions['Host']['name'])) {
+            if (isset($conditions['Host']['name_regex']) && $conditions['Host']['name_regex'] === true || $conditions['Host']['name_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['Host']['name'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                // Use LIKE
+                $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+            }
         }
 
         if (!empty($conditions['Host']['address'])) {
-            if ($this->isValidRegularExpression($conditions['Host']['address'])) {
-                $where[] = new Comparison(
-                    'Hosts.address',
-                    $conditions['Host']['address'],
-                    'string',
-                    'RLIKE'
-                );
+            if (isset($conditions['Host']['address_regex']) && $conditions['Host']['address_regex'] === true || $conditions['Host']['address_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['address'])) {
+                    $where[] = new Comparison(
+                        'Hosts.address',
+                        $conditions['Host']['address'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            }else{
+                $where['Hosts.address LIKE'] = sprintf('%%%s%%', $conditions['Host']['address']);
             }
         }
 

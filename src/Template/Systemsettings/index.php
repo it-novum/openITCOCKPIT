@@ -126,6 +126,7 @@
                                                                 value="session"><?php echo __('PHP session'); ?></option>
                                                             <option value="ldap"><?php echo __('PHP LDAP'); ?></option>
                                                             <option value="sso"><?php echo __('SSO oAuth2'); ?></option>
+                                                            <option value="sso_ldap"><?php echo __('SSO oAuth2 and LDAP'); ?></option>
                                                         </select>
                                                     </div>
                                                     <div ng-switch-when="FRONTEND.LDAP.TYPE">
@@ -195,6 +196,7 @@
                                                                 ng-model="systemsetting.value">
                                                             <option value="generic"><?php echo __('Generic'); ?></option>
                                                             <option value="PingIdentity"><?php echo __('Ping Identity'); ?></option>
+                                                            <option value="AzureActiveDirectory"><?php echo __('Azure Active Directory'); ?></option>
                                                         </select>
                                                     </div>
                                                     <div ng-switch-default>
