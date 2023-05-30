@@ -384,12 +384,17 @@ class LdapClient {
      */
     private function getGroupsFromUserOpenLdap(array $ldapUser) {
         // By default, Open LDAP has no memberOf in the user entity. So you have to query all groups and filter by memberUid(=sAMAccountName)
-        // LDAP ist ein Quell unendlicher Freude! (LDAP is a source of endless joy! )
+        // or by uniqueMember
+        // LDAP ist ein Quelle unendlicher Freude! (LDAP is a source of endless joy! )
         $memberUid = $ldapUser['samaccountname'];
+        $uniqueMember = "uid=" . $ldapUser['samaccountname'];
 
         $filter = \FreeDSx\Ldap\Search\Filters::and(
             \FreeDSx\Ldap\Search\Filters::raw($this->rawGroupFilter),
-            \FreeDSx\Ldap\Search\Filters::equal('memberUid', $memberUid)
+            \FreeDSx\Ldap\Search\Filters::or(
+                \FreeDSx\Ldap\Search\Filters::equal('memberUid', $memberUid),
+                \FreeDSx\Ldap\Search\Filters::startsWith('uniqueMember', $uniqueMember)
+            )
         );
 
         $search = \FreeDSx\Ldap\Operations::search($filter);
