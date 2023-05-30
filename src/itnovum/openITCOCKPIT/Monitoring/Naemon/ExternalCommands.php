@@ -329,7 +329,7 @@ class ExternalCommands {
                 'Data'    => sprintf('ENABLE_SVC_FLAP_DETECTION;%s;%s', $options['hostUuid'], $options['serviceUuid'])
             ];
             $this->toQueue($payload, 0);
-            return;
+            return true;
         }
 
         $payload = [
@@ -1020,7 +1020,7 @@ class ExternalCommands {
      *
      * @param array $options with the options
      */
-    public function enableServiceNotifications($options = []) {
+    public function enableServiceNotifications(array $options = []): bool {
         //ENABLE_SVC_NOTIFICATIONS
         $payload = [
             'Command' => 'raw',
@@ -1031,6 +1031,7 @@ class ExternalCommands {
             )
         ];
         $this->toQueue($payload, 0);
+        return true;
     }
 
     /**

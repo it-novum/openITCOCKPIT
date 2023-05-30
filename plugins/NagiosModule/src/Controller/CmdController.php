@@ -195,7 +195,7 @@ class CmdController extends AppController {
             throw new BadRequestException();
         }
         $externalNaemonCommands = new ExternalCommands();
-        foreach($data as $key => $value){
+        foreach($data as $value){
             switch ($value['command']) {
                 case 'rescheduleHost':
                     $result =  $externalNaemonCommands->rescheduleHost(['uuid' => $value['hostUuid'], 'type' =>$value['type'], 'satellite_id' => $value['satelliteId']]);
@@ -231,7 +231,7 @@ class CmdController extends AppController {
                     $result = $externalNaemonCommands->enableOrDisableHostFlapdetection(['uuid' => $value['hostUuid'], 'condition' => $value['condition']]);
                     break;
                 case 'enableOrDisableServiceFlapdetection':
-                    $this->ExternalCommands->enableOrDisableServiceFlapdetection(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid'], 'condition' => $value['condition']]);
+                    $result = $externalNaemonCommands->enableOrDisableServiceFlapdetection(['hostUuid' => $value['hostUuid'], 'serviceUuid' => $value['serviceUuid'], 'condition' => $value['condition']]);
                     break;
                 case 'submitEnableHostNotifications':
                     $result = $externalNaemonCommands->enableHostNotifications(['uuid' => $value['hostUuid'], 'type' => $value['type']]);
