@@ -151,8 +151,31 @@ try {
 
             throw new UnauthorizedException();
         }
+    }
+    if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        // This is used if Grafana is embedded into an iframe via /iframe-oitc/
+        $apiKeyArray = explode('X-OITC-API ', $_SERVER['HTTP_AUTHORIZATION']);
 
+        if (sizeof($apiKeyArray) === 2) {
+            $apikey = $apiKeyArray[1];
+            $IdentifierCollection = new IdentifierCollection([
+                'Authentication.Apikey' => [
+                    'className' => ApikeyIdentifier::class
+                ]
+            ]);
 
+            $identity = $IdentifierCollection->identify(['apikey' => $apikey]);
+
+            if (!empty($identity)) {
+                //Login success
+                if ($debug) {
+                    fwrite($file, 'Login Ok !!');
+                }
+                header("HTTP/1.0 200 Ok");
+                return;
+            }
+            throw new UnauthorizedException();
+        }
     }
 } catch (\Exception $e) {
 

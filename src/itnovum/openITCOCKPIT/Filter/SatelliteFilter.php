@@ -35,7 +35,8 @@ class SatelliteFilter extends Filter {
         $filters = [
             'like'   => [
                 'Satellites.name',
-                'Satellites.address'
+                'Satellites.address',
+                'Satellites.description',
             ],
             'equals' => [
                 'Satellites.sync_method'

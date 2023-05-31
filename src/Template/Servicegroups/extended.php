@@ -186,7 +186,7 @@
                                                        ng-model="servicegroupsStateFilter[$index]"
                                                        ng-value="$index">
                                                 <label
-                                                    class="custom-control-label custom-control-label-{{state}} no-margin"
+                                                    class="extended-list custom-control-label custom-control-label-{{state}} no-margin"
                                                     for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
                                             </div>
                                         </div>
@@ -391,6 +391,9 @@
                         </table>
                         <popover-graph-directive></popover-graph-directive>
                     </div>
+                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <?php echo $this->element('paginator_or_scroll'); ?>
                 </div>
             </div>
         </div>

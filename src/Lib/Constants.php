@@ -141,7 +141,8 @@ class Constants {
             'OBJECT_HOSTESCALATION'       => 1 << 17,
             'OBJECT_SERVICEESCALATION'    => 1 << 18,
             'OBJECT_HOSTDEPENDENCY'       => 1 << 19,
-            'OBJECT_SERVICEDEPENDENCY'    => 1 << 20
+            'OBJECT_SERVICEDEPENDENCY'    => 1 << 20,
+            'OBJECT_EXPORT'               => 1 << 21
         ]);
     }
 
@@ -252,4 +253,3 @@ class Constants {
         }
     }
 }
-
