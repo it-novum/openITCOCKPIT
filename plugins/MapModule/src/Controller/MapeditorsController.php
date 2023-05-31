@@ -230,6 +230,7 @@ class MapeditorsController extends AppController {
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         $properties = [];
+        $allowView = false;
 
         switch ($type) {
             case 'host':
@@ -702,7 +703,6 @@ class MapeditorsController extends AppController {
                         $HostgroupsTable,
                         $ServicegroupsTable
                     );
-
 
                     $hostIds = Hash::extract($allDependentMapElementsFromSubMaps, '{s}.hostIds.{n}');
                     $serviceIds = Hash::extract($allDependentMapElementsFromSubMaps, '{s}.serviceIds.{n}');

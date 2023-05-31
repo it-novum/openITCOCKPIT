@@ -1637,7 +1637,7 @@ class GearmanWorkerCommand extends Command {
             'export',
             'exports',
             1,
-            OBJECT_HOST,
+            OBJECT_EXPORT,
             ROOT_CONTAINER,
             0,
             __('Refresh of monitoring configuration finished {0}', $successfullyMsg),

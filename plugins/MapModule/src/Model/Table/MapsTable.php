@@ -1029,7 +1029,7 @@ class MapsTable extends Table {
         ];
         $allDependentMapElements = Hash::filter($allDependentMapElements);
         foreach ($allDependentMapElements as $allDependentMapElementArray) {
-            foreach ($allDependentMapElementArray as $mapElementKey => $mapElementData) {
+            foreach ($allDependentMapElementArray as $mapElementData) {
                 if (is_array($mapElementData)) {
                     foreach ($mapElementData as $mapElement) {
                         $mapElementsByCategory[$mapElement['type']][$mapElement['object_id']] = $mapElement['object_id'];
@@ -1037,68 +1037,26 @@ class MapsTable extends Table {
                 }
             }
         }
-
+        $hostIds = [];
         if (!empty($mapElementsByCategory['hostgroup'])) {
-            $query = $HostgroupsTable->find()
-                ->join([
-                    [
-                        'table'      => 'hosts_to_hostgroups',
-                        'type'       => 'INNER',
-                        'alias'      => 'HostsToHostgroups',
-                        'conditions' => 'HostsToHostgroups.hostgroup_id = Hostgroups.id',
-                    ]
-                ])
-                ->select([
-                    'HostsToHostgroups.host_id'
-                ])
-                ->where([
-                    'Hostgroups.id IN' => $mapElementsByCategory['hostgroup']
-                ]);
-            if (!empty($MY_RIGHTS)) {
-                $query->where([
-                    'Hostgroups.container_id IN' => $MY_RIGHTS
-                ]);
+            foreach ($mapElementsByCategory['hostgroup'] as $hostgroupId) {
+                $hostIds = array_merge(
+                    $hostIds,
+                    $HostgroupsTable->getHostsIdsByHostgroupForMaps($hostgroupId, $MY_RIGHTS)
+                );
             }
-            $query->disableHydration()
-                ->all()
-                ->toArray();
-            $hostIdsByHostgroup = $query;
-            foreach ($hostIdsByHostgroup as $hostIdByHostgroup) {
-                $mapElementsByCategory['host'][] = $hostIdByHostgroup['HostsToHostgroups']['host_id'];
-            }
+
         }
+        $serviceIds = [];
+
         if (!empty($mapElementsByCategory['servicegroup'])) {
-            $query = $ServicegroupsTable->find()
-                ->join([
-                    [
-                        'table'      => 'services_to_servicegroups',
-                        'type'       => 'INNER',
-                        'alias'      => 'ServicesToServicegroups',
-                        'conditions' => 'ServicesToServicegroups.servicegroup_id = Servicegroups.id',
-                    ]
-                ])
-                ->select([
-                    'ServicesToServicegroups.service_id'
-                ])
-                ->where([
-                    'Servicegroups.id IN' => $mapElementsByCategory['servicegroup']
-                ]);
-
-            if (!empty($MY_RIGHTS)) {
-                $query->where([
-                    'Servicegroups.container_id IN' => $MY_RIGHTS
-                ]);
-            }
-
-            $serviceIdsByServicegroup = $query->all()->toArray();
-            foreach ($serviceIdsByServicegroup as $serviceIdByServicegroup) {
-                $mapElementsByCategory['service'][] = $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
+            foreach ($mapElementsByCategory['servicegroup'] as $servicegroupId) {
+                $serviceIds = array_merge(
+                    $serviceIds,
+                    $ServicegroupsTable->getServiceIdsByServicegroupForMaps($servicegroupId, $MY_RIGHTS)
+                );
             }
         }
-
-
-        $hostIds = $mapElementsByCategory['host'];
-        $serviceIds = $mapElementsByCategory['service'];
 
         return [
             'hostIds'    => $hostIds,

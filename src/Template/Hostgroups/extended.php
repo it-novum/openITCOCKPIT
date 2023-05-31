@@ -101,7 +101,8 @@
                         </div>
 
                         <div class="col-lg-2">
-                            <div class="btn-group btn-group-sm" style="padding-top:23px;" ng-show="hostgroup.Hostgroup.allowEdit">
+                            <div class="btn-group btn-group-sm" style="padding-top:23px;"
+                                 ng-show="hostgroup.Hostgroup.allowEdit">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
                                     <?php echo __('Action'); ?>
@@ -187,7 +188,7 @@
                                                        ng-model="hostgroupsStateFilter[$index]"
                                                        ng-value="$index">
                                                 <label
-                                                    class="custom-control-label custom-control-label-{{state}} no-margin"
+                                                    class="extended-list custom-control-label custom-control-label-{{state}} no-margin"
                                                     for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
                                             </div>
                                         </div>
@@ -418,6 +419,9 @@
                             </tbody>
                         </table>
                     </div>
+                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <?php echo $this->element('paginator_or_scroll'); ?>
                 </div>
             </div>
         </div>

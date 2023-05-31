@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Filter;
 
 use Cake\Http\ServerRequest;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 abstract class Filter {
 
@@ -93,6 +94,39 @@ abstract class Filter {
                                 if ($this->isValidRegularExpression($regularExpression)) {
                                     $conditions[sprintf('%s not rlike', $field)] = $regularExpression;
                                 }
+                            }
+                            break;
+                        case 'like_or_rlike':
+                            // This filter is special. It is to resolve performance issues after ITC-2440 get implemented.
+                            // It searches in the request data for $field_regex. If this field is set to true, the filter will
+                            // return a regular expression (slower). Otherwise, the filter will return a simple LIKE query (faster)
+                            $enableRegexSearch = $this->getQueryFieldValue($field . '_regex', false);
+
+                            if ($enableRegexSearch === '1' || $enableRegexSearch === 1 || $enableRegexSearch === 'true' || $enableRegexSearch === true) {
+                                // The user enabled regex search for this field
+                                $value = $this->getQueryFieldValue($field, true);
+                                if ($value) {
+                                    if (!is_array($value)) {
+                                        $value = [$value];
+                                    }
+                                    $regularExpression = sprintf('.*(%s).*', implode('|', $value));
+                                    if ($this->isValidRegularExpression($regularExpression)) {
+                                        $conditions[sprintf('%s rlike', $field)] = $regularExpression;
+                                    }
+
+                                }
+                                break;
+                            }
+
+                            // Use a normale like condition
+                            $value = $this->getQueryFieldValue($field);
+                            if ($value) {
+                                $value = str_replace('\\', '\\\\', $value);
+
+                                $conditions[sprintf('%s LIKE', $field)] = sprintf(
+                                    '%%%s%%',
+                                    $value
+                                );
                             }
                             break;
                         case 'equals':

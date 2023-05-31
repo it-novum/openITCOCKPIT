@@ -9,7 +9,8 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 DeletedHost: {
-                    name: QueryStringService.getValue('filter[DeletedHost.name]', '')
+                    name: QueryStringService.getValue('filter[DeletedHost.name]', ''),
+                    name_regex: false
                 }
             };
         };
@@ -27,7 +28,8 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[DeletedHosts.name]': $scope.filter.DeletedHost.name
+                'filter[DeletedHosts.name]': $scope.filter.DeletedHost.name,
+                'filter[DeletedHosts.name_regex]': $scope.filter.DeletedHost.name_regex
             };
 
             $http.get("/deletedHosts/index.json", {

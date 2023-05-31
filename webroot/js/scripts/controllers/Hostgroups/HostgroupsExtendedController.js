@@ -8,6 +8,9 @@ angular.module('openITCOCKPIT')
         $scope.deactivateUrl = '/hosts/deactivate/';
         $scope.interval = null;
 
+        $scope.currentPage = 1;
+        $scope.useScroll = true;
+
         $scope.post = {
             Hostgroup: {
                 id: null
@@ -69,11 +72,15 @@ angular.module('openITCOCKPIT')
                 $http.get("/hostgroups/loadHostgroupWithHostsById/" + $scope.post.Hostgroup.id + ".json", {
                     params: {
                         'angular': true,
+                        'scroll': $scope.useScroll,
+                        'page': $scope.currentPage,
                         'selected': $scope.post.Hostgroup.id,
                         'filter[Hosts.name]': $scope.filter.Host.name
                     }
                 }).then(function(result){
                     $scope.hostgroup = result.data.hostgroup;
+                    $scope.paging = result.data.paging;
+                    $scope.scroll = result.data.scroll;
 
                     for(var host in $scope.hostgroup.Hosts){
                         $scope.showServices[$scope.hostgroup.Hosts[host].Host.id] = false;
@@ -133,6 +140,19 @@ angular.module('openITCOCKPIT')
                 $scope.showServices[hostId] = false;
             }
         };
+
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
+
 
         //Disable interval if object gets removed from DOM.
         $scope.$on('$destroy', function(){

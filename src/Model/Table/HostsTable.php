@@ -4458,26 +4458,35 @@ class HostsTable extends Table {
 
         $where = [];
 
-        if (!empty($conditions['Host']['name'])) {
-            if ($this->isValidRegularExpression($conditions['Host']['name'])) {
-                $where[] = new Comparison(
-                    'Hosts.name',
-                    $conditions['Host']['name'],
-                    'string',
-                    'RLIKE'
-                );
-            }
 
+        if (!empty($conditions['Host']['name'])) {
+            if (isset($conditions['Host']['name_regex']) && $conditions['Host']['name_regex'] === true || $conditions['Host']['name_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['Host']['name'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                // Use LIKE
+                $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+            }
         }
 
         if (!empty($conditions['Host']['address'])) {
-            if ($this->isValidRegularExpression($conditions['Host']['address'])) {
-                $where[] = new Comparison(
-                    'Hosts.address',
-                    $conditions['Host']['address'],
-                    'string',
-                    'RLIKE'
-                );
+            if (isset($conditions['Host']['address_regex']) && $conditions['Host']['address_regex'] === true || $conditions['Host']['address_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['address'])) {
+                    $where[] = new Comparison(
+                        'Hosts.address',
+                        $conditions['Host']['address'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            }else{
+                $where['Hosts.address LIKE'] = sprintf('%%%s%%', $conditions['Host']['address']);
             }
         }
 
