@@ -61,7 +61,6 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
-use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
 use Statusengine\PerfdataParser;
 
 /**
@@ -872,7 +871,6 @@ class GrafanaUserdashboardsController extends AppController {
                         $GrafanaTargetCollection,
                         new GrafanaOverrides($GrafanaTargetCollection),
                         new GrafanaColorOverrides($GrafanaTargetCollection),
-                        new GrafanaYAxes($GrafanaTargetCollection),
                         new GrafanaThresholdCollection($GrafanaTargetCollection)
                     );
                     $GrafanaRow->addPanel($GrafanaPanel);
