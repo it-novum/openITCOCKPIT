@@ -56,11 +56,6 @@ class GrafanaPanel {
     private $ColorOverrides;
 
     /**
-     * @var GrafanaYAxes
-     */
-    private $YAxes;
-
-    /**
      * @var GrafanaThresholdCollection
      */
     private $ThresholdCollection;
@@ -276,14 +271,12 @@ class GrafanaPanel {
     /**
      * @param GrafanaTargetCollection $grafanaTargetCollection
      * @param GrafanaOverrides $Overrides
-     * @param GrafanaYAxes $YAxes
      * @param GrafanaThresholdCollection $ThresholdCollection
      */
     public function addTargets(
         GrafanaTargetCollection    $grafanaTargetCollection,
         GrafanaOverrides           $Overrides,
         GrafanaColorOverrides      $ColorOverrides,
-        GrafanaYAxes               $YAxes,
         GrafanaThresholdCollection $ThresholdCollection
     ) {
 
@@ -296,7 +289,6 @@ class GrafanaPanel {
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
         $this->Overrides = $Overrides;
         $this->ColorOverrides = $ColorOverrides;
-        $this->YAxes = $YAxes;
         $this->ThresholdCollection = $ThresholdCollection;
     }
 
