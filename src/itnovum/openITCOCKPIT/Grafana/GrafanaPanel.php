@@ -85,6 +85,12 @@ class GrafanaPanel {
      */
     private $stacking_mode = 'none';
 
+    /**
+     * @var string|null
+     * This unit is used for all metrics in the panel
+     */
+    private $defaultUnit = null;
+
 
     /**
      * @var array
@@ -165,6 +171,7 @@ class GrafanaPanel {
                 "color"      => [
                     "mode" => "palette-classic"
                 ],
+                "unit"       => null,
                 "thresholds" => [
                     "steps" => []
                 ]
@@ -240,6 +247,8 @@ class GrafanaPanel {
             $this->panel['fieldConfig']['overrides'] = $this->ColorOverrides->getOverrides();
         }
 
+        $this->panel['fieldConfig']['defaults']['unit'] = $this->defaultUnit;
+
         return $this->panel;
     }
 
@@ -277,6 +286,13 @@ class GrafanaPanel {
         GrafanaYAxes               $YAxes,
         GrafanaThresholdCollection $ThresholdCollection
     ) {
+
+        if ($grafanaTargetCollection->canDisplayUnits()) {
+            $units = $grafanaTargetCollection->getUnits();
+            // Set the first unit as default unit for the panel
+            $this->defaultUnit = $units[0] ?? null;
+        }
+
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
         $this->Overrides = $Overrides;
         $this->ColorOverrides = $ColorOverrides;
