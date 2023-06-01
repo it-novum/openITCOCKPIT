@@ -77,7 +77,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     </div>
 </div>
 
-<?php if (!IS_CONTAINER): ?>
+<?php if (IS_CONTAINER === false): ?>
     <?php echo $this->element('repository_checker'); ?>
 
     <?php if ($LsbRelease->getCodename() === 'bionic'): ?>

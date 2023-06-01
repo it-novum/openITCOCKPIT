@@ -50,7 +50,7 @@ class ConfigurationFilesController extends AppController {
         }
 
         $configFilesForFrontend = [];
-        if (!IS_CONTAINER) {
+        if (IS_CONTAINER === false) {
             $GeneratorRegistry = new GeneratorRegistry();
             foreach ($GeneratorRegistry->getAllConfigFilesWithCategory() as $categoryName => $ConfigFileObjects) {
                 $category = [

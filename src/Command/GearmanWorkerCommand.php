@@ -754,7 +754,7 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'export_verify_config':
-                if (!IS_CONTAINER) {
+                if (IS_CONTAINER === false) {
                     // Normal installation of openITCOCKPIT via apt, dnf or git
                     /** @var SystemsettingsTable $SystemsettingsTable */
                     $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -782,13 +782,13 @@ class GearmanWorkerCommand extends Command {
                     $BinarydEndpoint = $Binarydctl->getBinarydApiEndpointByServiceName('naemon-verify');
 
                     //Run naemon-verify
-                    try{
+                    try {
                         $result = $BinarydEndpoint->executeJson('naemon-verify');
                         $returncode = $result['rc'] ?? 1;
                         $output = [
                             $result['stdout'] ?? ''
                         ];
-                    }catch (\Exception $e){
+                    } catch (\Exception $e) {
                         Log::error($e->getMessage());
                     }
 
@@ -1386,13 +1386,13 @@ class GearmanWorkerCommand extends Command {
             $BinarydEndpoint = $Binarydctl->getBinarydApiEndpointByServiceName('naemon-verify');
 
             //Run naemon-verify
-            try{
+            try {
                 $result = $BinarydEndpoint->executeJson('naemon-verify');
                 $returncode = $result['rc'] ?? 1;
                 $output = [
                     $result['stdout'] ?? ''
                 ];
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
                 Log::error($e->getMessage());
             }
         } else {
@@ -1416,7 +1416,7 @@ class GearmanWorkerCommand extends Command {
             $ExportsTable->save($verifyEntity);
 
             //Reloading the monitoring system
-            if (!IS_CONTAINER) {
+            if (IS_CONTAINER === false) {
                 //Check if Naemon/Nagios is running.
                 //If Nagios is running, we reload the config, if not we need to restart
                 $entity = $ExportsTable->newEntity([

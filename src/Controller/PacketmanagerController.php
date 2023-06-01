@@ -91,7 +91,7 @@ class PacketmanagerController extends AppController {
 
             $installedModules = [];
             $output = [];
-            if (!IS_CONTAINER) {
+            if (IS_CONTAINER === false) {
                 $LsbRelease = new LsbRelease();
                 if ($LsbRelease->isDebianBased()) {
                     exec('dpkg -l |grep openitcockpit-module', $output, $rc);
