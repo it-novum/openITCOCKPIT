@@ -25,7 +25,9 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
-class GraphiteWeb extends ConfigGenerator implements ConfigInterface {
+use App\itnovum\openITCOCKPIT\ConfigGenerator\ContainerConfigInterface;
+
+class GraphiteWeb extends ConfigGenerator implements ConfigInterface,ContainerConfigInterface {
 
     protected $templateDir = 'config';
 
@@ -96,6 +98,31 @@ class GraphiteWeb extends ConfigGenerator implements ConfigInterface {
         }
 
         return '';
+    }
+
+    public function getValuesFromEnvironment() {
+        return [
+            [
+                'key'   => 'graphite_web_host',
+                'value' => env('OITC_GRAPHITE_WEB_ADDRESS', '127.0.0.1'),
+            ],
+            [
+                'key'   => 'graphite_prefix',
+                'value' => env('OITC_GRAPHITE_PREFIX', 'openitcockpit'),
+            ],
+            [
+                'key'   => 'graphite_web_port',
+                'value' => env('OITC_GRAPHITE_WEB_PORT', 8888),
+            ],
+            [
+                'key'   => 'use_https',
+                'value' => env('OITC_GRAPHITE_USE_HTTPS', 0),
+            ],
+            [
+                'key'   => 'use_proxy',
+                'value' => env('OITC_GRAPHITE_USE_PROXY', 0),
+            ]
+        ];
     }
 
     /**

@@ -22,54 +22,14 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\ConfigGenerator;
+namespace App\itnovum\openITCOCKPIT\ConfigGenerator;
 
 
-interface ConfigInterface {
-
-    /**
-     * @return string
-     */
-    public function getTemplatePath();
+interface ContainerConfigInterface {
 
     /**
-     * @return string
+     * @return array
      */
-    public function getTemplateName();
-
-    /**
-     * @return string
-     */
-    public function getTemplateNameWithPath();
-
-    /**
-     * @param $data
-     * @return true|array
-     */
-    public function customValidationRules($data);
-
-    /**
-     * @return string
-     */
-    public function getAngularDirective();
-
-    /**
-     * Save the configuration as text file on disk
-     *
-     * @param array $dbRecords from CakePHP find
-     */
-    public function writeToFile($dbRecords);
-
-    /**
-     * @return string
-     */
-    public function getDbKey();
-
-    /**
-     * Migrate current existing config file to database
-     * @param array $dbRecords from CakePHP find
-     * @return bool
-     */
-    public function migrate($dbRecords);
+    public function getValuesFromEnvironment();
 
 }

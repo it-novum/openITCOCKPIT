@@ -25,7 +25,10 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use App\itnovum\openITCOCKPIT\Supervisor\Binarydctl;
+use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use Cake\Core\Configure;
+use Cake\Log\Log;
 
 class MonitoringEngine {
 
@@ -138,6 +141,11 @@ class MonitoringEngine {
     private $delimiter = '|';
 
     public function __construct() {
+        if (IS_CONTAINER) {
+            // We always use Naemon for containers
+            $this->monitoringEngine = 'Naemon Core Container';
+            return;
+        }
 
         Configure::load('nagios');
         exec(Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' --version | head -n 2', $output);
@@ -155,6 +163,11 @@ class MonitoringEngine {
      * @return bool
      */
     public function isNaemon() {
+        if (IS_CONTAINER) {
+            // We always use Naemon for containers
+            return true;
+        }
+
         $monitoringEngine = strtolower($this->monitoringEngine);
         if (preg_match('/naemon/', $monitoringEngine)) {
             return true;
@@ -187,16 +200,30 @@ class MonitoringEngine {
     /**
      * @return array|false
      */
-    public function runNagiostats(){
-        exec($this->getNagiostatsCommand(), $output);
+    public function runNagiostats() {
+        $output = [];
+        if (IS_CONTAINER) {
+            // Naemon is running inside a container - query remote supervisor to run "naemon -v naemon.cfg"
+            try {
+                $Binarydctl = new Binarydctl();
+                $BinarydEndpoint = $Binarydctl->getBinarydApiEndpointByServiceName('naemon-stats');
+                $result = $BinarydEndpoint->execute('naemon-stats');
+                $output = [$result];
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+            }
+        } else {
+            // Local running Naemon
+            exec($this->getNagiostatsCommand(), $output);
+        }
 
-         // Nagios and Naemon add the delimiter also the the end of the string
-         // this is bad, because explode will create and empty value in the array
-         // and this throw a warning in array_combine
+        // Nagios and Naemon add the delimiter also to the end of the string
+        // this is bad, because explode will create and empty value in the array
+        // and this throw a warning in array_combine
         $result = explode($this->delimiter, $output[0]);
         $result_sizeof = sizeof($result);
         if (sizeof($this->MRTG) < $result_sizeof) {
-            if ($result[$result_sizeof - 1] == '') {
+            if (trim($result[$result_sizeof - 1]) == '') {
                 unset($result[$result_sizeof - 1]);
             }
         }

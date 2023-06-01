@@ -70,6 +70,11 @@ class ChartRenderClient {
     private $endTimestamp = 0;
 
     public function __construct() {
+        $address = env('OITC_PUPPETEER_ADDRESS', null);
+        if (!empty($address)) {
+            $this->address = $address;
+        }
+
         $this->Client = new Client([
             'base_uri' => $this->address,
             'proxy'    => [
