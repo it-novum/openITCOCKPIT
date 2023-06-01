@@ -71,7 +71,7 @@ class ChartRenderClient {
 
     public function __construct() {
         $address = env('OITC_PUPPETEER_ADDRESS', null);
-        if (empty(!$address)) {
+        if (!empty($address)) {
             $this->address = $address;
         }
 
