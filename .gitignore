@@ -123,3 +123,4 @@ plugins/UPSModule
 plugins/VMwareSnapshotModule
 plugins/CustomalertModule
 plugins/SLAModule
+plugins/WinRMModule

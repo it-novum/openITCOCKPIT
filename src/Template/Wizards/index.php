@@ -41,7 +41,6 @@
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Configuration Wizards'); ?>
-                    <div class="badge border border-info text-info margin-left-10"><?= __('Beta'); ?></div>
                 </h2>
                 <div class="panel-toolbar">
                     <span class="padding-right-10">
