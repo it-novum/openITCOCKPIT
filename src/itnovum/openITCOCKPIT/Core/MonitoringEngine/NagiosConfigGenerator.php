@@ -2262,7 +2262,7 @@ class NagiosConfigGenerator {
                         $timestamp = strtotime(sprintf('%s 00:00', $holiday->get('date')));
 
                         $calendarDay = sprintf('%s 00:00-24:00; %s',
-                            strtolower(date('F j', $timestamp)),
+                            strtolower(date('Y-m-d', $timestamp)),
                             $holiday->get('name')
                         );
                         $content .= $this->addContent($calendarDay, 1);
@@ -2378,7 +2378,7 @@ class NagiosConfigGenerator {
                         $timestamp = strtotime(sprintf('%s 00:00', $holiday->get('date')));
 
                         $calendarDay = sprintf('%s 00:00-24:00; %s',
-                            strtolower(date('F j', $timestamp)),
+                            strtolower(date('Y-m-d', $timestamp)),
                             $holiday->get('name')
                         );
                         $content .= $this->addContent($calendarDay, 1);
