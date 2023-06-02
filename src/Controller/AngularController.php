@@ -1003,8 +1003,9 @@ class AngularController extends AppController {
         $QueryHandler = new QueryHandler($SystemsettingsTable->getQueryHandlerPath());
 
         $this->set('QueryHandler', [
-            'exists' => $QueryHandler->exists(),
-            'path'   => $QueryHandler->getPath()
+            'exists'      => $QueryHandler->exists(),
+            'path'        => $QueryHandler->getPath(),
+            'isContainer' => $QueryHandler->isContainer()
         ]);
         $this->viewBuilder()->setOption('serialize', ['QueryHandler']);
 
@@ -1258,6 +1259,7 @@ class AngularController extends AppController {
         //Return HTML Template for PaginatorDirective
         return;
     }
+
     public function ackTooltip() {
         //Only ship HTML template
         return;

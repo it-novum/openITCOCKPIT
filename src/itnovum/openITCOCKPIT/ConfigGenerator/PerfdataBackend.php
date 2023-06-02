@@ -25,9 +25,10 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use App\itnovum\openITCOCKPIT\ConfigGenerator\ContainerConfigInterface;
 use Cake\Core\Configure;
 
-class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
+class PerfdataBackend extends ConfigGenerator implements ConfigInterface,ContainerConfigInterface {
 
     protected $templateDir = 'config';
 
@@ -103,6 +104,15 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
         }
 
         return '';
+    }
+
+    public function getValuesFromEnvironment() {
+        return [
+            [
+                'key'   => 'perfdatabackend',
+                'value' => env('OITC_PERFDATA_BACKEND', 'Whisper'),
+            ]
+        ];
     }
 
     /**

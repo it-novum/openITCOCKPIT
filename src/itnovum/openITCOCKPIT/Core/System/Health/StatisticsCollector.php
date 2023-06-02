@@ -100,7 +100,8 @@ class StatisticsCollector {
                 'version'  => $LsbRelease->getVersion(),
                 'codename' => $LsbRelease->getCodename()
             ],
-            'mysql'             => $MysqlHealth->getAllMetrics()
+            'mysql'             => $MysqlHealth->getAllMetrics(),
+            'containerized'     => (IS_CONTAINER) ? true : false
         ];
     }
 

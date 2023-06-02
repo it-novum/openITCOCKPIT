@@ -56,11 +56,6 @@ class GrafanaPanel {
     private $ColorOverrides;
 
     /**
-     * @var GrafanaYAxes
-     */
-    private $YAxes;
-
-    /**
      * @var GrafanaThresholdCollection
      */
     private $ThresholdCollection;
@@ -84,6 +79,12 @@ class GrafanaPanel {
      * @var string
      */
     private $stacking_mode = 'none';
+
+    /**
+     * @var string|null
+     * This unit is used for all metrics in the panel
+     */
+    private $defaultUnit = null;
 
 
     /**
@@ -165,6 +166,7 @@ class GrafanaPanel {
                 "color"      => [
                     "mode" => "palette-classic"
                 ],
+                "unit"       => null,
                 "thresholds" => [
                     "steps" => []
                 ]
@@ -240,6 +242,8 @@ class GrafanaPanel {
             $this->panel['fieldConfig']['overrides'] = $this->ColorOverrides->getOverrides();
         }
 
+        $this->panel['fieldConfig']['defaults']['unit'] = $this->defaultUnit;
+
         return $this->panel;
     }
 
@@ -267,20 +271,24 @@ class GrafanaPanel {
     /**
      * @param GrafanaTargetCollection $grafanaTargetCollection
      * @param GrafanaOverrides $Overrides
-     * @param GrafanaYAxes $YAxes
      * @param GrafanaThresholdCollection $ThresholdCollection
      */
     public function addTargets(
         GrafanaTargetCollection    $grafanaTargetCollection,
         GrafanaOverrides           $Overrides,
         GrafanaColorOverrides      $ColorOverrides,
-        GrafanaYAxes               $YAxes,
         GrafanaThresholdCollection $ThresholdCollection
     ) {
+
+        if ($grafanaTargetCollection->canDisplayUnits()) {
+            $units = $grafanaTargetCollection->getUnits();
+            // Set the first unit as default unit for the panel
+            $this->defaultUnit = $units[0] ?? null;
+        }
+
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
         $this->Overrides = $Overrides;
         $this->ColorOverrides = $ColorOverrides;
-        $this->YAxes = $YAxes;
         $this->ThresholdCollection = $ThresholdCollection;
     }
 

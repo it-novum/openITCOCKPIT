@@ -4,9 +4,10 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use App\itnovum\openITCOCKPIT\ConfigGenerator\ContainerConfigInterface;
 use Cake\Core\Configure;
 
-class Gearman extends ConfigGenerator implements ConfigInterface {
+class Gearman extends ConfigGenerator implements ConfigInterface, ContainerConfigInterface {
     /** @var string */
     protected $templateDir = 'config';
     /** @var string */
@@ -20,8 +21,8 @@ class Gearman extends ConfigGenerator implements ConfigInterface {
     /** @var array */
     protected $defaults = [
         'string' => [
-            'address'  => '127.0.0.1',
-            'pidfile'  => '/var/run/oitc_gearmanworker.pid',
+            'address' => '127.0.0.1',
+            'pidfile' => '/var/run/oitc_gearmanworker.pid',
         ],
         'int'    => [
             'port'   => 4730,
@@ -52,10 +53,10 @@ class Gearman extends ConfigGenerator implements ConfigInterface {
      */
     public function getHelpText($key) {
         $help = [
-            'address'    => __('The host address where the gearman-job-server is running.'),
-            'pidfile'    => __('Process id file used by the gearman_worker.'),
-            'port'       => __('Port number of gearman-job-server.'),
-            'worker'     => __('Number of gearman_worker processes.')
+            'address' => __('The host address where the gearman-job-server is running.'),
+            'pidfile' => __('Process id file used by the gearman_worker.'),
+            'port'    => __('Port number of gearman-job-server.'),
+            'worker'  => __('Number of gearman_worker processes.')
         ];
 
         if (isset($help[$key])) {
@@ -63,6 +64,23 @@ class Gearman extends ConfigGenerator implements ConfigInterface {
         }
 
         return '';
+    }
+
+    public function getValuesFromEnvironment() {
+        return [
+            [
+                'key'   => 'address',
+                'value' => env('OITC_GEARMAN_ADDRESS', 'gearmand'),
+            ],
+            [
+                'key'   => 'port',
+                'value' => env('OITC_GEARMAN_PORT', 4730),
+            ],
+            [
+                'key'   => 'worker',
+                'value' => env('OITC_GEARMAM_WORKER', 5),
+            ]
+        ];
     }
 
     /**

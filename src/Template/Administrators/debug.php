@@ -77,35 +77,36 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     </div>
 </div>
 
+<?php if (IS_CONTAINER === false): ?>
+    <?php echo $this->element('repository_checker'); ?>
 
-<?php echo $this->element('repository_checker'); ?>
+    <?php if ($LsbRelease->getCodename() === 'bionic'): ?>
+        <div class="alert alert-danger alert-block">
+            <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
+            <h4 class="alert-heading">
+                <i class="fa fa-warning"></i>
+                <?php echo __('Ubuntu Bionic 18.04 is end of life soon!'); ?>
+            </h4>
+            <?php echo __('Official end of life of Ubuntu Bionic scheduled for April 2023.'); ?>
+            <?php echo __('Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Ubuntu Bionic. Please update to Ubuntu Focal to receive further updates.'); ?>
+            <br/>
+            <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        </div>
+    <?php endif; ?>
 
-<?php if ($LsbRelease->getCodename() === 'bionic'): ?>
-    <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
-        <h4 class="alert-heading">
-            <i class="fa fa-warning"></i>
-            <?php echo __('Ubuntu Bionic 18.04 is end of life soon!'); ?>
-        </h4>
-        <?php echo __('Official end of life of Ubuntu Bionic scheduled for April 2023.'); ?>
-        <?php echo __('Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Ubuntu Bionic. Please update to Ubuntu Focal to receive further updates.'); ?>
-        <br/>
-        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
-    </div>
-<?php endif; ?>
-
-<?php if ($LsbRelease->getCodename() === 'buster'): ?>
-    <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
-        <h4 class="alert-heading">
-            <i class="fa fa-warning"></i>
-            <?php echo __('Debian Buster 10 end of life!'); ?>
-        </h4>
-        <?php echo __('Debian Buster is not supported by the Debian security team anymore!'); ?>
-        <?php echo __('Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Debian Buster. Please update to Debian Bullseye to receive further updates.'); ?>
-        <br/>
-        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
-    </div>
+    <?php if ($LsbRelease->getCodename() === 'buster'): ?>
+        <div class="alert alert-danger alert-block">
+            <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
+            <h4 class="alert-heading">
+                <i class="fa fa-warning"></i>
+                <?php echo __('Debian Buster 10 end of life!'); ?>
+            </h4>
+            <?php echo __('Debian Buster is not supported by the Debian security team anymore!'); ?>
+            <?php echo __('Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Debian Buster. Please update to Debian Bullseye to receive further updates.'); ?>
+            <br/>
+            <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        </div>
+    <?php endif; ?>
 <?php endif; ?>
 
 <div class="row">
@@ -122,7 +123,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
                     <div class="row">
                         <div class="col-12 text-center">
-                            <img class="img-fluid" alt="Logo" src="<?= $Logo->getLogoForHtml() ?>" style="max-height: 209px;">
+                            <img class="img-fluid" alt="Logo" src="<?= $Logo->getLogoForHtml() ?>"
+                                 style="max-height: 209px;">
                         </div>
                     </div>
 
@@ -430,6 +432,9 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
                             <dt><?php echo __('Kernel'); ?>:</dt>
                             <dd>{{serverInformation.kernel}}</dd>
+
+                            <dt><?php echo __('Containerized'); ?>:</dt>
+                            <dd>{{serverInformation.containerized}}</dd>
 
                             <dt><?php echo __('PHP version'); ?>:</dt>
                             <dd>{{serverInformation.php_version}}</dd>

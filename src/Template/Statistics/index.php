@@ -132,7 +132,11 @@
                             <br/>
 
                             <?php echo __('If you want to change your system_id, you can delete the file'); ?>
-                            <code>/opt/openitc/etc/system-id</code>.
+                            <?php if (IS_CONTAINER): ?>
+                                <code>/opt/openitc/var/system-id</code>
+                            <?php else: ?>
+                                <code>/opt/openitc/etc/system-id</code>.
+                            <?php endif; ?>
                             <?php echo __('openITCOCKPIT will generate a new system_id, if required.'); ?>
 
                         </div>

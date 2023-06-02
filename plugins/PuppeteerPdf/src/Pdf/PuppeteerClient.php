@@ -26,6 +26,11 @@ class PuppeteerClient {
     private $address = 'http://127.0.0.1:7084/';
 
     public function __construct() {
+        $address = env('OITC_PUPPETEER_ADDRESS', null);
+        if (!empty($address)) {
+            $this->address = $address;
+        }
+
         $this->Client = new Client([
             'base_uri' => $this->address,
             'proxy'    => [

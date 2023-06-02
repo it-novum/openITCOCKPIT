@@ -38,7 +38,6 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
-use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
 use Statusengine\PerfdataParser;
 
 /**
@@ -352,7 +351,6 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                 $grafanaTargetCollection,
                 new GrafanaOverrides($grafanaTargetCollection),
                 new GrafanaColorOverrides($grafanaTargetCollection),
-                new GrafanaYAxes($grafanaTargetCollection),
                 new GrafanaThresholdCollection($grafanaTargetCollection)
             );
 
