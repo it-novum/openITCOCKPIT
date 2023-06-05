@@ -300,6 +300,13 @@ class ConfigGenerator {
     private function flatDbResult($dbResult) {
         $result = [];
         foreach ($dbResult as $record) {
+            // ITC-2986 make default settings from environment variable look like from the database
+            if(!isset($record['ConfigurationFile'])){
+                $record = [
+                    'ConfigurationFile' => $record
+                ];
+            }
+
             $result[$record['ConfigurationFile']['key']] = $record['ConfigurationFile']['value'];
         }
         return $result;
@@ -344,6 +351,7 @@ class ConfigGenerator {
 
         $FileHeader = new FileHeader();
         $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
+        $configToExport['IS_CONTAINER'] = IS_CONTAINER;
 
         $configDir = dirname($this->realOutfile);
         if (!is_dir($configDir)) {

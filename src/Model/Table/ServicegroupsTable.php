@@ -434,7 +434,7 @@ class ServicegroupsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'Containers' => function (Query $q) use ($MY_RIGHTS) {
+                'Containers'       => function (Query $q) use ($MY_RIGHTS) {
                     $q->select([
                         'Containers.id',
                         'Containers.name'
@@ -444,7 +444,7 @@ class ServicegroupsTable extends Table {
                     }
                     return $q;
                 },
-                'Services'   => function (Query $q) {
+                'Services'         => function (Query $q) {
                     return $q->contain([
                         'Servicetemplates' => function (Query $q) {
                             return $q->select([
@@ -629,6 +629,99 @@ class ServicegroupsTable extends Table {
             ->firstOrFail();
 
         return $servicegroup;
+    }
+
+    /**
+     * @param $id
+     * @param $MY_RIGHTS
+     * @return array
+     */
+    public function getServiceIdsByServicegroupForMaps($id, $MY_RIGHTS = []) {
+        $where = [
+            'Servicegroups.id' => $id
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        $servicegroup = $this->find()
+            ->select([
+                'Servicegroups.id'
+            ])
+            ->contain([
+                'Containers',
+                'Services'         => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'Services.id'
+                        ])
+                        ->contain([
+                            'Hosts'            => function (Query $q) {
+                                return $q->enableAutoFields(false)
+                                    ->select([
+                                        'Hosts.id'
+                                    ])
+                                    ->contain(['HostsToContainersSharing'])
+                                    ->where(['Hosts.disabled' => 0]);
+                            },
+                            'Servicetemplates' => function (Query $q) {
+                                return $q->enableAutoFields(false)
+                                    ->select([
+                                        'Servicetemplates.name'
+                                    ]);
+                            },
+                        ])
+                        ->where(['Services.disabled' => 0]);
+                },
+                'Servicetemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Services' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Services.id',
+                                        'Services.servicetemplate_id'
+                                    ])
+                                    ->contain([
+                                        'Servicetemplates' => function (Query $q) {
+                                            return $q->select([
+                                                'Servicetemplates.id'
+                                            ]);
+                                        },
+                                        'Hosts'            => function (Query $q) {
+                                            return $q->contain([
+                                                'HostsToContainersSharing'
+                                            ])->select([
+                                                'Hosts.id'
+                                            ])->where([
+                                                'Hosts.disabled' => 0
+                                            ]);
+                                        }
+                                    ])
+                                    ->where([
+                                        'Services.disabled' => 0
+                                    ]);
+                                $query
+                                    ->leftJoinWith('Servicegroups')
+                                    ->whereNull('Servicegroups.id');
+                                return $query;
+                            }
+                        ]);
+                }
+            ])
+            ->where($where)
+            ->disableHydration()
+            ->firstOrFail();
+
+
+        return array_unique(array_merge(
+            Hash::extract($servicegroup, 'services.{n}.id'),
+            Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}.id')
+        ));
     }
 
     /**

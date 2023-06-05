@@ -25,6 +25,7 @@
 
 namespace itnovum\openITCOCKPIT\Core\MonitoringEngine;
 
+use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use App\Lib\ExportTasks;
 use App\Lib\PluginExportTasks;
 use App\Model\Entity\CalendarHoliday;
@@ -2262,7 +2263,7 @@ class NagiosConfigGenerator {
                         $timestamp = strtotime(sprintf('%s 00:00', $holiday->get('date')));
 
                         $calendarDay = sprintf('%s 00:00-24:00; %s',
-                            strtolower(date('F j', $timestamp)),
+                            strtolower(date('Y-m-d', $timestamp)),
                             $holiday->get('name')
                         );
                         $content .= $this->addContent($calendarDay, 1);
@@ -2378,7 +2379,7 @@ class NagiosConfigGenerator {
                         $timestamp = strtotime(sprintf('%s 00:00', $holiday->get('date')));
 
                         $calendarDay = sprintf('%s 00:00-24:00; %s',
-                            strtolower(date('F j', $timestamp)),
+                            strtolower(date('Y-m-d', $timestamp)),
                             $holiday->get('name')
                         );
                         $content .= $this->addContent($calendarDay, 1);
@@ -2718,7 +2719,17 @@ class NagiosConfigGenerator {
         }
 
         //Restart oitc CMD to wipe old cached information
-        exec('systemctl restart oitc_cmd');
+        if (IS_CONTAINER) {
+            try {
+                $Supervisorctl = new Supervisorctl();
+                $Supervisorctl->restart('oitc_cmd');
+            } catch (\Exception $e) {
+                Log::error('NagiosConfigGenerator: ' . $e->getMessage());
+            }
+        } else {
+            exec('systemctl restart oitc_cmd');
+        }
+
 
         $ExportTasks = new ExportTasks();
         foreach ($ExportTasks->getTasks() as $task) {

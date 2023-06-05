@@ -24,6 +24,7 @@
     "require": {
         "php": ">=7.2",
         "ext-calendar": "*",
+        "ext-curl": "*",
         "ext-gd": "*",
         "ext-gearman": "*",
         "ext-json": "*",
@@ -34,6 +35,7 @@
         "ext-simplexml": "*",
         "ext-soap": "*",
         "ext-sockets": "*",
+        "ext-xmlrpc": "*",
         "ext-zip": "*",
         "azuyalabs/yasumi": "^2.2",
         "cakephp/authentication": "^2.0",
@@ -47,7 +49,6 @@
         "erusev/parsedown": "^1.7",
         "erusev/parsedown-extra": "^0.8",
         "freedsx/ldap": "^0.5.0",
-        "friendsofcake/cakepdf": "4.0.0-beta",
         "friendsofcake/cakephp-csvview": "^4.0",
         "guiguiboy/php-cli-progress-bar": "^0.0.4",
         "guzzlehttp/guzzle": "^7.4",

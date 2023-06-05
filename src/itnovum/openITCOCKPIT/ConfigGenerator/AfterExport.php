@@ -25,9 +25,10 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use App\itnovum\openITCOCKPIT\ConfigGenerator\ContainerConfigInterface;
 use Cake\Core\Configure;
 
-class AfterExport extends ConfigGenerator implements ConfigInterface {
+class AfterExport extends ConfigGenerator implements ConfigInterface, ContainerConfigInterface {
 
     protected $templateDir = 'config';
 
@@ -89,6 +90,31 @@ class AfterExport extends ConfigGenerator implements ConfigInterface {
         }
 
         return '';
+    }
+
+    public function getValuesFromEnvironment() {
+        return [
+            [
+                'key'   => 'username',
+                'value' => env('OITC_AFTER_EXPORT_SSH_USERNAME', 'nagios'),
+            ],
+            [
+                'key'   => 'private_key',
+                'value' => env('OITC_AFTER_EXPORT_SSH_PRIVATE_KEY', '/var/lib/nagios/.ssh/id_rsa'),
+            ],
+            [
+                'key'   => 'public_key',
+                'value' => env('OITC_AFTER_EXPORT_SSH_PUBLIC_KEY', '/var/lib/nagios/.ssh/id_rsa.pub'),
+            ],
+            [
+                'key'   => 'restart_command',
+                'value' => env('OITC_AFTER_EXPORT_RESTART_COMMAND', 'sudo /opt/openitc/nagios/bin/restart-monitoring.sh'),
+            ],
+            [
+                'key'   => 'remote_port',
+                'value' => env('OITC_AFTER_EXPORT_SSH_REMOTE_PORT', 22),
+            ]
+        ];
     }
 
     /**

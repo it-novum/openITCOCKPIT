@@ -270,7 +270,13 @@
                                     {{ agent.last_update}}
                                 </td>
                                 <td>
-                                    Herbert satellite
+                                    <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
+                                        <a ui-sref="SatellitesEdit({id:agent.Satellites.id})">
+                                            {{ agent.Satellites.name}}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ agent.Satellites.name}}
+                                    <?php endif; ?>
                                 </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">

@@ -33,6 +33,8 @@ use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmpttIni;
 class GeneratorRegistry {
 
     /**
+     * This function is used, when openITCOCKPIT is running on Bare-metal server / a Virtual Maschine and is
+     * installed via the package manager like apt or dnf
      * @return array
      */
     public function getAllConfigFiles() {
@@ -61,6 +63,27 @@ class GeneratorRegistry {
         if (Plugin::isLoaded('PrometheusModule')) {
             $configFiles[] = new PrometheusCfgs_prometheus();
         }
+
+        return $configFiles;
+    }
+
+    /**
+     * This function is used, when openITCOCKPIT is running inside a container like Docker, Podman etc.
+     * In this case, we don't need most of the config files, because the corresponding containers will generate
+     * configuration files (if necessary) by themselves.
+     * ITC-2986
+     * @return array
+     */
+    public function getAllConfigFilesForContainer(){
+        $configFiles = [
+            new AfterExport(),
+            new DbBackend(),
+            new PerfdataBackend(),
+            new Gearman(),
+            new GraphiteWeb(),
+            new NSTAMaster(),
+            new PhpFpmOitc()
+        ];
 
         return $configFiles;
     }

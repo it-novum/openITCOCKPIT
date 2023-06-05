@@ -26,10 +26,12 @@ angular.module('openITCOCKPIT')
                     Host: {
                         id: QueryStringService.getStateValue($stateParams, 'id', []),
                         name: (filterHostname) ? filterHostname : '',
+                        name_regex: false,
                         hostdescription: '',
                         keywords: '',
                         not_keywords: '',
                         address: (filterAddress) ? filterAddress : '',
+                        address_regex: false,
                         satellite_id: [],
                         priority: {
                             1: false,
@@ -150,9 +152,11 @@ angular.module('openITCOCKPIT')
                 filter: {
                     'Hosts.id': $scope.filter.Host.id,
                     'Hosts.name': $scope.filter.Host.name,
+                    'Hosts.name_regex': $scope.filter.Host.name_regex,
                     'Hosts.keywords': ($scope.filter.Host.keywords !== '' ? $scope.filter.Host.keywords.split(',') : []),
                     'Hosts.not_keywords': ($scope.filter.Host.not_keywords !== '' ? $scope.filter.Host.not_keywords.split(',') : []),
                     'Hosts.address': $scope.filter.Host.address,
+                    'Hosts.address_regex': $scope.filter.Host.address_regex,
                     'Hosts.satellite_id': $scope.filter.Host.satellite_id,
                     'Hosts.host_type': $scope.filter.Host.host_type,
                     'hostdescription': $scope.filter.Host.hostdescription,

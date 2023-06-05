@@ -107,6 +107,14 @@ class QueryHandler {
     }
 
     /**
+     * When openITCOCKPIT is running in a Docker container, it HAS NO ACCESS to the query handler socket
+     * @return bool
+     */
+    public function isContainer(){
+        return IS_CONTAINER;
+    }
+
+    /**
      * @return string
      */
     public function getLastError() {

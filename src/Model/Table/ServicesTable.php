@@ -20,6 +20,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -1991,7 +1992,6 @@ class ServicesTable extends Table {
         if ($ServiceConditions->getHostId()) {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
-
         $query = $this->find();
         $query
             ->select([
@@ -2166,7 +2166,6 @@ class ServicesTable extends Table {
                 ['Services.id' => 'asc']
             )
         );
-
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -4612,26 +4611,35 @@ class ServicesTable extends Table {
         }
 
         if (!empty($conditions['Host']['name'])) {
-            if ($this->isValidRegularExpression($conditions['Host']['name'])) {
-                $where[] = new Comparison(
-                    'Hosts.name',
-                    $conditions['Host']['name'],
-                    'string',
-                    'RLIKE'
-                );
+            if (isset($conditions['Host']['name_regex']) && $conditions['Host']['name_regex'] === true || $conditions['Host']['name_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['Host']['name'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
             }
-
         }
 
         if (!empty($conditions['Service']['servicename'])) {
-            if ($this->isValidRegularExpression($conditions['Service']['servicename'])) {
+            if (isset($conditions['Service']['servicename_regex']) && $conditions['Service']['servicename_regex'] === true || $conditions['Service']['servicename_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Service']['servicename'])) {
+                    $query->having([
+                        new Comparison(
+                            'servicename',
+                            $conditions['Service']['servicename'],
+                            'string',
+                            'RLIKE'
+                        )
+                    ]);
+                }
+            } else {
                 $query->having([
-                    new Comparison(
-                        'servicename',
-                        $conditions['Service']['servicename'],
-                        'string',
-                        'RLIKE'
-                    )
+                    'servicename LIKE' => sprintf('%%%s%%', $conditions['Service']['servicename'])
                 ]);
             }
         }
