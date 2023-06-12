@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Filter;
 
+use App\itnovum\openITCOCKPIT\Database\SanitizeOrder;
 use Cake\Http\ServerRequest;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 
@@ -297,17 +298,22 @@ abstract class Filter {
 
     /**
      * This parameter needs to be passed via the query string (GET)
+     * WARNING: Order fields/directions are not sanitized by the CakePHP query builder.
+     * You should use an allowed list of fields/directions when passing in user-supplied data to order().
      *
      * @param string $default
      * @return string|array
      */
-    public function getSort($default = '') {
-        $sort = $this->Request->getQuery('sort');
+    protected function getSort($default = '') {
+        $unsafeSort = $this->Request->getQuery('sort');
 
-        if ($sort !== null && $sort !== '') {
-            return $sort;
+        if ($unsafeSort !== null && $unsafeSort !== '') {
+            if (is_array($unsafeSort)) {
+                return $this->validateArrayDirection($unsafeSort);
+            }
+            return SanitizeOrder::filterOrderColumn($unsafeSort);
         }
-        return $default;
+        return SanitizeOrder::filterOrderColumn($default);
     }
 
     /**
@@ -316,7 +322,7 @@ abstract class Filter {
      * @param string $default
      * @return string
      */
-    public function getDirection($default = '') {
+    protected function getDirection($default = '') {
         if ($this->Request->getQuery('direction', null) === 'desc') {
             return 'desc';
         }
@@ -325,20 +331,21 @@ abstract class Filter {
             return 'asc';
         }
 
-        if ($default === '') {
+        if ($default === '' || $default === 'asc') {
             return 'asc';
         }
 
-        return $default;
+        return 'desc';
     }
 
     /**
      * @param array $sortAsArray
      * @return array
      */
-    public function validateArrayDirection($sortAsArray = []) {
+    protected function validateArrayDirection($sortAsArray = []) {
         $validatedSort = [];
         foreach ($sortAsArray as $sortField => $sortDirection) {
+            $sortField = SanitizeOrder::filterOrderColumn($sortField);
             $validatedSort[$sortField] = ($sortDirection === 'desc') ? 'desc' : 'asc';
         }
         return $validatedSort;
@@ -366,11 +373,10 @@ abstract class Filter {
      * @return int
      */
     public function getPage($default = 1) {
-
         if ($this->Request->getQuery('page', 0) > 0) {
             return (int)$this->Request->getQuery('page');
         }
-        return $default;
+        return (int)$default;
     }
 
     /**

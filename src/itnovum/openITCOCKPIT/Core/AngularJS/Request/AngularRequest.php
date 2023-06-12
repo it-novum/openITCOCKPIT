@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core\AngularJS\Request;
 
+use App\itnovum\openITCOCKPIT\Database\SanitizeOrder;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
@@ -224,29 +225,34 @@ class AngularRequest {
 
 
     /**
+     * WARNING: Order fields/directions are not sanitized by the CakePHP query builder.
+     * You should use an allowed list of fields/directions when passing in user-supplied data to order().
+     *
      * @param string $default
      * @return string
      */
-    public function getSort($default = '') {
+    protected function getSort($default = '') {
         $query = $this->Request->getQuery();
 
+        $sort = $default;
         if (isset($query['sort'])) {
-            return $query['sort'];
+            $sort = $query['sort'];
         }
-        return $default;
+        return SanitizeOrder::filterOrderColumn($sort);
     }
 
     /**
      * @param string $default
      * @return string
      */
-    public function getDirection($default = '') {
+    protected function getDirection($default = '') {
         $query = $this->Request->getQuery();
 
         if (isset($query['direction'])) {
-            return $query['direction'];
+            return ($query['direction'] === 'asc') ? 'asc' : 'desc';
         }
-        return $default;
+
+        return ($default === 'asc') ? 'asc' : 'desc';
     }
 
     /**
@@ -270,7 +276,7 @@ class AngularRequest {
         if (isset($query['page'])) {
             return (int)$query['page'];
         }
-        return $default;
+        return (int)$default;
     }
 
 }
