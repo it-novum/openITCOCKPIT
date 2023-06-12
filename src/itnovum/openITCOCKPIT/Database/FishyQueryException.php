@@ -27,6 +27,9 @@ namespace App\itnovum\openITCOCKPIT\Database;
 
 /**
  * Throw this exception whenever you want to prevent the execution of an SQL query
+ *
+ * The user will see this as "An Internal Error Has Occurred" Any exception message
+ * will get logged into the error.log
  */
 class FishyQueryException extends \RuntimeException {
 
