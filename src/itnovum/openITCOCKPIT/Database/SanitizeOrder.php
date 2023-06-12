@@ -43,4 +43,17 @@ class SanitizeOrder {
         // Ref.: https://xkcd.com/327/
         throw new FishyQueryException('Bobby Tables?');
     }
+
+    public static function filterOrderArray($sortAsArray) {
+        if (is_array($sortAsArray)) {
+            $validatedSort = [];
+            foreach ($sortAsArray as $sortField => $sortDirection) {
+                $sortField = self::filterOrderColumn($sortField);
+                $validatedSort[$sortField] = ($sortDirection === 'desc') ? 'desc' : 'asc';
+            }
+            return $validatedSort;
+        }
+
+        return self::filterOrderColumn((string)$sortAsArray);
+    }
 }
