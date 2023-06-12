@@ -1037,7 +1037,10 @@ class MapsTable extends Table {
                 }
             }
         }
-        $hostIds = [];
+
+        $hostIds = $mapElementsByCategory['host'];
+        $serviceIds = $mapElementsByCategory['service'];
+
         if (!empty($mapElementsByCategory['hostgroup'])) {
             foreach ($mapElementsByCategory['hostgroup'] as $hostgroupId) {
                 $hostIds = array_merge(
@@ -1047,7 +1050,6 @@ class MapsTable extends Table {
             }
 
         }
-        $serviceIds = [];
 
         if (!empty($mapElementsByCategory['servicegroup'])) {
             foreach ($mapElementsByCategory['servicegroup'] as $servicegroupId) {
