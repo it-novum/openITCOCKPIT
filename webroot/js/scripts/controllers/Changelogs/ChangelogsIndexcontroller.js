@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ChangelogsIndexController', function ($scope, $http, SortService, QueryStringService, $stateParams) {
+    .controller('ChangelogsIndexController', function($scope, $http, SortService, QueryStringService, $stateParams){
 
         SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Changelogs.id'));
         SortService.setDirection(QueryStringService.getStateValue($stateParams, 'direction', 'desc'));
@@ -7,7 +7,7 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
         /*** Filter Settings ***/
-        var defaultFilter = function () {
+        var defaultFilter = function(){
             var now = new Date();
 
             $scope.filter = {
@@ -53,10 +53,10 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
         $scope.init = true;
 
-        var getActionsFilter = function () {
+        var getActionsFilter = function(){
             var selectedActions = [];
-            for (var actionName in $scope.filter.Actions) {
-                if ($scope.filter.Actions[actionName] === 1) {
+            for(var actionName in $scope.filter.Actions){
+                if($scope.filter.Actions[actionName] === 1){
                     selectedActions.push(actionName);
                 }
             }
@@ -64,10 +64,10 @@ angular.module('openITCOCKPIT')
             return selectedActions;
         };
 
-        var getModelsFilter = function () {
+        var getModelsFilter = function(){
             var selectedModels = [];
-            for (var modelName in $scope.filter.Models) {
-                if ($scope.filter.Models[modelName] === 1) {
+            for(var modelName in $scope.filter.Models){
+                if($scope.filter.Models[modelName] === 1){
                     selectedModels.push(modelName);
                 }
             }
@@ -75,7 +75,7 @@ angular.module('openITCOCKPIT')
             return selectedModels;
         };
 
-        $scope.load = function () {
+        $scope.load = function(){
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
@@ -91,7 +91,7 @@ angular.module('openITCOCKPIT')
 
             $http.get("/changelogs/index.json", {
                 params: params
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.changes = result.data.all_changes;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
@@ -99,22 +99,22 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.triggerFilter = function () {
+        $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
         };
 
-        $scope.resetFilter = function () {
+        $scope.resetFilter = function(){
             defaultFilter();
         };
 
-        $scope.changepage = function (page) {
-            if (page !== $scope.currentPage) {
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
                 $scope.currentPage = page;
                 $scope.load();
             }
         };
 
-        $scope.changeMode = function (val) {
+        $scope.changeMode = function(val){
             $scope.useScroll = val;
             $scope.load();
         };
@@ -124,19 +124,19 @@ angular.module('openITCOCKPIT')
         SortService.setCallback($scope.load);
 
         //Watch on filter change
-        $scope.$watch('filter', function () {
+        $scope.$watch('filter', function(){
             $scope.currentPage = 1;
             $scope.load();
         }, true);
 
-        $scope.$watch('from_time', function (dateObject) {
-            if (dateObject !== undefined && dateObject instanceof Date) {
+        $scope.$watch('from_time', function(dateObject){
+            if(dateObject !== undefined && dateObject instanceof Date){
                 var dateString = date('d.m.Y H:i', dateObject.getTime() / 1000);
                 $scope.filter.from = dateString;
             }
         });
-        $scope.$watch('to_time', function (dateObject) {
-            if (dateObject !== undefined && dateObject instanceof Date) {
+        $scope.$watch('to_time', function(dateObject){
+            if(dateObject !== undefined && dateObject instanceof Date){
                 var dateString = date('d.m.Y H:i', dateObject.getTime() / 1000);
                 $scope.filter.to = dateString;
             }

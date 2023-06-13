@@ -104,7 +104,6 @@ use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\ChangelogsFilter;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use SLAModule\Model\Table\SlasTable;
@@ -2658,88 +2657,6 @@ class HostsController extends AppController {
         }
         $this->set('hoststatus', $hoststatus);
         $this->viewBuilder()->setOption('serialize', ['hoststatus']);
-    }
-
-    /**
-     * @param $id
-     * @return void
-     * @throws MethodNotAllowedException
-     * @throws NotFoundException
-     */
-    public function changelog($id = null): void {
-        if ($this->isHtmlRequest()) {
-            return;
-        }
-        $session = $this->request->getSession();
-        $session->close();
-
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        /** @var HostsTable $HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-        if (!$HostsTable->existsById($id)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
-        $host = $HostsTable->getHostById($id);
-
-        if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
-            $this->render403();
-            return;
-        }
-
-        $filter = new ChangelogsFilter($this->request);
-
-        /** @var SystemsettingsTable $SystemsettingsTable */
-        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-
-        $result = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.HIDDEN_USER_IN_CHANGELOG');
-        $includeUser = $result->get('value') === '0';
-
-        $User = new User($this->getUser());
-        $UserTime = $User->getUserTime();
-        $todayMidnight = strtotime('today');
-
-        /** @var ChangelogsTable $ChangelogTable */
-        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-        $changelogEntries = $ChangelogsTable->getChangelogByHostId($id, $includeUser, $filter);
-        foreach ($changelogEntries as $index => $change) {
-            $changeTimestamp = $change['created']->getTimestamp();
-            $changelogEntries[$index]['time'] = $UserTime->format($changeTimestamp);
-            $isToday = ($changeTimestamp > $todayMidnight);
-            if ($isToday) {
-                $changelogEntries[$index]['time'] = date('H:i:s', $changeTimestamp);
-            }
-
-            $dataUnserialized = unserialize($change['data']);
-            $dataUnserialized = $ChangelogsTable->replaceFieldValues($dataUnserialized);
-            $dataUnserialized = $ChangelogsTable->formatDataForView($dataUnserialized, $change['action']);
-            $dataUnserialized = $ChangelogsTable->replaceTableNames($dataUnserialized);
-
-            $changelogEntries[$index]['isToday'] = $isToday;
-            $changelogEntries[$index]['timeAgoInWords'] = $UserTime->timeAgoInWords($changeTimestamp, [
-                'end'      => 0,
-                'accuracy' => [
-                    'year'   => 'month',  // The format if years > 0   (default "day")
-                    'month'  => 'month',  // The format if months > 0  (default "day")
-                    'week'   => 'day',    // The format if weeks > 0   (default "day")
-                    'day'    => 'hour',   // The format if weeks > 0   (default "hour")
-                    'hour'   => 'minute', // The format if hours > 0   (default "minute")
-                    'minute' => 'minute', // The format if minutes > 0 (default "minute")
-                    'second' => 'second', // The format if seconds > 0 (default "second")
-                ]
-            ]);
-            $changelogEntries[$index]['recordExists'] = $ChangelogsTable->recordExists($change['model'], $change['object_id']);
-            $changelogEntries[$index]['data_unserialized'] = $dataUnserialized;
-            $changelogEntries[$index]['color'] = $ChangelogsTable->getColorByAction($change['action']);
-            $changelogEntries[$index]['icon'] = $ChangelogsTable->getIconByAction($change['action']);
-            $changelogEntries[$index]['includeUser'] = $includeUser;
-        }
-        $this->set('all_changes', $changelogEntries);
-        $this->viewBuilder()->setOption('serialize', ['all_changes']);
     }
 
     /**
