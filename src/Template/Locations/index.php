@@ -178,6 +178,13 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'location', objectId: location.Location.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                 <a class="dropdown-item"
                                                    ui-sref="ContainersShowDetails({id: location.Location.container_id})">

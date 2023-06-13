@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2023>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,28 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-/**
- * @var \App\View\AppView $this
- * @var \App\View\Helper\AclHelper $Acl
- */
 ?>
-<ol class="breadcrumb page-breadcrumb">
-    <li class="breadcrumb-item">
-        <a ui-sref="DashboardsIndex">
-            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
-        </a>
-    </li>
-    <li class="breadcrumb-item">
-        <a ui-sref="ChangelogsIndex">
-            <i class="fa fa-code-fork"></i> <?php echo __('Change log'); ?>
-        </a>
-    </li>
-    <li class="breadcrumb-item">
-        <i class="fa fa-list"></i> <?php echo __('Overview'); ?>
-    </li>
-</ol>
-
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
@@ -63,8 +42,6 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-
-                    <!-- Start Filter -->
                     <div class="list-filter card margin-bottom-10" ng-show="showFilter">
                         <div class="card-header">
                             <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
@@ -90,19 +67,6 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by name'); ?>"
-                                                   ng-model="filter.Changelogs.name"
-                                                   ng-model-options="{debounce: 500}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-6 margin-bottom-10">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
                                                 <span
                                                     class="input-group-text filter-text"><?php echo __('To'); ?></span>
                                             </div>
@@ -118,49 +82,8 @@
                             <div class="row">
                                 <div class="col-xs-12 col-lg-3">
                                     <fieldset>
-                                        <h5><?php echo __('Object type'); ?></h5>
-
-
-                                        <?php
-                                        $models = [
-                                            'Command'         => __('Commands'),
-                                            'Contact'         => __('Contacts'),
-                                            'Contactgroup'    => __('Contact groups'),
-                                            'Host'            => __('Hosts'),
-                                            'Hostgroup'       => __('Host groups'),
-                                            'Hosttemplate'    => __('Host templates'),
-                                            'Service'         => __('Services'),
-                                            'Servicegroup'    => __('Service groups'),
-                                            'Servicetemplate' => __('Service templates'),
-                                            'Timeperiod'      => __('Time periods'),
-                                            'Location'        => __('Locations'),
-                                            'Tenant'          => __('Tenants'),
-                                            'Container'       => __('Nodes'),
-                                            'Export'          => __('Refresh configuration')
-                                        ];
-                                        ?>
-
-                                        <?php foreach ($models as $model => $name): ?>
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="Filter<?= $model ?>"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-false-value="0"
-                                                       ng-true-value="1"
-                                                       ng-model="filter.Models.<?= $model ?>"
-                                                       ng-model-options="{debounce: 500}">
-                                                <label class="custom-control-label"
-                                                       for="Filter<?= $model ?>"><?php echo h($name); ?></label>
-                                            </div>
-                                        <?php endforeach; ?>
-
-                                    </fieldset>
-                                </div>
-                                <div class="col-xs-12 col-lg-3">
-                                    <fieldset>
                                         <h5><?php echo __('Actions'); ?></h5>
+
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox"
@@ -242,19 +165,6 @@
                                                 <label class="custom-control-label"
                                                        for="FilterDeactivate"><?php echo __('Deactivate'); ?></label>
                                             </div>
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="FilterActionExport"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-false-value="0"
-                                                       ng-true-value="1"
-                                                       ng-model="filter.Actions.export"
-                                                       ng-model-options="{debounce: 500}">
-                                                <label class="custom-control-label"
-                                                       for="FilterActionExport"><?php echo __('Export'); ?></label>
-                                            </div>
 
                                         </div>
                                     </fieldset>
@@ -268,7 +178,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- END FILTER -->
 
 
                     <div class="frame-wrap">
@@ -289,3 +198,5 @@
         </div>
     </div>
 </div>
+
+

@@ -1314,4 +1314,9 @@ class AngularController extends AppController {
         }
 
     }
+
+    public function changeLogEntry() {
+        //Return HTML Template for ChangeLogEntries
+        return;
+    }
 }

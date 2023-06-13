@@ -191,6 +191,13 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'hosttemplate', objectId: hosttemplate.Hosttemplate.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('usedBy', 'hosttemplates')): ?>
                                                 <a class="dropdown-item"
                                                    ui-sref="HosttemplatesUsedBy({id:hosttemplate.Hosttemplate.id})">

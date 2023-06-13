@@ -232,6 +232,13 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'servicetemplate', objectId: servicetemplate.Servicetemplate.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('usedBy', 'servicetemplates')): ?>
                                                 <a class="dropdown-item"
                                                    ui-sref="ServicetemplatesUsedBy({id:servicetemplate.Servicetemplate.id})">

@@ -1,35 +1,43 @@
 angular.module('openITCOCKPIT')
-    .controller('ChangelogsIndexController', function ($scope, $http, SortService, QueryStringService, $stateParams) {
+    .controller('ChangelogsEntityController', function($scope, $http, $stateParams, QueryStringService) {
 
-        SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Changelogs.id'));
-        SortService.setDirection(QueryStringService.getStateValue($stateParams, 'direction', 'desc'));
+        $scope.id = $stateParams.id;
+
         $scope.useScroll = true;
         $scope.currentPage = 1;
 
-        /*** Filter Settings ***/
-        var defaultFilter = function () {
+        objectTypes = {
+            'TENANT'               : 1 << 0,
+            'USER'                 : 1 << 1,
+            'NODE'                 : 1 << 2,
+            'LOCATION'             : 1 << 3,
+            'DEVICEGROUP'          : 1 << 4,
+            'CONTACT'              : 1 << 5,
+            'CONTACTGROUP'         : 1 << 6,
+            'TIMEPERIOD'           : 1 << 7,
+            'HOST'                 : 1 << 8,
+            'HOSTTEMPLATE'         : 1 << 9,
+            'HOSTGROUP'            : 1 << 10,
+            'SERVICE'              : 1 << 11,
+            'SERVICETEMPLATE'      : 1 << 12,
+            'SERVICEGROUP'         : 1 << 13,
+            'COMMAND'              : 1 << 14,
+            'SATELLITE'            : 1 << 15,
+            'SERVICETEMPLATEGROUP' : 1 << 16,
+            'HOSTESCALATION'       : 1 << 17,
+            'SERVICEESCALATION'    : 1 << 18,
+            'HOSTDEPENDENCY'       : 1 << 19,
+            'SERVICEDEPENDENCY'    : 1 << 20,
+            'EXPORT'               : 1 << 21
+        };
+        $scope.objecttypeId = objectTypes[(QueryStringService.getStateValue($stateParams, 'objectTypeId', 'TENANT').toUpperCase())] || 1;
+        $scope.objectId     = parseInt(QueryStringService.getStateValue($stateParams, 'objectId', null));
+
+
+        var defaultFilter = function (){
             var now = new Date();
 
             $scope.filter = {
-                Changelogs: {
-                    name: ''
-                },
-                Models: {
-                    Command: 1,
-                    Contact: 1,
-                    Contactgroup: 1,
-                    Host: 1,
-                    Hostgroup: 1,
-                    Hosttemplate: 1,
-                    Service: 1,
-                    Servicegroup: 1,
-                    Servicetemplate: 1,
-                    Timeperiod: 1,
-                    Location: 1,
-                    Tenant: 1,
-                    Container: 1,
-                    Export: 1
-                },
                 Actions: {
                     add: 1,
                     edit: 1,
@@ -79,14 +87,12 @@ angular.module('openITCOCKPIT')
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
-                'sort': SortService.getSort(),
                 'page': $scope.currentPage,
-                'direction': SortService.getDirection(),
-                'filter[Changelogs.name]': $scope.filter.Changelogs.name,
-                'filter[Changelogs.action][]': getActionsFilter(),
-                'filter[Changelogs.model][]': getModelsFilter(),
                 'filter[from]': $scope.filter.from,
-                'filter[to]': $scope.filter.to
+                'filter[to]': $scope.filter.to,
+                'filter[Changelogs.action][]': getActionsFilter(),
+                'filter[Changelogs.objecttype_id]' : $scope.objecttypeId,
+                'filter[Changelogs.object_id]' : $scope.objectId
             };
 
             $http.get("/changelogs/index.json", {
@@ -121,7 +127,6 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         defaultFilter();
-        SortService.setCallback($scope.load);
 
         //Watch on filter change
         $scope.$watch('filter', function () {
@@ -143,4 +148,7 @@ angular.module('openITCOCKPIT')
         });
 
     });
+
+
+
 
