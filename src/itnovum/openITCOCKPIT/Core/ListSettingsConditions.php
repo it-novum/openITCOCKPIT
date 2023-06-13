@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use App\itnovum\openITCOCKPIT\Database\SanitizeOrder;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
 
 abstract class ListSettingsConditions {
@@ -119,7 +120,7 @@ abstract class ListSettingsConditions {
      * @return array
      */
     public function getOrder() {
-        return $this->order;
+        return SanitizeOrder::filterOrderArray($this->order);
     }
 
     /**
