@@ -106,6 +106,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use MapModule\Model\Table\MapsTable;
 use SLAModule\Model\Table\SlasTable;
 
 
@@ -2297,6 +2298,9 @@ class HostsController extends AppController {
         $this->set('checkPeriod', $checkPeriod);
         $this->set('notifyPeriod', $notifyPeriod);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
+        $this->set('usageFlag', $hostObj->getUsageFlag());
+        $this->set('satelliteId', $hostObj->getSatelliteId());
+        $this->set('mapModule', (new MapsTable())->objectAppears('host', (int)$hostObj->getId()));
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
@@ -2313,7 +2317,10 @@ class HostsController extends AppController {
             'checkCommand',
             'checkPeriod',
             'notifyPeriod',
-            'canSubmitExternalCommands'
+            'canSubmitExternalCommands',
+            'usageFlag',
+            'satelliteId',
+            'mapModule'
         ]);
     }
 

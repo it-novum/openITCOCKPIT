@@ -2274,4 +2274,22 @@ class MapsTable extends Table {
         }
         return json_decode($config, true);
     }
+
+    /**
+     * @param string $objectType
+     * @param int $objectId
+     * @return bool
+     */
+    public function objectAppears(string $objectType, int $objectId) : bool
+    {
+
+        $conditions = [
+            'type'      => $objectType,
+            'object_id' => $objectId
+        ];
+
+        return (new MapgadgetsTable())->exists($conditions)
+            || (new MapitemsTable())->exists($conditions)
+            || (new MaplinesTable())->exists($conditions);
+    }
 }

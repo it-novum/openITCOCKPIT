@@ -112,6 +112,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
 use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
+use MapModule\Model\Table\MapsTable;
 use SLAModule\Model\Table\SlasTable;
 use Statusengine\PerfdataParser;
 
@@ -1796,6 +1797,8 @@ class ServicesController extends AppController {
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
+        $this->set('usageFlag', $serviceObj->getUsageFlag());
+        $this->set('mapModule', (new MapsTable())->objectAppears('service', (int)$serviceObj->getId()));
 
 
         $this->viewBuilder()->setOption('serialize', [
@@ -1817,7 +1820,9 @@ class ServicesController extends AppController {
             'notifyPeriod',
             'canSubmitExternalCommands',
             'mainContainer',
-            'sharedContainers'
+            'sharedContainers',
+            'usageFlag',
+            'mapModule'
         ]);
     }
 

@@ -70,6 +70,11 @@ class Service {
     private $host_id;
 
     /**
+     * @var int
+     */
+    private int $usageFlag;
+
+    /**
      * @var bool
      */
     private $allow_edit = false;
@@ -174,6 +179,10 @@ class Service {
             $this->host_id = (int)$service['Host']['id'];
         }
 
+        if (isset($service['Service']['usage_flag'])) {
+            $this->usageFlag = (int)$service['Service']['usage_flag'];
+        }
+
         if (isset($service['Host']['name'])) {
             $this->hostname = $service['Host']['name'];
         }
@@ -268,6 +277,13 @@ class Service {
     }
 
     /**
+     * @return int
+     */
+    public function getUsageFlag(): int {
+        return $this->usageFlag ?? 0;
+    }
+
+    /**
      * @return bool|int
      */
     public function isDisabled() {
@@ -294,5 +310,4 @@ class Service {
     public function toArray() {
         return get_object_vars($this);
     }
-
 }
