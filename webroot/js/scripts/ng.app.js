@@ -1425,6 +1425,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AutomapsViewController"
             })
 
+            .state('AutomapsCopy', {
+                url: '/automaps/copy/:ids',
+                templateUrl: "/automaps/copy.html",
+                controller: "AutomapsCopyController"
+            })
+
             .state('SearchIndex', {
                 url: '/search/index',
                 templateUrl: "/search/index.html",

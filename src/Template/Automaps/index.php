@@ -250,6 +250,15 @@
                                                     <?php echo __('View'); ?>
                                                 </a>
                                             <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('copy', 'automaps')): ?>
+                                                <a ui-sref="AutomapsCopy({ids: automap.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
                                             <?php if ($this->Acl->hasPermission('delete', 'automaps')): ?>
                                                 <div class="dropdown-divider" ng-if="automap.allow_edit"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(automap))"
@@ -271,23 +280,31 @@
                             </div>
                         </div>
                         <div class="row margin-top-10 margin-bottom-10">
-                            <div class="col-xs-12 col-md-3 text-muted text-center">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
                                 <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                             </div>
-                            <div class="col-xs-12 col-md-3">
+                            <div class="col-xs-12 col-md-2">
                                 <span ng-click="selectAll()" class="pointer">
                                     <i class="fas fa-lg fa-check-square"></i>
                                     <?php echo __('Select all'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-3">
+                            <div class="col-xs-12 col-md-2">
                                 <span ng-click="undoSelection()" class="pointer">
                                     <i class="fas fa-lg fa-square"></i>
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
+                            <?php if ($this->Acl->hasPermission('copy', 'automaps')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="AutomapsCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('delete', 'automaps')): ?>
-                                <div class="col-xs-12 col-md-3 txt-color-red">
+                                <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                         <i class="fas fa-trash"></i>
                                         <?php echo __('Delete selected'); ?>
