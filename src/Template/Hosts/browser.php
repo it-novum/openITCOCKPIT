@@ -980,7 +980,7 @@ use Cake\Core\Plugin;
                                                     </a>
                                                     <span ng-if="usageFlag.distributed == true"
                                                           class="badge border margin-right-10 border-generic text-generic">
-                                                        <i class="fa fa-question"></i> <?= __('Distributed') ?>
+                                                        <i class="fa fas fa-satellite"></i> <?= __('Distributed') ?>
                                                     </span>
                                                     <span ng-if="usageFlag.mapModule == true"
                                                           class="badge border margin-right-10 border-generic text-generic">
