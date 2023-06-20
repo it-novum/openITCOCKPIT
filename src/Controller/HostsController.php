@@ -3525,7 +3525,6 @@ class HostsController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
-
         $host = $hostsTable->get($id);
 
         $objects = [

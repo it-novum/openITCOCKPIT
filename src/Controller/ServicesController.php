@@ -3087,7 +3087,6 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-
         $service = $serviceTable->getServiceById($id);
 
         $service['name'] = (!$service->get('name')) ? $service->get('servicetemplate')->get('name') : $service->get('name');
