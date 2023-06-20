@@ -148,11 +148,11 @@
                                 </td>
                             </tr>
 
-                            <!-- Maps -->
+                            <!-- Hostgroups -->
                             <tr ng-if="objects.Hostgroups.length > 0">
                                 <th class="bg-color-lightGray">
                                     <i class="fas fa-server"></i>
-                                    <?php echo __('Maps'); ?> ({{objects.Hostgroups.length}})
+                                    <?php echo __('Host Groups'); ?> ({{objects.Hostgroups.length}})
                                 </th>
                             </tr>
                             <tr ng-repeat="hostgroup in objects.Hostgroups">
