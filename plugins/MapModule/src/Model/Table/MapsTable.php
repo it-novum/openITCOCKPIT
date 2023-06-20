@@ -2292,4 +2292,63 @@ class MapsTable extends Table {
             || (new MapitemsTable())->exists($conditions)
             || (new MaplinesTable())->exists($conditions);
     }
+
+    /**
+     * I will return the list of map.id where the given $serviceId is shown on the map.
+     * @param int $serviceId
+     * @return array
+     */
+    public function getMapsByServiceId(int $serviceId): array {
+        $mapIds = $this->getMapsByShownElement('service', $serviceId);
+        return $this->getMapNamesByIds($mapIds);
+    }
+
+    /**
+     * I will return the list of map.id where the given $hostId is shown on the map.
+     * @param int $hostId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getMapsByHostId(int $hostId, array $MY_RIGHTS): array {
+        $mapIds = $this->getMapsByShownElement('host', $hostId);
+        return $this->getMapNamesByIds($mapIds);
+    }
+
+    /**
+     * I will return the array of {id:42, name:"Your Map Name"} for the given $mapIds.
+     * @param int[] $mapIds
+     * @return array
+     */
+    private function getMapNamesByIds(array $mapIds): array {
+        if (empty($mapIds)) {
+            return [];
+        }
+        return (new MapsTable())->find()->select(['name', 'id'])->where([
+            'id IN ' => $mapIds
+        ])->disableHydration()->toArray();
+    }
+
+    /**
+     * For the given $type and $id, I will return the map.id for all maps the element appears on.
+     * @param string $type
+     * @param int $id
+     * @return int[]
+     */
+    private function getMapsByShownElement(string $type, int $id): array {
+        $conditions = [
+            'type'      => $type,
+            'object_id' => $id
+        ];
+
+        $rows = (new MapgadgetsTable())->find()->select('map_id')->where($conditions)->disableHydration()->toArray();
+        $rows += (new MapitemsTable())->find()->select('map_id')->where($conditions)->disableHydration()->toArray();
+        $rows += (new MaplinesTable())->find()->select('map_id')->where($conditions)->disableHydration()->toArray();
+
+        $found = [];
+
+        foreach ($rows as $row) {
+            $found[] = (int)$row['map_id'];
+        }
+        return array_unique($found);
+    }
 }

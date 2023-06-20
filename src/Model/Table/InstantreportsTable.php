@@ -940,4 +940,64 @@ class InstantreportsTable extends Table {
         return $list;
     }
 
+    /**
+     * @param int $hostId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getInstantReportsByHostId(int $hostId, array $MY_RIGHTS) : array
+    {
+        $query = $this->find();
+        $query->select([
+            'Instantreports.id',
+            'Instantreports.name'
+        ]);
+        $query->join([
+            'i' => [
+                'table' => 'instantreports_to_hosts',
+                'type' => 'LEFT',
+                'conditions' => "i.instantreport_id = Instantreports.id AND i.host_id = $hostId"
+            ]
+        ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Instantreports.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration();
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param int $serviceId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getInstantReportsByServiceId(int $serviceId, array $MY_RIGHTS) : array
+    {
+        $query = $this->find();
+        $query->select([
+            'Instantreports.id',
+            'Instantreports.name'
+        ]);
+        $query->join([
+            'i' => [
+                'table' => 'instantreports_to_services',
+                'type' => 'LEFT',
+                'conditions' => "i.instantreport_id = Instantreports.id AND i.service_id = $serviceId"
+            ]
+        ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Instantreports.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration();
+
+        return $query->toArray();
+    }
+
 }

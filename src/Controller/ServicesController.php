@@ -43,8 +43,10 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
+use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\InstantreportsTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicecommandargumentvaluesTable;
 use App\Model\Table\ServiceeventcommandargumentvaluesTable;
@@ -53,6 +55,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
@@ -62,6 +65,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use CustomalertModule\Model\Table\CustomalertsTable;
 use DistributeModule\Model\Table\SatellitesTable;
+use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -3065,5 +3069,72 @@ class ServicesController extends AppController {
         }
         $this->set('slaOverview', $slaOverview);
         $this->viewBuilder()->setOption('serialize', ['slaOverview']);
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function usedBy($id = null): void {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var ServicesTable $serviceTable */
+        $serviceTable = TableRegistry::getTableLocator()->get('Services');
+        if (!$serviceTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+
+        $service = $serviceTable->getServiceById($id);
+
+        $service['name'] = (!$service->get('name')) ? $service->get('servicetemplate')->get('name') : $service->get('name');
+
+        $objects = [
+            'Instantreports'    => [],
+            'Autoreports'       => [],
+            'Eventcorrelations' => [],
+            'Maps'              => [],
+            'Servicegroups'     => []
+        ];
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the host is used by Instantreports
+        $instantReportsTable = new InstantreportsTable();
+        $objects['Instantreports'] = $instantReportsTable->getInstantReportsByServiceId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Autoreports
+        $autoReportsTable = new AutoreportsTable();
+        $objects['Autoreports'] = $autoReportsTable->getAutoReportsByServiceId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Eventcorrelations
+        $eventCorrelationsTable = new EventcorrelationsTable();
+        $objects['Eventcorrelations'] = $eventCorrelationsTable->getEventCorrelationsByServiceId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Maps
+        $mapsTable = new MapsTable();
+        $objects['Maps'] = $mapsTable->getMapsByServiceId((int)$id);
+
+        //Check if the host is used by Hostgroups
+        $hostGroupsTable = new ServicegroupsTable();
+        $objects['Servicegroups'] = $hostGroupsTable->getServiceGroupsByServiceId((int)$id, $MY_RIGHTS);
+
+        $total = 0;
+        $total += sizeof($objects['Instantreports']);
+        $total += sizeof($objects['Autoreports']);
+        $total += sizeof($objects['Eventcorrelations']);
+        $total += sizeof($objects['Maps']);
+        $total += sizeof($objects['Servicegroups']);
+
+        $this->set('service', $service->toArray());
+        $this->set('objects', $objects);
+        $this->set('total', $total);
+        $this->viewBuilder()->setOption('serialize', ['service', 'objects', 'total']);
     }
 }

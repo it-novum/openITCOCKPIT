@@ -1197,4 +1197,29 @@ class ServicegroupsTable extends Table {
                 return $return;
         }
     }
+
+    /**
+     * @param int $serviceId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServiceGroupsByServiceId(int $serviceId, array $MY_RIGHTS): array {
+        $query = (new ServicesToServicegroupsTable())->find()
+            ->select('servicegroup_id')
+            ->innerJoinWith('Servicegroups')
+            ->where([
+                'service_id' => $serviceId
+            ])
+            ->disableHydration()
+            ->toArray();
+        $return = [];
+        foreach ($query as $result) {
+            $myServiceGroup = $this->getServicegroupById($result['servicegroup_id']);
+            $return[] = [
+                'name' => $myServiceGroup['description'],
+                'id'   => $result['servicegroup_id']
+            ];
+        }
+        return $return;
+    }
 }

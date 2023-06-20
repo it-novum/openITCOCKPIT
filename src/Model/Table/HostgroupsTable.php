@@ -1295,4 +1295,29 @@ class HostgroupsTable extends Table {
                 return $return;
         }
     }
+
+    /**
+     * @param int $hostId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostGroupsByHostId(int $hostId, array $MY_RIGHTS): array {
+        $query = (new HostsToHostgroupsTable())->find()
+            ->select('hostgroup_id')
+            ->innerJoinWith('Hostgroups')
+            ->where([
+                'host_id' => $hostId
+            ])
+            ->disableHydration()
+            ->toArray();
+        $return = [];
+        foreach ($query as $result) {
+            $myHostGroup = $this->getHostgroupById($result['hostgroup_id']);
+            $return[] = [
+                'name' => $myHostGroup['description'],
+                'id'   => $result['hostgroup_id']
+            ];
+        }
+        return $return;
+    }
 }
