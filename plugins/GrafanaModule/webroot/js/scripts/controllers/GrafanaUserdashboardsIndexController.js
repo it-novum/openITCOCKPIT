@@ -112,33 +112,56 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
-        $scope.synchronizeWithGrafana = function(id){
+        // This method can now be called with a singel id, or an object with multiple ids
+        // where the key of the object has to be the ID of the dashboard you want to sync
+        $scope.synchronizeWithGrafana = function(_ids){
+            // Convert singel ID into an object
+            // For example when synchronize is selected from the dropdown menu
+            var ids = {};
+            if(typeof _ids !== "object"){
+                ids[_ids] = 'Dashboard';
+            }else{
+                ids = _ids;
+            }
+
+            var count = Object.keys(ids).length;
+            var i = 0;
+            var issueCount = 0;
+
+            if(count === 0){
+                return;
+            }
+
             $('#synchronizeWithGrafanaModal').modal('show');
+            for(var id in ids){
+                $scope.syncError = false;
+                var data = {
+                    id: id
+                };
 
-            $scope.syncError = false;
-            var data = {
-                id: id
-            };
-
-            $http.post("/grafana_module/grafana_userdashboards/synchronizeWithGrafana.json?angular=true", data).then(function(result){
-
-
-                if(result.data.success){
-                    new Noty({
-                        theme: 'metroui',
-                        type: 'success',
-                        text: 'Synchronization successfully',
-                        timeout: 3500
-                    }).show();
-                    $('#synchronizeWithGrafanaModal').modal('hide');
-                    $scope.load();
-                    return;
-                }
-
-                $scope.syncError = result.data.message;
-            }, function errorCallback(result){
-                $scope.syncError = result.data.message;
-            });
+                $http.post("/grafana_module/grafana_userdashboards/synchronizeWithGrafana.json?angular=true", data).then(function(result){
+                    i++;
+                    if(result.data.success){
+                        if(i === count && issueCount === 0){
+                            new Noty({
+                                theme: 'metroui',
+                                type: 'success',
+                                text: 'Synchronization successfully',
+                                timeout: 3500
+                            }).show();
+                            $('#synchronizeWithGrafanaModal').modal('hide');
+                            $scope.load();
+                            return;
+                        }
+                    }else{
+                        $scope.syncError = result.data.message;
+                    }
+                }, function errorCallback(result){
+                    i++;
+                    issueCount++;
+                    $scope.syncError = result.data.message;
+                });
+            }
 
         };
 

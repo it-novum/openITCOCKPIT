@@ -261,6 +261,14 @@
                                     </a>
                                 </div>
                             <?php endif; ?>
+                            <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <span ng-click="synchronizeWithGrafana(getObjectsForDelete())" class="pointer">
+                                        <i class="fa fa-refresh"></i>
+                                        <?php echo __('Synchronize'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('delete', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
