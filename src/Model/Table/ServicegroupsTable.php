@@ -1204,20 +1204,36 @@ class ServicegroupsTable extends Table {
      * @return array
      */
     public function getServiceGroupsByServiceId(int $serviceId, array $MY_RIGHTS): array {
-        $query = (new ServicesToServicegroupsTable())->find()
-            ->select('servicegroup_id')
-            ->innerJoinWith('Servicegroups')
-            ->where([
-                'service_id' => $serviceId
+        $query = $this->find()
+            ->select([
+                'Servicegroups.id',
+                'Containers.name'
             ])
-            ->disableHydration()
-            ->toArray();
+            ->innerJoin(
+                ['ServicesToServicegroupsTable' => 'services_to_servicegroups'],
+                [
+                    'ServicesToServicegroupsTable.servicegroup_id = Servicegroups.id',
+                    "ServicesToServicegroupsTable.service_id" => $serviceId
+                ]
+            )
+            ->innerJoin(
+                ['Containers' => 'containers'],
+                [
+                    'Servicegroups.container_id = Containers.id'
+                ]
+            )
+            ->disableHydration();
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+
         $return = [];
-        foreach ($query as $result) {
-            $myServiceGroup = $this->getServicegroupById($result['servicegroup_id']);
+        foreach ($query->toArray() as $result) {
             $return[] = [
-                'name' => $myServiceGroup['description'],
-                'id'   => $result['servicegroup_id']
+                'name' => $result['Containers']['name'],
+                'id'   => $result['id']
             ];
         }
         return $return;

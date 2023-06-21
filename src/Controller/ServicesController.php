@@ -3118,7 +3118,7 @@ class ServicesController extends AppController {
 
         //Check if the host is used by Maps
         $mapsTable = new MapsTable();
-        $objects['Maps'] = $mapsTable->getMapsByServiceId((int)$id);
+        $objects['Maps'] = $mapsTable->getMapsByServiceId((int)$id, $MY_RIGHTS);
 
         //Check if the host is used by Hostgroups
         $hostGroupsTable = new ServicegroupsTable();

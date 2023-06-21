@@ -11,6 +11,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
@@ -951,19 +952,19 @@ class InstantreportsTable extends Table {
             'Instantreports.id',
             'Instantreports.name'
         ])
-            ->join([
-                'i' => [
-                    'table'      => 'instantreports_to_hosts',
-                    'type'       => 'LEFT',
-                    'conditions' => "i.instantreport_id = Instantreports.id AND i.host_id = $hostId"
+            ->innerJoin(
+                ['Instantreportstohosts' => 'instantreports_to_hosts'],
+                [
+                    "Instantreportstohosts.host_id" => $hostId
                 ]
-            ]);
+            );
 
         if (!empty($MY_RIGHTS)) {
             $query->andWhere([
                 'Instantreports.container_id IN' => $MY_RIGHTS
             ]);
         }
+
         $query->disableHydration();
 
         return $query->toArray();
@@ -979,13 +980,14 @@ class InstantreportsTable extends Table {
         $query->select([
             'Instantreports.id',
             'Instantreports.name'
-        ])->join([
-            'i' => [
-                'table'      => 'instantreports_to_services',
-                'type'       => 'LEFT',
-                'conditions' => "i.instantreport_id = Instantreports.id AND i.service_id = $serviceId"
-            ]
-        ]);
+        ])
+            ->innerJoin(
+                ['Instantreportstoservices' => 'instantreports_to_services'],
+                [
+                    "Instantreportstoservices.service_id" => $serviceId,
+                    'Instantreportstoservices.instantreport_id = Instantreports.id'
+                ]
+            );
 
         if (!empty($MY_RIGHTS)) {
             $query->andWhere([

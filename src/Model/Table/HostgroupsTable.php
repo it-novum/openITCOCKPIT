@@ -1302,20 +1302,38 @@ class HostgroupsTable extends Table {
      * @return array
      */
     public function getHostGroupsByHostId(int $hostId, array $MY_RIGHTS): array {
-        $query = (new HostsToHostgroupsTable())->find()
-            ->select('hostgroup_id')
-            ->innerJoinWith('Hostgroups')
+        $query = $this->find()
+            ->select([
+                'Containers.name',
+                'Hostgroups.id'
+            ])
+            ->innerJoin(
+                ['HostsToHostgroupsTable' => 'hosts_to_hostgroups'],
+                [
+                    'HostsToHostgroupsTable.hostgroup_id = Hostgroups.id',
+                    'HostsToHostgroupsTable.host_id' => $hostId
+                ]
+            )
+            ->innerJoin(
+                ['Containers' => 'containers'],
+                [
+                    'Hostgroups.container_id = Containers.id'
+                ]
+            )
             ->where([
                 'host_id' => $hostId
             ])
-            ->disableHydration()
-            ->toArray();
+            ->disableHydration();
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
         $return = [];
-        foreach ($query as $result) {
-            $myHostGroup = $this->getHostgroupById($result['hostgroup_id']);
+        foreach ($query->toArray() as $result) {
             $return[] = [
-                'name' => $myHostGroup['description'],
-                'id'   => $result['hostgroup_id']
+                'name' => $result['Containers']['name'],
+                'id'   => $result['id']
             ];
         }
         return $return;

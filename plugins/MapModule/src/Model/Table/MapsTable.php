@@ -2280,8 +2280,7 @@ class MapsTable extends Table {
      * @param int $objectId
      * @return bool
      */
-    public function objectAppears(string $objectType, int $objectId) : bool
-    {
+    public function objectAppears(string $objectType, int $objectId): bool {
 
         $conditions = [
             'type'      => $objectType,
@@ -2298,9 +2297,8 @@ class MapsTable extends Table {
      * @param int $serviceId
      * @return array
      */
-    public function getMapsByServiceId(int $serviceId): array {
-        $mapIds = $this->getMapsByShownElement('service', $serviceId);
-        return $this->getMapNamesByIds($mapIds);
+    public function getMapsByServiceId(int $serviceId, array $MY_RIGHTS): array {
+        return $this->getMapsByShownElement('service', $serviceId, $MY_RIGHTS);
     }
 
     /**
@@ -2310,22 +2308,7 @@ class MapsTable extends Table {
      * @return array
      */
     public function getMapsByHostId(int $hostId, array $MY_RIGHTS): array {
-        $mapIds = $this->getMapsByShownElement('host', $hostId);
-        return $this->getMapNamesByIds($mapIds);
-    }
-
-    /**
-     * I will return the array of {id:42, name:"Your Map Name"} for the given $mapIds.
-     * @param int[] $mapIds
-     * @return array
-     */
-    private function getMapNamesByIds(array $mapIds): array {
-        if (empty($mapIds)) {
-            return [];
-        }
-        return (new MapsTable())->find()->select(['name', 'id'])->where([
-            'id IN ' => $mapIds
-        ])->disableHydration()->toArray();
+        return $this->getMapsByShownElement('host', $hostId, $MY_RIGHTS);
     }
 
     /**
@@ -2334,21 +2317,44 @@ class MapsTable extends Table {
      * @param int $id
      * @return int[]
      */
-    private function getMapsByShownElement(string $type, int $id): array {
-        $conditions = [
-            'type'      => $type,
-            'object_id' => $id
-        ];
+    private function getMapsByShownElement(string $type, int $id, array $MY_RIGHTS): array {
+        $query = $this->find();
+        $query->select([
+            'Maps.id',
+            'Maps.name'
+        ]);
+        $query->innerJoin(
+            ['Mapitems' => 'mapitems'],
+            [
+                "Mapitems.type"      => $type,
+                "Mapitems.object_id" => $id
+            ]
+        );
+        $query->innerJoin(
+            ['Maplines' => 'maplines'],
+            [
+                "Maplines.type"      => $type,
+                "Maplines.object_id" => $id
+            ]
+        );
+        $query->innerJoin(
+            ['Mapsummaryitems' => 'mapsummaryitems'],
+            [
+                "Mapsummaryitems.type"      => $type,
+                "Mapsummaryitems.object_id" => $id
+            ]
+        );
 
-        $rows = (new MapgadgetsTable())->find()->select('map_id')->where($conditions)->disableHydration()->toArray();
-        $rows += (new MapitemsTable())->find()->select('map_id')->where($conditions)->disableHydration()->toArray();
-        $rows += (new MaplinesTable())->find()->select('map_id')->where($conditions)->disableHydration()->toArray();
-
-        $found = [];
-
-        foreach ($rows as $row) {
-            $found[] = (int)$row['map_id'];
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(
+                ['MapsToContainers' => 'maps_to_containers'],
+                [
+                    'MapsToContainers.map_id = Maps.id',
+                    'MapsToContainers.container_id IN' => $MY_RIGHTS
+                ]
+            );
         }
-        return array_unique($found);
+
+        return $query->group(['Maps.id'])->disableHydration()->toArray() ?? [];
     }
 }
