@@ -623,6 +623,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "HostgroupsAppendController"
             })
 
+            .state('HostgroupsCopy', {
+                url: '/hostgroups/copy/:ids',
+                templateUrl: "/hostgroups/copy.html",
+                controller: "HostgroupsCopyController"
+            })
+
             .state('HostchecksIndex', {
                 url: '/hostchecks/index/:id',
                 templateUrl: "/hostchecks/index.html",

@@ -35,7 +35,7 @@
                                        ng-if="!issue.isAngular"
                                        href="{{issue.url}}">{{issue.message}}</a>
 
-                                    <a class="text-danger"
+                                    <a class="text-danger pointer"
                                        ng-if="issue.isAngular"
                                        ng-click="goToStateMassDelete(issue)">{{issue.message}}</a>
                                 </div>

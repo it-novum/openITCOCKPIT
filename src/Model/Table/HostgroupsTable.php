@@ -1295,4 +1295,56 @@ class HostgroupsTable extends Table {
                 return $return;
         }
     }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostgroupsForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Hostgroups.id IN' => $ids])
+            ->contain([
+                'Containers'
+            ])
+            ->order(['Hostgroups.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    public function getSourceHostgroupForCopy($id, array $MY_RIGHTS) {
+        $query = $this->find()
+            ->where(['Hostgroups.id' => $id])
+            ->contain([
+                'Hosts',
+                'Hosttemplates',
+                'Containers'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $result = $query->firstOrFail();
+        $hostgroup = $result;
+        $hostgroup['hosts'] = [
+            '_ids' => Hash::extract($result, 'hosts.{n}.id')
+        ];
+        $hostgroup['hosttemplates'] = [
+            '_ids' => Hash::extract($result, 'hosttemplates.{n}.id')
+        ];
+        return $hostgroup;
+    }
+
 }

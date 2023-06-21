@@ -1087,12 +1087,23 @@ class ContainersTable extends Table {
      * checks if the given container contains subcontainers
      * return false if it has subcontainers - so it cant be deleted
      * return true if its empty and can be safely deleted
-     * @param int $id
+     * @param int $id Id of the container to check
+     * @param int $containertype_id Containertypeid of the container
      * @return bool
      */
-    public function allowDelete($id): bool {
+    public function allowDelete($id, int $containertype_id): bool {
         if (!$this->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
+        }
+
+        // This container types do not have any child containers!
+        // Therefore, they can be safely deleted.
+        switch ($containertype_id){
+            case CT_CONTACTGROUP:
+            case CT_HOSTGROUP:
+            case CT_SERVICEGROUP:
+            case CT_SERVICETEMPLATEGROUP:
+                return true;
         }
 
         $subContainers = $this->getContainerWithAllChildren($id);

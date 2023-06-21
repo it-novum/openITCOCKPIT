@@ -295,7 +295,7 @@ class ContactgroupsController extends AppController {
                 'Contactgroups'
             ]
         ]);
-        if($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)){
+        if($ContainersTable->allowDelete($container->id, CT_CONTACTGROUP)){
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 Cache::clear('permissions');
