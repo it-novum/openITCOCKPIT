@@ -95,6 +95,11 @@ angular.module('openITCOCKPIT')
             return object;
         };
 
+        $scope.linkForCopy = function(){
+            var ids = Object.keys(MassChangeService.getSelected());
+            return ids.join(',');
+        };
+
         $scope.changepage = function(page){
             if(page !== $scope.currentPage){
                 $scope.currentPage = page;

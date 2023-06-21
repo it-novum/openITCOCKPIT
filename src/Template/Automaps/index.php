@@ -252,6 +252,7 @@
                                             <?php endif; ?>
 
                                             <?php if ($this->Acl->hasPermission('copy', 'automaps')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ui-sref="AutomapsCopy({ids: automap.id})"
                                                    class="dropdown-item">
                                                     <i class="fas fa-files-o"></i>
