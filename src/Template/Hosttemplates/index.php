@@ -206,6 +206,14 @@
                                                     <?php echo __('Documentation'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'hosttemplates')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="HosttemplatesCopy({ids: hosttemplate.Hosttemplate.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosttemplates')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(hosttemplate))"
