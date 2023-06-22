@@ -2281,7 +2281,6 @@ class MapsTable extends Table {
      * @return bool
      */
     public function objectAppears(string $objectType, int $objectId): bool {
-
         $conditions = [
             'type'      => $objectType,
             'object_id' => $objectId
@@ -2322,28 +2321,28 @@ class MapsTable extends Table {
         $query->select([
             'Maps.id',
             'Maps.name'
-        ]);
-        $query->innerJoin(
-            ['Mapitems' => 'mapitems'],
-            [
-                "Mapitems.type"      => $type,
-                "Mapitems.object_id" => $id
-            ]
-        );
-        $query->innerJoin(
-            ['Maplines' => 'maplines'],
-            [
-                "Maplines.type"      => $type,
-                "Maplines.object_id" => $id
-            ]
-        );
-        $query->innerJoin(
-            ['Mapsummaryitems' => 'mapsummaryitems'],
-            [
-                "Mapsummaryitems.type"      => $type,
-                "Mapsummaryitems.object_id" => $id
-            ]
-        );
+        ])
+            ->innerJoin(
+                ['Mapitems' => 'mapitems'],
+                [
+                    "Mapitems.type"      => $type,
+                    "Mapitems.object_id" => $id
+                ]
+            )
+            ->innerJoin(
+                ['Maplines' => 'maplines'],
+                [
+                    "Maplines.type"      => $type,
+                    "Maplines.object_id" => $id
+                ]
+            )
+            ->innerJoin(
+                ['Mapsummaryitems' => 'mapsummaryitems'],
+                [
+                    "Mapsummaryitems.type"      => $type,
+                    "Mapsummaryitems.object_id" => $id
+                ]
+            );
 
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(
