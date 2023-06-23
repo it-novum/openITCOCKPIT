@@ -452,8 +452,8 @@ class AutomapsController extends AppController {
                     //This happens, if a user copy multiple automaps, and one run into an validation error
                     //All automaps without validation errors got already saved to the database
                     $newAutomapEntity = $AutomapsTable->get($automapData['Automap']['id']);
-                    $newAutomapEntity->setAccess('id', false);
-                    $newAutomapEntity->setAccess('container_id', false);
+                    $newAutomapEntity->setAccess('*', false);
+                    $newAutomapEntity->setAccess(['name', 'description', 'host_regex', 'service_regex'], true);
 
                     $newAutomapEntity = $AutomapsTable->patchEntity($newAutomapEntity, $automapData['Automap']);
                     $action = 'edit';
