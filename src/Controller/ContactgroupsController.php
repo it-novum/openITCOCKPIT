@@ -295,7 +295,7 @@ class ContactgroupsController extends AppController {
                 'Contactgroups'
             ]
         ]);
-        if($ContainersTable->allowDelete($container->id, CT_CONTACTGROUP)){
+        if ($ContainersTable->allowDelete($container->id, CT_CONTACTGROUP)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 Cache::clear('permissions');
@@ -347,8 +347,13 @@ class ContactgroupsController extends AppController {
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         if ($this->request->is('get')) {
-            $contactgroups = $ContactgroupsTable->getContactgroupsForCopy(func_get_args());
+            $contactgroups = $ContactgroupsTable->getContactgroupsForCopy(func_get_args(), $MY_RIGHTS);
             $this->set('contactgroups', $contactgroups);
             $this->viewBuilder()->setOption('serialize', ['contactgroups']);
             return;
@@ -403,6 +408,8 @@ class ContactgroupsController extends AppController {
                     //This happens, if a user copy multiple contacts, and one run into an validation error
                     //All contacts without validation errors got already saved to the database
                     $newContactgroupEntity = $ContactgroupsTable->get($contactgroupData['Contactgroup']['id']);
+                    $newContactgroupEntity->setAccess('*', false);
+                    $newContactgroupEntity->setAccess(['name', 'description'], true);
                     $newContactgroupEntity = $ContactgroupsTable->patchEntity($newContactgroupEntity, $contactgroupData['Contactgroup']);
                     $newContactgroupData = $newContactgroupEntity->toArray();
                     $action = 'edit';
