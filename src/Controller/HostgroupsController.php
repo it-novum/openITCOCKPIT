@@ -901,11 +901,12 @@ class HostgroupsController extends AppController {
                     //All hostgroups without validation errors got already saved to the database
                     $newHostgroupEntity = $HostgroupsTable->get($hostgroupData['Hostgroup']['id'], [
                         'contain' => [
-                            'Hosts',
-                            'Hosttemplates',
-                            'Container'
+                            'Containers'
                         ]
                     ]);
+                    $newHostgroupEntity->setAccess('*', false);
+                    $newHostgroupEntity->container->setAccess('*', false);
+                    $newHostgroupEntity->container->setAccess('name', true);
                     $newHostgroupEntity = $HostgroupsTable->patchEntity($newHostgroupEntity, $hostgroupData['Hostgroup']);
                     $newHostgroupData = $newHostgroupEntity->toArray();
                     $action = 'edit';
