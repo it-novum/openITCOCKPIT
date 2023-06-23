@@ -1664,7 +1664,7 @@ class HostsController extends AppController {
         }
 
         if ($this->request->is('get')) {
-            $hosts = $HostsTable->getHostsForCopy(func_get_args());
+            $hosts = $HostsTable->getHostsForCopy(func_get_args(), $MY_RIGHTS);
             $this->set('hosts', $hosts);
             $this->viewBuilder()->setOption('serialize', ['hosts']);
             return;
