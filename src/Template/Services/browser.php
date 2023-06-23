@@ -1046,7 +1046,7 @@ use Cake\Core\Plugin;
                                         </table>
                                     </div>
 
-                                    <div class="col-lg-12">
+                                    <div class="col-lg-6">
                                         <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Container'); ?></td>
@@ -1138,8 +1138,32 @@ use Cake\Core\Plugin;
                                                     {{mergedService.description}}
                                                 </td>
                                             </tr>
+                                            <tr ng-if="usageFlag.autoReports || usageFlag.eventCorrelation || usageFlag.mapModule == true">
+                                                <td><?php echo __('Used by'); ?></td>
+                                                <td>
+                                                    <?php if ($this->Acl->hasPermission('serviceUsedBy', 'autoreports', 'AutoreportModule')): ?>
+                                                        <a ng-if="usageFlag.autoReports == true"
+                                                           ui-sref="AutoreportsServiceUsedBy({id: mergedService.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?>
+                                                           </span>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <a ng-if="usageFlag.eventCorrelation == true"
+                                                       ui-sref="EventcorrelationsServiceUsedBy({id: mergedService.id})">
+                                                        <span class="badge border margin-right-10 border-generic text-generic">
+                                                            <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?>
+                                                        </span>
+                                                    </a>
+                                                    <span ng-if="usageFlag.mapModule == true"
+                                                          class="badge border margin-right-10 border-generic text-generic">
+                                                        <i class="fa fa-map-marker"></i> <?= __('Map Module') ?>
+                                                    </span>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
+
                                 </div>
                             </div>
                         </div>

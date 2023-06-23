@@ -2274,4 +2274,86 @@ class MapsTable extends Table {
         }
         return json_decode($config, true);
     }
+
+    /**
+     * @param string $objectType
+     * @param int $objectId
+     * @return bool
+     */
+    public function objectAppears(string $objectType, int $objectId): bool {
+        $conditions = [
+            'type'      => $objectType,
+            'object_id' => $objectId
+        ];
+
+        return (new MapgadgetsTable())->exists($conditions)
+            || (new MapitemsTable())->exists($conditions)
+            || (new MaplinesTable())->exists($conditions);
+    }
+
+    /**
+     * I will return the list of map.id where the given $serviceId is shown on the map.
+     * @param int $serviceId
+     * @return array
+     */
+    public function getMapsByServiceId(int $serviceId, array $MY_RIGHTS): array {
+        return $this->getMapsByShownElement('service', $serviceId, $MY_RIGHTS);
+    }
+
+    /**
+     * I will return the list of map.id where the given $hostId is shown on the map.
+     * @param int $hostId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getMapsByHostId(int $hostId, array $MY_RIGHTS): array {
+        return $this->getMapsByShownElement('host', $hostId, $MY_RIGHTS);
+    }
+
+    /**
+     * For the given $type and $id, I will return the map.id for all maps the element appears on.
+     * @param string $type
+     * @param int $id
+     * @return int[]
+     */
+    private function getMapsByShownElement(string $type, int $id, array $MY_RIGHTS): array {
+        $query = $this->find();
+        $query->select([
+            'Maps.id',
+            'Maps.name'
+        ])
+            ->innerJoin(
+                ['Mapitems' => 'mapitems'],
+                [
+                    "Mapitems.type"      => $type,
+                    "Mapitems.object_id" => $id
+                ]
+            )
+            ->innerJoin(
+                ['Maplines' => 'maplines'],
+                [
+                    "Maplines.type"      => $type,
+                    "Maplines.object_id" => $id
+                ]
+            )
+            ->innerJoin(
+                ['Mapsummaryitems' => 'mapsummaryitems'],
+                [
+                    "Mapsummaryitems.type"      => $type,
+                    "Mapsummaryitems.object_id" => $id
+                ]
+            );
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(
+                ['MapsToContainers' => 'maps_to_containers'],
+                [
+                    'MapsToContainers.map_id = Maps.id',
+                    'MapsToContainers.container_id IN' => $MY_RIGHTS
+                ]
+            );
+        }
+
+        return $query->group(['Maps.id'])->disableHydration()->toArray() ?? [];
+    }
 }

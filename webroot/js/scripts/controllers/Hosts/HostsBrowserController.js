@@ -150,6 +150,12 @@ angular.module('openITCOCKPIT')
                     4: false,
                     5: false
                 };
+                $scope.usageFlag = {
+                    autoReports      : (result.data.usageFlag   & 1) === 1,
+                    eventCorrelation : (result.data.usageFlag   & 2) === 2,
+                    distributed      : result.data.satelliteId !== 0,
+                    mapModule        : result.data.mapModule
+                };
                 var priority = parseInt($scope.mergedHost.priority, 10);
                 for(var i = 1; i <= priority; i++){
                     $scope.priorities[i] = true;

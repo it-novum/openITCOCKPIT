@@ -148,6 +148,11 @@ angular.module('openITCOCKPIT')
                 $scope.hostDowntime = results[0].data.hostDowntime;
 
                 $scope.canSubmitExternalCommands = results[0].data.canSubmitExternalCommands;
+                $scope.usageFlag = {
+                    autoReports      : (results[0].data.usageFlag   & 1) === 1,
+                    eventCorrelation : (results[0].data.usageFlag   & 2) === 2,
+                    mapModule        : results[0].data.mapModule
+                };
 
                 //Host container info
                 $scope.mainContainer = results[0].data.mainContainer;

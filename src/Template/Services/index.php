@@ -1009,6 +1009,13 @@
                                             $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                             echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
                                             ?>
+                                            <?php if ($this->Acl->hasPermission('usedBy', 'services')): ?>
+                                                <a ui-sref="ServicesUsedBy({id: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                    <?php echo __('Used by'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(service))"

@@ -961,6 +961,33 @@ use Cake\Core\Plugin;
                                                     {{mergedHost.description}}
                                                 </td>
                                             </tr>
+                                            <tr ng-if="usageFlag.autoReports || usageFlag.eventCorrelation || usageFlag.mapModule == true">
+                                                <td><?php echo __('Used by'); ?></td>
+                                                <td>
+                                                    <?php if ($this->Acl->hasPermission('hostUsedBy', 'autoreports', 'AutoreportModule')): ?>
+                                                        <a ng-if="usageFlag.autoReports == true"
+                                                           ui-sref="AutoreportsHostUsedBy({id: mergedHost.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?>
+                                                           </span>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <a ng-if="usageFlag.eventCorrelation == true"
+                                                       ui-sref="EventcorrelationsHostUsedBy({id: mergedHost.id})">
+                                                        <span class="badge border margin-right-10 border-generic text-generic">
+                                                            <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?>
+                                                        </span>
+                                                    </a>
+                                                    <span ng-if="usageFlag.distributed == true"
+                                                          class="badge border margin-right-10 border-generic text-generic">
+                                                        <i class="fa fas fa-satellite"></i> <?= __('Distributed') ?>
+                                                    </span>
+                                                    <span ng-if="usageFlag.mapModule == true"
+                                                          class="badge border margin-right-10 border-generic text-generic">
+                                                        <i class="fa fa-map-marker"></i> <?= __('Map Module') ?>
+                                                    </span>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
                                 </div>
