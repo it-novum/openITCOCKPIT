@@ -32,6 +32,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
@@ -262,16 +263,16 @@ class UsercontainerrolesTable extends Table {
                             'Containers'
                         ]
                     ])
-                    ->select([
-                        'Users.id',
-                        'Users.firstname',
-                        'Users.lastname',
-                        'full_name' => $q->func()->concat([
-                            'Users.firstname' => 'literal',
-                            ' ',
-                            'Users.lastname'  => 'literal'
-                        ])
-                    ])->order('full_name');
+                        ->select([
+                            'Users.id',
+                            'Users.firstname',
+                            'Users.lastname',
+                            'full_name' => $q->func()->concat([
+                                'Users.firstname' => 'literal',
+                                ' ',
+                                'Users.lastname'  => 'literal'
+                            ])
+                        ])->order('full_name');
                     return $q;
                 }
             ])
@@ -406,5 +407,36 @@ class UsercontainerrolesTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getUsercontainerrolesForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Usercontainerroles.id IN' => $ids])
+            ->contain([
+                'Containers',
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
+                ]
+            ])
+            ->matching('Containers')
+            ->order(['Usercontainerroles.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }
