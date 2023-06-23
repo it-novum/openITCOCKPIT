@@ -660,15 +660,11 @@
                                     <i class="fa fa-check-square"></i>
                                 </th>
 
-                                <th ng-show="fields[1]" class="no-sort text-center"
-                                    ng-click="orderBy('Servicestatus.acknowledgement_type')">
-                                    <i class="fa" ng-class="getSortClass('Servicestatus.acknowledgement_type')"></i>
+                                <th ng-show="fields[1]" class="no-sort text-center">
                                     <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
-                                <th ng-show="fields[2]" class="no-sort text-center"
-                                    ng-click="orderBy('Servicestatus.scheduled_downtime_depth')">
-                                    <i class="fa" ng-class="getSortClass('Servicestatus.scheduled_downtime_depth')"></i>
+                                <th ng-show="fields[2]" class="no-sort text-center">
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>

@@ -1191,16 +1191,12 @@ use Cake\Core\Plugin;
                                     <?php echo __('Service status'); ?>
                                 </th>
 
-                                <th class="no-sort text-center"
-                                    ng-click="orderBy('Servicestatus.acknowledgement_type')">
-                                    <i class="fa" ng-class="getSortClass('Servicestatus.acknowledgement_type')"></i>
+                                <th class="no-sort text-center">
                                     <i class="fa fa-user"
                                        title="<?php echo __('Acknowledgedment'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center"
-                                    ng-click="orderBy('Servicestatus.scheduled_downtime_depth')">
-                                    <i class="fa" ng-class="getSortClass('Servicestatus.scheduled_downtime_depth')"></i>
+                                <th class="no-sort text-center">
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('in Downtime'); ?>"></i>
                                 </th>

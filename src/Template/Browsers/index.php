@@ -577,16 +577,12 @@
                                     <i class="fa fa-check-square"></i>
                                 </th>
 
-                                <th ng-show="fields[1]" class="no-sort text-center"
-                                    ng-click="orderBy('Hoststatus.acknowledgement_type')">
-                                    <i class="fa" ng-class="getSortClass('Hoststatus.acknowledgement_type')"></i>
+                                <th ng-show="fields[1]" class="no-sort text-center">
                                     <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
                                 <th ng-show="fields[2]" class="no-sort text-center">
-                                    <i class="fa" ng-class="getSortClass('Hoststatus.scheduled_downtime_depth')"></i>
                                     <i class="fa fa-power-off"
-                                       ng-click="orderBy('Hoststatus.scheduled_downtime_depth')"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
                                 <th ng-show="fields[3]" class="no-sort text-center"
