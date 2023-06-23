@@ -735,6 +735,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicegroupsExtendedController"
             })
 
+            .state('ServicegroupsCopy', {
+                url: '/servicegroups/copy/:ids',
+                templateUrl: "/servicegroups/copy.html",
+                controller: "ServicegroupsCopyController"
+            })
+
             .state('StatehistoriesHost', {
                 url: '/statehistories/host/:id',
                 templateUrl: "/statehistories/host.html",

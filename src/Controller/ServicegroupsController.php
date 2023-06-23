@@ -723,6 +723,126 @@ class ServicegroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['username']);
     }
 
+    /**
+     * @param int|null $id
+     */
+    public function copy($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var ServicegroupsTable $ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $servicegroups = $ServicegroupsTable->getServicegroupsForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('servicegroups', $servicegroups);
+            $this->viewBuilder()->setOption('serialize', ['servicegroups']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
+
+            $postData = $this->request->getData('data');
+            $User = new User($this->getUser());
+            $userId = $User->getId();
+
+            foreach ($postData as $index => $servicegroupData) {
+                if (!isset($servicegroupData['Servicegroup']['id'])) {
+                    //Create/clone servicegroup
+                    $sourceServicegroupId = $servicegroupData['Source']['id'];
+                    if (!$Cache->has($sourceServicegroupId)) {
+                        $sourceServicegroup = $ServicegroupsTable->getSourceServicegroupForCopy($sourceServicegroupId, $MY_RIGHTS);
+                        $Cache->set($sourceServicegroupId, $sourceServicegroup);
+                    }
+
+                    $sourceServicegroup = $Cache->get($sourceServicegroupId);
+
+                    $newServicegroupData = [
+                        'description'   => $servicegroupData['Servicegroup']['description'],
+                        'servicegroup_url' => $sourceServicegroup['servicegroup_url'],
+                        'uuid'          => UUID::v4(),
+                        'container'     => [
+                            'name'             => $servicegroupData['Servicegroup']['container']['name'],
+                            'containertype_id' => CT_SERVICEGROUP,
+                            'parent_id'        => $sourceServicegroup['container']['parent_id']
+                        ],
+                        'services'         => [
+                            '_ids' => $sourceServicegroup['services']['_ids']
+                        ],
+                        'servicetemplates' => [
+                            '_ids' => $sourceServicegroup['servicetemplates']['_ids']
+                        ],
+                    ];
+
+                    $newServicegroupEntity = $ServicegroupsTable->newEntity($newServicegroupData);
+
+                }
+
+                $action = 'copy';
+                if (isset($servicegroupData['Servicegroup']['id'])) {
+                    //Update existing servicegroup
+                    //This happens, if a user copy multiple servicegroups, and one run into an validation error
+                    //All servicegroups without validation errors got already saved to the database
+                    $newServicegroupEntity = $ServicegroupsTable->get($servicegroupData['Servicegroup']['id'], [
+                        'contain' => [
+                            'Containers'
+                        ]
+                    ]);
+                    $newServicegroupEntity->setAccess('*', false);
+                    $newServicegroupEntity->container->setAccess('*', false);
+                    $newServicegroupEntity->container->setAccess('name', true);
+                    $newServicegroupEntity = $ServicegroupsTable->patchEntity($newServicegroupEntity, $servicegroupData['Servicegroup']);
+                    $newServicegroupData = $newServicegroupEntity->toArray();
+                    $action = 'edit';
+                }
+                $ServicegroupsTable->save($newServicegroupEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newServicegroupEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newServicegroupEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Servicegroup']['id'] = $newServicegroupEntity->get('id');
+
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        $action,
+                        'servicegroups',
+                        $postData[$index]['Servicegroup']['id'],
+                        OBJECT_SERVICEGROUP,
+                        $newServicegroupEntity->get('container')->get('parent_id'),
+                        $userId,
+                        $newServicegroupEntity->get('container')->get('name'),
+                        ['Servicegroup' => $newServicegroupData]
+                    );
+                    if ($changelog_data) {
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+    }
 
     /****************************
      *       AJAX METHODS       *

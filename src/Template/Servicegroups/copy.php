@@ -30,8 +30,8 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="HostgroupsIndex">
-            <i class="fas fa-server"></i> <?php echo __('Host groups'); ?>
+        <a ui-sref="ServicegroupsIndex">
+            <i class="fas fa-server"></i> <?php echo __('Service groups'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -44,11 +44,11 @@
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Auto map'); ?>
-                    <span class="fw-300"><i><?php echo __('Copy host group/s'); ?></i></span>
+                    <span class="fw-300"><i><?php echo __('Copy service group/s'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <?php if ($this->Acl->hasPermission('index', 'hostgroups')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HostgroupsIndex'
+                    <?php if ($this->Acl->hasPermission('index', 'servicegroups')): ?>
+                        <a back-button href="javascript:void(0);" fallback-state='ServicegroupsIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
@@ -57,41 +57,41 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <div class="card margin-bottom-10" ng-repeat="sourceHostgroup in sourceHostgroups">
+                    <div class="card margin-bottom-10" ng-repeat="sourceServicegroup in sourceServicegroups">
                         <div class="card-header">
                             <i class="fa fa-cog"></i>
-                            <?php echo __('Source host group:'); ?>
-                            {{sourceHostgroup.Source.name}}
+                            <?php echo __('Source service group:'); ?>
+                            {{sourceServicegroup.Source.name}}
 
                         </div>
                         <div class="card-body">
-                            <div class="form-group required" ng-class="{'has-error': sourceHostgroup.Error.container.name}">
-                                <label for="Hostgroup{{$index}}Name" class="control-label required">
-                                    <?php echo __('Host group name'); ?>
+                            <div class="form-group required" ng-class="{'has-error': sourceServicegroup.Error.container.name}">
+                                <label for="Servicegroup{{$index}}Name" class="control-label required">
+                                    <?php echo __('Service group name'); ?>
                                 </label>
                                 <input
                                     class="form-control"
                                     type="text"
-                                    ng-model="sourceHostgroup.Hostgroup.container.name"
-                                    id="Hostgroup{{$index}}Name">
+                                    ng-model="sourceServicegroup.Servicegroup.container.name"
+                                    id="Servicegroup{{$index}}Name">
                                 <span class="help-block">
-                                <?php echo __('Name of the new host group'); ?>
+                                <?php echo __('Name of the new service group'); ?>
                                 </span>
-                                <div ng-repeat="error in sourceHostgroup.Error.container.name">
+                                <div ng-repeat="error in sourceServicegroup.Error.container.name">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
 
-                            <div class="form-group" ng-class="{'has-error': sourceHostgroup.Error.description}">
-                                <label for="Hostgroup{{$index}}Description" class="control-label">
+                            <div class="form-group" ng-class="{'has-error': sourceServicegroup.Error.description}">
+                                <label for="Servicegroup{{$index}}Description" class="control-label">
                                     <?php echo __('Description'); ?>
                                 </label>
                                 <input
                                     class="form-control"
                                     type="text"
-                                    ng-model="sourceHostgroup.Hostgroup.description"
-                                    id="Hostgroup{{$index}}Description">
-                                <div ng-repeat="error in sourceHostgroup.Error.description">
+                                    ng-model="sourceServicegroup.Servicegroup.description"
+                                    id="Servicegroup{{$index}}Description">
+                                <div ng-repeat="error in sourceServicegroup.Error.description">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
@@ -105,8 +105,8 @@
                                 <button class="btn btn-primary" ng-click="copy()">
                                     <?php echo __('Copy'); ?>
                                 </button>
-                                <?php if ($this->Acl->hasPermission('index', 'Hostgroups')): ?>
-                                    <a back-button href="javascript:void(0);" fallback-state='HostgroupsIndex'
+                                <?php if ($this->Acl->hasPermission('index', 'Servicegroups')): ?>
+                                    <a back-button href="javascript:void(0);" fallback-state='ServicegroupsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 <?php endif; ?>
                             </div>
