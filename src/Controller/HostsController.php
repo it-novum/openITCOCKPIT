@@ -3540,25 +3540,36 @@ class HostsController extends AppController {
             $MY_RIGHTS = [];
         }
 
+        //Check if the host is used by Hostgroups
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $objects['Hostgroups'] = $HostgroupsTable->getHostGroupsByHostId((int)$id, $MY_RIGHTS);
+
         //Check if the host is used by Instantreports
-        $instantReportsTable = new InstantreportsTable();
-        $objects['Instantreports'] = $instantReportsTable->getInstantReportsByHostId((int)$id, $MY_RIGHTS);
+        /** @var InstantreportsTable $InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByHostId((int)$id, $MY_RIGHTS);
 
         //Check if the host is used by Autoreports
-        $autoReportsTable = new AutoreportsTable();
-        $objects['Autoreports'] = $autoReportsTable->getAutoReportsByHostId((int)$id, $MY_RIGHTS);
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByHostId((int)$id, $MY_RIGHTS);
+        }
 
         //Check if the host is used by Eventcorrelations
-        $eventCorrelationsTable = new EventcorrelationsTable();
-        $objects['Eventcorrelations'] = $eventCorrelationsTable->getEventCorrelationsByHostId((int)$id, $MY_RIGHTS);
+        if (Plugin::isLoaded('EventCorrelations')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByHostId((int)$id, $MY_RIGHTS);
+        }
 
         //Check if the host is used by Maps
-        $mapsTable = new MapsTable();
-        $objects['Maps'] = $mapsTable->getMapsByHostId((int)$id, $MY_RIGHTS);
-
-        //Check if the host is used by Hostgroups
-        $hostGroupsTable = new HostgroupsTable();
-        $objects['Hostgroups'] = $hostGroupsTable->getHostGroupsByHostId((int)$id, $MY_RIGHTS);
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByHostId((int)$id, $MY_RIGHTS);
+        }
 
         $total = 0;
         $total += sizeof($objects['Instantreports']);
