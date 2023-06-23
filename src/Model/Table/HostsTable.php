@@ -20,6 +20,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -3031,9 +3032,10 @@ class HostsTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHostsForCopy($ids = []) {
+    public function getHostsForCopy($ids = [], array $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'Hosts.id',
@@ -3043,7 +3045,18 @@ class HostsTable extends Table {
                 'Hosts.host_url'
             ])
             ->where(['Hosts.id IN' => $ids])
-            ->order(['Hosts.id' => 'asc'])
+            ->order(['Hosts.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query
             ->disableHydration()
             ->all();
 
