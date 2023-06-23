@@ -143,13 +143,13 @@ class ContactsTable extends Table {
         $validator
             ->integer('host_timeperiod_id')
             ->allowEmptyString('host_timeperiod_id', null, false)
-            ->requirePresence('host_timeperiod_id')
+            ->requirePresence('host_timeperiod_id', 'create')
             ->greaterThan('host_timeperiod_id', 0);
 
         $validator
             ->integer('service_timeperiod_id')
             ->allowEmptyString('service_timeperiod_id', null, false)
-            ->requirePresence('service_timeperiod_id')
+            ->requirePresence('service_timeperiod_id', 'create')
             ->greaterThan('service_timeperiod_id', 0);
 
         $validator
@@ -165,21 +165,21 @@ class ContactsTable extends Table {
             ], __('You have to choose at least one command.'));
 
         $validator
-            ->requirePresence('notify_host_recovery', true, __('You have to choose at least one option.'))
+            ->requirePresence('notify_host_recovery', 'create', __('You have to choose at least one option.'))
             ->add('notify_host_recovery', 'custom', [
                 'rule'    => [$this, 'checkHostNotificationOptions'],
                 'message' => 'You have to choose at least one option.',
             ]);
 
         $validator
-            ->requirePresence('notify_service_recovery', true, __('You have to choose at least one option.'))
+            ->requirePresence('notify_service_recovery', 'create', __('You have to choose at least one option.'))
             ->add('notify_service_recovery', 'custom', [
                 'rule'    => [$this, 'checkHostNotificationOptions'],
                 'message' => 'You have to choose at least one option.',
             ]);
 
         $validator
-            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->requirePresence('containers', 'create', __('You have to choose at least one option.'))
             ->allowEmptyString('containers', null, false)
             ->multipleOptions('containers', [
                 'min' => 1
@@ -375,9 +375,10 @@ class ContactsTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getContactsForCopy($ids = []) {
+    public function getContactsForCopy($ids = [], array $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'Contacts.id',
@@ -386,8 +387,21 @@ class ContactsTable extends Table {
                 'Contacts.email',
                 'Contacts.phone'
             ])
+            ->contain('Containers')
             ->where(['Contacts.id IN' => $ids])
-            ->order(['Contacts.id' => 'asc'])
+            ->order(['Contacts.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            });
+        }
+
+        $query
+            ->distinct('Contacts.id')
             ->disableHydration()
             ->all();
 
