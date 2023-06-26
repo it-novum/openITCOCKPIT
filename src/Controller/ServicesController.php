@@ -3116,7 +3116,7 @@ class ServicesController extends AppController {
         }
 
         //Check if the host is used by Eventcorrelations
-        if (Plugin::isLoaded('EventCorrelations')) {
+        if (Plugin::isLoaded('EventCorrelationsModule')) {
             /** @var EventcorrelationsTable $EventcorrelationsTable */
             $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
             $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByServiceId((int)$id, $MY_RIGHTS);
