@@ -485,6 +485,9 @@ class ServicetemplategroupsController extends AppController {
 
     }
 
+    public function copy(){
+
+    }
 
     /********************************
      *      ALLOCATION METHODS      *
