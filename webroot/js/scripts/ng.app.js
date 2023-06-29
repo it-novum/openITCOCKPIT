@@ -623,6 +623,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "HostgroupsAppendController"
             })
 
+            .state('HostgroupsCopy', {
+                url: '/hostgroups/copy/:ids',
+                templateUrl: "/hostgroups/copy.html",
+                controller: "HostgroupsCopyController"
+            })
+
             .state('HostchecksIndex', {
                 url: '/hostchecks/index/:id',
                 templateUrl: "/hostchecks/index.html",
@@ -727,6 +733,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     }
                 },
                 controller: "ServicegroupsExtendedController"
+            })
+
+            .state('ServicegroupsCopy', {
+                url: '/servicegroups/copy/:ids',
+                templateUrl: "/servicegroups/copy.html",
+                controller: "ServicegroupsCopyController"
             })
 
             .state('StatehistoriesHost', {
@@ -1347,6 +1359,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicetemplategroupsAllocateToHostgroupController"
             })
 
+            .state('ServicetemplategroupsCopy', {
+                url: '/servicetemplategroups/copy/:ids',
+                templateUrl: "/servicetemplategroups/copy.html",
+                controller: "ServicetemplategroupsCopyController"
+            })
+
             .state('LocationsIndex', {
                 url: '/locations/index',
                 templateUrl: "/locations/index.html",
@@ -1423,6 +1441,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/automaps/view/:id',
                 templateUrl: "/automaps/view.html",
                 controller: "AutomapsViewController"
+            })
+
+            .state('AutomapsCopy', {
+                url: '/automaps/copy/:ids',
+                templateUrl: "/automaps/copy.html",
+                controller: "AutomapsCopyController"
             })
 
             .state('SearchIndex', {

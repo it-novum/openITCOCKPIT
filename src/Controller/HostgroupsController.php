@@ -47,6 +47,7 @@ use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -229,7 +230,7 @@ class HostgroupsController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            //Update contact data
+            //Update hostgroup data
             $User = new User($this->getUser());
             $hostgroupEntity = $HostgroupsTable->get($id, [
                 'contain' => [
@@ -309,7 +310,7 @@ class HostgroupsController extends AppController {
             return;
         }
 
-        if ($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)) {
+        if ($ContainersTable->allowDelete($container->id, CT_HOSTGROUP)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 /** @var  ChangelogsTable $ChangelogsTable */
@@ -826,6 +827,127 @@ class HostgroupsController extends AppController {
             $this->set('hostgroup', $hostgroupEntity);
             $this->viewBuilder()->setOption('serialize', ['hostgroup']);
         }
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function copy($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $hostgroups = $HostgroupsTable->getHostgroupsForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('hostgroups', $hostgroups);
+            $this->viewBuilder()->setOption('serialize', ['hostgroups']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
+
+            $postData = $this->request->getData('data');
+            $User = new User($this->getUser());
+            $userId = $User->getId();
+
+            foreach ($postData as $index => $hostgroupData) {
+                if (!isset($hostgroupData['Hostgroup']['id'])) {
+                    //Create/clone hostgroup
+                    $sourceHostgroupId = $hostgroupData['Source']['id'];
+                    if (!$Cache->has($sourceHostgroupId)) {
+                        $sourceHostgroup = $HostgroupsTable->getSourceHostgroupForCopy($sourceHostgroupId, $MY_RIGHTS);
+                        $Cache->set($sourceHostgroupId, $sourceHostgroup);
+                    }
+
+                    $sourceHostgroup = $Cache->get($sourceHostgroupId);
+
+                    $newHostgroupData = [
+                        'description'   => $hostgroupData['Hostgroup']['description'],
+                        'hostgroup_url' => $sourceHostgroup['hostgroup_url'],
+                        'uuid'          => UUID::v4(),
+                        'container'     => [
+                            'name'             => $hostgroupData['Hostgroup']['container']['name'],
+                            'containertype_id' => CT_HOSTGROUP,
+                            'parent_id'        => $sourceHostgroup['container']['parent_id']
+                        ],
+                        'hosts'         => [
+                            '_ids' => $sourceHostgroup['hosts']['_ids']
+                        ],
+                        'hosttemplates' => [
+                            '_ids' => $sourceHostgroup['hosttemplates']['_ids']
+                        ],
+                    ];
+
+                    $newHostgroupEntity = $HostgroupsTable->newEntity($newHostgroupData);
+
+                }
+
+                $action = 'copy';
+                if (isset($hostgroupData['Hostgroup']['id'])) {
+                    //Update existing hostgroup
+                    //This happens, if a user copy multiple hostgroups, and one run into an validation error
+                    //All hostgroups without validation errors got already saved to the database
+                    $newHostgroupEntity = $HostgroupsTable->get($hostgroupData['Hostgroup']['id'], [
+                        'contain' => [
+                            'Containers'
+                        ]
+                    ]);
+                    $newHostgroupEntity->setAccess('*', false);
+                    $newHostgroupEntity->container->setAccess('*', false);
+                    $newHostgroupEntity->container->setAccess('name', true);
+                    $newHostgroupEntity = $HostgroupsTable->patchEntity($newHostgroupEntity, $hostgroupData['Hostgroup']);
+                    $newHostgroupData = $newHostgroupEntity->toArray();
+                    $action = 'edit';
+                }
+                $HostgroupsTable->save($newHostgroupEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newHostgroupEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newHostgroupEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Hostgroup']['id'] = $newHostgroupEntity->get('id');
+
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        $action,
+                        'hostgroups',
+                        $postData[$index]['Hostgroup']['id'],
+                        OBJECT_HOSTGROUP,
+                        $newHostgroupEntity->get('container')->get('parent_id'),
+                        $userId,
+                        $newHostgroupEntity->get('container')->get('name'),
+                        ['Hostgroup' => $newHostgroupData]
+                    );
+                    if ($changelog_data) {
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /****************************

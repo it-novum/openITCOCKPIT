@@ -444,7 +444,7 @@ class ServicetemplategroupsController extends AppController {
                 'Servicetemplategroups'
             ]
         ]);
-        if ($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)) {
+        if ($ContainersTable->allowDelete($container->id, CT_SERVICETEMPLATEGROUP)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 Cache::clear('permissions');
@@ -485,6 +485,9 @@ class ServicetemplategroupsController extends AppController {
 
     }
 
+    public function copy(){
+
+    }
 
     /********************************
      *      ALLOCATION METHODS      *

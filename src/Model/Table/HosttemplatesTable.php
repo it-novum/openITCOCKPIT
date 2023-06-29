@@ -631,9 +631,10 @@ class HosttemplatesTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHosttemplatesForCopy($ids = []) {
+    public function getHosttemplatesForCopy($ids = [], array $MY_RIGHTS = []) {
         $contain = [
             'Hosttemplatecommandargumentvalues' => [
                 'Commandarguments'
@@ -654,7 +655,13 @@ class HosttemplatesTable extends Table {
             ])
             ->contain($contain)
             ->where(['Hosttemplates.id IN' => $ids])
-            ->order(['Hosttemplates.id' => 'asc'])
+            ->order(['Hosttemplates.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere(['Hosttemplates.container_id IN' => $MY_RIGHTS]);
+        }
+
+        $query
             ->disableHydration()
             ->all();
 

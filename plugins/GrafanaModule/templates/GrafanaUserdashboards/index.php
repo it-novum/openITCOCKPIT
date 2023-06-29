@@ -209,6 +209,14 @@
                                                     <?php echo __('View'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="GrafanaUserdashboardsCopy({ids: userdashboard.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"
@@ -245,8 +253,24 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
+                            <?php if ($this->Acl->hasPermission('copy', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="GrafanaUserdashboardsCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <span ng-click="synchronizeWithGrafana(getObjectsForDelete())" class="pointer">
+                                        <i class="fa fa-refresh"></i>
+                                        <?php echo __('Synchronize'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('delete', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                                <div class="col-xs-12 col-md-4 txt-color-red">
+                                <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                         <i class="fas fa-trash"></i>
                                         <?php echo __('Delete selected'); ?>

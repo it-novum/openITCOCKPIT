@@ -1658,8 +1658,13 @@ class HostsController extends AppController {
         /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         if ($this->request->is('get')) {
-            $hosts = $HostsTable->getHostsForCopy(func_get_args());
+            $hosts = $HostsTable->getHostsForCopy(func_get_args(), $MY_RIGHTS);
             $this->set('hosts', $hosts);
             $this->viewBuilder()->setOption('serialize', ['hosts']);
             return;
@@ -1722,7 +1727,7 @@ class HostsController extends AppController {
                             'sla_id'
                         ]
                     );
-                    /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
+
                     $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($sourceHost->get('hosttemplate_id'));
 
                     $tmpHost = $HostsTable->newEmptyEntity();
@@ -1820,6 +1825,8 @@ class HostsController extends AppController {
                     $newHost->set('hosttemplate_flap_detection_on_up', $newHost->get('flap_detection_on_up'));
                     $newHost->set('hosttemplate_flap_detection_on_down', $newHost->get('flap_detection_on_down'));
                     $newHost->set('hosttemplate_flap_detection_on_unreachable', $newHost->get('flap_detection_on_unreachable'));
+                    $newHost->setAccess('*', false);
+                    $newHost->setAccess(['name', 'description', 'address', 'host_url'], true);
                     $newHost = $HostsTable->patchEntity($newHost, $host2copyData['Host']);
                     $extDataForChangelog = $newHost->toArray();
                 }

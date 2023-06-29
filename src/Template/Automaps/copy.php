@@ -30,8 +30,8 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="ContactsIndex">
-            <i class="fa fa-user"></i> <?php echo __('Contacts'); ?>
+        <a ui-sref="AutomapsIndex">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Auto Maps'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -43,12 +43,13 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Contacts'); ?>
-                    <span class="fw-300"><i><?php echo __('Copy contact/s'); ?></i></span>
+                    <?php echo __('Auto map'); ?>
+                    <span class="fw-300"><i><?php echo __('Copy auto map/s'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='ContactsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                    <?php if ($this->Acl->hasPermission('index', 'automaps')): ?>
+                        <a back-button href="javascript:void(0);" fallback-state='AutomapsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -56,71 +57,74 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <div class="card margin-bottom-10" ng-repeat="sourceContact in sourceContacts">
+                    <div class="card margin-bottom-10" ng-repeat="sourceAutomap in sourceAutomaps">
                         <div class="card-header">
                             <i class="fa fa-cog"></i>
-                            <?php echo __('Source contact:'); ?>
-                            {{sourceContact.Source.name}}
+                            <?php echo __('Source auto map:'); ?>
+                            {{sourceAutomap.Source.name}}
+
                         </div>
                         <div class="card-body">
-                            <div class="form-group required" ng-class="{'has-error': sourceContact.Error.name}">
-                                <label for="Contact{{$index}}Name" class="control-label">
-                                    <?php echo __('Contact name'); ?>
+                            <div class="form-group required" ng-class="{'has-error': sourceAutomap.Error.name}">
+                                <label for="Automap{{$index}}Name" class="control-label required">
+                                    <?php echo __('Automap name'); ?>
                                 </label>
                                 <input
-                                    maxlength="64"
                                     class="form-control"
                                     type="text"
-                                    ng-model="sourceContact.Contact.name"
-                                    id="Contact{{$index}}Name">
+                                    ng-model="sourceAutomap.Automap.name"
+                                    id="Automap{{$index}}Name">
                                 <span class="help-block">
-                                <?php echo __('Name of the new contact'); ?>
+                                <?php echo __('Name of the new auto map'); ?>
                                 </span>
-                                <div ng-repeat="error in sourceContact.Error.name">
+                                <div ng-repeat="error in sourceAutomap.Error.name">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
-                            <div class="form-group" ng-class="{'has-error': sourceContact.Error.description}">
-                                <label for="Contact{{$index}}Description" class="control-label">
+
+                            <div class="form-group" ng-class="{'has-error': sourceAutomap.Error.description}">
+                                <label for="Automap{{$index}}Description" class="control-label">
                                     <?php echo __('Description'); ?>
                                 </label>
                                 <input
                                     class="form-control"
                                     type="text"
-                                    ng-model="sourceContact.Contact.description"
-                                    id="Contact{{$index}}Description">
-                                <div ng-repeat="error in sourceContact.Error.description">
+                                    ng-model="sourceAutomap.Automap.description"
+                                    id="Automap{{$index}}Description">
+                                <div ng-repeat="error in sourceAutomap.Error.description">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
 
-                            <div class="form-group required" ng-class="{'has-error': sourceContact.Error.email}">
-                                <label for="Contact{{$index}}Email" class="control-label">
-                                    <?php echo __('Email'); ?>
+                            <div class="form-group required" ng-class="{'has-error': sourceAutomap.Error.host_regex}">
+                                <label for="Automap{{$index}}HostRegex" class="control-label required">
+                                    <?php echo __('Host RegEx'); ?>
                                 </label>
                                 <input
                                     class="form-control"
                                     type="text"
-                                    ng-model="sourceContact.Contact.email"
-                                    id="Contact{{$index}}Email">
-                                <div ng-repeat="error in sourceContact.Error.email">
+                                    ng-model="sourceAutomap.Automap.host_regex"
+                                    id="Automap{{$index}}HostRegex">
+                                <div ng-repeat="error in sourceAutomap.Error.host_regex">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
 
-                            <div class="form-group required" ng-class="{'has-error': sourceContact.Error.phone}">
-                                <label for="Contact{{$index}}Phone" class="control-label">
-                                    <?php echo __('Phone'); ?>
+                            <div class="form-group required"
+                                 ng-class="{'has-error': sourceAutomap.Error.service_regex}">
+                                <label for="Automap{{$index}}ServiceRegex" class="control-label required">
+                                    <?php echo __('Service RegEx'); ?>
                                 </label>
                                 <input
                                     class="form-control"
                                     type="text"
-                                    ng-model="sourceContact.Contact.phone"
-                                    id="Contact{{$index}}Phone">
-                                <div ng-repeat="error in sourceContact.Error.phone">
+                                    ng-model="sourceAutomap.Automap.service_regex"
+                                    id="Automap{{$index}}ServiceRegex">
+                                <div ng-repeat="error in sourceAutomap.Error.service_regex">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -130,8 +134,8 @@
                                 <button class="btn btn-primary" ng-click="copy()">
                                     <?php echo __('Copy'); ?>
                                 </button>
-                                <?php if ($this->Acl->hasPermission('index', 'Contacts')): ?>
-                                    <a back-button href="javascript:void(0);" fallback-state='ContactsIndex'
+                                <?php if ($this->Acl->hasPermission('index', 'Automaps')): ?>
+                                    <a back-button href="javascript:void(0);" fallback-state='AutomapsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 <?php endif; ?>
                             </div>
