@@ -815,8 +815,6 @@ class ServicegroupsController extends AppController {
                     //No errors
                     $postData[$index]['Servicegroup']['id'] = $newServicegroupEntity->get('id');
 
-                    Cache::clear('permissions');
-
                     /** @var  ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -842,6 +840,7 @@ class ServicegroupsController extends AppController {
         if ($hasErrors) {
             $this->response = $this->response->withStatus(400);
         }
+        Cache::clear('permissions');
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
     }
