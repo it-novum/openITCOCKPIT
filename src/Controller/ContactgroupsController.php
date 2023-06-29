@@ -424,6 +424,8 @@ class ContactgroupsController extends AppController {
                     //No errors
                     $postData[$index]['Contactgroup']['id'] = $newContactgroupEntity->get('id');
 
+                    Cache::clear('permissions');
+
                     /** @var  ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 

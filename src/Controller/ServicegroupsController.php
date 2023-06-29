@@ -815,6 +815,8 @@ class ServicegroupsController extends AppController {
                     //No errors
                     $postData[$index]['Servicegroup']['id'] = $newServicegroupEntity->get('id');
 
+                    Cache::clear('permissions');
+
                     /** @var  ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 

@@ -921,6 +921,8 @@ class HostgroupsController extends AppController {
                     //No errors
                     $postData[$index]['Hostgroup']['id'] = $newHostgroupEntity->get('id');
 
+                    Cache::clear('permissions');
+
                     /** @var  ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
