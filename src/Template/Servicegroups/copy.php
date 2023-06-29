@@ -43,7 +43,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Auto map'); ?>
+                    <?php echo __('Service groups'); ?>
                     <span class="fw-300"><i><?php echo __('Copy service group/s'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
