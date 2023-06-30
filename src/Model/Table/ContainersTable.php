@@ -6,9 +6,12 @@ use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\QueryExpression;
+use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -73,6 +76,20 @@ class ContainersTable extends Table {
      * @var null|array
      */
     private $containerCache = null;
+
+    /**
+     * @var int|null
+     */
+    private $semaphoreKey = null;
+
+    /**
+     * @var \SysvSemaphore
+     * Provided by ext-sysvsem.
+     * Default on Ubuntu and Debian.
+     * For RHEL you have to install php-process
+     *
+     */
+    private $semaphore;
 
     /**
      * Initialize method
@@ -1228,5 +1245,31 @@ class ContainersTable extends Table {
         );
         sort($visibleContainerIds);
         return $visibleContainerIds;
+    }
+
+    /**
+     * Will create a Semaphore with a limit of 1 to avoid multiple operations running concurrently on the containers table
+     * This method blocks (if necessary) until the semaphore can be acquired
+     *
+     * https://github.com/cakephp/cakephp/issues/14983#issuecomment-1613491168
+     * @param bool $auto_release
+     * @return bool
+     */
+    public function acquireLock(bool $auto_release = true) {
+        if ($this->semaphoreKey === null) {
+            $this->semaphoreKey = ftok(__FILE__, 'c');
+            $this->semaphore = sem_get($this->semaphoreKey, 1, 0666, $auto_release);
+        }
+
+        return sem_acquire($this->semaphore);
+    }
+
+    /**
+     * @return bool
+     */
+    public function releaseLock() {
+        if (!is_null($this->semaphore)) {
+            return sem_release($this->semaphore);
+        }
     }
 }

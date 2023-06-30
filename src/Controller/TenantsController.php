@@ -120,6 +120,10 @@ class TenantsController extends AppController {
             $tenant->container->parent_id = ROOT_CONTAINER;
             $tenant->container->containertype_id = CT_TENANT;
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
 
             $TenantsTable->save($tenant);
             if ($tenant->hasErrors()) {
@@ -193,6 +197,12 @@ class TenantsController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
+
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $oldTenant = $TenantsTable->get($id, [
                 'contain' => ['Containers']
             ]);
@@ -271,10 +281,11 @@ class TenantsController extends AppController {
             throw new NotFoundException(__('Invalid container'));
         }
 
+        $ContainersTable->acquireLock();
 
         try {
             $tenant = $TenantsTable->getTenantByContainerId($containerId);
-        }catch (RecordNotFoundException $e){
+        } catch (RecordNotFoundException $e) {
             throw new NotFoundException(__('Invalid tenant'));
         }
         $tenantForChangelog = $tenant;
