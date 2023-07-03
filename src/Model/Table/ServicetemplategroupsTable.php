@@ -724,4 +724,16 @@ class ServicetemplategroupsTable extends Table {
 
         return $servicetemplategroups;
     }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedServicetemplategroupsByContainerId(int $containerId){
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
 }

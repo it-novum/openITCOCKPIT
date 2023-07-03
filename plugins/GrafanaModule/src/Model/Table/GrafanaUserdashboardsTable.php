@@ -365,4 +365,16 @@ class GrafanaUserdashboardsTable extends Table {
 
         return $query->first();
     }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedGrafanaUserdashboardsByContainerId(int $containerId){
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
 }

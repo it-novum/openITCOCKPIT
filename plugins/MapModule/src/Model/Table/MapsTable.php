@@ -52,6 +52,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
@@ -2273,5 +2274,36 @@ class MapsTable extends Table {
             return $this->getDefaultMapeditorSettings();
         }
         return json_decode($config, true);
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedMapsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $maps = $result->toArray();
+
+        // Check each map, if it as more than one container.
+        // If the map has more than 1 container, we can keep this map because is not orphaned
+        $orphanedMaps = [];
+        foreach ($maps as $map) {
+            if (empty($map->containers)) {
+                $orphanedMaps[] = $map;
+            }
+        }
+
+        return $orphanedMaps;
     }
 }

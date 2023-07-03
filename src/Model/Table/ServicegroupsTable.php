@@ -1197,4 +1197,16 @@ class ServicegroupsTable extends Table {
                 return $return;
         }
     }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedServicegroupsByContainerId(int $containerId){
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
 }
