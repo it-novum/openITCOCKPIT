@@ -107,6 +107,8 @@ class ContainersController extends AppController {
             return;
         }
 
+        $ContainersTable->acquireLock();
+
         $ContainersTable->save($container);
         if ($container->hasErrors()) {
             $this->response = $this->response->withStatus(400);
@@ -154,6 +156,9 @@ class ContainersController extends AppController {
             if (!$ContainersTable->existsById($containerId)) {
                 throw new NotFoundException(__('Invalid container'));
             }
+
+            $ContainersTable->acquireLock();
+
             $container = $ContainersTable->get($containerId);
             $containerForChangelog = $container->toArray();
 
@@ -416,6 +421,9 @@ class ContainersController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $ContainersTable->acquireLock();
+
         $container = $ContainersTable->find()
             ->where([
                 'Containers.id'    => $id,
@@ -424,7 +432,8 @@ class ContainersController extends AppController {
             ->first();
 
         if (empty($container)) {
-            return $this->render403();
+            $this->render403();
+            return;
         }
         $containerForChangelog = $container->toArray();
 
