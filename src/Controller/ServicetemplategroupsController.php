@@ -44,7 +44,6 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
-use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServicetemplategroupsConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -511,8 +510,6 @@ class ServicetemplategroupsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $Cache = new KeyValueStore();
-
             $postData = $this->request->getData('data');
             $User = new User($this->getUser());
             $userId = $User->getId();
@@ -526,12 +523,7 @@ class ServicetemplategroupsController extends AppController {
                 if (!isset($servicetemplategroupData['Servicetemplategroup']['id'])) {
                     //Create/clone service template group
                     $sourceServicetemplategroupId = $servicetemplategroupData['Source']['id'];
-                    if (!$Cache->has($sourceServicetemplategroupId)) {
-                        $sourceServicetemplategroup = $ServicetemplategroupsTable->getSourceServicetemplategroupForCopy($sourceServicetemplategroupId, $MY_RIGHTS);
-                        $Cache->set($sourceServicetemplategroupId, $sourceServicetemplategroup);
-                    }
-
-                    $sourceServicetemplategroup = $Cache->get($sourceServicetemplategroupId);
+                    $sourceServicetemplategroup = $ServicetemplategroupsTable->getSourceServicetemplategroupForCopy($sourceServicetemplategroupId, $MY_RIGHTS);
 
                     $newServicetemplategroupData = [
                         'description'      => $servicetemplategroupData['Servicetemplategroup']['description'],

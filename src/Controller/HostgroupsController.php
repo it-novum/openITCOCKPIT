@@ -47,7 +47,6 @@ use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -871,8 +870,6 @@ class HostgroupsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $Cache = new KeyValueStore();
-
             /** @var ContainersTable $ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
@@ -887,12 +884,7 @@ class HostgroupsController extends AppController {
                 if (!isset($hostgroupData['Hostgroup']['id'])) {
                     //Create/clone hostgroup
                     $sourceHostgroupId = $hostgroupData['Source']['id'];
-                    if (!$Cache->has($sourceHostgroupId)) {
-                        $sourceHostgroup = $HostgroupsTable->getSourceHostgroupForCopy($sourceHostgroupId, $MY_RIGHTS);
-                        $Cache->set($sourceHostgroupId, $sourceHostgroup);
-                    }
-
-                    $sourceHostgroup = $Cache->get($sourceHostgroupId);
+                    $sourceHostgroup = $HostgroupsTable->getSourceHostgroupForCopy($sourceHostgroupId, $MY_RIGHTS);
 
                     $newHostgroupData = [
                         'description'   => $hostgroupData['Hostgroup']['description'],

@@ -765,8 +765,6 @@ class ServicegroupsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $Cache = new KeyValueStore();
-
             /** @var ContainersTable $ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
@@ -780,12 +778,7 @@ class ServicegroupsController extends AppController {
                 if (!isset($servicegroupData['Servicegroup']['id'])) {
                     //Create/clone servicegroup
                     $sourceServicegroupId = $servicegroupData['Source']['id'];
-                    if (!$Cache->has($sourceServicegroupId)) {
-                        $sourceServicegroup = $ServicegroupsTable->getSourceServicegroupForCopy($sourceServicegroupId, $MY_RIGHTS);
-                        $Cache->set($sourceServicegroupId, $sourceServicegroup);
-                    }
-
-                    $sourceServicegroup = $Cache->get($sourceServicegroupId);
+                    $sourceServicegroup = $ServicegroupsTable->getSourceServicegroupForCopy($sourceServicegroupId, $MY_RIGHTS);
 
                     $newServicegroupData = [
                         'description'   => $servicegroupData['Servicegroup']['description'],
