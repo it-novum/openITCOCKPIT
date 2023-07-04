@@ -66,7 +66,7 @@ class UsercontainerrolesController extends AppController {
         }, ARRAY_FILTER_USE_BOTH);
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
             $userRoleContainerIds = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
-            if(!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIds, $containerWithWritePermissions))){
+            if (!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIds, $containerWithWritePermissions))) {
                 unset($all_usercontainerroles[$index]);
                 continue; //insufficient user (container) rights
             }
@@ -81,7 +81,7 @@ class UsercontainerrolesController extends AppController {
                 }
             }
 
-            foreach ($usercontainerrole['users'] as $userIndex => $user){
+            foreach ($usercontainerrole['users'] as $userIndex => $user) {
 
                 $usercontainerrole['users'][$userIndex]['allow_edit'] = $this->hasRootPrivileges;
                 if ($this->hasRootPrivileges === false) {
@@ -117,7 +117,7 @@ class UsercontainerrolesController extends AppController {
                 }
             }
 
-            $all_usercontainerroles[$index]['users'] =  $usercontainerrole['users'];
+            $all_usercontainerroles[$index]['users'] = $usercontainerrole['users'];
         }
 
         $this->set('all_usercontainerroles', $all_usercontainerroles);
@@ -279,64 +279,47 @@ class UsercontainerrolesController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $Cache = new KeyValueStore();
-
             $postData = $this->request->getData('data');
 
-            foreach ($postData as $index => $automapData) {
-                if (!isset($automapData['Automap']['id'])) {
-                    //Create/clone automap
-                    $sourceAutomapId = $automapData['Source']['id'];
-                    if (!$Cache->has($sourceAutomapId)) {
-                        $sourceAutomap = $AutomapsTable->getSourceAutomapForCopy($sourceAutomapId, $MY_RIGHTS);
-                        $Cache->set($sourceAutomapId, $sourceAutomap);
-                    }
+            foreach ($postData as $index => $usercontainerroleData) {
+                if (!isset($usercontainerroleData['Usercontainerrole']['id'])) {
+                    //Create/clone Usercontainerrole
+                    $sourceUsercontainerroleId = $usercontainerroleData['Source']['id'];
+                    $sourceUsercontainerrole = $UsercontainerrolesTable->getSourceUserContainerRoleForCopy($sourceUsercontainerroleId, $MY_RIGHTS);
 
-                    $sourceAutomap = $Cache->get($sourceAutomapId);
 
-                    $newAutomapData = [
-                        'name'              => $automapData['Automap']['name'],
-                        'description'       => $automapData['Automap']['description'],
-                        'container_id'      => $sourceAutomap['container_id'],
-                        'recursive'         => $sourceAutomap['recursive'],
-                        'host_regex'        => $automapData['Automap']['host_regex'],
-                        'service_regex'     => $automapData['Automap']['service_regex'],
-                        'show_ok'           => $sourceAutomap['show_ok'],
-                        'show_warning'      => $sourceAutomap['show_warning'],
-                        'show_critical'     => $sourceAutomap['show_critical'],
-                        'show_unknown'      => $sourceAutomap['show_unknown'],
-                        'show_downtime'     => $sourceAutomap['show_downtime'],
-                        'show_acknowledged' => $sourceAutomap['show_acknowledged'],
-                        'show_label'        => $sourceAutomap['show_label'],
-                        'group_by_host'     => $sourceAutomap['group_by_host'],
-                        'use_paginator'     => $sourceAutomap['use_paginator'],
-                        'font_size'         => $sourceAutomap['font_size'],
+                    $newUsercontainerroleData = [
+                        'name'       => $usercontainerroleData['Usercontainerrole']['name'],
+                        'containers' => $UsercontainerrolesTable->containerPermissionsForSave($sourceUsercontainerrole['ContainersUsercontainerrolesMemberships']),
+                        'ldapgroups' => [
+                            '_ids' => $sourceUsercontainerrole['ldapgroups']['_ids']
+                        ]
                     ];
 
-                    $newAutomapEntity = $AutomapsTable->newEntity($newAutomapData);
+                    $newUsercontainerroleEntity = $UsercontainerrolesTable->newEntity($newUsercontainerroleData);
                 }
 
                 $action = 'copy';
-                if (isset($automapData['Automap']['id'])) {
-                    //Update existing automap
-                    //This happens, if a user copy multiple automaps, and one run into an validation error
-                    //All automaps without validation errors got already saved to the database
-                    $newAutomapEntity = $AutomapsTable->get($automapData['Automap']['id']);
-                    $newAutomapEntity->setAccess('*', false);
-                    $newAutomapEntity->setAccess(['name', 'description', 'host_regex', 'service_regex'], true);
+                if (isset($usercontainerroleData['Usercontainerrole']['id'])) {
+                    //Update existing Usercontainerrole
+                    //This happens, if a user copy multiple Usercontainerroles, and one run into an validation error
+                    //All Usercontainerroles without validation errors got already saved to the database
+                    $newUsercontainerroleEntity = $UsercontainerrolesTable->get($usercontainerroleData['Usercontainerrole']['id']);
+                    $newUsercontainerroleEntity->setAccess('*', false);
+                    $newUsercontainerroleEntity->setAccess(['name'], true);
 
-                    $newAutomapEntity = $AutomapsTable->patchEntity($newAutomapEntity, $automapData['Automap']);
+                    $newUsercontainerroleEntity = $UsercontainerrolesTable->patchEntity($newUsercontainerroleEntity, $usercontainerroleData['Usercontainerrole']);
                     $action = 'edit';
                 }
-                $AutomapsTable->save($newAutomapEntity);
+                $UsercontainerrolesTable->save($newUsercontainerroleEntity);
 
                 $postData[$index]['Error'] = [];
-                if ($newAutomapEntity->hasErrors()) {
+                if ($newUsercontainerroleEntity->hasErrors()) {
                     $hasErrors = true;
-                    $postData[$index]['Error'] = $newAutomapEntity->getErrors();
+                    $postData[$index]['Error'] = $newUsercontainerroleEntity->getErrors();
                 } else {
                     //No errors
-                    $postData[$index]['Automap']['id'] = $newAutomapEntity->get('id');
+                    $postData[$index]['Usercontainerrole']['id'] = $newUsercontainerroleEntity->get('id');
                 }
             }
         }
