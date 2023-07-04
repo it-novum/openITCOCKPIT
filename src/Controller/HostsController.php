@@ -2511,12 +2511,18 @@ class HostsController extends AppController {
                 $satelliteName = $satellites[$Host->getSatelliteId()];
             }
 
+            $tags = $Host->getTags();
+            if (empty($tags)) {
+                $tags = $Hosttemplate->getTags();
+            }
+
             $all_hosts[] = [
                 $Host->getHostname(),
                 $Host->getId(),
                 $Host->getUuid(),
                 $Host->getAddress(),
                 $Host->getDescription(),
+                $tags,
                 $Host->getHosttemplateId(),
                 $Hosttemplate->getName(),
                 $Host->getSatelliteId(),
@@ -2540,6 +2546,7 @@ class HostsController extends AppController {
             'host_uuid',
             'host_address',
             'host_description',
+            'host_tags',
             'hosttemplate_id',
             'hosttemplate_name',
             'satellite_id',
