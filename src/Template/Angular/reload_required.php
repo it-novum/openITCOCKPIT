@@ -12,18 +12,18 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-lg-12 text-info">
+                    <div class="col-12 text-info">
                         <i class="fa fa-info-circle"></i>
                         <?php echo __('To apply changes, a reload of the interface is required.'); ?>
                     </div>
 
-                    <div class="col-lg-12 text-info">
+                    <div class="col-12 text-info">
                         <?php echo __('Automatically reload in {{ delay - i }} seconds.'); ?>
                     </div>
 
-                    <div class="col-lg-12 margin-top-10">
-                        <div class="progress progress-striped active">
-                            <div class="progress-bar bg-downtime" style="width: {{percentage}}%"></div>
+                    <div class="col-12 margin-top-10">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-downtime" style="width: {{percentage}}%"></div>
                         </div>
                     </div>
 

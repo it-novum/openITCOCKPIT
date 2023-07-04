@@ -145,6 +145,11 @@ class ServicetemplategroupsController extends AppController {
         $servicetemplategroup->set('uuid', UUID::v4());
         $servicetemplategroup->get('container')->set('containertype_id', CT_SERVICETEMPLATEGROUP);
 
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $ContainersTable->acquireLock();
+
         $ServicetemplategroupsTable->save($servicetemplategroup);
         if ($servicetemplategroup->hasErrors()) {
             $this->response = $this->response->withStatus(400);
@@ -225,6 +230,11 @@ class ServicetemplategroupsController extends AppController {
             //Update service template group data
             $User = new User($this->getUser());
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $servicetemplategroupEntity = $ServicetemplategroupsTable->get($id, [
                 'contain' => [
                     'Containers'
@@ -303,6 +313,8 @@ class ServicetemplategroupsController extends AppController {
             if (!$ServicetemplategroupsTable->existsById($id)) {
                 throw new NotFoundException(__('Invalid service template group'));
             }
+
+            $ContainersTable->acquireLock();
 
             $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplategroupForEdit($id);
             $servicetemplategroupForChangelog = $servicetemplategroup;
@@ -425,6 +437,11 @@ class ServicetemplategroupsController extends AppController {
             throw new NotFoundException(__('Service template group not found'));
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $ContainersTable->acquireLock();
+
         $servicetemplategroupEntity = $ServicetemplategroupsTable->get($id, [
             'contain' => [
                 'Containers'
@@ -436,9 +453,6 @@ class ServicetemplategroupsController extends AppController {
             return;
         }
 
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $container = $ContainersTable->get($servicetemplategroupEntity->get('container')->get('id'), [
             'contain' => [
                 'Servicetemplategroups'

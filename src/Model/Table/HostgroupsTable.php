@@ -1347,4 +1347,15 @@ class HostgroupsTable extends Table {
         return $hostgroup;
     }
 
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedHostgroupsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
 }

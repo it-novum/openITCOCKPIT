@@ -155,6 +155,11 @@ class HostgroupsController extends AppController {
             $hostgroup->set('uuid', UUID::v4());
             $hostgroup->get('container')->set('containertype_id', CT_HOSTGROUP);
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $HostgroupsTable->save($hostgroup);
             if ($hostgroup->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -232,6 +237,12 @@ class HostgroupsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update hostgroup data
             $User = new User($this->getUser());
+
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $hostgroupEntity = $HostgroupsTable->get($id, [
                 'contain' => [
                     'Containers'
@@ -297,6 +308,8 @@ class HostgroupsController extends AppController {
         if (!$HostgroupsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid Hostgroup'));
         }
+
+        $ContainersTable->acquireLock();
 
         $hostgroup = $HostgroupsTable->getHostgroupById($id);
         $container = $ContainersTable->get($hostgroup->get('container')->get('id'), [
@@ -729,6 +742,8 @@ class HostgroupsController extends AppController {
             if (!$HostgroupsTable->existsById($id)) {
                 throw new NotFoundException(__('Invalid Hostgroup'));
             }
+
+            $ContainersTable->acquireLock();
 
             $hostgroup = $HostgroupsTable->getHostgroupForEdit($id);
             $hostgroupForChangelog = $hostgroup;

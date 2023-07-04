@@ -123,20 +123,21 @@
 
                                         <?php
                                         $models = [
-                                            'Command'         => __('Commands'),
-                                            'Contact'         => __('Contacts'),
-                                            'Contactgroup'    => __('Contact groups'),
-                                            'Host'            => __('Hosts'),
-                                            'Hostgroup'       => __('Host groups'),
-                                            'Hosttemplate'    => __('Host templates'),
-                                            'Service'         => __('Services'),
-                                            'Servicegroup'    => __('Service groups'),
-                                            'Servicetemplate' => __('Service templates'),
-                                            'Timeperiod'      => __('Time periods'),
-                                            'Location'        => __('Locations'),
-                                            'Tenant'          => __('Tenants'),
-                                            'Container'       => __('Nodes'),
-                                            'Export'          => __('Refresh configuration')
+                                            'Command'              => __('Commands'),
+                                            'Contact'              => __('Contacts'),
+                                            'Contactgroup'         => __('Contact groups'),
+                                            'Host'                 => __('Hosts'),
+                                            'Hostgroup'            => __('Host groups'),
+                                            'Hosttemplate'         => __('Host templates'),
+                                            'Service'              => __('Services'),
+                                            'Servicegroup'         => __('Service groups'),
+                                            'Servicetemplate'      => __('Service templates'),
+                                            'Servicetemplategroup' => __('Service template groups'),
+                                            'Timeperiod'           => __('Time periods'),
+                                            'Location'             => __('Locations'),
+                                            'Tenant'               => __('Tenants'),
+                                            'Container'            => __('Nodes'),
+                                            'Export'               => __('Refresh configuration')
                                         ];
                                         ?>
 

@@ -940,4 +940,16 @@ class InstantreportsTable extends Table {
         return $list;
     }
 
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedInstantreportsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
+
 }
