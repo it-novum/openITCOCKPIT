@@ -767,6 +767,11 @@ class ServicegroupsController extends AppController {
         if ($this->request->is('post')) {
             $Cache = new KeyValueStore();
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $postData = $this->request->getData('data');
             $User = new User($this->getUser());
             $userId = $User->getId();
