@@ -261,7 +261,7 @@ class UsergroupsController extends AppController {
 
             /** @var ArosTable $ArosTable */
             $ArosTable = TableRegistry::getTableLocator()->get('Acl.Aros');
-            /** @var ArosAcosTable c */
+            /** @var ArosAcosTable $ArosAcosTable */
             $ArosAcosTable = TableRegistry::getTableLocator()->get('ArosAcos');
             $aro = $ArosTable->find()
                 ->where([
