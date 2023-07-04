@@ -23247,7 +23247,7 @@ msgstr "Beachte Anzahl der Zustände"
 
 #: .-modules/EventcorrelationModule/templates/EventcorrelationSettings/index.php:88
 msgid "If enabled, services in unknown state are ignored if there are more other services in critical or warning state."
-msgstr "Wenn diese Option aktiviert ist, werden Dienste im unbekannten Status ignoriert, wenn sich weitere Dienste im kritischen Status oder im Warnstatus befinden."
+msgstr "Wenn diese Option aktiviert ist, werden Dienste im unbekannten Status ignoriert, wenn mehr Dienste im kritischen Status oder im Warnstatus existieren."
 
 #: .-modules/EventcorrelationModule/templates/EventcorrelationSettings/index.php:102
 msgid "Reflect status to host"
