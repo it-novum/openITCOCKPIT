@@ -186,14 +186,25 @@ class ChangecalendarsController extends AppController {
                 if (isset($event['id']) && $event['changecalendar_id']) {
                     $tmpEvent['id'] = $event['id'];
                     $tmpEvent['changecalendar_id'] = $event['changecalendar_id'];
-
                 }
 
                 $data['changecalendar_events'][] = $tmpEvent;
             }
-            $Entity = $ChangecalendarsTable->get($id);
-            $Entity = $ChangecalendarsTable->patchEntity($Entity, $data);
 
+
+            $changeCalendar = $ChangecalendarsTable->get($id, [
+                'contain' => 'ChangecalendarEvents'
+            ]);
+
+            $Entity = $ChangecalendarsTable->find()
+                ->where([
+                    'id' => $id
+                ])
+                ->contain(['ChangecalendarEvents'])
+                ->firstOrFail();
+
+            $Entity['changecalendar_events'] = $data['changecalendar_events'];
+            $Entity = $ChangecalendarsTable->patchEntity($Entity, $data);
             $ChangecalendarsTable->save($Entity);
             if ($Entity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -205,7 +216,6 @@ class ChangecalendarsController extends AppController {
             $this->set('changeCalendar', $Entity);
             $this->viewBuilder()->setOption('serialize', ['changeCalendar']);
 
-            return;
         }
     }
 
