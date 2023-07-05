@@ -1126,6 +1126,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "UsergroupsEditController"
             })
 
+            .state('UsergroupsCopy', {
+                url: '/usergroups/copy/:ids',
+                templateUrl: "/usergroups/copy.html",
+                controller: "UsergroupsCopyController"
+            })
+
             .state('ProfileEdit', {
                 url: '/profile/edit/',
                 templateUrl: "/profile/edit.html",
