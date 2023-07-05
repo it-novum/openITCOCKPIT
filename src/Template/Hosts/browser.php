@@ -978,10 +978,7 @@ use Cake\Core\Plugin;
                                                             <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?>
                                                         </span>
                                                     </a>
-                                                    <span ng-if="usageFlag.distributed == true"
-                                                          class="badge border margin-right-10 border-generic text-generic">
-                                                        <i class="fa fas fa-satellite"></i> <?= __('Distributed') ?>
-                                                    </span>
+
                                                     <span ng-if="usageFlag.mapModule == true"
                                                           class="badge border margin-right-10 border-generic text-generic">
                                                         <i class="fa fa-map-marker"></i> <?= __('Map Module') ?>

@@ -3527,14 +3527,6 @@ class HostsController extends AppController {
 
         $host = $hostsTable->get($id);
 
-        $objects = [
-            'Instantreports'    => [],
-            'Autoreports'       => [],
-            'Eventcorrelations' => [],
-            'Maps'              => [],
-            'Hostgroups'        => []
-        ];
-
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
             $MY_RIGHTS = [];
@@ -3558,7 +3550,7 @@ class HostsController extends AppController {
         }
 
         //Check if the host is used by Eventcorrelations
-        if (Plugin::isLoaded('EventCorrelationsModule')) {
+        if (Plugin::isLoaded('EventcorrelationModule')) {
             /** @var EventcorrelationsTable $EventcorrelationsTable */
             $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
             $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByHostId((int)$id, $MY_RIGHTS);
@@ -3573,10 +3565,17 @@ class HostsController extends AppController {
 
         $total = 0;
         $total += sizeof($objects['Instantreports']);
-        $total += sizeof($objects['Autoreports']);
-        $total += sizeof($objects['Eventcorrelations']);
-        $total += sizeof($objects['Maps']);
         $total += sizeof($objects['Hostgroups']);
+
+        if (isset($objects['Autoreports'])) {
+            $total += sizeof($objects['Autoreports']);
+        }
+        if (isset($objects['Eventcorrelations'])) {
+            $total += sizeof($objects['Eventcorrelations']);
+        }
+        if (isset($objects['Maps'])) {
+            $total += sizeof($objects['Maps']);
+        }
 
         $this->set('host', $host->toArray());
         $this->set('objects', $objects);

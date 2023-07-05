@@ -11,7 +11,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
@@ -953,9 +952,10 @@ class InstantreportsTable extends Table {
             'Instantreports.name'
         ])
             ->innerJoin(
-                ['Instantreportstohosts' => 'instantreports_to_hosts'],
+                ['InstantreportsToHosts' => 'instantreports_to_hosts'],
                 [
-                    "Instantreportstohosts.host_id" => $hostId
+                    'InstantreportsToHosts.instantreport_id = Instantreports.id',
+                    'InstantreportsToHosts.host_id' => $hostId,
                 ]
             );
 
@@ -964,7 +964,6 @@ class InstantreportsTable extends Table {
                 'Instantreports.container_id IN' => $MY_RIGHTS
             ]);
         }
-
         $query->disableHydration();
 
         return $query->toArray();

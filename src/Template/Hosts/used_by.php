@@ -30,6 +30,8 @@
  * @var bool $blurryCommandLine
  */
 
+use Cake\Core\Plugin;
+
 
 ?>
 <ol class="breadcrumb page-breadcrumb">
@@ -66,7 +68,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HostsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HostsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -94,60 +97,66 @@
                                     <?php endif; ?>
                                 </td>
                             </tr>
-                            <tr ng-if="objects.Autoreports.length > 0">
-                                <th class="bg-color-lightGray">
-                                    <i class="fa fa-file-invoice"></i>
-                                    <?php echo __('Autoreports'); ?> ({{objects.Autoreports.length}})
-                                </th>
-                            </tr>
-                            <tr ng-repeat="autoreport in objects.Autoreports">
-                                <td>
-                                    <?php if ($this->Acl->hasPermission('edit', 'autoreports', 'AutoreportModule')): ?>
-                                        <a ui-sref="AutoreportsEditStepOne({id: autoreport.id})">
+                            <?php if (Plugin::isLoaded('AutoreportModule')): ?>
+
+                                <tr ng-if="objects.Autoreports.length > 0">
+                                    <th class="bg-color-lightGray">
+                                        <i class="fa fa-file-invoice"></i>
+                                        <?php echo __('Autoreports'); ?> ({{objects.Autoreports.length}})
+                                    </th>
+                                </tr>
+                                <tr ng-repeat="autoreport in objects.Autoreports">
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('edit', 'autoreports', 'AutoreportModule')): ?>
+                                            <a ui-sref="AutoreportsEditStepTwo({id: autoreport.id})">
+                                                {{ autoreport.name }}
+                                            </a>
+                                        <?php else: ?>
                                             {{ autoreport.name }}
-                                        </a>
-                                    <?php else: ?>
-                                        {{ autoreport.name }}
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <tr ng-if="objects.Eventcorrelations.length > 0">
-                                <th class="bg-color-lightGray">
-                                    <i class="fas fa-sitemap fa-rotate-90"></i>
-                                    <?php echo __('Eventcorrelations'); ?> ({{objects.Eventcorrelations.length}})
-                                </th>
-                            </tr>
-                            <tr ng-repeat="eventcorrelation in objects.Eventcorrelations">
-                                <td>
-                                    <?php if ($this->Acl->hasPermission('editCorrelation', 'eventcorrelations', 'Eventcorrelationmodule')): ?>
-                                        <a ui-sref="EventcorrelationsEditCorrelation({id: eventcorrelation.id})">
-                                            {{ eventcorrelation.name }}
-                                        </a>
-                                    <?php else: ?>
-                                        {{ eventcorrelation.name }}
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                            <?php if (Plugin::isLoaded('EventcorrelationModule')): ?>
 
-                            <!-- Maps -->
-                            <tr ng-if="objects.Maps.length > 0">
-                                <th class="bg-color-lightGray">
-                                    <i class="fas fa-map-marker"></i>
-                                    <?php echo __('Maps'); ?> ({{objects.Maps.length}})
-                                </th>
-                            </tr>
-                            <tr ng-repeat="map in objects.Maps">
-                                <td>
-                                    <?php if ($this->Acl->hasPermission('edit', 'maps', 'MapModule')): ?>
-                                        <a ui-sref="MapsEdit({id: map.id})">
+                                <tr ng-if="objects.Eventcorrelations.length > 0">
+                                    <th class="bg-color-lightGray">
+                                        <i class="fas fa-sitemap fa-rotate-90"></i>
+                                        <?php echo __('Eventcorrelations'); ?> ({{objects.Eventcorrelations.length}})
+                                    </th>
+                                </tr>
+                                <tr ng-repeat="eventcorrelation in objects.Eventcorrelations">
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('editCorrelation', 'eventcorrelations', 'EventcorrelationModule')): ?>
+                                            <a ui-sref="EventcorrelationsEditCorrelation({id: eventcorrelation.host_id,  highlightHostId: eventcorrelation.FilterHost.id})">
+                                                {{ eventcorrelation.Hosts.name }}
+                                            </a>
+                                        <?php else: ?>
+                                            {{ eventcorrelation.Hosts.name }}
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                            <?php if (Plugin::isLoaded('MapModule')): ?>
+                                <!-- Maps -->
+                                <tr ng-if="objects.Maps.length > 0">
+                                    <th class="bg-color-lightGray">
+                                        <i class="fas fa-map-marker"></i>
+                                        <?php echo __('Maps'); ?> ({{objects.Maps.length}})
+                                    </th>
+                                </tr>
+                                <tr ng-repeat="map in objects.Maps">
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('edit', 'maps', 'MapModule')): ?>
+                                            <a ui-sref="MapeditorsEdit({id: map.id})">
+                                                {{ map.name }}
+                                            </a>
+                                        <?php else: ?>
                                             {{ map.name }}
-                                        </a>
-                                    <?php else: ?>
-                                        {{ map.name }}
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
                             <!-- Hostgroups -->
                             <tr ng-if="objects.Hostgroups.length > 0">
                                 <th class="bg-color-lightGray">

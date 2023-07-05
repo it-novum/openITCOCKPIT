@@ -194,8 +194,7 @@ class AclDependencies {
             ->allow('Services', 'details')
             ->allow('Services', 'byUuid')
             ->allow('Services', 'loadServicesByStringCake4')
-            ->allow('Services', 'loadServicesByContainerIdCake4')
-            ->allow('Services', 'usedBy');
+            ->allow('Services', 'loadServicesByContainerIdCake4');
 
         $this
             ->allow('Graphgenerators', 'getPerfdataByUuid');
@@ -262,8 +261,7 @@ class AclDependencies {
             ->allow('Hosts', 'hostservicelist')
             ->allow('Hosts', 'loadParentHostsByString')
             ->allow('Hosts', 'hoststatus')
-            ->allow('Hosts', 'byUuid')
-            ->allow('Hosts', 'usedBy');
+            ->allow('Hosts', 'byUuid');
 
         $this
             ->allow('Statistics', 'ask_anonymous_statistics');

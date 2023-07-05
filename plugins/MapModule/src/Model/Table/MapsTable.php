@@ -2322,25 +2322,28 @@ class MapsTable extends Table {
             'Maps.id',
             'Maps.name'
         ])
-            ->innerJoin(
+            ->leftJoin(
                 ['Mapitems' => 'mapitems'],
                 [
-                    "Mapitems.type"      => $type,
-                    "Mapitems.object_id" => $id
+                    'Mapitems.map_id = Maps.id',
+                    'Mapitems.type'      => $type,
+                    'Mapitems.object_id' => $id
                 ]
             )
-            ->innerJoin(
+            ->leftJoin(
                 ['Maplines' => 'maplines'],
                 [
-                    "Maplines.type"      => $type,
-                    "Maplines.object_id" => $id
+                    'Maplines.map_id = Maps.id',
+                    'Maplines.type'      => $type,
+                    'Maplines.object_id' => $id
                 ]
             )
-            ->innerJoin(
+            ->leftJoin(
                 ['Mapsummaryitems' => 'mapsummaryitems'],
                 [
-                    "Mapsummaryitems.type"      => $type,
-                    "Mapsummaryitems.object_id" => $id
+                    'Mapsummaryitems.map_id = Maps.id',
+                    'Mapsummaryitems.type'      => $type,
+                    'Mapsummaryitems.object_id' => $id
                 ]
             );
 
@@ -2353,7 +2356,16 @@ class MapsTable extends Table {
                 ]
             );
         }
+        $query->andWhere([
+            'OR' => [
+                'Mapitems.id IS NOT NULL',
+                'Maplines.id IS NOT NULL',
+                'Mapsummaryitems.id IS NOT NULL'
+            ]
+        ]);
+        $query->group(['Maps.id'])
+            ->disableHydration();
 
-        return $query->group(['Maps.id'])->disableHydration()->toArray() ?? [];
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }

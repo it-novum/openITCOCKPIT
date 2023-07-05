@@ -43,10 +43,8 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
-use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
-use App\Model\Table\InstantreportsTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicecommandargumentvaluesTable;
 use App\Model\Table\ServiceeventcommandargumentvaluesTable;
@@ -3091,13 +3089,6 @@ class ServicesController extends AppController {
 
         $service['name'] = (!$service->get('name')) ? $service->get('servicetemplate')->get('name') : $service->get('name');
 
-        $objects = [
-            'Instantreports'    => [],
-            'Autoreports'       => [],
-            'Eventcorrelations' => [],
-            'Maps'              => [],
-            'Servicegroups'     => []
-        ];
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -3116,7 +3107,7 @@ class ServicesController extends AppController {
         }
 
         //Check if the host is used by Eventcorrelations
-        if (Plugin::isLoaded('EventCorrelationsModule')) {
+        if (Plugin::isLoaded('EventcorrelationModule')) {
             /** @var EventcorrelationsTable $EventcorrelationsTable */
             $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
             $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByServiceId((int)$id, $MY_RIGHTS);
@@ -3136,9 +3127,15 @@ class ServicesController extends AppController {
 
         $total = 0;
         $total += sizeof($objects['Instantreports']);
-        $total += sizeof($objects['Autoreports']);
-        $total += sizeof($objects['Eventcorrelations']);
-        $total += sizeof($objects['Maps']);
+        if (isset($objects['Autoreports'])) {
+            $total += sizeof($objects['Autoreports']);
+        }
+        if (isset($objects['Eventcorrelations'])) {
+            $total += sizeof($objects['Eventcorrelations']);
+        }
+        if (isset($objects['Maps'])) {
+            $total += sizeof($objects['Maps']);
+        }
         $total += sizeof($objects['Servicegroups']);
 
         $this->set('service', $service->toArray());
