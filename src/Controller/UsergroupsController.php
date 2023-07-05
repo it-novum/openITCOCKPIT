@@ -43,7 +43,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\Filter;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\LdapgroupFilter;
 
@@ -403,20 +402,15 @@ class UsergroupsController extends AppController {
                 }
 
                 $action = 'copy';
-                if (isset($usergroupData['Hostgroup']['id'])) {
+                if (isset($usergroupData['Usergroup']['id'])) {
                     //Update existing usergroup
-                    //This happens, if a user copy multiple usergroups, and one run into an validation error
+                    //This happens, if a user copy multiple usergroups, and one run into a validation error
                     //All usergroups without validation errors got already saved to the database
-                    $newUsergroupEntity = $UsergroupsTable->get($usergroupData['Hostgroup']['id'], [
-                        'contain' => [
-                            'Containers'
-                        ]
-                    ]);
+                    $newUsergroupEntity = $UsergroupsTable->get($usergroupData['Usergroup']['id']);
                     $newUsergroupEntity->setAccess('*', false);
-                    $newUsergroupEntity->container->setAccess('*', false);
-                    $newUsergroupEntity->container->setAccess('name', true);
-                    $newUsergroupEntity = $UsergroupsTable->patchEntity($newUsergroupEntity, $usergroupData['Hostgroup']);
-                    $newUsergroupData = $newUsergroupEntity->toArray();
+                    $newUsergroupEntity->setAccess('name', true);
+                    $newUsergroupEntity->setAccess('description', true);
+                    $newUsergroupEntity = $UsergroupsTable->patchEntity($newUsergroupEntity, $usergroupData['Usergroup']);
                     $action = 'edit';
                 }
                 $UsergroupsTable->save($newUsergroupEntity);
@@ -428,44 +422,35 @@ class UsergroupsController extends AppController {
                 } else {
                     //No errors
                     $postData[$index]['Usergroup']['id'] = $newUsergroupEntity->get('id');
+                    if ($action === 'copy') {
+                        /** @var ArosTable $ArosTable */
+                        $ArosTable = TableRegistry::getTableLocator()->get('Acl.Aros');
+                        $ArosAcosTable = TableRegistry::getTableLocator()->get('ArosAcos');
+                        $aro = $ArosTable->find()
+                            ->where([
+                                'Aros.foreign_key' => $newUsergroupEntity->get('id')
+                            ])
+                            ->firstOrFail();
+                        /** @var ArosAcosTable $ArosAcosTable */
+                        $ArosAcosTable = TableRegistry::getTableLocator()->get('ArosAcos');
 
-                    //Save Acos
-                    $AclDependencies = new AclDependencies();
-                    $selectedAcos = $this->request->getData('Acos');
-                    $selectedAcos = $AclDependencies->getDependentAcos($AcosTable, $selectedAcos);
-
-                    /** @var ArosTable $ArosTable */
-                    $ArosTable = TableRegistry::getTableLocator()->get('Acl.Aros');
-                    /** @var ArosAcosTable $ArosAcosTable */
-                    $ArosAcosTable = TableRegistry::getTableLocator()->get('ArosAcos');
-                    $aro = $ArosTable->find()
-                        ->where([
-                            'Aros.foreign_key' => $usergroup->get('id')
-                        ])
-                        ->firstOrFail();
-
-                    //Drop old permissions
-                    $ArosAcosTable->deleteAll([
-                        'ArosAcos.aro_id' => $aro->get('id')
-                    ]);
-
-                    $arosToAcos = [];
-                    foreach ($selectedAcos as $acoId => $state) {
-                        $arosToAcos[] = $ArosAcosTable->newEntity([
-                            'aro_id'  => $aro->get('id'),
-                            'aco_id'  => $acoId,
-                            '_create' => (int)($state === 1),
-                            '_read'   => (int)($state === 1),
-                            '_update' => (int)($state === 1),
-                            '_delete' => (int)($state === 1),
-                        ]);
+                        $arosAcos = $ArosAcosTable->find()
+                            ->where([
+                                'ArosAcos.aro_id' => $sourceUsergroup['aro']['id']
+                            ])
+                            ->all();
+                        foreach ($arosAcos as $aroAco) {
+                            $arosToAcos[] = $ArosAcosTable->newEntity([
+                                'aro_id'  => $aro->get('id'),
+                                'aco_id'  => (int)$aroAco['aco_id'],
+                                '_create' => (int)$aroAco['_create'],
+                                '_read'   => (int)$aroAco['_read'],
+                                '_update' => (int)$aroAco['_update'],
+                                '_delete' => (int)$aroAco['_delete'],
+                            ]);
+                        }
+                        $ArosAcosTable->saveMany($arosToAcos);
                     }
-
-                    $ArosAcosTable->saveMany($arosToAcos);
-                    Cache::clear('permissions');
-                    $this->set('usergroup', $usergroup);
-                    $this->viewBuilder()->setOption('serialize', ['usergroup']);
-
                 }
             }
         }
