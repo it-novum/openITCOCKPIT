@@ -157,6 +157,11 @@ class ServicegroupsController extends AppController {
             $servicegroup->set('uuid', UUID::v4());
             $servicegroup->get('container')->set('containertype_id', CT_SERVICEGROUP);
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $ServicegroupsTable->save($servicegroup);
             if ($servicegroup->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -234,6 +239,12 @@ class ServicegroupsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $User = new User($this->getUser());
+
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $servicegroupEntity = $ServicegroupsTable->get($id, [
                 'contain' => [
                     'Containers'
@@ -300,6 +311,8 @@ class ServicegroupsController extends AppController {
         if (!$ServicegroupsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid Servicegroup'));
         }
+
+        $ContainersTable->acquireLock();
 
         $servicegroup = $ServicegroupsTable->getServicegroupById($id);
         $container = $ContainersTable->get($servicegroup->get('container')->get('id'), [
@@ -390,6 +403,8 @@ class ServicegroupsController extends AppController {
             if (!$ServicegroupsTable->existsById($id)) {
                 throw new NotFoundException(__('Invalid Servicegroup'));
             }
+
+            $ContainersTable->acquireLock();
 
             $servicegroup = $ServicegroupsTable->getServicegroupForEdit($id);
             $servicegroupForChangelog = $servicegroup;
@@ -750,7 +765,10 @@ class ServicegroupsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $Cache = new KeyValueStore();
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
 
             $postData = $this->request->getData('data');
             $User = new User($this->getUser());
@@ -760,12 +778,7 @@ class ServicegroupsController extends AppController {
                 if (!isset($servicegroupData['Servicegroup']['id'])) {
                     //Create/clone servicegroup
                     $sourceServicegroupId = $servicegroupData['Source']['id'];
-                    if (!$Cache->has($sourceServicegroupId)) {
-                        $sourceServicegroup = $ServicegroupsTable->getSourceServicegroupForCopy($sourceServicegroupId, $MY_RIGHTS);
-                        $Cache->set($sourceServicegroupId, $sourceServicegroup);
-                    }
-
-                    $sourceServicegroup = $Cache->get($sourceServicegroupId);
+                    $sourceServicegroup = $ServicegroupsTable->getSourceServicegroupForCopy($sourceServicegroupId, $MY_RIGHTS);
 
                     $newServicegroupData = [
                         'description'   => $servicegroupData['Servicegroup']['description'],
@@ -840,6 +853,7 @@ class ServicegroupsController extends AppController {
         if ($hasErrors) {
             $this->response = $this->response->withStatus(400);
         }
+        Cache::clear('permissions');
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
     }

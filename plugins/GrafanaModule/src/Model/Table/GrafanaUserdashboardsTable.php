@@ -420,4 +420,16 @@ class GrafanaUserdashboardsTable extends Table {
 
         return $dashboard;
     }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedGrafanaUserdashboardsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
 }

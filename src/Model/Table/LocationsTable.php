@@ -230,4 +230,17 @@ class LocationsTable extends Table {
         }
         return $result->get('id');
     }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedLocationsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
+
 }

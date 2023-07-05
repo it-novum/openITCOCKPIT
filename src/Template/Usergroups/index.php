@@ -168,8 +168,17 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'usergroups')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="UsergroupsCopy({ids: usergroup.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'usergroups')): ?>
-                                                <div class="dropdown-divider" ng-show="usergroup.name !== 'Administrator'"></div>
+                                                <div class="dropdown-divider"
+                                                     ng-show="usergroup.name !== 'Administrator'"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(usergroup))"
                                                    ng-show="usergroup.name !== 'Administrator'"
                                                    href="javascript:void(0);"
@@ -205,6 +214,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
+                            <?php if ($this->Acl->hasPermission('copy', 'usergroups')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="UsergroupsCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('delete', 'usergroups')): ?>
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">

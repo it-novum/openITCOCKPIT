@@ -47,7 +47,6 @@ use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -155,6 +154,11 @@ class HostgroupsController extends AppController {
             $hostgroup->set('uuid', UUID::v4());
             $hostgroup->get('container')->set('containertype_id', CT_HOSTGROUP);
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $HostgroupsTable->save($hostgroup);
             if ($hostgroup->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -232,6 +236,12 @@ class HostgroupsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update hostgroup data
             $User = new User($this->getUser());
+
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $hostgroupEntity = $HostgroupsTable->get($id, [
                 'contain' => [
                     'Containers'
@@ -297,6 +307,8 @@ class HostgroupsController extends AppController {
         if (!$HostgroupsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid Hostgroup'));
         }
+
+        $ContainersTable->acquireLock();
 
         $hostgroup = $HostgroupsTable->getHostgroupById($id);
         $container = $ContainersTable->get($hostgroup->get('container')->get('id'), [
@@ -730,6 +742,8 @@ class HostgroupsController extends AppController {
                 throw new NotFoundException(__('Invalid Hostgroup'));
             }
 
+            $ContainersTable->acquireLock();
+
             $hostgroup = $HostgroupsTable->getHostgroupForEdit($id);
             $hostgroupForChangelog = $hostgroup;
             if (!$this->allowedByContainerId($hostgroup['Hostgroup']['container']['parent_id'])) {
@@ -856,7 +870,11 @@ class HostgroupsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $Cache = new KeyValueStore();
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
 
             $postData = $this->request->getData('data');
             $User = new User($this->getUser());
@@ -866,12 +884,7 @@ class HostgroupsController extends AppController {
                 if (!isset($hostgroupData['Hostgroup']['id'])) {
                     //Create/clone hostgroup
                     $sourceHostgroupId = $hostgroupData['Source']['id'];
-                    if (!$Cache->has($sourceHostgroupId)) {
-                        $sourceHostgroup = $HostgroupsTable->getSourceHostgroupForCopy($sourceHostgroupId, $MY_RIGHTS);
-                        $Cache->set($sourceHostgroupId, $sourceHostgroup);
-                    }
-
-                    $sourceHostgroup = $Cache->get($sourceHostgroupId);
+                    $sourceHostgroup = $HostgroupsTable->getSourceHostgroupForCopy($sourceHostgroupId, $MY_RIGHTS);
 
                     $newHostgroupData = [
                         'description'   => $hostgroupData['Hostgroup']['description'],
@@ -946,6 +959,7 @@ class HostgroupsController extends AppController {
         if ($hasErrors) {
             $this->response = $this->response->withStatus(400);
         }
+        Cache::clear('permissions');
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
     }

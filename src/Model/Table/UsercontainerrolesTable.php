@@ -419,11 +419,6 @@ class UsercontainerrolesTable extends Table {
             ->where(['Usercontainerroles.id IN' => $ids])
             ->contain([
                 'Containers',
-                'Ldapgroups' => [
-                    'fields' => [
-                        'Ldapgroups.id'
-                    ]
-                ]
             ])
             ->matching('Containers')
             ->order(['Usercontainerroles.id' => 'asc']);
@@ -434,9 +429,87 @@ class UsercontainerrolesTable extends Table {
             ]);
         }
 
+        $query->group([
+            'Usercontainerroles.id'
+        ]);
+
         $query->disableHydration()
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param $id
+     * @param array $MY_RIGHTS
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getSourceUserContainerRoleForCopy($id, array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where([
+                'Usercontainerroles.id' => $id
+            ])
+            ->contain([
+                'Containers',
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $usercontainerrole = $query;
+
+
+        $usercontainerrole['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $usercontainerrole['ldapgroups'] = [
+            '_ids' => Hash::extract($query, 'ldapgroups.{n}.id')
+        ];
+
+
+        //Build up data struct for radio inputs
+        $usercontainerrole['ContainersUsercontainerrolesMemberships'] = [];
+        foreach ($query['containers'] as $container) {
+            $usercontainerrole['ContainersUsercontainerrolesMemberships'][$container['id']] = (int)$container['_joinData']['permission_level'];
+        }
+
+        return $usercontainerrole;
+    }
+
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedUsercontainerrolesByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (\Cake\ORM\Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $usercontainerroles = $result->toArray();
+
+        // Check each user container role, if it as more than one container.
+        // If user container role has more than 1 container, we can keep this each user container role because is not orphaned
+        $orphanedUsercontainerroles = [];
+        foreach ($usercontainerroles as $usercontainerrole) {
+            if (empty($usercontainerrole->containers)) {
+                $orphanedUsercontainerroles[] = $usercontainerrole;
+            }
+        }
+
+        return $orphanedUsercontainerroles;
     }
 }

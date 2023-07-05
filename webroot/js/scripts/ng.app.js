@@ -1102,6 +1102,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "UsercontainerrolesEditController"
             })
 
+            .state('UsercontainerrolesCopy', {
+                url: '/usercontainerroles/copy/:ids',
+                templateUrl: "/usercontainerroles/copy.html",
+                controller: "UsercontainerrolesCopyController"
+            })
+
             .state('UsergroupsIndex', {
                 url: '/usergroups/index',
                 templateUrl: "/usergroups/index.html",
@@ -1118,6 +1124,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/usergroups/edit/:id',
                 templateUrl: "/usergroups/edit.html",
                 controller: "UsergroupsEditController"
+            })
+
+            .state('UsergroupsCopy', {
+                url: '/usergroups/copy/:ids',
+                templateUrl: "/usergroups/copy.html",
+                controller: "UsergroupsCopyController"
             })
 
             .state('ProfileEdit', {

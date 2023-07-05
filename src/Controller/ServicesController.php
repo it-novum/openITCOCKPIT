@@ -36,6 +36,7 @@ use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
+use App\Model\Entity\Servicetemplate;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -2024,11 +2025,17 @@ class ServicesController extends AppController {
             $Service = new Service($service);
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
 
+            $tags = $Service->getTags();
+            if (empty($tags)) {
+                $tags = $service['_matchingData']['Servicetemplates']['tags'];
+            }
+
             $all_services[] = [
                 $Service->getServicename(),
                 $Service->getId(),
                 $Service->getUuid(),
                 $Service->getDescription(),
+                $tags,
                 $service['_matchingData']['Servicetemplates']['id'],
                 $service['_matchingData']['Servicetemplates']['name'],
 
@@ -2053,6 +2060,7 @@ class ServicesController extends AppController {
             'service_id',
             'service_uuid',
             'service_description',
+            'service_tags',
             'servicetemplate_id',
             'servicetemplate_name',
 

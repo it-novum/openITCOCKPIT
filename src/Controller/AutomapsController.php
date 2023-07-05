@@ -43,7 +43,6 @@ use Exception;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Dashboards\AutomapJson;
 use itnovum\openITCOCKPIT\Core\HostConditions;
-use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\Host;
@@ -409,20 +408,13 @@ class AutomapsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $Cache = new KeyValueStore();
-
             $postData = $this->request->getData('data');
 
             foreach ($postData as $index => $automapData) {
                 if (!isset($automapData['Automap']['id'])) {
                     //Create/clone automap
                     $sourceAutomapId = $automapData['Source']['id'];
-                    if (!$Cache->has($sourceAutomapId)) {
-                        $sourceAutomap = $AutomapsTable->getSourceAutomapForCopy($sourceAutomapId, $MY_RIGHTS);
-                        $Cache->set($sourceAutomapId, $sourceAutomap);
-                    }
-
-                    $sourceAutomap = $Cache->get($sourceAutomapId);
+                    $sourceAutomap = $AutomapsTable->getSourceAutomapForCopy($sourceAutomapId, $MY_RIGHTS);
 
                     $newAutomapData = [
                         'name'              => $automapData['Automap']['name'],

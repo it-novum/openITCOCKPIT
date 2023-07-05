@@ -45,7 +45,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
@@ -436,20 +435,13 @@ class GrafanaUserdashboardsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $Cache = new KeyValueStore();
-
             $postData = $this->request->getData('data', []);
 
             foreach ($postData as $index => $dashboardData) {
                 if (!isset($dashboardData['Dashboard']['id'])) {
                     //Create/clone Grafana User Dashboard
                     $sourceId = $dashboardData['Source']['id'];
-                    if (!$Cache->has($sourceId)) {
-                        $sourceDashboard = $GrafanaUserdashboardsTable->getSourceGrafanaUserdashboardForCopy($sourceId, $MY_RIGHTS);
-                        $Cache->set($sourceId, $sourceDashboard);
-                    }
-
-                    $sourceDashboard = $Cache->get($sourceId);
+                    $sourceDashboard = $GrafanaUserdashboardsTable->getSourceGrafanaUserdashboardForCopy($sourceId, $MY_RIGHTS);
 
                     $newDashboardData = $sourceDashboard;
                     $newDashboardData['name'] = $dashboardData['Dashboard']['name'];
