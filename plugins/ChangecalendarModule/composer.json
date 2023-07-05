@@ -1,0 +1,23 @@
+{
+    "name": "open-itcockpit/ChangecalendarModule",
+    "description": "ChangecalendarModule plugin for openITCOCKPIT",
+    "type": "cakephp-plugin",
+    "license": "Proprietary",
+    "require": {
+        "cakephp/cakephp": ""
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ChangecalendarModule\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ChangecalendarModule\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+        }
+    }
+}

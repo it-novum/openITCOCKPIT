@@ -98,6 +98,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         }
 
         $this->addPlugin('Dbml');
+        $this->addPlugin('ChangecalendarModule');
     }
 
     /**
