@@ -98,7 +98,9 @@ class StatisticsController extends AppController {
                 'askAgainForHelp',
                 'Remind me later',
                 new \DateTime('+16 hours'),
-                '/'
+                '/',
+                null,
+                true
             ));
         }
 
