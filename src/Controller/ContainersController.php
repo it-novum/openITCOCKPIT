@@ -438,7 +438,7 @@ class ContainersController extends AppController {
         $containerForChangelog = $container->toArray();
 
         //check if the current container contains subcontainers
-        $deletionAllowed = $ContainersTable->allowDelete($id);
+        $deletionAllowed = $ContainersTable->allowDelete($id, $container->containertype_id);
         if ($deletionAllowed) {
             Cache::clear('permissions');
             if ($ContainersTable->delete($container)) {

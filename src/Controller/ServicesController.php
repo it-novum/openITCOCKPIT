@@ -993,6 +993,12 @@ class ServicesController extends AppController {
             }
 
             $host = $HostsTable->getHostForServiceEdit($hostId);
+
+            if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+                $this->render403();
+                return;
+            }
+
             $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
             $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
 

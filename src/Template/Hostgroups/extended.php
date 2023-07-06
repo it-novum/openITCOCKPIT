@@ -116,7 +116,16 @@
                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                         </button>
                                     <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('copy', 'hostgroups')): ?>
+                                        <div class="dropdown-divider"></div>
+                                        <a ui-sref="HostgroupsCopy({ids: post.Hostgroup.id})"
+                                           class="dropdown-item">
+                                            <i class="fas fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                    <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
+                                        <div class="dropdown-divider"></div>
                                         <button data-toggle="modal"
                                                 data-target="#nag_command_reschedule"
                                                 ng-click="rescheduleHost(getObjectsForExternalCommand())"
@@ -390,6 +399,15 @@
                                                    class="dropdown-item">
                                                     <i class="fa fa-plug"></i>
                                                     <?php echo __('Enable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
+                                                <div class="dropdown-divider" ng-if="host.Host.allow_edit"></div>
+                                                <a ui-sref="HostsCopy({ids: host.Host.id})"
+                                                   ng-if="host.Host.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>

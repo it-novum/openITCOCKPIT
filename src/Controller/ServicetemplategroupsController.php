@@ -44,7 +44,6 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
-use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServicetemplategroupsConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -79,7 +78,6 @@ class ServicetemplategroupsController extends AppController {
 
         $all_servicetemplategroups = [];
         foreach ($servicetemplategroups as $servicetemplategroup) {
-           // debug($servicetemplategroup);
             $servicetemplategroup['allow_edit'] = $this->hasPermission('edit', 'servicetemplategroups');
             if ($this->hasRootPrivileges === false) {
                 $servicetemplategroup['allow_edit'] = $this->isWritableContainer($servicetemplategroup['Servicetemplategroup']['container_id']);
@@ -87,17 +85,6 @@ class ServicetemplategroupsController extends AppController {
             $all_servicetemplategroups[] = $servicetemplategroup;
         }
 
-       // debug($all_servicetemplategroups);
-
-        /* foreach ($hostgroups as $hostgroup) {
-             $hostgroup['allowEdit'] = $this->hasPermission('edit', 'hostgroups');
-             if ($this->hasRootPrivileges === false && $hostgroup['allowEdit'] === true) {
-                 $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup->get('container')->get('parent_id'));
-             }
-
-             $all_hostgroups[] = $hostgroup;
-         }
- */
         $this->set('all_servicetemplategroups', $all_servicetemplategroups);
         $this->viewBuilder()->setOption('serialize', ['all_servicetemplategroups']);
     }
@@ -458,7 +445,7 @@ class ServicetemplategroupsController extends AppController {
                 'Servicetemplategroups'
             ]
         ]);
-        if ($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)) {
+        if ($ContainersTable->allowDelete($container->id, CT_SERVICETEMPLATEGROUP)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 Cache::clear('permissions');
@@ -499,6 +486,119 @@ class ServicetemplategroupsController extends AppController {
 
     }
 
+    public function copy() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var ServicetemplategroupsTable $ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $servicetemplategroups = $ServicetemplategroupsTable->getServicetemplategroupsForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('servicetemplategroups', $servicetemplategroups);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplategroups']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData('data');
+            $User = new User($this->getUser());
+            $userId = $User->getId();
+
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
+            foreach ($postData as $index => $servicetemplategroupData) {
+                if (!isset($servicetemplategroupData['Servicetemplategroup']['id'])) {
+                    //Create/clone service template group
+                    $sourceServicetemplategroupId = $servicetemplategroupData['Source']['id'];
+                    $sourceServicetemplategroup = $ServicetemplategroupsTable->getSourceServicetemplategroupForCopy($sourceServicetemplategroupId, $MY_RIGHTS);
+
+                    $newServicetemplategroupData = [
+                        'description'      => $servicetemplategroupData['Servicetemplategroup']['description'],
+                        'uuid'             => UUID::v4(),
+                        'container'        => [
+                            'name'             => $servicetemplategroupData['Servicetemplategroup']['container']['name'],
+                            'containertype_id' => CT_SERVICETEMPLATEGROUP,
+                            'parent_id'        => $sourceServicetemplategroup['container']['parent_id']
+                        ],
+                        'servicetemplates' => [
+                            '_ids' => $sourceServicetemplategroup['servicetemplates']['_ids']
+                        ]
+                    ];
+
+                    $newServicetemplategroupEntity = $ServicetemplategroupsTable->newEntity($newServicetemplategroupData);
+
+                }
+
+                $action = 'copy';
+                if (isset($servicetemplategroupData['Servicetemplategroup']['id'])) {
+                    //Update existing servicetemplategroup
+                    //This happens, if a user copy multiple servicetemplategroup, and one run into an validation error
+                    //All servicetemplategroup without validation errors got already saved to the database
+                    $newServicetemplategroupEntity = $ServicetemplategroupsTable->get($servicetemplategroupData['Servicetemplategroup']['id'], [
+                        'contain' => [
+                            'Containers'
+                        ]
+                    ]);
+                    $newServicetemplategroupEntity->setAccess('*', false);
+                    $newServicetemplategroupEntity->setAccess('description', true);
+                    $newServicetemplategroupEntity->container->setAccess('*', false);
+                    $newServicetemplategroupEntity->container->setAccess('name', true);
+                    $newServicetemplategroupEntity = $ServicetemplategroupsTable->patchEntity($newServicetemplategroupEntity, $servicetemplategroupData['Servicetemplategroup']);
+                    $newServicetemplategroupData = $newServicetemplategroupEntity->toArray();
+                    $action = 'edit';
+                }
+                $ServicetemplategroupsTable->save($newServicetemplategroupEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newServicetemplategroupEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newServicetemplategroupEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Servicetemplategroup']['id'] = $newServicetemplategroupEntity->get('id');
+
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        $action,
+                        'servicetemplategroups',
+                        $postData[$index]['Servicetemplategroup']['id'],
+                        OBJECT_SERVICETEMPLATEGROUP,
+                        $newServicetemplategroupEntity->get('container')->get('parent_id'),
+                        $userId,
+                        $newServicetemplategroupEntity->get('container')->get('name'),
+                        ['Servicetemplategroup' => $newServicetemplategroupData]
+                    );
+                    if ($changelog_data) {
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        Cache::clear('permissions');
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+    }
 
     /********************************
      *      ALLOCATION METHODS      *

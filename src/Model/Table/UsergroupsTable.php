@@ -7,6 +7,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
@@ -223,5 +224,55 @@ class UsergroupsTable extends Table {
             ->first();
 
         return $this->emptyArrayIfNull($query);
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getUsergroupsForCopy($ids = []) {
+        $query = $this->find()
+            ->select([
+                'Usergroups.id',
+                'Usergroups.name',
+                'Usergroups.description',
+            ])
+            ->where(['Usergroups.id IN' => $ids])
+            ->order(['Usergroups.id' => 'asc']);
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getSourceUsergroupForCopy($id) {
+        $usergroup = $this->find()
+            ->contain([
+                'Aros'       => [
+                    'Acos'
+                ],
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
+                ]
+            ])
+            ->where([
+                'Usergroups.id' => $id
+            ])
+            ->firstOrFail();
+
+        $usergroup = $usergroup->toArray();
+
+        $usergroup['ldapgroups'] = [
+            '_ids' => Hash::extract($usergroup, 'ldapgroups.{n}.id')
+        ];
+
+        return $usergroup;
     }
 }
