@@ -79,10 +79,9 @@ angular.module('openITCOCKPIT')
                                     $('#addEventModal').modal('show');
                                     $scope.newEvent = {
                                         title: '',
-                                        begin: new Date(currentDate + "T00:00:00"),
+                                        start: new Date(currentDate + "T00:00:00"),
                                         end: new Date(currentDate + "T00:00:00")
                                     };
-                                    console.log($scope.newEvent);
                                 }
                             );
 
@@ -313,7 +312,6 @@ angular.module('openITCOCKPIT')
 
                 RedirectService.redirectWithFallback('ChangecalendarsIndex');
 
-                console.log('Data saved successfully');
             }, function errorCallback(result){
 
                 NotyService.genericError();
