@@ -1323,4 +1323,35 @@ class UsersTable extends Table {
 
         return $query->toArray();
     }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedUsersByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (\Cake\ORM\Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $users = $result->toArray();
+
+        // Check each user, if it as more than one container.
+        // If the user has more than 1 container, we can keep this user because is not orphaned
+        $orphanedUsers = [];
+        foreach ($users as $user) {
+            if (empty($user->containers)) {
+                $orphanedUsers[] = $user;
+            }
+        }
+
+        return $orphanedUsers;
+    }
 }

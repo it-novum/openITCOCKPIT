@@ -6,14 +6,19 @@ use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\QueryExpression;
+use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use CustomalertModule\Model\Table\CustomalertRulesTable;
+use CustomalertModule\Model\Table\CustomalertsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardsTable;
 use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 use MapModule\Model\Table\MapsTable;
@@ -73,6 +78,20 @@ class ContainersTable extends Table {
      * @var null|array
      */
     private $containerCache = null;
+
+    /**
+     * @var int|null
+     */
+    private $semaphoreKey = null;
+
+    /**
+     * @var \SysvSemaphore
+     * Provided by ext-sysvsem.
+     * Default on Ubuntu and Debian.
+     * For RHEL you have to install php-process
+     *
+     */
+    private $semaphore;
 
     /**
      * Initialize method
@@ -1228,5 +1247,257 @@ class ContainersTable extends Table {
         );
         sort($visibleContainerIds);
         return $visibleContainerIds;
+    }
+
+    /**
+     * Will create a Semaphore with a limit of 1 to avoid multiple operations running concurrently on the containers table
+     * This method blocks (if necessary) until the semaphore can be acquired
+     *
+     * https://github.com/cakephp/cakephp/issues/14983#issuecomment-1613491168
+     * @param bool $auto_release
+     * @return bool
+     */
+    public function acquireLock(bool $auto_release = true) {
+        if ($this->semaphoreKey === null) {
+            $this->semaphoreKey = ftok(__FILE__, 'c');
+            $this->semaphore = sem_get($this->semaphoreKey, 1, 0666, $auto_release);
+        }
+
+        return sem_acquire($this->semaphore);
+    }
+
+    /**
+     * @return bool
+     */
+    public function releaseLock() {
+        if (!is_null($this->semaphore)) {
+            return sem_release($this->semaphore);
+        }
+    }
+
+    /**
+     *
+     * This method will check if the parent_id of all containers exists in the containers table
+     * and will return all containers that are orphaned (Where the parent_id does not exist in the containers table anymore)
+     *
+     * @return array
+     */
+    public function getOrphanedContainers() {
+        $query = $this->find();
+        $query->select([
+            'Containers.id',
+            'Containers.name',
+            'Containers.containertype_id',
+            'orphaned' => $query->newExpr('
+                SELECT containers_sub.id
+                FROM containers AS containers_sub
+                WHERE containers_sub.id = Containers.parent_id')
+        ])
+            ->where([
+                'Containers.id > ' => ROOT_CONTAINER
+            ])
+            ->having(
+                'orphaned IS NULL'
+            )
+            ->disableAutoFields()
+            ->disableHydration();
+
+        $result = $query->all();
+
+        return $result->toArray();
+    }
+
+    /**
+     * Checks if an orphaned container is used by any objects
+     *
+     * @param int $containerId
+     * @return bool false=Container not in use, true=Container is in use (bad!)
+     */
+    public function isOrphanedContainerInUse(int $containerId) {
+        $inUse = false;
+
+        /** @var TenantsTable $TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+        if (!empty($TenantsTable->tenantsByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by tenants', $containerId));
+            $inUse = true;
+        }
+
+        /** @var LocationsTable $LocationsTable */
+        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+        if (!empty($LocationsTable->getOrphanedLocationsByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by locations', $containerId));
+            $inUse = true;
+        }
+
+        // Containers / Nodes
+        if (!empty($this->getAllContainerByParentId($containerId))) {
+            Log::error(sprintf('container_id %s is used by nodes', $containerId));
+            $inUse = true;
+        }
+
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        if (!empty($ContactgroupsTable->getOrphanedContactgroupsByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by contact group', $containerId));
+            $inUse = true;
+        }
+
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        if (!empty($HostgroupsTable->getOrphanedHostgroupsByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by host group', $containerId));
+            $inUse = true;
+        }
+
+        /** @var ServicegroupsTable $ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        if (!empty($ServicegroupsTable->getOrphanedServicegroupsByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by service group', $containerId));
+            $inUse = true;
+        }
+
+        /** @var ServicetemplategroupsTable $ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+        if (!empty($ServicetemplategroupsTable->getOrphanedServicetemplategroupsByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by service template group', $containerId));
+            $inUse = true;
+        }
+
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        if (!empty($InstantreportsTable->getOrphanedInstantreportsByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by instant report', $containerId));
+            $inUse = true;
+        }
+
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            if (!empty($SatellitesTable->getOrphanedSatellitesByContainerId($containerId))) {
+                Log::error(sprintf('container_id %s is used by satellite', $containerId));
+                $inUse = true;
+            }
+        }
+
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+
+            if (!empty($AutoreportsTable->getOrphanedAutoreportsByContainerId($containerId))) {
+                Log::error(sprintf('container_id %s is used by auto report', $containerId));
+                $inUse = true;
+            }
+        }
+
+        if (Plugin::isLoaded('GrafanaModule')) {
+            /** @var $GrafanaUserdashboardsTable GrafanaUserdashboardsTable */
+            $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+
+            if (!empty($GrafanaUserdashboardsTable->getOrphanedGrafanaUserdashboardsByContainerId($containerId))) {
+                Log::error(sprintf('container_id %s is used by grafana user dashboard', $containerId));
+                $inUse = true;
+            }
+        }
+
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
+            if (!empty($MapsTable->getOrphanedMapsByContainerId($containerId))) {
+                Log::error(sprintf('container_id %s is used by map', $containerId));
+                $inUse = true;
+            }
+        }
+
+        if (Plugin::isLoaded('CustomalertModule')) {
+            /** @var CustomalertRulesTable $CustomalertRulesTable */
+            $CustomalertRulesTable = TableRegistry::getTableLocator()->get('CustomalertModule.CustomalertRules');
+            if (!empty($CustomalertRulesTable->getOrphanedCustomAlertRulesByContainerId($containerId))) {
+                Log::error(sprintf('container_id %s is used by custom alert rule', $containerId));
+                $inUse = true;
+            }
+        }
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!empty($HostsTable->getHostsByContainerIdExact($containerId))) {
+            Log::error(sprintf('container_id %s is used by host', $containerId));
+            $inUse = true;
+        }
+
+        /** @var HosttemplatesTable $HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        if (!empty($HosttemplatesTable->getHosttemplatesByContainerIdExact($containerId))) {
+            Log::error(sprintf('container_id %s is used by host template', $containerId));
+            $inUse = true;
+        }
+
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        if (!empty($ServicetemplatesTable->getServicetemplatesByContainerIdExact($containerId))) {
+            Log::error(sprintf('container_id %s is used by service template', $containerId));
+            $inUse = true;
+        }
+
+        /** @var TimeperiodsTable $TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        if (!empty($TimeperiodsTable->getTimeperiodsByContainerIdExact($containerId))) {
+            Log::error(sprintf('container_id %s is used by time period', $containerId));
+            $inUse = true;
+        }
+
+        /** @var HostdependenciesTable $HostdependenciesTable */
+        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+        if (!empty($HostdependenciesTable->getHostdependenciesByContainerIdExact($containerId))) {
+            Log::error(sprintf('container_id %s is used by host dependency', $containerId));
+            $inUse = true;
+        }
+
+        /** @var $HostescalationsTable HostescalationsTable */
+        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+        if (!empty($HostescalationsTable->getHostescalationsByContainerIdExact($containerId))) {
+            Log::error(sprintf('container_id %s is used by host escalation', $containerId));
+            $inUse = true;
+        }
+
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+        if (!empty($ServicedependenciesTable->getServicedependenciesByContainerIdExact($containerId))) {
+            Log::error(sprintf('container_id %s is used by service dependency', $containerId));
+            $inUse = true;
+        }
+
+        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+        if (!empty($ServiceescalationsTable->getServiceescalationsByContainerIdExact($containerId))) {
+            Log::error(sprintf('container_id %s is used by service escalation', $containerId));
+            $inUse = true;
+        }
+
+        /** @var ContactsTable $ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        if (!empty($ContactsTable->getOrphanedContactsByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by contact', $containerId));
+            $inUse = true;
+        }
+
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        if (!empty($UsersTable->getOrphanedUsersByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by user', $containerId));
+            $inUse = true;
+        }
+
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+        if (!empty($UsercontainerrolesTable->getOrphanedUsercontainerrolesByContainerId($containerId))) {
+            Log::error(sprintf('container_id %s is used by user container role', $containerId));
+            $inUse = true;
+        }
+
+
+        return $inUse;
     }
 }

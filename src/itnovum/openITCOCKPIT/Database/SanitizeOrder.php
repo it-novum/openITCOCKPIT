@@ -29,10 +29,24 @@ class SanitizeOrder {
     /**
      * Only allow to pass column_name or Table.column_name into the MySQL ORDER BY query
      *
-     * @param string $sort
+     * @param string|array $sort
      * @return array|string|string[]|null
      */
-    public static function filterOrderColumn(string $sort) {
+    public static function filterOrderColumn($sort) {
+        if (is_array($sort)) {
+            return self::filterOrderArray($sort);
+        }
+
+        return self::_filterOrderColumn($sort);
+    }
+
+    /**
+     * Only allow to pass column_name or Table.column_name into the MySQL ORDER BY query
+     *
+     * @param string|array $sort
+     * @return array|string|string[]|null
+     */
+    private static function _filterOrderColumn(string $sort) {
         $sort = trim($sort);
         // Only match to column_name or Table.column_name (no numbers, no special characters or umlauts)
         if (preg_match('/^[a-zA-Z_]+(\.[a-zA-Z_]+)*$/', $sort) === 1) {
@@ -48,12 +62,12 @@ class SanitizeOrder {
         if (is_array($sortAsArray)) {
             $validatedSort = [];
             foreach ($sortAsArray as $sortField => $sortDirection) {
-                $sortField = self::filterOrderColumn($sortField);
+                $sortField = self::_filterOrderColumn($sortField);
                 $validatedSort[$sortField] = ($sortDirection === 'desc') ? 'desc' : 'asc';
             }
             return $validatedSort;
         }
 
-        return self::filterOrderColumn((string)$sortAsArray);
+        return self::_filterOrderColumn((string)$sortAsArray);
     }
 }

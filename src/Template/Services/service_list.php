@@ -174,11 +174,15 @@
                                         <?php echo __('State'); ?>
                                     </th>
 
-                                    <th class="no-sort text-center">
+                                    <th class="no-sort text-center"
+                                        ng-click="orderBy('Servicestatus.acknowledgement_type')">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.acknowledgement_type')"></i>
                                         <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                     </th>
 
-                                    <th class="no-sort text-center">
+                                    <th class="no-sort text-center"
+                                        ng-click="orderBy('Servicestatus.scheduled_downtime_depth')">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.scheduled_downtime_depth')"></i>
                                         <i class="fa fa-power-off"
                                            title="<?php echo __('is in downtime'); ?>"></i>
                                     </th>

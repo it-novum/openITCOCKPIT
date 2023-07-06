@@ -667,4 +667,16 @@ class ContactgroupsTable extends Table {
 
         return $list;
     }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedContactgroupsByContainerId(int $containerId){
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
 }

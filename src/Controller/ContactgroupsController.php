@@ -124,6 +124,11 @@ class ContactgroupsController extends AppController {
             $contactgroup->set('uuid', UUID::v4());
             $contactgroup->get('container')->set('containertype_id', CT_CONTACTGROUP);
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $ContactgroupsTable->save($contactgroup);
             if ($contactgroup->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -197,6 +202,11 @@ class ContactgroupsController extends AppController {
             //Update contact data
             $User = new User($this->getUser());
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $contactgroupEntity = $ContactgroupsTable->get($id, [
                 'contain' => [
                     'Containers'
@@ -254,9 +264,14 @@ class ContactgroupsController extends AppController {
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if (!$ContactgroupsTable->existsById($id)) {
             throw new NotFoundException(__('Contact group not found'));
         }
+
+        $ContainersTable->acquireLock();
 
         $contactgroupEntity = $ContactgroupsTable->get($id, [
             'contain' => [
@@ -288,8 +303,6 @@ class ContactgroupsController extends AppController {
             return;
         }
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $container = $ContainersTable->get($contactgroupEntity->get('container')->get('id'), [
             'contain' => [
                 'Contactgroups'

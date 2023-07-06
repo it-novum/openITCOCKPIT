@@ -49,12 +49,12 @@
                         <?php echo __('Force to hard state'); ?>
                     </label>
                 </div>
-                <div class="col-lg-12 margin-top-10" ng-show="isSubmittingHostResult">
+                <div class="col-12 margin-top-10" ng-show="isSubmittingHostResult">
                     <h4><?php echo __('Executing command'); ?></h4>
                 </div>
-                <div class="col-lg-12 margin-top-10" ng-show="isSubmittingHostResult">
-                    <div class="progress progress-striped active">
-                        <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
+                <div class="col-12 margin-top-10" ng-show="isSubmittingHostResult">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped bg-primary" style="width: {{percentage}}%"></div>
                     </div>
                 </div>
 

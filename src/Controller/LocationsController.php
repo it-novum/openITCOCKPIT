@@ -122,6 +122,11 @@ class LocationsController extends AppController {
             $location->set('uuid', UUID::v4());
             $location->container->containertype_id = CT_LOCATION;
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $LocationsTable->save($location);
             if ($location->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -194,6 +199,12 @@ class LocationsController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
+
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $oldLocation = $LocationsTable->get($id, [
                 'contain' => ['Containers']
             ]);
@@ -268,6 +279,8 @@ class LocationsController extends AppController {
         if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid container'));
         }
+
+        $ContainersTable->acquireLock();
 
         $container = $ContainersTable->get($containerId);
 

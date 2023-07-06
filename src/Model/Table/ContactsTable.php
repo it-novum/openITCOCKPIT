@@ -1190,4 +1190,35 @@ class ContactsTable extends Table {
         return $requiredIds;
     }
 
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedContactsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $contacts = $result->toArray();
+
+        // Check each contact, if it as more than one container.
+        // If the contact has more than 1 container, we can keep this contact because is not orphaned
+        $orphanedContacts = [];
+        foreach ($contacts as $contact) {
+            if (empty($contact->containers)) {
+                $orphanedContacts[] = $contact;
+            }
+        }
+
+        return $orphanedContacts;
+    }
+
 }

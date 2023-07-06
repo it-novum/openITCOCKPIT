@@ -262,16 +262,16 @@ class UsercontainerrolesTable extends Table {
                             'Containers'
                         ]
                     ])
-                    ->select([
-                        'Users.id',
-                        'Users.firstname',
-                        'Users.lastname',
-                        'full_name' => $q->func()->concat([
-                            'Users.firstname' => 'literal',
-                            ' ',
-                            'Users.lastname'  => 'literal'
-                        ])
-                    ])->order('full_name');
+                        ->select([
+                            'Users.id',
+                            'Users.firstname',
+                            'Users.lastname',
+                            'full_name' => $q->func()->concat([
+                                'Users.firstname' => 'literal',
+                                ' ',
+                                'Users.lastname'  => 'literal'
+                            ])
+                        ])->order('full_name');
                     return $q;
                 }
             ])
@@ -406,5 +406,36 @@ class UsercontainerrolesTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedUsercontainerrolesByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (\Cake\ORM\Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $usercontainerroles = $result->toArray();
+
+        // Check each user container role, if it as more than one container.
+        // If user container role has more than 1 container, we can keep this each user container role because is not orphaned
+        $orphanedUsercontainerroles = [];
+        foreach ($usercontainerroles as $usercontainerrole) {
+            if (empty($usercontainerrole->containers)) {
+                $orphanedUsercontainerroles[] = $usercontainerrole;
+            }
+        }
+
+        return $orphanedUsercontainerroles;
     }
 }
