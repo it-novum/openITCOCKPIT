@@ -216,11 +216,39 @@ class CronjobsCommand extends Command {
             dump($e->getMessage());
         }
 
-        //Cronjob is done, set is_running back to 0 and the end_time
-        $scheduleEntity->set('end_time', date('Y-m-d H:i:s'));
-        $scheduleEntity->set('is_running', 0);
+        try {
+            //Cronjob is done, set is_running back to 0 and the end_time
+            $scheduleEntity->set('end_time', date('Y-m-d H:i:s'));
+            $scheduleEntity->set('is_running', 0);
 
-        $CronschedulesTable->save($scheduleEntity);
+            $CronschedulesTable->save($scheduleEntity);
+        } catch (\PDOException $e) {
+            // Thanks to https://github.com/statusengine/worker/blob/e20d6b5c83c6b3c6a2030c9506542fa59dcbb551/src/Backends/MySQL/MySQL.php#L296C17-L298C92
+            $sqlstateErrorCode = $e->errorInfo[0]; // SQLSTATE error code (a five characters alphanumeric identifier defined in the ANSI SQL standard).
+            $errorNo = $e->errorInfo[1]; //  Driver-specific error code.
+            $errorString = $e->errorInfo[2]; //  Driver-specific error message.
+
+            Log::error(sprintf(
+                'Catch MySQL Error: %s %s %s',
+                $sqlstateErrorCode,
+                $errorNo,
+                $errorString
+            ));
+
+            // $sqlstateErrorCode = HY000
+            // $errorNo = 2006
+            if ($errorString == 'MySQL server has gone away') {
+
+                // This can happen if MySQL terminates the connection because the Job was running for too long
+                // Or if the MySQL Server got restarted
+                $connection = $CronschedulesTable->getConnection();
+                $connection->disconnect();
+                $connection->connect();
+
+                // Retry
+                $CronschedulesTable->save($scheduleEntity);
+            }
+        }
 
         return !$scheduleEntity->hasErrors();
     }
