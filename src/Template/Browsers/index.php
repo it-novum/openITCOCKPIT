@@ -916,6 +916,13 @@
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'host', objectId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php
                                             $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                             echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'index', 'list');
