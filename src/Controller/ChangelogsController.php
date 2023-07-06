@@ -129,6 +129,5 @@ class ChangelogsController extends AppController {
 
     //Only for ACLs
     public function entity(): void {
-        return;
     }
 }

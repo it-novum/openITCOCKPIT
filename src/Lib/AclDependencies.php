@@ -317,6 +317,8 @@ class AclDependencies {
         $this
             ->dependency('Commands', 'index', 'Commands', 'view');
 
+        $this
+            ->dependency('Changelogs', 'index', 'Changelogs', 'entity');
 
         $this
             ->dependency('Timeperiods', 'index', 'Timeperiods', 'view')
