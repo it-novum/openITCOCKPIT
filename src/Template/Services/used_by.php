@@ -103,7 +103,7 @@
                             <tr ng-repeat="autoreport in objects.Autoreports">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'autoreports', 'AutoreportModule')): ?>
-                                        <a ui-sref="AutoreportsEditStepOne({id: autoreport.id})">
+                                        <a ui-sref="AutoreportsEditStepTwo({id: autoreport.id})">
                                             {{ autoreport.name }}
                                         </a>
                                     <?php else: ?>
@@ -120,7 +120,7 @@
                             <tr ng-repeat="eventcorrelation in objects.Eventcorrelations">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('editCorrelation', 'eventcorrelations', 'Eventcorrelationmodule')): ?>
-                                        <a ui-sref="EventcorrelationsEditCorrelation({id: eventcorrelation.id})">
+                                        <a ui-sref="EventcorrelationsEditCorrelation({id: eventcorrelation.id,  highlightServiceId: service.id})">
                                             {{ eventcorrelation.name }}
                                         </a>
                                     <?php else: ?>
@@ -138,8 +138,8 @@
                             </tr>
                             <tr ng-repeat="map in objects.Maps">
                                 <td>
-                                    <?php if ($this->Acl->hasPermission('edit', 'maps', 'MapModule')): ?>
-                                        <a ui-sref="MapsEdit({id: map.id})">
+                                    <?php if ($this->Acl->hasPermission('edit', 'mapeditors', 'MapModule')): ?>
+                                        <a ui-sref="MapeditorsEdit({id: map.id})">
                                             {{ map.name }}
                                         </a>
                                     <?php else: ?>

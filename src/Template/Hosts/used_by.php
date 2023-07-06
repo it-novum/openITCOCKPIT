@@ -147,7 +147,7 @@ use Cake\Core\Plugin;
                                 </tr>
                                 <tr ng-repeat="map in objects.Maps">
                                     <td>
-                                        <?php if ($this->Acl->hasPermission('edit', 'maps', 'MapModule')): ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'mapeditors', 'MapModule')): ?>
                                             <a ui-sref="MapeditorsEdit({id: map.id})">
                                                 {{ map.name }}
                                             </a>
