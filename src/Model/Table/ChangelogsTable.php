@@ -757,3 +757,5 @@ class ChangelogsTable extends Table {
         return $dataUnserialized;
     }
 }
+
+

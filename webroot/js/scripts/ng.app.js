@@ -1443,6 +1443,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ChangelogsIndexController"
             })
 
+            .state('ChangelogsEntity', {
+                url: '/changelogs/entity/:objectTypeId/:objectId',
+                templateUrl: "/changelogs/entity.html",
+                controller: "ChangelogsEntityController"
+            })
+
             .state('WizardsIndex', {
                 url: '/wizards/index',
                 templateUrl: "/wizards/index.html",
