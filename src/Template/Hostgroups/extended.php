@@ -63,8 +63,7 @@
             <div class="panel-hdr">
                 <h2>
                     {{(hostgroup.Hostgroup.container.name) && hostgroup.Hostgroup.container.name ||
-                    '<?php echo __('Host Groups (0)'); ?>'}}
-                    <span class="fw-300"><i><?php echo __('UUID: '); ?>{{hostgroup.Hostgroup.uuid}}</i></span>
+q                    <span class="fw-300"><i><?php echo __('UUID: '); ?>{{hostgroup.Hostgroup.uuid}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="loadHostsWithStatus()">
@@ -401,6 +400,15 @@
                                                     <?php echo __('Enable'); ?>
                                                 </a>
                                             <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'host', objectId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
                                             <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
                                                 <div class="dropdown-divider" ng-if="host.Host.allow_edit"></div>
                                                 <a ui-sref="HostsCopy({ids: host.Host.id})"

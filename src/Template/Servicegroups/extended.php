@@ -373,7 +373,6 @@
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
-
                                             <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                                 <a ng-click="confirmActivate(getObjectForDelete(service.Host, service))"
                                                    ng-if="service.Service.allow_edit && service.Service.disabled"
@@ -381,6 +380,13 @@
                                                    class="dropdown-item">
                                                     <i class="fa fa-plug"></i>
                                                     <?php echo __('Enable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'services')): ?>

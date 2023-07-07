@@ -206,6 +206,13 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'command', objectId: command.Command.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('usedBy', 'commands')): ?>
                                                 <a ui-sref="CommandsUsedBy({id:command.Command.id})"
                                                    class="dropdown-item">

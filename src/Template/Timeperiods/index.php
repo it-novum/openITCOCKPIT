@@ -201,6 +201,13 @@
                                                     <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'timeperiod', objectId: timeperiod.Timeperiod.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('usedBy', 'timeperiods')): ?>
                                                 <a ui-sref="TimeperiodsUsedBy({id:timeperiod.Timeperiod.id})"
                                                    class="dropdown-item">

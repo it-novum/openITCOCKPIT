@@ -144,7 +144,8 @@ class AclDependencies {
             ->allow('Angular', 'wizardInterfaceFilter')
             ->allow('Angular', 'columns_config_import')
             ->allow('Angular', 'columns_config_export')
-            ->allow('Angular', 'autoRefresher');
+            ->allow('Angular', 'autoRefresher')
+            ->allow('Angular', 'changeLogEntry');
 
         $this
             ->allow('Agentconnector', 'register_agent')
@@ -316,6 +317,8 @@ class AclDependencies {
         $this
             ->dependency('Commands', 'index', 'Commands', 'view');
 
+        $this
+            ->dependency('Changelogs', 'index', 'Changelogs', 'entity');
 
         $this
             ->dependency('Timeperiods', 'index', 'Timeperiods', 'view')

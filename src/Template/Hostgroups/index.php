@@ -191,6 +191,13 @@
                                                     <?php echo __('Extended view'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'hostgroup', objectId: hostgroup.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'hostgroups')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ui-sref="HostgroupsCopy({ids: hostgroup.id})"

@@ -428,6 +428,13 @@
                                                         <?php echo __('Disable'); ?>
                                                     </a>
                                                 <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                    <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                       class="dropdown-item">
+                                                        <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                        <?php echo __('Changelog'); ?>
+                                                    </a>
+                                                <?php endif; ?>
                                                 <?php
                                                 $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                                 echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
