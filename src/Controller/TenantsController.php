@@ -296,7 +296,7 @@ class TenantsController extends AppController {
         }
 
 
-        if ($ContainersTable->allowDelete($tenant['container']['id'])) {
+        if ($ContainersTable->allowDelete($tenant['container']['id'], CT_TENANT)) {
 
             if ($ContainersTable->delete($ContainersTable->get($tenant['container']['id']))) {
                 Cache::clear('permissions');

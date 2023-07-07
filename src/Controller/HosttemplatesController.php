@@ -373,8 +373,13 @@ class HosttemplatesController extends AppController {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         if ($this->request->is('get')) {
-            $hosttemplates = $HosttemplatesTable->getHosttemplatesForCopy(func_get_args());
+            $hosttemplates = $HosttemplatesTable->getHosttemplatesForCopy(func_get_args(), $MY_RIGHTS);
             /** @var $CommandsTable CommandsTable */
             $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
             $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
@@ -434,6 +439,8 @@ class HosttemplatesController extends AppController {
                     //This happens, if a user copy multiple hosttemplates, and one run into an validation error
                     //All hosttemplates without validation errors got already saved to the database
                     $newHosttemplateEntity = $HosttemplatesTable->get($hosttemplateData['Hosttemplate']['id']);
+                    $newHosttemplateEntity->setAccess('*', false);
+                    $newHosttemplateEntity->setAccess(['name', 'description', 'command_id', 'hosttemplatecommandargumentvalues'], true);
                     $newHosttemplateEntity = $HosttemplatesTable->patchEntity($newHosttemplateEntity, $hosttemplateData['Hosttemplate']);
                     $newHosttemplateData = $newHosttemplateEntity->toArray();
                     $action = 'edit';

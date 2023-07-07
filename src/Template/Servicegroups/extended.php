@@ -63,7 +63,10 @@
             <div class="panel-hdr">
                 <h2>
                     {{(servicegroup.Servicegroup.container.name) && servicegroup.Servicegroup.container.name ||
-                    '<?php echo __('Service Groups (0)'); ?>'}}
+                    '<?php echo __('
+                    Service
+                    Groups(0)
+                    '); ?>'}}
                     <span class="fw-300"><i><?php echo __('UUID: '); ?>{{servicegroup.Servicegroup.uuid}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
@@ -113,6 +116,15 @@
                                                 type="button">
                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                         </button>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('copy', 'servicegroups')): ?>
+                                        <div class="dropdown-divider"></div>
+                                        <a ui-sref="ServicegroupsCopy({ids: post.Servicegroup.id})"
+                                           class="dropdown-item">
+                                            <i class="fas fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                        <div class="dropdown-divider"></div>
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('externalcommands', 'services')): ?>
                                         <button data-toggle="modal"
@@ -380,8 +392,17 @@
                                                     <?php echo __('Changelog'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                                <div class="dropdown-divider" ng-if="service.Service.allow_edit"></div>
+                                                <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                                   ng-if="service.Service.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
-                                                <div class="dropdown-divider"></div>
+                                                <div class="dropdown-divider" ng-if="service.Service.allow_edit"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(service.Host, service))"
                                                    ng-if="service.Service.allow_edit"
                                                    class="dropdown-item txt-color-red">

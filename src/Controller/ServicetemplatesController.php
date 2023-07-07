@@ -390,8 +390,13 @@ class ServicetemplatesController extends AppController {
         /** @var $ServicetemplatesTable ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         if ($this->request->is('get')) {
-            $servicetemplates = $ServicetemplatesTable->getServicetemplatesForCopy(func_get_args());
+            $servicetemplates = $ServicetemplatesTable->getServicetemplatesForCopy(func_get_args(), $MY_RIGHTS);
             /** @var $CommandsTable CommandsTable */
             $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
             $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
@@ -459,6 +464,8 @@ class ServicetemplatesController extends AppController {
                     //This happens, if a user copy multiple servicetemplates, and one run into an validation error
                     //All servicetemplates without validation errors got already saved to the database
                     $newServicetemplateEntity = $ServicetemplatesTable->get($servicetemplateData['Servicetemplate']['id']);
+                    $newServicetemplateEntity->setAccess('*', false);
+                    $newServicetemplateEntity->setAccess(['template_name', 'name', 'description', 'command_id', 'servicetemplatecommandargumentvalues'], true);
                     $newServicetemplateEntity = $ServicetemplatesTable->patchEntity($newServicetemplateEntity, $servicetemplateData['Servicetemplate']);
                     $newServicetemplateData = $newServicetemplateEntity->toArray();
                     $action = 'edit';

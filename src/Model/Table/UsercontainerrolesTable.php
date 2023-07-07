@@ -32,6 +32,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
@@ -407,6 +408,79 @@ class UsercontainerrolesTable extends Table {
 
         return $result;
     }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getUsercontainerrolesForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Usercontainerroles.id IN' => $ids])
+            ->contain([
+                'Containers',
+            ])
+            ->matching('Containers')
+            ->order(['Usercontainerroles.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->group([
+            'Usercontainerroles.id'
+        ]);
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param $id
+     * @param array $MY_RIGHTS
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getSourceUserContainerRoleForCopy($id, array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where([
+                'Usercontainerroles.id' => $id
+            ])
+            ->contain([
+                'Containers',
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $usercontainerrole = $query;
+
+
+        $usercontainerrole['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $usercontainerrole['ldapgroups'] = [
+            '_ids' => Hash::extract($query, 'ldapgroups.{n}.id')
+        ];
+
+
+        //Build up data struct for radio inputs
+        $usercontainerrole['ContainersUsercontainerrolesMemberships'] = [];
+        foreach ($query['containers'] as $container) {
+            $usercontainerrole['ContainersUsercontainerrolesMemberships'][$container['id']] = (int)$container['_joinData']['permission_level'];
+        }
+
+        return $usercontainerrole;
+    }
+
 
     /**
      * @param int $containerId

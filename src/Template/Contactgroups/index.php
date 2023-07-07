@@ -202,6 +202,14 @@
                                                     <?php echo __('Used By'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'contactgroups')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ContactgroupsCopy({ids: contactgroup.Contactgroup.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'contactgroups')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(contactgroup))"

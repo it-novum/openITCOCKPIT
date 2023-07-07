@@ -889,6 +889,23 @@
                                                     <?php echo __('Sharing'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
+                                                <a ui-sref="HostsCopy({ids: host.Host.id})"
+                                                   ng-if="host.Host.allow_sharing"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
+                                                <a ng-if="host.Host.allow_edit"
+                                                   class="dropdown-item"
+                                                   href="javascript:void(0);"
+                                                   ng-click="confirmDeactivate(getObjectForDelete(host))">
+                                                    <i class="fa fa-plug"></i>
+                                                    <?php echo __('Disable'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                 <a ui-sref="ServicesServiceList({id: host.Host.id})"
                                                    class="dropdown-item">
@@ -903,7 +920,6 @@
                                                     <?php echo __('Allocate service template group'); ?>
                                                 </a>
                                             <?php endif; ?>
-
                                             <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                                                 <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
                                                    class="dropdown-item" href="javascript:void(0);">
@@ -911,13 +927,11 @@
                                                     <?php echo __('Append to host group'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
-                                                <a ng-if="host.Host.allow_edit"
-                                                   class="dropdown-item"
-                                                   href="javascript:void(0);"
-                                                   ng-click="confirmDeactivate(getObjectForDelete(host))">
-                                                    <i class="fa fa-plug"></i>
-                                                    <?php echo __('Disable'); ?>
+                                            <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
+                                                <a ui-sref="AgentconnectorsWizard({hostId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-user-secret"></i>
+                                                    <?php echo __('openITCOCKPIT Agent discovery'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>

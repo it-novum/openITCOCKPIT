@@ -295,7 +295,7 @@ class LocationsController extends AppController {
             return;
         }
 
-        if ($ContainersTable->allowDelete($container->get('id'))) {
+        if ($ContainersTable->allowDelete($container->get('id'), CT_LOCATION)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 /** @var  ChangelogsTable $ChangelogsTable */

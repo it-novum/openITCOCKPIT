@@ -264,6 +264,15 @@
                                         $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                         echo $AdditionalLinks->getLinksAsHtmlList('services', 'disabled', 'list');
                                         ?>
+                                        <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                            <div class="dropdown-divider"></div>
+                                            <a ui-sref="ServicesCopy({ids: service.id})"
+                                               ng-if="service.allow_edit"
+                                               class="dropdown-item">
+                                                <i class="fas fa-files-o"></i>
+                                                <?php echo __('Copy'); ?>
+                                            </a>
+                                        <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                             <div class="dropdown-divider"></div>
                                             <a href="javascript:void(0);"

@@ -451,7 +451,7 @@ class ServicetemplategroupsTable extends Table {
             ->disableHydration()
             ->first();
 
-        if(empty(!$servicetemplates['servicetemplates'])){
+        if (empty(!$servicetemplates['servicetemplates'])) {
             return [];
         }
         return Hash::extract($servicetemplates['servicetemplates'], '{n}.id');
@@ -726,10 +726,58 @@ class ServicetemplategroupsTable extends Table {
     }
 
     /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicetemplategroupsForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Servicetemplategroups.id IN' => $ids])
+            ->contain([
+                'Containers'
+            ])
+            ->order(['Servicetemplategroups.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    public function getSourceServicetemplategroupForCopy($id, array $MY_RIGHTS) {
+        $query = $this->find()
+            ->where(['Servicetemplategroups.id' => $id])
+            ->contain([
+                'Servicetemplates',
+                'Containers'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $result = $query->firstOrFail();
+        $servicetemplategroup = $result;
+        $servicetemplategroup['servicetemplates'] = [
+            '_ids' => Hash::extract($result, 'servicetemplates.{n}.id')
+        ];
+
+        return $servicetemplategroup;
+    }
+
+    /**
      * @param int $containerId
      * @return array
      */
-    public function getOrphanedServicetemplategroupsByContainerId(int $containerId){
+    public function getOrphanedServicetemplategroupsByContainerId(int $containerId) {
         $query = $this->find()
             ->where(['container_id' => $containerId]);
         $result = $query->all();

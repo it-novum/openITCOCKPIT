@@ -254,6 +254,14 @@
                                                     <?php echo __('Documentation'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'servicetemplates')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ServicetemplatesCopy({ids: servicetemplate.Servicetemplate.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'servicetemplates')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(servicetemplate))"

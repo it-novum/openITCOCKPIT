@@ -305,6 +305,14 @@
                                                     <?php echo __('Used by'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'contacts')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ContactsCopy({ids: contact.Contact.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'contacts')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"

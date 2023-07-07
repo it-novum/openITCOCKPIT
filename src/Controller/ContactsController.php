@@ -402,9 +402,13 @@ class ContactsController extends AppController {
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
 
         if ($this->request->is('get')) {
-            $contacts = $ContactsTable->getContactsForCopy(func_get_args());
+            $contacts = $ContactsTable->getContactsForCopy(func_get_args(), $MY_RIGHTS);
             $this->set('contacts', $contacts);
             $this->viewBuilder()->setOption('serialize', ['contacts']);
             return;
@@ -501,6 +505,8 @@ class ContactsController extends AppController {
                     //This happens, if a user copy multiple contacts, and one run into an validation error
                     //All contacts without validation errors got already saved to the database
                     $newContactEntity = $ContactsTable->get($contactData['Contact']['id']);
+                    $newContactEntity->setAccess('*', false);
+                    $newContactEntity->setAccess(['name', 'description', 'email', 'phone'], true);
                     $newContactEntity = $ContactsTable->patchEntity($newContactEntity, $contactData['Contact']);
                     $newContactData = $newContactEntity->toArray();
                     $action = 'edit';

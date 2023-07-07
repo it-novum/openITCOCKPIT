@@ -166,4 +166,17 @@ class GrafanaUserdashboardMetricsTable extends Table {
         return $this->exists(['GrafanaUserdashboardMetrics.id' => $id]);
     }
 
+    /**
+     * @param int $panelId
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getMetricsByPanelIdForCopy(int $panelId) {
+        $result = $this->find()
+            ->where([
+                'GrafanaUserdashboardMetrics.panel_id' => $panelId
+            ])
+            ->all();
+        return $result;
+    }
+
 }

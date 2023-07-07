@@ -405,9 +405,10 @@ class ContactgroupsTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getContactgroupsForCopy($ids = []) {
+    public function getContactgroupsForCopy($ids = [], array $MY_RIGHTS = []) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -418,11 +419,23 @@ class ContactgroupsTable extends Table {
                 'Containers.name',
                 'Contactgroups.id',
                 'Contactgroups.description',
+                'Contactgroups.container_id',
             ])
             ->contain(['Containers'])
             ->where([
                 'Contactgroups.id IN' => $ids,
-            ])
+            ]);
+
+        if(!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            });
+        }
+
+        $query
             ->disableHydration()
             ->all();
 
