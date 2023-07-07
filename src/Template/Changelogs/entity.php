@@ -179,6 +179,11 @@
                         </div>
                     </div>
 
+                    <div class="margin-top-10" ng-show="changes.length === 0">
+                        <div class="text-center text-danger italic">
+                            <?php echo __('No entries match the selection'); ?>
+                        </div>
+                    </div>
 
                     <div class="frame-wrap">
                         <div class="col-lg-12">
