@@ -578,7 +578,7 @@ class ContainersController extends AppController {
         if (Plugin::isLoaded('DistributeModule')) {
             /** @var $SatellitesTable SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-            $satellites = $SatellitesTable->getSatellitesByContainerIds($containerIds, 'list');
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($containerIds);
         }
         $satellites = Api::makeItJavaScriptAble($satellites);
 
