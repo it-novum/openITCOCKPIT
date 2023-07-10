@@ -191,7 +191,7 @@
                                                     <?php echo __('Extended view'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
                                                 <a ui-sref="ChangelogsEntity({objectTypeId: 'hostgroup', objectId: hostgroup.id})"
                                                    class="dropdown-item">
                                                     <i class="fa-solid fa-timeline fa-rotate-90"></i>

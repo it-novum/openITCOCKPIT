@@ -1709,6 +1709,13 @@ use Cake\Core\Plugin;
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ui-sref="ServicesCopy({ids: service.Service.id})"
@@ -1817,6 +1824,13 @@ use Cake\Core\Plugin;
                                                    class="dropdown-item">
                                                     <i class="fa fa-plug"></i>
                                                     <?php echo __('Enable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
