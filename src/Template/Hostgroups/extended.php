@@ -115,7 +115,7 @@ q                    <span class="fw-300"><i><?php echo __('UUID: '); ?>{{hostgr
                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                         </button>
                                     <?php endif; ?>
-                                    <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                    <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
                                         <a ui-sref="ChangelogsEntity({objectTypeId: 'hostgroup', objectId: post.Hostgroup.id})"
                                            class="dropdown-item">
                                             <i class="fa-solid fa-timeline fa-rotate-90"></i>
