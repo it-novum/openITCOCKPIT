@@ -81,6 +81,13 @@
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                        <a ui-sref="ChangelogsEntity({objectTypeId: 'host', objectId: data.hostId})"
+                           class="dropdown-item">
+                            <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                            <?php echo __('Changelog'); ?>
+                        </a>
+                    <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
                         <div class="dropdown-divider" ng-if="host.allow_edit"></div>
                         <a ui-sref="HostsCopy({ids: data.hostId})"

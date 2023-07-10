@@ -114,6 +114,13 @@
                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                         </button>
                                     <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('entity', 'changelogs')): ?>
+                                        <a ui-sref="ChangelogsEntity({objectTypeId: 'servicegroup', objectId: post.Servicegroup.id})"
+                                           class="dropdown-item">
+                                            <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                            <?php echo __('Changelog'); ?>
+                                        </a>
+                                    <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('copy', 'servicegroups')): ?>
                                         <div class="dropdown-divider"></div>
                                         <a ui-sref="ServicegroupsCopy({ids: post.Servicegroup.id})"
