@@ -405,10 +405,10 @@ class UsersController extends AppController {
 
             if (!$this->hasRootPrivileges) {
                 $containerIdsWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
-                    return $v == 2;
+                    return $v == WRITE_RIGHT;
                 }, ARRAY_FILTER_USE_BOTH);
                 $userToEditContainerIdsWithWritePermissions = array_filter($data['ContainersUsersMemberships'], function ($v) {
-                    return $v == 2;
+                    return $v == WRITE_RIGHT;
                 }, ARRAY_FILTER_USE_BOTH);
 
                 $notPermittedContainerIds = array_keys(
@@ -830,8 +830,9 @@ class UsersController extends AppController {
         $userContainerIds = $this->MY_RIGHTS;
         if (!$this->hasRootPrivileges) {
             $userContainerIds = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
-                return $v == 2;
+                return $v == WRITE_RIGHT;
             }, ARRAY_FILTER_USE_BOTH);
+            $userContainerIds = array_keys($userContainerIds);
         }
 
         $ucr = Api::makeItJavaScriptAble(
@@ -976,7 +977,7 @@ class UsersController extends AppController {
             [CT_HOSTGROUP]
         );
         $containerIdsWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v, $k) use ($containers) {
-            return $v == 2 && array_key_exists($k, $containers);
+            return $v == WRITE_RIGHT && array_key_exists($k, $containers);
         }, ARRAY_FILTER_USE_BOTH);
 
         $containerIdsWithWritePermissions = array_keys($containerIdsWithWritePermissions);

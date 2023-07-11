@@ -64,6 +64,7 @@ class UsercontainerrolesController extends AppController {
         $containerWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
             return $v == WRITE_RIGHT;
         }, ARRAY_FILTER_USE_BOTH);
+        $containerWithWritePermissions = array_keys($containerWithWritePermissions);
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
             $userRoleContainerIds = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
             if (!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIds, $containerWithWritePermissions))) {
