@@ -45,6 +45,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\InstantreportsTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicecommandargumentvaluesTable;
 use App\Model\Table\ServiceeventcommandargumentvaluesTable;
@@ -3131,7 +3132,7 @@ class ServicesController extends AppController {
             $MY_RIGHTS = [];
         }
 
-        //Check if the service is used by Instantreports
+        /** @var InstantreportsTable $InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByServiceId((int)$id, $MY_RIGHTS);
 
