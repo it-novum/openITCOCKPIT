@@ -516,7 +516,6 @@ class ContainersController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function showDetails($id = null) {
         if (!$this->isApiRequest() && $id === null) {
