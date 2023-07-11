@@ -25,13 +25,9 @@
 
 /**
  * @var \App\View\AppView $this
- * @var string $masterInstanceName
- * @var string $username
- * @var bool $blurryCommandLine
  */
 
 use Cake\Core\Plugin;
-
 
 ?>
 <ol class="breadcrumb page-breadcrumb">

@@ -2285,6 +2285,49 @@ class HostsController extends AppController {
             $checkCommand = 'Removed due to insufficient permissions';
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the host is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var MapsTable $MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $this->set('mapModule', !empty($MapsTable->getMapsByHostId((int)$hostObj->getId(), $MY_RIGHTS)));
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $objects['Hostgroups'] = $HostgroupsTable->getHostGroupsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Instantreports
+        /** @var InstantreportsTable $InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByHostId((int)$id, $MY_RIGHTS);
+        }
+
         // Set data to fronend
         $this->set('mergedHost', $mergedHost);
         $this->set('docuExists', $DocumentationsTable->existsByUuid($hostObj->getUuid()));
@@ -2301,9 +2344,8 @@ class HostsController extends AppController {
         $this->set('checkPeriod', $checkPeriod);
         $this->set('notifyPeriod', $notifyPeriod);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
-        $this->set('usageFlag', $hostObj->getUsageFlag());
+        $this->set('objects', $objects);
         $this->set('satelliteId', $hostObj->getSatelliteId());
-        $this->set('mapModule', (new MapsTable())->objectAppears('host', (int)$hostObj->getId()));
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
@@ -2321,7 +2363,7 @@ class HostsController extends AppController {
             'checkPeriod',
             'notifyPeriod',
             'canSubmitExternalCommands',
-            'usageFlag',
+            'objects',
             'satelliteId',
             'mapModule'
         ]);
@@ -3520,12 +3562,13 @@ class HostsController extends AppController {
             return;
         }
 
-        $hostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        if (!$hostsTable->existsById($id)) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        $host = $hostsTable->get($id);
+        $host = $HostsTable->get($id);
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

@@ -1138,27 +1138,51 @@ use Cake\Core\Plugin;
                                                     {{mergedService.description}}
                                                 </td>
                                             </tr>
-                                            <tr ng-if="usageFlag.autoReports || usageFlag.eventCorrelation || usageFlag.mapModule == true">
+                                            <tr ng-if="objects.Autoreports || objects.Eventcorrelations || objects.serviceGroups || objects.instantReports || objects.maps">
                                                 <td><?php echo __('Used by'); ?></td>
                                                 <td>
-                                                    <?php if ($this->Acl->hasPermission('serviceUsedBy', 'autoreports', 'AutoreportModule')): ?>
-                                                        <a ng-if="usageFlag.autoReports == true"
-                                                           ui-sref="AutoreportsServiceUsedBy({id: mergedService.id})">
+                                                    <?php if ($this->Acl->hasPermission('usedBy', 'services')): ?>
+
+                                                        <a ng-if="objects.Instantreports.length > 0"
+                                                           ui-sref="ServicesUsedBy({id: mergedService.id})">
                                                            <span class="badge border margin-right-10 border-generic text-generic">
-                                                                <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?>
+                                                                <i class="fa fa-file-invoice"></i> <?php echo __('Instant reports'); ?> ({{objects.Instantreports.length}})
+                                                           </span>
+                                                        </a>
+
+                                                        <?php if (Plugin::isLoaded('AutoreportModule')): ?>
+                                                            <a ng-if="objects.Autoreports.length > 0"
+                                                               ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?> ({{objects.Autoreports.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                        <?php if (Plugin::isLoaded('EventcorrelationModule')): ?>
+                                                            <a ng-if="objects.Eventcorrelations.length > 0"
+                                                               ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                                <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?> ({{objects.Eventcorrelations.length}})
+                                                                </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <?php if (Plugin::isLoaded('MapModule')): ?>
+                                                            <a ng-if="objects.Maps.length > 0"
+                                                               ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-map-marker"></i> <?= __('Map') ?> ({{objects.Maps.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <a ng-if="objects.Servicegroups.length > 0"
+                                                           ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fas fa-server"></i> <?php echo __('Service Groups'); ?> ({{objects.Servicegroups.length}})
                                                            </span>
                                                         </a>
                                                     <?php endif; ?>
-                                                    <a ng-if="usageFlag.eventCorrelation == true"
-                                                       ui-sref="EventcorrelationsServiceUsedBy({id: mergedService.id})">
-                                                        <span class="badge border margin-right-10 border-generic text-generic">
-                                                            <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?>
-                                                        </span>
-                                                    </a>
-                                                    <span ng-if="usageFlag.mapModule == true"
-                                                          class="badge border margin-right-10 border-generic text-generic">
-                                                        <i class="fa fa-map-marker"></i> <?= __('Map Module') ?>
-                                                    </span>
                                                 </td>
                                             </tr>
                                         </table>

@@ -25,11 +25,7 @@
 
 /**
  * @var \App\View\AppView $this
- * @var string $masterInstanceName
- * @var string $username
- * @var bool $blurryCommandLine
  */
-
 
 ?>
 <ol class="breadcrumb page-breadcrumb">

@@ -1779,6 +1779,42 @@ class ServicesController extends AppController {
             $checkCommand = 'Removed due to insufficient permissions';
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the service is used by Instantreports
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByServiceId((int)$id, $MY_RIGHTS);
+
+        //Check if the service is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the service is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        $objects['Servicegroups'] = $ServicegroupsTable->getServiceGroupsByServiceId((int)$id, $MY_RIGHTS);
+
+
         // Set data to fronend
         $this->set('mergedService', $mergedService);
         $this->set('serviceType', $serviceType);
@@ -1799,9 +1835,8 @@ class ServicesController extends AppController {
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
+        $this->set('objects', $objects);
         $this->set('usageFlag', $serviceObj->getUsageFlag());
-        $this->set('mapModule', (new MapsTable())->objectAppears('service', (int)$serviceObj->getId()));
-
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedService',
@@ -1823,6 +1858,7 @@ class ServicesController extends AppController {
             'canSubmitExternalCommands',
             'mainContainer',
             'sharedContainers',
+            'objects',
             'usageFlag',
             'mapModule'
         ]);
@@ -3079,16 +3115,16 @@ class ServicesController extends AppController {
             return;
         }
 
-        /** @var ServicesTable $serviceTable */
-        $serviceTable = TableRegistry::getTableLocator()->get('Services');
-        if (!$serviceTable->existsById($id)) {
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if (!$ServicesTable->existsById($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $serviceTable->getServiceById($id);
+        $service = $ServicesTable->getServiceById($id);
+        $Service = new Service($service->toArray());
 
-        $service['name'] = (!$service->get('name')) ? $service->get('servicetemplate')->get('name') : $service->get('name');
-
+        $service['name'] = $Service->getServicename();
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

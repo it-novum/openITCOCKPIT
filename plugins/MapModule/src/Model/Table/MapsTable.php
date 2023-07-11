@@ -2276,22 +2276,6 @@ class MapsTable extends Table {
     }
 
     /**
-     * @param string $objectType
-     * @param int $objectId
-     * @return bool
-     */
-    public function objectAppears(string $objectType, int $objectId): bool {
-        $conditions = [
-            'type'      => $objectType,
-            'object_id' => $objectId
-        ];
-
-        return (new MapgadgetsTable())->exists($conditions)
-            || (new MapitemsTable())->exists($conditions)
-            || (new MaplinesTable())->exists($conditions);
-    }
-
-    /**
      * I will return the list of map.id where the given $serviceId is shown on the map.
      * @param int $serviceId
      * @return array
