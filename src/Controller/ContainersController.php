@@ -427,7 +427,7 @@ class ContainersController extends AppController {
         $container = $ContainersTable->find()
             ->where([
                 'Containers.id'    => $id,
-                'Containers.id IN' => $this->MY_RIGHTS
+                'Containers.id IN' => $this->getWriteContainers()
             ])
             ->first();
 
