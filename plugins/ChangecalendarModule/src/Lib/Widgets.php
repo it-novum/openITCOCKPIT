@@ -28,16 +28,14 @@ class Widgets implements ModuleWidgetsInterface {
      */
     public function getAvailableWidgets() {
         $widgets = [];
-        if (isset($this->ACL_PERMISSIONS['ChangecalendarModule']['Changecalendar']['view']) && isset($this->ACL_PERMISSIONS['ChangecalendarModule']['Changecalendar']['index'])) {
-            $widgets[] = [
-                'type_id'   => 300,
-                'title'     => __('Changecalendar'),
-                'icon'      => 'fas fa-sitemap fa-fw fa-rotate-90',
-                'directive' => 'evc-widget',
-                'width'     => 12,
-                'height'    => 25
-            ];
-        }
+        $widgets[] = [
+            'type_id'   => 90700,
+            'title'     => __('Changecalendar'),
+            'icon'      => 'fas fa-sitemap fa-fw fa-rotate-90',
+            'directive' => 'changecalendar-widget',
+            'width'     => 12,
+            'height'    => 25
+        ];
 
         return $widgets;
     }

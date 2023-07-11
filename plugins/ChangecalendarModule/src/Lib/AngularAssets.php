@@ -53,4 +53,5 @@ class AngularAssets extends PluginAngularAssets implements AngularAssetsInterfac
     public function getJsFiles() {
         return [];
     }
+
 }

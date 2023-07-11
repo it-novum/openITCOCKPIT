@@ -5,7 +5,9 @@ namespace ChangecalendarModule\Controller;
 
 use App\itnovum\openITCOCKPIT\Filter\ChangecalendarsFilter;
 use App\Model\Table\CalendarsTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\TimeperiodsTable;
+use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -256,5 +258,102 @@ class ChangecalendarsController extends AppController {
         $this->set('success', false);
         $this->set('message', __('Issue while deleting Changecalendar'));
         $this->viewBuilder()->setOption('serialize', ['success', 'message']);
+    }
+
+    // For acl....
+    public function widget(): void {
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->getQuery('widgetId', 0);
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new \RuntimeException('Invalid widget id');
+            }
+
+            $widget = $WidgetsTable->getWidgetByIdAsCake2($widgetId);
+
+            //Check host permissions
+            $jsonData = (array)json_decode($widget['Widget']['json_data'], true);
+            $changeCalendarId = $jsonData['changecalendar_id'];
+            if ($changeCalendarId > 0) {
+                $this->set('changecalendar_id', $changeCalendarId);
+            }
+
+            if (!$this->isApiRequest()) {
+                //Only ship HTML template for angular
+                return;
+            }
+
+            /** @var ChangecalendarsTable $ChangecalendarsTable */
+            $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
+
+            if (!$ChangecalendarsTable->existsById($changeCalendarId)) {
+                throw new NotFoundException(__('Invalid changeCalendar'));
+            }
+
+            $changeCalendar = $ChangecalendarsTable->getCalendarByIdForEdit($changeCalendarId);
+
+            if (!$this->allowedByContainerId($changeCalendar['container_id'])) {
+                $this->render403();
+                return;
+            }
+            $events = $changeCalendar['changecalendar_events'];
+            //Fix name for json/js
+            foreach ($events as $index => $event) {
+                $events[$index]['title'] = $event['name'];
+                $events[$index]['start'] = $event['begin'];
+                $events[$index]['end'] = $event['end'];
+            }
+
+            unset($changeCalendar['changecalendar_events']);
+
+            $this->set('changeCalendar', $changeCalendar);
+            $this->set('events', $events);
+            $this->viewBuilder()->setOption('serialize', ['changeCalendar', 'events', 'changecalendar_id']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $hostId = (int)$this->request->getData('host_id', 0);
+
+            if ($hostId === 0) {
+                $hostId = null;
+            }
+
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new \RuntimeException('Invalid widget id');
+            }
+
+            $json = [
+                'changecalendar_id' => (int)$this->request->getData('changecalendar_id', 0)
+            ];
+
+            $widget = $WidgetsTable->get($widgetId);
+            $widget->set('host_id', $hostId);
+            $widget->set('json_data', json_encode($json));
+
+            $WidgetsTable->save($widget);
+            if ($widget->hasErrors()) {
+                $this->serializeCake4ErrorMessage($widget);
+                return;
+            } else {
+                $this->set('changecalendar_id', $hostId);
+                $this->viewBuilder()->setOption('serialize', ['changecalendar_id']);
+                return;
+            }
+        }
+        throw new MethodNotAllowedException();
     }
 }
