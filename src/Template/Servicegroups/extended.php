@@ -63,7 +63,10 @@
             <div class="panel-hdr">
                 <h2>
                     {{(servicegroup.Servicegroup.container.name) && servicegroup.Servicegroup.container.name ||
-                    '<?php echo __('Service Groups (0)'); ?>'}}
+                    '<?php echo __('
+                    Service
+                    Groups(0)
+                    '); ?>'}}
                     <span class="fw-300"><i><?php echo __('UUID: '); ?>{{servicegroup.Servicegroup.uuid}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
@@ -199,11 +202,12 @@
                                                        name="checkbox"
                                                        checked="checked"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-model="servicegroupsStateFilter[$index]"
-                                                       ng-value="$index">
+                                                       ng-value="{{state}}"
+                                                       ng-model="filter.Servicestatus.current_state[state]">
                                                 <label
                                                     class="extended-list custom-control-label custom-control-label-{{state}} no-margin"
-                                                    for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
+                                                    for="statusFilter{{state}}">{{stateCount}}
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
