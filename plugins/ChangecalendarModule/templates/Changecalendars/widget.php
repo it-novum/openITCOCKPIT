@@ -16,10 +16,10 @@
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
                 <i class="fa fa-cog fa-sm"></i>
             </a>
-            <span ng-show="evc.host_id === null" class="text-info padding-left-20">
+            <span ng-show="currentChangeCalendar.id === null" class="text-info padding-left-20">
                 <?php echo __('No change calendar selected'); ?>
             </span>
-            <div class="no-padding">
+            <div ng-show="currentChangeCalendar.id !== null" class="no-padding">
                 <div id="changecalendar"></div>
             </div>
         </flippy-front>
