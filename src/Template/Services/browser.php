@@ -1046,7 +1046,7 @@ use Cake\Core\Plugin;
                                         </table>
                                     </div>
 
-                                    <div class="col-lg-12">
+                                    <div class="col-lg-6">
                                         <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Container'); ?></td>
@@ -1138,8 +1138,56 @@ use Cake\Core\Plugin;
                                                     {{mergedService.description}}
                                                 </td>
                                             </tr>
+                                            <tr ng-if="objects.Autoreports || objects.Eventcorrelations || objects.serviceGroups || objects.instantReports || objects.maps">
+                                                <td><?php echo __('Used by'); ?></td>
+                                                <td>
+                                                    <?php if ($this->Acl->hasPermission('usedBy', 'services')): ?>
+
+                                                        <a ng-if="objects.Instantreports.length > 0"
+                                                           ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fa fa-file-invoice"></i> <?php echo __('Instant reports'); ?> ({{objects.Instantreports.length}})
+                                                           </span>
+                                                        </a>
+
+                                                        <?php if (Plugin::isLoaded('AutoreportModule')): ?>
+                                                            <a ng-if="objects.Autoreports.length > 0"
+                                                               ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?> ({{objects.Autoreports.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                        <?php if (Plugin::isLoaded('EventcorrelationModule')): ?>
+                                                            <a ng-if="objects.Eventcorrelations.length > 0"
+                                                               ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                                <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?> ({{objects.Eventcorrelations.length}})
+                                                                </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <?php if (Plugin::isLoaded('MapModule')): ?>
+                                                            <a ng-if="objects.Maps.length > 0"
+                                                               ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-map-marker"></i> <?= __('Map') ?> ({{objects.Maps.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <a ng-if="objects.Servicegroups.length > 0"
+                                                           ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fas fa-server"></i> <?php echo __('Service Groups'); ?> ({{objects.Servicegroups.length}})
+                                                           </span>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
+
                                 </div>
                             </div>
                         </div>

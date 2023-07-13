@@ -485,6 +485,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicesCopyController"
             })
 
+            .state('ServicesUsedBy', {
+                url: '/services/usedBy/:id',
+                templateUrl: "/services/usedBy.html",
+                controller: "ServicesUsedByController"
+            })
+
             .state('ServicechecksIndex', {
                 url: '/servicechecks/index/:id',
                 templateUrl: "/servicechecks/index.html",
@@ -1231,6 +1237,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/hosts/edit_details/:ids',
                 templateUrl: "/hosts/edit_details.html",
                 controller: "HostsEditDetailsController"
+            })
+
+            .state('HostsUsedBy', {
+                url: '/hosts/usedBy/:id',
+                templateUrl: "/hosts/usedBy.html",
+                controller: "HostsUsedByController"
             })
 
             .state('HostdependenciesIndex', {
