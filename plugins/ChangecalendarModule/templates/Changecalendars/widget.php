@@ -17,16 +17,10 @@
                 <i class="fa fa-cog fa-sm"></i>
             </a>
             <span ng-show="evc.host_id === null" class="text-info padding-left-20">
-            <?php echo __('No element selected'); ?>
-        </span>
+                <?php echo __('No change calendar selected'); ?>
+            </span>
             <div class="no-padding">
-                <a ui-sref="EventcorrelationsSummaryView({id: evc.host_id})" ng-if="ACL.evc.view">
-                    <div ng-bind-html="evcHtml"></div>
-                </a>
-
-                <div ng-bind-html="evcHtml" ng-if="ACL.evc.view === false">
-                    <div id="changecalendar"></div>
-                </div>
+                <div id="changecalendar"></div>
             </div>
         </flippy-front>
         <flippy-back class="fixFlippy">
@@ -53,7 +47,7 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <button class="btn btn-primary pull-right"
-                                    ng-click="saveEvc()">
+                                    ng-click="saveChangecalendar()">
                                 <?php echo __('Save'); ?>
                             </button>
                         </div>

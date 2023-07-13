@@ -82,11 +82,9 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     eventDurationEditable: false,
                     defaultDate: $scope.defaultDate,
                     businessHours: true, // display business hours
-                    editable: true,
+                    editable: false,
                     events: $scope.events
                 });
-
-                //console.warn($calendar);
 
                 $scope.calendar.render();
             };
@@ -102,10 +100,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                             description: result.data.all_changecalendars[i].description
                         });
                     }
-
                     $scope.changeCalendars = changeCalendars;
-
-                    console.log($scope.changeCalendars);
                 });
             };
 
@@ -118,14 +113,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                 $scope.loadChangeCalendars();
             };
 
-            $scope.saveEvc = function(){
-                console.log({
-                    Widget: {
-                        id: $scope.widget.id
-                    },
-                    changecalendar_id: $scope.currentChangeCalendar.id
-                });
-                console.log($scope);
+            $scope.saveChangecalendar = function(){
                 $http.post("/changecalendar_module/changecalendars/widget.json?angular=true",
                     {
                         Widget: {
