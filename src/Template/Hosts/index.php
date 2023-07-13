@@ -1024,6 +1024,13 @@
                                             $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                             echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'index', 'list');
                                             ?>
+                                            <?php if ($this->Acl->hasPermission('usedBy', 'hosts')): ?>
+                                                <a ui-sref="HostsUsedBy({id: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                    <?php echo __('Used by'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host))"

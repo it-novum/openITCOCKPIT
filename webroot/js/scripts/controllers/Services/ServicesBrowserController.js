@@ -148,6 +148,7 @@ angular.module('openITCOCKPIT')
                 $scope.hostDowntime = results[0].data.hostDowntime;
 
                 $scope.canSubmitExternalCommands = results[0].data.canSubmitExternalCommands;
+                $scope.objects = results[0].data.objects;
 
                 //Host container info
                 $scope.mainContainer = results[0].data.mainContainer;

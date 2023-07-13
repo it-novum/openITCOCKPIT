@@ -45,12 +45,14 @@ use App\Model\Table\HostcommandargumentvaluesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\InstantreportsTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -58,6 +60,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
+use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use ImportModule\Model\Table\ImportedHostsTable;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -106,6 +109,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use MapModule\Model\Table\MapsTable;
 use SLAModule\Model\Table\SlasTable;
 
 
@@ -2286,6 +2290,49 @@ class HostsController extends AppController {
             $checkCommand = 'Removed due to insufficient permissions';
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the host is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var MapsTable $MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $this->set('mapModule', !empty($MapsTable->getMapsByHostId((int)$hostObj->getId(), $MY_RIGHTS)));
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $objects['Hostgroups'] = $HostgroupsTable->getHostGroupsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Instantreports
+        /** @var InstantreportsTable $InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByHostId((int)$id, $MY_RIGHTS);
+        }
+
         // Set data to fronend
         $this->set('mergedHost', $mergedHost);
         $this->set('docuExists', $DocumentationsTable->existsByUuid($hostObj->getUuid()));
@@ -2302,6 +2349,8 @@ class HostsController extends AppController {
         $this->set('checkPeriod', $checkPeriod);
         $this->set('notifyPeriod', $notifyPeriod);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
+        $this->set('objects', $objects);
+        $this->set('satelliteId', $hostObj->getSatelliteId());
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
@@ -2318,7 +2367,10 @@ class HostsController extends AppController {
             'checkCommand',
             'checkPeriod',
             'notifyPeriod',
-            'canSubmitExternalCommands'
+            'canSubmitExternalCommands',
+            'objects',
+            'satelliteId',
+            'mapModule'
         ]);
     }
 
@@ -3510,5 +3562,79 @@ class HostsController extends AppController {
 
         $this->set('slaOverview', $slaOverview);
         $this->viewBuilder()->setOption('serialize', ['slaOverview']);
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function usedBy($id = null): void {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostsTable->get($id);
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $objects['Hostgroups'] = $HostgroupsTable->getHostGroupsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Instantreports
+        /** @var InstantreportsTable $InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        $total = 0;
+        $total += sizeof($objects['Instantreports']);
+        $total += sizeof($objects['Hostgroups']);
+
+        if (isset($objects['Autoreports'])) {
+            $total += sizeof($objects['Autoreports']);
+        }
+        if (isset($objects['Eventcorrelations'])) {
+            $total += sizeof($objects['Eventcorrelations']);
+        }
+        if (isset($objects['Maps'])) {
+            $total += sizeof($objects['Maps']);
+        }
+
+        $this->set('host', $host->toArray());
+        $this->set('objects', $objects);
+        $this->set('total', $total);
+        $this->viewBuilder()->setOption('serialize', ['host', 'objects', 'total']);
     }
 }

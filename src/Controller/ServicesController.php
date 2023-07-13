@@ -46,6 +46,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\InstantreportsTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicecommandargumentvaluesTable;
 use App\Model\Table\ServiceeventcommandargumentvaluesTable;
@@ -54,6 +55,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
@@ -63,6 +65,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use CustomalertModule\Model\Table\CustomalertsTable;
 use DistributeModule\Model\Table\SatellitesTable;
+use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -113,6 +116,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
 use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
+use MapModule\Model\Table\MapsTable;
 use SLAModule\Model\Table\SlasTable;
 use Statusengine\PerfdataParser;
 
@@ -1783,6 +1787,42 @@ class ServicesController extends AppController {
             $checkCommand = 'Removed due to insufficient permissions';
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the service is used by Instantreports
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByServiceId((int)$id, $MY_RIGHTS);
+
+        //Check if the service is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the service is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        $objects['Servicegroups'] = $ServicegroupsTable->getServiceGroupsByServiceId((int)$id, $MY_RIGHTS);
+
+
         // Set data to fronend
         $this->set('mergedService', $mergedService);
         $this->set('serviceType', $serviceType);
@@ -1803,7 +1843,8 @@ class ServicesController extends AppController {
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
-
+        $this->set('objects', $objects);
+        $this->set('usageFlag', $serviceObj->getUsageFlag());
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedService',
@@ -1824,7 +1865,10 @@ class ServicesController extends AppController {
             'notifyPeriod',
             'canSubmitExternalCommands',
             'mainContainer',
-            'sharedContainers'
+            'sharedContainers',
+            'objects',
+            'usageFlag',
+            'mapModule'
         ]);
     }
 
@@ -3074,5 +3118,80 @@ class ServicesController extends AppController {
         }
         $this->set('slaOverview', $slaOverview);
         $this->viewBuilder()->setOption('serialize', ['slaOverview']);
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function usedBy($id = null): void {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+        $service = $ServicesTable->getServiceById($id);
+        $Service = new Service($service->toArray());
+
+        $service['name'] = $Service->getServicename();
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        /** @var InstantreportsTable $InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByServiceId((int)$id, $MY_RIGHTS);
+
+        //Check if the service is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the service is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        $objects['Servicegroups'] = $ServicegroupsTable->getServiceGroupsByServiceId((int)$id, $MY_RIGHTS);
+
+        $total = 0;
+        $total += sizeof($objects['Instantreports']);
+        if (isset($objects['Autoreports'])) {
+            $total += sizeof($objects['Autoreports']);
+        }
+        if (isset($objects['Eventcorrelations'])) {
+            $total += sizeof($objects['Eventcorrelations']);
+        }
+        if (isset($objects['Maps'])) {
+            $total += sizeof($objects['Maps']);
+        }
+        $total += sizeof($objects['Servicegroups']);
+
+        $this->set('service', $service->toArray());
+        $this->set('objects', $objects);
+        $this->set('total', $total);
+        $this->viewBuilder()->setOption('serialize', ['service', 'objects', 'total']);
     }
 }

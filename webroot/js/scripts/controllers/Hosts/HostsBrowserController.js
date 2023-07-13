@@ -150,6 +150,7 @@ angular.module('openITCOCKPIT')
                     4: false,
                     5: false
                 };
+                $scope.objects = result.data.objects;
                 var priority = parseInt($scope.mergedHost.priority, 10);
                 for(var i = 1; i <= priority; i++){
                     $scope.priorities[i] = true;
