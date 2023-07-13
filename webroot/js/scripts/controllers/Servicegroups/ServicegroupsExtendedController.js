@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsExtendedController', function($rootScope, $scope, $http, $interval, $stateParams, QueryStringService){
+    .controller('ServicegroupsExtendedController', function($rootScope, $scope, $http, $interval, $stateParams){
 
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};

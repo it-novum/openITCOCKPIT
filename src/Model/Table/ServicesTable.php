@@ -5148,5 +5148,4 @@ class ServicesTable extends Table {
         $query->group(['Servicestatus.current_state']);
         return $this->emptyArrayIfNull($query->toArray());
     }
-
 }
