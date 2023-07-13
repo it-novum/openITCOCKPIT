@@ -134,7 +134,7 @@ class HostsController extends AppController {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
 
@@ -392,7 +392,7 @@ class HostsController extends AppController {
             }
             /** @var $SatellitesTable \DistributeModule\Model\Table\SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-            $SatelliteNames = $SatellitesTable->getSatellitesAsList($MY_RIGHTS);
+            $SatelliteNames = $SatellitesTable->getSatellitesAsListWithDescription($MY_RIGHTS);
             $SatelliteNames[0] = $masterInstanceName;
         }
 
@@ -615,8 +615,6 @@ class HostsController extends AppController {
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $HostgroupsTable HostgroupsTable */
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
         if (!$HostsTable->existsById($id)) {
             throw new NotFoundException(__('Host not found'));
@@ -998,7 +996,7 @@ class HostsController extends AppController {
                 /** @var $SatellitesTable SatellitesTable */
                 $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-                $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+                $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
                 $satellites[0] = $masterInstanceName;
             }
             $satellites = Api::makeItJavaScriptAble($satellites);
@@ -1348,7 +1346,7 @@ class HostsController extends AppController {
             }
             /** @var $SatellitesTable \DistributeModule\Model\Table\SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-            $SatelliteNames = $SatellitesTable->getSatellitesAsList($MY_RIGHTS);
+            $SatelliteNames = $SatellitesTable->getSatellitesAsListWithDescription($MY_RIGHTS);
             $SatelliteNames[0] = $masterInstanceName;
         }
 
@@ -2336,7 +2334,7 @@ class HostsController extends AppController {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
 
@@ -2445,7 +2443,7 @@ class HostsController extends AppController {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
 

@@ -63,7 +63,7 @@ class BrowsersController extends AppController {
                 /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
                 $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-                $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+                $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
                 $satellites[0] = $masterInstanceName;
             }
 
