@@ -1127,20 +1127,7 @@ class ContainersTable extends Table {
 
         $subContainers = $this->getContainerWithAllChildren($id);
         // check content of subcontainers
-        /*
-         This checks if there are content in containers like servicetemplates, services or hosts e.g.
-        this also causes that a Servicetemplategroup for example cant be deleted anymore due to the fact that its
-        content has to be at least one servicetemplate. So you cant save an empty servicetemplategroup which is the
-        only allowed form of a servicetemplategroup to be deleted with the following function.
-        This checking is may too strict
-        */
-        /*
-        foreach ($subContainers as $key => $container) {
-            if (!$this->isEmptyContainer($id, $container['containertype_id'])) {
-                return false;
-            }
-        }
-        */
+
         foreach ($subContainers as $key => $subcontainer) {
             //check child elements
             foreach ($subcontainer['childsElements'] as $childsElement) {
@@ -1162,67 +1149,6 @@ class ContainersTable extends Table {
         return true;
     }
 
-    /**
-     * @param null $containerId
-     * @param null $containertype
-     * @return bool
-     * @deprecated
-     */
-    public function isEmptyContainer($containerId = null, $containertype = null): bool {
-        if (!empty($containertype)) {
-            switch ($containertype) {
-                case CT_TENANT:
-                    /** @var TenantsTable $TenantsTable */
-                    $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
-                    $tenant = $TenantsTable->getTenantByContainerId($containerId);
-                    break;
-                case CT_LOCATION:
-                    /** @var LocationsTable $LocationsTable */
-                    $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
-                    $location = $LocationsTable->getLocationByContainerId($containerId);
-                    break;
-                case CT_NODE:
-
-                    break;
-                case CT_CONTACTGROUP:
-                    /** @var $ContactgroupsTable ContactgroupsTable */
-                    $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-                    $ContactgroupsTable->getContactgroupByContainerId($containerId);
-
-                    break;
-                case CT_HOSTGROUP:
-                    /** @var HostgroupsTable $HostgroupsTable */
-                    $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-                    $hostgroup = $HostgroupsTable->getHostgroupByContainerId($containerId);
-                    if (!empty($hostgroup['hosts']) || !empty($hostgroup['hosttemplates'])) {
-                        return false;
-                    }
-                    return true;
-                    break;
-                case CT_SERVICEGROUP:
-                    /** @var ServicegroupsTable $ServicegroupsTable */
-                    $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
-                    $servicegroup = $ServicegroupsTable->getServicegroupByContainerId($containerId);
-                    if (!empty($servicegroup['services']) || !empty($servicegroup['servicetemplates'])) {
-                        return false;
-                    }
-                    return true;
-
-                    break;
-                case CT_SERVICETEMPLATEGROUP:
-                    /** @var ServicetemplategroupsTable $ServicetemplategroupsTable */
-                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
-                    $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplategroupByContainerId($containerId);
-                    if (!empty($servicetemplategroup['servicetemplates'])) {
-                        return false;
-                    }
-                    return true;
-                    break;
-
-            }
-        }
-        return false;
-    }
 
     /**
      * @param $containerId
