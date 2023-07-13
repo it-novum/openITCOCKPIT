@@ -1,8 +1,6 @@
 angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http, $sce){
     return {
-        restrict: 'E',
-        templateUrl: '/changecalendar_module/changecalendars/widget.html',
-        scope: {
+        restrict: 'E', templateUrl: '/changecalendar_module/changecalendars/widget.html', scope: {
             'widget': '='
         },
 
@@ -19,8 +17,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
             $scope.load = function(){
                 $http.get("/changecalendar_module/changecalendars/widget.json", {
                     params: {
-                        'angular': true,
-                        'widgetId': $scope.widget.id
+                        'angular': true, 'widgetId': $scope.widget.id
                     }
                 }).then(function(result){
                     $scope.init = false;
@@ -61,15 +58,10 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                         hour12: false
                     },
                     slotLabelFormat: {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        omitZeroMinute: false,
-                        hour12: false
+                        hour: '2-digit', minute: '2-digit', omitZeroMinute: false, hour12: false
                     },
                     eventTimeFormat: {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
+                        hour: '2-digit', minute: '2-digit', hour12: false
                     },
                     displayEventEnd: true,
                     allDaySlot: true,
@@ -90,8 +82,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
             };
 
             $scope.loadChangeCalendars = function(){
-                $http.get("/changecalendar_module/changecalendars/index.json?angular=true", {}
-                ).then(function(result){
+                $http.get("/changecalendar_module/changecalendars/index.json?angular=true", {}).then(function(result){
                     var changeCalendars = [];
                     for(var i in result.data.all_changecalendars){
                         changeCalendars.push({
@@ -114,14 +105,11 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
             };
 
             $scope.saveChangecalendar = function(){
-                $http.post("/changecalendar_module/changecalendars/widget.json?angular=true",
-                    {
-                        Widget: {
-                            id: $scope.widget.id
-                        },
-                        changecalendar_id: $scope.currentChangeCalendar.id
-                    }
-                ).then(function(result){
+                $http.post("/changecalendar_module/changecalendars/widget.json?angular=true", {
+                    Widget: {
+                        id: $scope.widget.id
+                    }, changecalendar_id: $scope.currentChangeCalendar.id
+                }).then(function(result){
                     //Update status
                     $scope.hideConfig();
                 });
