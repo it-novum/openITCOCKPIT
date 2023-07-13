@@ -20,7 +20,9 @@
                 <?php echo __('No change calendar selected'); ?>
             </span>
             <div ng-show="currentChangeCalendar.id !== null" class="no-padding">
-                <div id="changecalendar"></div>
+                <a ui-sref="ChangecalendarsEdit({id:currentChangeCalendar.id})">
+                    <div id="changecalendar"></div>
+                </a>
             </div>
         </flippy-front>
         <flippy-back class="fixFlippy">
