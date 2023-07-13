@@ -73,6 +73,12 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
 
             $scope.hideConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_IN');
+                if($scope.init){
+                    return;
+                }
+                if($scope.calendar !== null){
+                    $scope.calendar.destroy();
+                }
                 $scope.load();
             };
             $scope.showConfig = function(){
@@ -111,6 +117,12 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     clearTimeout($scope.calendarTimeout);
                 }
                 $scope.calendarTimeout = setTimeout(function(){
+                    if($scope.init){
+                        return;
+                    }
+                    if($scope.calendar !== null){
+                        $scope.calendar.destroy();
+                    }
                     $scope.load();
                 }, 500);
             };
