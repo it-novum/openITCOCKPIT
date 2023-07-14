@@ -19,10 +19,11 @@
             <span ng-show="currentChangeCalendar.id === null" class="text-info padding-left-20">
                 <?php echo __('No change calendar selected'); ?>
             </span>
-            <div ng-show="currentChangeCalendar.id !== null" class="no-padding">
+            <div class="no-padding">
                 <a ui-sref="ChangecalendarsEdit({id:currentChangeCalendar.id})">
-                    <div id="changecalendar"></div>
+                    {{currentChangeCalendar.name}}
                 </a>
+                <div id="changecalendar-{{widget.id}}"></div>
             </div>
         </flippy-front>
         <flippy-back class="fixFlippy">

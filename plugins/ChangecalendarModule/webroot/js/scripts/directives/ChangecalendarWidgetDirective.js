@@ -5,7 +5,9 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
         },
 
         controller: function($scope){
-            $scope.currentChangeCalendar = {};
+            $scope.currentChangeCalendar = {
+                id : null
+            };
             $scope.changeCalendars = [];
             var $widget = $('#widget-' + $scope.widget.id);
             $scope.frontWidgetHeight = parseInt(($widget.height()), 10); //-50px header
@@ -36,7 +38,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
             };
 
             $scope.renderCalendar = function(){
-                var calendarEl = document.getElementById('changecalendar');
+                var calendarEl = document.getElementById('changecalendar-'+$scope.widget.id);
                 $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                     plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
                     firstDay: 1, // monday as first day of the week
