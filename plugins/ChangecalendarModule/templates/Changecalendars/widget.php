@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2023-present>  <it-novum GmbH>
 //
 // This file is licensed under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 // The license agreement and license key were sent with the order confirmation.
@@ -34,7 +34,7 @@
                 <div class="form-group">
                     <div class="row">
                         <label class="col-lg-12 control-label">
-                            <?php echo __('Event Correlation'); ?>
+                            <?php echo __('Changecalendar'); ?>
                         </label>
                         <div class="col-lg-12">
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
