@@ -103,7 +103,7 @@ angular.module('openITCOCKPIT')
                     event.start = date('Y-m-d', info.event.start);
 
                     //Add event back to json
-                    $scope.addEvent(event.title, event.start);
+                    $scope.addEvent(event);
 
                     $scope.$apply();
                 },
@@ -256,29 +256,32 @@ angular.module('openITCOCKPIT')
             return false;
         };
 
-        $scope.addEvent = function(title, start, end){
-            $scope.events.push({
-                title: title,
-                start: start,
-                end: end,
-                className: 'bg-color-pinkDark'
-            });
+        $scope.addEvent = function(event){
+            $scope.events.push(event);
+            console.log($scope.events);
         };
 
-        $scope.addEventFromModal = function(){
+        $scope.modifyEventFromModal = function(){
             if($scope.modifyEvent.title === ''){
+                return;
+            }
+            if($scope.modifyEvent.start === ''){
+                return;
+            }
+            if($scope.modifyEvent.end === ''){
                 return;
             }
 
             //Add event to internal json
-            $scope.addEvent($scope.modifyEvent.title, $scope.modifyEvent.start, $scope.modifyEvent.end);
+            $scope.addEvent($scope.modifyEvent);
 
             //Reset modal and newEvent object
             $('#addEventModal').modal('hide');
             $scope.modifyEvent = {
                 title: '',
                 start: '',
-                end: ''
+                end: '',
+                id: ''
             };
         };
 
