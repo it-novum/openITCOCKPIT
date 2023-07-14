@@ -77,7 +77,7 @@ angular.module('openITCOCKPIT')
                             })
                             .click(function(){
                                     $('#addEventModal').modal('show');
-                                    $scope.newEvent = {
+                                    $scope.modifyEvent = {
                                         title: '',
                                         start: new Date(currentDate + "T00:00:00"),
                                         end: new Date(currentDate + "T00:00:00")
@@ -107,7 +107,16 @@ angular.module('openITCOCKPIT')
 
                     $scope.$apply();
                 },
-
+                dateClick: function(info){
+                    alert('Clicked on: ' + info.dateStr);
+                    alert('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
+                    alert('Current view: ' + info.view.type);
+                    // change the day's background color just for fun
+                    info.dayEl.style.backgroundColor = 'red';
+                },
+                eventClick: function(info){
+                    $scope.editEventFromModal(info.event);
+                },
                 events: $scope.events
             });
 
@@ -257,45 +266,34 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.addEventFromModal = function(){
-            if($scope.newEvent.title === ''){
+            if($scope.modifyEvent.title === ''){
                 return;
             }
 
             //Add event to internal json
-            $scope.addEvent($scope.newEvent.title, $scope.newEvent.start, $scope.newEvent.end);
+            $scope.addEvent($scope.modifyEvent.title, $scope.modifyEvent.start, $scope.modifyEvent.end);
 
             //Reset modal and newEvent object
             $('#addEventModal').modal('hide');
-            $scope.newEvent = {
+            $scope.modifyEvent = {
                 title: '',
                 start: '',
                 end: ''
             };
         };
 
-        $scope.editEventFromModal = function(){
-            if($scope.editEvent.title === ''){
-                return;
-            }
+        // Show the modal and pre-fill the form with the given event.
+        $scope.editEventFromModal = function(event){
+            $scope.modifyEvent = {
+                id: event.id,
+                title: event.title,
+                start: event.start,
+                end: event.end,
+                description: event.description
+            };
 
             //Get old event from json
-            var event = $scope.deleteEvent($scope.editEvent.start);
-            if(!event){
-                return;
-            }
-
-            event = event[0];
-
-            //Add event back to json with new name and old date
-            $scope.addEvent($scope.editEvent.title, event.start);
-
-            //Reset modal and newEvent object
-            $('#editEventModal').modal('hide');
-            $scope.editEvent = {
-                title: '',
-                start: '',
-                end: ''
-            };
+            $('#addEventModal').modal('show');
         };
 
         $scope.submit = function(){
