@@ -61,3 +61,76 @@
         </flippy-back>
     </flippy>
 </div>
+
+
+
+
+<!-- Add Event modal -->
+<div id="changecalendar-{{widget.id}}-details" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-edit"></i>
+                    <?php echo __('Modify date'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label for="modifyEventTitle"><?php echo __('Title'); ?></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-prepend fa fa-pencil-alt"></i></span>
+                            </div>
+                            <input disabled="disabled" type="text" class="form-control" placeholder="<?php echo __('Title'); ?>"
+                                   ng-model="modifyEvent.title" id="modifyEventTitle">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <label for="modifyEventStart"><?php echo __('Start'); ?></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-prepend fa fa-pencil-alt"></i></span>
+                            </div>
+                            <input disabled="disabled" type="datetime-local" class="form-control" placeholder="<?php echo __('Start'); ?>"
+                                   ng-model="modifyEvent.start" id="modifyEventStart">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="modifyEventEnd"><?php echo __('End'); ?></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-prepend fa fa-pencil-alt"></i></span>
+                            </div>
+                            <input disabled="disabled" type="datetime-local" class="form-control" placeholder="<?php echo __('End'); ?>"
+                                   ng-model="modifyEvent.end" id="modifyEventEnd">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1"><?php echo __('Description'); ?></label>
+                            <textarea disabled="disabled" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="modifyEventFromModal()">
+                    <?php echo __('Save'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+            <input type="hidden" value="" ng-model="modifyEvent.id" />
+        </div>
+    </div>
+</div>

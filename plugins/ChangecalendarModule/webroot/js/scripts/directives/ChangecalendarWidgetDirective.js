@@ -53,10 +53,27 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     defaultDate: $scope.defaultDate,
                     businessHours: true, // display business hours
                     editable: false,
-                    events: $scope.events
+                    events: $scope.events,
+                    eventClick: function(info){
+                        $scope.showEventDetails(info.event);
+                    },
                 });
 
                 $scope.calendar.render();
+            };
+
+            // Show the modal and pre-fill the form with the given event.
+            $scope.showEventDetails = function(event){
+                $scope.modifyEvent = {
+                    id: event.id,
+                    title: event.title,
+                    start: event.start,
+                    end: event.end,
+                    description: event.description
+                };
+
+                //Get old event from json
+                $('#changecalendar-'+$scope.widget.id+'-details').modal('show');
             };
 
             $scope.loadChangeCalendars = function(){
@@ -79,7 +96,9 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     return;
                 }
                 if($scope.calendar !== null){
-                    $scope.calendar.destroy();
+                    if (typeof($scope.calendar.destroy) === "function") {
+                        $scope.calendar.destroy();
+                    }
                 }
                 $scope.load();
             };
@@ -104,6 +123,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                 hasResize();
             });
             var hasResize = function(){
+                console.warn('RESIZED BUDDY!');
                 if($scope.init){
                     return;
                 }

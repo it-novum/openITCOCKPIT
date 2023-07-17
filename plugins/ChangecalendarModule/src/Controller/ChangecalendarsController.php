@@ -185,9 +185,8 @@ class ChangecalendarsController extends AppController {
                     'end'   => (new DateTime((string)($event['end'])))->format('Y-m-d H:i:s'),
                 ];
 
-                if (isset($event['id']) && $event['changecalendar_id']) {
+                if (isset($event['id'])) {
                     $tmpEvent['id'] = $event['id'];
-                    $tmpEvent['changecalendar_id'] = $event['changecalendar_id'];
                 }
 
                 $data['changecalendar_events'][] = $tmpEvent;

@@ -107,13 +107,6 @@ angular.module('openITCOCKPIT')
 
                     $scope.$apply();
                 },
-                dateClick: function(info){
-                    alert('Clicked on: ' + info.dateStr);
-                    alert('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
-                    alert('Current view: ' + info.view.type);
-                    // change the day's background color just for fun
-                    info.dayEl.style.backgroundColor = 'red';
-                },
                 eventClick: function(info){
                     $scope.editEventFromModal(info.event);
                 },
@@ -257,7 +250,29 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.addEvent = function(event){
-            $scope.events.push(event);
+            // If the event is new
+            if(typeof (event.id) === "undefined"){
+                $scope.events.push(event);
+                return;
+            }
+
+            // Otherwise traverse for an update
+            let eventCount = $scope.events.length,
+                eventIndex = 0;
+
+            for(eventIndex = 0; eventIndex <= eventCount; eventIndex++){
+                let myEvent = $scope.events[eventIndex];
+                event.id = parseInt(event.id);
+
+                if(myEvent.id !== event.id){
+                    continue;
+                }
+
+                $scope.events[eventIndex].start = event.start;
+                $scope.events[eventIndex].end = event.end;
+                $scope.events[eventIndex].title = event.title;
+                break;
+            }
             console.log($scope.events);
         };
 
