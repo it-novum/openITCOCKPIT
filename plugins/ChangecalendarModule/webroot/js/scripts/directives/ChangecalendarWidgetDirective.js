@@ -64,6 +64,12 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
 
             // Show the modal and pre-fill the form with the given event.
             $scope.showEventDetails = function(event){
+                let myModal = $('#changecalendar-'+$scope.widget.id+'-details');
+
+                // move around
+                $('body').append(myModal);
+
+                // Move to end of body tag
                 $scope.modifyEvent = {
                     id: event.id,
                     title: event.title,
@@ -72,8 +78,10 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     description: event.description
                 };
 
-                //Get old event from json
-                $('#changecalendar-'+$scope.widget.id+'-details').modal('show');
+                // Show modal
+                myModal.modal('show');
+
+                $scope.$apply();
             };
 
             $scope.loadChangeCalendars = function(){

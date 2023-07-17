@@ -310,6 +310,8 @@ angular.module('openITCOCKPIT')
                 description: event.description
             };
 
+
+            $scope.$apply();
             //Get old event from json
             $('#addEventModal').modal('show');
         };
