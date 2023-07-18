@@ -180,6 +180,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
             defaultFilter();
+            $scope.currentPage = 1;
             $scope.loadHostsWithStatus('');
         }, true);
 
@@ -187,6 +188,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+            $scope.currentPage = 1;
             $scope.loadHostsWithStatus();
         }, true);
     });

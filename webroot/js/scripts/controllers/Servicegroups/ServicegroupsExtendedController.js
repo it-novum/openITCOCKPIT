@@ -189,6 +189,8 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+
+            $scope.currentPage = 1;
             $scope.loadServicesWithStatus('');
         }, true);
 
@@ -197,6 +199,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
             if($scope.post.Servicegroup.id > 0){
+                $scope.currentPage = 1;
                 $scope.loadServicesWithStatus('');
             }
         }, true);

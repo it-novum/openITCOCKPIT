@@ -965,7 +965,7 @@ class ServicegroupsController extends AppController {
         if (!empty($serviceIds)) {
             if ($this->DbBackend->isNdoUtils()) {
                 /** @var $ServicesTable ServicesTable */
-                $ServicesTable = TableRegistry::getTableLocator()->get('Services', $PaginateOMat);
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
                 $services = $ServicesTable->getServiceIndex($ServiceConditions);
             }
 
