@@ -312,12 +312,12 @@ angular.module('openITCOCKPIT')
         });
 
         $scope.setXdebugCookie = function(){
-            $.cookie('XDEBUG_TRIGGER', 'true');
+            $.cookie('XDEBUG_TRIGGER', 'true', {secure: true});
             $scope.hasXdebugCookie = true;
         };
 
         $scope.removeXdebugCookie = function(){
-            $.removeCookie('XDEBUG_TRIGGER');
+            $.removeCookie('XDEBUG_TRIGGER', {secure: true});
             $scope.hasXdebugCookie = false;
         };
 

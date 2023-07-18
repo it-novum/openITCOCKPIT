@@ -799,6 +799,7 @@ class HostsTable extends Table {
             'Hosts.satellite_id',
             'Hosts.container_id',
             'Hosts.tags',
+            'Hosts.usage_flag',
             'Hosts.priority',
             'Hosts.notes',
             'Hosts.host_type',
@@ -3031,9 +3032,10 @@ class HostsTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHostsForCopy($ids = []) {
+    public function getHostsForCopy($ids = [], array $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'Hosts.id',
@@ -3043,7 +3045,18 @@ class HostsTable extends Table {
                 'Hosts.host_url'
             ])
             ->where(['Hosts.id IN' => $ids])
-            ->order(['Hosts.id' => 'asc'])
+            ->order(['Hosts.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query
             ->disableHydration()
             ->all();
 
@@ -4485,7 +4498,7 @@ class HostsTable extends Table {
                         'RLIKE'
                     );
                 }
-            }else{
+            } else {
                 $where['Hosts.address LIKE'] = sprintf('%%%s%%', $conditions['Host']['address']);
             }
         }
@@ -4898,5 +4911,47 @@ class HostsTable extends Table {
      */
     private function isValidRegularExpression($regEx) {
         return @preg_match('`' . $regEx . '`', '') !== false;
+    }
+
+    /**
+     * @param HostFilter $HostFilter
+     * @param HostConditions $HostConditions
+     * @return array
+     */
+    public function getHostStatusGlobalOverview(HostFilter $HostFilter, HostConditions $HostConditions): array {
+        $MY_RIGHTS = $HostConditions->getContainerIds();
+        $where = $HostFilter->indexFilter();
+        $where['Hosts.disabled'] = 0;
+        if ($HostConditions->getHostIds()) {
+            $hostIds = $HostConditions->getHostIds();
+            if (!is_array($hostIds)) {
+                $hostIds = [$hostIds];
+            }
+
+            $where['Hosts.id IN'] = $hostIds;
+        }
+        $query = $this->find();
+        $query->select([
+            'Hoststatus.current_state',
+            'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.hostname)'),
+        ])
+            ->innerJoin(['Hoststatus' => 'statusengine_hoststatus'], [
+                'Hoststatus.hostname = Hosts.uuid'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+
+        $query->disableHydration();
+        $query->group(['Hoststatus.current_state']);
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }

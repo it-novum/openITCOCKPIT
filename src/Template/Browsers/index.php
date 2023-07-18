@@ -577,11 +577,15 @@
                                     <i class="fa fa-check-square"></i>
                                 </th>
 
-                                <th ng-show="fields[1]" class="no-sort text-center">
+                                <th ng-show="fields[1]" class="no-sort text-center"
+                                    ng-click="orderBy('Hoststatus.acknowledgement_type')">
+                                    <i class="fa" ng-class="getSortClass('Hoststatus.acknowledgement_type')"></i>
                                     <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
-                                <th ng-show="fields[2]" class="no-sort text-center">
+                                <th ng-show="fields[2]" class="no-sort text-center"
+                                    ng-click="orderBy('Hoststatus.scheduled_downtime_depth')">
+                                    <i class="fa" ng-class="getSortClass('Hoststatus.scheduled_downtime_depth')"></i>
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
@@ -885,6 +889,23 @@
                                                     <?php echo __('Sharing'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
+                                                <a ui-sref="HostsCopy({ids: host.Host.id})"
+                                                   ng-if="host.Host.allow_sharing"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
+                                                <a ng-if="host.Host.allow_edit"
+                                                   class="dropdown-item"
+                                                   href="javascript:void(0);"
+                                                   ng-click="confirmDeactivate(getObjectForDelete(host))">
+                                                    <i class="fa fa-plug"></i>
+                                                    <?php echo __('Disable'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                 <a ui-sref="ServicesServiceList({id: host.Host.id})"
                                                    class="dropdown-item">
@@ -899,7 +920,6 @@
                                                     <?php echo __('Allocate service template group'); ?>
                                                 </a>
                                             <?php endif; ?>
-
                                             <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                                                 <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
                                                    class="dropdown-item" href="javascript:void(0);">
@@ -907,13 +927,18 @@
                                                     <?php echo __('Append to host group'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
-                                                <a ng-if="host.Host.allow_edit"
-                                                   class="dropdown-item"
-                                                   href="javascript:void(0);"
-                                                   ng-click="confirmDeactivate(getObjectForDelete(host))">
-                                                    <i class="fa fa-plug"></i>
-                                                    <?php echo __('Disable'); ?>
+                                            <?php if ($this->Acl->hasPermission('wizard', 'agentconnector')): ?>
+                                                <a ui-sref="AgentconnectorsWizard({hostId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-user-secret"></i>
+                                                    <?php echo __('openITCOCKPIT Agent discovery'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'host', objectId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php

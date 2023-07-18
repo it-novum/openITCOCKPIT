@@ -126,4 +126,8 @@ class ChangelogsController extends AppController {
         $this->set('all_changes', $all_changes);
         $this->viewBuilder()->setOption('serialize', ['all_changes']);
     }
+
+    //Only for ACLs
+    public function entity(): void {
+    }
 }

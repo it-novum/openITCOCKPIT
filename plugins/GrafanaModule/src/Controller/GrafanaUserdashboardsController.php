@@ -35,6 +35,8 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use GrafanaModule\Model\Entity\GrafanaUserdashboardMetric;
+use GrafanaModule\Model\Entity\GrafanaUserdashboardPanel;
 use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardMetricsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardPanelsTable;
@@ -401,6 +403,127 @@ class GrafanaUserdashboardsController extends AppController {
         $this->set('message', __('Could not delete user defined Grafana dashboard'));
         $this->viewBuilder()->setOption('serialize', ['success', 'message']);
     }
+
+    /**
+     * @param int|null $id
+     */
+    public function copy($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+        /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
+        $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
+        /** @var GrafanaUserdashboardMetricsTable $GrafanaUserdashboardMetricsTable */
+        $GrafanaUserdashboardMetricsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardMetrics');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $dashboards = $GrafanaUserdashboardsTable->getGrafanaUserdashboardsForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('dashboards', $dashboards);
+            $this->viewBuilder()->setOption('serialize', ['dashboards']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData('data', []);
+
+            foreach ($postData as $index => $dashboardData) {
+                if (!isset($dashboardData['Dashboard']['id'])) {
+                    //Create/clone Grafana User Dashboard
+                    $sourceId = $dashboardData['Source']['id'];
+                    $sourceDashboard = $GrafanaUserdashboardsTable->getSourceGrafanaUserdashboardForCopy($sourceId, $MY_RIGHTS);
+
+                    $newDashboardData = $sourceDashboard;
+                    $newDashboardData['name'] = $dashboardData['Dashboard']['name'];
+
+                    $newDashboardEntity = $GrafanaUserdashboardsTable->newEntity($newDashboardData);
+                }
+
+                $action = 'copy';
+                if (isset($dashboardData['Dashboard']['id'])) {
+                    //Update existing Grafana Userdashboard
+                    //This happens, if a user copy multiple dashboards, and one run into an validation error
+                    //All dashboards without validation errors got already saved to the database
+                    $newDashboardEntity = $GrafanaUserdashboardsTable->get($dashboardData['Dashboard']['id']);
+                    $newDashboardEntity->setAccess('id', false);
+                    $newDashboardEntity->setAccess('container_id', false);
+                    $newDashboardEntity->set('name', $dashboardData['Dashboard']['name']);
+                    $action = 'edit';
+                }
+                $GrafanaUserdashboardsTable->save($newDashboardEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newDashboardEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newDashboardEntity->getErrors();
+                } else {
+                    //No errors
+
+                    // Due to Grafana User Dashboards are a bit special, we need to create the Dashboard first,
+                    // than add panels and in the last step we can add metrics to the panels :/
+                    // Therefor we only do this for new copies, not for an update (due to validation errors)
+                    if ($action === 'copy') {
+                        $sourcePanels = $GrafanaUserdashboardPanelsTable->getPanelsByUserdashboardIdForCopy($dashboardData['Source']['id']);
+                        if (!empty($sourcePanels)) {
+                            foreach ($sourcePanels as $sourcePanel) {
+                                /** @var GrafanaUserdashboardPanel $sourcePanel */
+                                $newPanelEntity = $GrafanaUserdashboardPanelsTable->newEntity([
+                                    'userdashboard_id'   => $newDashboardEntity->get('id'),
+                                    'row'                => $sourcePanel->row,
+                                    'unit'               => $sourcePanel->unit,
+                                    'title'              => $sourcePanel->title,
+                                    'visualization_type' => $sourcePanel->visualization_type,
+                                    'stacking_mode'      => $sourcePanel->stacking_mode
+                                ]);
+
+                                $GrafanaUserdashboardPanelsTable->save($newPanelEntity);
+                                if (!$newPanelEntity->hasErrors()) {
+                                    // Copy metrics form source dashboard/panel into the new panel
+                                    $sourceMetrics = $GrafanaUserdashboardMetricsTable->getMetricsByPanelIdForCopy($sourcePanel->get('id'));
+                                    if (!empty($sourceMetrics)) {
+                                        foreach ($sourceMetrics as $sourceMetric) {
+                                            /** @var GrafanaUserdashboardMetric $sourceMetric */
+                                            $newMetricEntity = $GrafanaUserdashboardMetricsTable->newEntity([
+                                                'panel_id'   => $newPanelEntity->get('id'),
+                                                'metric'     => $sourceMetric->metric,
+                                                'host_id'    => $sourceMetric->host_id,
+                                                'service_id' => $sourceMetric->service_id,
+                                                'color'      => $sourceMetric->color
+                                            ]);
+                                            $GrafanaUserdashboardMetricsTable->save($newMetricEntity);
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+
+                    $postData[$index]['Dashboard']['id'] = $newDashboardEntity->get('id');
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
 
     /**
      * @throws \Exception

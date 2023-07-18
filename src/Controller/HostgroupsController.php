@@ -154,6 +154,11 @@ class HostgroupsController extends AppController {
             $hostgroup->set('uuid', UUID::v4());
             $hostgroup->get('container')->set('containertype_id', CT_HOSTGROUP);
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $HostgroupsTable->save($hostgroup);
             if ($hostgroup->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -229,8 +234,14 @@ class HostgroupsController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            //Update contact data
+            //Update hostgroup data
             $User = new User($this->getUser());
+
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $hostgroupEntity = $HostgroupsTable->get($id, [
                 'contain' => [
                     'Containers'
@@ -297,6 +308,8 @@ class HostgroupsController extends AppController {
             throw new NotFoundException(__('Invalid Hostgroup'));
         }
 
+        $ContainersTable->acquireLock();
+
         $hostgroup = $HostgroupsTable->getHostgroupById($id);
         $container = $ContainersTable->get($hostgroup->get('container')->get('id'), [
             'contain' => [
@@ -309,7 +322,7 @@ class HostgroupsController extends AppController {
             return;
         }
 
-        if ($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)) {
+        if ($ContainersTable->allowDelete($container->id, CT_HOSTGROUP)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 /** @var  ChangelogsTable $ChangelogsTable */
@@ -392,6 +405,12 @@ class HostgroupsController extends AppController {
         $all_hosts = [];
         $hosts = [];
 
+        $hostgroupHoststatusOverview = [
+            0 => null,
+            1 => null,
+            2 => null
+        ];
+
         if (!empty($hostIds)) {
             if ($this->DbBackend->isNdoUtils()) {
                 /** @var $HostsTable HostsTable */
@@ -403,6 +422,11 @@ class HostgroupsController extends AppController {
                 /** @var $HostsTable HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostConditions, $PaginateOMat);
+                $hostgroupServicestatusAllHosts = $HostsTable->getHostStatusGlobalOverview($HostFilter, $HostConditions);
+                foreach ($hostgroupServicestatusAllHosts as $hoststatusGroupByState) {
+                    $state = (int)$hoststatusGroupByState['Hoststatus']['current_state'];
+                    $hostgroupHoststatusOverview[$state] = (int)$hoststatusGroupByState['count'];
+                }
             }
 
             if ($this->DbBackend->isCrateDb()) {
@@ -412,12 +436,6 @@ class HostgroupsController extends AppController {
 
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->currentState();
-
-        $hostgroupHoststatusOverview = [
-            0 => 0,
-            1 => 0,
-            2 => 0
-        ];
 
 
         foreach ($hosts as $host) {
@@ -450,8 +468,6 @@ class HostgroupsController extends AppController {
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
-
-            $hostgroupHoststatusOverview[$Hoststatus->currentState()]++;
 
             $tmpRecord = [
                 'Host'                 => $Host->toArray(),
@@ -729,6 +745,8 @@ class HostgroupsController extends AppController {
                 throw new NotFoundException(__('Invalid Hostgroup'));
             }
 
+            $ContainersTable->acquireLock();
+
             $hostgroup = $HostgroupsTable->getHostgroupForEdit($id);
             $hostgroupForChangelog = $hostgroup;
             if (!$this->allowedByContainerId($hostgroup['Hostgroup']['container']['parent_id'])) {
@@ -826,6 +844,127 @@ class HostgroupsController extends AppController {
             $this->set('hostgroup', $hostgroupEntity);
             $this->viewBuilder()->setOption('serialize', ['hostgroup']);
         }
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function copy($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $hostgroups = $HostgroupsTable->getHostgroupsForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('hostgroups', $hostgroups);
+            $this->viewBuilder()->setOption('serialize', ['hostgroups']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
+
+            $postData = $this->request->getData('data');
+            $User = new User($this->getUser());
+            $userId = $User->getId();
+
+            foreach ($postData as $index => $hostgroupData) {
+                if (!isset($hostgroupData['Hostgroup']['id'])) {
+                    //Create/clone hostgroup
+                    $sourceHostgroupId = $hostgroupData['Source']['id'];
+                    $sourceHostgroup = $HostgroupsTable->getSourceHostgroupForCopy($sourceHostgroupId, $MY_RIGHTS);
+
+                    $newHostgroupData = [
+                        'description'   => $hostgroupData['Hostgroup']['description'],
+                        'hostgroup_url' => $sourceHostgroup['hostgroup_url'],
+                        'uuid'          => UUID::v4(),
+                        'container'     => [
+                            'name'             => $hostgroupData['Hostgroup']['container']['name'],
+                            'containertype_id' => CT_HOSTGROUP,
+                            'parent_id'        => $sourceHostgroup['container']['parent_id']
+                        ],
+                        'hosts'         => [
+                            '_ids' => $sourceHostgroup['hosts']['_ids']
+                        ],
+                        'hosttemplates' => [
+                            '_ids' => $sourceHostgroup['hosttemplates']['_ids']
+                        ],
+                    ];
+
+                    $newHostgroupEntity = $HostgroupsTable->newEntity($newHostgroupData);
+
+                }
+
+                $action = 'copy';
+                if (isset($hostgroupData['Hostgroup']['id'])) {
+                    //Update existing hostgroup
+                    //This happens, if a user copy multiple hostgroups, and one run into an validation error
+                    //All hostgroups without validation errors got already saved to the database
+                    $newHostgroupEntity = $HostgroupsTable->get($hostgroupData['Hostgroup']['id'], [
+                        'contain' => [
+                            'Containers'
+                        ]
+                    ]);
+                    $newHostgroupEntity->setAccess('*', false);
+                    $newHostgroupEntity->container->setAccess('*', false);
+                    $newHostgroupEntity->container->setAccess('name', true);
+                    $newHostgroupEntity = $HostgroupsTable->patchEntity($newHostgroupEntity, $hostgroupData['Hostgroup']);
+                    $newHostgroupData = $newHostgroupEntity->toArray();
+                    $action = 'edit';
+                }
+                $HostgroupsTable->save($newHostgroupEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newHostgroupEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newHostgroupEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Hostgroup']['id'] = $newHostgroupEntity->get('id');
+
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        $action,
+                        'hostgroups',
+                        $postData[$index]['Hostgroup']['id'],
+                        OBJECT_HOSTGROUP,
+                        $newHostgroupEntity->get('container')->get('parent_id'),
+                        $userId,
+                        $newHostgroupEntity->get('container')->get('name'),
+                        ['Hostgroup' => $newHostgroupData]
+                    );
+                    if ($changelog_data) {
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        Cache::clear('permissions');
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /****************************

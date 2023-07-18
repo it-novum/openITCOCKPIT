@@ -62,11 +62,12 @@ class UsercontainerrolesController extends AppController {
             $this->MY_RIGHTS
         );
         $containerWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
-            return $v == 2;
+            return $v == WRITE_RIGHT;
         }, ARRAY_FILTER_USE_BOTH);
+        $containerWithWritePermissions = array_keys($containerWithWritePermissions);
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
             $userRoleContainerIds = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
-            if(!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIds, $containerWithWritePermissions))){
+            if (!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIds, $containerWithWritePermissions))) {
                 unset($all_usercontainerroles[$index]);
                 continue; //insufficient user (container) rights
             }
@@ -81,7 +82,7 @@ class UsercontainerrolesController extends AppController {
                 }
             }
 
-            foreach ($usercontainerrole['users'] as $userIndex => $user){
+            foreach ($usercontainerrole['users'] as $userIndex => $user) {
 
                 $usercontainerrole['users'][$userIndex]['allow_edit'] = $this->hasRootPrivileges;
                 if ($this->hasRootPrivileges === false) {
@@ -117,7 +118,7 @@ class UsercontainerrolesController extends AppController {
                 }
             }
 
-            $all_usercontainerroles[$index]['users'] =  $usercontainerrole['users'];
+            $all_usercontainerroles[$index]['users'] = $usercontainerrole['users'];
         }
 
         $this->set('all_usercontainerroles', $all_usercontainerroles);
@@ -250,6 +251,86 @@ class UsercontainerrolesController extends AppController {
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function copy($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $usercontainerroles = $UsercontainerrolesTable->getUserContainerRolesForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('usercontainerroles', $usercontainerroles);
+            $this->viewBuilder()->setOption('serialize', ['usercontainerroles']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData('data');
+
+            foreach ($postData as $index => $usercontainerroleData) {
+                if (!isset($usercontainerroleData['Usercontainerrole']['id'])) {
+                    //Create/clone Usercontainerrole
+                    $sourceUsercontainerroleId = $usercontainerroleData['Source']['id'];
+                    $sourceUsercontainerrole = $UsercontainerrolesTable->getSourceUserContainerRoleForCopy($sourceUsercontainerroleId, $MY_RIGHTS);
+
+
+                    $newUsercontainerroleData = [
+                        'name'       => $usercontainerroleData['Usercontainerrole']['name'],
+                        'containers' => $UsercontainerrolesTable->containerPermissionsForSave($sourceUsercontainerrole['ContainersUsercontainerrolesMemberships']),
+                        'ldapgroups' => [
+                            '_ids' => $sourceUsercontainerrole['ldapgroups']['_ids']
+                        ]
+                    ];
+
+                    $newUsercontainerroleEntity = $UsercontainerrolesTable->newEntity($newUsercontainerroleData);
+                }
+
+                $action = 'copy';
+                if (isset($usercontainerroleData['Usercontainerrole']['id'])) {
+                    //Update existing Usercontainerrole
+                    //This happens, if a user copy multiple Usercontainerroles, and one run into an validation error
+                    //All Usercontainerroles without validation errors got already saved to the database
+                    $newUsercontainerroleEntity = $UsercontainerrolesTable->get($usercontainerroleData['Usercontainerrole']['id']);
+                    $newUsercontainerroleEntity->setAccess('*', false);
+                    $newUsercontainerroleEntity->setAccess(['name'], true);
+
+                    $newUsercontainerroleEntity = $UsercontainerrolesTable->patchEntity($newUsercontainerroleEntity, $usercontainerroleData['Usercontainerrole']);
+                    $action = 'edit';
+                }
+                $UsercontainerrolesTable->save($newUsercontainerroleEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newUsercontainerroleEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newUsercontainerroleEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Usercontainerrole']['id'] = $newUsercontainerroleEntity->get('id');
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        Cache::clear('permissions');
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /****************************

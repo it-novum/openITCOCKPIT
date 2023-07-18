@@ -940,4 +940,74 @@ class InstantreportsTable extends Table {
         return $list;
     }
 
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedInstantreportsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param int $hostId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getInstantReportsByHostId(int $hostId, array $MY_RIGHTS): array {
+        $query = $this->find();
+        $query->select([
+            'Instantreports.id',
+            'Instantreports.name'
+        ])
+            ->innerJoin(
+                ['InstantreportsToHosts' => 'instantreports_to_hosts'],
+                [
+                    'InstantreportsToHosts.instantreport_id = Instantreports.id',
+                    'InstantreportsToHosts.host_id' => $hostId,
+                ]
+            );
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Instantreports.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration();
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param int $serviceId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getInstantReportsByServiceId(int $serviceId, array $MY_RIGHTS): array {
+        $query = $this->find();
+        $query->select([
+            'Instantreports.id',
+            'Instantreports.name'
+        ])
+            ->innerJoin(
+                ['Instantreportstoservices' => 'instantreports_to_services'],
+                [
+                    "Instantreportstoservices.service_id" => $serviceId,
+                    'Instantreportstoservices.instantreport_id = Instantreports.id'
+                ]
+            );
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Instantreports.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration();
+
+        return $query->toArray();
+    }
+
 }

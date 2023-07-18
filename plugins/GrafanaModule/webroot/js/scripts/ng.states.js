@@ -31,6 +31,12 @@ openITCOCKPIT.config(function($stateProvider){
             controller: "Grafana_userdashboardsViewController"
         })
 
+        .state('GrafanaUserdashboardsCopy', {
+            url: '/grafana_module/grafana_userdashboards/copy/:ids',
+            templateUrl: "/grafana_module/grafana_userdashboards/copy.html",
+            controller: "Grafana_userdashboardsCopyController"
+        })
+
         .state('GrafanaConfigurationIndex', {
             url: '/grafana_module/grafana_configuration/index',
             templateUrl: "/grafana_module/grafana_configuration/index.html",

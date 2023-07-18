@@ -104,7 +104,7 @@
                                                     <span class="input-group-text">
                                                         <div class='icon-stack'>
                                                             <i class="fas fa-cog icon-stack-3x opacity-100 "></i>
-                                                            <i class="fas fa-cogs icon-stack-2x opacity-100 text-primary"></i>
+                                                            <i class="fas fa-sitemap opacity-100 fa-xs text-primary cornered cornered-lr"></i>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -122,7 +122,7 @@
                                         <div class="form-group">
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
-                                                    <span class="input-group-text"><i class="fa fa-sitemap"></i></span>
+                                                    <span class="input-group-text"><i class="fa fa-cogs"></i></span>
                                                 </div>
                                                 <input type="text" class="form-control form-control-sm"
                                                        placeholder="<?php echo __('Filter by service group'); ?>"
@@ -145,7 +145,7 @@
                                                     <span class="input-group-text">
                                                         <div class='icon-stack'>
                                                             <i class="fas fa-cogs icon-stack-3x opacity-100 "></i>
-                                                            <i class="fas fa-cogs icon-stack-2x opacity-100 text-primary"></i>
+                                                            <i class="fas fa-sitemap opacity-100 fa-xs text-primary cornered cornered-lr"></i>
                                                         </div>
                                                     </span>
                                                 </div>

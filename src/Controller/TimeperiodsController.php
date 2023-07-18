@@ -153,7 +153,7 @@ class TimeperiodsController extends AppController {
             return;
         }
         $timeperiod['events'] = $TimeperiodsTable->parseTimerangesForCalendar($timeperiod['timeperiod_timeranges']);
-        
+
         $this->set('timeperiod', $timeperiod);
         $this->viewBuilder()->setOption('serialize', ['timeperiod']);
     }
@@ -363,11 +363,16 @@ class TimeperiodsController extends AppController {
             return;
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         if ($this->request->is('get')) {
-            $timeperiods = $TimeperiodsTable->getTimeperiodsForCopy(func_get_args());
+            $timeperiods = $TimeperiodsTable->getTimeperiodsForCopy(func_get_args(), $MY_RIGHTS);
             $this->set('timeperiods', $timeperiods);
             $this->viewBuilder()->setOption('serialize', ['timeperiods']);
             return;
@@ -419,6 +424,9 @@ class TimeperiodsController extends AppController {
                     //This happens, if a user copy multiple timeperiods, and one run into an validation error
                     //All timeperiods without validation errors got already saved to the database
                     $newTimeperiodEntity = $TimeperiodsTable->get($timeperiodData['Timeperiod']['id']);
+                    $newTimeperiodEntity->setAccess('*', false);
+                    $newTimeperiodEntity->setAccess('name', true);
+                    $newTimeperiodEntity->setAccess('description', true);
                     $newTimeperiodEntity = $TimeperiodsTable->patchEntity($newTimeperiodEntity, $timeperiodData['Timeperiod']);
                     $newTimeperiodData = $newTimeperiodEntity->toArray();
                     $action = 'edit';

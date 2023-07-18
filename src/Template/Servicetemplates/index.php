@@ -232,6 +232,13 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'servicetemplate', objectId: servicetemplate.Servicetemplate.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('usedBy', 'servicetemplates')): ?>
                                                 <a class="dropdown-item"
                                                    ui-sref="ServicetemplatesUsedBy({id:servicetemplate.Servicetemplate.id})">
@@ -245,6 +252,14 @@
                                                    ui-sref="DocumentationsView({uuid:servicetemplate.Servicetemplate.uuid, type:'servicetemplate'})">
                                                     <i class="fa fa-book"></i>
                                                     <?php echo __('Documentation'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'servicetemplates')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ServicetemplatesCopy({ids: servicetemplate.Servicetemplate.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'servicetemplates')): ?>

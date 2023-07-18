@@ -20,7 +20,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -5092,5 +5091,61 @@ class ServicesTable extends Table {
             ->enableHydration($enableHydration)
             ->all();
         return $query;
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @return array
+     */
+    public function getServiceStatusGlobalOverview(ServiceConditions $ServiceConditions): array {
+        $where = $ServiceConditions->getConditions();
+        $where['Services.disabled'] = 0;
+        if ($ServiceConditions->getServiceIds()) {
+            $serviceIds = $ServiceConditions->getServiceIds();
+            if (!is_array($serviceIds)) {
+                $serviceIds = [$serviceIds];
+            }
+
+            $where['Services.id IN'] = $serviceIds;
+        }
+
+        $query = $this->find();
+        $query->select([
+            'Servicestatus.current_state',
+            'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_description)'),
+        ])
+            ->contain('Servicetemplates')
+            ->innerJoin(['Hosts' => 'hosts'], [
+                'Hosts.id = Services.host_id',
+            ])
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                if (!empty($ServiceConditions->getContainerIds())) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoin(['Servicestatus' => 'statusengine_servicestatus'], [
+                'Servicestatus.service_description = Services.uuid'
+            ]);
+        if (isset($where['servicename LIKE'])) {
+            $query->where(new Comparison(
+                'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                $where['servicename LIKE'],
+                'string',
+                'like'
+            ));
+            unset($where['servicename LIKE']);
+        }
+
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+
+        $query->disableHydration();
+        $query->group(['Servicestatus.current_state']);
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }

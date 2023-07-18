@@ -123,20 +123,21 @@
 
                                         <?php
                                         $models = [
-                                            'Command'         => __('Commands'),
-                                            'Contact'         => __('Contacts'),
-                                            'Contactgroup'    => __('Contact groups'),
-                                            'Host'            => __('Hosts'),
-                                            'Hostgroup'       => __('Host groups'),
-                                            'Hosttemplate'    => __('Host templates'),
-                                            'Service'         => __('Services'),
-                                            'Servicegroup'    => __('Service groups'),
-                                            'Servicetemplate' => __('Service templates'),
-                                            'Timeperiod'      => __('Time periods'),
-                                            'Location'        => __('Locations'),
-                                            'Tenant'          => __('Tenants'),
-                                            'Container'       => __('Nodes'),
-                                            'Export'          => __('Refresh configuration')
+                                            'Command'              => __('Commands'),
+                                            'Contact'              => __('Contacts'),
+                                            'Contactgroup'         => __('Contact groups'),
+                                            'Host'                 => __('Hosts'),
+                                            'Hostgroup'            => __('Host groups'),
+                                            'Hosttemplate'         => __('Host templates'),
+                                            'Service'              => __('Services'),
+                                            'Servicegroup'         => __('Service groups'),
+                                            'Servicetemplate'      => __('Service templates'),
+                                            'Servicetemplategroup' => __('Service template groups'),
+                                            'Timeperiod'           => __('Time periods'),
+                                            'Location'             => __('Locations'),
+                                            'Tenant'               => __('Tenants'),
+                                            'Container'            => __('Nodes'),
+                                            'Export'               => __('Refresh configuration')
                                         ];
                                         ?>
 
@@ -270,139 +271,17 @@
                     </div>
                     <!-- END FILTER -->
 
+                    <div class="margin-top-10" ng-show="changes.length === 0">
+                        <div class="text-center text-danger italic">
+                            <?php echo __('No entries match the selection'); ?>
+                        </div>
+                    </div>
 
                     <div class="frame-wrap">
                         <div class="col-lg-12">
                             <ul class="cbp_tmtimeline">
-                                <li ng-repeat="change in changes">
-                                    <time class="cbp_tmtime" datetime="{{change.time}}">
-                                        <span>{{change.time}}</span>
-                                        <span>{{change.timeAgoInWords}}</span>
-                                    </time>
-                                    <div class="cbp_tmicon txt-color-white {{change.color}}" title="{{change.action}}">
-                                        <i class="{{change.icon}}"></i>
-                                    </div>
-                                    <div class="cbp_tmlabel">
-                                        <h2 class="font-md">
-                                            {{change.model}}:
-                                            <strong>
-                                                <a ui-sref="{{change.ngState}}({id: change.object_id})"
-                                                   ng-if="change.ngState">
-                                                    {{change.name}}
-                                                </a>
-                                                <span ng-if="!change.ngState"
-                                                      ng-class="{'changelog_delete': change.action ==='delete'}">
-                                                    {{change.name}}
-                                                </span>
-
-                                            </strong>
-                                            <span class="font-xs" ng-if="change.includeUser && change.user.id > 0">
-                                                <?= __('by') ?>
-                                                <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
-                                                    <a ui-sref="UsersEdit({id: change.user.id})">
-                                                        {{change.user.firstname}}
-                                                        {{change.user.lastname}}
-                                                    </a>
-                                                <?php else: ?>
-                                                    {{change.user.firstname}}
-                                                    {{change.user.lastname}}
-                                                <?php endif; ?>
-                                            </span>
-                                            <span class="font-xs" ng-if="change.includeUser && change.user === null">
-                                                <?= __('by Cronjob') ?>
-                                            </span>
-                                        </h2>
-
-                                        <!-- Add and copy changes -->
-                                        <blockquote
-                                            ng-class="{'changelog-blockquote-success': change.action ==='add', 'changelog-blockquote-primary': change.action ==='copy'}"
-                                            ng-if="(change.action === 'add' || change.action === 'copy') && data_unserialized_notEmpty(change.data_unserialized)"
-                                            class="blockquote">
-                                            <div class="margin-left-10"
-                                                 ng-repeat="(tableName, tableChanges) in change.data_unserialized">
-                                                {{tableName}}
-
-                                                <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
-                                                      ng-if="!tableChanges.isArray && fieldName !== 'id'">
-                                                    <footer class="padding-left-10 blockquote-footer">
-                                                        {{fieldName}}: <span class="text-primary">{{fieldValue}}</span>
-                                                    </footer>
-                                                </span>
-
-                                                <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
-                                                      ng-if="tableChanges.isArray" class="padding-top-5">
-                                                    <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
-                                                        <footer class="padding-left-10 blockquote-footer"
-                                                                ng-if="subFieldName !== 'id'">
-                                                            {{subFieldName}}:
-                                                            <span class="text-primary">{{subFieldValue}}</span>
-                                                        </footer>
-                                                    </span>
-                                                    <div class="padding-top-5"></div>
-                                                </span>
-                                            </div>
-                                        </blockquote>
-
-                                        <!-- Edit changes -->
-                                        <blockquote class="changelog-blockquote-warning blockquote"
-                                                    ng-if="change.action === 'edit' && data_unserialized_notEmpty(change.data_unserialized)">
-                                            <div class="margin-left-10"
-                                                 ng-repeat="(tableName, tableChanges) in change.data_unserialized">
-                                                {{tableName}}
-
-                                                <span ng-repeat="(fieldName, fieldValueChanges) in tableChanges.data"
-                                                      ng-if="!tableChanges.isArray">
-                                                    <footer class="padding-left-10 blockquote-footer">
-                                                        {{fieldName}}:
-                                                        <span class="down">{{fieldValueChanges.old}}</span>
-                                                        <i class="fa fa-caret-right"></i>
-                                                        <span class="up">{{fieldValueChanges.new}}</span>
-                                                    </footer>
-                                                </span>
-
-                                                <span ng-repeat="(fieldIndex, fieldValueChanges) in tableChanges.data"
-                                                      ng-if="tableChanges.isArray" class="padding-top-5">
-                                                    <small
-                                                        ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
-                                                        ng-if="fieldValueChanges.old === null">
-                                                        <footer class="blockquote-footer">
-                                                            {{newFieldName}}:
-                                                            <span class="up">{{newFieldValue}}</span>
-                                                        </footer>
-
-                                                    </small>
-
-                                                    <small
-                                                        ng-repeat="(oldFieldName, oldFieldValue) in fieldValueChanges.old"
-                                                        ng-if="fieldValueChanges.new === null">
-                                                        <footer class="blockquote-footer">
-                                                            {{oldFieldName}}:
-                                                            <span class="down changelog_delete">{{oldFieldValue}}</span>
-                                                        </footer>
-                                                    </small>
-
-                                                    <small
-                                                        ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
-                                                        ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
-                                                        <footer class="blockquote-footer">
-                                                            {{newFieldName}}:
-                                                            <span
-                                                                ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
-                                                                {{fieldValueChanges.old[newFieldName]}}
-                                                            </span>
-                                                            <i class="fa fa-caret-right"></i>
-                                                            <span
-                                                                ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'up': fieldValueChanges.old[newFieldName] !== newFieldValue}">
-                                                                {{newFieldValue}}
-                                                            </span>
-                                                        </footer>
-                                                    </small>
-
-                                                    <div class="padding-top-5"></div>
-                                                </span>
-                                            </div>
-                                        </blockquote>
-                                    </div>
+                                <li ng-repeat="changeLogEntry in changes">
+                                    <change-log-entry changelogentry="changeLogEntry"></change-log-entry>
                                 </li>
                             </ul>
 

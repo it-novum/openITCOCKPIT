@@ -122,6 +122,11 @@ class LocationsController extends AppController {
             $location->set('uuid', UUID::v4());
             $location->container->containertype_id = CT_LOCATION;
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $LocationsTable->save($location);
             if ($location->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -194,6 +199,12 @@ class LocationsController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
+
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $oldLocation = $LocationsTable->get($id, [
                 'contain' => ['Containers']
             ]);
@@ -269,6 +280,8 @@ class LocationsController extends AppController {
             throw new NotFoundException(__('Invalid container'));
         }
 
+        $ContainersTable->acquireLock();
+
         $container = $ContainersTable->get($containerId);
 
         try {
@@ -282,7 +295,7 @@ class LocationsController extends AppController {
             return;
         }
 
-        if ($ContainersTable->allowDelete($container->get('id'))) {
+        if ($ContainersTable->allowDelete($container->get('id'), CT_LOCATION)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 /** @var  ChangelogsTable $ChangelogsTable */

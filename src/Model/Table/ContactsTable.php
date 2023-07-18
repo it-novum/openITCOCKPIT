@@ -143,13 +143,13 @@ class ContactsTable extends Table {
         $validator
             ->integer('host_timeperiod_id')
             ->allowEmptyString('host_timeperiod_id', null, false)
-            ->requirePresence('host_timeperiod_id')
+            ->requirePresence('host_timeperiod_id', 'create')
             ->greaterThan('host_timeperiod_id', 0);
 
         $validator
             ->integer('service_timeperiod_id')
             ->allowEmptyString('service_timeperiod_id', null, false)
-            ->requirePresence('service_timeperiod_id')
+            ->requirePresence('service_timeperiod_id', 'create')
             ->greaterThan('service_timeperiod_id', 0);
 
         $validator
@@ -165,21 +165,21 @@ class ContactsTable extends Table {
             ], __('You have to choose at least one command.'));
 
         $validator
-            ->requirePresence('notify_host_recovery', true, __('You have to choose at least one option.'))
+            ->requirePresence('notify_host_recovery', 'create', __('You have to choose at least one option.'))
             ->add('notify_host_recovery', 'custom', [
                 'rule'    => [$this, 'checkHostNotificationOptions'],
                 'message' => 'You have to choose at least one option.',
             ]);
 
         $validator
-            ->requirePresence('notify_service_recovery', true, __('You have to choose at least one option.'))
+            ->requirePresence('notify_service_recovery', 'create', __('You have to choose at least one option.'))
             ->add('notify_service_recovery', 'custom', [
                 'rule'    => [$this, 'checkHostNotificationOptions'],
                 'message' => 'You have to choose at least one option.',
             ]);
 
         $validator
-            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->requirePresence('containers', 'create', __('You have to choose at least one option.'))
             ->allowEmptyString('containers', null, false)
             ->multipleOptions('containers', [
                 'min' => 1
@@ -375,9 +375,10 @@ class ContactsTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getContactsForCopy($ids = []) {
+    public function getContactsForCopy($ids = [], array $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'Contacts.id',
@@ -386,8 +387,21 @@ class ContactsTable extends Table {
                 'Contacts.email',
                 'Contacts.phone'
             ])
+            ->contain('Containers')
             ->where(['Contacts.id IN' => $ids])
-            ->order(['Contacts.id' => 'asc'])
+            ->order(['Contacts.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            });
+        }
+
+        $query
+            ->distinct('Contacts.id')
             ->disableHydration()
             ->all();
 
@@ -1188,6 +1202,37 @@ class ContactsTable extends Table {
             $requiredIds[] = (int)$requiredId;
         }
         return $requiredIds;
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedContactsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $contacts = $result->toArray();
+
+        // Check each contact, if it as more than one container.
+        // If the contact has more than 1 container, we can keep this contact because is not orphaned
+        $orphanedContacts = [];
+        foreach ($contacts as $contact) {
+            if (empty($contact->containers)) {
+                $orphanedContacts[] = $contact;
+            }
+        }
+
+        return $orphanedContacts;
     }
 
 }
