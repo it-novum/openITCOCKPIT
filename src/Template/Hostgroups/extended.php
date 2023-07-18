@@ -62,8 +62,8 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    {{(hostgroup.Hostgroup.container.name) && hostgroup.Hostgroup.container.name ||
-q                    <span class="fw-300"><i><?php echo __('UUID: '); ?>{{hostgroup.Hostgroup.uuid}}</i></span>
+                    {{hostgroup.Hostgroup.container.name}}
+                    <span class="fw-300"><i><?php echo __('UUID: '); ?>{{hostgroup.Hostgroup.uuid}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="loadHostsWithStatus()">
@@ -175,7 +175,7 @@ q                    <span class="fw-300"><i><?php echo __('UUID: '); ?>{{hostgr
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
-                            <tr ng-if="hostgroup.Hosts.length > 0">
+                            <tr>
                                 <td colspan="8" class="no-padding">
                                     <div class="form-group">
                                         <div class="input-group input-group-sm">
@@ -200,11 +200,12 @@ q                    <span class="fw-300"><i><?php echo __('UUID: '); ?>{{hostgr
                                                        name="checkbox"
                                                        checked="checked"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-model="hostgroupsStateFilter[$index]"
-                                                       ng-value="$index">
+                                                       ng-value="{{state}}"
+                                                       ng-model="filter.Hoststatus.current_state[state]">
                                                 <label
                                                     class="extended-list custom-control-label custom-control-label-{{state}} no-margin"
-                                                    for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
+                                                    for="statusFilter{{state}}">{{stateCount}}
+                                                </label>
                                             </div>
                                         </div>
                                     </div>

@@ -405,6 +405,12 @@ class HostgroupsController extends AppController {
         $all_hosts = [];
         $hosts = [];
 
+        $hostgroupHoststatusOverview = [
+            0 => null,
+            1 => null,
+            2 => null
+        ];
+
         if (!empty($hostIds)) {
             if ($this->DbBackend->isNdoUtils()) {
                 /** @var $HostsTable HostsTable */
@@ -416,6 +422,11 @@ class HostgroupsController extends AppController {
                 /** @var $HostsTable HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostConditions, $PaginateOMat);
+                $hostgroupServicestatusAllHosts = $HostsTable->getHostStatusGlobalOverview($HostFilter, $HostConditions);
+                foreach ($hostgroupServicestatusAllHosts as $hoststatusGroupByState) {
+                    $state = (int)$hoststatusGroupByState['Hoststatus']['current_state'];
+                    $hostgroupHoststatusOverview[$state] = (int)$hoststatusGroupByState['count'];
+                }
             }
 
             if ($this->DbBackend->isCrateDb()) {
@@ -425,12 +436,6 @@ class HostgroupsController extends AppController {
 
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->currentState();
-
-        $hostgroupHoststatusOverview = [
-            0 => 0,
-            1 => 0,
-            2 => 0
-        ];
 
 
         foreach ($hosts as $host) {
@@ -463,8 +468,6 @@ class HostgroupsController extends AppController {
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
-
-            $hostgroupHoststatusOverview[$Hoststatus->currentState()]++;
 
             $tmpRecord = [
                 'Host'                 => $Host->toArray(),

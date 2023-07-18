@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsExtendedController', function($scope, $http, $interval, $stateParams){
+    .controller('ServicegroupsExtendedController', function($rootScope, $scope, $http, $interval, $stateParams){
 
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
@@ -14,7 +14,15 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
 
         $scope.filter = {
-            servicename: ''
+            servicename: '',
+            Servicestatus: {
+                current_state: {
+                    ok: false,
+                    warning: false,
+                    critical: false,
+                    unknown: false
+                }
+            }
         };
 
         $scope.post = {
@@ -69,6 +77,7 @@ angular.module('openITCOCKPIT')
                         'scroll': $scope.useScroll,
                         'page': $scope.currentPage,
                         'filter[servicename]': $scope.filter.servicename,
+                        'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state)
                     }
                 }).then(function(result){
                     $scope.servicegroup = result.data.servicegroup;
@@ -187,7 +196,6 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-
             if($scope.post.Servicegroup.id > 0){
                 $scope.loadServicesWithStatus('');
             }

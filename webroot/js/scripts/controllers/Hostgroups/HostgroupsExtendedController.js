@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsExtendedController', function($scope, $http, $interval, $stateParams){
+    .controller('HostgroupsExtendedController', function($rootScope, $scope, $http, $interval, $stateParams){
 
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
@@ -29,6 +29,13 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Host: {
                     name: ''
+                },
+                Hoststatus: {
+                    current_state: {
+                        up: false,
+                        down: false,
+                        unreachable: false
+                    }
                 }
             };
         };
@@ -75,7 +82,9 @@ angular.module('openITCOCKPIT')
                         'scroll': $scope.useScroll,
                         'page': $scope.currentPage,
                         'selected': $scope.post.Hostgroup.id,
-                        'filter[Hosts.name]': $scope.filter.Host.name
+                        'filter[Hosts.name]': $scope.filter.Host.name,
+                        'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state)
+
                     }
                 }).then(function(result){
                     $scope.hostgroup = result.data.hostgroup;
