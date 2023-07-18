@@ -781,10 +781,10 @@ class ServicegroupsController extends AppController {
                     $sourceServicegroup = $ServicegroupsTable->getSourceServicegroupForCopy($sourceServicegroupId, $MY_RIGHTS);
 
                     $newServicegroupData = [
-                        'description'   => $servicegroupData['Servicegroup']['description'],
+                        'description'      => $servicegroupData['Servicegroup']['description'],
                         'servicegroup_url' => $sourceServicegroup['servicegroup_url'],
-                        'uuid'          => UUID::v4(),
-                        'container'     => [
+                        'uuid'             => UUID::v4(),
+                        'container'        => [
                             'name'             => $servicegroupData['Servicegroup']['container']['name'],
                             'containertype_id' => CT_SERVICEGROUP,
                             'parent_id'        => $sourceServicegroup['container']['parent_id']
@@ -943,7 +943,6 @@ class ServicegroupsController extends AppController {
         $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
 
         $serviceIds = $ServicegroupsTable->getServiceIdsByServicegroupId($id);
-
         $ServiceFilter = new ServiceFilter($this->request);
         $ServiceConditions = new ServiceConditions($ServiceFilter->indexFilter());
 
@@ -956,10 +955,17 @@ class ServicegroupsController extends AppController {
         $all_services = [];
         $services = [];
 
+        $servicegroupServicestatusOverview = [
+            0 => null,
+            1 => null,
+            2 => null,
+            3 => null
+        ];
+
         if (!empty($serviceIds)) {
             if ($this->DbBackend->isNdoUtils()) {
                 /** @var $ServicesTable ServicesTable */
-                $ServicesTable = TableRegistry::getTableLocator()->get('Services', $PaginateOMat);
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
                 $services = $ServicesTable->getServiceIndex($ServiceConditions);
             }
 
@@ -967,8 +973,12 @@ class ServicegroupsController extends AppController {
                 /** @var $ServicesTable ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
                 $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions, $PaginateOMat);
+                $servicegroupServicestatusAllServices = $ServicesTable->getServiceStatusGlobalOverview($ServiceConditions);
+                foreach ($servicegroupServicestatusAllServices as $servicestatusGroupByState) {
+                    $state = (int)$servicestatusGroupByState['Servicestatus']['current_state'];
+                    $servicegroupServicestatusOverview[$state] = (int)$servicestatusGroupByState['count'];
+                }
             }
-
             if ($this->DbBackend->isCrateDb()) {
                 throw new MissingDbBackendException('MissingDbBackendException');
             }
@@ -977,12 +987,6 @@ class ServicegroupsController extends AppController {
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->currentState();
 
-        $servicegroupServicestatusOverview = [
-            0 => 0,
-            1 => 0,
-            2 => 0,
-            3 => 0
-        ];
 
         $hostContainers = [];
         if ($this->hasRootPrivileges === false) {
@@ -1036,8 +1040,6 @@ class ServicegroupsController extends AppController {
             ];
             $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
-
-            $servicegroupServicestatusOverview[$Servicestatus->currentState()]++;
         }
 
         $statusOverview = array_combine([
