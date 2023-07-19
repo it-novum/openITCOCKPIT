@@ -103,6 +103,15 @@ class Initial extends AbstractMigration {
                     'default' => null,
                     'null'    => false
                 ])
+                ->addColumn('uid', 'string', [
+                    'default' => null,
+                    'limit'   => 255,
+                    'null'    => true,
+                ])
+                ->addColumn('context', 'json', [
+                    'default' => null,
+                    'null'    => true,
+                ])
                 ->addColumn('created', 'datetime', [
                     'default' => null,
                     'limit'   => null,
