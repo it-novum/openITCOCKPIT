@@ -159,6 +159,8 @@ class ChangecalendarsController extends AppController {
                 $events[$index]['title'] = $event['name'];
                 $events[$index]['start'] = $event['begin'];
                 $events[$index]['end'] = $event['end'];
+                $events[$index]['description'] = $event['description'];
+                $events[$index]['context'] = $event['context'];
             }
 
             unset($changeCalendar['changecalendar_events']);
@@ -183,6 +185,7 @@ class ChangecalendarsController extends AppController {
                     'name'  => $event['title'],
                     'begin' => (new DateTime((string)($event['start'])))->format('Y-m-d H:i:s'),
                     'end'   => (new DateTime((string)($event['end'])))->format('Y-m-d H:i:s'),
+                    'description' => $event['description'] ?? ''
                 ];
 
                 if (isset($event['id'])) {

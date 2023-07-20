@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace ChangecalendarModule\Command;
 
-use App\Model\Table\ServicetemplategroupsTable;
 use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
@@ -12,7 +11,6 @@ use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
 use ChangecalendarModule\Model\Table\ChangecalendarEventsTable;
 use ChangecalendarModule\Model\Table\ChangecalendarsTable;
-use PhpParser\Node\Arg;
 
 /**
  * Import command.
@@ -93,11 +91,13 @@ class ImportCommand extends Command {
     }
 
     /**
+     * I will formulate an array of mostly valid data for the given $row.
+     *
      * @param array $row
      * @return void
      * @throws \InvalidArgumentException In case the given $row is not valid.
      */
-    private function validateRow(array $row): void {
+    private function formulate(array $row): array {
         if (empty($row[0])) {
             throw new \InvalidArgumentException('// UID is empty');
         }
@@ -114,38 +114,56 @@ class ImportCommand extends Command {
             throw new \InvalidArgumentException('// name is empty');
         }
         if (empty($row[5])) {
-            throw new \InvalidArgumentException('// description is empty');
+            $row[5] = '';
         }
         if (empty($row[6])) {
+            var_dump($row);
             throw new \InvalidArgumentException('// context is empty');
         }
-    }
+        $context = (array)json_decode(str_replace("'", '"', $row[6] ?? 'null'), true);
+        var_dump($context);
+        foreach ($context as $index => $fieldObject) {
+            if (empty($fieldObject['name'])) {
+                throw new \InvalidArgumentException("Context field (#$index) has no name.");
+            }
+            if (empty($fieldObject['value'] ?? '')) {
+                $fieldObject['value'] = '';
+            }
+            if (empty($fieldObject['class'])) {
+                $fieldObject['class'] = '';
+            }
 
-    private function importRow(array $row): void {
-        $this->validateRow($row);
-
-        // NORMALIZE $H!T
-        $obj = [
+        }
+        return [
             'uid'                 => $row[0],
             'changecalendar_name' => $row[1],
             'begin'               => new \DateTime($row[2]),
             'end'                 => new \DateTime($row[3]),
             'name'                => $row[4],
             'description'         => $row[5],
-            'context'             => json_decode(str_replace("'", '"', $row[6] ?? 'null'))
+            'context'             => $context
         ];
+    }
 
+    /**
+     * I will import the current $row of the CSV.
+     *
+     * @param array $row
+     * @return void
+     * @throws \Exception
+     */
+    private function importRow(array $row): void {
+        $object = $this->formulate($row);
 
         // Search for the calendar for the entity to be put or moved in.
-        $changeCalendar = $this->getChangeCalendar($obj);
-        $obj['changecalendar_id'] = $changeCalendar->id;
+        $changeCalendar = $this->getChangeCalendar($object);
+        $object['changecalendar_id'] = $changeCalendar->id;
 
         // Either fetch the existing event or create an empty entity.
-        $changeCalendarEvent = $this->getEvent($obj);
+        $changeCalendarEvent = $this->getEvent($object);
 
         // Now override the entity with the new data
-        $changeCalendarEvent->set($obj);
-
+        $changeCalendarEvent->set($object);
 
 
         // Save the $h!t to the db.
@@ -154,20 +172,33 @@ class ImportCommand extends Command {
         $changecalendarEventsTable->save($changeCalendarEvent);
     }
 
-    private function getChangeCalendar(array $obj): Entity {
+    /**
+     * I will find the Changecalendar Entity for the given $object.
+     *
+     * @param array $object
+     * @return Entity
+     */
+    private function getChangeCalendar(array $object): Entity {
         /** @var ChangecalendarsTable $ChangecalendarsTable */
         $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
         $entity = $ChangecalendarsTable
             ->find()
             ->where([
-                'name' => $obj['changecalendar_name']
+                'name' => $object['changecalendar_name']
             ])
             ->firstOrFail();
 
         return $entity;
     }
 
+    /**
+     * I will find the correct ChangecalendarEvent Entity for the given $object.
+     * If it does not exist yet, I will return an empty Entity.
+     *
+     * @param array $obj
+     * @return Entity
+     */
     private function getEvent(array $obj): Entity {
 
         /** @var ChangecalendarEventsTable $changecalendarEventsTable */
@@ -180,7 +211,7 @@ class ImportCommand extends Command {
             ])
             ->first();
 
-        if (empty($entity)) {
+        if (empty($entity) || !$entity instanceof Entity) {
             return $changecalendarEventsTable->newEmptyEntity();
         }
 

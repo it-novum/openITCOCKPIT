@@ -185,7 +185,16 @@
                     <div class="col-lg-12">
                         <div class="form-group">
                             <label for="exampleFormControlTextarea1"><?php echo __('Description'); ?></label>
-                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            <textarea ng-model="modifyEvent.description" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div ng-repeat="contextField in modifyEvent.context" class="col-lg-12">
+                        <div class="form-group">
+                            <label class="text-{{contextField.class}}">{{contextField.name}}</label>
+                            <textarea disabled="disabled" class="form-control bg-{{contextField.class}}" rows="3">{{contextField.value}}</textarea>
                         </div>
                     </div>
                 </div>

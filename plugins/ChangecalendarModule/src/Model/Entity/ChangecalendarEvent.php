@@ -18,6 +18,7 @@ use Cake\ORM\Entity;
  * @property int $user_id
  * @property string|null $uid
  * @property array|null $context
+ * @property string|null $description
  *
  * @property \ChangecalendarModule\Model\Entity\Changecalendar $changecalendar
  * @property \ChangecalendarModule\Model\Entity\User $user
@@ -43,6 +44,7 @@ class ChangecalendarEvent extends Entity
         'user_id' => true,
         'uid' => true,
         'context' => true,
+        'description' => true,
         'changecalendar' => true,
         'user' => true,
     ];

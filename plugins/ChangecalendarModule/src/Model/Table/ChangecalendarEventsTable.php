@@ -100,6 +100,10 @@ class ChangecalendarEventsTable extends Table
         $validator
             ->allowEmptyString('context');
 
+        $validator
+            ->scalar('description')
+            ->allowEmptyString('description');
+
         return $validator;
     }
 

@@ -164,50 +164,6 @@ angular.module('openITCOCKPIT')
             $scope.countryCode = countryCode;
         };
 
-        $scope.loadHolidays = function(){
-            $http.get('/calendars/loadHolidays/' + $scope.countryCode + '.json', {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.init = false;
-                var customEvents = [];
-                $scope.events = result.data.holidays;
-                for(var index in customEvents){
-                    if($scope.hasEvents(customEvents[index].start)){
-                        $scope.deleteEvent(customEvents[index].start);
-                    }
-                    $scope.events.push(customEvents[index]);
-                }
-                if($scope.init){
-                    return;
-                }
-                if($scope.calendar !== null){
-                    $scope.calendar.destroy();
-                }
-                renderCalendar();
-            });
-        };
-
-        $scope.loadContainers = function(){
-            $q.all([
-                $http.get("/containers/loadContainersForAngular.json", {
-                    params: {
-                        'angular': true
-                    }
-                }),
-                $http.get("/calendars/loadCountryList.json", {
-                    params: {
-                        'angular': true
-                    }
-                })
-            ]).then(function(results){
-                $scope.containers = results[0].data.containers;
-                $scope.countries = results[1].data.countries;
-                $scope.init = false;
-            });
-        };
-
         $scope.load = function(){
             $http.get("/changecalendar_module/changecalendars/edit/" + $scope.id + ".json", {
                 params: {
@@ -270,10 +226,10 @@ angular.module('openITCOCKPIT')
 
                 $scope.events[eventIndex].start = event.start;
                 $scope.events[eventIndex].end = event.end;
+                $scope.events[eventIndex].description = event.description;
                 $scope.events[eventIndex].title = event.title;
                 break;
             }
-            console.log($scope.events);
         };
 
         $scope.modifyEventFromModal = function(){
@@ -296,7 +252,9 @@ angular.module('openITCOCKPIT')
                 title: '',
                 start: '',
                 end: '',
-                id: ''
+                description: '',
+                id: '',
+                context: []
             };
         };
 
@@ -307,7 +265,8 @@ angular.module('openITCOCKPIT')
                 title: event.title,
                 start: event.start,
                 end: event.end,
-                description: event.description
+                description: event.extendedProps.description,
+                context: event.extendedProps.context
             };
 
 
@@ -343,7 +302,6 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         $scope.load();
-        $scope.loadContainers();
 
         $scope.$watch('events', function(){
             if($scope.init){
@@ -356,10 +314,4 @@ angular.module('openITCOCKPIT')
             renderCalendar();
         }, true);
 
-        $scope.$watch('countryCode', function(){
-            if($scope.init){
-                return;
-            }
-            $scope.loadHolidays();
-        }, true);
     });
