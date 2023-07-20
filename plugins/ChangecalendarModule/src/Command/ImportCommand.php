@@ -143,8 +143,6 @@ class ImportCommand extends Command {
         // Either fetch the existing event or create an empty entity.
         $changeCalendarEvent = $this->getEvent($obj);
 
-        var_dump($obj);
-
         // Now override the entity with the new data
         $changeCalendarEvent->set($obj);
 
@@ -174,8 +172,6 @@ class ImportCommand extends Command {
 
         /** @var ChangecalendarEventsTable $changecalendarEventsTable */
         $changecalendarEventsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.ChangecalendarEvents');
-
-        return $changecalendarEventsTable->newEmptyEntity();
 
         $entity = $changecalendarEventsTable
             ->find()
