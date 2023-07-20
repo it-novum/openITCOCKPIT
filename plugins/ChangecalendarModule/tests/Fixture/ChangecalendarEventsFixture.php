@@ -21,12 +21,14 @@ class ChangecalendarEventsFixture extends TestFixture
             [
                 'id' => 1,
                 'name' => 'Lorem ipsum dolor sit amet',
-                'begin' => '2023-06-28 07:54:44',
-                'end' => '2023-06-28 07:54:44',
-                'created' => '2023-06-28 07:54:44',
-                'modified' => '2023-06-28 07:54:44',
+                'begin' => '2023-07-19 14:00:37',
+                'end' => '2023-07-19 14:00:37',
+                'created' => '2023-07-19 14:00:37',
+                'modified' => '2023-07-19 14:00:37',
                 'changecalendar_id' => 1,
                 'user_id' => 1,
+                'uid' => 'Lorem ipsum dolor sit amet',
+                'conotext' => '',
             ],
         ];
         parent::init();

@@ -65,18 +65,22 @@ class ImportCommand extends Command {
 
         $line = 0;
         foreach ($a as $b) {
-            if ($line === 0) {
-                $line++;
+            $line++;
+            if ($line === 1) {
                 continue;
             }
-            $this->importRow($b);
+            try {
+                $this->importRow($b);
+            } catch (\InvalidArgumentException $exception) {
+                $io->error("Row $line is invalid. See:");
+                $io->error($exception->getMessage());
+            }
         }
         exit(0);
 
     }
 
     private function getFile(string $filepath): \SplFileObject {
-
         $csvFile = new \SplFileObject($filepath, 'r');
         $csvFile->setFlags(
             \SplFileObject::READ_CSV
@@ -88,7 +92,38 @@ class ImportCommand extends Command {
         return $csvFile;
     }
 
+    /**
+     * @param array $row
+     * @return void
+     * @throws \InvalidArgumentException In case the given $row is not valid.
+     */
+    private function validateRow(array $row): void {
+        if (empty($row[0])) {
+            throw new \InvalidArgumentException('// UID is empty');
+        }
+        if (empty($row[1])) {
+            throw new \InvalidArgumentException('// changecalendar name is empty');
+        }
+        if (empty($row[2])) {
+            throw new \InvalidArgumentException('// begin is empty');
+        }
+        if (empty($row[3])) {
+            throw new \InvalidArgumentException('// end is empty');
+        }
+        if (empty($row[4])) {
+            throw new \InvalidArgumentException('// name is empty');
+        }
+        if (empty($row[5])) {
+            throw new \InvalidArgumentException('// description is empty');
+        }
+        if (empty($row[6])) {
+            throw new \InvalidArgumentException('// context is empty');
+        }
+    }
+
     private function importRow(array $row): void {
+        $this->validateRow($row);
+
         // NORMALIZE $H!T
         $obj = [
             'uid'                 => $row[0],
@@ -96,7 +131,8 @@ class ImportCommand extends Command {
             'begin'               => new \DateTime($row[2]),
             'end'                 => new \DateTime($row[3]),
             'name'                => $row[4],
-            'description'         => $row[5]
+            'description'         => $row[5],
+            'context'             => json_decode(str_replace("'", '"', $row[6] ?? 'null'))
         ];
 
 
@@ -107,8 +143,11 @@ class ImportCommand extends Command {
         // Either fetch the existing event or create an empty entity.
         $changeCalendarEvent = $this->getEvent($obj);
 
+        var_dump($obj);
+
         // Now override the entity with the new data
         $changeCalendarEvent->set($obj);
+
 
 
         // Save the $h!t to the db.
@@ -121,14 +160,14 @@ class ImportCommand extends Command {
         /** @var ChangecalendarsTable $ChangecalendarsTable */
         $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
-        $a = $ChangecalendarsTable
+        $entity = $ChangecalendarsTable
             ->find()
             ->where([
                 'name' => $obj['changecalendar_name']
             ])
             ->firstOrFail();
 
-        return $a;
+        return $entity;
     }
 
     private function getEvent(array $obj): Entity {
@@ -136,19 +175,20 @@ class ImportCommand extends Command {
         /** @var ChangecalendarEventsTable $changecalendarEventsTable */
         $changecalendarEventsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.ChangecalendarEvents');
 
+        return $changecalendarEventsTable->newEmptyEntity();
 
-        $event = $changecalendarEventsTable
+        $entity = $changecalendarEventsTable
             ->find()
             ->where([
                 'uid' => $obj['uid']
             ])
             ->first();
 
-        if (empty($event)) {
+        if (empty($entity)) {
             return $changecalendarEventsTable->newEmptyEntity();
         }
 
-        return $event;
+        return $entity;
     }
 
 

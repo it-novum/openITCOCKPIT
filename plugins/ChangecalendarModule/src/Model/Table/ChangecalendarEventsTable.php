@@ -30,14 +30,16 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class ChangecalendarEventsTable extends Table {
+class ChangecalendarEventsTable extends Table
+{
     /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config): void {
+    public function initialize(array $config): void
+    {
         parent::initialize($config);
 
         $this->setTable('changecalendar_events');
@@ -48,13 +50,13 @@ class ChangecalendarEventsTable extends Table {
 
         $this->belongsTo('Changecalendars', [
             'foreignKey' => 'changecalendar_id',
-            'joinType'   => 'INNER',
-            'className'  => 'ChangecalendarModule.Changecalendars',
+            'joinType' => 'INNER',
+            'className' => 'ChangecalendarModule.Changecalendars',
         ]);
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
-            'joinType'   => 'INNER',
-            'className'  => 'ChangecalendarModule.Users',
+            'joinType' => 'INNER',
+            'className' => 'ChangecalendarModule.Users',
         ]);
     }
 
@@ -64,7 +66,8 @@ class ChangecalendarEventsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator): Validator {
+    public function validationDefault(Validator $validator): Validator
+    {
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
@@ -89,6 +92,14 @@ class ChangecalendarEventsTable extends Table {
             ->integer('user_id')
             ->notEmptyString('user_id');
 
+        $validator
+            ->scalar('uid')
+            ->maxLength('uid', 255)
+            ->allowEmptyString('uid');
+
+        $validator
+            ->allowEmptyString('context');
+
         return $validator;
     }
 
@@ -99,7 +110,8 @@ class ChangecalendarEventsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules): RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker
+    {
         $rules->add($rules->existsIn('changecalendar_id', 'Changecalendars'), ['errorField' => 'changecalendar_id']);
         $rules->add($rules->existsIn('user_id', 'Users'), ['errorField' => 'user_id']);
 

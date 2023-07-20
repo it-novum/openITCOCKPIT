@@ -16,11 +16,14 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $modified
  * @property int $changecalendar_id
  * @property int $user_id
+ * @property string|null $uid
+ * @property array|null $context
  *
  * @property \ChangecalendarModule\Model\Entity\Changecalendar $changecalendar
  * @property \ChangecalendarModule\Model\Entity\User $user
  */
-class ChangecalendarEvent extends Entity {
+class ChangecalendarEvent extends Entity
+{
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -31,14 +34,16 @@ class ChangecalendarEvent extends Entity {
      * @var array<string, bool>
      */
     protected $_accessible = [
-        'name'              => true,
-        'begin'             => true,
-        'end'               => true,
-        'created'           => true,
-        'modified'          => true,
+        'name' => true,
+        'begin' => true,
+        'end' => true,
+        'created' => true,
+        'modified' => true,
         'changecalendar_id' => true,
-        'user_id'           => true,
-        'changecalendar'    => true,
-        'user'              => true,
+        'user_id' => true,
+        'uid' => true,
+        'context' => true,
+        'changecalendar' => true,
+        'user' => true,
     ];
 }
