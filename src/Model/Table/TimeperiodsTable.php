@@ -64,7 +64,7 @@ class TimeperiodsTable extends Table {
         ])->setDependent(true);
 
         $this->belongsTo('Calendars', [
-            'joinType'   => 'LEFT'
+            'joinType' => 'LEFT'
         ]);
     }
 
@@ -354,7 +354,7 @@ class TimeperiodsTable extends Table {
             ]);
         }
 
-            $query->disableHydration()
+        $query->disableHydration()
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);
@@ -681,7 +681,7 @@ class TimeperiodsTable extends Table {
                     'daysOfWeek' => [$day],
                     'startTime'  => $event['start'],
                     'endTime'    => $event['end'],
-                    'title' => sprintf('%s - %s', $event['start'], $event['end'])
+                    'title'      => sprintf('%s - %s', $event['start'], $event['end'])
                 ];
             }
         }
@@ -693,16 +693,33 @@ class TimeperiodsTable extends Table {
                 'className'  => 'no-events'
             ];
         }
-         /** highlight non business days: saturday and sunday  */
+        /** highlight non business days: saturday and sunday  */
         $eventsFormated[] = [
             'daysOfWeek' => [0, 6],
             'rendering'  => 'background',
             'className'  => 'fc-nonbusiness',
-            'allDay' =>  true,
-            'overLap' =>  false
+            'allDay'     => true,
+            'overLap'    => false
         ];
 
         return $eventsFormated;
     }
 
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getTimeperiodsByIdForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->contain(['TimeperiodTimeranges'])
+            ->where([
+                'Timeperiods.id IN'        => $ids,
+                'Timeperiods.container_id' => ROOT_CONTAINER
+            ])
+            ->disableHydration();
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

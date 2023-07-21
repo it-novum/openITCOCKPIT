@@ -51,7 +51,8 @@ class ConfigurationitemsController extends AppController {
             return;
         }
         $configurationitemsExportForm = new ConfigurationitemsExportForm();
-        $configurationitemsExportForm->execute($this->request->getData('Configurationitems', []));
+        $requestData = $this->request->getData('Configurationitems', []);
+        $configurationitemsExportForm->execute($requestData);
 
         if (!empty($configurationitemsExportForm->getErrors())) {
             $this->response = $this->response->withStatus(400);
@@ -59,11 +60,30 @@ class ConfigurationitemsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         } else {
+            if (!empty($requestData['commands']['_ids'])) {
+                /** @var $CommandsTable CommandsTable */
+                $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForExport = $CommandsTable->getCommandsByIdForExport(
+                    $requestData['commands']['_ids']
+                );
+            }
+
+            if (!empty($requestData['timeperiods']['_ids'])) {
+                /** @var $TimeperiodsTable TimeperiodsTable */
+                $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+                $timeperiodsForExport = $TimeperiodsTable->getTimeperiodsByIdForExport(
+                    $requestData['timeperiods']['_ids']
+                );
+
+            }
+
+            /*
             $exportFileName = 'test.json';
             $this->response->setTypeMap('json', 'application/json');
             $this->response->withType('json');
             $response = $this->response->withFile($exportFileName, ['download' => true, 'name' => $this->request->getQuery('filename')]);
             return $response;
+            */
         }
     }
 

@@ -175,11 +175,11 @@ class CommandsTable extends Table {
             $ids = [$ids];
         }
 
-        $command = $this->find('all')
+        $command = $this->find()
             ->contain('Commandarguments')
             ->where(['Commands.id IN' => $ids])
+            ->disableHydration()
             ->all();
-
         return $this->formatResultAsCake2($command->toArray());
     }
 
@@ -477,5 +477,25 @@ class CommandsTable extends Table {
         }
         $sourceCommand['commandarguments'] = $commandarguments;
         return $sourceCommand;
+    }
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getCommandsByIdForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->contain([
+                'Commandarguments'
+            ])
+            ->where([
+                'Commands.id IN' => $ids
+            ])
+            ->disableHydration();
+
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }
