@@ -718,7 +718,7 @@ class Menu {
                     __('Prometheus Metrics'),
                     'MetricsInfo',
                     'metrics',
-                    'info',
+                    'index',
                     '',
                     'fa-solid fa-heart-pulse',
                     [],
