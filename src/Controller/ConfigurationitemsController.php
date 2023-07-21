@@ -37,7 +37,6 @@ use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class ConfigurationitemsController extends AppController {
     public function import() {
@@ -60,7 +59,6 @@ class ConfigurationitemsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         } else {
-            //return;
             $exportFileName = 'test.json';
             $this->response->setTypeMap('json', 'application/json');
             $this->response->withType('json');

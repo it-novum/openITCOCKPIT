@@ -1147,6 +1147,12 @@ div.packetmanager-selection > span::selection {
     border-image-slice: 1;
 }
 
+.fieldset-legend-border-bottom-danger {
+    border-bottom: 5px solid;
+    border-image-source: linear-gradient(45deg, #CC0000, transparent);
+    border-image-slice: 1;
+}
+
 .bg-placeholder-wizard {
     background-image: linear-gradient(135deg, #d6d6d64D 25%, transparent 25%, transparent 50%, #d6d6d64D 50%, #d6d6d64D 75%, transparent 75%, transparent 100%);
     background-size: 56.57px 56.57px;

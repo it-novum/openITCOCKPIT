@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.hasError = null;
+        $scope.errors = {};
 
         $scope.post = {
             Configurationitems: {
@@ -42,6 +43,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
+            $scope.errors = {};
             $http.post("/configurationitems/export.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -53,7 +55,6 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
-
 
         //Fire on page load
         $scope.load();

@@ -70,12 +70,17 @@
                 <div class="panel-content fuelux">
                     <form class="form-horizontal">
                         <fieldset class="padding-bottom-20">
-                            <legend class="fs-md fieldset-legend-border-bottom">
+                            <legend class="fs-md fieldset-legend-border-bottom"
+                            ng-class="{'fieldset-legend-border-bottom-danger': (errors | json) !== '{}'}">
                                 <h4>
                                     <?= __('Configuration items'); ?>
+                                    <span class="text-danger font-xs pl-1 fw-300"
+                                    ng-show="(errors | json) !== '{}'">
+                                        <?= __('You must select at least one configuration item for export.'); ?>
+                                    </span>
                                 </h4>
                             </legend>
-                            <div class="col-12">
+                            <div class="col-12 py-2">
                                 <div class="form-group">
                                     <label class="control-label" for="Commands">
                                         <?= __('Commands'); ?>
