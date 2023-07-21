@@ -27,6 +27,16 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactgroupsTable;
+use App\Model\Table\ContactsTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplategroupsTable;
+use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+
 class ConfigurationitemsController extends AppController {
     public function import() {
         if (!$this->isJsonRequest()) {
@@ -38,5 +48,58 @@ class ConfigurationitemsController extends AppController {
         if (!$this->isJsonRequest()) {
             return;
         }
+    }
+
+
+    public function loadElementsForExport() { // ROOT container only
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var ServicesTable $ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+        $commands = $CommandsTable->getAllCommandsAsList();
+        $commands = Api::makeItJavaScriptAble($commands);
+
+        $timeperiods = $TimeperiodsTable->getTimeperiodsByContainerIdExact(ROOT_CONTAINER, 'list');
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
+
+        $contacts = $ContactsTable->contactsByContainerId(ROOT_CONTAINER, 'list');
+        $contacts = Api::makeItJavaScriptAble($contacts);
+
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerIdExact(ROOT_CONTAINER, 'list');
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
+
+        $servicetemplates = $ServicetemplatesTable->getServicetemplatesByContainerId(ROOT_CONTAINER, 'list');
+        $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
+
+        $servicetemplategroups = $ServicetemplategroupsTable->getServicetemplategroupsByContainerIdExact(ROOT_CONTAINER);
+        $servicetemplategroups = Api::makeItJavaScriptAble($servicetemplategroups);
+
+        $this->set('commands', $commands);
+        $this->set('timeperiods', $timeperiods);
+        $this->set('contacts', $contacts);
+        $this->set('contactgroups', $contactgroups);
+        $this->set('servicetemplates', $servicetemplates);
+        $this->set('servicetemplategroups', $servicetemplategroups);
+
+        $this->viewBuilder()->setOption('serialize', [
+            'commands',
+            'timeperiods',
+            'contacts',
+            'contactgroups',
+            'servicetemplates',
+            'servicetemplategroups'
+        ]);
     }
 }

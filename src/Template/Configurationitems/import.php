@@ -23,4 +23,55 @@
 //  confirmation.
 
 ?>
-IMPORT
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?= __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="WizardsIndex">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <?= __('Export / Import'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa-solid fa-file-export"></i> <?= __('Export'); ?>
+    </li>
+</ol>
+
+<div class="row">
+    <div class="col-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?= __('Import configuration items from JSON File'); ?>
+                </h2>
+                <div class="panel-toolbar">
+                    <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
+                        <?php if ($this->Acl->hasPermission('export', 'configurationitems')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" ui-sref="ConfigurationitemsExport" role="tab">
+                                    <i class="fa-solid fa-file-export pr-1"></i><?= __('Export'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if ($this->Acl->hasPermission('import', 'configurationitems')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" ui-sref="ConfigurationitemsImport"
+                                   role="tab">
+                                    <i class="fa-solid fa-file-import pr-1"></i><?= __('Import'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content fuelux">
+                    <form ng-submit="submit();" class="form-horizontal">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

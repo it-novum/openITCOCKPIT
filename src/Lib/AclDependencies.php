@@ -666,6 +666,9 @@ class AclDependencies {
             ->dependency('MessagesOtd', 'add', 'MessagesOtd', 'notifyUsersViaMail')
             ->dependency('MessagesOtd', 'edit', 'MessagesOtd', 'notifyUsersViaMail');
 
+        $this
+            ->dependency('Configurationitems', 'export', 'Configurationitems', 'loadElementsForExport');
+
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {
             $className = sprintf('\%s\Lib\AclDependencies', $pluginName);
@@ -677,7 +680,6 @@ class AclDependencies {
                 $this->dependencies[$pluginName] = $PluginAclDependencies->getDependencies();
             }
         }
-
     }
 
     /**

@@ -358,6 +358,19 @@ class CommandsTable extends Table {
         return $this->formatResultAsCake2($command->toArray(), $contain);
     }
 
+    public function getAllCommandsAsList() {
+        $result = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'name'
+        ])
+            ->disableHydration()
+            ->order(['Commands.name' => 'asc'])
+            ->all();
+
+
+        return $this->emptyArrayIfNull($result);
+    }
+
     /**
      * @return array
      */
@@ -386,7 +399,7 @@ class CommandsTable extends Table {
         return $this->exists(['Commands.uuid' => $uuid]);
     }
 
-    public function existsByName(string $name){
+    public function existsByName(string $name) {
         return $this->exists(['Commands.name' => $name]);
     }
 
@@ -449,7 +462,7 @@ class CommandsTable extends Table {
         return $this->commandTypes;
     }
 
-    public function getSourceCommandForCopy($sourceCommandId){
+    public function getSourceCommandForCopy($sourceCommandId) {
         $sourceCommand = $this->get($sourceCommandId, [
             'contain' => [
                 'Commandarguments'
@@ -458,7 +471,7 @@ class CommandsTable extends Table {
 
         //Remove all source ids so the new copied command will not use the original command arguments...
         $commandarguments = [];
-        foreach($sourceCommand['commandarguments'] as $commandargument){
+        foreach ($sourceCommand['commandarguments'] as $commandargument) {
             unset($commandargument['id'], $commandargument['command_id']);
             $commandarguments[] = $commandargument;
         }
