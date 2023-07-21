@@ -591,6 +591,16 @@ class Menu {
                     [],
                     7
                 ))
+                ->addLink(new MenuLink(
+                    __('Export / Import'),
+                    'ConfigurationitemsExport',
+                    'configurationitems',
+                    'export',
+                    '',
+                    'fa-solid fa-boxes-packing',
+                    [],
+                    8
+                ))
             )
             ->addCategory((new MenuCategory(
                 'agent_category',
