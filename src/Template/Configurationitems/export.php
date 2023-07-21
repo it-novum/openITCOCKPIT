@@ -68,7 +68,7 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content fuelux">
-                    <form ng-submit="submit();" class="form-horizontal">
+                    <form class="form-horizontal">
                         <fieldset class="padding-bottom-20">
                             <legend class="fs-md fieldset-legend-border-bottom">
                                 <h4>
@@ -164,7 +164,7 @@
                             <div class="card margin-top-10">
                                 <div class="card-body">
                                     <div class="float-right">
-                                        <button class="btn btn-primary" type="submit">
+                                        <button class="btn btn-primary" ng-click="submit()">
                                             <?php echo __('Export configuration items'); ?>
                                         </button>
                                     </div>

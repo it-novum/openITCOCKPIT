@@ -42,7 +42,16 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-
+            $http.post("/configurationitems/export.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                NotyService.genericSuccess();
+            }, function errorCallback(result){
+                NotyService.genericError();
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
         };
 
 

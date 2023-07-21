@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Form\ConfigurationitemsExportForm;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
@@ -36,6 +37,7 @@ use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class ConfigurationitemsController extends AppController {
     public function import() {
@@ -45,8 +47,25 @@ class ConfigurationitemsController extends AppController {
     }
 
     public function export() {
-        if (!$this->isJsonRequest()) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
             return;
+        }
+        $configurationitemsExportForm = new ConfigurationitemsExportForm();
+        $configurationitemsExportForm->execute($this->request->getData('Configurationitems', []));
+
+        if (!empty($configurationitemsExportForm->getErrors())) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $configurationitemsExportForm->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        } else {
+            //return;
+            $exportFileName = 'test.json';
+            $this->response->setTypeMap('json', 'application/json');
+            $this->response->withType('json');
+            $response = $this->response->withFile($exportFileName, ['download' => true, 'name' => $this->request->getQuery('filename')]);
+            return $response;
         }
     }
 
