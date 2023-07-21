@@ -26,6 +26,8 @@ namespace App\itnovum\openITCOCKPIT\Monitoring\PrometheusExporter;
 
 use Cake\Core\Configure;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
+use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
+use itnovum\openITCOCKPIT\Core\System\Health\MemoryUsage;
 use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
 use Prometheus\CollectorRegistry;
 use Prometheus\RenderTextFormat;
@@ -41,6 +43,11 @@ class PrometheusExporter {
         $stats = $MonitoringEngine->runNagiostats();
 
         Configure::load('gearman');
+
+        $CpuLoad = new CpuLoad();
+
+        $MemoryUsage = new MemoryUsage();
+        $memory = $MemoryUsage->getMemoryUsage();
 
         //Collect process information
         $GearmanClient = new Gearman();
@@ -86,6 +93,98 @@ class PrometheusExporter {
             'Time in seconds the collector needed to fetch all metrics'
         );
         $gauge->set($collectorDuration);
+
+        // Add node metrics
+        $gauge = $registry->registerGauge(
+            'node',
+            'load1',
+            '1m load average'
+        );
+        $gauge->set($CpuLoad->getLoad1());
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'load5',
+            '5m load average'
+        );
+        $gauge->set($CpuLoad->getLoad1());
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'load15',
+            '15m load average'
+        );
+        $gauge->set($CpuLoad->getLoad1());
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'memory_total_bytes',
+            'Total amount of memory in bytes'
+        );
+        $gauge->set($memory['memory']['total'] * 1024 * 1024);
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'memory_used_bytes',
+            'Total amount of used memory in bytes'
+        );
+        $gauge->set($memory['memory']['used'] * 1024 * 1024);
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'memory_free_bytes',
+            'Total amount of free memory in bytes'
+        );
+        $gauge->set($memory['memory']['free'] * 1024 * 1024);
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'memory_buffers_bytes',
+            'Total amount of buffers memory in bytes'
+        );
+        $gauge->set($memory['memory']['buffers'] * 1024 * 1024);
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'memory_cached_bytes',
+            'Total amount of cached memory in bytes'
+        );
+        $gauge->set($memory['memory']['cached'] * 1024 * 1024);
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'memory_used_percentage',
+            'Memory used as percentage'
+        );
+        $gauge->set($memory['memory']['percentage']);
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'swap_total_bytes',
+            'Total amount of swap space in bytes'
+        );
+        $gauge->set($memory['swap']['total'] * 1024 * 1024);
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'swap_used_bytes',
+            'Amount of used swap space in bytes'
+        );
+        $gauge->set($memory['swap']['used'] * 1024 * 1024);
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'swap_free_bytes',
+            'Amount of free swap space in bytes'
+        );
+        $gauge->set($memory['swap']['free'] * 1024 * 1024);
+
+        $gauge = $registry->registerGauge(
+            'node',
+            'swap_used_percentage',
+            'Swap used as percentage'
+        );
+        $gauge->set($memory['swap']['percentage']);
 
         // Add naemon stats metrics
 
@@ -327,7 +426,7 @@ class PrometheusExporter {
         foreach ($gearmanStatus as $queueName => $queueStats) {
             $gauge = $registry->registerGauge(
                 'gearman',
-                $queueName.'_jobs',
+                $queueName . '_jobs',
                 'Total number of jobs that are queued'
             );
 
@@ -336,7 +435,7 @@ class PrometheusExporter {
 
             $gauge = $registry->registerGauge(
                 'gearman',
-                $queueName.'_jobs_running',
+                $queueName . '_jobs_running',
                 'Total number of currently running jobs'
             );
 
@@ -345,7 +444,7 @@ class PrometheusExporter {
 
             $gauge = $registry->registerGauge(
                 'gearman',
-                $queueName.'_available_worker',
+                $queueName . '_available_worker',
                 'Total number of available worker'
             );
 
