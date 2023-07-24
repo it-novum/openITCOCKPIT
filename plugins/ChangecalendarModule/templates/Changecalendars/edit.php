@@ -182,11 +182,70 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <label for="exampleFormControlTextarea1"><?php echo __('Description'); ?></label>
-                            <textarea ng-model="modifyEvent.description" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+
+                    <div class="col-lg-6">
+                        <div class="panel">
+                            <div class="panel-hdr">
+                                <div class="panel-toolbar" style="width: 100%;">
+                                    <div class="mr-auto d-flex" role="menu">
+
+                                        <div class="dropdown">
+                                            <button class="btn btn-xs btn-default dropdown-toggle" type="button"
+                                                    id="docuFontSize" data-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                <i class="fa fa-font"></i>
+                                                <?php echo __('Font size'); ?>
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="docuFontSize">
+                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                                   fsize="xx-small"><?php echo __('Smallest'); ?></a>
+                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                                   fsize="x-small"><?php echo __('Smaller'); ?></a>
+                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                                   fsize="small"><?php echo __('Small'); ?></a>
+                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                                   fsize="large"><?php echo __('Big'); ?></a>
+                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                                   fsize="x-large"><?php echo __('Bigger'); ?></a>
+                                                <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                                   fsize="xx-large"><?php echo __('Biggest'); ?></a>
+                                            </div>
+                                        </div>
+                                        <span class="padding-left-10"></span>
+                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon" wysiwyg="true"
+                                           task="bold"><i class="fa fa-bold"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon" wysiwyg="true"
+                                           task="italic"><i class="fa fa-italic"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon" wysiwyg="true"
+                                           task="underline"><i class="fa fa-underline"></i></a>
+                                        <span class="padding-left-10"></span>
+                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon" wysiwyg="true"
+                                           task="left"><i class="fa fa-align-left"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon" wysiwyg="true"
+                                           task="center"><i class="fa fa-align-center"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon" wysiwyg="true"
+                                           task="right"><i class="fa fa-align-right"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-default btn-xs btn-icon" wysiwyg="true"
+                                           task="justify"><i class="fa fa-align-justify"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-container show">
+                                <div class="panel-content">
+                                    <div ng-class="{'has-error': errors.text}">
+                        <textarea class="form-control"  ng-model="modifyEvent.description"
+                                  style="width: 100%; height: 200px;" id="description"></textarea>
+                                    </div>
+                                    <div ng-repeat="error in errors.text">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="col-lg-6" ng-bind-html="descriptionPreview | trustAsHtml">
+                        {{descriptionPreview}}
                     </div>
                 </div>
                 <hr />

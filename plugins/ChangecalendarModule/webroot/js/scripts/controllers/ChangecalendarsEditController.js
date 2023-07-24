@@ -2,12 +2,13 @@
  * @link https://fullcalendar.io/docs/upgrading-from-v3
  */
 angular.module('openITCOCKPIT')
-    .controller('ChangecalendarsEditController', function($scope, $http, $state, $stateParams, $q, $compile, NotyService, RedirectService){
+    .controller('ChangecalendarsEditController', function($scope, $http, $state, $stateParams, $q, $compile, NotyService, RedirectService, BBParserService){
 
         $scope.defaultDate = new Date();
         $scope.countryCode = 'de';
         $scope.countries = [];
 
+        $scope.descriptionPreview = '';
         $scope.id = $stateParams.id;
 
 
@@ -271,6 +272,79 @@ angular.module('openITCOCKPIT')
 
 
             $scope.$apply();
+
+
+            //jQuery Bases WYSIWYG Editor
+            $("[wysiwyg='true']").click(function(){
+                var $textarea = $('#description');
+                var task = $(this).attr('task');
+                switch(task){
+                    case 'bold':
+                        $textarea.surroundSelectedText('[b]', '[/b]');
+                        break;
+
+                    case 'italic':
+                        $textarea.surroundSelectedText('[i]', '[/i]');
+                        break;
+
+                    case 'underline':
+                        $textarea.surroundSelectedText('[u]', '[/u]');
+                        break;
+
+                    case 'left':
+                        $textarea.surroundSelectedText('[left]', '[/left]');
+                        break;
+
+                    case 'center':
+                        $textarea.surroundSelectedText('[center]', '[/center]');
+                        break;
+
+                    case 'right':
+                        $textarea.surroundSelectedText('[right]', '[/right]');
+                        break;
+
+                    case 'justify':
+                        $textarea.surroundSelectedText('[justify]', '[/justify]');
+                        break;
+                }
+            });
+
+            // Bind click event for color selector
+            $("[select-color='true']").click(function(){
+                var color = $(this).attr('color');
+                var $textarea = $('#motdcontent');
+                $textarea.surroundSelectedText("[color='" + color + "']", '[/color]');
+            });
+
+            // Bind click event for font size selector
+            $("[select-fsize='true']").click(function(){
+                var fontSize = $(this).attr('fsize');
+                var $textarea = $('#motdcontent');
+                $textarea.surroundSelectedText("[text='" + fontSize + "']", "[/text]");
+            });
+
+            $scope.prepareHyperlinkSelection = function(){
+                var $textarea = $('#motdcontent');
+                var selection = $textarea.getSelection();
+                if(selection.length > 0){
+                    $scope.docu.hyperlinkDescription = selection.text;
+                }
+            };
+
+            $scope.insertWysiwygHyperlink = function(){
+                var $textarea = $('#motdcontent');
+                var selection = $textarea.getSelection();
+                var newTab = $('#modalLinkNewTab').is(':checked') ? " tab" : "";
+                if(selection.length > 0){
+                    $textarea.surroundSelectedText("[url='" + $scope.docu.hyperlink + "'" + newTab + "]", "[/url]");
+                }else{
+                    $textarea.insertText("[url='" + $scope.docu.hyperlink + "'" + newTab + "]" + $scope.docu.hyperlinkDescription + '[/url]', selection.start, "collapseToEnd");
+                }
+                $scope.docu.hyperlink = "";
+                $scope.docu.hyperlinkDescription = "";
+                $scope.addLink = false;
+            };
+
             //Get old event from json
             $('#addEventModal').modal('show');
         };
@@ -312,6 +386,13 @@ angular.module('openITCOCKPIT')
                 $scope.calendar.destroy();
             }
             renderCalendar();
+        }, true);
+        $scope.$watch('modifyEvent.description', function(){
+            if($scope.init){
+                return;
+            }
+
+            $scope.descriptionPreview = BBParserService.parse($scope.modifyEvent.description);
         }, true);
 
     });
