@@ -1235,4 +1235,25 @@ class ContactsTable extends Table {
         return $orphanedContacts;
     }
 
+    public function getContactsByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->contain([
+                'HostCommands',
+                'ServiceCommands',
+                'HostTimeperiods',
+                'ServiceTimeperiods',
+                'Customvariables'
+            ])
+            ->innerJoinWith('Containers', function (Query $q) {
+                return $q->where(['Containers.id IN' => ROOT_CONTAINER]);
+            })->where([
+                'Contacts.id IN' => $ids
+            ])
+            ->group(['Contacts.id'])
+            ->disableHydration();
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

@@ -9,6 +9,7 @@ use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Servicetemplate;
 use Cake\Core\Plugin;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -1670,4 +1671,53 @@ class ServicetemplatesTable extends Table {
         return $this->emptyArrayIfNull($query->toArray());
     }
 
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getServicetemplatesByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->contain([
+                'Contactgroups'                             => function (Query $q) {
+                    return $q->contain([
+                        'Containers'
+                    ]);
+                },
+                'Contacts',
+                'Servicegroups'                             => function (Query $q) {
+                    return $q->contain([
+                        'Containers'
+                    ]);
+                },
+                'Customvariables',
+                'CheckPeriod'                               => function (Query $q) {
+                    return $q->contain([
+                        'TimeperiodTimeranges'
+                    ]);
+                },
+                'NotifyPeriod'                              => function (Query $q) {
+                    return $q->contain([
+                        'TimeperiodTimeranges'
+                    ]);
+                },
+                'CheckCommand',
+                'Servicetemplatecommandargumentvalues'      => [
+                    'Commandarguments'
+                ],
+                'Servicetemplateeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where([
+                'Servicetemplates.id IN'        => $ids,
+                'Servicetemplates.container_id' => ROOT_CONTAINER
+            ])
+            ->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

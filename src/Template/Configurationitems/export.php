@@ -161,7 +161,7 @@
                                         class="form-control"
                                         multiple
                                         chosen="servicetemplategroups"
-                                        ng-options="servicetemplategroup.key as servicetemplategroup.value.container.name for servicetemplategroup in servicetemplategroups"
+                                        ng-options="servicetemplategroup.key as servicetemplategroup.value for servicetemplategroup in servicetemplategroups"
                                         ng-model="post.Configurationitems.servicetemplategroups._ids">
                                     </select>
                                 </div>

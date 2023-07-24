@@ -483,7 +483,7 @@ class CommandsTable extends Table {
      * @param $ids
      * @return array
      */
-    public function getCommandsByIdForExport($ids) {
+    public function getCommandsByIdsForExport($ids) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }

@@ -692,4 +692,29 @@ class ContactgroupsTable extends Table {
 
         return $result->toArray();
     }
+
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getContactgroupsByIdsForExport($ids) {
+        if(!is_array($ids)){
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->where([
+                'Contactgroups.id IN' => $ids
+            ])
+            ->contain([
+                'Containers',
+                'Contacts'
+            ])
+            ->innerJoinWith('Containers', function (Query $q){
+                     return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
+             })
+            ->disableHydration();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

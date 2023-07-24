@@ -33,6 +33,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplategroupsTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
@@ -63,7 +64,7 @@ class ConfigurationitemsController extends AppController {
             if (!empty($requestData['commands']['_ids'])) {
                 /** @var $CommandsTable CommandsTable */
                 $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-                $commandsForExport = $CommandsTable->getCommandsByIdForExport(
+                $commandsForExport = $CommandsTable->getCommandsByIdsForExport(
                     $requestData['commands']['_ids']
                 );
             }
@@ -71,10 +72,42 @@ class ConfigurationitemsController extends AppController {
             if (!empty($requestData['timeperiods']['_ids'])) {
                 /** @var $TimeperiodsTable TimeperiodsTable */
                 $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-                $timeperiodsForExport = $TimeperiodsTable->getTimeperiodsByIdForExport(
+                $timeperiodsForExport = $TimeperiodsTable->getTimeperiodsByIdsForExport(
                     $requestData['timeperiods']['_ids']
                 );
 
+            }
+
+            if (!empty($requestData['contacts']['_ids'])) {
+                /** @var $ContactsTable ContactsTable */
+                $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+                $contactsForExport = $ContactsTable->getContactsByIdsForExport(
+                    $requestData['contacts']['_ids']
+                );
+            }
+
+            if (!empty($requestData['contactgroups']['_ids'])) {
+                /** @var $ContactgroupsTable ContactgroupsTable */
+                $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+                $contactgroupsForExport = $ContactgroupsTable->getContactgroupsByIdsForExport(
+                    $requestData['contactgroups']['_ids']
+                );
+            }
+
+            if (!empty($requestData['servicetemplates']['_ids'])) {
+                /** @var $ServicetemplatesTable ServicetemplatesTable */
+                $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+                $servicetemplatesForExport = $ServicetemplatesTable->getServicetemplatesByIdsForExport(
+                    $requestData['servicetemplates']['_ids']
+                );
+            }
+
+            if (!empty($requestData['servicetemplategroups']['_ids'])) {
+                /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+                $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+                $servicetemplategroupsForExport = $ServicetemplategroupsTable->getServicetemplategroupsByIdsForExport(
+                    $requestData['servicetemplategroups']['_ids']
+                );
             }
 
             /*
@@ -114,13 +147,13 @@ class ConfigurationitemsController extends AppController {
         $contacts = $ContactsTable->contactsByContainerId(ROOT_CONTAINER, 'list');
         $contacts = Api::makeItJavaScriptAble($contacts);
 
-        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerIdExact(ROOT_CONTAINER, 'list');
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerIdExact(ROOT_CONTAINER, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $servicetemplates = $ServicetemplatesTable->getServicetemplatesByContainerId(ROOT_CONTAINER, 'list');
         $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
 
-        $servicetemplategroups = $ServicetemplategroupsTable->getServicetemplategroupsByContainerIdExact(ROOT_CONTAINER);
+        $servicetemplategroups = $ServicetemplategroupsTable->getServicetemplategroupsByContainerIdExact(ROOT_CONTAINER, 'list', 'id');
         $servicetemplategroups = Api::makeItJavaScriptAble($servicetemplategroups);
 
         $this->set('commands', $commands);

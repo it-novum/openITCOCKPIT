@@ -709,7 +709,7 @@ class TimeperiodsTable extends Table {
      * @param $ids
      * @return array
      */
-    public function getTimeperiodsByIdForExport($ids) {
+    public function getTimeperiodsByIdsForExport($ids) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }

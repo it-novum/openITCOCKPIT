@@ -784,4 +784,28 @@ class ServicetemplategroupsTable extends Table {
 
         return $result->toArray();
     }
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getServicetemplategroupsByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->where([
+                'Servicetemplategroups.id IN' => $ids
+            ])
+            ->contain([
+                'Containers',
+                'Servicetemplates'
+            ])
+            ->innerJoinWith('Containers', function (Query $q) {
+                return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
+            })
+            ->disableHydration();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }
