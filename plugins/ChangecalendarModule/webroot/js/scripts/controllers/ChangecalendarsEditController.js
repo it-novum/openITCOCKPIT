@@ -167,6 +167,19 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
+
+
+            $q.all([
+                $http.get("/containers/loadContainersForAngular.json", {
+                    params: {
+                        'angular': true
+                    }
+                }),
+            ]).then(function(results){
+                $scope.containers = results[0].data.containers;
+                $scope.init = false;
+            });
+
             $http.get("/changecalendar_module/changecalendars/edit/" + $scope.id + ".json", {
                 params: {
                     'angular': true
