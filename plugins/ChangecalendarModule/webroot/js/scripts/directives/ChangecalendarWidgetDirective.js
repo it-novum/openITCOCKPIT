@@ -68,7 +68,6 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
 
                 // move around
                 $('body').append(myModal);
-                console.log(event);
 
                 // Move to end of body tag
                 $scope.modifyEvent = {
