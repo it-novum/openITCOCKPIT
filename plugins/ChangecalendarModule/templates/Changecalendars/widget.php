@@ -117,7 +117,7 @@
                     <div class="col-lg-12">
                         <div class="form-group">
                             <label for="exampleFormControlTextarea1"><?php echo __('Description'); ?></label>
-                            <textarea disabled="disabled" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            <textarea ng-model="modifyEvent.description" disabled="disabled" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                         </div>
                     </div>
                 </div>
