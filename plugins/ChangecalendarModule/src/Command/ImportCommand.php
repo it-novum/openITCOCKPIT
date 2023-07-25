@@ -7,6 +7,7 @@ use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
 use ChangecalendarModule\Model\Table\ChangecalendarEventsTable;
@@ -69,9 +70,14 @@ class ImportCommand extends Command {
             }
             try {
                 $this->importRow($b);
-            } catch (\InvalidArgumentException $exception) {
-                $io->error("Row $line is invalid. See:");
-                $io->error($exception->getMessage());
+            } catch (\InvalidArgumentException | RecordNotFoundException $exception) {
+                $io->warning("Row $line is invalid. See:");
+                $io->warning($exception->getMessage());
+                continue;
+            } catch (\Exception $e) {
+                var_dump($e);
+                $io->error($e->getMessage());
+                break;
             }
         }
         exit(0);
