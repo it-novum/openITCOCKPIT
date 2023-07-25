@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http, $sce){
+angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http, $sce, BBParserService){
     return {
         restrict: 'E', templateUrl: '/changecalendar_module/changecalendars/widget.html', scope: {
             'widget': '='
@@ -78,6 +78,8 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     description: event.extendedProps.description,
                     context: event.extendedProps.context
                 };
+
+                $scope.descriptionPreview = BBParserService.parse($scope.modifyEvent.description);
 
                 // Show modal
                 myModal.modal('show');

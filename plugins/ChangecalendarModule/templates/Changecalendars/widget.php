@@ -117,7 +117,10 @@
                     <div class="col-lg-12">
                         <div class="form-group">
                             <label for="exampleFormControlTextarea1"><?php echo __('Description'); ?></label>
-                            <textarea ng-model="modifyEvent.description" disabled="disabled" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+
+                            <div ng-bind-html="descriptionPreview | trustAsHtml">
+                                {{descriptionPreview}}
+                            </div>
                         </div>
                     </div>
                 </div>
