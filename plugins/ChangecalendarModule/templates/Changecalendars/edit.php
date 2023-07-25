@@ -184,6 +184,7 @@
                 <div class="row">
 
                     <div class="col-lg-6">
+                        <label for="description"><?php echo __('Description'); ?></label>
                         <div class="panel">
                             <div class="panel-hdr">
                                 <div class="panel-toolbar" style="width: 100%;">
@@ -244,8 +245,15 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-6" ng-bind-html="descriptionPreview | trustAsHtml">
-                        {{descriptionPreview}}
+                    <div class="col-lg-6">
+                        <label for="preview"><?php echo __('Preview'); ?></label>
+                        <div class="panel">
+                            <div class="panel-hdr">
+                                <div ng-bind-html="descriptionPreview | trustAsHtml">
+                                    {{descriptionPreview}}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <hr />

@@ -117,11 +117,9 @@ class ImportCommand extends Command {
             $row[5] = '';
         }
         if (empty($row[6])) {
-            var_dump($row);
             throw new \InvalidArgumentException('// context is empty');
         }
         $context = (array)json_decode(str_replace("'", '"', $row[6] ?? 'null'), true);
-        var_dump($context);
         foreach ($context as $index => $fieldObject) {
             if (empty($fieldObject['name'])) {
                 throw new \InvalidArgumentException("Context field (#$index) has no name.");
@@ -140,7 +138,7 @@ class ImportCommand extends Command {
             'begin'               => new \DateTime($row[2]),
             'end'                 => new \DateTime($row[3]),
             'name'                => $row[4],
-            'description'         => $row[5],
+            'description'         => str_replace('\\n', chr(10), $row[5]),
             'context'             => $context
         ];
     }

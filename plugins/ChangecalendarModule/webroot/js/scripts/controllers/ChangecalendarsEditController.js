@@ -81,27 +81,28 @@ angular.module('openITCOCKPIT')
                                     $scope.modifyEvent = {
                                         title: '',
                                         start: new Date(currentDate + "T00:00:00"),
-                                        end: new Date(currentDate + "T00:00:00")
+                                        end: new Date(currentDate + "T23:59:59")
                                     };
                                 }
                             );
-
-                        var events = $scope.getEvents(currentDate);
-                        if(!$scope.hasEvents(currentDate)){
-                            $parentTd.css('text-align', 'right').append($addButton);
-                        }
                     });
                 },
                 eventDrop: function(info){
                     //Move event in json
-                    var event = $scope.deleteEvent(date('Y-m-d', info.oldEvent.start));
+                    var event = $scope.getEventById(info.oldEvent.id);
                     if(!event){
                         return;
                     }
-                    event = event[0];
+
+                    // Calculate difference between dates
+                    let diffTime = new Date(info.event.start) - info.oldEvent.start;
+                    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                     //Set new start date
-                    event.start = date('Y-m-d', info.event.start);
+                    event.start = new Date(event.start);
+                    event.end = new Date(event.end);
+                    event.start.setDate(event.start.getDate() + diffDays);
+                    event.end.setDate(event.end.getDate() + diffDays);
 
                     //Add event back to json
                     $scope.addEvent(event);
@@ -113,8 +114,6 @@ angular.module('openITCOCKPIT')
                 },
                 events: $scope.events
             });
-
-            //console.warn($calendar);
 
             $scope.calendar.render();
             $(".fc-holidays-button")
@@ -197,10 +196,11 @@ angular.module('openITCOCKPIT')
             return false;
         };
 
-        $scope.deleteEvent = function(date){
-            for(var index in $scope.events){
-                if($scope.events[index].start === date){
-                    return $scope.events.splice(index, 1);
+        $scope.getEventById = function(id){
+            for(var index in $scope.events) {
+                let event = $scope.events[index];
+                if(event.id == id){
+                    return event;
                 }
             }
             return false;
@@ -220,8 +220,7 @@ angular.module('openITCOCKPIT')
             for(eventIndex = 0; eventIndex <= eventCount; eventIndex++){
                 let myEvent = $scope.events[eventIndex];
                 event.id = parseInt(event.id);
-
-                if(myEvent.id !== event.id){
+                if(parseInt(myEvent.id) !== event.id){
                     continue;
                 }
 
