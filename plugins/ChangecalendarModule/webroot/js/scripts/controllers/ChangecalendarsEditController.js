@@ -276,7 +276,7 @@ angular.module('openITCOCKPIT')
 
 
             //jQuery Bases WYSIWYG Editor
-            $("[wysiwyg='true']").click(function(){
+            $("[wysiwyg='true']").unbind('click').click(function(){
                 var $textarea = $('#description');
                 var task = $(this).attr('task');
                 switch(task){

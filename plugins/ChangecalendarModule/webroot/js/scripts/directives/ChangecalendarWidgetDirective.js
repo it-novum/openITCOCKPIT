@@ -130,39 +130,8 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                 });
             };
 
-            $widget.on('resize', function(event, items){
-                hasResize();
-            });
-            var hasResize = function(){
-                if($scope.init){
-                    return;
-                }
-                if($scope.calendar !== null){
-                    $scope.calendar.destroy();
-                    $scope.calendar = null;
-                }
-                $scope.frontWidgetHeight = parseInt(($widget.height()), 10); //-50px header
-
-                $scope.fontSize = parseInt($scope.frontWidgetHeight / 3.8, 10);
-
-                if($scope.calendarTimeout){
-                    clearTimeout($scope.calendarTimeout);
-                }
-                $scope.calendarTimeout = setTimeout(function(){
-                    if($scope.init){
-                        return;
-                    }
-                    if($scope.calendar !== null){
-                        $scope.calendar.destroy();
-                    }
-                    $scope.load();
-                }, 500);
-            };
-
             /** Page load / widget get loaded **/
             $scope.load();
-
-
         },
 
         link: function($scope, element, attr){

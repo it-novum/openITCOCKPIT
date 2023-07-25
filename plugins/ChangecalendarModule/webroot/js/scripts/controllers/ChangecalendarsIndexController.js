@@ -34,7 +34,6 @@ angular.module('openITCOCKPIT')
                     'filter[Changecalendars.description]': $scope.filter.changecalendars.description
                 }
             }).then(function(result){
-                console.log(result);
                 $scope.changecalendars = result.data.all_changecalendars;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
