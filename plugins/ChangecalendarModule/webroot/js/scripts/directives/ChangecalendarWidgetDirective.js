@@ -68,6 +68,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
 
                 // move around
                 $('body').append(myModal);
+                console.log(event);
 
                 // Move to end of body tag
                 $scope.modifyEvent = {
@@ -75,7 +76,8 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     title: event.title,
                     start: event.start,
                     end: event.end,
-                    description: event.description
+                    description: event.extendedProps.description,
+                    context: event.extendedProps.context
                 };
 
                 // Show modal
@@ -131,7 +133,6 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                 hasResize();
             });
             var hasResize = function(){
-                console.warn('RESIZED BUDDY!');
                 if($scope.init){
                     return;
                 }

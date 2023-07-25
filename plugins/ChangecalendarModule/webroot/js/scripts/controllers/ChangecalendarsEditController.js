@@ -85,6 +85,8 @@ angular.module('openITCOCKPIT')
                                     };
                                 }
                             );
+
+                        $parentTd.css('text-align', 'right').append($addButton);
                     });
                 },
                 eventDrop: function(info){

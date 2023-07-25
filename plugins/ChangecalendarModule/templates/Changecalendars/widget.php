@@ -121,6 +121,15 @@
                         </div>
                     </div>
                 </div>
+                <hr />
+                <div class="row">
+                    <div ng-repeat="contextField in modifyEvent.context" class="col-lg-12">
+                        <div class="form-group">
+                            <label class="text-{{contextField.class}}">{{contextField.name}}</label>
+                            <textarea disabled="disabled" class="form-control bg-{{contextField.class}}" rows="3">{{contextField.value}}</textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" ng-click="modifyEventFromModal()">
