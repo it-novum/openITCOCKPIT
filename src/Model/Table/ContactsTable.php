@@ -1241,10 +1241,30 @@ class ContactsTable extends Table {
         }
         $query = $this->find()
             ->contain([
-                'HostCommands' => 'Commandarguments',
-                'ServiceCommands' => 'Commandarguments',
-                'HostTimeperiods' => 'TimeperiodTimeranges',
-                'ServiceTimeperiods' => 'TimeperiodTimeranges',
+                'HostCommands'       => function (Query $q) {
+                    return $q->select([
+                        'HostCommands.id',
+                        'HostCommands.uuid'
+                    ]);
+                },
+                'ServiceCommands'    => function (Query $q) {
+                    return $q->select([
+                        'ServiceCommands.id',
+                        'ServiceCommands.uuid'
+                    ]);
+                },
+                'HostTimeperiods'    => function (Query $q) {
+                    return $q->select([
+                        'HostTimeperiods.id',
+                        'HostTimeperiods.uuid'
+                    ]);
+                },
+                'ServiceTimeperiods' => function (Query $q) {
+                    return $q->select([
+                        'ServiceTimeperiods.id',
+                        'ServiceTimeperiods.uuid'
+                    ]);
+                },
                 'Customvariables'
             ])
             ->innerJoinWith('Containers', function (Query $q) {

@@ -1681,44 +1681,27 @@ class ServicetemplatesTable extends Table {
         }
         $query = $this->find()
             ->contain([
-                'Contactgroups'                             => function (Query $q) {
-                    return $q->contain([
-                        'Containers',
-                        'Contacts' => [
-                            'HostCommands'       => 'Commandarguments',
-                            'ServiceCommands'    => 'Commandarguments',
-                            'HostTimeperiods'    => 'TimeperiodTimeranges',
-                            'ServiceTimeperiods' => 'TimeperiodTimeranges',
-                            'Customvariables'
-                        ]
+                'Contactgroups',
+                'Contacts'                                  => function (Query $q) {
+                    return $q->select([
+                        'Contacts.id',
+                        'Contacts.uuid',
                     ]);
                 },
-                'Contacts'                                  => [
-                    'HostCommands'       => 'Commandarguments',
-                    'ServiceCommands'    => 'Commandarguments',
-                    'HostTimeperiods'    => 'TimeperiodTimeranges',
-                    'ServiceTimeperiods' => 'TimeperiodTimeranges',
-                    'Customvariables'
-                ],
-                /* ?????
-                'Servicegroups'                             => function (Query $q) {
-                    return $q->contain([
-                        'Containers'
-                    ]);
-                },
-                */
                 'Customvariables',
                 'CheckPeriod'                               => function (Query $q) {
-                    return $q->contain([
-                        'TimeperiodTimeranges'
+                    return $q->select([
+                        'CheckPeriod.id',
+                        'CheckPeriod.uuid',
                     ]);
                 },
                 'NotifyPeriod'                              => function (Query $q) {
-                    return $q->contain([
-                        'TimeperiodTimeranges'
+                    return $q->select([
+                        'NotifyPeriod.id',
+                        'NotifyPeriod.uuid',
                     ]);
                 },
-                'CheckCommand'                              => 'Commandarguments',
+                'CheckCommand' => 'Commandarguments',
                 'Servicetemplatecommandargumentvalues'      => [
                     'Commandarguments'
                 ],

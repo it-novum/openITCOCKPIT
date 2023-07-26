@@ -708,13 +708,12 @@ class ContactgroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Contacts' => [
-                    'HostCommands'       => 'Commandarguments',
-                    'ServiceCommands'    => 'Commandarguments',
-                    'HostTimeperiods'    => 'TimeperiodTimeranges',
-                    'ServiceTimeperiods' => 'TimeperiodTimeranges',
-                    'Customvariables'
-                ]
+                'Contacts' => function (Query $q) {
+                    return $q->select([
+                        'Contacts.id',
+                        'Contacts.uuid'
+                    ]);
+                }
             ])
             ->innerJoinWith('Containers', function (Query $q) {
                 return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);

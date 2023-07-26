@@ -794,12 +794,31 @@ class ServicetemplategroupsTable extends Table {
             $ids = [$ids];
         }
         $query = $this->find()
+            ->select([
+                'Servicetemplategroups.id',
+                'Servicetemplategroups.uuid',
+                'Servicetemplategroups.container_id',
+                'Servicetemplategroups.description',
+            ])
             ->where([
                 'Servicetemplategroups.id IN' => $ids
             ])
             ->contain([
-                'Containers',
-                'Servicetemplates'
+                'Containers' => function (Query $q) {
+                    $q->select([
+                        'Containers.id',
+                        'Containers.parent_id',
+                        'Containers.name'
+                    ]);
+                    return $q;
+                },
+                'Servicetemplates' => function (Query $q) {
+                    $q->select([
+                        'Servicetemplates.id',
+                        'Servicetemplates.uuid'
+                    ]);
+                    return $q;
+                }
             ])
             ->innerJoinWith('Containers', function (Query $q) {
                 return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
