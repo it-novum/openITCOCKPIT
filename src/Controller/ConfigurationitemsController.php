@@ -51,6 +51,11 @@ class ConfigurationitemsController extends AppController {
             //Only ship HTML template
             return;
         }
+
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
         $configurationitemsExportForm = new ConfigurationitemsExportForm();
         $requestData = $this->request->getData('Configurationitems', []);
         $configurationitemsExportForm->execute($requestData);
@@ -129,21 +134,10 @@ class ConfigurationitemsController extends AppController {
                 }
             }
 
-            if (!empty($confiurationItemsArray)) {
-                $exportFileName = '/tmp/test.json';
-
-                $exportJsonFile = fopen($exportFileName, 'w+');
-                fwrite($exportJsonFile, json_encode($confiurationItemsArray));
-                fclose($exportJsonFile);
-
-                $this->response->setTypeMap('json', 'application/json');
-                $this->response->withType('json');
-                $response = $this->response->withFile($exportFileName, [
-                    'download' => true,
-                    'name'     => $this->request->getQuery('filename')
-                ]);
-                return $response;
-            }
+            $this->set('export', $confiurationItemsArray);
+            $this->set('checksum', hash('sha256', json_encode($confiurationItemsArray)));
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['export', 'checksum', 'success']);
         }
     }
 

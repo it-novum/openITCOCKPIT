@@ -71,11 +71,11 @@
                     <form class="form-horizontal">
                         <fieldset class="padding-bottom-20">
                             <legend class="fs-md fieldset-legend-border-bottom"
-                            ng-class="{'fieldset-legend-border-bottom-danger': (errors | json) !== '{}'}">
+                                    ng-class="{'fieldset-legend-border-bottom-danger': (errors | json) !== '{}'}">
                                 <h4>
                                     <?= __('Configuration items'); ?>
                                     <span class="text-danger font-xs pl-1 fw-300"
-                                    ng-show="(errors | json) !== '{}'">
+                                          ng-show="(errors | json) !== '{}'">
                                         <?= __('You must select at least one configuration item for export.'); ?>
                                     </span>
                                 </h4>
@@ -169,8 +169,12 @@
                             <div class="card margin-top-10">
                                 <div class="card-body">
                                     <div class="float-right">
-                                        <button class="btn btn-primary" ng-click="submit()">
-                                            <?php echo __('Export configuration items'); ?>
+                                        <button class="btn btn-primary"
+                                                ng-disabled="isGenerating"
+                                                type="button"
+                                                ng-click="submit()">
+                                            <i class="fas fa-spinner fa-spin" ng-show="isGenerating"></i>
+                                            <?= __('Export configuration items'); ?>
                                         </button>
                                     </div>
                                 </div>
