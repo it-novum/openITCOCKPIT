@@ -61,12 +61,16 @@ class ConfigurationitemsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         } else {
+            $confiurationItemsArray = [];
             if (!empty($requestData['commands']['_ids'])) {
                 /** @var $CommandsTable CommandsTable */
                 $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
                 $commandsForExport = $CommandsTable->getCommandsByIdsForExport(
                     $requestData['commands']['_ids']
                 );
+                if (!empty($commandsForExport)) {
+                    $confiurationItemsArray['commands'] = $commandsForExport;
+                }
             }
 
             if (!empty($requestData['timeperiods']['_ids'])) {
@@ -75,6 +79,9 @@ class ConfigurationitemsController extends AppController {
                 $timeperiodsForExport = $TimeperiodsTable->getTimeperiodsByIdsForExport(
                     $requestData['timeperiods']['_ids']
                 );
+                if (!empty($timeperiodsForExport)) {
+                    $confiurationItemsArray['timeperiods'] = $timeperiodsForExport;
+                }
 
             }
 
@@ -84,6 +91,9 @@ class ConfigurationitemsController extends AppController {
                 $contactsForExport = $ContactsTable->getContactsByIdsForExport(
                     $requestData['contacts']['_ids']
                 );
+                if (!empty($contactsForExport)) {
+                    $confiurationItemsArray['contacts'] = $contactsForExport;
+                }
             }
 
             if (!empty($requestData['contactgroups']['_ids'])) {
@@ -92,6 +102,9 @@ class ConfigurationitemsController extends AppController {
                 $contactgroupsForExport = $ContactgroupsTable->getContactgroupsByIdsForExport(
                     $requestData['contactgroups']['_ids']
                 );
+                if (!empty($contactgroupsForExport)) {
+                    $confiurationItemsArray['contactgroups'] = $contactgroupsForExport;
+                }
             }
 
             if (!empty($requestData['servicetemplates']['_ids'])) {
@@ -100,6 +113,9 @@ class ConfigurationitemsController extends AppController {
                 $servicetemplatesForExport = $ServicetemplatesTable->getServicetemplatesByIdsForExport(
                     $requestData['servicetemplates']['_ids']
                 );
+                if (!empty($servicetemplatesForExport)) {
+                    $confiurationItemsArray['servicetemplates'] = $servicetemplatesForExport;
+                }
             }
 
             if (!empty($requestData['servicetemplategroups']['_ids'])) {
@@ -108,15 +124,26 @@ class ConfigurationitemsController extends AppController {
                 $servicetemplategroupsForExport = $ServicetemplategroupsTable->getServicetemplategroupsByIdsForExport(
                     $requestData['servicetemplategroups']['_ids']
                 );
+                if (!empty($servicetemplategroupsForExport)) {
+                    $confiurationItemsArray['servicetemplategroups'] = $servicetemplategroupsForExport;
+                }
             }
 
-            /*
-            $exportFileName = 'test.json';
-            $this->response->setTypeMap('json', 'application/json');
-            $this->response->withType('json');
-            $response = $this->response->withFile($exportFileName, ['download' => true, 'name' => $this->request->getQuery('filename')]);
-            return $response;
-            */
+            if (!empty($confiurationItemsArray)) {
+                $exportFileName = '/tmp/test.json';
+
+                $exportJsonFile = fopen($exportFileName, 'w+');
+                fwrite($exportJsonFile, json_encode($confiurationItemsArray));
+                fclose($exportJsonFile);
+
+                $this->response->setTypeMap('json', 'application/json');
+                $this->response->withType('json');
+                $response = $this->response->withFile($exportFileName, [
+                    'download' => true,
+                    'name'     => $this->request->getQuery('filename')
+                ]);
+                return $response;
+            }
         }
     }
 
