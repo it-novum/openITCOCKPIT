@@ -1241,10 +1241,10 @@ class ContactsTable extends Table {
         }
         $query = $this->find()
             ->contain([
-                'HostCommands',
-                'ServiceCommands',
-                'HostTimeperiods',
-                'ServiceTimeperiods',
+                'HostCommands' => 'Commandarguments',
+                'ServiceCommands' => 'Commandarguments',
+                'HostTimeperiods' => 'TimeperiodTimeranges',
+                'ServiceTimeperiods' => 'TimeperiodTimeranges',
                 'Customvariables'
             ])
             ->innerJoinWith('Containers', function (Query $q) {

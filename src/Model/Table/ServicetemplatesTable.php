@@ -1683,15 +1683,30 @@ class ServicetemplatesTable extends Table {
             ->contain([
                 'Contactgroups'                             => function (Query $q) {
                     return $q->contain([
-                        'Containers'
+                        'Containers',
+                        'Contacts' => [
+                            'HostCommands'       => 'Commandarguments',
+                            'ServiceCommands'    => 'Commandarguments',
+                            'HostTimeperiods'    => 'TimeperiodTimeranges',
+                            'ServiceTimeperiods' => 'TimeperiodTimeranges',
+                            'Customvariables'
+                        ]
                     ]);
                 },
-                'Contacts',
+                'Contacts'                                  => [
+                    'HostCommands'       => 'Commandarguments',
+                    'ServiceCommands'    => 'Commandarguments',
+                    'HostTimeperiods'    => 'TimeperiodTimeranges',
+                    'ServiceTimeperiods' => 'TimeperiodTimeranges',
+                    'Customvariables'
+                ],
+                /* ?????
                 'Servicegroups'                             => function (Query $q) {
                     return $q->contain([
                         'Containers'
                     ]);
                 },
+                */
                 'Customvariables',
                 'CheckPeriod'                               => function (Query $q) {
                     return $q->contain([
@@ -1703,7 +1718,7 @@ class ServicetemplatesTable extends Table {
                         'TimeperiodTimeranges'
                     ]);
                 },
-                'CheckCommand',
+                'CheckCommand'                              => 'Commandarguments',
                 'Servicetemplatecommandargumentvalues'      => [
                     'Commandarguments'
                 ],

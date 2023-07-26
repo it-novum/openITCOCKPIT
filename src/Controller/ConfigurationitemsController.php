@@ -37,7 +37,9 @@ use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class ConfigurationitemsController extends AppController {
     public function import() {
@@ -74,7 +76,9 @@ class ConfigurationitemsController extends AppController {
                     $requestData['commands']['_ids']
                 );
                 if (!empty($commandsForExport)) {
-                    $confiurationItemsArray['commands'] = $commandsForExport;
+                    $confiurationItemsArray['commands'] = Hash::combine(
+                        $commandsForExport, '{n}.uuid', '{n}'
+                    );
                 }
             }
 
@@ -85,9 +89,10 @@ class ConfigurationitemsController extends AppController {
                     $requestData['timeperiods']['_ids']
                 );
                 if (!empty($timeperiodsForExport)) {
-                    $confiurationItemsArray['timeperiods'] = $timeperiodsForExport;
+                    $confiurationItemsArray['timeperiods'] = Hash::combine(
+                        $timeperiodsForExport, '{n}.uuid', '{n}'
+                    );
                 }
-
             }
 
             if (!empty($requestData['contacts']['_ids'])) {
@@ -97,7 +102,36 @@ class ConfigurationitemsController extends AppController {
                     $requestData['contacts']['_ids']
                 );
                 if (!empty($contactsForExport)) {
-                    $confiurationItemsArray['contacts'] = $contactsForExport;
+                    foreach ($contactsForExport as $key => $contactForExport) {
+                        $hostCommandsUuids = [];
+                        foreach ($contactForExport['host_commands'] as $hostCommand) {
+                            if (isset($confiurationItemsArray['commands'][$hostCommand['uuid']])) {
+                                continue;
+                            }
+                            $confiurationItemsArray['commands'][$hostCommand['uuid']] = $hostCommand;
+                            $hostCommandsUuids[] = $hostCommand['uuid'];
+                        }
+                        $contactsForExport[$key]['host_commands'] = $hostCommandsUuids;
+
+                        $serviceCommandsUuids = [];
+                        foreach ($contactForExport['service_commands'] as $serviceCommand) {
+                            if (isset($confiurationItemsArray['commands'][$serviceCommand['uuid']])) {
+                                continue;
+                            }
+                            $confiurationItemsArray['commands'][$serviceCommand['uuid']] = $serviceCommand;
+                            $serviceCommandsUuids[] = $serviceCommand['uuid'];
+                        }
+                        $contactsForExport[$key]['service_commands'] = $serviceCommandsUuids;
+
+                        $confiurationItemsArray['timeperiods'][$contactForExport['host_timeperiod']['uuid']] = $contactForExport['host_timeperiod'];
+                        $contactsForExport[$key]['host_timeperiod'] = $contactForExport['host_timeperiod']['uuid'];
+
+                        $confiurationItemsArray['timeperiods'][$contactForExport['service_timeperiod']['uuid']] = $contactForExport['service_timeperiod'];
+                        $contactsForExport[$key]['service_timeperiod'] = $contactForExport['service_timeperiod']['uuid'];
+                    }
+                    $confiurationItemsArray['contacts'] = Hash::combine(
+                        $contactsForExport, '{n}.uuid', '{n}'
+                    );
                 }
             }
 
@@ -108,7 +142,43 @@ class ConfigurationitemsController extends AppController {
                     $requestData['contactgroups']['_ids']
                 );
                 if (!empty($contactgroupsForExport)) {
-                    $confiurationItemsArray['contactgroups'] = $contactgroupsForExport;
+                    foreach ($contactgroupsForExport as $key => $contactgroupForExport) {
+                        $contactUuids = [];
+                        foreach ($contactgroupForExport['contacts'] as $contactForExport) {
+                            if (!isset($confiurationItemsArray['contacts'][$contactForExport['uuid']])) {
+
+                                $hostCommandsUuids = [];
+                                foreach ($contactForExport['host_commands'] as $hostCommand) {
+                                    if (!isset($confiurationItemsArray['commands'][$hostCommand['uuid']])) {
+                                        $confiurationItemsArray['commands'][$hostCommand['uuid']] = $hostCommand;
+                                    }
+                                    $hostCommandsUuids[] = $hostCommand['uuid'];
+                                }
+                                $contactsForExport[$key]['host_commands'] = $hostCommandsUuids;
+
+                                $serviceCommandsUuids = [];
+                                foreach ($contactForExport['service_commands'] as $serviceCommand) {
+                                    if (!isset($confiurationItemsArray['commands'][$hostCommand['uuid']])) {
+                                        $confiurationItemsArray['commands'][$serviceCommand['uuid']] = $serviceCommand;
+                                    }
+                                    $serviceCommandsUuids[] = $serviceCommand['uuid'];
+                                }
+                                $contactsForExport[$key]['service_commands'] = $serviceCommandsUuids;
+
+                                $confiurationItemsArray['timeperiods'][$contactForExport['host_timeperiod']['uuid']] = $contactForExport['host_timeperiod'];
+                                $contactsForExport[$key]['host_timeperiod'] = $contactForExport['host_timeperiod']['uuid'];
+
+                                $confiurationItemsArray['timeperiods'][$contactForExport['service_timeperiod']['uuid']] = $contactForExport['service_timeperiod'];
+                                $contactsForExport[$key]['service_timeperiod'] = $contactForExport['service_timeperiod']['uuid'];
+
+                            }
+                            $contactUuids[] = $contactForExport['uuid'];
+                        }
+                        $contactgroupsForExport[$key]['contacts'] = $contactUuids;
+                    }
+                    $confiurationItemsArray['contactgroups'] = Hash::combine(
+                        $contactgroupsForExport, '{n}.uuid', '{n}'
+                    );
                 }
             }
 
@@ -119,6 +189,7 @@ class ConfigurationitemsController extends AppController {
                     $requestData['servicetemplates']['_ids']
                 );
                 if (!empty($servicetemplatesForExport)) {
+                    FileDebugger::dump($servicetemplatesForExport);
                     $confiurationItemsArray['servicetemplates'] = $servicetemplatesForExport;
                 }
             }

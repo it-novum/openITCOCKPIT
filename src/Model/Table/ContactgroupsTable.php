@@ -426,7 +426,7 @@ class ContactgroupsTable extends Table {
                 'Contactgroups.id IN' => $ids,
             ]);
 
-        if(!empty($MY_RIGHTS)) {
+        if (!empty($MY_RIGHTS)) {
             $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
@@ -685,7 +685,7 @@ class ContactgroupsTable extends Table {
      * @param int $containerId
      * @return array
      */
-    public function getOrphanedContactgroupsByContainerId(int $containerId){
+    public function getOrphanedContactgroupsByContainerId(int $containerId) {
         $query = $this->find()
             ->where(['container_id' => $containerId]);
         $result = $query->all();
@@ -699,7 +699,7 @@ class ContactgroupsTable extends Table {
      * @return array
      */
     public function getContactgroupsByIdsForExport($ids) {
-        if(!is_array($ids)){
+        if (!is_array($ids)) {
             $ids = [$ids];
         }
         $query = $this->find()
@@ -708,11 +708,17 @@ class ContactgroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Contacts'
+                'Contacts' => [
+                    'HostCommands'       => 'Commandarguments',
+                    'ServiceCommands'    => 'Commandarguments',
+                    'HostTimeperiods'    => 'TimeperiodTimeranges',
+                    'ServiceTimeperiods' => 'TimeperiodTimeranges',
+                    'Customvariables'
+                ]
             ])
-            ->innerJoinWith('Containers', function (Query $q){
-                     return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
-             })
+            ->innerJoinWith('Containers', function (Query $q) {
+                return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
+            })
             ->disableHydration();
 
         return $this->emptyArrayIfNull($query->toArray());
