@@ -41,7 +41,7 @@ angular.module('openITCOCKPIT')
                 $scope.servicetemplategroups = result.data.servicetemplategroups;
             });
         };
-        
+
 
         $scope.submit = function(){
             $scope.errors = {};
@@ -52,8 +52,10 @@ angular.module('openITCOCKPIT')
                 NotyService.genericSuccess();
                 $scope.isGenerating = false;
 
+                // Build the JSON File
                 jsonString = JSON.stringify({
                     export: response.data.export,
+                    OPENITCOCKPIT_VERSION: response.data.OPENITCOCKPIT_VERSION,
                     checksum: response.data.checksum
                 });
 

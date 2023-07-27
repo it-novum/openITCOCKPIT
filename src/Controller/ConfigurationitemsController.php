@@ -43,8 +43,17 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
+use Laminas\Diactoros\UploadedFile;
 
 class ConfigurationitemsController extends AppController {
+
+    /**
+     * We add this "salt" to the end of the json string that will be hashed to be able to detect if someone had tried
+     * to modify the json file. That's not very secure. Who ever is smart enough to find this in the code
+     * is probably also smart enough to modify the json file by itself without breaking anything
+     */
+    const SALT = 'No not modify this file manually!';
+
     public function import() {
         if (!$this->isApiRequest()) {
             //Only ship template
@@ -55,14 +64,41 @@ class ConfigurationitemsController extends AppController {
         $this->set('maxUploadLimit', $FileUploadSize->toArray());
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            FileDebugger::dump($this->request->getData());
-            $filename = $this->request->getData('filename', null);
-            FileDebugger::dump($filename);
-            $session = $this->getRequest()->getSession();
-            $fileDetails = $session->read('lastUploadedJson', null);
-            if (!empty($fileDetails)) {
-                $validRecordsFromFile =
-                    $fileDetails['full_path'];
+            $file = $this->request->getData('file');
+            if (is_object($file) && $file instanceof UploadedFile) {
+                /** @var UploadedFile $file */
+                $content = $file->getStream()->getContents();
+
+                // Is the uploaded file a valid json?
+                try {
+                    $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+
+                    if (!isset($data['checksum'])) {
+                        throw new \Exception('Checksum mismatch');
+                    }
+
+                    if (!isset($data['export'])) {
+                        throw new \Exception('No exported data found');
+                    }
+
+                    if (!isset($data['OPENITCOCKPIT_VERSION'])) {
+                        throw new \Exception('No version information found');
+                    }
+
+                    $checksum = hash('sha256', json_encode($data['export']) . self::SALT);
+                    if ($checksum !== $data['checksum']) {
+                        throw new \Exception('Checksum mismatch');
+                    }
+
+                } catch (\Exception $e) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $e->getMessage());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                    return;
+                }
+
+                FileDebugger::dump($content);
+
             }
         }
 
@@ -525,16 +561,12 @@ class ConfigurationitemsController extends AppController {
 
         }
 
-
-        // We add this "salt" to the end of the json string that will be hashed to be able to detect if someone had tried
-        // to modify the json file. That's not very secure. Who ever is smart enough to find this in the code
-        // is probably also smart enough to modify the json file by itself without breaking anything
-        $salt = 'No not modify this file manually!';
-
+        // The JSON file gets build by the ConfigurationitemsExportController.js
         $this->set('export', $jsonExport);
-        $this->set('checksum', hash('sha256', json_encode($jsonExport) . $salt));
+        $this->set('checksum', hash('sha256', json_encode($jsonExport) . self::SALT));
+        $this->set('OPENITCOCKPIT_VERSION', OPENITCOCKPIT_VERSION);
         $this->set('success', true);
-        $this->viewBuilder()->setOption('serialize', ['export', 'checksum', 'success']);
+        $this->viewBuilder()->setOption('serialize', ['export', 'checksum', 'success', 'OPENITCOCKPIT_VERSION']);
 
     }
 
