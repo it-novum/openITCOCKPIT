@@ -426,23 +426,16 @@ class ConfigurationitemsController extends AppController {
             }
         }
 
-        debug($jsonExport);
-        die();
-
-
-        /**** OLD CODE ***/
-        if (!empty($requestData['commands']['_ids'])) {
-            /** @var $CommandsTable CommandsTable */
-            $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-            $commandsForExport = $CommandsTable->getCommandsByIdsForExport(
-                $requestData['commands']['_ids']
-            );
-            if (!empty($commandsForExport)) {
-                $jsonExport['commands'] = Hash::combine(
-                    $commandsForExport, '{n}.uuid', '{n}'
-                );
-            }
+        // Export time periods
+        if (!isset($requestData['timeperiods']['_ids'])) {
+            $requestData['timeperiods']['_ids'] = [];
         }
+
+        // Merge manually selected time period ids (selected by the user) with time period ids that are required due to dependencies
+        foreach ($DependencyCollector->getTimeperiods() as $tpId => $tpUuid) {
+            $requestData['timeperiods']['_ids'][] = $tpId;
+        }
+        $requestData['timeperiods']['_ids'] = array_unique($requestData['timeperiods']['_ids']);
 
         if (!empty($requestData['timeperiods']['_ids'])) {
             /** @var $TimeperiodsTable TimeperiodsTable */
@@ -450,103 +443,75 @@ class ConfigurationitemsController extends AppController {
             $timeperiodsForExport = $TimeperiodsTable->getTimeperiodsByIdsForExport(
                 $requestData['timeperiods']['_ids']
             );
-            if (!empty($timeperiodsForExport)) {
-                $jsonExport['timeperiods'] = Hash::combine(
-                    $timeperiodsForExport, '{n}.uuid', '{n}'
-                );
-            }
-        }
 
-        if (!empty($requestData['contacts']['_ids'])) {
-            /** @var $ContactsTable ContactsTable */
-            $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-            $contactsForExport = $ContactsTable->getContactsByIdsForExport(
-                $requestData['contacts']['_ids']
-            );
-            if (!empty($contactsForExport)) {
-                foreach ($contactsForExport as $key => $contactForExport) {
-                    $hostCommandsUuids = [];
-                    foreach ($contactForExport['host_commands'] as $hostCommand) {
-                        if (isset($jsonExport['commands'][$hostCommand['uuid']])) {
-                            continue;
-                        }
-                        $jsonExport['commands'][$hostCommand['uuid']] = $hostCommand;
-                        $hostCommandsUuids[] = $hostCommand['uuid'];
-                    }
-                    $contactsForExport[$key]['host_commands'] = $hostCommandsUuids;
+            foreach ($timeperiodsForExport as $timeperiod) {
+                $jsonTimeperiod = [
+                    'uuid'                  => $timeperiod['uuid'],
+                    'container_id'          => ROOT_CONTAINER,
+                    'name'                  => $timeperiod['name'],
+                    'description'           => $timeperiod['description'],
+                    'calendar_id'           => 0, // Not supported by import/export
+                    'timeperiod_timeranges' => []
+                ];
 
-                    $serviceCommandsUuids = [];
-                    foreach ($contactForExport['service_commands'] as $serviceCommand) {
-                        if (isset($jsonExport['commands'][$serviceCommand['uuid']])) {
-                            continue;
-                        }
-                        $jsonExport['commands'][$serviceCommand['uuid']] = $serviceCommand;
-                        $serviceCommandsUuids[] = $serviceCommand['uuid'];
-                    }
-                    $contactsForExport[$key]['service_commands'] = $serviceCommandsUuids;
-
-                    $jsonExport['timeperiods'][$contactForExport['host_timeperiod']['uuid']] = $contactForExport['host_timeperiod'];
-                    $contactsForExport[$key]['host_timeperiod'] = $contactForExport['host_timeperiod']['uuid'];
-
-                    $jsonExport['timeperiods'][$contactForExport['service_timeperiod']['uuid']] = $contactForExport['service_timeperiod'];
-                    $contactsForExport[$key]['service_timeperiod'] = $contactForExport['service_timeperiod']['uuid'];
+                foreach ($timeperiod['timeperiod_timeranges'] as $timerange) {
+                    $jsonTimeperiod['timeperiod_timeranges'][] = [
+                        'day'   => $timerange['day'],
+                        'start' => $timerange['start'],
+                        'end'   => $timerange['end']
+                    ];
                 }
-                $jsonExport['contacts'] = Hash::combine(
-                    $contactsForExport, '{n}.uuid', '{n}'
-                );
+                $jsonExport['timeperiods'][] = $jsonTimeperiod;
             }
         }
 
-        if (!empty($requestData['contactgroups']['_ids'])) {
-            /** @var $ContactgroupsTable ContactgroupsTable */
-            $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-            $contactgroupsForExport = $ContactgroupsTable->getContactgroupsByIdsForExport(
-                $requestData['contactgroups']['_ids']
+        // Export commands
+        if (!isset($requestData['commands']['_ids'])) {
+            $requestData['commands']['_ids'] = [];
+        }
+
+        // Merge manually selected command ids (selected by the user) with command ids that are required due to dependencies
+        foreach ($DependencyCollector->getCommands() as $cId => $cUuid) {
+            $requestData['commands']['_ids'][] = $cId;
+        }
+        $requestData['commands']['_ids'] = array_unique($requestData['commands']['_ids']);
+
+        if (!empty($requestData['commands']['_ids'])) {
+            // CommandsTable is loaded at the beginning for event handlers
+            $commandsForExport = $CommandsTable->getCommandsByIdsForExport(
+                $requestData['commands']['_ids']
             );
-            if (!empty($contactgroupsForExport)) {
-                foreach ($contactgroupsForExport as $key => $contactgroupForExport) {
-                    $contactUuids = [];
-                    foreach ($contactgroupForExport['contacts'] as $contactForExport) {
-                        if (!isset($jsonExport['contacts'][$contactForExport['uuid']])) {
 
-                            $hostCommandsUuids = [];
-                            foreach ($contactForExport['host_commands'] as $hostCommand) {
-                                if (!isset($jsonExport['commands'][$hostCommand['uuid']])) {
-                                    $jsonExport['commands'][$hostCommand['uuid']] = $hostCommand;
-                                }
-                                $hostCommandsUuids[] = $hostCommand['uuid'];
-                            }
-                            $contactsForExport[$key]['host_commands'] = $hostCommandsUuids;
+            foreach ($commandsForExport as $command) {
+                $jsonCommand = [
+                    'name'             => $command['name'],
+                    'command_line'     => $command['command_line'],
+                    'command_type'     => $command['command_type'],
+                    'human_args'       => $command['human_args'],
+                    'uuid'             => $command['uuid'],
+                    'description'      => $command['description'],
+                    'commandarguments' => []
+                ];
 
-                            $serviceCommandsUuids = [];
-                            foreach ($contactForExport['service_commands'] as $serviceCommand) {
-                                if (!isset($jsonExport['commands'][$hostCommand['uuid']])) {
-                                    $jsonExport['commands'][$serviceCommand['uuid']] = $serviceCommand;
-                                }
-                                $serviceCommandsUuids[] = $serviceCommand['uuid'];
-                            }
-                            $contactsForExport[$key]['service_commands'] = $serviceCommandsUuids;
-
-                            $jsonExport['timeperiods'][$contactForExport['host_timeperiod']['uuid']] = $contactForExport['host_timeperiod'];
-                            $contactsForExport[$key]['host_timeperiod'] = $contactForExport['host_timeperiod']['uuid'];
-
-                            $jsonExport['timeperiods'][$contactForExport['service_timeperiod']['uuid']] = $contactForExport['service_timeperiod'];
-                            $contactsForExport[$key]['service_timeperiod'] = $contactForExport['service_timeperiod']['uuid'];
-
-                        }
-                        $contactUuids[] = $contactForExport['uuid'];
-                    }
-                    $contactgroupsForExport[$key]['contacts'] = $contactUuids;
+                foreach ($command['commandarguments'] as $commandargument) {
+                    $jsonCommand['commandarguments'][] = [
+                        'name'       => $commandargument['name'], // $ARG1$
+                        'human_name' => $commandargument['human_name']
+                    ];
                 }
-                $jsonExport['contactgroups'] = Hash::combine(
-                    $contactgroupsForExport, '{n}.uuid', '{n}'
-                );
+                $jsonExport['commands'][] = $jsonCommand;
             }
+
         }
 
+
+        // We add this "salt" to the end of the json string that will be hashed to be able to detect if someone had tried
+        // to modify the json file. That's not very secure. Who ever is smart enough to find this in the code
+        // is probably also smart enough to modify the json file by itself without breaking anything
+        $salt = 'No not modify this file manually!';
 
         $this->set('export', $jsonExport);
-        $this->set('checksum', hash('sha256', json_encode($jsonExport)));
+        $this->set('checksum', hash('sha256', json_encode($jsonExport) . $salt));
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['export', 'checksum', 'success']);
 
