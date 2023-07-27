@@ -1582,17 +1582,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "MessagesOTDEditController"
             })
 
-            .state('ConfigurationitemsExport', {
-                url: '/configurationitems/export',
-                templateUrl: "/configurationitems/export.html",
-                controller: "ConfigurationitemsExportController"
-            })
-
-            .state('ConfigurationitemsImport', {
-                url: '/configurationitems/import',
-                templateUrl: "/configurationitems/import.html",
-                controller: "ConfigurationitemsImportController"
-            })
     })
 
     /*
