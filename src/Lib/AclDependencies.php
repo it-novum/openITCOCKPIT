@@ -667,7 +667,8 @@ class AclDependencies {
             ->dependency('MessagesOtd', 'edit', 'MessagesOtd', 'notifyUsersViaMail');
 
         $this
-            ->dependency('Configurationitems', 'export', 'Configurationitems', 'loadElementsForExport');
+            ->dependency('Configurationitems', 'export', 'Configurationitems', 'loadElementsForExport')
+            ->dependency('Configurationitems', 'import', 'Configurationitems', 'deleteUploadedFile');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {

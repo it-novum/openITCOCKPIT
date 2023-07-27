@@ -37,17 +37,22 @@ use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 
 class ConfigurationitemsController extends AppController {
     public function import() {
-        if (!$this->isJsonRequest()) {
+        if (!$this->isApiRequest()) {
+            //Only ship template
             return;
         }
+        $FileUploadSize = new FileUploadSize();
+        $this->set('maxUploadLimit', $FileUploadSize->toArray());
+        $this->viewBuilder()->setOption('serialize', ['maxUploadLimit']);
+
     }
 
     public function export() {
@@ -568,5 +573,38 @@ class ConfigurationitemsController extends AppController {
             'servicetemplates',
             'servicetemplategroups'
         ]);
+    }
+
+    public function deleteUploadedFile() {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var Session $session */
+        $session = $this->getRequest()->getSession();
+        $filename = $this->request->getData('filename');
+
+        $jsonDirectory = APP . '../' . DS . 'webroot' . DS . 'files' . DS . 'json';
+
+        if (file_exists($jsonDirectory . DS . $filename)) {
+            unlink($jsonDirectory . DS . $filename);
+
+            $response = [
+                'success' => true,
+                'message' => __('Temporary uploaded JSON file successfully removed')
+            ];
+            $this->set('response', $response);
+            $this->viewBuilder()->setOption('serialize', ['response']);
+            $session->delete('lastUploadedJSON');
+            return;
+        }
+
+        $this->response->withStatus(500);
+        $response = [
+            'success' => false,
+            'message' => __('Error while deleting uploaded JSON File.')
+        ];
+        $this->set('response', $response);
+        $this->viewBuilder()->setOption('serialize', ['response']);
     }
 }

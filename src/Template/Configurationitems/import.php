@@ -69,8 +69,37 @@
             <div class="panel-container show">
                 <div class="panel-content fuelux">
                     <form ng-submit="submit();" class="form-horizontal">
+                        <div class="row">
+                            <div class="col-lg-12 text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Max allowed file size: '); ?>
+                                {{ maxUploadLimit.string }}
+                            </div>
+                            <div class="col-lg-12">
+                                <div id="jsonDropzone" class="dropzone dropzoneStyle">
+                                    <div class="dz-message">
+                                        <i class="fas fa-cloud-upload-alt fa-5x text-muted mb-3"></i> <br>
+                                        <span class="text-uppercase">
+                                        <?= __('Drop JSON file here or click to upload.'); ?>
+                                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Import JSON File -->
+<div id="importJsonFile" class="modal" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    TITLE !!!
+                </h5>
             </div>
         </div>
     </div>
