@@ -40,6 +40,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 
@@ -49,9 +50,24 @@ class ConfigurationitemsController extends AppController {
             //Only ship template
             return;
         }
+
         $FileUploadSize = new FileUploadSize();
         $this->set('maxUploadLimit', $FileUploadSize->toArray());
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+            FileDebugger::dump($this->request->getData());
+            $filename = $this->request->getData('filename', null);
+            FileDebugger::dump($filename);
+            $session = $this->getRequest()->getSession();
+            $fileDetails = $session->read('lastUploadedJson', null);
+            if (!empty($fileDetails)) {
+                $validRecordsFromFile =
+                    $fileDetails['full_path'];
+            }
+        }
+
         $this->viewBuilder()->setOption('serialize', ['maxUploadLimit']);
+
 
     }
 
@@ -595,7 +611,7 @@ class ConfigurationitemsController extends AppController {
             ];
             $this->set('response', $response);
             $this->viewBuilder()->setOption('serialize', ['response']);
-            $session->delete('lastUploadedJSON');
+            $session->delete('lastUploadedJson');
             return;
         }
 

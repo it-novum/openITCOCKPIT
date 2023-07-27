@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ConfigurationitemsImportController', function($scope, $http, NotyService){
+    .controller('ConfigurationitemsImportController', function($rootScope, $scope, $http, NotyService){
 
         $scope.init = true;
         $scope.hasError = null;
@@ -9,8 +9,7 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function(){
             console.log('test 123');
-            $http.get("/configurationitems/import.json", {
-            }).then(function(result){
+            $http.get("/configurationitems/import.json", {}).then(function(result){
                 $scope.maxUploadLimit = result.data.maxUploadLimit;
                 $scope.init = false;
                 createDropzone();
@@ -38,7 +37,6 @@ angular.module('openITCOCKPIT')
                 file.previewElement.parentNode.removeChild(file.previewElement);
                 $scope.uploadedFile = null;
                 $scope.uploadedFilenameOrigin = null;
-                $scope.previewData = [];
 
             }, function errorCallback(result){
                 var text = '';
@@ -63,7 +61,7 @@ angular.module('openITCOCKPIT')
             if(!$scope.uploadedFile){
                 return;
             }
-            $http.post("/import_module/imported_hosts/deleteUploadedFile.json?angular=true",
+            $http.post("/import_module/deleteUploadedFile.json?angular=true",
                 {
                     'filename': $scope.uploadedFile
                 }
@@ -77,7 +75,6 @@ angular.module('openITCOCKPIT')
                 }).show();
                 $scope.uploadedFile = null;
                 $scope.uploadedFilenameOrigin = null;
-                $scope.previewData = [];
             }, function errorCallback(result){
                 var text = '';
                 if(result.data && result.data.hasOwnProperty('message')){
@@ -115,6 +112,9 @@ angular.module('openITCOCKPIT')
                 return;
             }
             $scope.jsonDropzone = new Dropzone('#jsonDropzone', {
+                headers: {
+                    'X-CSRF-TOKEN': $rootScope._csrfToken
+                },
                 method: 'post',
                 maxFilesize: $scope.maxUploadLimit.value, //MB
                 acceptedFiles: '.json', //mimetypes
@@ -134,14 +134,9 @@ angular.module('openITCOCKPIT')
                     if(xhrResponse.response.success){
                         $previewElement.removeClass('dz-processing');
                         $previewElement.addClass('dz-success');
-                        $scope.previewData = xhrResponse.response.previewData;
-                        $scope.numberOfHeaders = Object.keys($scope.previewData.headers).length;
-                        $scope.importProcessRun = false;
+
                         $scope.errors = null;
 
-                        if($scope.previewData.hasOwnProperty('errors')){
-                            $scope.errors = $scope.previewData.errors;
-                        }
                         $scope.$apply();
                         new Noty({
                             theme: 'metroui',
@@ -199,7 +194,6 @@ angular.module('openITCOCKPIT')
             });
             $scope.dropzoneCreated = true;
         };
-
 
 
         $scope.submit = function(){
