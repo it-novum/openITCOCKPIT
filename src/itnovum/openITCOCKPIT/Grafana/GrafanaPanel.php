@@ -242,6 +242,10 @@ class GrafanaPanel {
             $this->panel['fieldConfig']['overrides'] = $this->ColorOverrides->getOverrides();
         }
 
+        if (sizeof($this->panel['targets']) >= 3 || $this->getMetricCount() >= 3) {
+            $this->panel['fieldConfig']['defaults']['custom']['fillOpacity'] = 10;
+        }
+
         $this->panel['fieldConfig']['defaults']['unit'] = $this->defaultUnit;
 
         return $this->panel;
