@@ -10,7 +10,8 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property string $name
- * @property string $description
+ * @property string|null $description
+ * @property string|null $colour
  * @property int $container_id
  * @property int $user_id
  * @property \Cake\I18n\FrozenTime $created
@@ -20,7 +21,8 @@ use Cake\ORM\Entity;
  * @property \ChangecalendarModule\Model\Entity\User $user
  * @property \ChangecalendarModule\Model\Entity\ChangecalendarEvent[] $changecalendar_events
  */
-class Changecalendar extends Entity {
+class Changecalendar extends Entity
+{
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -31,14 +33,15 @@ class Changecalendar extends Entity {
      * @var array<string, bool>
      */
     protected $_accessible = [
-        'name'                  => true,
-        'description'           => true,
-        'container_id'          => true,
-        'user_id'               => true,
-        'created'               => true,
-        'modified'              => true,
-        'container'             => true,
-        'user'                  => true,
+        'name' => true,
+        'description' => true,
+        'colour' => true,
+        'container_id' => true,
+        'user_id' => true,
+        'created' => true,
+        'modified' => true,
+        'container' => true,
+        'user' => true,
         'changecalendar_events' => true,
     ];
 }

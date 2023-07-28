@@ -56,7 +56,12 @@ class Initial extends AbstractMigration {
                 ->addColumn('description', 'string', [
                     'default' => null,
                     'limit'   => 255,
-                    'null'    => false,
+                    'null'    => true,
+                ])
+                ->addColumn('colour', 'string', [
+                    'default' => null,
+                    'limit'   => '7',
+                    'null'    => true,
                 ])
                 ->addColumn('container_id', 'integer', [
                     'default' => null,
@@ -90,12 +95,17 @@ class Initial extends AbstractMigration {
                     'null'          => false,
                 ])
                 ->addPrimaryKey(['id'])
-                ->addColumn('name', 'string', [
+                ->addColumn('title', 'string', [
                     'default' => null,
                     'limit'   => 255,
                     'null'    => false,
                 ])
-                ->addColumn('begin', 'datetime', [
+                ->addColumn('description', 'string', [
+                    'default' => null,
+                    'limit'   => 255,
+                    'null'    => true,
+                ])
+                ->addColumn('start', 'datetime', [
                     'default' => null,
                     'null'    => false
                 ])

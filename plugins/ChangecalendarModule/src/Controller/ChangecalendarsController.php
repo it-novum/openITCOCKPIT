@@ -46,12 +46,6 @@ class ChangecalendarsController extends AppController {
         $changecalendars = $ChangecalendarsTable->getChangecalendarsIndex($CalendarFilter, $PaginateOMat, $MY_RIGHTS);
         $all_changecalendars = [];
         foreach ($changecalendars as $calendar) {
-            /*
-            $calendar['allowEdit'] = $this->hasPermission('edit', 'changecalendars');
-            if ($this->hasRootPrivileges === false && $calendar['allowEdit'] === true) {
-                $calendar['allowEdit'] = $this->allowedByContainerId($calendar['container_id']);
-            }
-            */
             $calendar['allowEdit'] = true;
             $all_changecalendars[] = $calendar;
         }
@@ -88,20 +82,6 @@ class ChangecalendarsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData('Changecalendar');
             $events = $this->request->getData('events');
-
-            /*
-                        foreach ($events as $event) {
-                            if (!isset($event['title']) || !isset($event['default_holiday']) || !isset($event['start'])) {
-                                continue;
-                            }
-
-                            $data['calendar_holidays'][] = [
-                                'name'            => $event['title'],
-                                'default_holiday' => (int)$event['default_holiday'],
-                                'date'            => $event['start']
-                            ];
-                        }
-            */
 
 
             /** @var ChangecalendarsTable $ChangecalendarsTable */
@@ -155,13 +135,6 @@ class ChangecalendarsController extends AppController {
         if ($this->request->is('get')) {
             $events = $changeCalendar['changecalendar_events'];
             //Fix name for json/js
-            foreach ($events as $index => $event) {
-                $events[$index]['title'] = $event['name'];
-                $events[$index]['start'] = $event['begin'];
-                $events[$index]['end'] = $event['end'];
-                $events[$index]['description'] = $event['description'];
-                $events[$index]['context'] = $event['context'];
-            }
 
             unset($changeCalendar['changecalendar_events']);
 
@@ -174,7 +147,6 @@ class ChangecalendarsController extends AppController {
         if ($this->request->is('post')) {
             $data = $this->request->getData('changeCalendar');
             $events = $this->request->getData('events');
-            $data['calendar_holidays'] = [];
 
             foreach ($events as $event) {
                 if (!isset($event['title']) || !isset($event['start']) || !isset($event['end'])) {
@@ -182,23 +154,15 @@ class ChangecalendarsController extends AppController {
                 }
 
                 $tmpEvent = [
-                    'name'  => $event['title'],
-                    'begin' => (new DateTime((string)($event['start'])))->format('Y-m-d H:i:s'),
-                    'end'   => (new DateTime((string)($event['end'])))->format('Y-m-d H:i:s'),
-                    'description' => $event['description'] ?? ''
+                    'title'        => $event['title'],
+                    'start'       => (new DateTime((string)($event['start'])))->format('Y-m-d H:i:s'),
+                    'end'         => (new DateTime((string)($event['end'])))->format('Y-m-d H:i:s'),
+                    'description' => $event['description'] ?? '',
+                    'id'          => $event['id'] ?? null
                 ];
-
-                if (isset($event['id'])) {
-                    $tmpEvent['id'] = $event['id'];
-                }
 
                 $data['changecalendar_events'][] = $tmpEvent;
             }
-
-
-            $changeCalendar = $ChangecalendarsTable->get($id, [
-                'contain' => 'ChangecalendarEvents'
-            ]);
 
             $Entity = $ChangecalendarsTable->find()
                 ->where([
@@ -207,7 +171,6 @@ class ChangecalendarsController extends AppController {
                 ->contain(['ChangecalendarEvents'])
                 ->firstOrFail();
 
-            $Entity['changecalendar_events'] = $data['changecalendar_events'];
             $Entity = $ChangecalendarsTable->patchEntity($Entity, $data);
             $ChangecalendarsTable->save($Entity);
             if ($Entity->hasErrors()) {
@@ -285,10 +248,7 @@ class ChangecalendarsController extends AppController {
 
             //Check host permissions
             $jsonData = (array)json_decode($widget['Widget']['json_data'], true);
-            $changeCalendarId = $jsonData['changecalendar_id'];
-            if ($changeCalendarId > 0) {
-                $this->set('changecalendar_id', $changeCalendarId);
-            }
+            $changeCalendarIds = $jsonData['changecalendar_ids'];
 
             if (!$this->isApiRequest()) {
                 //Only ship HTML template for angular
@@ -298,29 +258,28 @@ class ChangecalendarsController extends AppController {
             /** @var ChangecalendarsTable $ChangecalendarsTable */
             $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
-            if (!$ChangecalendarsTable->existsById($changeCalendarId)) {
-                throw new NotFoundException(__('Invalid changeCalendar'));
+            $changeCalendars= [];
+
+            foreach ($changeCalendarIds as $changeCalendarId) {
+
+                if (!$ChangecalendarsTable->existsById($changeCalendarId)) {
+                    continue;
+                }
+                $changeCalendars[$changeCalendarId] = $ChangecalendarsTable->getCalendarByIdForEdit($changeCalendarId);
+
+                foreach($changeCalendars[$changeCalendarId]['changecalendar_events'] as $index => $event) {
+                    $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['backgroundColor']= $changeCalendars[$changeCalendarId]['colour'];
+                }
+
+                if (!$this->allowedByContainerId($changeCalendars[$changeCalendarId]['container_id'])) {
+                    $this->render403();
+                    return;
+                }
             }
 
-            $changeCalendar = $ChangecalendarsTable->getCalendarByIdForEdit($changeCalendarId);
-
-            if (!$this->allowedByContainerId($changeCalendar['container_id'])) {
-                $this->render403();
-                return;
-            }
-            $events = $changeCalendar['changecalendar_events'];
-            //Fix name for json/js
-            foreach ($events as $index => $event) {
-                $events[$index]['title'] = $event['name'];
-                $events[$index]['start'] = $event['begin'];
-                $events[$index]['end'] = $event['end'];
-            }
-
-            unset($changeCalendar['changecalendar_events']);
-
-            $this->set('changeCalendar', $changeCalendar);
-            $this->set('events', $events);
-            $this->viewBuilder()->setOption('serialize', ['changeCalendar', 'events', 'changecalendar_id']);
+            $this->set('changeCalendars', $changeCalendars);
+            $this->set('displayType', (string)($jsonData['displayType'] ?? 'month'));
+            $this->viewBuilder()->setOption('serialize', ['changeCalendars', 'displayType', 'events', 'changecalendar_id']);
             return;
         }
 
@@ -339,7 +298,8 @@ class ChangecalendarsController extends AppController {
             }
 
             $json = [
-                'changecalendar_id' => (int)$this->request->getData('changecalendar_id', 0)
+                'changecalendar_ids' => (array)$this->request->getData('changecalendar_ids', [0]),
+                'displayType' => (string)$this->request->getData('displayType', 'month')
             ];
 
             $widget = $WidgetsTable->get($widgetId);

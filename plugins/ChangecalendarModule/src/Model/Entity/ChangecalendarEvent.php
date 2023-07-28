@@ -9,16 +9,16 @@ use Cake\ORM\Entity;
  * ChangecalendarEvent Entity
  *
  * @property int $id
- * @property string $name
- * @property \Cake\I18n\FrozenTime $begin
+ * @property string $title
+ * @property string|null $description
+ * @property \Cake\I18n\FrozenTime $start
  * @property \Cake\I18n\FrozenTime $end
+ * @property string|null $uid
+ * @property array|null $context
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property int $changecalendar_id
  * @property int $user_id
- * @property string|null $uid
- * @property array|null $context
- * @property string|null $description
  *
  * @property \ChangecalendarModule\Model\Entity\Changecalendar $changecalendar
  * @property \ChangecalendarModule\Model\Entity\User $user
@@ -35,16 +35,16 @@ class ChangecalendarEvent extends Entity
      * @var array<string, bool>
      */
     protected $_accessible = [
-        'name' => true,
-        'begin' => true,
+        'title' => true,
+        'description' => true,
+        'start' => true,
         'end' => true,
+        'uid' => true,
+        'context' => true,
         'created' => true,
         'modified' => true,
         'changecalendar_id' => true,
         'user_id' => true,
-        'uid' => true,
-        'context' => true,
-        'description' => true,
         'changecalendar' => true,
         'user' => true,
     ];

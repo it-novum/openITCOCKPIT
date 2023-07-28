@@ -21,9 +21,7 @@ angular.module('openITCOCKPIT')
             $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
                 header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                    left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
                 },
                 firstDay: 1, // monday as first day of the week
                 titleFormat: { // will produce something like "Tuesday, September 18, 2018"
@@ -36,15 +34,10 @@ angular.module('openITCOCKPIT')
                     hour12: false
                 },
                 slotLabelFormat: {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    omitZeroMinute: false,
-                    hour12: false
+                    hour: '2-digit', minute: '2-digit', omitZeroMinute: false, hour12: false
                 },
                 eventTimeFormat: {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
+                    hour: '2-digit', minute: '2-digit', hour12: false
                 },
                 displayEventEnd: true,
                 allDaySlot: true,
@@ -72,19 +65,16 @@ angular.module('openITCOCKPIT')
                         var $addButton = $('<button>')
                             .html('<i class="fa fa-plus"></i>')
                             .attr({
-                                title: 'add',
-                                type: 'button',
-                                class: 'btn btn-xs btn-success calendar-button'
+                                title: 'add', type: 'button', class: 'btn btn-xs btn-success calendar-button'
                             })
                             .click(function(){
-                                    $('#addEventModal').modal('show');
-                                    $scope.modifyEvent = {
-                                        title: '',
-                                        start: new Date(currentDate + "T00:00:00"),
-                                        end: new Date(currentDate + "T23:59:59")
-                                    };
-                                }
-                            );
+                                $('#addEventModal').modal('show');
+                                $scope.modifyEvent = {
+                                    title: '',
+                                    start: new Date(currentDate + "T00:00:00"),
+                                    end: new Date(currentDate + "T23:59:59")
+                                };
+                            });
 
                         $parentTd.css('text-align', 'right').append($addButton);
                     });
@@ -122,43 +112,25 @@ angular.module('openITCOCKPIT')
                 .wrap("<span class='dropdown'></span>")
                 .addClass('btn btn-secondary dropdown-toggle')
                 .attr({
-                    'data-toggle': 'dropdown',
-                    'type': 'button',
-                    'aria-expanded': false,
-                    'aria-haspopup': true
+                    'data-toggle': 'dropdown', 'type': 'button', 'aria-expanded': false, 'aria-haspopup': true
                 })
                 .append($('<span/>', {'class': 'flag-icon flag-icon-' + $scope.countryCode}))
                 .append('<span class="caret caret-with-margin-left-5"></span>');
             $('.fc-holidays-button')
-                .parent().append(
-                $('<ul/>', {
-                        'id': 'countryList',
-                        'class': 'dropdown-menu',
-                        'role': 'button'
-                    }
-                )
-            );
+                .parent().append($('<ul/>', {
+                'id': 'countryList', 'class': 'dropdown-menu', 'role': 'button'
+            }));
 
             for(var key in $scope.countries){
-                $('#countryList').append($compile(
-                        $('<li/>', {
-                            'ng-click': 'setSelected("' + key + '")'
-                        }).append(
-                            $('<a/>', {
-                                // 'class': 'dropdown-item'
-                            }).append(
-                                $('<span/>', {
-                                    'class': 'flag-icon flag-icon-' + key
-                                })
-                            ).append(
-                                $('<span/>', {
-                                    'class': 'padding-left-5',
-                                    'text': $scope.countries[key]
-                                })
-                            )
-                        )
-                    )($scope)
-                );
+                $('#countryList').append($compile($('<li/>', {
+                    'ng-click': 'setSelected("' + key + '")'
+                }).append($('<a/>', {
+                    // 'class': 'dropdown-item'
+                }).append($('<span/>', {
+                    'class': 'flag-icon flag-icon-' + key
+                })).append($('<span/>', {
+                    'class': 'padding-left-5', 'text': $scope.countries[key]
+                }))))($scope));
             }
         };
 
@@ -169,13 +141,11 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
 
 
-            $q.all([
-                $http.get("/containers/loadContainersForAngular.json", {
-                    params: {
-                        'angular': true
-                    }
-                }),
-            ]).then(function(results){
+            $q.all([$http.get("/containers/loadContainersForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }),]).then(function(results){
                 $scope.containers = results[0].data.containers;
                 $scope.init = false;
             });
@@ -202,17 +172,8 @@ angular.module('openITCOCKPIT')
             return null;
         };
 
-        $scope.hasEvents = function(date){
-            for(var index in $scope.events){
-                if($scope.events[index].start === date){
-                    return true;
-                }
-            }
-            return false;
-        };
-
         $scope.getEventById = function(id){
-            for(var index in $scope.events) {
+            for(var index in $scope.events){
                 let event = $scope.events[index];
                 if(event.id == id){
                     return event;
@@ -229,8 +190,7 @@ angular.module('openITCOCKPIT')
             }
 
             // Otherwise traverse for an update
-            let eventCount = $scope.events.length,
-                eventIndex = 0;
+            let eventCount = $scope.events.length, eventIndex = 0;
 
             for(eventIndex = 0; eventIndex <= eventCount; eventIndex++){
                 let myEvent = $scope.events[eventIndex];
@@ -264,12 +224,7 @@ angular.module('openITCOCKPIT')
             //Reset modal and newEvent object
             $('#addEventModal').modal('hide');
             $scope.modifyEvent = {
-                title: '',
-                start: '',
-                end: '',
-                description: '',
-                id: '',
-                context: []
+                title: '', start: '', end: '', description: '', id: '', context: []
             };
         };
 
@@ -365,14 +320,10 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             $scope.post.events = $scope.events;
-            $http.post("/changecalendar_module/changecalendars/edit/" + $scope.id + ".json?angular=true",
-                $scope.post
-            ).then(function(result){
+            $http.post("/changecalendar_module/changecalendars/edit/" + $scope.id + ".json?angular=true", $scope.post).then(function(result){
                 var url = $state.href('ChangecalendarsEdit', {id: result.data.changeCalendar.id});
                 NotyService.genericSuccess({
-                    message: '<u><a href="' + url + '" class="txt-color-white"> '
-                        + $scope.successMessage.objectName
-                        + '</a></u> ' + $scope.successMessage.message
+                    message: '<u><a href="' + url + '" class="txt-color-white"> ' + $scope.successMessage.objectName + '</a></u> ' + $scope.successMessage.message
                 });
 
                 RedirectService.redirectWithFallback('ChangecalendarsIndex');

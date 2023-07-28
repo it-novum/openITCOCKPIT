@@ -40,12 +40,28 @@
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="changeCalendars"
+                                    multiple="multiple"
                                     ng-options="changeCalendar.id as changeCalendar.name for changeCalendar in changeCalendars"
-                                    ng-model="currentChangeCalendar.id">
+                                    ng-model="changeCalendarIds">
                             </select>
                         </div>
                     </div>
-                    <br/>
+                    <div class="row">
+                        <label class="col-lg-12 control-label">
+                            <?php echo __('Display Type'); ?>
+                        </label>
+                        <div class="col-lg-12">
+                            <select data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="displayType"
+                                    ng-model="displayType">
+                                <option value="dayGridMonth"><?php echo __('Month'); ?></option>
+                                <option value="dayGridWeek"><?php echo __('Week'); ?></option>
+                                <option value="timeGridDay"><?php echo __('Day'); ?></option>
+                                <option value="listWeek"><?php echo __('List'); ?></option>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-lg-12">

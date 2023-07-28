@@ -69,28 +69,25 @@ class ChangecalendarEventsTable extends Table
     public function validationDefault(Validator $validator): Validator
     {
         $validator
-            ->scalar('name')
-            ->maxLength('name', 255)
-            ->requirePresence('name', 'create')
-            ->notEmptyString('name');
+            ->scalar('title')
+            ->maxLength('title', 255)
+            ->requirePresence('title', 'create')
+            ->notEmptyString('title');
 
         $validator
-            ->dateTime('begin')
-            ->requirePresence('begin', 'create')
-            ->notEmptyDateTime('begin');
+            ->scalar('description')
+            ->maxLength('description', 255)
+            ->allowEmptyString('description');
+
+        $validator
+            ->dateTime('start')
+            ->requirePresence('start', 'create')
+            ->notEmptyDateTime('start');
 
         $validator
             ->dateTime('end')
             ->requirePresence('end', 'create')
             ->notEmptyDateTime('end');
-
-        $validator
-            ->integer('changecalendar_id')
-            ->notEmptyString('changecalendar_id');
-
-        $validator
-            ->integer('user_id')
-            ->notEmptyString('user_id');
 
         $validator
             ->scalar('uid')
@@ -101,8 +98,12 @@ class ChangecalendarEventsTable extends Table
             ->allowEmptyString('context');
 
         $validator
-            ->scalar('description')
-            ->allowEmptyString('description');
+            ->integer('changecalendar_id')
+            ->notEmptyString('changecalendar_id');
+
+        $validator
+            ->integer('user_id')
+            ->notEmptyString('user_id');
 
         return $validator;
     }

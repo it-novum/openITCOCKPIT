@@ -108,6 +108,20 @@
                             </div>
                         </div>
 
+                        <div class="form-group" ng-class="{'has-error': errors.colour}">
+                            <label class="control-label">
+                                <?php echo __('Colour'); ?>
+                            </label>
+
+                            <colorpicker-directive class="col-6" highlightclass="mapping.pageHeader.class"
+                                                   highlighttype="mapping.pageHeader.highlight" post="post"
+                                                   key="'pageHeader'"
+                                                   ng-model="post.changeCalendar.colour"></colorpicker-directive>
+                            <div ng-repeat="error in errors.colour">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
                         <div class="row padding-top-20">
                             <div class="col-lg-12">
                                 <div id="changecalendar">

@@ -5,9 +5,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
         },
 
         controller: function($scope){
-            $scope.currentChangeCalendar = {
-                id : null
-            };
+            $scope.currentChangeCalendars =[];
             $scope.changeCalendars = [];
             var $widget = $('#widget-' + $scope.widget.id);
             $scope.frontWidgetHeight = parseInt(($widget.height()), 10); //-50px header
@@ -15,6 +13,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
             $scope.fontSize = parseInt($scope.frontWidgetHeight / 3.8, 10);
 
             $scope.calendarTimeout = null;
+            $scope.displayType = 'dayGridMonth';
 
             $scope.load = function(){
                 $http.get("/changecalendar_module/changecalendars/widget.json", {
@@ -23,11 +22,26 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     }
                 }).then(function(result){
                     $scope.init = false;
-                    $scope.currentChangeCalendar = result.data.changeCalendar;
-                    $scope.events = result.data.events;
+                    $scope.currentChangeCalendars = result.data.changeCalendars;
+                    $scope.displayType = result.data.displayType;
+                    $scope.changeCalendarIds = [];
+
+                    let evenz = [];
+                    for(var index in $scope.currentChangeCalendars) {
+                        let myChangeCalendar = $scope.currentChangeCalendars[index];
+
+                        $scope.changeCalendarIds.push($scope.currentChangeCalendars[index].id);
+
+                        for(var eventIndex in myChangeCalendar.changecalendar_events) {
+                            let myEvent = myChangeCalendar.changecalendar_events[eventIndex];
+                            evenz.push(myEvent);
+                        }
+                    }
+
+                    $scope.events = evenz;
 
 
-                    if($scope.currentChangeCalendar.id !== null){
+                    if($scope.currentChangeCalendars !== null){
                         $scope.renderCalendar();
                     }
 
@@ -41,6 +55,12 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                 var calendarEl = document.getElementById('changecalendar-'+$scope.widget.id);
                 $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                     plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                    },
+                    defaultView: $scope.displayType,
                     firstDay: 1, // monday as first day of the week
                     displayEventEnd: true,
                     allDaySlot: true,
@@ -123,7 +143,8 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     Widget: {
                         id: $scope.widget.id
                     },
-                    changecalendar_id: $scope.currentChangeCalendar.id
+                    changecalendar_ids: $scope.changeCalendarIds,
+                    displayType : $scope.displayType
                 }).then(function(result){
                     //Update status
                     $scope.hideConfig();

@@ -88,8 +88,12 @@ class ChangecalendarsTable extends Table {
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
-            ->requirePresence('description', 'create')
-            ->notEmptyString('description');
+            ->allowEmptyString('description');
+
+        $validator
+            ->scalar('colour')
+            ->maxLength('colour', 7)
+            ->allowEmptyString('colour');
 
         $validator
             ->integer('container_id')

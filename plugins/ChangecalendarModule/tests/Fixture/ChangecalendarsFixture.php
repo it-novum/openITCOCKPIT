@@ -22,10 +22,11 @@ class ChangecalendarsFixture extends TestFixture
                 'id' => 1,
                 'name' => 'Lorem ipsum dolor sit amet',
                 'description' => 'Lorem ipsum dolor sit amet',
+                'colour' => 'Lorem',
                 'container_id' => 1,
                 'user_id' => 1,
-                'created' => '2023-07-04 14:09:52',
-                'modified' => '2023-07-04 14:09:52',
+                'created' => '2023-07-26 06:41:01',
+                'modified' => '2023-07-26 06:41:01',
             ],
         ];
         parent::init();

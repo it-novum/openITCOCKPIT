@@ -75,7 +75,6 @@ class ImportCommand extends Command {
                 $io->warning($exception->getMessage());
                 continue;
             } catch (\Exception $e) {
-                var_dump($e);
                 $io->error($e->getMessage());
                 break;
             }
@@ -111,7 +110,7 @@ class ImportCommand extends Command {
             throw new \InvalidArgumentException('// changecalendar name is empty');
         }
         if (empty($row[2])) {
-            throw new \InvalidArgumentException('// begin is empty');
+            throw new \InvalidArgumentException('// start is empty');
         }
         if (empty($row[3])) {
             throw new \InvalidArgumentException('// end is empty');
@@ -141,9 +140,9 @@ class ImportCommand extends Command {
         return [
             'uid'                 => $row[0],
             'changecalendar_name' => $row[1],
-            'begin'               => new \DateTime($row[2]),
+            'start'               => new \DateTime($row[2]),
             'end'                 => new \DateTime($row[3]),
-            'name'                => $row[4],
+            'title'               => $row[4],
             'description'         => str_replace('\\n', chr(10), $row[5]),
             'context'             => $context
         ];

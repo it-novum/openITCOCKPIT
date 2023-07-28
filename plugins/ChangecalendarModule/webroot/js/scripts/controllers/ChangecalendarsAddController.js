@@ -383,11 +383,11 @@ angular.module('openITCOCKPIT')
                 });
 
                 if($scope.data.createAnother === false){
-                    RedirectService.redirectWithFallback('CalendarsIndex');
+                    //RedirectService.redirectWithFallback('ChangecalendarsIndex');
                 }else{
-                    clearForm();
-                    $scope.errors = {};
-                    NotyService.scrollTop();
+                    //clearForm();
+                    //$scope.errors = {};
+                    //NotyService.scrollTop();
                 }
             }, function errorCallback(result){
 
