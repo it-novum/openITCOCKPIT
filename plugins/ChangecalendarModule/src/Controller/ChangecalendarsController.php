@@ -266,15 +266,14 @@ class ChangecalendarsController extends AppController {
                     continue;
                 }
                 $changeCalendars[$changeCalendarId] = $ChangecalendarsTable->getCalendarByIdForEdit($changeCalendarId);
+                if (!$this->allowedByContainerId($changeCalendars[$changeCalendarId]['container_id'])) {
+                    continue;
+                }
 
                 foreach($changeCalendars[$changeCalendarId]['changecalendar_events'] as $index => $event) {
                     $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['backgroundColor']= $changeCalendars[$changeCalendarId]['colour'];
                 }
 
-                if (!$this->allowedByContainerId($changeCalendars[$changeCalendarId]['container_id'])) {
-                    $this->render403();
-                    return;
-                }
             }
 
             $this->set('changeCalendars', $changeCalendars);
