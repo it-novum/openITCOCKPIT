@@ -4,18 +4,14 @@ declare(strict_types=1);
 namespace ChangecalendarModule\Controller;
 
 use App\itnovum\openITCOCKPIT\Filter\ChangecalendarsFilter;
-use App\Model\Table\CalendarsTable;
 use App\Model\Table\HostsTable;
-use App\Model\Table\TimeperiodsTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use ChangecalendarModule\Controller\AppController;
 use ChangecalendarModule\Model\Table\ChangecalendarsTable;
 use DateTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\CalendarFilter;
 
 /**
  * Changecalendars Controller
@@ -154,7 +150,7 @@ class ChangecalendarsController extends AppController {
                 }
 
                 $tmpEvent = [
-                    'title'        => $event['title'],
+                    'title'       => $event['title'],
                     'start'       => (new DateTime((string)($event['start'])))->format('Y-m-d H:i:s'),
                     'end'         => (new DateTime((string)($event['end'])))->format('Y-m-d H:i:s'),
                     'description' => $event['description'] ?? '',
@@ -258,20 +254,20 @@ class ChangecalendarsController extends AppController {
             /** @var ChangecalendarsTable $ChangecalendarsTable */
             $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
-            $changeCalendars= [];
+            $changeCalendars = [];
 
             foreach ($changeCalendarIds as $changeCalendarId) {
 
                 if (!$ChangecalendarsTable->existsById($changeCalendarId)) {
                     continue;
                 }
-                $changeCalendars[$changeCalendarId] = $ChangecalendarsTable->getCalendarByIdForEdit($changeCalendarId);
-                if (!$this->allowedByContainerId($changeCalendars[$changeCalendarId]['container_id'])) {
+                $editCalendar = $ChangecalendarsTable->getCalendarByIdForEdit($changeCalendarId);
+                if (!$this->allowedByContainerId($editCalendar['container_id'])) {
                     continue;
                 }
-
-                foreach($changeCalendars[$changeCalendarId]['changecalendar_events'] as $index => $event) {
-                    $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['backgroundColor']= $changeCalendars[$changeCalendarId]['colour'];
+                $changeCalendars[$changeCalendarId] = $editCalendar;
+                foreach ($changeCalendars[$changeCalendarId]['changecalendar_events'] as $index => $event) {
+                    $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['backgroundColor'] = $changeCalendars[$changeCalendarId]['colour'];
                 }
 
             }
@@ -298,7 +294,7 @@ class ChangecalendarsController extends AppController {
 
             $json = [
                 'changecalendar_ids' => (array)$this->request->getData('changecalendar_ids', [0]),
-                'displayType' => (string)$this->request->getData('displayType', 'month')
+                'displayType'        => (string)$this->request->getData('displayType', 'month')
             ];
 
             $widget = $WidgetsTable->get($widgetId);
