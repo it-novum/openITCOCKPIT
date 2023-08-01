@@ -10,4 +10,21 @@ namespace ChangecalendarModule\Lib;
 use App\Lib\PluginAclDependencies;
 
 class AclDependencies extends PluginAclDependencies {
+    public function __construct() {
+        parent::__construct();
+
+        $this
+            ->allow('ChangecalendarsController', 'index')
+            ->allow('ChangecalendarsController', 'view')
+            ->allow('ChangecalendarsController', 'add')
+            ->allow('ChangecalendarsController', 'edit');
+
+
+        ///////////////////////////////
+        //    Add dependencies       //
+        //////////////////////////////
+        $this
+            ->dependency('ChangecalendarsController', 'delete', 'ChangecalendarsController', 'edit')
+            ->dependency('ChangecalendarsController', 'widget', 'ChangecalendarsController', 'index');
+    }
 }
