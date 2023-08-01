@@ -132,7 +132,7 @@ class ChangecalendarsTable extends Table {
 
         $where = $CalendarFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {
-            $where['Calendars.container_id IN'] = $MY_RIGHTS;
+            $where['Changecalendars.container_id IN'] = $MY_RIGHTS;
         }
         $query->where($where);
 
