@@ -247,7 +247,7 @@ class ChangecalendarsController extends AppController {
             $widget = $WidgetsTable->getWidgetByIdAsCake2($widgetId);
 
             //Check host permissions
-            $jsonData = (array)json_decode($widget['Widget']['json_data'], true);
+            $jsonData = (array)json_decode((string)($widget['Widget']['json_data'] ?? '[]'), true);
             $changeCalendarIds = $jsonData['changecalendar_ids'];
 
             if (!$this->isApiRequest()) {
