@@ -9,7 +9,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.defaultDate = new Date();
-        $scope.countryCode = 'de';
 
         var clearForm = function(){
             $scope.post = {
@@ -41,7 +40,6 @@ angular.module('openITCOCKPIT')
          * @type {*[]}
          */
         $scope.events = [];
-        $scope.countries = [];
 
         $scope.init = true;
 
@@ -51,24 +49,6 @@ angular.module('openITCOCKPIT')
             $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
                 customButtons: {
-                    holidays: {
-                        text: $scope.message.addHoliday,
-                        click: function(event){
-                            event.stopPropagation();
-                        }
-                    },
-                    deleteallholidays: {
-                        text: $scope.message.deleteAllHolidays,
-                        click: function(){
-                            var index = $scope.events.length;
-                            while(index--){
-                                if($scope.events[index].default_holiday === true){
-                                    $scope.events.splice(index, 1);
-                                }
-                            }
-                            $scope.$apply();
-                        }
-                    },
                     deletemonthevents: {
                         text: $scope.message.deleteMonthEvents,
                         click: function(){
@@ -92,7 +72,7 @@ angular.module('openITCOCKPIT')
                     }
                 },
                 header: {
-                    left: 'holidays deleteallholidays deletemonthevents deleteallevents',
+                    left: '',
                     center: 'title',
                     right: 'prev,next today',
                 },
@@ -195,82 +175,7 @@ angular.module('openITCOCKPIT')
             });
 
             $scope.calendar.render();
-            $(".fc-holidays-button")
-                .wrap("<span class='dropdown'></span>")
-                .addClass('btn btn-secondary dropdown-toggle')
-                .attr({
-                    'data-toggle': 'dropdown',
-                    'type': 'button',
-                    'aria-expanded': false,
-                    'aria-haspopup': true
-                })
-                .append($('<span/>', {'class': 'flag-icon flag-icon-' + $scope.countryCode}))
-                .append('<span class="caret caret-with-margin-left-5"></span>');
-            $('.fc-holidays-button')
-                .parent().append(
-                $('<ul/>', {
-                        'id': 'countryList',
-                        'class': 'dropdown-menu',
-                        'role': 'button'
-                    }
-                )
-            );
 
-            for(var key in $scope.countries){
-                $('#countryList').append($compile(
-                        $('<li/>', {
-                            'ng-click': 'setSelected("' + key + '")'
-                        }).append(
-                            $('<a/>', {
-                                // 'class': 'dropdown-item'
-                            }).append(
-                                $('<span/>', {
-                                    'class': 'flag-icon flag-icon-' + key
-                                })
-                            ).append(
-                                $('<span/>', {
-                                    'class': 'padding-left-5',
-                                    'text': $scope.countries[key]
-                                })
-                            )
-                        )
-                    )($scope)
-                );
-            }
-        };
-
-        $scope.setSelected = function(countryCode){
-            $scope.countryCode = countryCode;
-        };
-
-        $scope.loadHolidays = function(){
-            $http.get('/changecalendar_module/changecalendars/loadHolidays/' + $scope.countryCode + '.json', {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.init = false;
-                var customEvents = [];
-                for(var index in $scope.events){
-                    if($scope.events[index].default_holiday === false){
-                        customEvents.push($scope.events[index]);
-                    }
-                }
-                $scope.events = result.data.holidays;
-                for(var index in customEvents){
-                    if($scope.hasEvents(customEvents[index].start)){
-                        $scope.deleteEvent(customEvents[index].start);
-                    }
-                    $scope.events.push(customEvents[index]);
-                }
-                if($scope.init){
-                    return;
-                }
-                if($scope.calendar !== null){
-                    $scope.calendar.destroy();
-                }
-                renderCalendar();
-            });
         };
 
 
@@ -281,16 +186,9 @@ angular.module('openITCOCKPIT')
                         'angular': true
                     }
                 }),
-                $http.get("/changecalendar_module/changecalendars/loadCountryList.json", {
-                    params: {
-                        'angular': true
-                    }
-                })
             ]).then(function(results){
                 $scope.containers = results[0].data.containers;
-                $scope.countries = results[1].data.countries;
                 $scope.init = false;
-                $scope.loadHolidays();
             });
         };
 
@@ -319,15 +217,6 @@ angular.module('openITCOCKPIT')
                 }
             }
             return false;
-        };
-
-        $scope.addEvent = function(title, date){
-            $scope.events.push({
-                title: title,
-                start: date,
-                default_holiday: false,
-                className: 'bg-color-pinkDark'
-            });
         };
 
         $scope.addEventFromModal = function(){
@@ -413,10 +302,4 @@ angular.module('openITCOCKPIT')
             renderCalendar();
         }, true);
 
-        $scope.$watch('countryCode', function(){
-            if($scope.init){
-                return;
-            }
-            $scope.loadHolidays();
-        }, true);
     });
