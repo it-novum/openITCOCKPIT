@@ -3,15 +3,9 @@
  */
 angular.module('openITCOCKPIT')
     .controller('ChangecalendarsEditController', function($scope, $http, $state, $stateParams, $q, $compile, NotyService, RedirectService, BBParserService){
-
         $scope.defaultDate = new Date();
-        $scope.countryCode = 'de';
-        $scope.countries = [];
-
         $scope.descriptionPreview = '';
         $scope.id = $stateParams.id;
-
-
         $scope.calendar = null;
         $scope.init = true;
 
@@ -108,39 +102,10 @@ angular.module('openITCOCKPIT')
             });
 
             $scope.calendar.render();
-            $(".fc-holidays-button")
-                .wrap("<span class='dropdown'></span>")
-                .addClass('btn btn-secondary dropdown-toggle')
-                .attr({
-                    'data-toggle': 'dropdown', 'type': 'button', 'aria-expanded': false, 'aria-haspopup': true
-                })
-                .append($('<span/>', {'class': 'flag-icon flag-icon-' + $scope.countryCode}))
-                .append('<span class="caret caret-with-margin-left-5"></span>');
-            $('.fc-holidays-button')
-                .parent().append($('<ul/>', {
-                'id': 'countryList', 'class': 'dropdown-menu', 'role': 'button'
-            }));
 
-            for(var key in $scope.countries){
-                $('#countryList').append($compile($('<li/>', {
-                    'ng-click': 'setSelected("' + key + '")'
-                }).append($('<a/>', {
-                    // 'class': 'dropdown-item'
-                }).append($('<span/>', {
-                    'class': 'flag-icon flag-icon-' + key
-                })).append($('<span/>', {
-                    'class': 'padding-left-5', 'text': $scope.countries[key]
-                }))))($scope));
-            }
-        };
-
-        $scope.setSelected = function(countryCode){
-            $scope.countryCode = countryCode;
         };
 
         $scope.load = function(){
-
-
             $q.all([$http.get("/containers/loadContainersForAngular.json", {
                 params: {
                     'angular': true
@@ -156,7 +121,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.post = {
-                    changeCalendar: result.data.changeCalendar
+                    changeCalendar: result.data.changeCalendar, colour: result.data.changeCalendar.colour
                 };
                 $scope.events = result.data.events;
                 $scope.init = false;

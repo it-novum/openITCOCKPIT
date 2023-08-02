@@ -58,9 +58,8 @@
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="message=
-            {objectName : '<?php echo __('Changecalendar'); ?>' , message: '<?php echo __('created successfully'); ?>',
-            'addHoliday': '<?php echo __('Add holiday '); ?>', 'deleteAllHolidays': '<?php echo __('Delete ALL holidays'); ?>',
-            'deleteMonthEvents': '<?php echo __('Delete MONTH events'); ?>', 'deleteAllEvents': '<?php echo __('Delete ALL events'); ?>'}">
+            {objectName : '<?php echo __('Changecalendar'); ?>' , message: '<?php echo __('created successfully'); ?>'
+            }">
                         <div class="form-group required" ng-class="{'has-error': errors.containers}">
                             <label class="control-label" for="ChangecalendarContainer">
                                 <?php echo __('Container'); ?>
