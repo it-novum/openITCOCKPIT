@@ -281,6 +281,9 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button ng-if="modifyEvent.position !== null" type="button" class="btn btn-danger" ng-click="deleteEventFromModal()">
+                    <?php echo __('Delete'); ?>
+                </button>
                 <button type="button" class="btn btn-success" ng-click="modifyEventFromModal()">
                     <?php echo __('Save'); ?>
                 </button>

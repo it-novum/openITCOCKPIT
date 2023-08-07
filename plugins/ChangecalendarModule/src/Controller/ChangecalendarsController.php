@@ -9,6 +9,7 @@ use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use ChangecalendarModule\Model\Table\ChangecalendarEventsTable;
 use ChangecalendarModule\Model\Table\ChangecalendarsTable;
 use DateTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -77,8 +78,6 @@ class ChangecalendarsController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData('Changecalendar');
-            $events = $this->request->getData('events');
-
 
             /** @var ChangecalendarsTable $ChangecalendarsTable */
             $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
@@ -142,29 +141,11 @@ class ChangecalendarsController extends AppController {
 
         if ($this->request->is('post')) {
             $data = $this->request->getData('changeCalendar');
-            $events = $this->request->getData('events');
-
-            foreach ($events as $event) {
-                if (!isset($event['title']) || !isset($event['start']) || !isset($event['end'])) {
-                    continue;
-                }
-
-                $tmpEvent = [
-                    'title'       => $event['title'],
-                    'start'       => (new DateTime((string)($event['start'])))->format('Y-m-d H:i:s'),
-                    'end'         => (new DateTime((string)($event['end'])))->format('Y-m-d H:i:s'),
-                    'description' => $event['description'] ?? '',
-                    'id'          => $event['id'] ?? null
-                ];
-
-                $data['changecalendar_events'][] = $tmpEvent;
-            }
 
             $Entity = $ChangecalendarsTable->find()
                 ->where([
                     'id' => $id
                 ])
-                ->contain(['ChangecalendarEvents'])
                 ->firstOrFail();
 
             $Entity = $ChangecalendarsTable->patchEntity($Entity, $data);
@@ -180,6 +161,85 @@ class ChangecalendarsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['changeCalendar']);
 
         }
+    }
+
+    /**
+     * I will delete an event from the database.
+     * @param $id
+     * @return void
+     */
+    public function deleteEvent($id = null): void {
+        /** @var ChangecalendarsTable $ChangecalendarsTable */
+        $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
+
+        if (!$ChangecalendarsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Changecalendar'));
+        }
+
+        $event = $this->request->getData('event');
+
+        /** @var ChangecalendarEventsTable $ChangecalendarEventsTable */
+        $ChangecalendarEventsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.ChangecalendarEvents');
+
+        $Entity = $ChangecalendarEventsTable->find()
+            ->where([
+                'id'                => $event['id'],
+                'changecalendar_id' => $id
+            ])->firstOrFail();
+        $ChangecalendarEventsTable->delete($Entity);
+
+
+        $changeCalendar = $ChangecalendarsTable->getCalendarByIdForEdit($id);
+        $this->set('changeCalendar', $changeCalendar);
+        $this->viewBuilder()->setOption('serialize', ['changeCalendar']);
+    }
+
+    /**
+     * I will put the events into the database.
+     * @param $id
+     * @return void
+     * @throws \Exception
+     */
+    public function events($id = null): void {
+        /** @var ChangecalendarsTable $ChangecalendarsTable */
+        $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
+
+        if (!$ChangecalendarsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Changecalendar'));
+        }
+
+        if ($this->request->is('post')) {
+            $event = $this->request->getData('event');
+
+            if (!isset($event['title']) || !isset($event['start']) || !isset($event['end'])) {
+                return;
+            }
+
+            $tmpEvent = [
+                'title'             => $event['title'],
+                'start'             => (new DateTime((string)($event['start'])))->format('Y-m-d H:i:s'),
+                'end'               => (new DateTime((string)($event['end'])))->format('Y-m-d H:i:s'),
+                'description'       => $event['description'] ?? '',
+                'id'                => $event['id'] ?? null,
+                'changecalendar_id' => $id
+            ];
+
+            /** @var ChangecalendarEventsTable $ChangecalendarEventsTable */
+            $ChangecalendarEventsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.ChangecalendarEvents');
+            $Entity = $ChangecalendarEventsTable->find()->where([
+                'id'                => $event['id'],
+                'changecalendar_id' => $id
+            ])->first();
+
+
+            $Entity = $ChangecalendarEventsTable->patchEntity($Entity, $tmpEvent);
+
+            $ChangecalendarEventsTable->save($Entity);
+        }
+
+        $changeCalendar = $ChangecalendarsTable->getCalendarByIdForEdit($id);
+        $this->set('changeCalendar', $changeCalendar);
+        $this->viewBuilder()->setOption('serialize', ['changeCalendar']);
     }
 
     /**
@@ -223,7 +283,6 @@ class ChangecalendarsController extends AppController {
 
     // For acl....
     public function widget(): void {
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -257,7 +316,6 @@ class ChangecalendarsController extends AppController {
             $changeCalendars = [];
 
             foreach ($changeCalendarIds as $changeCalendarId) {
-
                 if (!$ChangecalendarsTable->existsById($changeCalendarId)) {
                     continue;
                 }
@@ -287,7 +345,6 @@ class ChangecalendarsController extends AppController {
             }
 
             $widgetId = (int)$this->request->getData('Widget.id', 0);
-
             if (!$WidgetsTable->existsById($widgetId)) {
                 throw new \RuntimeException('Invalid widget id');
             }
@@ -305,11 +362,10 @@ class ChangecalendarsController extends AppController {
             if ($widget->hasErrors()) {
                 $this->serializeCake4ErrorMessage($widget);
                 return;
-            } else {
-                $this->set('changecalendar_id', $hostId);
-                $this->viewBuilder()->setOption('serialize', ['changecalendar_id']);
-                return;
             }
+            $this->set('changecalendar_id', $hostId);
+            $this->viewBuilder()->setOption('serialize', ['changecalendar_id']);
+            return;
         }
         throw new MethodNotAllowedException();
     }

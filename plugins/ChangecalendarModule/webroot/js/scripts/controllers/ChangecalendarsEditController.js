@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
         $scope.calendar = null;
         $scope.init = true;
+        $scope.removedEvents = [];
 
         var renderCalendar = function(){
             var calendarEl = document.getElementById('changecalendar');
@@ -91,7 +92,7 @@ angular.module('openITCOCKPIT')
                     event.end.setDate(event.end.getDate() + diffDays);
 
                     //Add event back to json
-                    $scope.addEvent(event);
+                    $scope.postEvent(event);
 
                     $scope.$apply();
                 },
@@ -147,29 +148,18 @@ angular.module('openITCOCKPIT')
             return false;
         };
 
-        $scope.addEvent = function(event){
-            // If the event is new
-            if(typeof (event.id) === "undefined"){
-                $scope.events.push(event);
-                return;
-            }
+        // Delete the event.
+        $scope.deleteEventFromModal = function(){
+            $http.post("/changecalendar_module/changecalendars/deleteEvent/" + $scope.id + ".json?angular=true", {event: $scope.modifyEvent}).then(function(result){
+                $scope.events = result.data.changeCalendar.changecalendar_events;
+            });
+        }
 
-            // Otherwise traverse for an update
-            let eventCount = $scope.events.length, eventIndex = 0;
-
-            for(eventIndex = 0; eventIndex <= eventCount; eventIndex++){
-                let myEvent = $scope.events[eventIndex];
-                event.id = parseInt(event.id);
-                if(parseInt(myEvent.id) !== event.id){
-                    continue;
-                }
-
-                $scope.events[eventIndex].start = event.start;
-                $scope.events[eventIndex].end = event.end;
-                $scope.events[eventIndex].description = event.description;
-                $scope.events[eventIndex].title = event.title;
-                break;
-            }
+        // Store the Event
+        $scope.postEvent = function(event){
+            $http.post("/changecalendar_module/changecalendars/events/" + $scope.id + ".json?angular=true", {event: event}).then(function(result){
+                $scope.events = result.data.changeCalendar.changecalendar_events;
+            });
         };
 
         $scope.modifyEventFromModal = function(){
@@ -183,15 +173,51 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            //Add event to internal json
-            $scope.addEvent($scope.modifyEvent);
+            //Save
+            $scope.postEvent($scope.modifyEvent);
+            //Reset
+            $scope.reset();
+        };
 
+        //Hide modal and reset modal form.
+        $scope.reset = function(){
             //Reset modal and newEvent object
             $('#addEventModal').modal('hide');
+            //Reset edit form.
             $scope.modifyEvent = {
-                title: '', start: '', end: '', description: '', id: '', context: []
+                title: '', start: '', end: '', description: '', id: '', context: [], position: null
             };
         };
+
+        $scope.eventEquals = function(a, b){
+            if(typeof (a) !== "object"){
+                return false;
+            }
+            if(typeof (b) !== "object"){
+                return false;
+            }
+            // ID is equal
+            if(typeof (a.id) !== "undefined" && typeof (b.id) !== "undefined" && parseInt(a.id) === parseInt(b.id)){
+                return true;
+            }
+
+            // Data is equal
+            if(a.title === b.title && a.start === b.start && a.end === b.end){
+                return true;
+            }
+            return false;
+        }
+
+        $scope.getPositionOfEvent = function(event){
+            let eventCount = $scope.events.length, eventPosition;
+            for(eventPosition = 0; eventPosition <= eventCount; eventPosition++){
+                let myEvent = $scope.events[eventPosition];
+                if($scope.eventEquals(event, myEvent)){
+                    return eventPosition;
+                }
+            }
+            return null;
+        }
 
         // Show the modal and pre-fill the form with the given event.
         $scope.editEventFromModal = function(event){
@@ -201,7 +227,8 @@ angular.module('openITCOCKPIT')
                 start: event.start,
                 end: event.end,
                 description: event.extendedProps.description,
-                context: event.extendedProps.context
+                context: event.extendedProps.context,
+                position: $scope.getPositionOfEvent(event)
             };
 
 
@@ -285,6 +312,7 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             $scope.post.events = $scope.events;
+            $scope.post.removedEvents = $scope.removedEvents;
             $http.post("/changecalendar_module/changecalendars/edit/" + $scope.id + ".json?angular=true", $scope.post).then(function(result){
                 var url = $state.href('ChangecalendarsEdit', {id: result.data.changeCalendar.id});
                 NotyService.genericSuccess({
@@ -322,7 +350,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $scope.descriptionPreview = BBParserService.parse($scope.modifyEvent.description);
+            $scope.descriptionPreview = BBParserService.parse($scope.modifyEvent.description || '');
         }, true);
 
     });

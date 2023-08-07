@@ -88,7 +88,7 @@
             <div class="modal-header">
                 <h5 class="modal-title">
                     <i class="fa fa-edit"></i>
-                    <?php echo __('Modify date'); ?>
+                    <?php echo __('Date'); ?>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="fa fa-times"></i></span>
