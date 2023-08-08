@@ -9,6 +9,10 @@ angular.module('openITCOCKPIT')
         $scope.calendar = null;
         $scope.init = true;
         $scope.removedEvents = [];
+        $scope.colour = '#F0F';
+        $scope.post = {
+            changeCalendar: {colour: '#F0F'}
+        }
 
         var renderCalendar = function(){
             var calendarEl = document.getElementById('changecalendar');
