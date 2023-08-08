@@ -151,9 +151,6 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" ng-click="modifyEventFromModal()">
-                    <?php echo __('Save'); ?>
-                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
                 </button>

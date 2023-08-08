@@ -246,11 +246,9 @@ class ChangecalendarsController extends AppController {
     }
 
     /**
-     * Delete method
-     *
-     * @param string|null $id Changecalendar id.
-     * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * I will delete an entire change calendar.
+     * @param $id
+     * @return void
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
@@ -284,7 +282,10 @@ class ChangecalendarsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success', 'message']);
     }
 
-    // For acl....
+    /**
+     * I will return the correct calendars and events to show for the widget.
+     * @return void
+     */
     public function widget(): void {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -293,8 +294,6 @@ class ChangecalendarsController extends AppController {
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
-        /** @var HostsTable $HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId', 0);
@@ -341,12 +340,6 @@ class ChangecalendarsController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $hostId = (int)$this->request->getData('host_id', 0);
-
-            if ($hostId === 0) {
-                $hostId = null;
-            }
-
             $widgetId = (int)$this->request->getData('Widget.id', 0);
             if (!$WidgetsTable->existsById($widgetId)) {
                 throw new \RuntimeException('Invalid widget id');
@@ -358,7 +351,6 @@ class ChangecalendarsController extends AppController {
             ];
 
             $widget = $WidgetsTable->get($widgetId);
-            $widget->set('host_id', $hostId);
             $widget->set('json_data', json_encode($json));
 
             $WidgetsTable->save($widget);
@@ -366,7 +358,6 @@ class ChangecalendarsController extends AppController {
                 $this->serializeCake4ErrorMessage($widget);
                 return;
             }
-            $this->set('changecalendar_id', $hostId);
             $this->viewBuilder()->setOption('serialize', ['changecalendar_id']);
             return;
         }
