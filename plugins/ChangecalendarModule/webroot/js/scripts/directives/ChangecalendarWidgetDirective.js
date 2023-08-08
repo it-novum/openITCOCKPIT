@@ -60,6 +60,9 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                         center: 'title',
                         right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
                     },
+                    eventTimeFormat: {
+                        hour: '2-digit', minute: '2-digit', hour12: false
+                    },
                     defaultView: $scope.displayType,
                     firstDay: 1, // monday as first day of the week
                     displayEventEnd: true,
@@ -72,7 +75,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     eventDurationEditable: false,
                     defaultDate: $scope.defaultDate,
                     businessHours: true, // display business hours
-                    editable: false,
+                    editable: true,
                     events: $scope.events,
                     eventClick: function(info){
                         $scope.showEventDetails(info.event);

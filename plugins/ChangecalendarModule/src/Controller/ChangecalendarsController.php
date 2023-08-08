@@ -250,7 +250,7 @@ class ChangecalendarsController extends AppController {
      * @param $id
      * @return void
      */
-    public function delete($id = null) {
+    public function delete($id = null): void {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -301,10 +301,10 @@ class ChangecalendarsController extends AppController {
                 throw new \RuntimeException('Invalid widget id');
             }
 
-            $widget = $WidgetsTable->getWidgetByIdAsCake2($widgetId);
+            $Entity = $WidgetsTable->getWidgetByIdAsCake2($widgetId);
 
             //Check host permissions
-            $jsonData = (array)json_decode((string)($widget['Widget']['json_data'] ?? '[]'), true);
+            $jsonData = (array)json_decode((string)($Entity['Widget']['json_data'] ?? '[]'), true);
             $changeCalendarIds = $jsonData['changecalendar_ids'];
 
             if (!$this->isApiRequest()) {
@@ -316,7 +316,6 @@ class ChangecalendarsController extends AppController {
             $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
             $changeCalendars = [];
-
             foreach ($changeCalendarIds as $changeCalendarId) {
                 if (!$ChangecalendarsTable->existsById($changeCalendarId)) {
                     continue;
@@ -338,7 +337,6 @@ class ChangecalendarsController extends AppController {
             return;
         }
 
-
         if ($this->request->is('post')) {
             $widgetId = (int)$this->request->getData('Widget.id', 0);
             if (!$WidgetsTable->existsById($widgetId)) {
@@ -350,12 +348,12 @@ class ChangecalendarsController extends AppController {
                 'displayType'        => (string)$this->request->getData('displayType', 'month')
             ];
 
-            $widget = $WidgetsTable->get($widgetId);
-            $widget->set('json_data', json_encode($json));
+            $Entity = $WidgetsTable->get($widgetId);
+            $Entity->set('json_data', json_encode($json));
 
-            $WidgetsTable->save($widget);
-            if ($widget->hasErrors()) {
-                $this->serializeCake4ErrorMessage($widget);
+            $WidgetsTable->save($Entity);
+            if ($Entity->hasErrors()) {
+                $this->serializeCake4ErrorMessage($Entity);
                 return;
             }
             $this->viewBuilder()->setOption('serialize', ['changecalendar_id']);

@@ -93,8 +93,6 @@ angular.module('openITCOCKPIT')
 
                     //Add event back to json
                     $scope.postEvent(event);
-
-                    $scope.$apply();
                 },
                 eventClick: function(info){
                     $scope.editEventFromModal(info.event);
@@ -152,6 +150,7 @@ angular.module('openITCOCKPIT')
         $scope.deleteEventFromModal = function(){
             $http.post("/changecalendar_module/changecalendars/deleteEvent/" + $scope.id + ".json?angular=true", {event: $scope.modifyEvent}).then(function(result){
                 $scope.events = result.data.changeCalendar.changecalendar_events;
+                $scope.reset();
             });
         }
 
@@ -159,6 +158,7 @@ angular.module('openITCOCKPIT')
         $scope.postEvent = function(event){
             $http.post("/changecalendar_module/changecalendars/events/" + $scope.id + ".json?angular=true", {event: event}).then(function(result){
                 $scope.events = result.data.changeCalendar.changecalendar_events;
+                $scope.reset();
             });
         };
 
@@ -175,8 +175,6 @@ angular.module('openITCOCKPIT')
 
             //Save
             $scope.postEvent($scope.modifyEvent);
-            //Reset
-            $scope.reset();
         };
 
         //Hide modal and reset modal form.
