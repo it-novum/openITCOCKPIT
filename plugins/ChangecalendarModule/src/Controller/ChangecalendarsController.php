@@ -224,15 +224,18 @@ class ChangecalendarsController extends AppController {
                 'changecalendar_id' => $id
             ];
 
+
             /** @var ChangecalendarEventsTable $ChangecalendarEventsTable */
             $ChangecalendarEventsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.ChangecalendarEvents');
-            $Entity = $ChangecalendarEventsTable->find()->where([
-                'id'                => $event['id'],
-                'changecalendar_id' => $id
-            ])->first();
-
-
-            $Entity = $ChangecalendarEventsTable->patchEntity($Entity, $tmpEvent);
+            if (!empty($event['id'])) {
+                $Entity = $ChangecalendarEventsTable->find()->where([
+                    'id'                => $event['id'],
+                    'changecalendar_id' => $id
+                ])->first();
+                $Entity = $ChangecalendarEventsTable->patchEntity($Entity, $tmpEvent);
+            } else {
+                $Entity = $ChangecalendarEventsTable->newEntity($tmpEvent);
+            }
 
             $ChangecalendarEventsTable->save($Entity);
         }
