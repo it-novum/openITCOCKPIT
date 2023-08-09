@@ -75,7 +75,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     eventDurationEditable: false,
                     defaultDate: $scope.defaultDate,
                     businessHours: true, // display business hours
-                    editable: true,
+                    editable: false,
                     events: $scope.events,
                     eventClick: function(info){
                         $scope.showEventDetails(info.event);
