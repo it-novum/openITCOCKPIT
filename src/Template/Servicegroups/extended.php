@@ -62,8 +62,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    {{(servicegroup.Servicegroup.container.name) && servicegroup.Servicegroup.container.name ||
-                    '<?php echo __('Service Groups (0)'); ?>'}}
+                    {{servicegroup.Servicegroup.container.name}}
                     <span class="fw-300"><i><?php echo __('UUID: '); ?>{{servicegroup.Servicegroup.uuid}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
@@ -113,6 +112,22 @@
                                                 type="button">
                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                         </button>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                        <a ui-sref="ChangelogsEntity({objectTypeId: 'servicegroup', objectId: post.Servicegroup.id})"
+                                           class="dropdown-item">
+                                            <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                            <?php echo __('Changelog'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('copy', 'servicegroups')): ?>
+                                        <div class="dropdown-divider"></div>
+                                        <a ui-sref="ServicegroupsCopy({ids: post.Servicegroup.id})"
+                                           class="dropdown-item">
+                                            <i class="fas fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                        <div class="dropdown-divider"></div>
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('externalcommands', 'services')): ?>
                                         <button data-toggle="modal"
@@ -183,11 +198,12 @@
                                                        name="checkbox"
                                                        checked="checked"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-model="servicegroupsStateFilter[$index]"
-                                                       ng-value="$index">
+                                                       ng-value="{{state}}"
+                                                       ng-model="filter.Servicestatus.current_state[state]">
                                                 <label
                                                     class="extended-list custom-control-label custom-control-label-{{state}} no-margin"
-                                                    for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
+                                                    for="statusFilter{{state}}">{{stateCount}}
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -364,7 +380,6 @@
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
-
                                             <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                                 <a ng-click="confirmActivate(getObjectForDelete(service.Host, service))"
                                                    ng-if="service.Service.allow_edit && service.Service.disabled"
@@ -374,8 +389,24 @@
                                                     <?php echo __('Enable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                                <div class="dropdown-divider" ng-if="service.Service.allow_edit"></div>
+                                                <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                                   ng-if="service.Service.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
-                                                <div class="dropdown-divider"></div>
+                                                <div class="dropdown-divider" ng-if="service.Service.allow_edit"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(service.Host, service))"
                                                    ng-if="service.Service.allow_edit"
                                                    class="dropdown-item txt-color-red">

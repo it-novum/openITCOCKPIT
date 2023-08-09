@@ -37,7 +37,9 @@ class ChangelogsFilter extends Filter {
             ],
             'equals' => [
                 'Changelogs.model',
-                'Changelogs.action'
+                'Changelogs.action',
+                'Changelogs.object_id',
+                'Changelogs.objecttype_id',
             ]
         ];
 

@@ -37,6 +37,7 @@
         "ext-sockets": "*",
         "ext-xmlrpc": "*",
         "ext-zip": "*",
+        "ext-sysvsem": "*",
         "azuyalabs/yasumi": "^2.2",
         "cakephp/authentication": "^2.0",
         "cakephp/authorization": "^2.0",

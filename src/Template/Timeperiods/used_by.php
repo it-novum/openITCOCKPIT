@@ -157,7 +157,7 @@
                             </tr>
                             <tr ng-if="objects.Instantreports.length > 0">
                                 <th class="bg-color-lightGray">
-                                    <i class="fa fa-file-image-o"></i>
+                                    <i class="fa fa-file-invoice"></i>
                                     <?php echo __('Instant reports'); ?> ({{objects.Instantreports.length}})
                                 </th>
                             </tr>
@@ -242,7 +242,7 @@
                             </tr>
                             <tr ng-if="objects.Autoreports.length > 0">
                                 <th class="bg-color-lightGray">
-                                    <i class="fa fa-file-image-o"></i>
+                                    <i class="fa fa-file-invoice"></i>
                                     <?php echo __('Autoreports'); ?> ({{objects.Autoreports.length}})
                                 </th>
                             </tr>

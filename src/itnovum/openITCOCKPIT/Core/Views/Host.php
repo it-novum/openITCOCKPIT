@@ -85,6 +85,11 @@ class Host {
     private $tags;
 
     /**
+     * @var int
+     */
+    private $usageFlag;
+
+    /**
      * @var bool
      */
     private $allow_edit = false;
@@ -202,6 +207,10 @@ class Host {
             $this->tags = $host['Host']['tags'];
         }
 
+        if (isset($host['Host']['usage_flag'])) {
+            $this->usageFlag = (int)$host['Host']['usage_flag'];
+        }
+
         if (isset($host['Host']['disabled'])) {
             $this->disabled = (bool)$host['Host']['disabled'];
         }
@@ -302,6 +311,13 @@ class Host {
      */
     public function getTags() {
         return $this->tags;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUsageFlag(): int {
+        return $this->usageFlag ?? 0;
     }
 
     /**

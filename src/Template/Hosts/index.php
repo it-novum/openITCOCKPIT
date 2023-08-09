@@ -648,11 +648,15 @@
                                     <i class="fa fa-check-square"></i>
                                 </th>
 
-                                <th ng-show="fields[1]" class="no-sort text-center">
+                                <th ng-show="fields[1]" class="no-sort text-center"
+                                    ng-click="orderBy('Hoststatus.acknowledgement_type')">
+                                    <i class="fa" ng-class="getSortClass('Hoststatus.acknowledgement_type')"></i>
                                     <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
-                                <th ng-show="fields[2]" class="no-sort text-center">
+                                <th ng-show="fields[2]" class="no-sort text-center"
+                                    ng-click="orderBy('Hoststatus.scheduled_downtime_depth')">
+                                    <i class="fa" ng-class="getSortClass('Hoststatus.scheduled_downtime_depth')"></i>
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
@@ -980,6 +984,13 @@
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'host', objectId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                 <a ui-sref="ServicesServiceList({id: host.Host.id})"
                                                    class="dropdown-item">
@@ -1013,6 +1024,13 @@
                                             $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                             echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'index', 'list');
                                             ?>
+                                            <?php if ($this->Acl->hasPermission('usedBy', 'hosts')): ?>
+                                                <a ui-sref="HostsUsedBy({id: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                    <?php echo __('Used by'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host))"

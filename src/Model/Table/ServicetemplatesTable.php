@@ -880,9 +880,10 @@ class ServicetemplatesTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getServicetemplatesForCopy($ids = []) {
+    public function getServicetemplatesForCopy($ids = [], array $MY_RIGHTS = []) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -904,7 +905,13 @@ class ServicetemplatesTable extends Table {
                 ]
             ])
             ->where(['Servicetemplates.id IN' => $ids])
-            ->order(['Servicetemplates.id' => 'asc'])
+            ->order(['Servicetemplates.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere(['Servicetemplates.container_id IN' => $MY_RIGHTS]);
+        }
+
+        $query
             ->disableHydration()
             ->all();
 

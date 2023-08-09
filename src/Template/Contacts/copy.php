@@ -68,6 +68,7 @@
                                     <?php echo __('Contact name'); ?>
                                 </label>
                                 <input
+                                    maxlength="64"
                                     class="form-control"
                                     type="text"
                                     ng-model="sourceContact.Contact.name"

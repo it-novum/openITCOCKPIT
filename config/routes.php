@@ -56,6 +56,7 @@ $routes->scope('/', function (RouteBuilder $builder) {
     // Register scoped middleware for in scopes.
     $csrf = new CsrfProtectionMiddleware([
         'httponly' => true,
+        'secure'   => true
     ]);
 
     // Token check will be skipped when callback returns `true`.

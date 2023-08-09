@@ -147,4 +147,18 @@ class GrafanaUserdashboardPanelsTable extends Table {
         return $result->get('row') + 1;
     }
 
+    /**
+     * @param int $dashboardId
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getPanelsByUserdashboardIdForCopy(int $dashboardId){
+        $result = $this->find()
+            ->where([
+                'GrafanaUserdashboardPanels.userdashboard_id' => $dashboardId
+            ])
+            ->all();
+
+        return $result;
+    }
+
 }

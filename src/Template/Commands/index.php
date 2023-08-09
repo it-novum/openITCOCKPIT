@@ -206,11 +206,26 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'command', objectId: command.Command.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('usedBy', 'commands')): ?>
                                                 <a ui-sref="CommandsUsedBy({id:command.Command.id})"
                                                    class="dropdown-item">
                                                     <i class="fa fa-reply-all fa-flip-horizontal"></i>
                                                     <?php echo __('Used by'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'commands')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="CommandsCopy({ids: command.Command.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'commands')): ?>

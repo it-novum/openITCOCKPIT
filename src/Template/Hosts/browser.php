@@ -961,6 +961,53 @@ use Cake\Core\Plugin;
                                                     {{mergedHost.description}}
                                                 </td>
                                             </tr>
+                                            <tr ng-if="objects.Autoreports || objects.Eventcorrelations || objects.hostGroups || objects.instantReports || objects.maps">
+                                                <td><?php echo __('Used by'); ?></td>
+                                                <td>
+                                                    <?php if ($this->Acl->hasPermission('usedBy', 'hosts')): ?>
+
+                                                        <a ng-if="objects.Instantreports.length > 0"
+                                                           ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fa fa-file-invoice"></i> <?php echo __('Instant reports'); ?> ({{objects.Instantreports.length}})
+                                                           </span>
+                                                        </a>
+
+                                                        <?php if (Plugin::isLoaded('AutoreportModule')): ?>
+                                                            <a ng-if="objects.Autoreports.length > 0"
+                                                               ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?> ({{objects.Autoreports.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                        <?php if (Plugin::isLoaded('EventcorrelationModule')): ?>
+                                                            <a ng-if="objects.Eventcorrelations.length > 0"
+                                                               ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                                <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?> ({{objects.Eventcorrelations.length}})
+                                                                </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <?php if (Plugin::isLoaded('MapModule')): ?>
+                                                            <a ng-if="objects.Maps.length > 0"
+                                                               ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-map-marker"></i> <?= __('Map') ?> ({{objects.Maps.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <a ng-if="objects.Hostgroups.length > 0"
+                                                           ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fas fa-server"></i> <?php echo __('Host Groups'); ?> ({{objects.Hostgroups.length}})
+                                                           </span>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
                                 </div>
@@ -1191,12 +1238,16 @@ use Cake\Core\Plugin;
                                     <?php echo __('Service status'); ?>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th class="no-sort text-center"
+                                    ng-click="orderBy('Servicestatus.acknowledgement_type')">
+                                    <i class="fa" ng-class="getSortClass('Servicestatus.acknowledgement_type')"></i>
                                     <i class="fa fa-user"
                                        title="<?php echo __('Acknowledgedment'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th class="no-sort text-center"
+                                    ng-click="orderBy('Servicestatus.scheduled_downtime_depth')">
+                                    <i class="fa" ng-class="getSortClass('Servicestatus.scheduled_downtime_depth')"></i>
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('in Downtime'); ?>"></i>
                                 </th>
@@ -1512,6 +1563,13 @@ use Cake\Core\Plugin;
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php
                                             $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                             echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
@@ -1698,6 +1756,22 @@ use Cake\Core\Plugin;
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                                   ng-if="service.Service.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))"
@@ -1797,6 +1871,22 @@ use Cake\Core\Plugin;
                                                    class="dropdown-item">
                                                     <i class="fa fa-plug"></i>
                                                     <?php echo __('Enable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                                   ng-if="service.Service.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>

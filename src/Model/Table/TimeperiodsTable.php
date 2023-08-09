@@ -89,7 +89,7 @@ class TimeperiodsTable extends Table {
         $validator
             ->integer('container_id')
             ->greaterThan('container_id', 0)
-            ->requirePresence('container_id')
+            ->requirePresence('container_id', 'create')
             ->allowEmptyString('container_id', null, false);
 
         $validator
@@ -333,18 +333,28 @@ class TimeperiodsTable extends Table {
 
     /**
      * @param array $ids
+     * @paran array $MY_RIGHTS
      * @return array
      */
-    public function getTimeperiodsForCopy($ids = []) {
+    public function getTimeperiodsForCopy($ids = [], array $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'Timeperiods.id',
                 'Timeperiods.name',
                 'Timeperiods.description'
             ])
-            ->where(['Timeperiods.id IN' => $ids])
-            ->order(['Timeperiods.id' => 'asc'])
-            ->disableHydration()
+            ->where([
+                'Timeperiods.id IN' => $ids
+            ])
+            ->order(['Timeperiods.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Timeperiods.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+            $query->disableHydration()
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);

@@ -107,6 +107,8 @@ class ContainersController extends AppController {
             return;
         }
 
+        $ContainersTable->acquireLock();
+
         $ContainersTable->save($container);
         if ($container->hasErrors()) {
             $this->response = $this->response->withStatus(400);
@@ -154,6 +156,9 @@ class ContainersController extends AppController {
             if (!$ContainersTable->existsById($containerId)) {
                 throw new NotFoundException(__('Invalid container'));
             }
+
+            $ContainersTable->acquireLock();
+
             $container = $ContainersTable->get($containerId);
             $containerForChangelog = $container->toArray();
 
@@ -416,20 +421,24 @@ class ContainersController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $ContainersTable->acquireLock();
+
         $container = $ContainersTable->find()
             ->where([
                 'Containers.id'    => $id,
-                'Containers.id IN' => $this->MY_RIGHTS
+                'Containers.id IN' => $this->getWriteContainers()
             ])
             ->first();
 
         if (empty($container)) {
-            return $this->render403();
+            $this->render403();
+            return;
         }
         $containerForChangelog = $container->toArray();
 
         //check if the current container contains subcontainers
-        $deletionAllowed = $ContainersTable->allowDelete($id);
+        $deletionAllowed = $ContainersTable->allowDelete($id, $container->containertype_id);
         if ($deletionAllowed) {
             Cache::clear('permissions');
             if ($ContainersTable->delete($container)) {
@@ -507,7 +516,6 @@ class ContainersController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function showDetails($id = null) {
         if (!$this->isApiRequest() && $id === null) {
@@ -569,7 +577,7 @@ class ContainersController extends AppController {
         if (Plugin::isLoaded('DistributeModule')) {
             /** @var $SatellitesTable SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-            $satellites = $SatellitesTable->getSatellitesByContainerIds($containerIds, 'list');
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($containerIds);
         }
         $satellites = Api::makeItJavaScriptAble($satellites);
 

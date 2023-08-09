@@ -112,7 +112,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     public function routes($routes): void {
         // Register scoped middleware for use in routes.php
         $routes->registerMiddleware('csrf', new CsrfProtectionMiddleware([
-            'httponly' => true
+            'httponly' => true,
+            'secure'   => true
         ]));
 
         parent::routes($routes);
@@ -190,7 +191,9 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             'rememberMeField' => 'remember_me',
             'fields'          => $fields,
             'cookie'          => [
-                'expires' => $expireAt
+                'expires'  => $expireAt,
+                'httponly' => true,
+                'secure'   => true
             ]
         ]);
         $service->loadAuthenticator('Authentication.Session');

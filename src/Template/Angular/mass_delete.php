@@ -35,7 +35,7 @@
                                        ng-if="!issue.isAngular"
                                        href="{{issue.url}}">{{issue.message}}</a>
 
-                                    <a class="text-danger"
+                                    <a class="text-danger pointer"
                                        ng-if="issue.isAngular"
                                        ng-click="goToStateMassDelete(issue)">{{issue.message}}</a>
                                 </div>
@@ -45,12 +45,12 @@
                 </div>
                 <div class="row">
 
-                    <div class="col-xs-12 margin-top-10" ng-show="isDeleting">
+                    <div class="col-12 margin-top-10" ng-show="isDeleting">
                         <h4><?php echo __('Deleting...'); ?></h4>
                     </div>
-                    <div class="col-xs-12 margin-top-10" ng-show="isDeleting">
-                        <div class="progress progress-striped active">
-                            <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
+                    <div class="col-12 margin-top-10" ng-show="isDeleting">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-danger" style="width: {{percentage}}%"></div>
                         </div>
                     </div>
 

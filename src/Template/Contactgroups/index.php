@@ -188,11 +188,26 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'contactgroup', objectId: contactgroup.Contactgroup.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('usedBy', 'contactgroups')): ?>
                                                 <a class="dropdown-item"
                                                    ui-sref="ContactgroupsUsedBy({id:contactgroup.Contactgroup.id})">
                                                     <i class="fa fa-reply-all fa-flip-horizontal"></i>
                                                     <?php echo __('Used By'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'contactgroups')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ContactgroupsCopy({ids: contactgroup.Contactgroup.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'contactgroups')): ?>

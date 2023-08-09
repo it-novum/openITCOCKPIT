@@ -1197,4 +1197,108 @@ class ServicegroupsTable extends Table {
                 return $return;
         }
     }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicegroupsForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Servicegroups.id IN' => $ids])
+            ->contain([
+                'Containers'
+            ])
+            ->order(['Servicegroups.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    public function getSourceServicegroupForCopy($id, array $MY_RIGHTS) {
+        $query = $this->find()
+            ->where(['Servicegroups.id' => $id])
+            ->contain([
+                'Services',
+                'Servicetemplates',
+                'Containers'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $result = $query->firstOrFail();
+        $servicegroup = $result;
+        $servicegroup['services'] = [
+            '_ids' => Hash::extract($result, 'services.{n}.id')
+        ];
+        $servicegroup['servicetemplates'] = [
+            '_ids' => Hash::extract($result, 'servicetemplates.{n}.id')
+        ];
+        return $servicegroup;
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedServicegroupsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param int $serviceId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServiceGroupsByServiceId(int $serviceId, array $MY_RIGHTS): array {
+        $query = $this->find()
+            ->select([
+                'Servicegroups.id',
+                'Containers.name'
+            ])
+            ->innerJoin(
+                ['ServicesToServicegroupsTable' => 'services_to_servicegroups'],
+                [
+                    'ServicesToServicegroupsTable.servicegroup_id = Servicegroups.id',
+                    "ServicesToServicegroupsTable.service_id" => $serviceId
+                ]
+            )
+            ->innerJoin(
+                ['Containers' => 'containers'],
+                [
+                    'Servicegroups.container_id = Containers.id'
+                ]
+            )
+            ->disableHydration();
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $return = [];
+        foreach ($query->toArray() as $result) {
+            $return[] = [
+                'name' => $result['Containers']['name'],
+                'id'   => $result['id']
+            ];
+        }
+        return $return;
+    }
 }

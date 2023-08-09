@@ -404,6 +404,8 @@ class CommandsController extends AppController {
                     //This happens, if a user copy multiple commands, and one run into an validation error
                     //All commands without validation errors got already saved to the database
                     $newCommandEntity = $CommandsTable->get($commandData['Command']['id']);
+                    $newCommandEntity->setAccess('*', false);
+                    $newCommandEntity->setAccess(['name', 'command_line', 'description'], true);
                     $newCommandEntity = $CommandsTable->patchEntity($newCommandEntity, $commandData['Command']);
                     $newCommandData = $newCommandEntity->toArray();
                     $action = 'edit';
