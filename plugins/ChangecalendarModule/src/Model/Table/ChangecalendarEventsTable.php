@@ -76,7 +76,6 @@ class ChangecalendarEventsTable extends Table
 
         $validator
             ->scalar('description')
-            ->maxLength('description', 255)
             ->allowEmptyString('description');
 
         $validator

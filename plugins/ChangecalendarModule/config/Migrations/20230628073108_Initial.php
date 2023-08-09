@@ -53,9 +53,8 @@ class Initial extends AbstractMigration {
                     'limit'   => 255,
                     'null'    => false,
                 ])
-                ->addColumn('description', 'string', [
+                ->addColumn('description', 'text', [
                     'default' => null,
-                    'limit'   => 255,
                     'null'    => true,
                 ])
                 ->addColumn('colour', 'string', [
@@ -100,9 +99,8 @@ class Initial extends AbstractMigration {
                     'limit'   => 255,
                     'null'    => false,
                 ])
-                ->addColumn('description', 'string', [
+                ->addColumn('description', 'text', [
                     'default' => null,
-                    'limit'   => 255,
                     'null'    => true,
                 ])
                 ->addColumn('start', 'datetime', [
