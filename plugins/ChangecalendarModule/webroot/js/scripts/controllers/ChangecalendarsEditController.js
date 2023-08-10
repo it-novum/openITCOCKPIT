@@ -68,10 +68,13 @@ angular.module('openITCOCKPIT')
                             })
                             .click(function(){
                                 $('#addEventModal').modal('show');
+                                let today = new Date(currentDate + "T00:00:00"),
+                                    tomorrow = new Date(currentDate+ "T00:00:00");
+                                tomorrow.setDate(tomorrow.getDate() + 1);
                                 $scope.modifyEvent = {
                                     title: '',
-                                    start: new Date(currentDate + "T00:00:00"),
-                                    end: new Date(currentDate + "T23:59:59")
+                                    start: today,
+                                    end: tomorrow
                                 };
                             });
 
