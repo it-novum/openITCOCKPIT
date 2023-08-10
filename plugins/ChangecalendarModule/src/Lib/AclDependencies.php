@@ -13,18 +13,15 @@ class AclDependencies extends PluginAclDependencies {
     public function __construct() {
         parent::__construct();
 
-        $this
-            ->allow('ChangecalendarsController', 'index')
-            ->allow('ChangecalendarsController', 'view')
-            ->allow('ChangecalendarsController', 'add')
-            ->allow('ChangecalendarsController', 'edit');
-
 
         ///////////////////////////////
         //    Add dependencies       //
         //////////////////////////////
         $this
-            ->dependency('ChangecalendarsController', 'delete', 'ChangecalendarsController', 'edit')
-            ->dependency('ChangecalendarsController', 'widget', 'ChangecalendarsController', 'index');
+            ->dependency('Changecalendars', 'edit', 'Changecalendars', 'delete')
+            ->dependency('Changecalendars', 'edit', 'Changecalendars', 'events')
+            ->dependency('Changecalendars', 'edit', 'Changecalendars', 'add')
+            ->dependency('Changecalendars', 'edit', 'Changecalendars', 'deleteEvent')
+            ->dependency('Changecalendars', 'index', 'Changecalendars', 'widget');
     }
 }
