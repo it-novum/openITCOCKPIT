@@ -165,6 +165,19 @@
                                                 <label class="custom-control-label"
                                                        for="FilterDeactivate"><?php echo __('Deactivate'); ?></label>
                                             </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="FilterShowServices"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-false-value="0"
+                                                       ng-true-value="1"
+                                                       ng-model="filter.showServices"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="FilterShowServices"><?php echo __('Show Services'); ?></label>
+                                            </div>
 
                                         </div>
                                     </fieldset>
