@@ -16,7 +16,7 @@ class DefaultRolePermissions implements DefaultRolePermissionsInterface {
     public function getDefaultRolePermissions() {
         return [
             'Viewer' => [
-                'Changecalendars' => ['index', 'view', 'edit'],
+                'Changecalendars' => ['index'],
             ]
         ];
     }
