@@ -22,6 +22,7 @@ class AclDependencies extends PluginAclDependencies {
             ->dependency('Changecalendars', 'edit', 'Changecalendars', 'events')
             ->dependency('Changecalendars', 'edit', 'Changecalendars', 'add')
             ->dependency('Changecalendars', 'edit', 'Changecalendars', 'deleteEvent')
-            ->dependency('Changecalendars', 'index', 'Changecalendars', 'widget');
+            ->dependency('Changecalendars', 'index', 'Changecalendars', 'widget')
+            ->dependency('Changecalendars', 'index', 'Changecalendars', 'view');
     }
 }

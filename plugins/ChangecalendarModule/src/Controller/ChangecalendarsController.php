@@ -91,13 +91,49 @@ class ChangecalendarsController extends AppController {
     }
 
     /**
+     * View method
+     *
+     * @param string|null $id Changecalendar id.
+     */
+    public function view($id = null): void {
+        if (!$this->request->is('get')) {
+            throw new MethodNotAllowedException('Only GET is allowed');
+        }
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var ChangecalendarsTable $ChangecalendarsTable */
+        $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
+
+        if (!$ChangecalendarsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid changeCalendar'));
+        }
+
+        $changeCalendar = $ChangecalendarsTable->getCalendarByIdForEdit($id);
+
+        if (!$this->allowedByContainerId($changeCalendar['container_id'])) {
+            $this->render403();
+            return;
+        }
+
+        $events = $changeCalendar['changecalendar_events'];
+
+        unset($changeCalendar['changecalendar_events']);
+
+        $this->set('changeCalendar', $changeCalendar);
+        $this->set('events', $events);
+        $this->viewBuilder()->setOption('serialize', ['changeCalendar', 'events']);
+    }
+
+    /**
      * Edit method
      *
      * @param string|null $id Changecalendar id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function edit($id = null) {
+    public function edit($id = null): void {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -119,10 +155,7 @@ class ChangecalendarsController extends AppController {
 
         if ($this->request->is('get')) {
             $events = $changeCalendar['changecalendar_events'];
-            //Fix name for json/js
-
             unset($changeCalendar['changecalendar_events']);
-
             $this->set('changeCalendar', $changeCalendar);
             $this->set('events', $events);
             $this->viewBuilder()->setOption('serialize', ['changeCalendar', 'events']);
