@@ -12,6 +12,7 @@ use Cake\ORM\TableRegistry;
 use ChangecalendarModule\Model\Table\ChangecalendarEventsTable;
 use ChangecalendarModule\Model\Table\ChangecalendarsTable;
 use DateTime;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -124,6 +125,11 @@ class ChangecalendarsController extends AppController {
         unset($changeCalendar['changecalendar_events']);
 
         $this->set('changeCalendar', $changeCalendar);
+        $User = new User($this->getUser());
+        foreach($events as $index => $event) {
+            $events[$index]['start']->setTimeZone($User->getTimezone());
+            $events[$index]['end']->setTimeZone($User->getTimezone());
+        }
         $this->set('events', $events);
         $this->viewBuilder()->setOption('serialize', ['changeCalendar', 'events']);
     }
@@ -155,6 +161,13 @@ class ChangecalendarsController extends AppController {
 
         if ($this->request->is('get')) {
             $events = $changeCalendar['changecalendar_events'];
+
+            $User = new User($this->getUser());
+            foreach($events as $index => $event) {
+                $events[$index]['start']->setTimeZone($User->getTimezone());
+                $events[$index]['end']->setTimeZone($User->getTimezone());
+            }
+
             unset($changeCalendar['changecalendar_events']);
             $this->set('changeCalendar', $changeCalendar);
             $this->set('events', $events);
