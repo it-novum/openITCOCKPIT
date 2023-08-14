@@ -118,9 +118,10 @@ class ChangelogsTable extends Table {
      * @param array $MY_RIGHTS
      * @param bool $includeUser
      * @param bool $enableHydration
+     * @param bool $showInherit Use me to show inheritance of the main element queried. E.g. Hosts->Services.
      * @return array
      */
-    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $enableHydration = true) {
+    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $enableHydration = true, bool $showInherit = false) {
         $contain = ['Containers'];
         $select = [
             'id',
@@ -164,12 +165,17 @@ class ChangelogsTable extends Table {
         $where['Changelogs.created <='] = date('Y-m-d H:i:s', $ChangelogsFilter->getTo());
 
         // If only a host is queried and the services shall be shown, too...
-        if ($where['Changelogs.Model'] = ['Host']) {
+        if ($showInherit && $where['Changelogs.Model'] = ['Host']) {
             $hostId = $where['Changelogs.object_id'];
             unset($where['Changelogs.objecttype_id']);
             unset($where['Changelogs.Model']);
             unset($where['Changelogs.object_id']);
             $HostsTable = new ServicesTable();
+
+            $serviceIds = [];
+            foreach($HostsTable->getServicesByHostIdForCopy($hostId) as $service) {
+                $serviceIds[] = $service['id'];
+            }
 
             // remove ['id'>1, ...
             $where[] = [
@@ -180,7 +186,7 @@ class ChangelogsTable extends Table {
                     ],
                     [
                         'Changelogs.Model'        => 'service',
-                        'Changelogs.object_id IN' => $HostsTable->getServicesByHostIdForCopy($hostId)
+                        'Changelogs.object_id IN' => $serviceIds
                     ]
                 ]
             ];
@@ -195,9 +201,6 @@ class ChangelogsTable extends Table {
                 ['Changelogs.id' => 'desc']
             )
         );
-
-        FileDebugger::dieQuery($query);
-        var_dump($query->all());
 
         if ($PaginateOMat === null) {
             //Just execute query
