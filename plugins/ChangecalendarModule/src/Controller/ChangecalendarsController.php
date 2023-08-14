@@ -126,7 +126,7 @@ class ChangecalendarsController extends AppController {
 
         $this->set('changeCalendar', $changeCalendar);
         $User = new User($this->getUser());
-        foreach($events as $index => $event) {
+        foreach ($events as $index => $event) {
             $events[$index]['start']->setTimeZone($User->getTimezone());
             $events[$index]['end']->setTimeZone($User->getTimezone());
         }
@@ -163,7 +163,7 @@ class ChangecalendarsController extends AppController {
             $events = $changeCalendar['changecalendar_events'];
 
             $User = new User($this->getUser());
-            foreach($events as $index => $event) {
+            foreach ($events as $index => $event) {
                 $events[$index]['start']->setTimeZone($User->getTimezone());
                 $events[$index]['end']->setTimeZone($User->getTimezone());
             }
@@ -306,6 +306,14 @@ class ChangecalendarsController extends AppController {
         }
 
         if ($ChangecalendarsTable->delete($calendar)) {
+            /** @var ChangecalendarEventsTable $ChangecalendarEventsTable */
+            $ChangecalendarEventsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.ChangecalendarEvents');
+            $events = $ChangecalendarEventsTable->find()->where(['changecalendar_id' => $id])->all();
+
+            foreach ($events as $event) {
+                $ChangecalendarEventsTable->delete($event);
+            }
+
             $this->set('success', true);
             $this->set('message', __('Changecalendar deleted successfully'));
             $this->viewBuilder()->setOption('serialize', ['success', 'message']);
