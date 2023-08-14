@@ -165,7 +165,9 @@
                                                 <label class="custom-control-label"
                                                        for="FilterDeactivate"><?php echo __('Deactivate'); ?></label>
                                             </div>
-                                            <div class="custom-control custom-checkbox">
+                                            <div
+                                                ng-if="objecttypeId == 256"
+                                                class="custom-control custom-checkbox">
                                                 <input type="checkbox"
                                                        id="FilterShowServices"
                                                        class="custom-control-input"
