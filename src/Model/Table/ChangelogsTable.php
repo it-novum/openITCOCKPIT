@@ -13,6 +13,7 @@ use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\CakePHP\Set;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ChangelogsFilter;
 
@@ -131,6 +132,8 @@ class ChangelogsTable extends Table {
             'name',
             'created'
         ];
+
+
         if ($includeUser === true) {
             $select[] = 'user_id';
             $select[] = 'Users.id';
@@ -159,15 +162,42 @@ class ChangelogsTable extends Table {
 
         $where['Changelogs.created >='] = date('Y-m-d H:i:s', $ChangelogsFilter->getFrom());
         $where['Changelogs.created <='] = date('Y-m-d H:i:s', $ChangelogsFilter->getTo());
+
+        // If only a host is queried and the services shall be shown, too...
+        if ($where['Changelogs.Model'] = ['Host']) {
+            $hostId = $where['Changelogs.object_id'];
+            unset($where['Changelogs.objecttype_id']);
+            unset($where['Changelogs.Model']);
+            unset($where['Changelogs.object_id']);
+            $HostsTable = new ServicesTable();
+
+            // remove ['id'>1, ...
+            $where[] = [
+                'OR' => [
+                    [
+                        'Changelogs.Model'     => 'host',
+                        'Changelogs.object_id' =>  $hostId
+                    ],
+                    [
+                        'Changelogs.Model'        => 'service',
+                        'Changelogs.object_id IN' => $HostsTable->getServicesByHostIdForCopy($hostId)
+                    ]
+                ]
+            ];
+        }
+
         $query->group(['Changelogs.id']);
         $query->where($where);
+
         $query->order(
             array_merge(
                 $ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'),
                 ['Changelogs.id' => 'desc']
             )
-
         );
+
+        FileDebugger::dieQuery($query);
+        var_dump($query->all());
 
         if ($PaginateOMat === null) {
             //Just execute query
