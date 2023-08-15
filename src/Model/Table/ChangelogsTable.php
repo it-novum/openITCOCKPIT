@@ -165,28 +165,24 @@ class ChangelogsTable extends Table {
         $where['Changelogs.created <='] = date('Y-m-d H:i:s', $ChangelogsFilter->getTo());
 
         // If only a host is queried and the services shall be shown, too...
-        if ($showInherit && $where['Changelogs.Model'] = ['Host']) {
+        if ($showInherit && $where['Changelogs.objecttype_id'] == OBJECT_HOST) {
             $hostId = $where['Changelogs.object_id'];
-            unset($where['Changelogs.objecttype_id']);
-            unset($where['Changelogs.Model']);
+            $where['Changelogs.objecttype_id IN'] = [OBJECT_HOST, OBJECT_SERVICE];
             unset($where['Changelogs.object_id']);
-            $HostsTable = new ServicesTable();
-
-            $serviceIds = [];
-            foreach($HostsTable->getServicesByHostIdForCopy($hostId) as $service) {
-                $serviceIds[] = $service['id'];
-            }
-
-            // remove ['id'>1, ...
+            unset($where['Changelogs.objecttype_id']);
             $where[] = [
                 'OR' => [
                     [
                         'Changelogs.Model'     => 'host',
-                        'Changelogs.object_id' =>  $hostId
+                        'Changelogs.object_id' => $hostId
                     ],
                     [
                         'Changelogs.Model'        => 'service',
-                        'Changelogs.object_id IN' => $serviceIds
+                        'Changelogs.object_id IN' => $query->newExpr(
+                            'SELECT GROUP_CONCAT(Services.id SEPARATOR ",")
+                                        FROM services AS Services
+                                        WHERE Services.host_id = ' . (int)$hostId
+                        )
                     ]
                 ]
             ];
@@ -194,7 +190,6 @@ class ChangelogsTable extends Table {
 
         $query->group(['Changelogs.id']);
         $query->where($where);
-
         $query->order(
             array_merge(
                 $ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'),
@@ -790,5 +785,3 @@ class ChangelogsTable extends Table {
         return $dataUnserialized;
     }
 }
-
-
