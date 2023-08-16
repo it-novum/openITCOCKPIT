@@ -44,8 +44,18 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
             window.localStorage.setItem('lastPage', '/' + location.substring(location.indexOf('#!/')));
         }
 
+        // Option for debugging purpose
+        var disable_force_redirect_sso_users_to_login_screen = false;
+        if($scope.getValueFromQueryString('disable_redirect', false)){
+            disable_force_redirect_sso_users_to_login_screen = true;
+        }
+
         $http.get("/users/login.json",
-            {}
+            {
+                params: {
+                    disable_force_redirect_sso_users_to_login_screen: disable_force_redirect_sso_users_to_login_screen
+                }
+            }
         ).then(function(result){
             $scope._csrfToken = result.data._csrfToken;
             $scope.hasValidSslCertificate = result.data.hasValidSslCertificate;
@@ -93,6 +103,20 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
         }
         //window.localStorage.removeItem(key);
         return val;
+    };
+
+    $scope.getValueFromQueryString = function(varName, defaultReturn){
+        defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
+        var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
+        if(sourceUrl.includes('/#!/')){
+            sourceUrl = sourceUrl.replace('/#!', '');
+        }
+        var query = parseUri(sourceUrl).queryKey;
+        if(query.hasOwnProperty(varName)){
+            return query[varName];
+        }
+
+        return defaultReturn;
     };
 
     $scope.submit = function(){
