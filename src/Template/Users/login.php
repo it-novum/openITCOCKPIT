@@ -27,6 +27,7 @@
  * @var \App\View\AppView $this
  * @var bool $isSsoEnabled
  * @var bool $forceRedirectSsousersToLoginScreen
+ * @var bool $disableForceRedirectSsoUsers
  */
 
 $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
@@ -46,7 +47,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
     <h4 class="fw-300 c-white mB-40"><?= __('Login') ?></h4>
 
-    <?php if ($isSsoEnabled === true): ?>
+    <?php if ( ($disableForceRedirectSsoUsers === true) || ($isSsoEnabled === true) ): ?>
         <div class="form-group">
             <a
                     id="sso-redirect-href"

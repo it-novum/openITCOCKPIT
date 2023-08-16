@@ -53,7 +53,7 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
         $http.get("/users/login.json",
             {
                 params: {
-                    disable_force_redirect_sso_users_to_login_screen: disable_force_redirect_sso_users_to_login_screen
+                    disable_redirect: disable_force_redirect_sso_users_to_login_screen
                 }
             }
         ).then(function(result){

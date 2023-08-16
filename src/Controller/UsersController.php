@@ -84,8 +84,9 @@ class UsersController extends AppController {
         if ($isSsoEnabled === true) {
             $forceRedirectSsousersToLoginScreen = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE')->get('value') === '1';
             // Option for debugging purpose
-            if ($this->getRequest()->getQuery('disable_force_redirect_sso_users_to_login_screen', false) === 'true') {
+            if ($this->getRequest()->getQuery('disable_redirect', false) === 'true') {
                 $forceRedirectSsousersToLoginScreen = false;
+                $this->set('disableForceRedirectSsoUsers', true);
             }
         }
 
