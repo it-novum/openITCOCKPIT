@@ -135,7 +135,14 @@ class MonitoringEngine {
         'NUMSVCPSVCHK60M',
         'NUMSVCCHECKED',
         'NUMHSTCHECKED',
-        'PROGRUNTIME'
+        'PROGRUNTIME',
+        'NUMHSTUP',
+        'NUMHSTDOWN',
+        'NUMHSTUNR',
+        'NUMSVCOK',
+        'NUMSVCWARN',
+        'NUMSVCCRIT',
+        'NUMSVCUNKN',
     ];
 
     private $delimiter = '|';

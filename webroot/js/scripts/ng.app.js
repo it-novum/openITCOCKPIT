@@ -1581,6 +1581,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 templateUrl: "/messagesOtd/edit.html",
                 controller: "MessagesOTDEditController"
             })
+
+            .state('MetricsInfo', {
+                url: '/metrics/info',
+                templateUrl: "/metrics/info.html",
+                controller: "MetricsInfoController"
+            })
     })
 
     /*
