@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http, $sce, BBParserService){
+angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http, $sce, BBParserService, $q){
     return {
         restrict: 'E', templateUrl: '/changecalendar_module/changecalendars/widget.html', scope: {
             'widget': '='
@@ -16,15 +16,25 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
             $scope.displayType = 'dayGridMonth';
 
             $scope.load = function(){
-                $http.get("/changecalendar_module/changecalendars/widget.json", {
-                    params: {
-                        'angular': true, 'widgetId': $scope.widget.id
-                    }
-                }).then(function(result){
+
+                $q.all([
+
+                    $http.get("/changecalendar_module/changecalendars/widget.json", {
+                        params: {
+                            'angular': true, 'widgetId': $scope.widget.id
+                        }
+                    }),
+                    $http.get("/angular/user_timezone.json", {
+                        params: {
+                            'angular': true
+                        }
+                    })
+                ]).then(function(results){
                     $scope.init = false;
-                    $scope.currentChangeCalendars = result.data.changeCalendars;
-                    $scope.displayType = result.data.displayType;
+                    $scope.currentChangeCalendars = results[0].data.changeCalendars;
+                    $scope.displayType = results[0].data.displayType;
                     $scope.changeCalendarIds = [];
+                    $scope.timeZone   = results[1].data.timezone;
 
                     let evenz = [];
                     for(var index in $scope.currentChangeCalendars) {
@@ -54,6 +64,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
             $scope.renderCalendar = function(){
                 var calendarEl = document.getElementById('changecalendar-'+$scope.widget.id);
                 $scope.calendar = new FullCalendar.Calendar(calendarEl, {
+                    timeZone: $scope.timeZone.user_timezone,
                     plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
                     header: {
                         left: 'prev,next today',
@@ -92,15 +103,31 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                 // move around
                 $('body').append(myModal);
 
-                // Move to end of body tag
+                // Fullcalendar ignores the setting for it's original time zone it was using.
+                // FC still uses the correct time, BUT claims it is in UTC zone.
+                let newStart = luxon.DateTime.fromMillis(event.start.getTime(), {zone: 'UTC'});
+                let newEnd   = luxon.DateTime.fromMillis(event.end.getTime(),   {zone: 'UTC'});
+                // So we simply add the timeZone WITHOUT re-calculating the actual time.
+                // We change the ZONE. NOT the TIME.
+                newStart = newStart.setZone($scope.timeZone.user_timezone, {keepLocalTime: true});
+                newEnd   =   newEnd.setZone($scope.timeZone.user_timezone, {keepLocalTime: true});
+
+                let myStart = new Date(newStart.get('year'), newStart.get('month')-1, newStart.get('day'))
+                myStart.setHours(newStart.get('hour'), newStart.get('minute'), newStart.get('second'))
+
+
+                let myEnd = new Date(newEnd.get('year'), newEnd.get('month')-1, newEnd.get('day'))
+                myEnd.setHours(newEnd.get('hour'), newEnd.get('minute'), newEnd.get('second'))
+
                 $scope.modifyEvent = {
                     id: event.id,
                     title: event.title,
-                    start: event.start,
-                    end: event.end,
+                    start: myStart,
+                    end: myEnd,
                     description: event.extendedProps.description,
                     context: event.extendedProps.context
                 };
+
 
                 $scope.descriptionPreview = BBParserService.parse($scope.modifyEvent.description);
 

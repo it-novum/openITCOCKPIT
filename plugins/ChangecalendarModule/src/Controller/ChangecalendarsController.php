@@ -12,6 +12,7 @@ use Cake\ORM\TableRegistry;
 use ChangecalendarModule\Model\Table\ChangecalendarEventsTable;
 use ChangecalendarModule\Model\Table\ChangecalendarsTable;
 use DateTime;
+use DateTimeZone;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
@@ -20,13 +21,15 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  *
  * @method \ChangecalendarModule\Model\Entity\Changecalendar[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class ChangecalendarsController extends AppController {
+class ChangecalendarsController extends AppController
+{
     /**
      * Index method
      *
      * @return \Cake\Http\Response|null|void Renders view
      */
-    public function index() {
+    public function index()
+    {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -61,7 +64,8 @@ class ChangecalendarsController extends AppController {
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add() {
+    public function add()
+    {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -96,7 +100,8 @@ class ChangecalendarsController extends AppController {
      *
      * @param string|null $id Changecalendar id.
      */
-    public function view($id = null): void {
+    public function view($id = null): void
+    {
         if (!$this->request->is('get')) {
             throw new MethodNotAllowedException('Only GET is allowed');
         }
@@ -120,17 +125,14 @@ class ChangecalendarsController extends AppController {
             return;
         }
 
-        $events = $changeCalendar['changecalendar_events'];
-
-        unset($changeCalendar['changecalendar_events']);
-
-        $this->set('changeCalendar', $changeCalendar);
         $User = new User($this->getUser());
-        foreach ($events as $index => $event) {
-            $events[$index]['start']->setTimeZone($User->getTimezone());
-            $events[$index]['end']->setTimeZone($User->getTimezone());
+        $UserTime = $User->getUserTime();
+
+        foreach ($changeCalendar['changecalendar_events'] as $index => $event) {
+            $changeCalendar['changecalendar_events'][$index]['start'] = $UserTime->customFormat('c', $changeCalendar['changecalendar_events'][$index]['start']);
+            $changeCalendar['changecalendar_events'][$index]['end'] = $UserTime->customFormat('c', $changeCalendar['changecalendar_events'][$index]['end']);
         }
-        $this->set('events', $events);
+        $this->set('changeCalendar', $changeCalendar);
         $this->viewBuilder()->setOption('serialize', ['changeCalendar', 'events']);
     }
 
@@ -139,7 +141,8 @@ class ChangecalendarsController extends AppController {
      *
      * @param string|null $id Changecalendar id.
      */
-    public function edit($id = null): void {
+    public function edit($id = null): void
+    {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -160,18 +163,16 @@ class ChangecalendarsController extends AppController {
         }
 
         if ($this->request->is('get')) {
-            $events = $changeCalendar['changecalendar_events'];
+            $User     = new User($this->getUser());
+            $UserTime = $User->getUserTime();
 
-            $User = new User($this->getUser());
-            foreach ($events as $index => $event) {
-                $events[$index]['start']->setTimeZone($User->getTimezone());
-                $events[$index]['end']->setTimeZone($User->getTimezone());
+            foreach ($changeCalendar['changecalendar_events'] as $index => $event) {
+                $changeCalendar['changecalendar_events'][$index]['start'] = $UserTime->customFormat('c', $changeCalendar['changecalendar_events'][$index]['start']);
+                $changeCalendar['changecalendar_events'][$index]['end'] = $UserTime->customFormat('c', $changeCalendar['changecalendar_events'][$index]['end']);
             }
 
-            unset($changeCalendar['changecalendar_events']);
             $this->set('changeCalendar', $changeCalendar);
-            $this->set('events', $events);
-            $this->viewBuilder()->setOption('serialize', ['changeCalendar', 'events']);
+            $this->viewBuilder()->setOption('serialize', ['changeCalendar']);
             return;
         }
 
@@ -204,7 +205,8 @@ class ChangecalendarsController extends AppController {
      * @param $id
      * @return void
      */
-    public function deleteEvent($id = null): void {
+    public function deleteEvent($id = null): void
+    {
         /** @var ChangecalendarsTable $ChangecalendarsTable */
         $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
@@ -219,7 +221,7 @@ class ChangecalendarsController extends AppController {
 
         $Entity = $ChangecalendarEventsTable->find()
             ->where([
-                'id'                => $event['id'],
+                'id' => $event['id'],
                 'changecalendar_id' => $id
             ])->firstOrFail();
         $ChangecalendarEventsTable->delete($Entity);
@@ -236,36 +238,40 @@ class ChangecalendarsController extends AppController {
      * @return void
      * @throws \Exception
      */
-    public function events($id = null): void {
+    public function events($id = null): void
+    {
         /** @var ChangecalendarsTable $ChangecalendarsTable */
         $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
         if (!$ChangecalendarsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid Changecalendar'));
         }
+        $User     = new User($this->getUser());
+        $UserTime = $User->getUserTime();
 
         if ($this->request->is('post')) {
             $event = $this->request->getData('event');
+            $UserTimeZone = new DateTimeZone($User->getTimezone());
+
 
             if (!isset($event['title']) || !isset($event['start']) || !isset($event['end'])) {
                 return;
             }
 
             $tmpEvent = [
-                'title'             => $event['title'],
-                'start'             => (new DateTime((string)($event['start'])))->format('Y-m-d H:i:s'),
-                'end'               => (new DateTime((string)($event['end'])))->format('Y-m-d H:i:s'),
-                'description'       => $event['description'] ?? '',
-                'id'                => $event['id'] ?? null,
+                'title' => $event['title'],
+                'start' => (new DateTime((string)($event['start']), $UserTimeZone))->setTimezone(new DateTimeZone('Europe/Berlin'))->format('Y-m-d H:i:s'),
+                'end' => (new DateTime((string)($event['end']), $UserTimeZone))->setTimezone(new DateTimeZone('Europe/Berlin'))->format('Y-m-d H:i:s'),
+                'description' => $event['description'] ?? '',
+                'id' => $event['id'] ?? null,
                 'changecalendar_id' => $id
             ];
-
 
             /** @var ChangecalendarEventsTable $ChangecalendarEventsTable */
             $ChangecalendarEventsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.ChangecalendarEvents');
             if (!empty($event['id'])) {
                 $Entity = $ChangecalendarEventsTable->find()->where([
-                    'id'                => $event['id'],
+                    'id' => $event['id'],
                     'changecalendar_id' => $id
                 ])->first();
                 $Entity = $ChangecalendarEventsTable->patchEntity($Entity, $tmpEvent);
@@ -277,6 +283,11 @@ class ChangecalendarsController extends AppController {
         }
 
         $changeCalendar = $ChangecalendarsTable->getCalendarByIdForEdit($id);
+        foreach ($changeCalendar['changecalendar_events'] as $index => $event) {
+            $changeCalendar['changecalendar_events'][$index]['start'] = $UserTime->customFormat('c', $changeCalendar['changecalendar_events'][$index]['start']);
+            $changeCalendar['changecalendar_events'][$index]['end'] = $UserTime->customFormat('c', $changeCalendar['changecalendar_events'][$index]['end']);
+        }
+
         $this->set('changeCalendar', $changeCalendar);
         $this->viewBuilder()->setOption('serialize', ['changeCalendar']);
     }
@@ -286,7 +297,8 @@ class ChangecalendarsController extends AppController {
      * @param $id
      * @return void
      */
-    public function delete($id = null): void {
+    public function delete($id = null): void
+    {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -330,7 +342,8 @@ class ChangecalendarsController extends AppController {
      * I will return the correct calendars and events to show for the widget.
      * @return void
      */
-    public function widget(): void {
+    public function widget(): void
+    {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -360,6 +373,7 @@ class ChangecalendarsController extends AppController {
             $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
             $changeCalendars = [];
+            $User = new User($this->getUser());
             foreach ($changeCalendarIds as $changeCalendarId) {
                 if (!$ChangecalendarsTable->existsById($changeCalendarId)) {
                     continue;
@@ -371,7 +385,11 @@ class ChangecalendarsController extends AppController {
                 $changeCalendars[$changeCalendarId] = $editCalendar;
                 foreach ($changeCalendars[$changeCalendarId]['changecalendar_events'] as $index => $event) {
                     $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['backgroundColor'] = $changeCalendars[$changeCalendarId]['colour'];
+                    $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['start'] = $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['start']->setTimeZone(new DateTimeZone($User->getTimezone()));
+                    $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['end'] = $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['end']->setTimeZone(new DateTimeZone($User->getTimezone()));
                 }
+
+                
 
             }
 
@@ -389,7 +407,7 @@ class ChangecalendarsController extends AppController {
 
             $json = [
                 'changecalendar_ids' => (array)$this->request->getData('changecalendar_ids', [0]),
-                'displayType'        => (string)$this->request->getData('displayType', 'month')
+                'displayType' => (string)$this->request->getData('displayType', 'month')
             ];
 
             $Entity = $WidgetsTable->get($widgetId);
