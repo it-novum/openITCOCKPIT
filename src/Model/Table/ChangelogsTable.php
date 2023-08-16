@@ -158,7 +158,6 @@ class ChangelogsTable extends Table {
         $where = $ChangelogsFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {
             $where['Containers.id IN'] = $MY_RIGHTS;
-            $select[] = 'Containers.id';
         }
 
         $where['Changelogs.created >='] = date('Y-m-d H:i:s', $ChangelogsFilter->getFrom());
@@ -170,6 +169,16 @@ class ChangelogsTable extends Table {
             $where['Changelogs.objecttype_id IN'] = [OBJECT_HOST, OBJECT_SERVICE];
             unset($where['Changelogs.object_id']);
             unset($where['Changelogs.objecttype_id']);
+
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            $subSelect = $ServicesTable->subquery();
+            $subSelect->select([
+                'Services.id'
+            ])
+                ->where(['Services.host_id' => $hostId]);
+
             $where[] = [
                 'OR' => [
                     [
@@ -178,11 +187,7 @@ class ChangelogsTable extends Table {
                     ],
                     [
                         'Changelogs.Model'        => 'service',
-                        'Changelogs.object_id IN' => $query->newExpr(
-                            'SELECT GROUP_CONCAT(Services.id SEPARATOR ",")
-                                        FROM services AS Services
-                                        WHERE Services.host_id = ' . (int)$hostId
-                        )
+                        'Changelogs.object_id IN' => $subSelect
                     ]
                 ]
             ];
