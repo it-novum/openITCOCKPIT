@@ -13,6 +13,7 @@ use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\CakePHP\Set;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ChangelogsFilter;
 
@@ -117,9 +118,10 @@ class ChangelogsTable extends Table {
      * @param array $MY_RIGHTS
      * @param bool $includeUser
      * @param bool $enableHydration
+     * @param bool $showInherit Use me to show inheritance of the main element queried. E.g. Hosts->Services.
      * @return array
      */
-    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $enableHydration = true) {
+    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $enableHydration = true, bool $showInherit = false) {
         $contain = ['Containers'];
         $select = [
             'id',
@@ -131,6 +133,8 @@ class ChangelogsTable extends Table {
             'name',
             'created'
         ];
+
+
         if ($includeUser === true) {
             $select[] = 'user_id';
             $select[] = 'Users.id';
@@ -154,11 +158,41 @@ class ChangelogsTable extends Table {
         $where = $ChangelogsFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {
             $where['Containers.id IN'] = $MY_RIGHTS;
-            $select[] = 'Containers.id';
         }
 
         $where['Changelogs.created >='] = date('Y-m-d H:i:s', $ChangelogsFilter->getFrom());
         $where['Changelogs.created <='] = date('Y-m-d H:i:s', $ChangelogsFilter->getTo());
+
+        // If only a host is queried and the services shall be shown, too...
+        if ($showInherit && $where['Changelogs.objecttype_id'] == OBJECT_HOST) {
+            $hostId = $where['Changelogs.object_id'];
+            $where['Changelogs.objecttype_id IN'] = [OBJECT_HOST, OBJECT_SERVICE];
+            unset($where['Changelogs.object_id']);
+            unset($where['Changelogs.objecttype_id']);
+
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            $subSelect = $ServicesTable->subquery();
+            $subSelect->select([
+                'Services.id'
+            ])
+                ->where(['Services.host_id' => $hostId]);
+
+            $where[] = [
+                'OR' => [
+                    [
+                        'Changelogs.Model'     => 'host',
+                        'Changelogs.object_id' => $hostId
+                    ],
+                    [
+                        'Changelogs.Model'        => 'service',
+                        'Changelogs.object_id IN' => $subSelect
+                    ]
+                ]
+            ];
+        }
+
         $query->group(['Changelogs.id']);
         $query->where($where);
         $query->order(
@@ -166,7 +200,6 @@ class ChangelogsTable extends Table {
                 $ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'),
                 ['Changelogs.id' => 'desc']
             )
-
         );
 
         if ($PaginateOMat === null) {
@@ -757,5 +790,3 @@ class ChangelogsTable extends Table {
         return $dataUnserialized;
     }
 }
-
-

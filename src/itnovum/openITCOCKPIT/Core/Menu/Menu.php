@@ -714,6 +714,16 @@ class Menu {
                     [],
                     6
                 ))
+                ->addLink(new MenuLink(
+                    __('Prometheus Metrics'),
+                    'MetricsInfo',
+                    'metrics',
+                    'index',
+                    '',
+                    'fa-solid fa-heart-pulse',
+                    [],
+                    7
+                ))
             );
 
 

@@ -165,7 +165,25 @@
                                                 <label class="custom-control-label"
                                                        for="FilterDeactivate"><?php echo __('Deactivate'); ?></label>
                                             </div>
-
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-xs-12 col-lg-3">
+                                    <fieldset>
+                                        <h5><?php echo __('Show services'); ?></h5>
+                                        <div ng-if="objecttypeId == <?= OBJECT_HOST; ?>"
+                                             class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="FilterShowServices"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-false-value="0"
+                                                   ng-true-value="1"
+                                                   ng-model="filter.showServices"
+                                                   ng-model-options="{debounce: 500}">
+                                            <label class="custom-control-label"
+                                                   for="FilterShowServices"><?= __('Yes'); ?></label>
                                         </div>
                                     </fieldset>
                                 </div>
@@ -203,5 +221,3 @@
         </div>
     </div>
 </div>
-
-
