@@ -87,7 +87,7 @@ class AgentHttpClient {
             $protocol = 'http';
         }
 
-        // e.g.: https://127.0.0.1:3333
+        // e.g.: https://127.0.0.1:3333 or https://[2001:db8::1]:3333 (in case of IPv6)
         $this->baseUrl = sprintf('%s://%s:%s', $protocol, $this->hostaddress, $this->port);
     }
 
