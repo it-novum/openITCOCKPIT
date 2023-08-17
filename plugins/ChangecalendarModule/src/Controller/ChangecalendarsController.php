@@ -173,6 +173,7 @@ class ChangecalendarsController extends AppController {
 
         if ($this->request->is('post')) {
             $data = $this->request->getData('changeCalendar');
+            unset($data['changecalendar_events']);
 
             $Entity = $ChangecalendarsTable->find()
                 ->where([

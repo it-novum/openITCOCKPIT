@@ -8,7 +8,6 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
         $scope.calendar = null;
         $scope.init = true;
-        $scope.removedEvents = [];
         $scope.colour = '#F0F';
         $scope.post = {
             changeCalendar: {colour: '#F0F'}
@@ -122,30 +121,31 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function () {
-            $q.all([$http.get("/containers/loadContainersForAngular.json", {
-                params: {
-                    'angular': true
-                }
-            }),
+            $q.all([
+                $http.get("/containers/loadContainersForAngular.json", {
+                    params: {
+                        'angular': true
+                    }
+                }),
                 $http.get("/angular/user_timezone.json", {
                     params: {
                         'angular': true
                     }
-                })]).then(function (results) {
+                }),
+                $http.get("/changecalendar_module/changecalendars/edit/" + $scope.id + ".json", {
+                    params: {
+                        'angular': true
+                    }
+                })
+            ]).then(function (results) {
                 $scope.containers = results[0].data.containers;
                 $scope.timeZone = results[1].data.timezone;
                 $scope.init = false;
-            });
-
-            $http.get("/changecalendar_module/changecalendars/edit/" + $scope.id + ".json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function (result) {
                 $scope.post = {
-                    changeCalendar: result.data.changeCalendar, colour: result.data.changeCalendar.colour
+                    changeCalendar: results[2].data.changeCalendar,
+                    colour: results[2].data.changeCalendar.colour
                 };
-                $scope.events = result.data.changeCalendar.changecalendar_events;
+                $scope.events = results[2].data.changeCalendar.changecalendar_events;
                 $scope.init = false;
             });
         };
@@ -379,7 +379,6 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function () {
             $scope.post.events = $scope.events;
-            $scope.post.removedEvents = $scope.removedEvents;
             $http.post("/changecalendar_module/changecalendars/edit/" + $scope.id + ".json?angular=true", $scope.post).then(function (result) {
                 var url = $state.href('ChangecalendarsEdit', {id: result.data.changeCalendar.id});
                 NotyService.genericSuccess({
