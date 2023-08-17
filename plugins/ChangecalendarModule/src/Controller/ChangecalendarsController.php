@@ -21,15 +21,13 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  *
  * @method \ChangecalendarModule\Model\Entity\Changecalendar[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class ChangecalendarsController extends AppController
-{
+class ChangecalendarsController extends AppController {
     /**
      * Index method
      *
      * @return \Cake\Http\Response|null|void Renders view
      */
-    public function index()
-    {
+    public function index() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -64,8 +62,7 @@ class ChangecalendarsController extends AppController
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
-    {
+    public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -100,8 +97,7 @@ class ChangecalendarsController extends AppController
      *
      * @param string|null $id Changecalendar id.
      */
-    public function view($id = null): void
-    {
+    public function view($id = null): void {
         if (!$this->request->is('get')) {
             throw new MethodNotAllowedException('Only GET is allowed');
         }
@@ -141,8 +137,7 @@ class ChangecalendarsController extends AppController
      *
      * @param string|null $id Changecalendar id.
      */
-    public function edit($id = null): void
-    {
+    public function edit($id = null): void {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -163,7 +158,7 @@ class ChangecalendarsController extends AppController
         }
 
         if ($this->request->is('get')) {
-            $User     = new User($this->getUser());
+            $User = new User($this->getUser());
             $UserTime = $User->getUserTime();
 
             foreach ($changeCalendar['changecalendar_events'] as $index => $event) {
@@ -205,8 +200,7 @@ class ChangecalendarsController extends AppController
      * @param $id
      * @return void
      */
-    public function deleteEvent($id = null): void
-    {
+    public function deleteEvent($id = null): void {
         /** @var ChangecalendarsTable $ChangecalendarsTable */
         $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
@@ -221,7 +215,7 @@ class ChangecalendarsController extends AppController
 
         $Entity = $ChangecalendarEventsTable->find()
             ->where([
-                'id' => $event['id'],
+                'id'                => $event['id'],
                 'changecalendar_id' => $id
             ])->firstOrFail();
         $ChangecalendarEventsTable->delete($Entity);
@@ -238,15 +232,14 @@ class ChangecalendarsController extends AppController
      * @return void
      * @throws \Exception
      */
-    public function events($id = null): void
-    {
+    public function events($id = null): void {
         /** @var ChangecalendarsTable $ChangecalendarsTable */
         $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
 
         if (!$ChangecalendarsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid Changecalendar'));
         }
-        $User     = new User($this->getUser());
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         if ($this->request->is('post')) {
@@ -258,12 +251,14 @@ class ChangecalendarsController extends AppController
                 return;
             }
 
+            $ServerTime = new DateTime();
+            $ServerTimeZone = $ServerTime->getTimezone();
             $tmpEvent = [
-                'title' => $event['title'],
-                'start' => (new DateTime((string)($event['start']), $UserTimeZone))->setTimezone(new DateTimeZone('Europe/Berlin'))->format('Y-m-d H:i:s'),
-                'end' => (new DateTime((string)($event['end']), $UserTimeZone))->setTimezone(new DateTimeZone('Europe/Berlin'))->format('Y-m-d H:i:s'),
-                'description' => $event['description'] ?? '',
-                'id' => $event['id'] ?? null,
+                'title'             => $event['title'],
+                'start'             => (new DateTime((string)($event['start']), $UserTimeZone))->setTimezone($ServerTimeZone)->format('Y-m-d H:i:s'),
+                'end'               => (new DateTime((string)($event['end']), $UserTimeZone))->setTimezone($ServerTimeZone)->format('Y-m-d H:i:s'),
+                'description'       => $event['description'] ?? '',
+                'id'                => $event['id'] ?? null,
                 'changecalendar_id' => $id
             ];
 
@@ -271,7 +266,7 @@ class ChangecalendarsController extends AppController
             $ChangecalendarEventsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.ChangecalendarEvents');
             if (!empty($event['id'])) {
                 $Entity = $ChangecalendarEventsTable->find()->where([
-                    'id' => $event['id'],
+                    'id'                => $event['id'],
                     'changecalendar_id' => $id
                 ])->first();
                 $Entity = $ChangecalendarEventsTable->patchEntity($Entity, $tmpEvent);
@@ -297,8 +292,7 @@ class ChangecalendarsController extends AppController
      * @param $id
      * @return void
      */
-    public function delete($id = null): void
-    {
+    public function delete($id = null): void {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -342,8 +336,7 @@ class ChangecalendarsController extends AppController
      * I will return the correct calendars and events to show for the widget.
      * @return void
      */
-    public function widget(): void
-    {
+    public function widget(): void {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -389,7 +382,6 @@ class ChangecalendarsController extends AppController
                     $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['end'] = $changeCalendars[$changeCalendarId]['changecalendar_events'][$index]['end']->setTimeZone(new DateTimeZone($User->getTimezone()));
                 }
 
-                
 
             }
 
@@ -407,7 +399,7 @@ class ChangecalendarsController extends AppController
 
             $json = [
                 'changecalendar_ids' => (array)$this->request->getData('changecalendar_ids', [0]),
-                'displayType' => (string)$this->request->getData('displayType', 'month')
+                'displayType'        => (string)$this->request->getData('displayType', 'month')
             ];
 
             $Entity = $WidgetsTable->get($widgetId);
