@@ -109,7 +109,7 @@ angular.module('openITCOCKPIT')
                     event.end.setDate(event.end.getDate() + diffDays);
 
                     //Add event back to json
-                    $scope.postEvent(event);
+                    $scope.postEvent(event, false);
                 },
                 eventClick: function (info) {
                     $scope.editEventFromModal(info.event);
@@ -199,10 +199,10 @@ angular.module('openITCOCKPIT')
         }
 
         // Store the Event
-        $scope.postEvent = function (event) {
+        $scope.postEvent = function (event, strip = false) {
             postEvent = {
-                start : $scope.stripZone(event.start),
-                end   : $scope.stripZone(event.end),
+                start : strip ? $scope.stripZone(event.start) : event.start,
+                end   : strip ? $scope.stripZone(event.end) : event.end,
                 title : event.title,
                 description: event.description,
                 context: event.context,
@@ -227,7 +227,7 @@ angular.module('openITCOCKPIT')
             }
 
             //Save
-            $scope.postEvent($scope.modifyEvent);
+            $scope.postEvent($scope.modifyEvent, true);
         };
 
         //Hide modal and reset modal form.
