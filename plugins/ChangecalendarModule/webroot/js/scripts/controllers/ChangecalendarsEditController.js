@@ -190,9 +190,12 @@ angular.module('openITCOCKPIT')
                 Hour = ZeroForHour + date.getHours(),
                 Minute = ZeroForMinute + date.getMinutes(),
                 Second = ZeroForSecond + date.getSeconds(),
-                dS = Year + "-" + Month + "-" +  Day + "T" + Hour + ":" + Minute + ":" + Second + "+09:00";
+                Zone = $scope.timeZone.user_offset / 60 / 60,
+                ZeroForZone = Zone < 10 ? '0':'',
+                TimeZone = "+" + ZeroForZone + Zone,
+                dS = Year + "-" + Month + "-" +  Day + "T" + Hour + ":" + Minute + ":" + Second + TimeZone;
 
-            return (dS);
+            return dS;
         }
 
         // Store the Event
