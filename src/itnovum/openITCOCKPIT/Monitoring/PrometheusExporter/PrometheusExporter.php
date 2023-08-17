@@ -219,7 +219,7 @@ class PrometheusExporter {
             'services_total',
             'Total number of services'
         );
-        $gauge->set($stats['HIGHCMDBUF'] ?? 0);
+        $gauge->set($stats['NUMSERVICES'] ?? 0);
 
         $gauge = $registry->registerGauge(
             'naemon',
@@ -316,10 +316,10 @@ class PrometheusExporter {
             $gauge = $registry->registerGauge(
                 'naemon',
                 'active_host_check_last_' . strtolower($k) . '_minutes_total',
-                'Number of total active host checks occurring in last ' . $k . ' minutes'
+                'Number of total active host checks in last ' . $k . ' minutes'
             );
 
-            $v = $stats['NUMACTHSTCHECKS' . $k . 'M'] ?? 0;
+            $v = $stats['NUMHSTACTCHK' . $k . 'M'] ?? 0;
             $gauge->set($v);
 
             $gauge = $registry->registerGauge(
@@ -360,7 +360,7 @@ class PrometheusExporter {
 
             $gauge = $registry->registerGauge(
                 'naemon',
-                'passive_host_check_last_' . strtolower($k) . '_minutes_total',
+                'passive_host_check_occuring_last_' . strtolower($k) . '_minutes_total',
                 'Number of passive host checks occurring in last ' . $k . ' minutes'
             );
 
@@ -369,11 +369,20 @@ class PrometheusExporter {
 
             $gauge = $registry->registerGauge(
                 'naemon',
-                'active_service_check_last_' . strtolower($k) . '_minutes_total',
-                'Number of total active service checks occurring in last ' . $k . ' minutes'
+                'passive_host_check_last_' . strtolower($k) . '_minutes_total',
+                'Number of hosts passively checked in last ' . $k . ' minutes'
             );
 
-            $v = $stats['NUMACTSVCCHECKS' . $k . 'M'] ?? 0;
+            $v = $stats['NUMHSTPSVCHK' . $k . 'M'] ?? 0;
+            $gauge->set($v);
+
+            $gauge = $registry->registerGauge(
+                'naemon',
+                'active_service_check_last_' . strtolower($k) . '_minutes_total',
+                'Number of total active service checks in last ' . $k . ' minutes'
+            );
+
+            $v = $stats['NUMSVCACTCHK' . $k . 'M'] ?? 0;
             $gauge->set($v);
 
             $gauge = $registry->registerGauge(
@@ -405,11 +414,20 @@ class PrometheusExporter {
 
             $gauge = $registry->registerGauge(
                 'naemon',
-                'passive_service_check_last_' . strtolower($k) . '_minutes_total',
+                'passive_service_check_occurring_last_' . strtolower($k) . '_minutes_total',
                 'Number of passive service checks occurring in last ' . $k . ' minutes'
             );
 
             $v = $stats['NUMPSVSVCCHECKS' . $k . 'M'] ?? 0;
+            $gauge->set($v);
+
+            $gauge = $registry->registerGauge(
+                'naemon',
+                'passive_service_check_last_' . strtolower($k) . '_minutes_total',
+                'Number of services passively checked in last ' . $k . ' minutes'
+            );
+
+            $v = $stats['NUMSVCPSVCHK' . $k . 'M'] ?? 0;
             $gauge->set($v);
 
             $gauge = $registry->registerGauge(
