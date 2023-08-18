@@ -5,6 +5,7 @@ angular.module('openITCOCKPIT')
 
         $scope.useScroll = true;
         $scope.currentPage = 1;
+        $scope.showServices = 0;
 
         objectTypes = {
             'TENANT'               : 1 << 0,
@@ -47,6 +48,7 @@ angular.module('openITCOCKPIT')
                     activate: 1,
                     export: 1
                 },
+                showServices: 0,
                 from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30 * 4)),
                 to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 5)),
             };
@@ -92,7 +94,8 @@ angular.module('openITCOCKPIT')
                 'filter[to]': $scope.filter.to,
                 'filter[Changelogs.action][]': getActionsFilter(),
                 'filter[Changelogs.objecttype_id]' : $scope.objecttypeId,
-                'filter[Changelogs.object_id]' : $scope.objectId
+                'filter[Changelogs.object_id]' : $scope.objectId,
+                'filter[ShowServices]' : $scope.filter.showServices
             };
 
             $http.get("/changelogs/index.json", {

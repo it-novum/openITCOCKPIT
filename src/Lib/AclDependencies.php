@@ -666,6 +666,8 @@ class AclDependencies {
             ->dependency('MessagesOtd', 'add', 'MessagesOtd', 'notifyUsersViaMail')
             ->dependency('MessagesOtd', 'edit', 'MessagesOtd', 'notifyUsersViaMail');
 
+        $this
+            ->dependency('Metrics', 'index', 'Metrics', 'info');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {

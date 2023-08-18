@@ -1581,7 +1581,11 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 templateUrl: "/messagesOtd/edit.html",
                 controller: "MessagesOTDEditController"
             })
-
+            .state('MetricsInfo', {
+                url: '/metrics/info',
+                templateUrl: "/metrics/info.html",
+                controller: "MetricsInfoController"
+            })
     })
 
     /*
@@ -1798,10 +1802,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             let $target = $($event.target);
             // Find a possible nested <copy> button
-            if ($target.find('span').length >0) {
+            if($target.find('span').length > 0){
                 $target = $target.find('span.copy-action');
             }
-            let copyText  = $target.data('copy'),
+            let copyText = $target.data('copy'),
                 copiedText = $target.data('copied');
 
             //$target.addClass('fadeOut');

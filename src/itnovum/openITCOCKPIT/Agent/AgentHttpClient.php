@@ -74,6 +74,11 @@ class AgentHttpClient {
         $this->config = $AgentConfiguration->unmarshal($agentconfig->config);
 
         $this->hostaddress = $hostaddress;
+        // Encapsulate IPv6 address in [...] for use in curl URLs
+        if(filter_var($hostaddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false) {
+            $this->hostaddress = sprintf('[%s]', $hostaddress);
+        }
+
         $this->port = $this->config['int']['bind_port'];
 
         $protocol = 'https';
@@ -82,8 +87,8 @@ class AgentHttpClient {
             $protocol = 'http';
         }
 
-        // e.g.: https://127.0.0.1:3333
-        $this->baseUrl = sprintf('%s://%s:%s', $protocol, $hostaddress, $this->port);
+        // e.g.: https://127.0.0.1:3333 or https://[2001:db8::1]:3333 (in case of IPv6)
+        $this->baseUrl = sprintf('%s://%s:%s', $protocol, $this->hostaddress, $this->port);
     }
 
 
