@@ -146,9 +146,7 @@ class CommandsController extends AppController {
         if (!$CommandsTable->existsById($id)) {
             throw new NotFoundException('Command not found');
         }
-        $command = $CommandsTable->get($id, [
-            'contain' => 'Commandarguments'
-        ]);
+        $command = $CommandsTable->getCommandForEdit($id);
         $commandForChangeLog = $command->toArray();
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {

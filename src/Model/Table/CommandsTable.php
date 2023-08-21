@@ -6,6 +6,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Command;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -403,6 +404,23 @@ class CommandsTable extends Table {
 
     public function existsByName(string $name) {
         return $this->exists(['Commands.name' => $name]);
+    }
+
+    /**
+     * @param $id
+     * @return Command|EntityInterface
+     */
+    public function getCommandForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Commands.id' => $id
+            ])
+            ->contain([
+                'Commandarguments'
+            ])
+            ->firstOrFail();
+
+        return $query;
     }
 
     /**
