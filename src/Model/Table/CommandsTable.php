@@ -534,27 +534,28 @@ class CommandsTable extends Table {
             // We have some validation errors
             // Let the caller (probably CakePHP Controller) handle the error
             return $entity;
-        } else {
-            //No errors
-            /** @var ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'add',
-                'Commands',
-                $entity->get('id'),
-                OBJECT_COMMAND,
-                [ROOT_CONTAINER],
-                $userId,
-                $entity->get('name'),
-                $command
-            );
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
-            }
         }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'Commands',
+            $entity->get('id'),
+            OBJECT_COMMAND,
+            [ROOT_CONTAINER],
+            $userId,
+            $entity->get('name'),
+            $command
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
 
         return $entity;
     }
@@ -575,28 +576,28 @@ class CommandsTable extends Table {
             // We have some validation errors
             // Let the caller (probably CakePHP Controller) handle the error
             return $entity;
-        } else {
-            //No errors
-            /** @var ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+        }
 
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'edit',
-                'Commands',
-                $entity->get('id'),
-                OBJECT_COMMAND,
-                [ROOT_CONTAINER],
-                $userId,
-                $entity->get('name'),
-                $newCommand,
-                $oldCommand
-            );
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
-            }
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'Commands',
+            $entity->get('id'),
+            OBJECT_COMMAND,
+            [ROOT_CONTAINER],
+            $userId,
+            $entity->get('name'),
+            $newCommand,
+            $oldCommand
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
         }
 
         return $entity;

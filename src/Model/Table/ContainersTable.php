@@ -1117,7 +1117,7 @@ class ContainersTable extends Table {
 
         // This container types do not have any child containers!
         // Therefore, they can be safely deleted.
-        switch ($containertype_id){
+        switch ($containertype_id) {
             case CT_CONTACTGROUP:
             case CT_HOSTGROUP:
             case CT_SERVICEGROUP:

@@ -740,27 +740,28 @@ class TimeperiodsTable extends Table {
             // We have some validation errors
             // Let the caller (probably CakePHP Controller) handle the error
             return $entity;
-        } else {
-            //No errors
-            /** @var ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'add',
-                'Timeperiods',
-                $entity->get('id'),
-                OBJECT_TIMEPERIOD,
-                [ROOT_CONTAINER],
-                $userId,
-                $entity->get('name'),
-                $timeperiod
-            );
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
-            }
         }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'Timeperiods',
+            $entity->get('id'),
+            OBJECT_TIMEPERIOD,
+            [ROOT_CONTAINER],
+            $userId,
+            $entity->get('name'),
+            $timeperiod
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
 
         return $entity;
     }
@@ -781,28 +782,28 @@ class TimeperiodsTable extends Table {
             // We have some validation errors
             // Let the caller (probably CakePHP Controller) handle the error
             return $entity;
-        } else {
-            //No errors
-            /** @var ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+        }
 
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'edit',
-                'Timeperiods',
-                $entity->get('id'),
-                OBJECT_TIMEPERIOD,
-                [$entity->get('container_id')],
-                $userId,
-                $entity->get('name'),
-                $newTimeperiod,
-                $oldTimeperiod
-            );
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
-            }
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'Timeperiods',
+            $entity->get('id'),
+            OBJECT_TIMEPERIOD,
+            [$entity->get('container_id')],
+            $userId,
+            $entity->get('name'),
+            $newTimeperiod,
+            $oldTimeperiod
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
         }
 
         return $entity;

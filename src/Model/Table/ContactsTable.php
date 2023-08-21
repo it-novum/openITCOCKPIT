@@ -5,6 +5,8 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Contact;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -1275,5 +1277,90 @@ class ContactsTable extends Table {
             ->group(['Contacts.id'])
             ->disableHydration();
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new contact. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Contact $entity The entity that will be saved by the Table
+     * @param array $contact The contact as array ( [ Contact => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Contact
+     */
+    public function createContact(Contact $entity, array $contact, int $userId): Contact {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($contact);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'contacts',
+            $entity->get('id'),
+            OBJECT_CONTACT,
+            $contact['Contact']['containers']['_ids'],
+            $userId,
+            $entity->get('name'),
+            array_merge($extDataForChangelog, $contact)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing contact. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Contact $entity The entity that will be updated by the Table
+     * @param array $newContact The new contact as array ( [ Contact => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldContact The old contact as array ( [ Contact => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Contact
+     */
+    public function updateContact(Contact $entity, array $newContact, array $oldContact, int $userId): Contact {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'contacts',
+            $entity->get('id'),
+            OBJECT_CONTACT,
+            $newContact['Contact']['containers']['_ids'],
+            $userId,
+            $entity->get('name'),
+            array_merge($this->resolveDataForChangelog($newContact), $newContact),
+            array_merge($this->resolveDataForChangelog($oldContact), $oldContact)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
     }
 }
