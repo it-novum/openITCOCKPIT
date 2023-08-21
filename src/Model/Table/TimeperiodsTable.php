@@ -4,6 +4,8 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Timeperiod;
 use Cake\Core\Plugin;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
@@ -721,5 +723,88 @@ class TimeperiodsTable extends Table {
             ])
             ->disableHydration();
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new timeperiod. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Timeperiod $entity The entity that will be saved by the Table
+     * @param array $timeperiod The timeperiod as array ( [ Timeperiod => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Timeperiod
+     */
+    public function createTimeperiod(Timeperiod $entity, array $timeperiod, int $userId): Timeperiod {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        } else {
+            //No errors
+            /** @var ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'add',
+                'Timeperiods',
+                $entity->get('id'),
+                OBJECT_TIMEPERIOD,
+                [ROOT_CONTAINER],
+                $userId,
+                $entity->get('name'),
+                $timeperiod
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+        }
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing timeperiod. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Timeperiod $entity The entity that will be updated by the Table
+     * @param array $newTimeperiod The new timeperiod as array ( [ Timeperiod => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldTimeperiod The old timeperiod as array ( [ Timeperiod => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Timeperiod
+     */
+    public function updateTimeperiod(Timeperiod $entity, array $newTimeperiod, array $oldTimeperiod, int $userId): Timeperiod {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        } else {
+            //No errors
+            /** @var ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'edit',
+                'Timeperiods',
+                $entity->get('id'),
+                OBJECT_TIMEPERIOD,
+                [$entity->get('container_id')],
+                $userId,
+                $entity->get('name'),
+                $newTimeperiod,
+                $oldTimeperiod
+            );
+
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+        }
+
+        return $entity;
     }
 }
