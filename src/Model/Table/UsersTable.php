@@ -799,6 +799,15 @@ class UsersTable extends Table {
     }
 
     /**
+     * @param array $containerIds
+     * @param string $type
+     * @return array
+     */
+    public function getUsersByContainerIdExact($containerId, $type = 'list') {
+       return $this->getUsersByContainerIds($containerId, $type);
+    }
+
+    /**
      * May deprecated functions after fully moving to cakephp 4
      * get the first user
      * @return array
