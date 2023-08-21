@@ -4,6 +4,8 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Command;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -497,5 +499,88 @@ class CommandsTable extends Table {
             ->disableHydration();
 
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new commands. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Command $entity The entity that will be saved by the Table
+     * @param array $command The command as array ( [ Command => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Command
+     */
+    public function createCommand(Command $entity, array $command, int $userId): Command {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        } else {
+            //No errors
+            /** @var ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'add',
+                'Commands',
+                $entity->get('id'),
+                OBJECT_COMMAND,
+                [ROOT_CONTAINER],
+                $userId,
+                $entity->get('name'),
+                $command
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+        }
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing commands. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Command $entity The entity that will be updated by the Table
+     * @param array $newCommand The new command as array ( [ Command => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldCommand The old command as array ( [ Command => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Command
+     */
+    public function updateCommand(Command $entity, array $newCommand, array $oldCommand, int $userId): Command {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        } else {
+            //No errors
+            /** @var ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'edit',
+                'Commands',
+                $entity->get('id'),
+                OBJECT_COMMAND,
+                [ROOT_CONTAINER],
+                $userId,
+                $entity->get('name'),
+                $newCommand,
+                $oldCommand
+            );
+
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+        }
+
+        return $entity;
     }
 }
