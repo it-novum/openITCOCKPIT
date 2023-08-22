@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
+use App\Model\Entity\Changelog;
 use App\Model\Entity\Hostgroup;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
@@ -1400,5 +1401,97 @@ class HostgroupsTable extends Table {
             ];
         }
         return $return;
+    }
+
+    /**
+     * This method provides a unified way to create new hostgroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Hostgroup $entity The entity that will be saved by the Table
+     * @param array $hostgroup The contactgroup as array ( [ Contactgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Hostgroup
+     */
+    public function createHostgroup(Hostgroup $entity, array $hostgroup, int $userId): Hostgroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($hostgroup);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'hostgroups',
+            $entity->get('id'),
+            OBJECT_HOSTGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($hostgroup, $extDataForChangelog)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing hostgroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Hostgroup $entity The entity that will be updated by the Table
+     * @param array $newHostgroup The new hostgroup as array ( [ Hostgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldHostgroup The old hostgroup as array ( [ Hostgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Hostgroup
+     */
+    public function updateHostgroup(Hostgroup $entity, array $newHostgroup, array $oldHostgroup, int $userId): Hostgroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'hostgroups',
+            $entity->get('id'),
+            OBJECT_HOSTGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($this->resolveDataForChangelog($newHostgroup), $newHostgroup),
+            array_merge($this->resolveDataForChangelog($oldHostgroup), $oldHostgroup)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
     }
 }

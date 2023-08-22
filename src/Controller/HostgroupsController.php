@@ -159,7 +159,10 @@ class HostgroupsController extends AppController {
 
             $ContainersTable->acquireLock();
 
-            $HostgroupsTable->save($hostgroup);
+            $requestData = $this->request->getData();
+
+            $hostgroup = $HostgroupsTable->createHostgroup($hostgroup, $requestData, $User->getId());
+
             if ($hostgroup->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostgroup->getErrors());
@@ -167,27 +170,6 @@ class HostgroupsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                $requestData = $this->request->getData();
-                $extDataForChangelog = $HostgroupsTable->resolveDataForChangelog($requestData);
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'hostgroups',
-                    $hostgroup->get('id'),
-                    OBJECT_HOSTGROUP,
-                    $hostgroup->get('container')->get('parent_id'),
-                    $User->getId(),
-                    $hostgroup->get('container')->get('name'),
-                    array_merge($requestData, $extDataForChangelog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 Cache::clear('permissions');
 
@@ -251,7 +233,16 @@ class HostgroupsController extends AppController {
             $hostgroupEntity->setAccess('uuid', false);
             $hostgroupEntity = $HostgroupsTable->patchEntity($hostgroupEntity, $this->request->getData('Hostgroup'));
             $hostgroupEntity->id = $id;
-            $HostgroupsTable->save($hostgroupEntity);
+
+            $requestData = $this->request->getData();
+
+            $hostgroupEntity = $HostgroupsTable->updateHostgroup(
+                $hostgroupEntity,
+                $requestData,
+                $hostgroupForChangelog,
+                $User->getId()
+            );
+
             if ($hostgroupEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostgroupEntity->getErrors());
@@ -259,27 +250,6 @@ class HostgroupsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                $requestData = $this->request->getData();
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'hostgroups',
-                    $hostgroupEntity->id,
-                    OBJECT_HOSTGROUP,
-                    $hostgroupEntity->get('container')->get('parent_id'),
-                    $User->getId(),
-                    $hostgroupEntity->get('container')->get('name'),
-                    array_merge($HostgroupsTable->resolveDataForChangelog($requestData), $requestData),
-                    array_merge($HostgroupsTable->resolveDataForChangelog($hostgroupForChangelog), $hostgroupForChangelog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostgroupEntity); // REST API ID serialization
