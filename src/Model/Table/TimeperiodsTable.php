@@ -431,6 +431,14 @@ class TimeperiodsTable extends Table {
         return $this->exists(['Timeperiods.id' => $id]);
     }
 
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid) {
+        return $this->exists(['Timeperiods.uuid' => $uuid]);
+    }
+
     public function timeperiodsByContainerId($container_ids = [], $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
