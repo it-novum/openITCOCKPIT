@@ -1701,7 +1701,7 @@ class ServicetemplatesTable extends Table {
                         'NotifyPeriod.uuid',
                     ]);
                 },
-                'CheckCommand' => 'Commandarguments',
+                'CheckCommand'                              => 'Commandarguments',
                 'Servicetemplatecommandargumentvalues'      => [
                     'Commandarguments'
                 ],
@@ -1717,5 +1717,103 @@ class ServicetemplatesTable extends Table {
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new servicetemplates. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Servicetemplate $entity The entity that will be saved by the Table
+     * @param array $servicetemplate The servicetemplate as array ( [ Servicetemplate => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicetemplate
+     */
+    public function createServicetemplate(Servicetemplate $entity, array $servicetemplate, int $userId): Servicetemplate {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($servicetemplate);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'servicetemplates',
+            $entity->get('id'),
+            OBJECT_SERVICETEMPLATE,
+            $entity->get('container_id'),
+            $userId,
+            $entity->get('template_name'),
+            array_merge($extDataForChangelog, $servicetemplate)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing servicetemplates. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Servicetemplate $entity The entity that will be updated by the Table
+     * @param array $newServicetemplate The new servicetemplate as array ( [ Servicetemplate => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldServicetemplate The old servicetemplate as array ( [ Servicetemplate => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicetemplate
+     */
+    public function updateServicetemplate(Servicetemplate $entity, array $newServicetemplate, array $oldServicetemplate, int $userId): Servicetemplate {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        /**
+         * ITC-2522
+         * update dependent services if service template command has been changed and their
+         * command arguments values are not empty
+         */
+        if ($newServicetemplate['Servicetemplate']['command_id'] != $oldServicetemplate['Servicetemplate']['command_id'] &&
+            !empty($oldServicetemplate['Servicetemplate']['servicetemplatecommandargumentvalues'])) {
+            $oldCommandId = $oldServicetemplate['Servicetemplate']['command_id'];
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $ServicesTable->updateServiceCommandIdIfServiceHasOwnCommandArguments($entity->get('id'), $oldCommandId);
+        }
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'servicetemplates',
+            $entity->get('id'),
+            OBJECT_SERVICETEMPLATE,
+            $entity->get('container_id'),
+            $userId,
+            $entity->get('template_name'),
+            array_merge($this->resolveDataForChangelog($newServicetemplate), $newServicetemplate),
+            array_merge($this->resolveDataForChangelog($oldServicetemplate), $oldServicetemplate)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
     }
 }
