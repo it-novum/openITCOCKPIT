@@ -702,8 +702,16 @@ class ContactsTable extends Table {
      * @param int $id
      * @return bool
      */
-    public function existsById($id) {
+    public function existsById($id): bool {
         return $this->exists(['Contacts.id' => $id]);
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid): bool {
+        return $this->exists(['Contacts.uuid' => $uuid]);
     }
 
     /**

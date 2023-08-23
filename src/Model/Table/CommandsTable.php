@@ -390,7 +390,7 @@ class CommandsTable extends Table {
      * @param int $id
      * @return bool
      */
-    public function existsById($id) {
+    public function existsById($id): bool {
         return $this->exists(['Commands.id' => $id]);
     }
 
@@ -398,11 +398,11 @@ class CommandsTable extends Table {
      * @param string $uuid
      * @return bool
      */
-    public function existsByUuid(string $uuid) {
+    public function existsByUuid(string $uuid): bool {
         return $this->exists(['Commands.uuid' => $uuid]);
     }
 
-    public function existsByName(string $name) {
+    public function existsByName(string $name): bool {
         return $this->exists(['Commands.name' => $name]);
     }
 
