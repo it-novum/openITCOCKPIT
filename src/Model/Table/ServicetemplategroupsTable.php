@@ -817,7 +817,8 @@ class ServicetemplategroupsTable extends Table {
                 'Servicetemplates' => function (Query $q) {
                     $q->select([
                         'Servicetemplates.id',
-                        'Servicetemplates.uuid'
+                        'Servicetemplates.uuid',
+                        'Servicetemplates.template_name'
                     ]);
                     return $q;
                 }

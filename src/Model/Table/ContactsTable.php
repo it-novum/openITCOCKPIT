@@ -1246,25 +1246,29 @@ class ContactsTable extends Table {
                 'HostCommands'       => function (Query $q) {
                     return $q->select([
                         'HostCommands.id',
-                        'HostCommands.uuid'
+                        'HostCommands.uuid',
+                        'HostCommands.name'
                     ]);
                 },
                 'ServiceCommands'    => function (Query $q) {
                     return $q->select([
                         'ServiceCommands.id',
-                        'ServiceCommands.uuid'
+                        'ServiceCommands.uuid',
+                        'ServiceCommands.name'
                     ]);
                 },
                 'HostTimeperiods'    => function (Query $q) {
                     return $q->select([
                         'HostTimeperiods.id',
-                        'HostTimeperiods.uuid'
+                        'HostTimeperiods.uuid',
+                        'HostTimeperiods.name'
                     ]);
                 },
                 'ServiceTimeperiods' => function (Query $q) {
                     return $q->select([
                         'ServiceTimeperiods.id',
-                        'ServiceTimeperiods.uuid'
+                        'ServiceTimeperiods.uuid',
+                        'ServiceTimeperiods.name'
                     ]);
                 },
                 'Customvariables'

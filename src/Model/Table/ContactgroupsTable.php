@@ -713,7 +713,8 @@ class ContactgroupsTable extends Table {
                 'Contacts' => function (Query $q) {
                     return $q->select([
                         'Contacts.id',
-                        'Contacts.uuid'
+                        'Contacts.uuid',
+                        'Contacts.name'
                     ]);
                 }
             ])

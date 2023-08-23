@@ -1681,11 +1681,12 @@ class ServicetemplatesTable extends Table {
         }
         $query = $this->find()
             ->contain([
-                'Contactgroups',
+                'Contactgroups'                             => 'Containers',
                 'Contacts'                                  => function (Query $q) {
                     return $q->select([
                         'Contacts.id',
                         'Contacts.uuid',
+                        'Contacts.name',
                     ]);
                 },
                 'Customvariables',
@@ -1693,12 +1694,14 @@ class ServicetemplatesTable extends Table {
                     return $q->select([
                         'CheckPeriod.id',
                         'CheckPeriod.uuid',
+                        'CheckPeriod.name',
                     ]);
                 },
                 'NotifyPeriod'                              => function (Query $q) {
                     return $q->select([
                         'NotifyPeriod.id',
                         'NotifyPeriod.uuid',
+                        'NotifyPeriod.name',
                     ]);
                 },
                 'CheckCommand'                              => 'Commandarguments',
