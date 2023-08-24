@@ -193,6 +193,33 @@ class ContactgroupsTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getContactgroupForEditByUuid(string $uuid): array {
+        $query = $this->find()
+            ->where([
+                'Contactgroups.uuid' => $uuid
+            ])
+            ->contain([
+                'Containers',
+                'Contacts',
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $contact = $query;
+        $contact['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+
+        return [
+            'Contactgroup' => $contact
+        ];
+    }
+
+    /**
      * @param array $containerIds
      * @param string $type
      * @param string $index
@@ -476,8 +503,16 @@ class ContactgroupsTable extends Table {
      * @param int $id
      * @return bool
      */
-    public function existsById($id) {
+    public function existsById($id): bool {
         return $this->exists(['Contactgroups.id' => $id]);
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid): bool {
+        return $this->exists(['Contactgroups.uuid' => $uuid]);
     }
 
     /**
