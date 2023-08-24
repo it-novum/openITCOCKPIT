@@ -94,6 +94,9 @@ class Set {
                 return $tmp;
             } else if (strpos($key, '{') !== false && strpos($key, '}') !== false) {
                 $pattern = substr($key, 1, -1);
+                if(!is_array($data)){
+                    return null;
+                }
 
                 foreach ($data as $j => $val) {
                     if (preg_match('/^' . $pattern . '/s', $j) !== 0) {
