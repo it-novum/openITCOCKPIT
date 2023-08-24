@@ -447,6 +447,41 @@ class ContactsTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getContactForEditByUuid(string $uuid): array {
+        $query = $this->find()
+            ->where([
+                'Contacts.uuid' => $uuid
+            ])
+            ->contain([
+                'Containers',
+                'HostCommands',
+                'ServiceCommands',
+                'Customvariables'
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $contact = $query;
+        $contact['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $contact['host_commands'] = [
+            '_ids' => Hash::extract($query, 'host_commands.{n}.id')
+        ];
+        $contact['service_commands'] = [
+            '_ids' => Hash::extract($query, 'service_commands.{n}.id')
+        ];
+
+        return [
+            'Contact' => $contact
+        ];
+    }
+
+    /**
      * @return array
      */
     public function getContactsForCrateDBSync() {
