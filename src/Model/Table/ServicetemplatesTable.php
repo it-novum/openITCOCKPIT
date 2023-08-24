@@ -1818,6 +1818,14 @@ class ServicetemplatesTable extends Table {
             $ServicesTable->updateServiceCommandIdIfServiceHasOwnCommandArguments($entity->get('id'), $oldCommandId);
         }
 
+        if ($newServicetemplate['Servicetemplate']['eventhandler_command_id'] != $oldServicetemplate['Servicetemplate']['eventhandler_command_id'] &&
+            !empty($oldServicetemplate['Servicetemplate']['servicetemplateeventcommandargumentvalues'])) {
+            $oldEventhandlerCommandId = $oldServicetemplate['Servicetemplate']['eventhandler_command_id'];
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $ServicesTable->updateServiceEventhandlerCommandIdIfServiceHasOwnEventhandlerCommandArguments($entity->get('id'), $oldEventhandlerCommandId);
+        }
+
         $changelog_data = $ChangelogsTable->parseDataForChangelog(
             'edit',
             'servicetemplates',
