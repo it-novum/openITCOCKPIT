@@ -689,6 +689,24 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getServicetemplateForEditByUuid(string $uuid) {
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id',
+                'Servicetemplates.uuid'
+            ])
+            ->where([
+                'Servicetemplates.uuid' => $uuid
+            ])
+            ->firstOrFail();
+
+        return $this->getServicetemplateForEdit($query->id);
+    }
+
+    /**
      * @param $ids
      * @param array $MY_RIGHTS
      * @param array $excludedUuids
