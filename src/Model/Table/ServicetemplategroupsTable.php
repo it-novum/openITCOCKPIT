@@ -228,22 +228,12 @@ class ServicetemplategroupsTable extends Table {
      * @return array
      */
     public function getServicetemplategroupForEdit($id) {
-        $query = $this->find()
-            ->where([
-                'Servicetemplategroups.id' => $id
-            ])
-            ->contain([
-                'Containers',
-                'Servicetemplates' => function (Query $query) {
-                    $query->enableAutoFields(false)
-                        ->select([
-                            'Servicetemplates.id'
-                        ]);
-                    return $query;
-                }
-            ])
-            ->disableHydration()
-            ->first();
+        $where = [
+            'Servicetemplategroups.id' => $id
+        ];
+
+        $query = $this->getServicetemplategroupForEditQuery($where);
+        $query = $query->first();
 
 
         $servicetemplategroup = $query;
@@ -254,6 +244,49 @@ class ServicetemplategroupsTable extends Table {
         return [
             'Servicetemplategroup' => $servicetemplategroup
         ];
+    }
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getServicetemplategroupForEditByUuid(string $uuid): array {
+        $where = [
+            'Servicetemplategroups.uuid' => $uuid
+        ];
+
+        $query = $this->getServicetemplategroupForEditQuery($where);
+        $query = $query->first();
+
+        $servicetemplategroup = $query;
+        $servicetemplategroup['servicetemplates'] = [
+            '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
+        ];
+
+        return [
+            'Servicetemplategroup' => $servicetemplategroup
+        ];
+    }
+
+    /**
+     * @param array $where
+     * @return Query
+     */
+    private function getServicetemplategroupForEditQuery(array $where): Query {
+        $query = $this->find()
+            ->where($where)
+            ->contain([
+                'Containers',
+                'Servicetemplates' => function (Query $query) {
+                    $query->enableAutoFields(false)
+                        ->select([
+                            'Servicetemplates.id'
+                        ]);
+                    return $query;
+                }
+            ])
+            ->disableHydration();
+        return $query;
     }
 
     /**
