@@ -1268,3 +1268,12 @@ div.packetmanager-selection > span::selection {
     background-color: #ff0000;
     background: linear-gradient(0deg, #f00 0%, #ffa700 100%) !important;
 }
+
+.bg-diff-green {
+    background: rgba(73, 255, 146, 0.27);
+}
+
+.bg-diff-red {
+background: rgba(255, 77, 77, 0.27)
+}
+
