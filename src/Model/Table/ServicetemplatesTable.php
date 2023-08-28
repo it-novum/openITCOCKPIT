@@ -1848,4 +1848,48 @@ class ServicetemplatesTable extends Table {
 
         return $entity;
     }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getServicetemplateByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->select([
+                'Servicetemplates.id'
+            ])
+            ->contain([
+                'CheckCommand',
+                'CheckPeriod',
+                'NotifyPeriod',
+                'Contacts' => function(Query $query){
+                    return $query->select([
+                        'Contacts.name',
+                        'Contacts.uuid'
+                    ]);
+                },
+                'Contactgroups'=> function(Query $query){
+                    return $query->select([
+                        'name' =>  'Containers.name',
+                        'Contactgroups.uuid'
+                    ])->contain(['Containers']);
+                },
+                'Servicetemplatecommandargumentvalues',
+                'Servicetemplateeventcommandargumentvalues',
+                'Customvariables'
+            ])
+            ->where(['Servicetemplates.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $servicetemplate = $this->emptyArrayIfNull($query);
+
+        if (!empty($servicetemplate)) {
+            $servicetemplate['contacts'] = Hash::remove($servicetemplate['contacts'], '{n}._joinData');
+            $servicetemplate['contactgroups'] = Hash::remove($servicetemplate['contactgroups'], '{n}._joinData');
+        }
+
+        return $servicetemplate;
+    }
+
 }

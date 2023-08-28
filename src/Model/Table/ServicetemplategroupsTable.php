@@ -944,4 +944,37 @@ class ServicetemplategroupsTable extends Table {
 
         return $entity;
     }
+
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getServicetemplategroupByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->select([
+                'Servicetemplategroups.id',
+                'Containers.name'
+            ])
+            ->contain([
+                'Containers',
+                'Servicetemplates' => function (Query $query) {
+                    return $query->select([
+                        'name' => 'Servicetemplates.name',
+                        'uuid' => 'Servicetemplates.uuid'
+                    ]);
+                }
+            ])
+            ->where(['Servicetemplategroups.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $servicetemplategroup = $this->emptyArrayIfNull($query);
+        if (!empty($servicetemplategroup)) {
+            $servicetemplategroup['servicetemplates'] = Hash::remove($servicetemplategroup['servicetemplates'], '{n}._joinData');
+        }
+
+        return $servicetemplategroup;
+    }
+
 }
