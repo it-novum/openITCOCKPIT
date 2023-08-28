@@ -847,4 +847,35 @@ class ContactgroupsTable extends Table {
 
         return $entity;
     }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getContactgroupByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->select([
+                'Contactgroups.id',
+                'Containers.name'
+            ])
+            ->contain([
+                'Containers',
+                'Contacts' => function (Query $query) {
+                    return $query->select([
+                        'name' => 'Contacts.name',
+                        'uuid' => 'Contacts.uuid'
+                    ]);
+                }
+            ])
+            ->where(['Contactgroups.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $contactgroup = $this->emptyArrayIfNull($query);
+        if(!empty($contactgroup)){
+            $contactgroup['contacts'] = Hash::remove($contactgroup['contacts'], '{n}._joinData');
+        }
+
+        return $contactgroup;
+    }
 }

@@ -849,4 +849,18 @@ class TimeperiodsTable extends Table {
 
         return $entity;
     }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getTimeperiodByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->contain('TimeperiodTimeranges')
+            ->where(['Timeperiods.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $this->emptyArrayIfNull($query);
+    }
 }

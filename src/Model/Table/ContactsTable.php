@@ -1395,4 +1395,52 @@ class ContactsTable extends Table {
 
         return $entity;
     }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getContactByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->select([
+                'Contacts.id',
+                'Contacts.email',
+                'Contacts.phone',
+                'HostTimeperiods.name',
+                'HostTimeperiods.uuid',
+                'ServiceTimeperiods.name',
+                'ServiceTimeperiods.uuid'
+            ])
+            ->contain([
+                'HostCommands'    => function (Query $query) {
+                    return $query->select([
+                        'name' => 'HostCommands.name',
+                        'uuid' => 'HostCommands.uuid'
+                    ]);
+                },
+                'ServiceCommands' => function (Query $query) {
+                    return $query->select([
+                        'name' => 'ServiceCommands.name',
+                        'uuid' => 'ServiceCommands.uuid'
+                    ]);
+                },
+                'HostTimeperiods',
+                'ServiceTimeperiods',
+                'Customvariables'
+            ])
+            ->where(['Contacts.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $contact = $this->emptyArrayIfNull($query);
+        if (!empty($contact)) {
+            $contact['host_timeperiod_id'] = $contact['host_timeperiod'];
+            unset($contact['host_timeperiod']);
+            $contact['service_timeperiod_id'] = $contact['service_timeperiod'];
+            unset($contact['service_timeperiod']);
+            $contact['host_commands'] = Hash::remove($contact['host_commands'], '{n}._joinData');
+            $contact['service_commands'] = Hash::remove($contact['service_commands'], '{n}._joinData');
+        }
+        return $contact;
+    }
 }
