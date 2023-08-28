@@ -1281,3 +1281,6 @@ div.packetmanager-selection > span::selection {
 background: rgba(255, 77, 77, 0.27)
 }
 
+.border-secondary-with-20-opacity {
+    border-color: #6c757d33 !important;
+}
