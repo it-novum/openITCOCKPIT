@@ -123,6 +123,12 @@ class ServicetemplatesTable extends Table {
             'joinType'   => 'INNER'
         ]);
 
+        $this->belongsTo('EventhandlerCommand', [
+            'className'  => 'Commands',
+            'foreignKey' => 'eventhandler_command_id',
+            'joinType'   => 'INNER'
+        ]);
+
         $this->hasOne('Agentchecks', [
             'foreignKey' => 'servicetemplate_id'
         ])->setDependent(true);
@@ -1859,24 +1865,67 @@ class ServicetemplatesTable extends Table {
                 'Servicetemplates.id'
             ])
             ->contain([
-                'CheckCommand',
-                'CheckPeriod',
-                'NotifyPeriod',
-                'Contacts' => function(Query $query){
+                'CheckPeriod'                               => function (Query $query) {
+                    return $query->select([
+                        'CheckPeriod.name',
+                        'CheckPeriod.uuid'
+                    ]);
+                },
+                'NotifyPeriod'                              => function (Query $query) {
+                    return $query->select([
+                        'NotifyPeriod.name',
+                        'NotifyPeriod.uuid'
+                    ]);
+                },
+                'EventhandlerCommand'                       => function (Query $query) {
+                    return $query->select([
+                        'EventhandlerCommand.name',
+                        'EventhandlerCommand.uuid',
+                    ]);
+
+                },
+                'Contacts'                                  => function (Query $query) {
                     return $query->select([
                         'Contacts.name',
                         'Contacts.uuid'
                     ]);
                 },
-                'Contactgroups'=> function(Query $query){
+                'Contactgroups'                             => function (Query $query) {
                     return $query->select([
-                        'name' =>  'Containers.name',
+                        'name' => 'Containers.name',
                         'Contactgroups.uuid'
                     ])->contain(['Containers']);
                 },
-                'Servicetemplatecommandargumentvalues',
-                'Servicetemplateeventcommandargumentvalues',
-                'Customvariables'
+                'Servicetemplatecommandargumentvalues'      => function (Query $query) {
+                    return $query->select([
+                        'Servicetemplatecommandargumentvalues.id',
+                        'Servicetemplatecommandargumentvalues.servicetemplate_id',
+                        'Servicetemplatecommandargumentvalues.value',
+                        'name' => 'Commandarguments.name'
+                    ])->contain([
+                        'Commandarguments'
+                    ]);
+                },
+                'Servicetemplateeventcommandargumentvalues' => function (Query $query) {
+                    return $query->select([
+                        'Servicetemplateeventcommandargumentvalues.id',
+                        'Servicetemplateeventcommandargumentvalues.servicetemplate_id',
+                        'Servicetemplateeventcommandargumentvalues.value',
+                        'name' => 'Commandarguments.name'
+                    ])->contain([
+                        'Commandarguments'
+                    ]);
+                },
+                'Customvariables'                           => function (Query $query) {
+                    return $query->select([
+                        'Customvariables.id',
+                        'Customvariables.object_id',
+                        'Customvariables.name',
+                        'Customvariables.value',
+                        'Customvariables.objecttype_id',
+                        'Customvariables.password'
+                    ]);
+                }
             ])
             ->where(['Servicetemplates.uuid' => $uuid])
             ->disableHydration()
@@ -1885,11 +1934,22 @@ class ServicetemplatesTable extends Table {
         $servicetemplate = $this->emptyArrayIfNull($query);
 
         if (!empty($servicetemplate)) {
+            //clean up and format data for Condition Items Differ
+            $servicetemplate['check_period_id'] = $servicetemplate['check_period'];
+            unset($servicetemplate['check_period']);
+
+            $servicetemplate['notify_period_id'] = $servicetemplate['notify_period'];
+            unset($servicetemplate['notify_period']);
+
+            $servicetemplate['eventhandler_command_id'] = $servicetemplate['eventhandler_command'];
+            unset($servicetemplate['eventhandler_command']);
+
             $servicetemplate['contacts'] = Hash::remove($servicetemplate['contacts'], '{n}._joinData');
             $servicetemplate['contactgroups'] = Hash::remove($servicetemplate['contactgroups'], '{n}._joinData');
-        }
+            $servicetemplate['servicetemplatecommandargumentvalues'] = Hash::remove($servicetemplate['servicetemplatecommandargumentvalues'], '{n}.servicetemplate_id');
 
+            $servicetemplate['customvariables'] = Hash::remove($servicetemplate['customvariables'], '{n}.object_id');
+        }
         return $servicetemplate;
     }
-
 }
