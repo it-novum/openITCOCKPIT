@@ -734,6 +734,39 @@ class TimeperiodsTable extends Table {
     }
 
     /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getTimeperiodForEdit($id) {
+        $where = [
+            'Timeperiods.id' => $id
+        ];
+        return $this->getTimeperiodForEditByWhere($where);
+    }
+
+    /**
+     * @param string $uuid
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getTimeperiodForEditByUuid(string $uuid) {
+        $where = [
+            'Timeperiods.uuid' => $uuid
+        ];
+        return $this->getTimeperiodForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    private function getTimeperiodForEditByWhere(array $where) {
+        return $this->find()
+            ->where($where)
+            ->contain(['TimeperiodTimeranges'])
+            ->firstOrFail();
+    }
+
+    /**
      * This method provides a unified way to create new timeperiod. It will also make sure that the changelog is used
      * It will always return an Entity object, so make sure to check for "hasErrors()"
      *

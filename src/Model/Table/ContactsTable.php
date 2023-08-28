@@ -412,38 +412,14 @@ class ContactsTable extends Table {
 
 
     /**
-     * @param int $id
+     * @param $id
      * @return array
      */
-    public function getContactForEdit($id) {
-        $query = $this->find()
-            ->where([
-                'Contacts.id' => $id
-            ])
-            ->contain([
-                'Containers',
-                'HostCommands',
-                'ServiceCommands',
-                'Customvariables'
-            ])
-            ->disableHydration()
-            ->first();
-
-
-        $contact = $query;
-        $contact['containers'] = [
-            '_ids' => Hash::extract($query, 'containers.{n}.id')
+    public function getContactForEdit($id): array {
+        $where = [
+            'Contacts.id' => $id
         ];
-        $contact['host_commands'] = [
-            '_ids' => Hash::extract($query, 'host_commands.{n}.id')
-        ];
-        $contact['service_commands'] = [
-            '_ids' => Hash::extract($query, 'service_commands.{n}.id')
-        ];
-
-        return [
-            'Contact' => $contact
-        ];
+        return $this->getContactForEditByWhere($where);
     }
 
     /**
@@ -451,10 +427,19 @@ class ContactsTable extends Table {
      * @return array
      */
     public function getContactForEditByUuid(string $uuid): array {
+        $where = [
+            'Contacts.uuid' => $uuid
+        ];
+        return $this->getContactForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    private function getContactForEditByWhere(array $where): array {
         $query = $this->find()
-            ->where([
-                'Contacts.uuid' => $uuid
-            ])
+            ->where($where)
             ->contain([
                 'Containers',
                 'HostCommands',
@@ -462,7 +447,7 @@ class ContactsTable extends Table {
                 'Customvariables'
             ])
             ->disableHydration()
-            ->first();
+            ->firstOrFail();
 
 
         $contact = $query;

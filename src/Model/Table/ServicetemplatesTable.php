@@ -612,14 +612,12 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
-     * @param int $id
+     * @param array $where
      * @return array
      */
-    public function getServicetemplateForEdit($id) {
+    private function getServicetemplateForEditByWhere(array $where): array {
         $query = $this->find()
-            ->where([
-                'Servicetemplates.id' => $id
-            ])
+            ->where($where)
             ->contain([
                 'Contactgroups',
                 'Contacts',
@@ -636,7 +634,7 @@ class ServicetemplatesTable extends Table {
                 ]
             ])
             ->disableHydration()
-            ->first();
+            ->firstOrFail();
 
         $servicetemplate = $query;
         $servicetemplate['servicegroups'] = [
@@ -689,21 +687,26 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return array
+     */
+    public function getServicetemplateForEdit($id): array {
+        $where = [
+            'Servicetemplates.id' => $id
+        ];
+        return $this->getServicetemplateForEditByWhere($where);
+    }
+
+    /**
      * @param string $uuid
      * @return array
      */
-    public function getServicetemplateForEditByUuid(string $uuid) {
-        $query = $this->find()
-            ->select([
-                'Servicetemplates.id',
-                'Servicetemplates.uuid'
-            ])
-            ->where([
-                'Servicetemplates.uuid' => $uuid
-            ])
-            ->firstOrFail();
+    public function getServicetemplateForEditByUuid(string $uuid): array {
+        $where = [
+            'Servicetemplates.uuid' => $uuid
+        ];
 
-        return $this->getServicetemplateForEdit($query->id);
+        return $this->getServicetemplateForEditByWhere($where);
     }
 
     /**

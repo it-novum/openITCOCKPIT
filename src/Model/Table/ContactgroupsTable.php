@@ -169,27 +169,12 @@ class ContactgroupsTable extends Table {
      * @param int $id
      * @return array
      */
-    public function getContactgroupForEdit($id) {
-        $query = $this->find()
-            ->where([
-                'Contactgroups.id' => $id
-            ])
-            ->contain([
-                'Containers',
-                'Contacts',
-            ])
-            ->disableHydration()
-            ->first();
-
-
-        $contact = $query;
-        $contact['contacts'] = [
-            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+    public function getContactgroupForEdit($id): array {
+        $where = [
+            'Contactgroups.id' => $id
         ];
 
-        return [
-            'Contactgroup' => $contact
-        ];
+        return $this->getContactgroupForEditByWhere($where);
     }
 
     /**
@@ -197,16 +182,26 @@ class ContactgroupsTable extends Table {
      * @return array
      */
     public function getContactgroupForEditByUuid(string $uuid): array {
+        $where = [
+            'Contactgroups.uuid' => $uuid
+        ];
+
+        return $this->getContactgroupForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    private function getContactgroupForEditByWhere(array $where): array {
         $query = $this->find()
-            ->where([
-                'Contactgroups.uuid' => $uuid
-            ])
+            ->where($where)
             ->contain([
                 'Containers',
                 'Contacts',
             ])
             ->disableHydration()
-            ->first();
+            ->firstOrFail();
 
 
         $contact = $query;

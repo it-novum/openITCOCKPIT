@@ -212,9 +212,7 @@ class TimeperiodsController extends AppController {
         if (!$TimeperiodsTable->existsById($id)) {
             throw new NotFoundException('Time period not found');
         }
-        $timeperiod = $TimeperiodsTable->get($id, [
-            'contain' => 'TimeperiodTimeranges'
-        ]);
+        $timeperiod = $TimeperiodsTable->getTimeperiodForEdit($id);
         $timeperiodForChangeLog['Timeperiod'] = $timeperiod->toArray();
 
         if (!$this->allowedByContainerId($timeperiod->get('container_id'))) {

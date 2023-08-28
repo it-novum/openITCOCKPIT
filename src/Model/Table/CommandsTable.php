@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Command;
 use Cake\Datasource\EntityInterface;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -411,16 +412,37 @@ class CommandsTable extends Table {
      * @return Command|EntityInterface
      */
     public function getCommandForEdit($id) {
+        $where = [
+            'Commands.id' => $id
+        ];
+
+        return $this->getCommandForEditByWhere($where);
+    }
+
+    /**
+     * @param string $uuid
+     * @return array|EntityInterface
+     */
+    public function getCommandForEditByUuid(string $uuid) {
+        $where = [
+            'Commands.uuid' => $uuid
+        ];
+
+        return $this->getCommandForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array|EntityInterface
+     */
+    private function getCommandForEditByWhere(array $where) {
         $query = $this->find()
-            ->where([
-                'Commands.id' => $id
-            ])
+            ->where($where)
             ->contain([
                 'Commandarguments'
-            ])
-            ->firstOrFail();
+            ]);
 
-        return $query;
+        return $query->firstOrFail();
     }
 
     /**
