@@ -227,23 +227,12 @@ class ServicetemplategroupsTable extends Table {
      * @param int $id
      * @return array
      */
-    public function getServicetemplategroupForEdit($id) {
+    public function getServicetemplategroupForEdit($id): array {
         $where = [
             'Servicetemplategroups.id' => $id
         ];
 
-        $query = $this->getServicetemplategroupForEditQuery($where);
-        $query = $query->first();
-
-
-        $servicetemplategroup = $query;
-        $servicetemplategroup['servicetemplates'] = [
-            '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
-        ];
-
-        return [
-            'Servicetemplategroup' => $servicetemplategroup
-        ];
+        return $this->getServicetemplategroupForEditByWhere($where);
     }
 
     /**
@@ -255,24 +244,14 @@ class ServicetemplategroupsTable extends Table {
             'Servicetemplategroups.uuid' => $uuid
         ];
 
-        $query = $this->getServicetemplategroupForEditQuery($where);
-        $query = $query->first();
-
-        $servicetemplategroup = $query;
-        $servicetemplategroup['servicetemplates'] = [
-            '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
-        ];
-
-        return [
-            'Servicetemplategroup' => $servicetemplategroup
-        ];
+        return $this->getServicetemplategroupForEditByWhere($where);
     }
 
     /**
      * @param array $where
-     * @return Query
+     * @return array
      */
-    private function getServicetemplategroupForEditQuery(array $where): Query {
+    private function getServicetemplategroupForEditByWhere(array $where): array {
         $query = $this->find()
             ->where($where)
             ->contain([
@@ -285,8 +264,18 @@ class ServicetemplategroupsTable extends Table {
                     return $query;
                 }
             ])
-            ->disableHydration();
-        return $query;
+            ->disableHydration()
+            ->firstOrFail();
+
+
+        $servicetemplategroup = $query;
+        $servicetemplategroup['servicetemplates'] = [
+            '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
+        ];
+
+        return [
+            'Servicetemplategroup' => $servicetemplategroup
+        ];
     }
 
     /**
