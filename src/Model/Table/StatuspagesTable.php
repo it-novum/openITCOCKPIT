@@ -32,6 +32,8 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 
 /**
  * Statuspages Model
@@ -57,6 +59,7 @@ use Cake\Validation\Validator;
  */
 class StatuspagesTable extends Table
 {
+    use PaginationAndScrollIndexTrait;
     /**
      * Initialize method
      *
@@ -121,5 +124,42 @@ class StatuspagesTable extends Table
             ->notEmptyString('show_comments');
 
         return $validator;
+    }
+
+    /**
+     * @param StatuspagesFilter $StatuspagesFilter
+     * @param $PaginateOMat
+     * @param $MY_RIGHTS
+     * @return array
+     */
+    public function getStatuspagesIndex(StatuspagesFilter $StatuspagesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        $query = $this->find('all');
+        $query->contain(['Containers']);
+        $query->where($StatuspagesFilter->indexFilter());
+
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+
+        $query->distinct('Statuspages.id');
+
+        $query->disableHydration();
+        $query->order($StatuspagesFilter->getOrderForPaginator('Statuspages.name', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
     }
 }
