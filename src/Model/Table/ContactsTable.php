@@ -1404,6 +1404,7 @@ class ContactsTable extends Table {
         $query = $this->find('all')
             ->select([
                 'Contacts.id',
+                'Contacts.name',
                 'Contacts.email',
                 'Contacts.phone',
                 'HostTimeperiods.name',

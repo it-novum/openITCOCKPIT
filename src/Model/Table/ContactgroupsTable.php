@@ -856,7 +856,7 @@ class ContactgroupsTable extends Table {
         $query = $this->find('all')
             ->select([
                 'Contactgroups.id',
-                'Containers.name'
+                'name' => 'Containers.name'
             ])
             ->contain([
                 'Containers',
@@ -872,7 +872,7 @@ class ContactgroupsTable extends Table {
             ->firstOrFail();
 
         $contactgroup = $this->emptyArrayIfNull($query);
-        if(!empty($contactgroup)){
+        if (!empty($contactgroup)) {
             $contactgroup['contacts'] = Hash::remove($contactgroup['contacts'], '{n}._joinData');
         }
 

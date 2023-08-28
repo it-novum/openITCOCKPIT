@@ -1862,7 +1862,8 @@ class ServicetemplatesTable extends Table {
     public function getServicetemplateByUuidForImportDiff($uuid) {
         $query = $this->find('all')
             ->select([
-                'Servicetemplates.id'
+                'Servicetemplates.id',
+                'Servicetemplates.name'
             ])
             ->contain([
                 'CheckPeriod'                               => function (Query $query) {
