@@ -954,7 +954,7 @@ class ServicetemplategroupsTable extends Table {
         $query = $this->find('all')
             ->select([
                 'Servicetemplategroups.id',
-                'Containers.name'
+                'name' => 'Containers.name'
             ])
             ->contain([
                 'Containers',
