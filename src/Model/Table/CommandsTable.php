@@ -602,4 +602,18 @@ class CommandsTable extends Table {
 
         return $entity;
     }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getCommandByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->contain('Commandarguments')
+            ->where(['Commands.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $this->emptyArrayIfNull($query);
+    }
 }
