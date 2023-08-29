@@ -126,7 +126,7 @@ class ServicetemplatesTable extends Table {
         $this->belongsTo('EventhandlerCommand', [
             'className'  => 'Commands',
             'foreignKey' => 'eventhandler_command_id',
-            'joinType'   => 'INNER'
+            'joinType'   => 'LEFT'
         ]);
 
         $this->hasOne('Agentchecks', [
@@ -1860,10 +1860,10 @@ class ServicetemplatesTable extends Table {
      * @return array
      */
     public function getServicetemplateByUuidForImportDiff($uuid) {
-        $query = $this->find('all')
+        $query = $this->find()
             ->select([
                 'Servicetemplates.id',
-                'Servicetemplates.name'
+                'name' => 'Servicetemplates.template_name'
             ])
             ->contain([
                 'CheckPeriod'                               => function (Query $query) {
