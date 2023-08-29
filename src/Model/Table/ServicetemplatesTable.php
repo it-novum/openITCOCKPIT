@@ -1901,8 +1901,9 @@ class ServicetemplatesTable extends Table {
                     return $query->select([
                         'Servicetemplatecommandargumentvalues.id',
                         'Servicetemplatecommandargumentvalues.servicetemplate_id',
-                        'Servicetemplatecommandargumentvalues.value',
-                        'name' => 'Commandarguments.name'
+                        'name' => 'Commandarguments.name',
+                        'Servicetemplatecommandargumentvalues.value'
+
                     ])->contain([
                         'Commandarguments'
                     ]);
@@ -1911,8 +1912,8 @@ class ServicetemplatesTable extends Table {
                     return $query->select([
                         'Servicetemplateeventcommandargumentvalues.id',
                         'Servicetemplateeventcommandargumentvalues.servicetemplate_id',
+                        'name' => 'Commandarguments.name',
                         'Servicetemplateeventcommandargumentvalues.value',
-                        'name' => 'Commandarguments.name'
                     ])->contain([
                         'Commandarguments'
                     ]);
