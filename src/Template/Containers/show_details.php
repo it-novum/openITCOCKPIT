@@ -117,6 +117,27 @@ $objectDetails = [
         ],
         'ui-sref' => 'ContactgroupsEdit({id:id})'
     ],
+    'users'         => [
+        'label'   => __('Users'),
+        'icon'    => 'fa fa-user',
+        'rights'  => [
+            'action'     => 'edit',
+            'controller' => 'users',
+            'plugin'     => ''
+        ],
+        'ui-sref' => 'UsersEdit({id:id})'
+    ],
+    'usercontainerroles'         => [
+        'label'   => __('User container roles'),
+        'icon'    => 'fa fa-users',
+        'rights'  => [
+            'action'     => 'edit',
+            'controller' => 'usercontainerroles',
+            'plugin'     => ''
+        ],
+        'ui-sref' => 'UsercontainerrolesEdit({id:id})'
+    ],
+
     'hostdependencies'      => [
         'label'   => __('Hostdependencies'),
         'icon'    => 'fa fa-sitemap',
