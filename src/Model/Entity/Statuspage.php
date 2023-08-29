@@ -6,6 +6,7 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 use App\Model\Entity\Container;
 use Cake\I18n\FrozenTime;
+use DistributeModule\Model\Entity\Satellite;
 
 /**
  * Statuspage Entity
@@ -21,6 +22,7 @@ use Cake\I18n\FrozenTime;
  * @property StatuspageItem[] $statuspage_items
  * @property StatuspagesToContainer[] $statuspages_to_containers
  * @property Container[] $containers
+ * @property Satellite[] $satellites
  */
 class Statuspage extends Entity
 {
@@ -41,7 +43,7 @@ class Statuspage extends Entity
         'created' => true,
         'modified' => true,
         'statuspage_items' => true,
-        'statuspages_to_containers' => true,
+        'containers'         => true
     ];
 
     /**

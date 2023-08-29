@@ -157,6 +157,10 @@
                                     <i class="fa" ng-class="getSortClass('Statuspages.description')"></i>
                                     <?php echo __('Description'); ?>
                                 </th>
+                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.show_comments')">
+                                    <i class="fa" ng-class="getSortClass('Statuspages.show_comments')"></i>
+                                    <?php echo __('Comments'); ?>
+                                </th>
                                 <th class="no-sort width-95" ng-click="orderBy('Statuspages.public')">
                                     <i class="fa" ng-class="getSortClass('Statuspages.public')"></i>
                                     <?php echo __('Public'); ?>
@@ -191,6 +195,10 @@
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-truncate text-truncate-sm">{{statuspage.description}}</td>
+                                <td>
+                                    <i class="fas fa-check text-success" ng-show="statuspage.show_comments"></i>
+                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_comments"></i>
+                                </td>
                                 <td>
                                     <i class="fas fa-check text-success" ng-show="statuspage.public"></i>
                                     <i class="fas fa-times text-danger" ng-show="!statuspage.public"></i>
