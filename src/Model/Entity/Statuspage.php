@@ -40,8 +40,8 @@ class Statuspage extends Entity
         'description' => true,
         'public' => true,
         'show_comments' => true,
-        'created' => true,
-        'modified' => true,
+        'created' => false,
+        'modified' => false,
         'statuspage_items' => true,
         'containers'         => true
     ];

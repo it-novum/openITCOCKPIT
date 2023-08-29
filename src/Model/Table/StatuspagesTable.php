@@ -162,4 +162,12 @@ class StatuspagesTable extends Table
 
         return $result;
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Statuspages.id' => $id]);
+    }
 }

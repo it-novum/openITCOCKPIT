@@ -28,7 +28,9 @@ namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
 use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -159,20 +161,36 @@ class StatuspagesController extends AppController
      */
     public function edit($id = null)
     {
-        $statuspage = $this->Statuspages->get($id, [
-            'contain' => ['Containers'],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $statuspage = $this->Statuspages->patchEntity($statuspage, $this->request->getData());
-            if ($this->Statuspages->save($statuspage)) {
-                $this->Flash->success(__('The statuspage has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The statuspage could not be saved. Please, try again.'));
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
-        $containers = $this->Statuspages->Containers->find('list', ['limit' => 200])->all();
-        $this->set(compact('statuspage', 'containers'));
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Statuspage'));
+        }
+
+        $statuspage = $this->Statuspages->get($id, [
+            'contain' => [
+                'Containers',
+                'StatuspageItems'
+            ],
+        ]);
+        $statuspage['containers'] = [
+            '_ids' => Hash::extract($statuspage, 'containers.{n}.id')
+        ];
+        if ($this->request->is(['patch', 'post', 'put']) ) {
+            $data = $this->request->getData();
+            $statuspage = $StatuspagesTable->patchEntity($statuspage, $data['Statuspage']);
+            if ($StatuspagesTable->save($statuspage)) {
+               // $this->Flash->success(__('The statuspage has been saved.'));
+
+                //return $this->redirect(['action' => 'index']);
+            }
+           // $this->Flash->error(__('The statuspage could not be saved. Please, try again.'));
+        }
+        $this->set('statuspage', $statuspage);
+        $this->viewBuilder()->setOption('serialize', ['statuspage']);
     }
 
     /**
@@ -193,6 +211,36 @@ class StatuspagesController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+    /**
+     *
+     * edit items
+     *
+     * @param string|null $id Statuspage id.
+     * @return \Cake\Http\Response|null|void Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function items($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Statuspage'));
+        }
+
+        $statuspage = $this->Statuspages->get($id, [
+            'contain' => [
+                'Containers',
+                'StatuspageItems'
+            ],
+        ]);
+        $statuspage['containers'] = [
+            '_ids' => Hash::extract($statuspage, 'containers.{n}.id')
+        ];
+
+
     }
 
     public function loadContainers() {
