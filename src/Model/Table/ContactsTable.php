@@ -1427,7 +1427,16 @@ class ContactsTable extends Table {
                 },
                 'HostTimeperiods',
                 'ServiceTimeperiods',
-                'Customvariables'
+                'Customvariables' => function (Query $query) {
+                    return $query->select([
+                        'Customvariables.id',
+                        'Customvariables.objecttype_id',
+                        'Customvariables.name',
+                        'Customvariables.value',
+                        'Customvariables.password',
+                        'Customvariables.object_id'
+                    ]);
+                }
             ])
             ->where(['Contacts.uuid' => $uuid])
             ->disableHydration()

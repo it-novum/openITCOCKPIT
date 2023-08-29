@@ -1921,11 +1921,11 @@ class ServicetemplatesTable extends Table {
                 'Customvariables'                           => function (Query $query) {
                     return $query->select([
                         'Customvariables.id',
-                        'Customvariables.object_id',
+                        'Customvariables.objecttype_id',
                         'Customvariables.name',
                         'Customvariables.value',
-                        'Customvariables.objecttype_id',
-                        'Customvariables.password'
+                        'Customvariables.password',
+                        'Customvariables.object_id',
                     ]);
                 }
             ])
