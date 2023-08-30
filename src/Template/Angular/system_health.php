@@ -207,18 +207,7 @@
                     </li>
 
                     <li ng-repeat="satellite in systemHealth.satellites" ng-if="satellite.satellite_status.status !== 1">
-                        <a ui-sref="SatellitesEdit({id: satellite.id})"
-                           ng-if="satellite.allow_edit">
-                            <div class="padding-5">
-                                <p class="margin-bottom-5">
-                                    <i><?php echo __('Sync status'); ?> <?php echo __('failed')?></i>
-                                    <br/>
-                                    <i>{{ satellite.name }}, <?php echo __('last seen')?> {{ satellite.satellite_status.last_seen }}</i>
-                                </p>
-                            </div>
-                        </a>
-                        <span
-                            ng-if="! satellite.allow_edit">
+                        <span>
                             <div class="padding-5">
                                 <p class="margin-bottom-5">
                                     <i><?php echo __('Sync status'); ?> <?php echo __('failed')?></i>
