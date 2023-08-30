@@ -152,7 +152,6 @@ class CronjobsCommand extends Command {
             exit(0);
         }
 
-        $this->cronjobsToExecute = [];
         foreach ($cronjobs as $cronjob) {
             if (!empty($task)) {
                 // Only execute the given cronjob

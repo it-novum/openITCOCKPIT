@@ -302,7 +302,7 @@ class UsersTable extends Table {
      * @param \ArrayObject $options
      * @return bool
      */
-    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options) {
+    public function beforeSave(Event $event, User $entity, \ArrayObject $options) {
         if ($entity->isDirty('password')) {
             $Hasher = $this->getDefaultPasswordHasher();
             $entity->password = $Hasher->hash($entity->password);

@@ -54,7 +54,6 @@ use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 use Spatie\Emoji\Emoji;
-use function GuzzleHttp\default_ca_bundle;
 
 /**
  * NagiosNotification command.

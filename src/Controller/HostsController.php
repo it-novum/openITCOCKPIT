@@ -1732,6 +1732,7 @@ class HostsController extends AppController {
 
                     $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($sourceHost->get('hosttemplate_id'));
 
+                    /** @var \App\Model\Entity\Host $tmpHost */
                     $tmpHost = $HostsTable->newEmptyEntity();
                     $tmpHost->setNew(true);
                     if (!empty($hostDefaultValues)) {
