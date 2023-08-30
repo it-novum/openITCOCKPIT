@@ -39,7 +39,7 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Ratchet\Overwrites\HttpServerSize;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
-use React\Socket\Server as Reactor;
+use React\Socket\SocketServer;
 
 
 /**
@@ -90,15 +90,14 @@ class SudoServerCommand extends Command {
             $checkForExport
         );
 
-        $loop = \React\EventLoop\Factory::create();
+        $loop = \React\EventLoop\Loop::get();
         $loop->addPeriodicTimer(1, [$SudoMessasgeInterface, 'eventLoop']);
 
         $Server = new IoServer(
             new HttpServerSize(
                 new WsServer($SudoMessasgeInterface)
             ),
-
-            new Reactor(sprintf('127.0.0.1:%s', 8081), $loop),
+            new SocketServer(sprintf('%s:%s', '0.0.0.0', 8081), [], $loop),
             $loop
         );
 

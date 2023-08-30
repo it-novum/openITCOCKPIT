@@ -39,7 +39,7 @@ class AppIdentity extends \Authentication\Identity {
     public function overwriteUsergroupId($usergroupId) {
         $usergroupId = (int)$usergroupId;
         if ($usergroupId > 0) {
-            $this->data->usergroup_id = $usergroupId;
+            $this->data['usergroup_id'] = $usergroupId;
         }
     }
 

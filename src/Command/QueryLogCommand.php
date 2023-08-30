@@ -36,8 +36,7 @@ use itnovum\openITCOCKPIT\Core\System\QueryLogMessageInterface;
 use itnovum\openITCOCKPIT\Ratchet\Overwrites\HttpServerSize;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
-use React\EventLoop\Factory;
-use React\Socket\Server as Reactor;
+use React\Socket\SocketServer;
 use Symfony\Component\Process\Process;
 
 /**
@@ -98,7 +97,7 @@ class QueryLogCommand extends Command {
         $this->logfile = LOGS . 'queries.log';
 
         $dataSource = ConnectionManager::getConfig('default');
-        if($dataSource['log'] != 1) {
+        if ($dataSource['log'] != 1) {
             $io->setStyle('red_bold', ['text' => 'red', 'bold' => true]);
             $io->out('<red_bold>Setting "\'log\' => true" in "' . ROOT . '/config/datasource.php' . '" required!</red_bold>');
         }
@@ -210,14 +209,14 @@ class QueryLogCommand extends Command {
             $MessageInterface->stopTailf();
         });
 
-        $loop = Factory::create();
+        $loop = \React\EventLoop\Loop::get();
         $loop->addPeriodicTimer(0.01, [$MessageInterface, 'eventLoop']);
 
         $Server = new IoServer(
             new HttpServerSize(
                 new WsServer($MessageInterface)
             ),
-            new Reactor(sprintf('%s:%s', '0.0.0.0', 8082), $loop),
+            new SocketServer(sprintf('%s:%s', '0.0.0.0', 8082), [], $loop),
             $loop
         );
 
