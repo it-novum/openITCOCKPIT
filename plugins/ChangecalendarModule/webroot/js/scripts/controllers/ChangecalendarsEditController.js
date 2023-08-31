@@ -8,9 +8,9 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
         $scope.calendar = null;
         $scope.init = true;
-        $scope.colour = '#F0F';
+        $scope.colour = '#3788d8';
         $scope.post = {
-            changeCalendar: {colour: '#F0F'}
+            changeCalendar: {colour: '#3788d8'}
         }
 
         // get TimeZone beforee FullCalendar.C Calendar()
