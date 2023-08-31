@@ -43,7 +43,7 @@ angular.module('openITCOCKPIT')
             $http.post("/changecalendar_module/changecalendars/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                var url = $state.href('CalendarsEdit', {id: result.data.id});
+                var url = $state.href('ChangecalendarsEdit', {id: result.data.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.message.objectName
