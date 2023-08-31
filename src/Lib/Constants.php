@@ -188,14 +188,11 @@ class Constants {
 
     public function getModuleConstants() {
         return [
+            'CORE'                    => 0 << 0,
             'AUTOREPORT_MODULE'       => 1 << 0,
             'EVENTCORRELATION_MODULE' => 1 << 1,
-            'DISTRIBUTE_MODULE'       => 1 << 2,
-            'IDOIT_MODULE'            => 1 << 3,
-            'MAP_MODULE'              => 1 << 4,
-            'MK_MODULE'               => 1 << 5,
-            'MASSENVERSAND_MODULE'    => 1 << 6,
-            'SAP_MODULE'              => 1 << 7,
+            'IMPORT_MODULE'           => 1 << 2,
+            'SLA_MODULE'              => 1 << 3
         ];
     }
 

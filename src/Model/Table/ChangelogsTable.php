@@ -13,7 +13,6 @@ use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\CakePHP\Set;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ChangelogsFilter;
 
@@ -121,7 +120,7 @@ class ChangelogsTable extends Table {
      * @param bool $showInherit Use me to show inheritance of the main element queried. E.g. Hosts->Services.
      * @return array
      */
-    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $enableHydration = true, bool $showInherit = false) {
+    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $moduleFlag = CORE, $enableHydration = true, bool $showInherit = false) {
         $contain = ['Containers'];
         $select = [
             'id',
@@ -194,6 +193,9 @@ class ChangelogsTable extends Table {
         }
 
         $query->group(['Changelogs.id']);
+        $query->where([
+            'Changelogs.module_flag' => $moduleFlag
+        ]);
         $query->where($where);
         $query->order(
             array_merge(
