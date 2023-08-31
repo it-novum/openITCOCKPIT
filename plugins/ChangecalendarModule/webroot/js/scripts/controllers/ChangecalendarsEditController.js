@@ -325,19 +325,20 @@ angular.module('openITCOCKPIT')
             // Bind click event for color selector
             $("[select-color='true']").click(function(){
                 var color = $(this).attr('color');
-                var $textarea = $('#motdcontent');
+                var $textarea = $('#description');
                 $textarea.surroundSelectedText("[color='" + color + "']", '[/color]');
             });
 
             // Bind click event for font size selector
             $("[select-fsize='true']").click(function(){
                 var fontSize = $(this).attr('fsize');
-                var $textarea = $('#motdcontent');
+                var $textarea = $('#description');
+                console.log("[text='" + fontSize + "']");
                 $textarea.surroundSelectedText("[text='" + fontSize + "']", "[/text]");
             });
 
             $scope.prepareHyperlinkSelection = function(){
-                var $textarea = $('#motdcontent');
+                var $textarea = $('#description');
                 var selection = $textarea.getSelection();
                 if(selection.length > 0){
                     $scope.docu.hyperlinkDescription = selection.text;
@@ -345,7 +346,7 @@ angular.module('openITCOCKPIT')
             };
 
             $scope.insertWysiwygHyperlink = function(){
-                var $textarea = $('#motdcontent');
+                var $textarea = $('#description');
                 var selection = $textarea.getSelection();
                 var newTab = $('#modalLinkNewTab').is(':checked') ? " tab" : "";
                 if(selection.length > 0){
