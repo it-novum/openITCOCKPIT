@@ -53,7 +53,7 @@
         "friendsofcake/cakephp-csvview": "^4.0",
         "guiguiboy/php-cli-progress-bar": "^0.0.4",
         "guzzlehttp/guzzle": "^7.4",
-        "itnovum/acl": "^0.7.2",
+        "itnovum/acl": "^0.7.3",
         "jbbcode/jbbcode": "^1.4",
         "jdorn/sql-formatter": "^1.2",
         "lasserafn/php-initial-avatar-generator": "^4.2",
