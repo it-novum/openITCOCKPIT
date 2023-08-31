@@ -69,7 +69,7 @@ class ChangecalendarsController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $data = $this->request->getData('Changecalendar');
+            $data = (array)$this->request->getData('Changecalendar', []);
 
             /** @var ChangecalendarsTable $ChangecalendarsTable */
             $ChangecalendarsTable = TableRegistry::getTableLocator()->get('ChangecalendarModule.Changecalendars');
