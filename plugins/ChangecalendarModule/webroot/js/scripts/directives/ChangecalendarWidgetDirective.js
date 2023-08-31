@@ -5,10 +5,11 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
         },
 
         controller: function($scope){
-            $scope.currentChangeCalendars =[];
+            $scope.moved = false;
+            $scope.currentChangeCalendars = [];
             $scope.changeCalendars = [];
-            var $widget = $('#widget-' + $scope.widget.id);
-            $scope.frontWidgetHeight = parseInt(($widget.height()), 10); //-50px header
+            $scope.widgetPointer = $('#widget-' + $scope.widget.id);
+            $scope.frontWidgetHeight = parseInt(($scope.widgetPointer.height()), 10); //-50px header
 
             $scope.fontSize = parseInt($scope.frontWidgetHeight / 3.8, 10);
 
@@ -23,26 +24,24 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                         params: {
                             'angular': true, 'widgetId': $scope.widget.id
                         }
-                    }),
-                    $http.get("/angular/user_timezone.json", {
+                    }), $http.get("/angular/user_timezone.json", {
                         params: {
                             'angular': true
                         }
-                    })
-                ]).then(function(results){
+                    })]).then(function(results){
                     $scope.init = false;
                     $scope.currentChangeCalendars = results[0].data.changeCalendars;
                     $scope.displayType = results[0].data.displayType;
                     $scope.changeCalendarIds = [];
-                    $scope.timeZone   = results[1].data.timezone;
+                    $scope.timeZone = results[1].data.timezone;
 
                     let evenz = [];
-                    for(var index in $scope.currentChangeCalendars) {
+                    for(var index in $scope.currentChangeCalendars){
                         let myChangeCalendar = $scope.currentChangeCalendars[index];
 
                         $scope.changeCalendarIds.push($scope.currentChangeCalendars[index].id);
 
-                        for(var eventIndex in myChangeCalendar.changecalendar_events) {
+                        for(var eventIndex in myChangeCalendar.changecalendar_events){
                             let myEvent = myChangeCalendar.changecalendar_events[eventIndex];
                             evenz.push(myEvent);
                         }
@@ -62,7 +61,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
             };
 
             $scope.renderCalendar = function(){
-                var calendarEl = document.getElementById('changecalendar-'+$scope.widget.id);
+                var calendarEl = document.getElementById('changecalendar-' + $scope.widget.id);
                 $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                     timeZone: $scope.timeZone.user_timezone,
                     plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
@@ -98,25 +97,25 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
 
             // Show the modal and pre-fill the form with the given event.
             $scope.showEventDetails = function(event){
-                let myModal = $('#changecalendar-'+$scope.widget.id+'-details');
+                let myModal = $('#changecalendar-' + $scope.widget.id + '-details');
 
-                // move around
+                // move around while shown
                 $('body').append(myModal);
 
                 // Fullcalendar ignores the setting for it's original time zone it was using.
                 // FC still uses the correct time, BUT claims it is in UTC zone.
                 let newStart = luxon.DateTime.fromMillis(event.start.getTime(), {zone: 'UTC'});
-                let newEnd   = luxon.DateTime.fromMillis(event.end.getTime(),   {zone: 'UTC'});
+                let newEnd = luxon.DateTime.fromMillis(event.end.getTime(), {zone: 'UTC'});
                 // So we simply add the timeZone WITHOUT re-calculating the actual time.
                 // We change the ZONE. NOT the TIME.
                 newStart = newStart.setZone($scope.timeZone.user_timezone, {keepLocalTime: true});
-                newEnd   =   newEnd.setZone($scope.timeZone.user_timezone, {keepLocalTime: true});
+                newEnd = newEnd.setZone($scope.timeZone.user_timezone, {keepLocalTime: true});
 
-                let myStart = new Date(newStart.get('year'), newStart.get('month')-1, newStart.get('day'))
+                let myStart = new Date(newStart.get('year'), newStart.get('month') - 1, newStart.get('day'))
                 myStart.setHours(newStart.get('hour'), newStart.get('minute'), newStart.get('second'))
 
 
-                let myEnd = new Date(newEnd.get('year'), newEnd.get('month')-1, newEnd.get('day'))
+                let myEnd = new Date(newEnd.get('year'), newEnd.get('month') - 1, newEnd.get('day'))
                 myEnd.setHours(newEnd.get('hour'), newEnd.get('minute'), newEnd.get('second'))
 
                 $scope.modifyEvent = {
@@ -133,6 +132,10 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
 
                 // Show modal
                 myModal.modal('show');
+                myModal.unbind('hidden.bs.modal').on('hidden.bs.modal', function(){
+                    // Move back after modal closed
+                    $scope.widgetPointer.append($(this));
+                });
 
                 $scope.$apply();
             };
@@ -157,7 +160,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                     return;
                 }
                 if($scope.calendar !== null){
-                    if (typeof($scope.calendar.destroy) === "function") {
+                    if(typeof ($scope.calendar.destroy) === "function"){
                         $scope.calendar.destroy();
                     }
                 }
@@ -172,9 +175,7 @@ angular.module('openITCOCKPIT').directive('changecalendarWidget', function($http
                 $http.post("/changecalendar_module/changecalendars/widget.json?angular=true", {
                     Widget: {
                         id: $scope.widget.id
-                    },
-                    changecalendar_ids: $scope.changeCalendarIds,
-                    displayType : $scope.displayType
+                    }, changecalendar_ids: $scope.changeCalendarIds, displayType: $scope.displayType
                 }).then(function(result){
                     //Update status
                     $scope.hideConfig();
