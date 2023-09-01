@@ -109,7 +109,11 @@ class CommandsController extends AppController {
             $command = $CommandsTable->patchEntity($command, $this->request->getData('Command'));
             $command->set('uuid', UUID::v4());
 
-            $CommandsTable->save($command);
+            // Used by the Changelog
+            $requestData = $this->request->getData();
+            $User = new User($this->getUser());
+
+            $command = $CommandsTable->createCommand($command, $requestData, $User->getId());
             if ($command->hasErrors()) {
                 $this->set('error', $command->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
@@ -117,26 +121,7 @@ class CommandsController extends AppController {
                 return;
             } else {
                 //No errors
-                $User = new User($this->getUser());
-                $requestData = $this->request->getData();
-                /** @var ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    $this->request->getParam('controller'),
-                    $command->get('id'),
-                    OBJECT_COMMAND,
-                    [ROOT_CONTAINER],
-                    $User->getId(),
-                    $requestData['Command']['name'],
-                    $requestData
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($command); // REST API ID serialization
                     return;
@@ -161,14 +146,22 @@ class CommandsController extends AppController {
         if (!$CommandsTable->existsById($id)) {
             throw new NotFoundException('Command not found');
         }
-        $command = $CommandsTable->get($id, [
-            'contain' => 'Commandarguments'
-        ]);
+        $command = $CommandsTable->getCommandForEdit($id);
         $commandForChangeLog = $command->toArray();
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $command = $CommandsTable->patchEntity($command, $this->request->getData('Command'));
-            $CommandsTable->save($command);
+
+            $requestData = $this->request->getData();
+            $User = new User($this->getUser());
+
+            $command = $CommandsTable->updateCommand(
+                $command,
+                $requestData,
+                ['Command' => $commandForChangeLog],
+                $User->getId()
+            );
+
             if ($command->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $command->getErrors());
@@ -176,27 +169,6 @@ class CommandsController extends AppController {
                 return;
             } else {
                 //No errors
-                $User = new User($this->getUser());
-                $requestData = $this->request->getData();
-
-                /** @var ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    $this->request->getParam('controller'),
-                    $command->get('id'),
-                    OBJECT_COMMAND,
-                    [ROOT_CONTAINER],
-                    $User->getId(),
-                    $requestData['Command']['name'],
-                    $requestData,
-                    ['Command' => $commandForChangeLog]
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($command); // REST API ID serialization
                     return;

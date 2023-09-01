@@ -155,7 +155,11 @@ class HosttemplatesController extends AppController {
             $hosttemplate = $HosttemplatesTable->patchEntity($hosttemplate, $this->request->getData('Hosttemplate'));
             $hosttemplate->set('uuid', UUID::v4());
 
-            $HosttemplatesTable->save($hosttemplate);
+            $User = new User($this->getUser());
+            $requestData = $this->request->getData();
+
+            $hosttemplate = $HosttemplatesTable->createHosttemplate($hosttemplate, $requestData, $User->getId());
+
             if ($hosttemplate->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $hosttemplate->getErrors());
@@ -163,31 +167,6 @@ class HosttemplatesController extends AppController {
                 return;
             } else {
                 //No errors
-
-                $User = new User($this->getUser());
-                $requestData = $this->request->getData();
-
-                $extDataForChangelog = $HosttemplatesTable->resolveDataForChangelog($requestData);
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'hosttemplates',
-                    $hosttemplate->get('id'),
-                    OBJECT_HOSTTEMPLATE,
-                    $hosttemplate->get('container_id'),
-                    $User->getId(),
-                    $hosttemplate->get('name'),
-                    array_merge($requestData, $extDataForChangelog)
-                );
-
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hosttemplate); // REST API ID serialization
@@ -247,7 +226,15 @@ class HosttemplatesController extends AppController {
             $hosttemplateEntity = $HosttemplatesTable->patchEntity($hosttemplateEntity, $this->request->getData('Hosttemplate'));
             $hosttemplateEntity->id = $id;
 
-            $HosttemplatesTable->save($hosttemplateEntity);
+            $requestData = $this->request->getData();
+
+            $hosttemplateEntity = $HosttemplatesTable->updateHosttemplate(
+                $hosttemplateEntity,
+                $requestData,
+                $hosttemplateForChangeLog,
+                $User->getId()
+            );
+
             if ($hosttemplateEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $hosttemplateEntity->getErrors());
@@ -255,46 +242,6 @@ class HosttemplatesController extends AppController {
                 return;
             } else {
                 //No errors
-                $requestData = $this->request->getData();
-
-                /**
-                 * update dependent hosts if host template command has been changed and their
-                 * command arguments values are not empty
-                 */
-                if ($requestData['Hosttemplate']['command_id'] != $hosttemplateForChangeLog['Hosttemplate']['command_id'] &&
-                    !empty($hosttemplateForChangeLog['Hosttemplate']['hosttemplatecommandargumentvalues'])) {
-                    $oldCommandId = $hosttemplateForChangeLog['Hosttemplate']['command_id'];
-                    /** @var $HostsTable HostsTable */
-                    $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                    $HostsTable->updateHostCommandIdIfHostHasOwnCommandArguments($id, $oldCommandId);
-                }
-
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'hosttemplates',
-                    $hosttemplateEntity->id,
-                    OBJECT_HOSTTEMPLATE,
-                    $hosttemplateEntity->get('container_id'),
-                    $User->getId(),
-                    $hosttemplateEntity->name,
-                    array_merge($HosttemplatesTable->resolveDataForChangelog($requestData), $requestData),
-                    array_merge($HosttemplatesTable->resolveDataForChangelog($hosttemplateForChangeLog), $hosttemplateForChangeLog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-
-
-                // Update SLA tables
-                $oldSlaId = $hosttemplateForChangeLog['Hosttemplate']['sla_id'] ?? null;
-                $newSlaId = $hosttemplateEntity->get('sla_id');
-                if (intval($oldSlaId) !== intval($newSlaId) && Plugin::isLoaded('SLAModule')) {
-                    $HosttemplatesTable->deleteSlaRecords(intval($id));
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hosttemplateEntity); // REST API ID serialization

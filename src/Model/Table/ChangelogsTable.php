@@ -647,23 +647,36 @@ class ChangelogsTable extends Table {
         $tablesToReplace = [
             'Command.commandarguments' => __('Command arguments'),
 
-            'Timeperiod.timeperiod_timeranges' => __('Time ranges'),
+            'Contact.customvariables'       => __('Custom variables'),
+            'Contact.host_timeperiod_id'    => __('Host time period'),
+            'Contact.service_timeperiod_id' => __('Service time period'),
+            'Contact.host_commands'         => __('Host command'),
+            'Contact.service_commands'      => __('Service command'),
 
-            'Contact.customvariables' => __('Custom variables'),
-            'Contactgroup.container'  => __('Container'),
+
+            'Contactgroup.container' => __('Container'),
+            'Contactgroup.contacts'  => __('Contacts'),
 
             'Hostgroup.container' => __('Container'),
 
             'Hosttemplate.customvariables'                   => __('Custom variables'),
             'Hosttemplate.hosttemplatecommandargumentvalues' => __('Command arguments'),
 
+            'Servicetemplate.check_period_id'                           => __('Check period'),
+            'Servicetemplate.contacts'                                  => __('Contacts'),
             'Servicetemplate.customvariables'                           => __('Custom variables'),
+            'Servicetemplate.contactgroups'                             => __('Contact groups'),
+            'Servicetemplate.eventhandler_command_id'                   => __('Event handler command'),
+            'Servicetemplate.notify_period_id'                          => __('Notify period'),
             'Servicetemplate.servicetemplatecommandargumentvalues'      => __('Command arguments'),
             'Servicetemplate.servicetemplateeventcommandargumentvalues' => __('Event handler command arguments'),
 
+
             'Servicegroup.container' => __('Container'),
 
-            'Servicetemplategroup.container' => __('Container'),
+
+            'Servicetemplategroup.container'        => __('Container'),
+            'Servicetemplategroup.servicetemplates' => __('Service templates'),
 
             'Host.customvariables'           => __('Custom variables'),
             'Host.hostcommandargumentvalues' => __('Command arguments'),
@@ -674,6 +687,8 @@ class ChangelogsTable extends Table {
             'Service.serviceeventcommandargumentvalues' => __('Event handler command arguments'),
 
             'tenant.container' => __('Container'),
+
+            'Timeperiod.timeperiod_timeranges' => __('Time ranges'),
 
             'location.container' => __('Container'),
         ];

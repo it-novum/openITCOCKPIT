@@ -5,6 +5,8 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Servicetemplategroup;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -225,11 +227,33 @@ class ServicetemplategroupsTable extends Table {
      * @param int $id
      * @return array
      */
-    public function getServicetemplategroupForEdit($id) {
+    public function getServicetemplategroupForEdit($id): array {
+        $where = [
+            'Servicetemplategroups.id' => $id
+        ];
+
+        return $this->getServicetemplategroupForEditByWhere($where);
+    }
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getServicetemplategroupForEditByUuid(string $uuid): array {
+        $where = [
+            'Servicetemplategroups.uuid' => $uuid
+        ];
+
+        return $this->getServicetemplategroupForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    private function getServicetemplategroupForEditByWhere(array $where): array {
         $query = $this->find()
-            ->where([
-                'Servicetemplategroups.id' => $id
-            ])
+            ->where($where)
             ->contain([
                 'Containers',
                 'Servicetemplates' => function (Query $query) {
@@ -241,7 +265,7 @@ class ServicetemplategroupsTable extends Table {
                 }
             ])
             ->disableHydration()
-            ->first();
+            ->firstOrFail();
 
 
         $servicetemplategroup = $query;
@@ -784,4 +808,173 @@ class ServicetemplategroupsTable extends Table {
 
         return $result->toArray();
     }
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getServicetemplategroupsByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->select([
+                'Servicetemplategroups.id',
+                'Servicetemplategroups.uuid',
+                'Servicetemplategroups.container_id',
+                'Servicetemplategroups.description',
+            ])
+            ->where([
+                'Servicetemplategroups.id IN' => $ids
+            ])
+            ->contain([
+                'Containers'       => function (Query $q) {
+                    $q->select([
+                        'Containers.id',
+                        'Containers.parent_id',
+                        'Containers.name'
+                    ]);
+                    return $q;
+                },
+                'Servicetemplates' => function (Query $q) {
+                    $q->select([
+                        'Servicetemplates.id',
+                        'Servicetemplates.uuid',
+                        'Servicetemplates.template_name'
+                    ]);
+                    return $q;
+                }
+            ])
+            ->innerJoinWith('Containers', function (Query $q) {
+                return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
+            })
+            ->disableHydration();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new servicetemplategroups. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Servicetemplategroup $entity The entity that will be saved by the Table
+     * @param array $servicetemplategroup The servicetemplategroup as array ( [ Servicetemplategroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicetemplategroup
+     */
+    public function createServicetemplategroup(Servicetemplategroup $entity, array $servicetemplategroup, int $userId): Servicetemplategroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($servicetemplategroup);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'servicetemplategroups',
+            $entity->get('id'),
+            OBJECT_SERVICETEMPLATEGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($servicetemplategroup, $extDataForChangelog)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing servicetemplategroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Servicetemplategroup $entity The entity that will be updated by the Table
+     * @param array $newServicetemplategroup The new servicetemplategroup as array ( [ Servicetemplategroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldServicetemplategroup The old servicetemplategroup as array ( [ Servicetemplategroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicetemplategroup
+     */
+    public function updateServicetemplategroup(Servicetemplategroup $entity, array $newServicetemplategroup, array $oldServicetemplategroup, int $userId): Servicetemplategroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'servicetemplategroups',
+            $entity->get('id'),
+            OBJECT_SERVICETEMPLATEGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($this->resolveDataForChangelog($newServicetemplategroup), $newServicetemplategroup),
+            array_merge($this->resolveDataForChangelog($oldServicetemplategroup), $oldServicetemplategroup)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getServicetemplategroupByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->select([
+                'Servicetemplategroups.id',
+                'name' => 'Containers.name'
+            ])
+            ->contain([
+                'Containers',
+                'Servicetemplates' => function (Query $query) {
+                    return $query->select([
+                        'name' => 'Servicetemplates.name',
+                        'uuid' => 'Servicetemplates.uuid'
+                    ]);
+                }
+            ])
+            ->where(['Servicetemplategroups.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $servicetemplategroup = $this->emptyArrayIfNull($query);
+        if (!empty($servicetemplategroup)) {
+            $servicetemplategroup['servicetemplates'] = Hash::remove($servicetemplategroup['servicetemplates'], '{n}._joinData');
+        }
+
+        return $servicetemplategroup;
+    }
+
 }

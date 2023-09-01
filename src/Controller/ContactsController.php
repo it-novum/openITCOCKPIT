@@ -156,7 +156,8 @@ class ContactsController extends AppController {
             $contact = $ContactsTable->newEmptyEntity();
             $contact = $ContactsTable->patchEntity($contact, $requestData['Contact']);
 
-            $ContactsTable->save($contact);
+            $contact = $ContactsTable->createContact($contact, $requestData, $User->getId());
+
             if ($contact->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $contact->getErrors());
@@ -164,27 +165,6 @@ class ContactsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                $extDataForChangelog = $ContactsTable->resolveDataForChangelog($requestData);
-
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'contacts',
-                    $contact->id,
-                    OBJECT_CONTACT,
-                    $requestData['Contact']['containers']['_ids'],
-                    $User->getId(),
-                    $contact->name,
-                    array_merge($extDataForChangelog, $requestData)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contact); // REST API ID serialization
@@ -264,7 +244,14 @@ class ContactsController extends AppController {
             $contactEntity->setAccess('uuid', false);
             $contactEntity = $ContactsTable->patchEntity($contactEntity, $requestData['Contact']);
             $contactEntity->id = $id;
-            $ContactsTable->save($contactEntity);
+
+            $contactEntity = $ContactsTable->updateContact(
+                $contactEntity,
+                $requestData,
+                $contactForChangeLog,
+                $User->getId()
+            );
+
             if ($contactEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $contactEntity->getErrors());
@@ -272,26 +259,6 @@ class ContactsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'contacts',
-                    $contactEntity->id,
-                    OBJECT_CONTACT,
-                    $requestData['Contact']['containers']['_ids'],
-                    $User->getId(),
-                    $contactEntity->name,
-                    array_merge($ContactsTable->resolveDataForChangelog($requestData), $requestData),
-                    array_merge($ContactsTable->resolveDataForChangelog($contactForChangeLog), $contactForChangeLog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contactEntity); // REST API ID serialization
