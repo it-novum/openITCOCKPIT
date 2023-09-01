@@ -4,6 +4,10 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Command;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -175,11 +179,11 @@ class CommandsTable extends Table {
             $ids = [$ids];
         }
 
-        $command = $this->find('all')
+        $command = $this->find()
             ->contain('Commandarguments')
             ->where(['Commands.id IN' => $ids])
+            ->disableHydration()
             ->all();
-
         return $this->formatResultAsCake2($command->toArray());
     }
 
@@ -358,6 +362,19 @@ class CommandsTable extends Table {
         return $this->formatResultAsCake2($command->toArray(), $contain);
     }
 
+    public function getAllCommandsAsList() {
+        $result = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'name'
+        ])
+            ->disableHydration()
+            ->order(['Commands.name' => 'asc'])
+            ->all();
+
+
+        return $this->emptyArrayIfNull($result);
+    }
+
     /**
      * @return array
      */
@@ -374,7 +391,7 @@ class CommandsTable extends Table {
      * @param int $id
      * @return bool
      */
-    public function existsById($id) {
+    public function existsById($id): bool {
         return $this->exists(['Commands.id' => $id]);
     }
 
@@ -382,12 +399,50 @@ class CommandsTable extends Table {
      * @param string $uuid
      * @return bool
      */
-    public function existsByUuid(string $uuid) {
+    public function existsByUuid(string $uuid): bool {
         return $this->exists(['Commands.uuid' => $uuid]);
     }
 
-    public function existsByName(string $name){
+    public function existsByName(string $name): bool {
         return $this->exists(['Commands.name' => $name]);
+    }
+
+    /**
+     * @param $id
+     * @return Command|EntityInterface
+     */
+    public function getCommandForEdit($id) {
+        $where = [
+            'Commands.id' => $id
+        ];
+
+        return $this->getCommandForEditByWhere($where);
+    }
+
+    /**
+     * @param string $uuid
+     * @return array|EntityInterface
+     */
+    public function getCommandForEditByUuid(string $uuid) {
+        $where = [
+            'Commands.uuid' => $uuid
+        ];
+
+        return $this->getCommandForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array|EntityInterface
+     */
+    private function getCommandForEditByWhere(array $where) {
+        $query = $this->find()
+            ->where($where)
+            ->contain([
+                'Commandarguments'
+            ]);
+
+        return $query->firstOrFail();
     }
 
     /**
@@ -449,7 +504,7 @@ class CommandsTable extends Table {
         return $this->commandTypes;
     }
 
-    public function getSourceCommandForCopy($sourceCommandId){
+    public function getSourceCommandForCopy($sourceCommandId) {
         $sourceCommand = $this->get($sourceCommandId, [
             'contain' => [
                 'Commandarguments'
@@ -458,11 +513,129 @@ class CommandsTable extends Table {
 
         //Remove all source ids so the new copied command will not use the original command arguments...
         $commandarguments = [];
-        foreach($sourceCommand['commandarguments'] as $commandargument){
+        foreach ($sourceCommand['commandarguments'] as $commandargument) {
             unset($commandargument['id'], $commandargument['command_id']);
             $commandarguments[] = $commandargument;
         }
         $sourceCommand['commandarguments'] = $commandarguments;
         return $sourceCommand;
+    }
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getCommandsByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->contain([
+                'Commandarguments'
+            ])
+            ->where([
+                'Commands.id IN' => $ids
+            ])
+            ->disableHydration();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new commands. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Command $entity The entity that will be saved by the Table
+     * @param array $command The command as array ( [ Command => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Command
+     */
+    public function createCommand(Command $entity, array $command, int $userId): Command {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'Commands',
+            $entity->get('id'),
+            OBJECT_COMMAND,
+            [ROOT_CONTAINER],
+            $userId,
+            $entity->get('name'),
+            $command
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing commands. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Command $entity The entity that will be updated by the Table
+     * @param array $newCommand The new command as array ( [ Command => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldCommand The old command as array ( [ Command => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Command
+     */
+    public function updateCommand(Command $entity, array $newCommand, array $oldCommand, int $userId): Command {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'Commands',
+            $entity->get('id'),
+            OBJECT_COMMAND,
+            [ROOT_CONTAINER],
+            $userId,
+            $entity->get('name'),
+            $newCommand,
+            $oldCommand
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getCommandByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->contain('Commandarguments')
+            ->where(['Commands.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $this->emptyArrayIfNull($query);
     }
 }

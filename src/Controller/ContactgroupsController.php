@@ -117,6 +117,11 @@ class ContactgroupsController extends AppController {
             /** @var $ContactgroupsTable ContactgroupsTable */
             $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $requestData = $this->request->getData();
 
             $contactgroup = $ContactgroupsTable->newEmptyEntity();
@@ -124,10 +129,9 @@ class ContactgroupsController extends AppController {
             $contactgroup->set('uuid', UUID::v4());
             $contactgroup->get('container')->set('containertype_id', CT_CONTACTGROUP);
 
-            /** @var ContainersTable $ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $User = new User($this->getUser());
 
-            $ContainersTable->acquireLock();
+            $contactgroup = $ContactgroupsTable->createContactgroup($contactgroup, $requestData, $User->getId());
 
             $ContactgroupsTable->save($contactgroup);
             if ($contactgroup->hasErrors()) {
@@ -137,27 +141,7 @@ class ContactgroupsController extends AppController {
                 return;
             } else {
                 //No errors
-                $User = new User($this->getUser());
-                $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($requestData);
                 Cache::clear('permissions');
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'contactgroups',
-                    $contactgroup->get('id'),
-                    OBJECT_CONTACTGROUP,
-                    $contactgroup->get('container')->get('parent_id'),
-                    $User->getId(),
-                    $contactgroup->get('container')->get('name'),
-                    array_merge($requestData, $extDataForChangelog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contactgroup); // REST API ID serialization
@@ -216,6 +200,15 @@ class ContactgroupsController extends AppController {
             $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->getData('Contactgroup'));
             $contactgroupEntity->id = $id;
 
+            $requestData = $this->request->getData();
+
+            $contactgroupEntity = $ContactgroupsTable->updateContactgroup(
+                $contactgroupEntity,
+                $requestData,
+                $contactgroupForChangeLog,
+                $User->getId()
+            );
+
             $ContactgroupsTable->save($contactgroupEntity);
             if ($contactgroupEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -224,27 +217,6 @@ class ContactgroupsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                $requestData = $this->request->getData();
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'contactgroups',
-                    $contactgroupEntity->get('id'),
-                    OBJECT_CONTACTGROUP,
-                    $contactgroupEntity->get('container')->get('parent_id'),
-                    $User->getId(),
-                    $contactgroupEntity->get('container')->get('name'),
-                    array_merge($ContactgroupsTable->resolveDataForChangelog($requestData), $requestData),
-                    array_merge($ContactgroupsTable->resolveDataForChangelog($contactgroupForChangeLog), $contactgroupForChangeLog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contactgroupEntity); // REST API ID serialization

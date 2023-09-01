@@ -4,6 +4,8 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Contactgroup;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -167,17 +169,39 @@ class ContactgroupsTable extends Table {
      * @param int $id
      * @return array
      */
-    public function getContactgroupForEdit($id) {
+    public function getContactgroupForEdit($id): array {
+        $where = [
+            'Contactgroups.id' => $id
+        ];
+
+        return $this->getContactgroupForEditByWhere($where);
+    }
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getContactgroupForEditByUuid(string $uuid): array {
+        $where = [
+            'Contactgroups.uuid' => $uuid
+        ];
+
+        return $this->getContactgroupForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    private function getContactgroupForEditByWhere(array $where): array {
         $query = $this->find()
-            ->where([
-                'Contactgroups.id' => $id
-            ])
+            ->where($where)
             ->contain([
                 'Containers',
                 'Contacts',
             ])
             ->disableHydration()
-            ->first();
+            ->firstOrFail();
 
 
         $contact = $query;
@@ -426,7 +450,7 @@ class ContactgroupsTable extends Table {
                 'Contactgroups.id IN' => $ids,
             ]);
 
-        if(!empty($MY_RIGHTS)) {
+        if (!empty($MY_RIGHTS)) {
             $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
@@ -474,8 +498,16 @@ class ContactgroupsTable extends Table {
      * @param int $id
      * @return bool
      */
-    public function existsById($id) {
+    public function existsById($id): bool {
         return $this->exists(['Contactgroups.id' => $id]);
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid): bool {
+        return $this->exists(['Contactgroups.uuid' => $uuid]);
     }
 
     /**
@@ -685,11 +717,165 @@ class ContactgroupsTable extends Table {
      * @param int $containerId
      * @return array
      */
-    public function getOrphanedContactgroupsByContainerId(int $containerId){
+    public function getOrphanedContactgroupsByContainerId(int $containerId) {
         $query = $this->find()
             ->where(['container_id' => $containerId]);
         $result = $query->all();
 
         return $result->toArray();
+    }
+
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getContactgroupsByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->where([
+                'Contactgroups.id IN' => $ids
+            ])
+            ->contain([
+                'Containers',
+                'Contacts' => function (Query $q) {
+                    return $q->select([
+                        'Contacts.id',
+                        'Contacts.uuid',
+                        'Contacts.name'
+                    ]);
+                }
+            ])
+            ->innerJoinWith('Containers', function (Query $q) {
+                return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
+            })
+            ->disableHydration();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new contactgroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Contactgroup $entity The entity that will be saved by the Table
+     * @param array $contactgroup The contactgroup as array ( [ Contactgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Contactgroup
+     */
+    public function createContactgroup(Contactgroup $entity, array $contactgroup, int $userId): Contactgroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($contactgroup);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'contactgroups',
+            $entity->get('id'),
+            OBJECT_CONTACTGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($contactgroup, $extDataForChangelog)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing contactgroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Contactgroup $entity The entity that will be updated by the Table
+     * @param array $newContactgroup The new contactgroup as array ( [ Contactgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldContactgroup The old contactgroup as array ( [ Contactgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Contactgroup
+     */
+    public function updateContactgroup(Contactgroup $entity, array $newContactgroup, array $oldContactgroup, int $userId): Contactgroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'contactgroups',
+            $entity->get('id'),
+            OBJECT_CONTACTGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($this->resolveDataForChangelog($newContactgroup), $newContactgroup),
+            array_merge($this->resolveDataForChangelog($oldContactgroup), $oldContactgroup)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getContactgroupByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->select([
+                'Contactgroups.id',
+                'name' => 'Containers.name'
+            ])
+            ->contain([
+                'Containers',
+                'Contacts' => function (Query $query) {
+                    return $query->select([
+                        'name' => 'Contacts.name',
+                        'uuid' => 'Contacts.uuid'
+                    ]);
+                }
+            ])
+            ->where(['Contactgroups.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $contactgroup = $this->emptyArrayIfNull($query);
+        if (!empty($contactgroup)) {
+            $contactgroup['contacts'] = Hash::remove($contactgroup['contacts'], '{n}._joinData');
+        }
+
+        return $contactgroup;
     }
 }

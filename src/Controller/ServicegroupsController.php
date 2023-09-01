@@ -31,6 +31,7 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Entity\Changelog;
+use App\Model\Entity\Servicegroup;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
@@ -162,7 +163,14 @@ class ServicegroupsController extends AppController {
 
             $ContainersTable->acquireLock();
 
-            $ServicegroupsTable->save($servicegroup);
+            $requestData = $this->request->getData();
+
+            $servicegroup = $ServicegroupsTable->createServicegroup(
+                $servicegroup,
+                $requestData,
+                $User->getId()
+            );
+
             if ($servicegroup->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicegroup->getErrors());
@@ -170,28 +178,6 @@ class ServicegroupsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                $requestData = $this->request->getData();
-                $extDataForChangelog = $ServicegroupsTable->resolveDataForChangelog($requestData);
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'servicegroups',
-                    $servicegroup->get('id'),
-                    OBJECT_SERVICEGROUP,
-                    $servicegroup->get('container')->get('parent_id'),
-                    $User->getId(),
-                    $servicegroup->get('container')->get('name'),
-                    array_merge($requestData, $extDataForChangelog)
-                );
-
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 Cache::clear('permissions');
 
@@ -255,7 +241,15 @@ class ServicegroupsController extends AppController {
             $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, $this->request->getData('Servicegroup'));
             $servicegroupEntity->id = $id;
 
-            $ServicegroupsTable->save($servicegroupEntity);
+            $requestData = $this->request->getData();
+
+            $servicegroupEntity = $ServicegroupsTable->updateServicegroup(
+                $servicegroupEntity,
+                $requestData,
+                $servicegroupForChangelog,
+                $User->getId()
+            );
+
             if ($servicegroupEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicegroupEntity->getErrors());
@@ -263,27 +257,6 @@ class ServicegroupsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                $requestData = $this->request->getData();
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'servicegroups',
-                    $servicegroupEntity->id,
-                    OBJECT_SERVICEGROUP,
-                    $servicegroupEntity->get('container')->get('parent_id'),
-                    $User->getId(),
-                    $servicegroupEntity->get('container')->get('name'),
-                    array_merge($ServicegroupsTable->resolveDataForChangelog($requestData), $requestData),
-                    array_merge($ServicegroupsTable->resolveDataForChangelog($servicegroupForChangelog), $servicegroupForChangelog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicegroupEntity); // REST API ID serialization
