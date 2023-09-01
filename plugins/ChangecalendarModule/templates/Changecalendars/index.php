@@ -210,7 +210,7 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <?php if ($this->Acl->hasPermission('edit', 'Changecalendars')): ?>
+                            <?php if ($this->Acl->hasPermission('edit', 'Changecalendars', 'ChangecalendarModule')): ?>
                                 <div class="col-xs-12 col-md-4 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                         <i class="fas fa-trash"></i>
