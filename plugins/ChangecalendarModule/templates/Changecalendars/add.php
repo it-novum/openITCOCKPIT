@@ -111,10 +111,10 @@
                                 <?php echo __('Colour'); ?>
                             </label>
 
-                            <colorpicker-directive class="col-6" highlightclass="mapping.pageHeader.class"
-                                                   highlighttype="mapping.pageHeader.highlight" post="post"
-                                                   key="'pageHeader'"
-                                                   ng-model="post.Changecalendar.colour"></colorpicker-directive>
+                            <colorpicker-directive ng-model="post.Changecalendar.colour"
+                                                   class="col-6"
+                                                   post="post.changeCalendar"
+                                                   key="'colour'"></colorpicker-directive>
                             <div ng-repeat="error in errors.colour">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
