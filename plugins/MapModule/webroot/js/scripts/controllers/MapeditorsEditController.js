@@ -129,7 +129,7 @@ angular.module('openITCOCKPIT')
             $('.background-dropzone').dropzone({
                 method: 'post',
                 maxFilesize: $scope.maxUploadLimit.value, //MB
-                acceptedFiles: 'image/*', //mimetypes
+                acceptedFiles: 'image/gif,image/jpeg,image/png', //mimetypes
                 paramName: "file",
                 success: function(obj){
                     var $previewElement = $(obj.previewElement);
@@ -186,7 +186,7 @@ angular.module('openITCOCKPIT')
             $('.icon-dropzone').dropzone({
                 method: 'post',
                 maxFilesize: $scope.maxUploadLimit.value, //MB
-                acceptedFiles: 'image/*', //mimetypes
+                acceptedFiles: 'image/gif,image/jpeg,image/png', //mimetypes
                 paramName: "file",
                 success: function(obj){
                     var $previewElement = $(obj.previewElement);
