@@ -121,28 +121,35 @@ class Constants {
 
     private function defineObjects() {
         $this->define([
-            'OBJECT_TENANT'               => 1 << 0,
-            'OBJECT_USER'                 => 1 << 1,
-            'OBJECT_NODE'                 => 1 << 2,
-            'OBJECT_LOCATION'             => 1 << 3,
-            'OBJECT_DEVICEGROUP'          => 1 << 4,
-            'OBJECT_CONTACT'              => 1 << 5,
-            'OBJECT_CONTACTGROUP'         => 1 << 6,
-            'OBJECT_TIMEPERIOD'           => 1 << 7,
-            'OBJECT_HOST'                 => 1 << 8,
-            'OBJECT_HOSTTEMPLATE'         => 1 << 9,
-            'OBJECT_HOSTGROUP'            => 1 << 10,
-            'OBJECT_SERVICE'              => 1 << 11,
-            'OBJECT_SERVICETEMPLATE'      => 1 << 12,
-            'OBJECT_SERVICEGROUP'         => 1 << 13,
-            'OBJECT_COMMAND'              => 1 << 14,
-            'OBJECT_SATELLITE'            => 1 << 15,
-            'OBJECT_SERVICETEMPLATEGROUP' => 1 << 16,
-            'OBJECT_HOSTESCALATION'       => 1 << 17,
-            'OBJECT_SERVICEESCALATION'    => 1 << 18,
-            'OBJECT_HOSTDEPENDENCY'       => 1 << 19,
-            'OBJECT_SERVICEDEPENDENCY'    => 1 << 20,
-            'OBJECT_EXPORT'               => 1 << 21
+            'OBJECT_TENANT'                    => 1 << 0,
+            'OBJECT_USER'                      => 1 << 1,
+            'OBJECT_NODE'                      => 1 << 2,
+            'OBJECT_LOCATION'                  => 1 << 3,
+            'OBJECT_DEVICEGROUP'               => 1 << 4,
+            'OBJECT_CONTACT'                   => 1 << 5,
+            'OBJECT_CONTACTGROUP'              => 1 << 6,
+            'OBJECT_TIMEPERIOD'                => 1 << 7,
+            'OBJECT_HOST'                      => 1 << 8,
+            'OBJECT_HOSTTEMPLATE'              => 1 << 9,
+            'OBJECT_HOSTGROUP'                 => 1 << 10,
+            'OBJECT_SERVICE'                   => 1 << 11,
+            'OBJECT_SERVICETEMPLATE'           => 1 << 12,
+            'OBJECT_SERVICEGROUP'              => 1 << 13,
+            'OBJECT_COMMAND'                   => 1 << 14,
+            'OBJECT_SATELLITE'                 => 1 << 15,
+            'OBJECT_SERVICETEMPLATEGROUP'      => 1 << 16,
+            'OBJECT_HOSTESCALATION'            => 1 << 17,
+            'OBJECT_SERVICEESCALATION'         => 1 << 18,
+            'OBJECT_HOSTDEPENDENCY'            => 1 << 19,
+            'OBJECT_SERVICEDEPENDENCY'         => 1 << 20,
+            'OBJECT_EXPORT'                    => 1 << 21,  // Changelog only
+            'OBJECT_HOSTDEFAULT'               => 1 << 22,  // Changelog only
+            'OBJECT_IMPORTER'                  => 1 << 23,  // Changelog only
+            'OBJECT_IMPORTEDHOST'              => 1 << 24,  // Changelog only
+            'OBJECT_EXTERNALSYSTEM'            => 1 << 25,  // Changelog only
+            'OBJECT_EXTERNALMONITORING'        => 1 << 26,  // Changelog only
+            'OBJECT_STARTIMPORTDATA'           => 1 << 27,  // Changelog only
+            'OBJECT_SYNCHRONIZEWITHMONITORING' => 1 << 28   // Changelog only
         ]);
     }
 
