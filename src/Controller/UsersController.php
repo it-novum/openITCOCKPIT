@@ -45,7 +45,6 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
