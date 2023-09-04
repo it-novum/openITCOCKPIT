@@ -18,7 +18,6 @@ angular.module('openITCOCKPIT')
                     colour: '#3788d8'
                 }
             };
-            $scope.post.Changecalendar.colour ='#3788d8';
         };
 
         $scope.init = true;

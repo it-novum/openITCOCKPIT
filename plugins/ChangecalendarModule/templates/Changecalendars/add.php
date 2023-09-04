@@ -113,7 +113,7 @@
 
                             <colorpicker-directive ng-model="post.Changecalendar.colour"
                                                    class="col-6"
-                                                   post="post.changeCalendar"
+                                                   post="post.Changecalendar"
                                                    key="'colour'"></colorpicker-directive>
                             <div ng-repeat="error in errors.colour">
                                 <div class="help-block text-danger">{{ error }}</div>
