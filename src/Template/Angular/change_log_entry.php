@@ -78,7 +78,7 @@
             </span>
 
             <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
-                  ng-if="tableChanges.isArray" class="padding-top-5">
+                  ng-if="tableChanges.isArray">
                 <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
                     <footer class="padding-left-10 blockquote-footer"
                             ng-if="subFieldName !== 'id'">
@@ -86,7 +86,7 @@
                         <span class="text-primary">{{subFieldValue}}</span>
                     </footer>
                 </span>
-                <div class="padding-top-5"></div>
+                <div class="py-1"></div>
             </span>
         </div>
     </blockquote>
@@ -109,7 +109,7 @@
             </span>
 
             <span ng-repeat="(fieldIndex, fieldValueChanges) in tableChanges.data"
-                  ng-if="tableChanges.isArray" class="padding-top-5">
+                  ng-if="tableChanges.isArray">
                 <small
                     ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
                     ng-if="fieldValueChanges.old === null">
@@ -146,7 +146,7 @@
                     </footer>
                 </small>
 
-                <div class="padding-top-5"></div>
+                <div class="py-1"></div>
             </span>
         </div>
     </blockquote>
