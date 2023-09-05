@@ -1817,5 +1817,11 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             }, 1000);
         };
 
+        // You cannot use Bitwise or void operators in an Angular expression.
+        // https://stackoverflow.com/a/39295072
+        $rootScope.hasFlag = function(value, flag){
+            return value & flag;
+        }
+
     })
 ;
