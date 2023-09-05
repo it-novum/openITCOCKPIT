@@ -93,7 +93,7 @@ class BackgroundUploadsController extends AppController {
             $fullFilePath = $backgroundFolder->path . DS . $saveFilename . '.' . $fileExtension;
             try {
                 if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
-                    throw new Exception(__('Cannot move uploaded file'));
+                    throw new \Exception(__('Cannot move uploaded file'));
                 }
 
                 $imageConfig = [
@@ -117,7 +117,7 @@ class BackgroundUploadsController extends AppController {
                     'message'  => __('File uploaded successfully'),
                     'filename' => $saveFilename . '.' . $fileExtension
                 ];
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $response = [
                     'success' => false,
                     'message' => __('Upload failed: {0}', $e->getMessage())
@@ -229,7 +229,7 @@ class BackgroundUploadsController extends AppController {
                 }
 
                 if (!move_uploaded_file($_FILES['file']['tmp_name'], $iconImgDirectory . DS . $fileName)) {
-                    throw new Exception(__('Cannot move uploaded file'));
+                    throw new \Exception(__('Cannot move uploaded file'));
                 }
                 $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
 
@@ -249,7 +249,7 @@ class BackgroundUploadsController extends AppController {
                     'message'  => __('File uploaded successfully'),
                     'filename' => $fileName
                 ];
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $response = [
                     'success' => false,
                     'message' => __('Upload failed: {0}', $e->getMessage())
@@ -346,13 +346,13 @@ class BackgroundUploadsController extends AppController {
                 }
 
                 if (!move_uploaded_file($_FILES['file']['tmp_name'], $tempZipsDirectory . DS . $fileName)) {
-                    throw new Exception(__('Cannot move uploaded file'));
+                    throw new \Exception(__('Cannot move uploaded file'));
                 }
 
                 $zipFile = new ZipArchive();
                 $openZip = $zipFile->open($tempZipsDirectory . DS . $fileName);
                 if (!$openZip) {
-                    throw new Exception(__('Could not open uploaded zip file.'));
+                    throw new \Exception(__('Could not open uploaded zip file.'));
                 }
 
                 $unzipDirectory = $tempZipsDirectory . DS . 'uploaded_' . str_replace('.zip', '', $fileName);
@@ -411,7 +411,7 @@ class BackgroundUploadsController extends AppController {
                     $fs = new Filesystem();
                     $fs->remove($unzipDirectory);
 
-                    throw new Exception('Iconset name is empty');
+                    throw new \Exception('Iconset name is empty');
                 }
 
                 //Check if all required icons exists and make sure the images are PNGs
@@ -448,14 +448,14 @@ class BackgroundUploadsController extends AppController {
                     $fs = new Filesystem();
                     $fs->remove($unzipDirectory);
 
-                    throw new Exception($error);
+                    throw new \Exception($error);
 
                 }
 
                 //Copy new icons into iconsets directory
                 $destinationDirectory = $iconsetImgDirectory . DS . $iconsetName;
                 if (is_dir($destinationDirectory)) {
-                    throw new Exception(sprintf(
+                    throw new \Exception(sprintf(
                         'Iconset "%s" already exists',
                         $iconsetName
                     ));
@@ -467,7 +467,7 @@ class BackgroundUploadsController extends AppController {
                     //Remove tmp directory
                     $fs = new Filesystem();
                     $fs->remove($unzipDirectory);
-                    throw new Exception('Could not create directory: ' . $destinationDirectory);
+                    throw new \Exception('Could not create directory: ' . $destinationDirectory);
                 }
 
                 foreach ($iconsetIcons as $icon) {
@@ -483,7 +483,7 @@ class BackgroundUploadsController extends AppController {
                     'message'     => __('File uploaded successfully'),
                     'iconsetname' => $iconsetName
                 ];
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $response = [
                     'success' => false,
                     'message' => __('Upload failed: {0}', $e->getMessage())
