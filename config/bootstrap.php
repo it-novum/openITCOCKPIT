@@ -137,6 +137,15 @@ if (Configure::read('debug')) {
     Configure::write('Cache._cake_core_.duration', '+2 minutes');
     // disable router cache during development
     Configure::write('Cache._cake_routes_.duration', '+2 seconds');
+
+    /*
+    // Open a new Browser windows and navigate to /debug-kit
+    Configure::write('DebugKit.forceEnable', true);
+    // Ignore image paths
+    Configure::write('DebugKit.ignorePathsPattern', '/\.(jpg|png|gif)$/');
+    Configure::write('DebugKit.ignoreAuthorization', true);
+    Configure::write('DebugKit.includeSchemaReflection', true);
+    */
 }
 
 /*
