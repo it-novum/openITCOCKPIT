@@ -104,7 +104,7 @@ class PacketmanagerController extends AppController {
                 }
 
                 foreach ($output as $line) {
-                    preg_match_all('/(openitcockpit\-module\-\w+)/', $line, $matches);
+                    preg_match_all('/(openitcockpit\-module\-[^\s|^\.]+)/', $line, $matches);
                     if (isset($matches[0][0])) {
                         $module = $matches[0][0];
                         $installedModules[$module] = true;
