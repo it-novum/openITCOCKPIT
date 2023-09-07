@@ -212,6 +212,48 @@ class LoginBackgrounds {
                         'credit' => 'Photo by Mister James on Unsplash'
                     ]
                 ]
+            ],
+            'cat_day' => [
+                'description' => __('International Cat Day'),
+                'particles'   => 'default',
+                'images'      => [
+                    [
+                        'image'  => 'Luna.jpg',
+                        'credit' => 'Luna'
+                    ],
+                    [
+                        'image'  => 'Mia.jpg',
+                        'credit' => 'Mia'
+                    ]
+                ]
+            ],
+            'chocolate_day' => [
+                'description' => __('International Chocolate Day'),
+                'particles'   => 'default',
+                'images'      => [
+                    [
+                        'image'  => 'amirali-mirhashemian-RCVIlSXhYI0-unsplash.jpg',
+                        'credit' => 'Photo by amirali mirhashemian on Unsplash'
+                    ],
+                    [
+                        'image'  => 'malik-skydsgaard-dm1gBKem7XA-unsplash.jpg',
+                        'credit' => 'Photo by Malik Skydsgaard on Unsplash'
+                    ]
+                ]
+            ],
+            'women_day' => [
+                'description' => __('International Women\'s Day'),
+                'particles'   => 'stars',
+                'images'      => [
+                    [
+                        'image'  => 'eyestetix-studio-9SNSHSTpBmk-unsplash.jpg',
+                        'credit' => 'Photo by Eyestetix Studio on Unsplash'
+                    ],
+                    [
+                        'image'  => 'christina-wocintechchat-com-b6dfPNHa81w-unsplash.jpg',
+                        'credit' => 'Photo by Christina @ wocintechchat.com on Unsplash'
+                    ]
+                ]
             ]
         ];
     }
@@ -316,9 +358,9 @@ class LoginBackgrounds {
             $season = 'valentines_day';
         }
 
-        //German Unity Day - 3. Oct
-        if ($today === '03.10') {
-            $season = 'german_unity';
+        // International Women's Day - 08. Mar
+        if ($today === '08.03') {
+            $season = 'women_day';
         }
 
         // Sysadmin day - Last friday of July(7)
@@ -329,6 +371,21 @@ class LoginBackgrounds {
         // International Beer Day - First friday of August(8)
         if ($today === date('d.m', strtotime('first friday of august'))) {
             $season = 'beer_day';
+        }
+
+        // International Cat Day - 08. Aug
+        if ($today === '08.08') {
+            $season = 'cat_day';
+        }
+
+        // International Chocolate Day - 13. Sep
+        if ($today === '13.09') {
+            $season = 'chocolate_day';
+        }
+
+        //German Unity Day - 3. Oct
+        if ($today === '03.10') {
+            $season = 'german_unity';
         }
 
         // Halloween - 31. Oct
