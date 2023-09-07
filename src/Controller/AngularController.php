@@ -766,7 +766,7 @@ class AngularController extends AppController {
             $UserTime = $User->getUserTime();
             foreach (($cache['satellites'] ?? []) as $index => $satellite) {
                 // Put date to users time-zone
-                $date = $UserTime->customFormat('c', $cache['satellites'][$index]['satellite_status']['last_seen']);
+                $date = $UserTime->format($cache['satellites'][$index]['satellite_status']['last_seen']);
                 $cache['satellites'][$index]['satellite_status']['last_seen'] = $date;
 
                 // Check if user may edit satellite
