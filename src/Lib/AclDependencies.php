@@ -556,8 +556,16 @@ class AclDependencies {
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadElementsByContainerId');
 
         $this
-            ->dependency('Statuspages', 'index', 'Statuspages', 'view')
+            ->dependency('Statuspages', 'add', 'Statuspages', 'loadHostsByContainerIds')
+            ->dependency('Statuspages', 'add', 'Statuspages', 'loadServicesByContainerIds')
+            ->dependency('Statuspages', 'add', 'Statuspages', 'loadServicegroupsByContainerIds')
+            ->dependency('Statuspages', 'add', 'Statuspages', 'loadHostgroupsByContainerIds')
             ->dependency('Statuspages', 'add', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'setAlias')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'loadHostsByContainerIds')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'loadServicesByContainerIds')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'loadServicegroupsByContainerIds')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'loadHostgroupsByContainerIds')
             ->dependency('Statuspages', 'edit', 'Statuspages', 'loadContainers');
 
         $this

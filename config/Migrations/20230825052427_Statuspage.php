@@ -57,47 +57,6 @@ class Statuspage extends AbstractMigration
                 ->create();
         }
 
-        if (!$this->hasTable('statuspage_items')) {
-            $this->table('statuspage_items')
-                ->addColumn('id', 'integer', [
-                    'autoIncrement' => true,
-                    'default'       => null,
-                    'limit'         => 11,
-                    'null'          => false,
-                ])
-                ->addPrimaryKey(['id'])
-                ->addColumn('statuspage_id', 'integer', [
-                    'default' => null,
-                    'limit'   => 11,
-                    'null'    => false,
-                ])
-                ->addColumn('type', 'string', [
-                    'default' => null,
-                    'limit'   => 20,
-                    'null'    => false,
-                ])
-                ->addColumn('object_id', 'integer', [
-                    'default' => null,
-                    'limit'   => 11,
-                    'null'    => false,
-                ])
-                ->addColumn('display_text', 'string', [
-                    'default' => null,
-                    'limit'   => 255,
-                    'null'    => true,
-                ])
-                ->addColumn('created', 'datetime', [
-                    'default' => null,
-                    'limit'   => null,
-                    'null'    => false,
-                ])
-                ->addColumn('modified', 'datetime', [
-                    'default' => null,
-                    'limit'   => null,
-                    'null'    => false,
-                ])
-                ->create();
-        }
         if (!$this->hasTable('statuspages_to_containers')) {
             $this->table('statuspages_to_containers')
                 ->addColumn('id', 'integer', [
@@ -130,11 +89,162 @@ class Statuspage extends AbstractMigration
                 ->create();
         }
 
+        if (!$this->hasTable('statuspages_to_hosts')) {
+            $this->table('statuspages_to_hosts')
+                ->addColumn('id', 'integer', [
+                    'autoIncrement' => true,
+                    'default'       => null,
+                    'limit'         => 11,
+                    'null'          => false,
+                ])
+                ->addPrimaryKey(['id'])
+                ->addColumn('statuspage_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('host_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('display_alias', 'string', [
+                    'default' => null,
+                    'limit'   => 255,
+                    'null'    => true,
+                ])
+                ->addIndex(
+                    [
+                        'statuspage_id',
+                    ]
+                )
+                ->addIndex(
+                    [
+                        'host_id',
+                    ]
+                )
+                ->create();
+        }
+
+        if (!$this->hasTable('statuspages_to_services')) {
+            $this->table('statuspages_to_services')
+                ->addColumn('id', 'integer', [
+                    'autoIncrement' => true,
+                    'default'       => null,
+                    'limit'         => 11,
+                    'null'          => false,
+                ])
+                ->addPrimaryKey(['id'])
+                ->addColumn('statuspage_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('service_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('display_alias', 'string', [
+                    'default' => null,
+                    'limit'   => 255,
+                    'null'    => true,
+                ])
+                ->addIndex(
+                    [
+                        'statuspage_id',
+                    ]
+                )
+                ->addIndex(
+                    [
+                        'service_id',
+                    ]
+                )
+                ->create();
+        }
+
+        if (!$this->hasTable('statuspages_to_hostgroups')) {
+            $this->table('statuspages_to_hostgroups')
+                ->addColumn('id', 'integer', [
+                    'autoIncrement' => true,
+                    'default'       => null,
+                    'limit'         => 11,
+                    'null'          => false,
+                ])
+                ->addPrimaryKey(['id'])
+                ->addColumn('statuspage_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('hostgroup_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('display_alias', 'string', [
+                    'default' => null,
+                    'limit'   => 255,
+                    'null'    => true,
+                ])
+                ->addIndex(
+                    [
+                        'statuspage_id',
+                    ]
+                )
+                ->addIndex(
+                    [
+                        'hostgroup_id',
+                    ]
+                )
+                ->create();
+        }
+
+        if (!$this->hasTable('statuspages_to_servicegroups')) {
+            $this->table('statuspages_to_servicegroups')
+                ->addColumn('id', 'integer', [
+                    'autoIncrement' => true,
+                    'default'       => null,
+                    'limit'         => 11,
+                    'null'          => false,
+                ])
+                ->addPrimaryKey(['id'])
+                ->addColumn('statuspage_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('servicegroup_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('display_alias', 'string', [
+                    'default' => null,
+                    'limit'   => 255,
+                    'null'    => true,
+                ])
+                ->addIndex(
+                    [
+                        'statuspage_id',
+                    ]
+                )
+                ->addIndex(
+                    [
+                        'servicegroup_id',
+                    ]
+                )
+                ->create();
+        }
+
     }
 
     public function down(): void {
         $this->table('statuspages')->drop()->save();
-        $this->table('statuspage_items')->drop()->save();
         $this->table('statuspages_to_containers')->drop()->save();
+        $this->table('statuspages_to_hosts')->drop()->save();
+        $this->table('statuspages_to_servicess')->drop()->save();
+        $this->table('statuspages_to_hostgroups')->drop()->save();
+        $this->table('statuspages_to_servicegroups')->drop()->save();
     }
 }

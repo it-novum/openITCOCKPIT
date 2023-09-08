@@ -38,6 +38,13 @@ use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Model\Table\StatuspagesTable;
+use Cake\Event\EventInterface;
+use Cake\Http\Exception\ForbiddenException;
+
+use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 
 /**
@@ -146,6 +153,15 @@ class StatuspagesController extends AppController
                     return;
                 }
             }
+           /* $statuspage = $StatuspagesTable->get($statuspage->id, [
+                'contain' => [
+                    'Containers',
+                    'Hosts',
+                    'Services',
+                    'Hostgroups',
+                    'Servicegroups'
+                ]
+            ]); */
             $this->set('statuspage', $statuspage);
             $this->viewBuilder()->setOption('serialize', ['statuspage']);
 
@@ -220,7 +236,7 @@ class StatuspagesController extends AppController
      * @return \Cake\Http\Response|null|void Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function items($id = null) {
+   /* public function items($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -239,9 +255,7 @@ class StatuspagesController extends AppController
         $statuspage['containers'] = [
             '_ids' => Hash::extract($statuspage, 'containers.{n}.id')
         ];
-
-
-    }
+    } */
 
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
@@ -262,4 +276,120 @@ class StatuspagesController extends AppController
         $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
+    public function loadHostsByContainerIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerIds = $this->request->getQuery('containerIds');
+        $selected = $this->request->getQuery('selected');
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        $containerIds = array_unique($containerIds);
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($containerIds);
+
+        $hosts = Api::makeItJavaScriptAble(
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set('hosts', $hosts);
+        $this->viewBuilder()->setOption('serialize', ['hosts']);
+    }
+
+    public function loadServicesByContainerIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->getQuery('selected');
+        $containerIds = $this->request->getQuery('containerIds');
+
+        $ServiceFilter = new ServiceFilter($this->request);
+        $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        $containerIds = array_unique($containerIds);
+
+
+        // as $ServiceCondition->setIncludeDisabled(false); has no function at all we need to exclude the disabled services here
+        $serviceConditions = ['Services.disabled' => 0];
+        if(!empty($ServiceFilter->indexFilter())){
+            $serviceConditions = array_merge($ServiceFilter->indexFilter(), $serviceConditions);
+        }
+        $ServiceCondition = new ServiceConditions($serviceConditions);
+        $ServiceCondition->setContainerIds($containerIds);
+        //$ServiceCondition->setIncludeDisabled(false); // this has no function
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = Api::makeItJavaScriptAble(
+            $ServicesTable->getServicesForAngular($ServiceCondition, $selected)
+        );
+
+        $this->set('services', $services);
+        $this->viewBuilder()->setOption('serialize', ['services']);
+    }
+    public function loadServicegroupsByContainerIds() {}
+    public function loadHostgroupsByContainerIds() {}
+
+    /**
+     *
+     * edit items
+     *
+     * @param string|null $id Statuspage id.
+     * @return \Cake\Http\Response|null|void Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function setAlias($id = null)
+    {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $StatuspagesTable StatuspagesTable */
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
+            throw new NotFoundException('Statuspage not found');
+        }
+        $statuspage = $StatuspagesTable->getStatuspageObjects($id);
+
+        if ($this->request->is('post')) {
+            $statuspage = $StatuspagesTable->get($id, [
+                'contain' => [
+                    'Containers',
+                    'Hosts',
+                    'Services',
+                    'Hostgroups',
+                    'Servicegroups'
+                ]
+            ]);
+            $statuspageData = $this->request->getData()['Statuspage'];
+            $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData, [
+                'validate' => 'stepTwo'
+            ]);
+            $StatuspagesTable->save($statuspage);
+            if ($statuspage->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $statuspage->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            } else {
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($statuspage); // REST API ID serialization
+                    return;
+                }
+            }
+        }
+
+        $this->set('Statuspage', $statuspage);
+        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
+
+    }
 }

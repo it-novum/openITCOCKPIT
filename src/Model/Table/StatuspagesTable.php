@@ -30,16 +30,19 @@ use Cake\ORM\Association\HasMany;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\ORM\Association\BelongsToMany;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 
 /**
  * Statuspages Model
+
  *
- * @property \App\Model\Table\StatuspageItemsTable&\Cake\ORM\Association\HasMany $StatuspageItems
- * @property ContainersTable&HasMany $StatuspagesToContainers
+ * @property \App\Model\Table\StatuspagesToContainersTable&\Cake\ORM\Association\HasMany $StatuspagesToContainers
+ * @property \App\Model\Table\StatuspagesToHostgroupsTable&\Cake\ORM\Association\HasMany $StatuspagesToHostgroups
+ * @property \App\Model\Table\StatuspagesToHostsTable&\Cake\ORM\Association\HasMany $StatuspagesToHosts
+ * @property \App\Model\Table\StatuspagesToServicegroupsTable&\Cake\ORM\Association\HasMany $StatuspagesToServicegroups
+ * @property \App\Model\Table\StatuspagesToServicesTable&\Cake\ORM\Association\HasMany $StatuspagesToServices
  *
  * @method \App\Model\Entity\Statuspage newEmptyEntity()
  * @method \App\Model\Entity\Statuspage newEntity(array $data, array $options = [])
@@ -76,15 +79,44 @@ class StatuspagesTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->hasMany('StatuspageItems', [
-            'foreignKey' => 'statuspage_id',
-        ])->setDependent(true);
+        $this->belongsToMany('Containers', [
+            'className'        => 'Containers',
+            'foreignKey'       => 'statuspage_id',
+            'targetForeignKey' => 'container_id',
+            'joinTable'        => 'statuspages_to_containers'
+        ]);
 
         $this->belongsToMany('Containers', [
             'className'        => 'Containers',
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'container_id',
             'joinTable'        => 'statuspages_to_containers'
+        ]);
+
+        $this->belongsToMany('Hosts', [
+            'className'        => 'Hosts',
+            'foreignKey'       => 'statuspage_id',
+            'targetForeignKey' => 'host_id',
+            'joinTable'        => 'statuspages_to_hosts'
+        ]);
+
+        $this->belongsToMany('Services', [
+            'className'        => 'Services',
+            'foreignKey'       => 'statuspage_id',
+            'targetForeignKey' => 'service_id',
+            'joinTable'        => 'statuspages_to_services'
+        ]);
+        $this->belongsToMany('Hostgroups', [
+            'className'        => 'Hostgroups',
+            'foreignKey'       => 'statuspage_id',
+            'targetForeignKey' => 'hostgroup_id',
+            'joinTable'        => 'statuspages_to_hostgroups'
+        ]);
+        $this->belongsToMany('Servicegroups', [
+            'className'        => 'Servicegroups',
+            'foreignKey'       => 'statuspage_id',
+            'targetForeignKey' => 'servicegroup_id',
+            'joinTable'        => 'statuspages_to_servicegroups'
         ]);
 
     }
@@ -127,6 +159,14 @@ class StatuspagesTable extends Table
     }
 
     /**
+     * @param Validator $validator
+     * @return Validator
+     */
+    public function  validationStepTwo(Validator $validator): Validator {
+        return $validator;
+    }
+
+    /**
      * @param StatuspagesFilter $StatuspagesFilter
      * @param $PaginateOMat
      * @param $MY_RIGHTS
@@ -161,6 +201,62 @@ class StatuspagesTable extends Table
         }
 
         return $result;
+    }
+
+    /**
+     * @param $id
+     * @return array|void
+     */
+    public function getStatuspageObjects($id = null, $conditions = []) {
+        if (!$this->existsById($id)) {
+            return;
+        }
+
+        $conditions = array_merge(['Statuspages.id' => $id], $conditions);
+
+        $query = $this->find()
+            ->contain('Hosts', function (Query $q) {
+                return $q
+                    ->select(['id', 'uuid', 'name']);
+            })
+            ->contain('Services', function (Query $q) {
+                return $q
+                    ->select([
+                        'id',
+                        'uuid',
+                        'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                    ])
+                    ->innerJoin(['Servicetemplates' => 'servicetemplates'], [
+                        'Servicetemplates.id = Services.servicetemplate_id'
+                    ]);
+            })
+            ->contain('Hostgroups', function (Query $q) {
+                return $q
+                    ->select([
+                        'id',
+                        'Containers.name'
+                    ])
+                    ->innerJoin(['Containers' => 'containers'], [
+                        'Containers.id = Hostgroups.container_id',
+                        'Containers.containertype_id' => CT_HOSTGROUP
+                    ]);
+            })
+            ->contain('Servicegroups', function (Query $q) {
+                return $q
+                    ->select([
+                        'id',
+                        'Containers.name'
+                    ])
+                    ->innerJoin(['Containers' => 'containers'], [
+                        'Containers.id = Servicegroups.container_id',
+                        'Containers.containertype_id' => CT_SERVICEGROUP
+                    ]);
+            })
+            ->where($conditions)
+            ->firstOrFail();
+        $statuspage = $query->toArray();
+
+        return $statuspage;
     }
 
     /**

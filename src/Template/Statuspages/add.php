@@ -135,11 +135,116 @@
                                     <?php echo __('Show comments'); ?>
                                 </label>
                             </div>
-
                         </div>
 
-                        <div class="card margin-top-10">
-                            <div class="card-body">
+                        <hr>
+
+                        <div class="form-group"
+                             ng-class="{'has-error': errors.hosts}">
+                            <label class="control-label">
+                                <?php echo __('Hosts'); ?>
+                            </label>
+                            <div class="input-group" style="width: 100%;">
+                                <select
+                                    id="HostsSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="hosts"
+                                    callback="loadHosts"
+                                    multiple
+                                    ng-options="host.key as host.value for host in hosts"
+                                    ng-model="post.Statuspage.hosts._ids">
+                                </select>
+                            </div>
+                            <div ng-repeat="error in errors.hosts">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary btn-sm" type="button" ng-click="toggleHostAlias()" ng-show="showHostAliasButton">Set host alias</button>
+                        </div>
+                        <div class="form-group" ng-show="showHostAlias">
+                            <label class="control-label">
+                                <?php echo __('Host alias'); ?>
+                            </label>
+                            <span ng-if="selectedHosts.length > 0">
+                            <table class="table">
+                                <thead>
+                                <tr class="d-flex">
+                                    <th class="col-5"><?= __('Host name'); ?></th>
+                                    <th class="col-7"><?= __('Display name'); ?></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="host in selectedHosts" class="d-flex">
+                                    <td class="col-5">{{host.name}}</td>
+                                    <td class="col-7">
+                                        <input
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="host.display_alias">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </span>
+                        </div>
+
+
+                        <div class="form-group"
+                             ng-class="{'has-error': errors.services}">
+                            <label class="control-label">
+                                <?php echo __('Services'); ?>
+                            </label>
+                            <div class="input-group" style="width: 100%;">
+                                <select
+                                        id="ServicesSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="services"
+                                        callback="loadServices"
+                                        multiple
+                                        ng-options="(service.value.Service.id) as service.value.Host.name + '/' +service.value.Service.servicename group by service.value.Host.name for service in services"
+                                        ng-model="post.Statuspage.services._ids">
+                                </select>
+                            </div>
+                            <div ng-repeat="error in errors.services">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary btn-sm" type="button" ng-click="toggleServiceAlias()" ng-show="showServiceAliasButton">Set service alias</button>
+                        </div>
+                        <div class="form-group" ng-show="showServiceAlias">
+                            <label class="control-label">
+                                <?php echo __('Service alias'); ?>
+                            </label>
+                            <span ng-if="selectedServices.length > 0">
+                            <table class="table">
+                                <thead>
+                                <tr class="d-flex">
+                                    <th class="col-3"><?= __('Service name'); ?></th>
+                                    <th class="col-2"><?= __('Host name'); ?></th>
+                                    <th class="col-7"><?= __('Display name'); ?></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="service in selectedServices" class="d-flex">
+                                    <td class="col-3">{{service.name}}</td>
+                                    <td class="col-2">{{service.hostName}}</td>
+                                    <td class="col-7">
+                                        <input
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="service.display_alias">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </span>
+                        </div>
+
+                        <div class="form-group">
                                 <div class="float-right">
                                     <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?>
@@ -150,7 +255,7 @@
                                         </button>
                                     <?php endif; ?>
                                 </div>
-                            </div>
+
                         </div>
                     </form>
                 </div>

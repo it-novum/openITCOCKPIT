@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-use App\Model\Entity\Container;
 use Cake\I18n\FrozenTime;
-use DistributeModule\Model\Entity\Satellite;
 
 /**
  * Statuspage Entity
@@ -19,10 +17,11 @@ use DistributeModule\Model\Entity\Satellite;
  * @property FrozenTime $created
  * @property FrozenTime $modified
  *
- * @property StatuspageItem[] $statuspage_items
- * @property StatuspagesToContainer[] $statuspages_to_containers
- * @property Container[] $containers
- * @property Satellite[] $satellites
+ * @property \App\Model\Entity\StatuspagesToContainer[] $statuspages_to_containers
+ * @property \App\Model\Entity\StatuspagesToHostgroup[] $statuspages_to_hostgroups
+ * @property \App\Model\Entity\StatuspagesToHost[] $statuspages_to_hosts
+ * @property \App\Model\Entity\StatuspagesToServicegroup[] $statuspages_to_servicegroups
+ * @property \App\Model\Entity\StatuspagesToService[] $statuspages_to_services
  */
 class Statuspage extends Entity
 {
@@ -40,10 +39,13 @@ class Statuspage extends Entity
         'description' => true,
         'public' => true,
         'show_comments' => true,
-        'created' => false,
-        'modified' => false,
-        'statuspage_items' => true,
-        'containers'         => true
+        'created' => true,
+        'modified' => true,
+        'containers' => true,
+        'hosts' => true,
+        'services' => true,
+        'hostgroups' => true,
+        'servicegroups' => true,
     ];
 
     /**
