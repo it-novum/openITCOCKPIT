@@ -205,6 +205,18 @@
                         </span>
                     </li>
 
+                    <li ng-repeat="satellite in systemHealth.satellites" ng-if="satellite.satellite_status.status !== 1">
+                        <span>
+                            <div class="padding-5">
+                                <p class="margin-bottom-5">
+                                    <i><?php echo __('Sync status'); ?> <?php echo __('failed')?></i>
+                                    <br/>
+                                    <i>{{ satellite.name }}, <?php echo __('last seen')?> {{ satellite.satellite_status.last_seen }}</i>
+                                </p>
+                            </div>
+                        </span>
+                    </li>
+
                     <li ng-if="systemHealth.memory_usage.memory.state !== 'ok'">
                         <span>
                             <div class="padding-5">
