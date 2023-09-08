@@ -9,6 +9,7 @@ use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Servicetemplate;
 use Cake\Core\Plugin;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -120,6 +121,12 @@ class ServicetemplatesTable extends Table {
             'className'  => 'Commands',
             'foreignKey' => 'command_id',
             'joinType'   => 'INNER'
+        ]);
+
+        $this->belongsTo('EventhandlerCommand', [
+            'className'  => 'Commands',
+            'foreignKey' => 'eventhandler_command_id',
+            'joinType'   => 'LEFT'
         ]);
 
         $this->hasOne('Agentchecks', [
@@ -611,14 +618,12 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
-     * @param int $id
+     * @param array $where
      * @return array
      */
-    public function getServicetemplateForEdit($id) {
+    private function getServicetemplateForEditByWhere(array $where): array {
         $query = $this->find()
-            ->where([
-                'Servicetemplates.id' => $id
-            ])
+            ->where($where)
             ->contain([
                 'Contactgroups',
                 'Contacts',
@@ -635,7 +640,7 @@ class ServicetemplatesTable extends Table {
                 ]
             ])
             ->disableHydration()
-            ->first();
+            ->firstOrFail();
 
         $servicetemplate = $query;
         $servicetemplate['servicegroups'] = [
@@ -685,6 +690,29 @@ class ServicetemplatesTable extends Table {
         return [
             'Servicetemplate' => $servicetemplate
         ];
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServicetemplateForEdit($id): array {
+        $where = [
+            'Servicetemplates.id' => $id
+        ];
+        return $this->getServicetemplateForEditByWhere($where);
+    }
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getServicetemplateForEditByUuid(string $uuid): array {
+        $where = [
+            'Servicetemplates.uuid' => $uuid
+        ];
+
+        return $this->getServicetemplateForEditByWhere($where);
     }
 
     /**
@@ -1670,4 +1698,260 @@ class ServicetemplatesTable extends Table {
         return $this->emptyArrayIfNull($query->toArray());
     }
 
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getServicetemplatesByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->contain([
+                'Contactgroups'                             => 'Containers',
+                'Contacts'                                  => function (Query $q) {
+                    return $q->select([
+                        'Contacts.id',
+                        'Contacts.uuid',
+                        'Contacts.name',
+                    ]);
+                },
+                'Customvariables',
+                'CheckPeriod'                               => function (Query $q) {
+                    return $q->select([
+                        'CheckPeriod.id',
+                        'CheckPeriod.uuid',
+                        'CheckPeriod.name',
+                    ]);
+                },
+                'NotifyPeriod'                              => function (Query $q) {
+                    return $q->select([
+                        'NotifyPeriod.id',
+                        'NotifyPeriod.uuid',
+                        'NotifyPeriod.name',
+                    ]);
+                },
+                'CheckCommand'                              => 'Commandarguments',
+                'Servicetemplatecommandargumentvalues'      => [
+                    'Commandarguments'
+                ],
+                'Servicetemplateeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where([
+                'Servicetemplates.id IN'        => $ids,
+                'Servicetemplates.container_id' => ROOT_CONTAINER
+            ])
+            ->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new servicetemplates. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Servicetemplate $entity The entity that will be saved by the Table
+     * @param array $servicetemplate The servicetemplate as array ( [ Servicetemplate => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicetemplate
+     */
+    public function createServicetemplate(Servicetemplate $entity, array $servicetemplate, int $userId): Servicetemplate {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($servicetemplate);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'servicetemplates',
+            $entity->get('id'),
+            OBJECT_SERVICETEMPLATE,
+            $entity->get('container_id'),
+            $userId,
+            $entity->get('template_name'),
+            array_merge($extDataForChangelog, $servicetemplate)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing servicetemplates. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Servicetemplate $entity The entity that will be updated by the Table
+     * @param array $newServicetemplate The new servicetemplate as array ( [ Servicetemplate => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldServicetemplate The old servicetemplate as array ( [ Servicetemplate => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicetemplate
+     */
+    public function updateServicetemplate(Servicetemplate $entity, array $newServicetemplate, array $oldServicetemplate, int $userId): Servicetemplate {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        /**
+         * ITC-2522
+         * update dependent services if service template command has been changed and their
+         * command arguments values are not empty
+         */
+        if ($newServicetemplate['Servicetemplate']['command_id'] != $oldServicetemplate['Servicetemplate']['command_id'] &&
+            !empty($oldServicetemplate['Servicetemplate']['servicetemplatecommandargumentvalues'])) {
+            $oldCommandId = $oldServicetemplate['Servicetemplate']['command_id'];
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $ServicesTable->updateServiceCommandIdIfServiceHasOwnCommandArguments($entity->get('id'), $oldCommandId);
+        }
+
+        if ($newServicetemplate['Servicetemplate']['eventhandler_command_id'] != $oldServicetemplate['Servicetemplate']['eventhandler_command_id'] &&
+            !empty($oldServicetemplate['Servicetemplate']['servicetemplateeventcommandargumentvalues'])) {
+            $oldEventhandlerCommandId = $oldServicetemplate['Servicetemplate']['eventhandler_command_id'];
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $ServicesTable->updateServiceEventhandlerCommandIdIfServiceHasOwnEventhandlerCommandArguments($entity->get('id'), $oldEventhandlerCommandId);
+        }
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'servicetemplates',
+            $entity->get('id'),
+            OBJECT_SERVICETEMPLATE,
+            $entity->get('container_id'),
+            $userId,
+            $entity->get('template_name'),
+            array_merge($this->resolveDataForChangelog($newServicetemplate), $newServicetemplate),
+            array_merge($this->resolveDataForChangelog($oldServicetemplate), $oldServicetemplate)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getServicetemplateByUuidForImportDiff($uuid) {
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id',
+                'name' => 'Servicetemplates.template_name'
+            ])
+            ->contain([
+                'CheckPeriod'                               => function (Query $query) {
+                    return $query->select([
+                        'CheckPeriod.name',
+                        'CheckPeriod.uuid'
+                    ]);
+                },
+                'NotifyPeriod'                              => function (Query $query) {
+                    return $query->select([
+                        'NotifyPeriod.name',
+                        'NotifyPeriod.uuid'
+                    ]);
+                },
+                'EventhandlerCommand'                       => function (Query $query) {
+                    return $query->select([
+                        'EventhandlerCommand.name',
+                        'EventhandlerCommand.uuid',
+                    ]);
+
+                },
+                'Contacts'                                  => function (Query $query) {
+                    return $query->select([
+                        'Contacts.name',
+                        'Contacts.uuid'
+                    ]);
+                },
+                'Contactgroups'                             => function (Query $query) {
+                    return $query->select([
+                        'name' => 'Containers.name',
+                        'Contactgroups.uuid'
+                    ])->contain(['Containers']);
+                },
+                'Servicetemplatecommandargumentvalues'      => function (Query $query) {
+                    return $query->select([
+                        'Servicetemplatecommandargumentvalues.id',
+                        'Servicetemplatecommandargumentvalues.servicetemplate_id',
+                        'name' => 'Commandarguments.name',
+                        'Servicetemplatecommandargumentvalues.value'
+
+                    ])->contain([
+                        'Commandarguments'
+                    ]);
+                },
+                'Servicetemplateeventcommandargumentvalues' => function (Query $query) {
+                    return $query->select([
+                        'Servicetemplateeventcommandargumentvalues.id',
+                        'Servicetemplateeventcommandargumentvalues.servicetemplate_id',
+                        'name' => 'Commandarguments.name',
+                        'Servicetemplateeventcommandargumentvalues.value',
+                    ])->contain([
+                        'Commandarguments'
+                    ]);
+                },
+                'Customvariables'                           => function (Query $query) {
+                    return $query->select([
+                        'Customvariables.id',
+                        'Customvariables.objecttype_id',
+                        'Customvariables.name',
+                        'Customvariables.value',
+                        'Customvariables.password',
+                        'Customvariables.object_id',
+                    ]);
+                }
+            ])
+            ->where(['Servicetemplates.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $servicetemplate = $this->emptyArrayIfNull($query);
+
+        if (!empty($servicetemplate)) {
+            //clean up and format data for Condition Items Differ
+            $servicetemplate['check_period_id'] = $servicetemplate['check_period'];
+            unset($servicetemplate['check_period']);
+
+            $servicetemplate['notify_period_id'] = $servicetemplate['notify_period'];
+            unset($servicetemplate['notify_period']);
+
+            $servicetemplate['eventhandler_command_id'] = $servicetemplate['eventhandler_command'];
+            unset($servicetemplate['eventhandler_command']);
+
+            $servicetemplate['contacts'] = Hash::remove($servicetemplate['contacts'], '{n}._joinData');
+            $servicetemplate['contactgroups'] = Hash::remove($servicetemplate['contactgroups'], '{n}._joinData');
+            $servicetemplate['servicetemplatecommandargumentvalues'] = Hash::remove($servicetemplate['servicetemplatecommandargumentvalues'], '{n}.servicetemplate_id');
+
+            $servicetemplate['customvariables'] = Hash::remove($servicetemplate['customvariables'], '{n}.object_id');
+        }
+        return $servicetemplate;
+    }
 }

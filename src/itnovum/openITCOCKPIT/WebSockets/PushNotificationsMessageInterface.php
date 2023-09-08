@@ -99,8 +99,8 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn) {
         //debug($conn->resourceId);
         $uuid = UUID::v4();
-        $conn->uuid = $uuid;
-        $this->clients->attach($conn);
+        $this->clients->attach($conn, $uuid);
+
         $conn->send(json_encode([
             'type'    => 'connection',
             'message' => 'Connection established successfully',
@@ -114,7 +114,8 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      */
     public function onClose(ConnectionInterface $conn) {
-        $this->ClientsRepository->removeClientByUuid($conn->uuid);
+        $uuid = $this->clients->offsetGet($conn);
+        $this->ClientsRepository->removeClientByUuid($uuid);
         $this->clients->detach($conn);
     }
 

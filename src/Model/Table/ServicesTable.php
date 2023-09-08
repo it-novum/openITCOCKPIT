@@ -4186,6 +4186,46 @@ class ServicesTable extends Table {
     }
 
     /**
+     * @param $servicetemplateId
+     * @param $commandId
+     */
+    public function updateServiceEventhandlerCommandIdIfServiceHasOwnEventhandlerCommandArguments($servicetemplateId, $eventhandlerCommandId) {
+        $query = $this->find()
+            ->select([
+                'Services.id'
+            ])
+            ->contain([
+                'Serviceeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where([
+                'Services.eventhandler_command_id IS NULL',
+                'Services.servicetemplate_id' => $servicetemplateId
+            ])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if (!empty($query)) {
+            $serviceIds = [];
+            foreach ($query as $row) {
+                if (!empty($row['serviceeventcommandargumentvalues'])) {
+                    $serviceIds[] = (int)$row['id'];
+                }
+            }
+            if (!empty($serviceIds)) {
+                $this->updateAll([
+                    'eventhandler_command_id' => $eventhandlerCommandId
+                ], [
+                    'id IN' => $serviceIds
+                ]);
+            }
+        }
+    }
+
+    /**
      * @param int $hostId
      * @param int[] $excludedServiceIds
      * @return array

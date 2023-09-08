@@ -29,6 +29,16 @@ use Cake\Utility\Hash;
 
 class Http {
 
+    private $curlOptions = [];
+    private $lastError;
+    private $proxy;
+    private $url;
+    private $postBody;
+    private $ch;
+
+    public $error;
+    public $data;
+
     public function __construct($url = '', $settings = [], $proxy = []) {
         $_curlDefaults = [
             'CURLOPT_SSL_VERIFYPEER' => true,

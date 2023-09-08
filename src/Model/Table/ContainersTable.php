@@ -833,6 +833,10 @@ class ContainersTable extends Table {
         $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
         /** @var $ServiceescalationsTable ServiceescalationsTable */
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        /** @var UserContainerRolesTable $UserContainerRolesTable */
+        $UserContainerRolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
         /** Reports Objects */
 
@@ -888,6 +892,8 @@ class ContainersTable extends Table {
                     $containers[$index]['childsElements']['contacts'] = $ContactsTable->getContactsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['contactgroups'] = $ContactgroupsTable->getContactgroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
 
+                    $containers[$index]['childsElements']['users'] = $UsersTable->getUsersByContainerIdExact($container['id'], 'list');
+                    $containers[$index]['childsElements']['usercontainerroles'] = $UserContainerRolesTable->getContainerRoleByContainerIdExact($container['id'], 'list','id', $MY_RIGHTS);
                     // label Type_#Id
                     $containers[$index]['childsElements']['hostdependencies'] = $HostdependenciesTable->getHostdependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['hostescalations'] = $HostescalationsTable->getHostescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
@@ -1032,6 +1038,8 @@ class ContainersTable extends Table {
             'satellites'             => __('Satellites'),
             'timeperiods'            => __('Time periods'),
             'grafana_userdashboards' => __('Grafana user dashboards'),
+            'users'                  => __('Users'),
+            'usercontainerroles'    =>  __('User container roles')
         ];
 
 
@@ -1117,7 +1125,7 @@ class ContainersTable extends Table {
 
         // This container types do not have any child containers!
         // Therefore, they can be safely deleted.
-        switch ($containertype_id){
+        switch ($containertype_id) {
             case CT_CONTACTGROUP:
             case CT_HOSTGROUP:
             case CT_SERVICEGROUP:

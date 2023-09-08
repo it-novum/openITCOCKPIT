@@ -319,6 +319,26 @@ angular.module('openITCOCKPIT')
                             size: 5
                         }
                     },
+                    users: {
+                        shape: 'dot',
+                        color: '#800080',
+                        size: 15,
+                        icon: {
+                            code: '\uf2bd',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    usercontainerroles: {
+                        shape: 'dot',
+                        color: '#800080',
+                        size: 15,
+                        icon: {
+                            code: '\uf0c0',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
                     timeperiods: {
                         shape: 'dot',
                         color: '#3f51b5',

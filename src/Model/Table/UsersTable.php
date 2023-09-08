@@ -292,6 +292,21 @@ class UsersTable extends Table {
     public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['email']));
         $rules->add($rules->existsIn(['usergroup_id'], 'Usergroups'));
+        $rules->add(function (User $entity, $options) {
+            if ($entity->isDirty('password') && !empty($entity->get('password'))) {
+                // Password was changed - make sure it is not the same as the old one
+                $oldPasswordHashed = $entity->getOriginal('password');
+
+                $Hasher = $this->getDefaultPasswordHasher();
+                $hasChanged = $Hasher->check($entity->get('password'), $oldPasswordHashed) !== true;
+
+                return $hasChanged;
+            }
+            return true;
+        }, 'notSamePassword', [
+            'errorField' => 'password',
+            'message'    => __('The new password can not be the same as the old password is.'),
+        ]);
 
         return $rules;
     }
@@ -302,7 +317,7 @@ class UsersTable extends Table {
      * @param \ArrayObject $options
      * @return bool
      */
-    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options) {
+    public function beforeSave(Event $event, User $entity, \ArrayObject $options) {
         if ($entity->isDirty('password')) {
             $Hasher = $this->getDefaultPasswordHasher();
             $entity->password = $Hasher->hash($entity->password);
@@ -796,6 +811,15 @@ class UsersTable extends Table {
         }
 
         return $query->toArray();
+    }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @return array
+     */
+    public function getUsersByContainerIdExact($containerId, $type = 'list') {
+        return $this->getUsersByContainerIds($containerId, $type);
     }
 
     /**
