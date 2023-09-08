@@ -212,9 +212,7 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <button class="btn btn-primary btn-sm" type="button" ng-click="toggleServiceAlias()" ng-show="showServiceAliasButton">Set service alias</button>
-                        </div>
+
                         <div class="form-group" ng-show="showServiceAlias">
                             <label class="control-label">
                                 <?php echo __('Service alias'); ?>
@@ -244,7 +242,8 @@
                         </span>
                         </div>
 
-                        <div class="form-group">
+                        <div class="card margin-top-10">
+                            <div class="card-body">
                                 <div class="float-right">
                                     <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?>
@@ -255,7 +254,7 @@
                                         </button>
                                     <?php endif; ?>
                                 </div>
-
+                            </div>
                         </div>
                     </form>
                 </div>

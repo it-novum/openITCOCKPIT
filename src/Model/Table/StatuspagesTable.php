@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use Cake\Utility\Hash;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -37,12 +38,6 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 /**
  * Statuspages Model
 
- *
- * @property \App\Model\Table\StatuspagesToContainersTable&\Cake\ORM\Association\HasMany $StatuspagesToContainers
- * @property \App\Model\Table\StatuspagesToHostgroupsTable&\Cake\ORM\Association\HasMany $StatuspagesToHostgroups
- * @property \App\Model\Table\StatuspagesToHostsTable&\Cake\ORM\Association\HasMany $StatuspagesToHosts
- * @property \App\Model\Table\StatuspagesToServicegroupsTable&\Cake\ORM\Association\HasMany $StatuspagesToServicegroups
- * @property \App\Model\Table\StatuspagesToServicesTable&\Cake\ORM\Association\HasMany $StatuspagesToServices
  *
  * @method \App\Model\Entity\Statuspage newEmptyEntity()
  * @method \App\Model\Entity\Statuspage newEntity(array $data, array $options = [])
@@ -86,38 +81,33 @@ class StatuspagesTable extends Table
             'joinTable'        => 'statuspages_to_containers'
         ]);
 
-        $this->belongsToMany('Containers', [
-            'className'        => 'Containers',
-            'foreignKey'       => 'statuspage_id',
-            'targetForeignKey' => 'container_id',
-            'joinTable'        => 'statuspages_to_containers'
-        ]);
 
         $this->belongsToMany('Hosts', [
             'className'        => 'Hosts',
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'host_id',
             'joinTable'        => 'statuspages_to_hosts'
-        ]);
+        ])->setDependent(true);
 
         $this->belongsToMany('Services', [
             'className'        => 'Services',
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'service_id',
             'joinTable'        => 'statuspages_to_services'
-        ]);
+        ])->setDependent(true);
+
         $this->belongsToMany('Hostgroups', [
             'className'        => 'Hostgroups',
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'hostgroup_id',
             'joinTable'        => 'statuspages_to_hostgroups'
-        ]);
+        ])->setDependent(true);
         $this->belongsToMany('Servicegroups', [
             'className'        => 'Servicegroups',
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'servicegroup_id',
             'joinTable'        => 'statuspages_to_servicegroups'
-        ]);
+        ])->setDependent(true);
 
     }
 
@@ -162,7 +152,7 @@ class StatuspagesTable extends Table
      * @param Validator $validator
      * @return Validator
      */
-    public function  validationStepTwo(Validator $validator): Validator {
+    public function  validationAlias(Validator $validator): Validator {
         return $validator;
     }
 
@@ -225,6 +215,10 @@ class StatuspagesTable extends Table
                         'id',
                         'uuid',
                         'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                        'hostname' => 'host.name'
+
+                    ])->innerJoin(['host' => 'hosts'], [
+                        'host.id = Services.host_id'
                     ])
                     ->innerJoin(['Servicetemplates' => 'servicetemplates'], [
                         'Servicetemplates.id = Services.servicetemplate_id'

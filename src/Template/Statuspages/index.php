@@ -241,20 +241,28 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('view', 'statuspages')): ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'statuspages')): ?>
+                                                <a ui-sref="StatuspagesAlias({id: statuspage.id})"
+                                                   ng-if="statuspage.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit alias'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <!--<?php if ($this->Acl->hasPermission('view', 'statuspages')): ?>
                                                 <a href="/statuspages/view/{{statuspage.id}}" target="_blank"
                                                    class="dropdown-item" ng-if="statuspage.allow_view">
                                                     <i class="fas fa-calendar-week"></i>
                                                     <?php echo __('View'); ?>
                                                 </a>
-                                            <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('status', 'statuspages')): ?>
+                                            <?php endif; ?>-->
+                                            <!--<?php if ($this->Acl->hasPermission('status', 'statuspages')): ?>
                                                 <a href="/statuspages/status/{{statuspage.id}}" target="_blank"
                                                    class="dropdown-item" ng-show="statuspage.public">
                                                     <i class="fas fa-eye"></i>
                                                     <?php echo __('Public View'); ?>
                                                 </a>
-                                            <?php endif; ?>
+                                            <?php endif; ?>-->
                                             <?php if ($this->Acl->hasPermission('delete', 'statuspages')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"

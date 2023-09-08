@@ -34,7 +34,6 @@ use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
-use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Model\Table\StatuspagesTable;
@@ -42,9 +41,7 @@ use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
 
 use itnovum\openITCOCKPIT\Core\HostConditions;
-use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 
 /**
@@ -84,24 +81,11 @@ class StatuspagesController extends AppController
             if ($this->hasRootPrivileges === false) {
                 $all_statuspages[$key]['allow_edit'] = false;
                 if (empty(array_diff($statuspagesWithContainers[$statuspage['id']], $this->getWriteContainers()))) {
-                    //statuspage has no containers where user has no edit permission
                     $all_statuspages[$key]['allow_edit'] = true;
                 }
             }
 
-            $all_statuspages[$key]['allow_view'] = true;
-            if ($all_statuspages[$key]['public'] === false) {
-                if ($this->hasRootPrivileges === false) {
-                    $all_statuspages[$key]['allow_view'] = false;
-                    if (empty(array_diff($statuspagesWithContainers[$statuspage['id']], $this->MY_RIGHTS))) {
-                        //statuspage has no containers where user has no edit permission
-                        $all_statuspages[$key]['allow_view'] = true;
-                    }
-                }
-            }
-
         }
-
 
         $this->set('all_statuspages', $all_statuspages);
         $this->viewBuilder()->setOption('serialize', ['all_statuspages']);
@@ -116,11 +100,7 @@ class StatuspagesController extends AppController
      */
     public function view($id = null)
     {
-        $statuspage = $this->Statuspages->get($id, [
-            'contain' => ['Containers', 'StatuspageItems'],
-        ]);
 
-        $this->set(compact('statuspage'));
     }
 
     /**
@@ -135,12 +115,11 @@ class StatuspagesController extends AppController
             return;
         }
 
-        $data = $this->request->getData();
-        if (($this->request->is('post') || $this->request->is('put')) && isset($data['Statuspage'])) {
+        $data = $this->request->getData()['Statuspage'];
+        if (($this->request->is('post') || $this->request->is('put')) && isset($data)) {
             $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
-
             $statuspage = $StatuspagesTable->newEmptyEntity();
-            $statuspage = $StatuspagesTable->patchEntity($statuspage, $data['Statuspage']);
+            $statuspage = $StatuspagesTable->patchEntity($statuspage, $data);
             $StatuspagesTable->save($statuspage);
             if ($statuspage->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -150,18 +129,12 @@ class StatuspagesController extends AppController
             } else {
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($statuspage); // REST API ID serialization
+                 //   $this->set('statuspage', $statuspage);
+                 //   $this->viewBuilder()->setOption('serialize', ['statuspage']);
                     return;
                 }
+
             }
-           /* $statuspage = $StatuspagesTable->get($statuspage->id, [
-                'contain' => [
-                    'Containers',
-                    'Hosts',
-                    'Services',
-                    'Hostgroups',
-                    'Servicegroups'
-                ]
-            ]); */
             $this->set('statuspage', $statuspage);
             $this->viewBuilder()->setOption('serialize', ['statuspage']);
 
@@ -181,32 +154,65 @@ class StatuspagesController extends AppController
             //Only ship HTML template for angular
             return;
         }
+
+        /** @var $StatuspagesTable StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
-            throw new NotFoundException(__('Invalid Statuspage'));
+            throw new NotFoundException('Statuspage not found');
         }
 
-        $statuspage = $this->Statuspages->get($id, [
+        $statuspage = $StatuspagesTable->get($id, [
             'contain' => [
                 'Containers',
-                'StatuspageItems'
-            ],
+                'Hosts',
+                'Services',
+                'Hostgroups',
+                'Servicegroups'
+            ]
         ]);
+
+
         $statuspage['containers'] = [
             '_ids' => Hash::extract($statuspage, 'containers.{n}.id')
         ];
-        if ($this->request->is(['patch', 'post', 'put']) ) {
-            $data = $this->request->getData();
-            $statuspage = $StatuspagesTable->patchEntity($statuspage, $data['Statuspage']);
-            if ($StatuspagesTable->save($statuspage)) {
-               // $this->Flash->success(__('The statuspage has been saved.'));
 
-                //return $this->redirect(['action' => 'index']);
+        $statuspage['hosts'] = [
+            '_ids' => Hash::extract($statuspage, 'hosts.{n}.id')
+        ];
+
+        $statuspage['hostgroups'] = [
+            '_ids' => Hash::extract($statuspage, 'hostgroups.{n}.id')
+        ];
+
+        $statuspage['services'] = [
+            '_ids' => Hash::extract($statuspage, 'services.{n}.id')
+        ];
+
+        $statuspage['servicegroups'] = [
+            '_ids' => Hash::extract($statuspage, 'servicegroups.{n}.id')
+        ];
+
+
+        if ($this->request->is('post')) {
+            $statuspageData = $this->request->getData();
+            $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData['Statuspage']);
+            $StatuspagesTable->save($statuspage);
+            if ($statuspage->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $statuspage->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            } else {
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($statuspage); // REST API ID serialization
+                    return;
+                }
             }
-           // $this->Flash->error(__('The statuspage could not be saved. Please, try again.'));
+
         }
-        $this->set('statuspage', $statuspage);
-        $this->viewBuilder()->setOption('serialize', ['statuspage']);
+
+        $this->set('Statuspage', $statuspage);
+        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 
     /**
@@ -220,43 +226,23 @@ class StatuspagesController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $statuspage = $this->Statuspages->get($id);
+
         if ($this->Statuspages->delete($statuspage)) {
-            $this->Flash->success(__('The statuspage has been deleted.'));
+            $this->set('success', true);
+            $this->set('id', $id);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id']);
+
         } else {
-            $this->Flash->error(__('The statuspage could not be deleted. Please, try again.'));
+            $this->response = $this->response->withStatus(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id']);
         }
-
-        return $this->redirect(['action' => 'index']);
     }
+
     /**
-     *
-     * edit items
-     *
-     * @param string|null $id Statuspage id.
-     * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @return void
      */
-   /* public function items($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
-        if (!$StatuspagesTable->existsById($id)) {
-            throw new NotFoundException(__('Invalid Statuspage'));
-        }
-
-        $statuspage = $this->Statuspages->get($id, [
-            'contain' => [
-                'Containers',
-                'StatuspageItems'
-            ],
-        ]);
-        $statuspage['containers'] = [
-            '_ids' => Hash::extract($statuspage, 'containers.{n}.id')
-        ];
-    } */
-
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -276,23 +262,26 @@ class StatuspagesController extends AppController
         $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
+    /**
+     * @return void
+     */
     public function loadHostsByContainerIds() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
         $containerIds = $this->request->getQuery('containerIds');
+        if (!in_array(ROOT_CONTAINER, $containerIds)){
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        }
         $selected = $this->request->getQuery('selected');
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
         $HostFilter = new HostFilter($this->request);
-
-        $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
-        $containerIds = array_unique($containerIds);
-
-        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostConditions = ['Hosts.disabled' => 0];
+        $HostConditions = array_merge($HostFilter->ajaxFilter(), $HostConditions);
+        $HostCondition = new HostConditions($HostConditions);
         $HostCondition->setContainerIds($containerIds);
 
         $hosts = Api::makeItJavaScriptAble(
@@ -303,6 +292,9 @@ class StatuspagesController extends AppController
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
+    /**
+     * @return void
+     */
     public function loadServicesByContainerIds() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -310,20 +302,18 @@ class StatuspagesController extends AppController
 
         $selected = $this->request->getQuery('selected');
         $containerIds = $this->request->getQuery('containerIds');
-
-        $ServiceFilter = new ServiceFilter($this->request);
-        $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
-        $containerIds = array_unique($containerIds);
-
-
-        // as $ServiceCondition->setIncludeDisabled(false); has no function at all we need to exclude the disabled services here
-        $serviceConditions = ['Services.disabled' => 0];
-        if(!empty($ServiceFilter->indexFilter())){
-            $serviceConditions = array_merge($ServiceFilter->indexFilter(), $serviceConditions);
+        if (!in_array(ROOT_CONTAINER, $containerIds)){
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
         }
+        $ServiceFilter = new ServiceFilter($this->request);
+
+
+        $serviceConditions = ['Services.disabled' => 0];
+        //if(!empty($ServiceFilter->indexFilter())){
+            $serviceConditions = array_merge($ServiceFilter->indexFilter(), $serviceConditions);
+        //}
         $ServiceCondition = new ServiceConditions($serviceConditions);
         $ServiceCondition->setContainerIds($containerIds);
-        //$ServiceCondition->setIncludeDisabled(false); // this has no function
 
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
@@ -372,7 +362,7 @@ class StatuspagesController extends AppController
             ]);
             $statuspageData = $this->request->getData()['Statuspage'];
             $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData, [
-                'validate' => 'stepTwo'
+                'validate' => 'alias'
             ]);
             $StatuspagesTable->save($statuspage);
             if ($statuspage->hasErrors()) {

@@ -40,12 +40,11 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadHosts = function(searchString){
+        $scope.loadHosts = function(){
             $http.get("/statuspages/loadHostsByContainerIds.json", {
                 params: {
                     'angular': true,
                     'containerIds[]': $scope.post.Statuspage.containers._ids,
-                    'filter[Hosts.name]': searchString,
                     'selected[]': $scope.post.Statuspage.hosts._ids
                 }
             }).then(function(result){
@@ -53,12 +52,11 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadServices = function(searchString){
+        $scope.loadServices = function(){
             $http.get("/statuspages/loadServicesByContainerIds.json", {
                 params: {
                     'angular': true,
                     'containerIds[]': $scope.post.Statuspage.containers._ids,
-                    'filter[servicename]': searchString,
                     'selected[]': $scope.post.Statuspage.services._ids,
                 }
             }).then(function(result){
@@ -78,13 +76,13 @@ angular.module('openITCOCKPIT')
             $http.post("/statuspages/add.json?angular=true",
                 $scope.post
             ).then(function(result) {
-                var url = $state.href('StatuspagesEdit', {id: result.data.id});
+                var url = $state.href('StatuspagesAdd', {id: result.data.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-              //  RedirectService.redirectWithFallback('MapsIndex');
+                $state.go('StatuspagesIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
