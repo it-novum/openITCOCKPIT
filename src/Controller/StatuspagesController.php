@@ -115,7 +115,7 @@ class StatuspagesController extends AppController
             return;
         }
 
-        $data = $this->request->getData()['Statuspage'];
+        $data = $this->request->getData();
         if (($this->request->is('post') || $this->request->is('put')) && isset($data)) {
             $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
             $statuspage = $StatuspagesTable->newEmptyEntity();

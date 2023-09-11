@@ -79,7 +79,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function() {
-            $http.post("/statuspages/setAlias/" + $scope.id + ".json?angular=true",
+            $http.post("/statuspages/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 var url = $state.href('StatuspagesEdit', {id: $scope.id});

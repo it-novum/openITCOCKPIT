@@ -11,23 +11,23 @@ angular.module('openITCOCKPIT')
                     containers: {
                         _ids: []
                     },
-                    hosts: {
-                        _ids: []
-                    },
-                    services: {
-                        _ids: []
-                    },
                 }
             };
         };
         clearForm();
+        $scope.hosts_ids = [];
+        $scope.services_ids = []
+
+
         $scope.selectedHosts = [];
         $scope.selectedServices = [];
         $scope.init = true;
         $scope.showHostAliasButton = false;
         $scope.showHostAlias = false;
-        $scope.showServiceAliasButton = false;
+        $scope.showServiceAliasButton = true;
         $scope.showServiceAlias = false;
+
+
         $scope.loadContainers = function(){
             var params = {
                 'angular': true
@@ -45,7 +45,7 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'containerIds[]': $scope.post.Statuspage.containers._ids,
-                    'selected[]': $scope.post.Statuspage.hosts._ids
+                    'selected[]': $scope.hosts._ids
                 }
             }).then(function(result){
                 $scope.hosts = result.data.hosts;
@@ -57,7 +57,7 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'containerIds[]': $scope.post.Statuspage.containers._ids,
-                    'selected[]': $scope.post.Statuspage.services._ids,
+                    'selected[]': $scope.services._ids,
                 }
             }).then(function(result){
                 $scope.services = result.data.services;
@@ -73,8 +73,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
+            let hostsub = $scope.transformHosts();
+            let servicesub = $scope.transformServices();
+            let data = $scope.post.Statuspage;
+            data.hosts = hostsub;
+            data.services = servicesub;
             $http.post("/statuspages/add.json?angular=true",
-                $scope.post
+                data
             ).then(function(result) {
                 var url = $state.href('StatuspagesAdd', {id: result.data.id});
                 NotyService.genericSuccess({
@@ -91,7 +96,31 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.transformHosts = function (){
+            let hostsconv = [];
+            for(let index in $scope.selectedHosts) {
+                let hostObject = {};
+                hostObject.id = $scope.selectedHosts[index].id;
+                hostObject._joinData = {
+                    display_alias: $scope.selectedHosts[index].display_alias
+                }
+                hostsconv.push(hostObject);
+            }
+            return hostsconv;
+        }
 
+        $scope.transformServices = function (){
+            let servicesconv = [];
+            for(let index in $scope.selectedServices) {
+                let serviceObject = {};
+                serviceObject.id = $scope.selectedServices[index].id;
+                serviceObject._joinData = {
+                    display_alias: $scope.selectedServices[index].display_alias
+                }
+                servicesconv.push(serviceObject);
+            }
+            return servicesconv;
+        }
 
         $scope.$watch('post.Statuspage.containers._ids', function(){
             if($scope.post.Statuspage.containers._ids.length > 0){
@@ -103,9 +132,9 @@ angular.module('openITCOCKPIT')
             }else{
                 console.log('reset');
                 //reset host,service hostgroup and service chosen boxes if all containers are deselected
-                $scope.post.Statuspage.hosts._ids = [];
+                $scope.hosts_ids = [];
                 $scope.hosts = [];
-                $scope.post.Statuspage.services._ids = [];
+                $scope.services_ids = [];
                 $scope.services = [];
               /*  $scope.post.Statuspage.hostgroups._ids = [];
                 $scope.hostgroups = [];
@@ -115,12 +144,12 @@ angular.module('openITCOCKPIT')
         }, true);
 
 
-         $scope.$watch('post.Statuspage.hosts._ids', function(){
-                if($scope.post.Statuspage.hosts._ids.length > 0) {
+         $scope.$watch('hosts_ids', function(){
+                if($scope.hosts_ids.length > 0) {
                     let filter = [];
-                    for (let index in  $scope.post.Statuspage.hosts._ids) {
+                    for (let index in  $scope.hosts_ids) {
                         let object = {};
-                        object.id = $scope.post.Statuspage.hosts._ids[index];
+                        object.id = $scope.hosts_ids[index];
                         object.name = $scope.hosts.find(x => x.key === object.id).value;
                         object.display_alias = ($scope.selectedHosts.find(x => x.id === object.id) !== undefined) ? $scope.selectedHosts.find(x => x.id === object.id).display_alias: null;
                         filter.push(object);
@@ -133,12 +162,12 @@ angular.module('openITCOCKPIT')
                 }
         }, true);
 
-        $scope.$watch('post.Statuspage.services._ids', function(){
-            if($scope.post.Statuspage.services._ids.length > 0) {
+        $scope.$watch('services_ids', function(){
+            if($scope.services_ids.length > 0) {
                 let filter = [];
-                for (let index in  $scope.post.Statuspage.services._ids) {
+                for (let index in  $scope.services_ids) {
                     let object = {};
-                    object.id = $scope.post.Statuspage.services._ids[index];
+                    object.id = $scope.services_ids[index];
                     object.name = $scope.services.find(x => x.key === object.id).value.Service.servicename;
                     object.hostName = $scope.services.find(x => x.key === object.id).value.Host.name;
                     object.display_alias = ($scope.selectedServices.find(x => x.id === object.id) !== undefined) ? $scope.selectedServices.find(x => x.id === object.id).display_alias: null;

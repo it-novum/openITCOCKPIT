@@ -153,7 +153,7 @@
                                     callback="loadHosts"
                                     multiple
                                     ng-options="host.key as host.value for host in hosts"
-                                    ng-model="post.Statuspage.hosts._ids">
+                                    ng-model="hosts_ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hosts">
@@ -205,14 +205,16 @@
                                         callback="loadServices"
                                         multiple
                                         ng-options="(service.value.Service.id) as service.value.Host.name + '/' +service.value.Service.servicename group by service.value.Host.name for service in services"
-                                        ng-model="post.Statuspage.services._ids">
+                                        ng-model="services_ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.services">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-
+                        <div class="form-group">
+                            <button class="btn btn-primary btn-sm" type="button" ng-click="toggleServiceAlias()" ng-show="showServiceAliasButton">Set service alias</button>
+                        </div>
                         <div class="form-group" ng-show="showServiceAlias">
                             <label class="control-label">
                                 <?php echo __('Service alias'); ?>
