@@ -30,6 +30,11 @@ use Cake\Core\Configure;
 class PerfdataBackend {
 
     /**
+     * @var string
+     */
+    private $perfdataBackend;
+
+    /**
      * PerfdataBackend constructor.
      */
     public function __construct() {

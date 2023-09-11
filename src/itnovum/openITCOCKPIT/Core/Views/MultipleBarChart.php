@@ -30,6 +30,18 @@ use Cake\Filesystem\Folder;
 
 class MultipleBarChart {
 
+    private $img;
+    private $width;
+    private $height;
+    private $maxBars;
+    private $scale;
+    private $chartDepth3d;
+    private $x;
+    private $y;
+    private $maxLabelLength;
+    private $fontFile;
+
+
     public function createBarChart($chartData, $maxBars = 10) {
         $filepath = WWW_ROOT . 'img' . DS . 'charts';
         $filename = uniqid() . '.png';

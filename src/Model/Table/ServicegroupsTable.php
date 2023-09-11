@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
+use App\Model\Entity\Changelog;
 use App\Model\Entity\Servicegroup;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -1300,5 +1301,97 @@ class ServicegroupsTable extends Table {
             ];
         }
         return $return;
+    }
+
+    /**
+     * This method provides a unified way to create new servicegroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Servicegroup $entity The entity that will be saved by the Table
+     * @param array $servicegroup The servicegroup as array ( [ Servicegroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicegroup
+     */
+    public function createServicegroup(Servicegroup $entity, array $servicegroup, int $userId): Servicegroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($servicegroup);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'servicegroups',
+            $entity->get('id'),
+            OBJECT_SERVICEGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($servicegroup, $extDataForChangelog)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing servicegroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Servicegroup $entity The entity that will be updated by the Table
+     * @param array $newServicegroup The new servicegroup as array ( [ Servicegroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldServicegroup The old servicegroup as array ( [ Servicegroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicegroup
+     */
+    public function updateServicegroup(Servicegroup $entity, array $newServicegroup, array $oldServicegroup, int $userId): Servicegroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'servicegroups',
+            $entity->get('id'),
+            OBJECT_SERVICEGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($this->resolveDataForChangelog($newServicegroup), $newServicegroup),
+            array_merge($this->resolveDataForChangelog($oldServicegroup), $oldServicegroup)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
     }
 }

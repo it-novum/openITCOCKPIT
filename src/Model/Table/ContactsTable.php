@@ -5,6 +5,8 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Contact;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -410,14 +412,34 @@ class ContactsTable extends Table {
 
 
     /**
-     * @param int $id
+     * @param $id
      * @return array
      */
-    public function getContactForEdit($id) {
+    public function getContactForEdit($id): array {
+        $where = [
+            'Contacts.id' => $id
+        ];
+        return $this->getContactForEditByWhere($where);
+    }
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getContactForEditByUuid(string $uuid): array {
+        $where = [
+            'Contacts.uuid' => $uuid
+        ];
+        return $this->getContactForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    private function getContactForEditByWhere(array $where): array {
         $query = $this->find()
-            ->where([
-                'Contacts.id' => $id
-            ])
+            ->where($where)
             ->contain([
                 'Containers',
                 'HostCommands',
@@ -425,7 +447,7 @@ class ContactsTable extends Table {
                 'Customvariables'
             ])
             ->disableHydration()
-            ->first();
+            ->firstOrFail();
 
 
         $contact = $query;
@@ -700,8 +722,16 @@ class ContactsTable extends Table {
      * @param int $id
      * @return bool
      */
-    public function existsById($id) {
+    public function existsById($id): bool {
         return $this->exists(['Contacts.id' => $id]);
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid): bool {
+        return $this->exists(['Contacts.uuid' => $uuid]);
     }
 
     /**
@@ -1235,4 +1265,192 @@ class ContactsTable extends Table {
         return $orphanedContacts;
     }
 
+    public function getContactsByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->contain([
+                'HostCommands'       => function (Query $q) {
+                    return $q->select([
+                        'HostCommands.id',
+                        'HostCommands.uuid',
+                        'HostCommands.name'
+                    ]);
+                },
+                'ServiceCommands'    => function (Query $q) {
+                    return $q->select([
+                        'ServiceCommands.id',
+                        'ServiceCommands.uuid',
+                        'ServiceCommands.name'
+                    ]);
+                },
+                'HostTimeperiods'    => function (Query $q) {
+                    return $q->select([
+                        'HostTimeperiods.id',
+                        'HostTimeperiods.uuid',
+                        'HostTimeperiods.name'
+                    ]);
+                },
+                'ServiceTimeperiods' => function (Query $q) {
+                    return $q->select([
+                        'ServiceTimeperiods.id',
+                        'ServiceTimeperiods.uuid',
+                        'ServiceTimeperiods.name'
+                    ]);
+                },
+                'Customvariables'
+            ])
+            ->innerJoinWith('Containers', function (Query $q) {
+                return $q->where(['Containers.id IN' => ROOT_CONTAINER]);
+            })->where([
+                'Contacts.id IN' => $ids
+            ])
+            ->group(['Contacts.id'])
+            ->disableHydration();
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new contact. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Contact $entity The entity that will be saved by the Table
+     * @param array $contact The contact as array ( [ Contact => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Contact
+     */
+    public function createContact(Contact $entity, array $contact, int $userId): Contact {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($contact);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'contacts',
+            $entity->get('id'),
+            OBJECT_CONTACT,
+            $contact['Contact']['containers']['_ids'],
+            $userId,
+            $entity->get('name'),
+            array_merge($extDataForChangelog, $contact)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing contact. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Contact $entity The entity that will be updated by the Table
+     * @param array $newContact The new contact as array ( [ Contact => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldContact The old contact as array ( [ Contact => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Contact
+     */
+    public function updateContact(Contact $entity, array $newContact, array $oldContact, int $userId): Contact {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'contacts',
+            $entity->get('id'),
+            OBJECT_CONTACT,
+            $newContact['Contact']['containers']['_ids'],
+            $userId,
+            $entity->get('name'),
+            array_merge($this->resolveDataForChangelog($newContact), $newContact),
+            array_merge($this->resolveDataForChangelog($oldContact), $oldContact)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getContactByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->select([
+                'Contacts.id',
+                'Contacts.name',
+                'Contacts.email',
+                'Contacts.phone',
+                'HostTimeperiods.name',
+                'HostTimeperiods.uuid',
+                'ServiceTimeperiods.name',
+                'ServiceTimeperiods.uuid'
+            ])
+            ->contain([
+                'HostCommands'    => function (Query $query) {
+                    return $query->select([
+                        'name' => 'HostCommands.name',
+                        'uuid' => 'HostCommands.uuid'
+                    ]);
+                },
+                'ServiceCommands' => function (Query $query) {
+                    return $query->select([
+                        'name' => 'ServiceCommands.name',
+                        'uuid' => 'ServiceCommands.uuid'
+                    ]);
+                },
+                'HostTimeperiods',
+                'ServiceTimeperiods',
+                'Customvariables' => function (Query $query) {
+                    return $query->select([
+                        'Customvariables.id',
+                        'Customvariables.objecttype_id',
+                        'Customvariables.name',
+                        'Customvariables.value',
+                        'Customvariables.password',
+                        'Customvariables.object_id'
+                    ]);
+                }
+            ])
+            ->where(['Contacts.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $contact = $this->emptyArrayIfNull($query);
+        if (!empty($contact)) {
+            $contact['host_timeperiod_id'] = $contact['host_timeperiod'];
+            unset($contact['host_timeperiod']);
+            $contact['service_timeperiod_id'] = $contact['service_timeperiod'];
+            unset($contact['service_timeperiod']);
+            $contact['host_commands'] = Hash::remove($contact['host_commands'], '{n}._joinData');
+            $contact['service_commands'] = Hash::remove($contact['service_commands'], '{n}._joinData');
+        }
+        return $contact;
+    }
 }

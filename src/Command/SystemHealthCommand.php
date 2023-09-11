@@ -34,11 +34,14 @@ use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Plugin;
+use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
+use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
 use itnovum\openITCOCKPIT\Core\System\Health\Disks;
 use itnovum\openITCOCKPIT\Core\System\Health\MemoryUsage;
+use itnovum\openITCOCKPIT\Filter\SatelliteFilter;
 
 /**
  * SystemHealth command.
@@ -223,6 +226,9 @@ class SystemHealthCommand extends Command implements CronjobInterface {
 
         if (Plugin::isLoaded('DistributeModule')) {
             $data['isDistributeModuleInstalled'] = true;
+            /** @var $SatellitesTable SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+            $data['satellites'] = $SatellitesTable->getSatellitesStatus(new SatelliteFilter(new ServerRequest()));
         }
 
         return $data;

@@ -1147,6 +1147,12 @@ div.packetmanager-selection > span::selection {
     border-image-slice: 1;
 }
 
+.fieldset-legend-border-bottom-danger {
+    border-bottom: 5px solid;
+    border-image-source: linear-gradient(45deg, #CC0000, transparent);
+    border-image-slice: 1;
+}
+
 .bg-placeholder-wizard {
     background-image: linear-gradient(135deg, #d6d6d64D 25%, transparent 25%, transparent 50%, #d6d6d64D 50%, #d6d6d64D 75%, transparent 75%, transparent 100%);
     background-size: 56.57px 56.57px;
@@ -1261,4 +1267,24 @@ div.packetmanager-selection > span::selection {
 .new-flame-bg {
     background-color: #ff0000;
     background: linear-gradient(0deg, #f00 0%, #ffa700 100%) !important;
+}
+
+.bg-diff-info{
+    background: rgba(164, 222, 243, 0.27)
+}
+
+.bg-diff-primary{
+    background: rgba(66,133,244, 0.27);
+}
+
+.bg-diff-green {
+    background: rgba(73, 255, 146, 0.27);
+}
+
+.bg-diff-red {
+background: rgba(255, 77, 77, 0.27)
+}
+
+.border-secondary-with-20-opacity {
+    border-color: #6c757d33 !important;
 }

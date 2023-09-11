@@ -12,7 +12,7 @@ use itnovum\openITCOCKPIT\Ratchet\Overwrites\HttpServerSize;
 use itnovum\openITCOCKPIT\WebSockets\PushNotificationsMessageInterface;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
-use React\Socket\Server as Reactor;
+use React\Socket\SocketServer;
 
 /**
  * PushNotifications command.
@@ -47,13 +47,13 @@ class PushNotificationsCommand extends Command {
 
     private function fireUpWebSocketServer() {
         $MessageInterface = new PushNotificationsMessageInterface();
-        $loop = \React\EventLoop\Factory::create();
+        $loop = \React\EventLoop\Loop::get();
         $loop->addPeriodicTimer(0.01, [$MessageInterface, 'eventLoop']);
         $Server = new IoServer(
             new HttpServerSize(
                 new WsServer($MessageInterface)
             ),
-            new Reactor(sprintf('%s:%s', '0.0.0.0', 8083), $loop),
+            new SocketServer(sprintf('%s:%s', '0.0.0.0', 8083), [], $loop),
             $loop
         );
         try {

@@ -18,6 +18,11 @@ use MapModule\Model\Table\RotationsTable;
 
 class ExportTasks implements PluginExportTasks {
 
+    /**
+     * @var false[]|mixed|mixed[]
+     */
+    private $conf;
+
     public function __construct() {
         Configure::load('nagios');
         $this->conf = Configure::read('nagios.export');

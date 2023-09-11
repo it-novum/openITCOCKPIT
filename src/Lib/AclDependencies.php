@@ -680,7 +680,6 @@ class AclDependencies {
                 $this->dependencies[$pluginName] = $PluginAclDependencies->getDependencies();
             }
         }
-
     }
 
     /**

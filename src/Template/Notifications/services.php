@@ -107,7 +107,7 @@
                                             </div>
                                             <input type="text" class="form-control"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.NotificationHosts.output"
+                                                   ng-model="filter.NotificationServices.output"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
