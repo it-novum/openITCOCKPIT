@@ -38,6 +38,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Cache\Cache;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Table;
@@ -758,6 +759,23 @@ class AngularController extends AppController {
         $this->setHealthState($cache['load']['state']);
         foreach ($cache['disk_usage'] as $disk) {
             $this->setHealthState($disk['state']);
+        }
+
+        if (Plugin::isLoaded('DistributeModule')) {
+            $User = new User($this->getUser());
+            $UserTime = $User->getUserTime();
+            foreach (($cache['satellites'] ?? []) as $index => $satellite) {
+                // Put date to users time-zone
+                $date = $UserTime->format($cache['satellites'][$index]['satellite_status']['last_seen']);
+                $cache['satellites'][$index]['satellite_status']['last_seen'] = $date;
+
+                // Check if user may edit satellite
+                if ($this->hasRootPrivileges) {
+                    $cache['satellites'][$index]['allow_edit'] = true;
+                } else {
+                    $cache['satellites'][$index]['allow_edit'] = $this->isWritableContainer($satellite['container_id']);
+                }
+            }
         }
 
         $user = $this->getUser();

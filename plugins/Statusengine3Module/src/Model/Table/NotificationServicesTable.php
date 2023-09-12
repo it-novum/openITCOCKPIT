@@ -29,8 +29,6 @@ namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\NotificationServicesTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
@@ -151,6 +149,10 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
                 ['Commands' => 'commands'],
                 ['Commands.uuid = NotificationServices.command_name']
             )
+            ->where([
+                'NotificationServices.start_time >' => $ServiceNotificationConditions->getFrom(),
+                'NotificationServices.start_time <' => $ServiceNotificationConditions->getTo()
+            ])
             ->order($ServiceNotificationConditions->getOrder())
             ->group([
                 'NotificationServices.service_description',

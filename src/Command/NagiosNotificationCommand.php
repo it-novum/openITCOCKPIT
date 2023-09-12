@@ -230,7 +230,7 @@ class NagiosNotificationCommand extends Command {
         $toName = null;
         if ($args->getOption('contactalias') !== '') {
             $toName = $args->getOption('contactalias');
-            if(!empty($toName) && is_string($toName)){
+            if (!empty($toName) && is_string($toName)) {
                 $toName = EmailCharacters::removeDangerousCharactersForToHeader($toName);
             }
         }
@@ -281,7 +281,7 @@ class NagiosNotificationCommand extends Command {
         $toName = null;
         if ($args->getOption('contactalias') !== '') {
             $toName = $args->getOption('contactalias');
-            if(!empty($toName) && is_string($toName)){
+            if (!empty($toName) && is_string($toName)) {
                 $toName = EmailCharacters::removeDangerousCharactersForToHeader($toName);
             }
         }
@@ -310,6 +310,15 @@ class NagiosNotificationCommand extends Command {
 
             if ($Service->getServiceType() === EVK_SERVICE) {
                 if (Plugin::isLoaded('EventcorrelationModule')) {
+                    // The Statusengine Worker use Bulk-insert SQL statements to update multiple records in the database
+                    // at once. By default, openITCOCKPIT configures the value of "max_bulk_delay" to 1 second.
+                    // This means that the MySQL database is (worst case) 1 (+ time for processing) second behind Naemon.
+                    // Would be good if Naemon (or Statusengine) would provide an HTTP API where we could query
+                    // the current status from Naemons memory (something like Livestatus, but I do not want to load the Livestatus broker!)
+                    //
+                    // I do not like this workaround!
+                    sleep(3);
+
                     $DbBackend = new DbBackend();
                     $ServicestatusTable = $DbBackend->getServicestatusTable();
 
