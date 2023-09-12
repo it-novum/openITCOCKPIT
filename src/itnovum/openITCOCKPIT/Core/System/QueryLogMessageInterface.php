@@ -128,7 +128,7 @@ class QueryLogMessageInterface implements MessageComponentInterface {
                         $query['query'] = SqlFormatter::highlight($query['query']);
                     }
                     $queries[] = $query;
-                    $time += $query['took'];
+                    $time += $query['duration'];
                 }
                 $processedQueries = [
                     'queries'    => $queries,
@@ -143,7 +143,7 @@ class QueryLogMessageInterface implements MessageComponentInterface {
     }
 
     public function startTailf() {
-        $this->process = new Process('/usr/bin/tail -f -n 10 ' . $this->logfile);
+        $this->process = new Process(['/usr/bin/tail', '-f', '-n', '10', $this->logfile]);
         $this->process->start();
     }
 

@@ -94,7 +94,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
          * Debug Kit should not be installed on a production system
          */
         if (Configure::read('debug')) {
-            //$this->addPlugin(\DebugKit\Plugin::class);
+            //$this->addPlugin('DebugKit');
         }
 
         $this->addPlugin('Dbml');
