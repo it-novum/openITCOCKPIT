@@ -153,6 +153,7 @@ class StatuspagesTable extends Table
      * @return Validator
      */
     public function  validationAlias(Validator $validator): Validator {
+
         return $validator;
     }
 
@@ -207,13 +208,12 @@ class StatuspagesTable extends Table
         $query = $this->find()
             ->contain('Hosts', function (Query $q) {
                 return $q
-                    ->select(['id', 'uuid', 'name']);
+                    ->select(['id', 'name']);
             })
             ->contain('Services', function (Query $q) {
                 return $q
                     ->select([
                         'id',
-                        'uuid',
                         'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
                         'hostname' => 'host.name'
 
@@ -228,7 +228,7 @@ class StatuspagesTable extends Table
                 return $q
                     ->select([
                         'id',
-                        'Containers.name'
+                        'name' => 'Containers.name'
                     ])
                     ->innerJoin(['Containers' => 'containers'], [
                         'Containers.id = Hostgroups.container_id',
@@ -239,7 +239,7 @@ class StatuspagesTable extends Table
                 return $q
                     ->select([
                         'id',
-                        'Containers.name'
+                        'name' => 'Containers.name'
                     ])
                     ->innerJoin(['Containers' => 'containers'], [
                         'Containers.id = Servicegroups.container_id',

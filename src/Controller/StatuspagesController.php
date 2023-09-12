@@ -34,6 +34,7 @@ use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Model\Table\StatuspagesTable;
@@ -42,7 +43,7 @@ use Cake\Http\Exception\ForbiddenException;
 
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
-
+use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 
 /**
  * Statuspages Controller
@@ -155,7 +156,6 @@ class StatuspagesController extends AppController
             return;
         }
 
-        /** @var $StatuspagesTable StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
@@ -271,16 +271,22 @@ class StatuspagesController extends AppController
         }
 
         $containerIds = $this->request->getQuery('containerIds');
-        if (!in_array(ROOT_CONTAINER, $containerIds)){
-            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        foreach($containerIds as $containerId){
+            $subIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+            $containerIds = array_merge($containerIds, $subIds);
         }
+        $containerIds = array_unique($containerIds);
+
+     /*  if (!in_array(ROOT_CONTAINER, $containerIds)){
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        } */
         $selected = $this->request->getQuery('selected');
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         $HostFilter = new HostFilter($this->request);
-        $HostConditions = ['Hosts.disabled' => 0];
-        $HostConditions = array_merge($HostFilter->ajaxFilter(), $HostConditions);
+        $HostConditions = $HostFilter->ajaxFilter();
         $HostCondition = new HostConditions($HostConditions);
         $HostCondition->setContainerIds($containerIds);
 
@@ -302,15 +308,21 @@ class StatuspagesController extends AppController
 
         $selected = $this->request->getQuery('selected');
         $containerIds = $this->request->getQuery('containerIds');
-        if (!in_array(ROOT_CONTAINER, $containerIds)){
-            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        foreach($containerIds as $containerId){
+            $subIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+            $containerIds = array_merge($containerIds, $subIds);
         }
+        $containerIds = array_unique($containerIds);
+       /* if (!in_array(ROOT_CONTAINER, $containerIds)){
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        } */
         $ServiceFilter = new ServiceFilter($this->request);
 
 
-        $serviceConditions = ['Services.disabled' => 0];
+       // $serviceConditions = ['Services.disabled' => 0];
         //if(!empty($ServiceFilter->indexFilter())){
-            $serviceConditions = array_merge($ServiceFilter->indexFilter(), $serviceConditions);
+            $serviceConditions = $ServiceFilter->indexFilter();
         //}
         $ServiceCondition = new ServiceConditions($serviceConditions);
         $ServiceCondition->setContainerIds($containerIds);
@@ -325,8 +337,61 @@ class StatuspagesController extends AppController
         $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
-    public function loadServicegroupsByContainerIds() {}
-    public function loadHostgroupsByContainerIds() {}
+
+    /**
+     * @return void
+     */
+    public function loadServicegroupsByContainerIds() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        $containerIds = $this->request->getQuery('containerIds');
+        if (!in_array(ROOT_CONTAINER, $containerIds)){
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        }
+
+        $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list');
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
+
+        $this->set('servicegroups', $servicegroups);
+        $this->viewBuilder()->setOption('serialize', ['servicegroups']);
+    }
+
+    /**
+     * @return void
+     */
+    public function loadHostgroupsByContainerIds() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerIds = $this->request->getQuery('containerIds');
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        foreach($containerIds as $containerId){
+            $subIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+            $containerIds = array_merge($containerIds, $subIds);
+        }
+        $containerIds = array_unique($containerIds);
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+      /*  $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+        $containerIds = array_unique($containerIds); */
+
+
+        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
+        $HostgroupCondition->setContainerIds($containerIds);
+
+        $hostgroups = $HostgroupsTable->getHostgroupsByContainerIdNew($HostgroupCondition);
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+
+        $this->set('hostgroups', $hostgroups);
+        $this->viewBuilder()->setOption('serialize', ['hostgroups']);
+    }
 
     /**
      *

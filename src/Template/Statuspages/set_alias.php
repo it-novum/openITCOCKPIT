@@ -44,7 +44,7 @@
             <div class="panel-hdr">
             <h2>
                 <?php echo __('Status page'); ?>
-                <span class="fw-300"><i><?php echo __('Set alias names'); ?></i></span>
+                <span class="fw-300"><i><?php echo __('Set alias names'); ?> </i></span>
             </h2>
             <div class="panel-toolbar">
                 <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
@@ -60,6 +60,52 @@
                         {objectName : '<?php echo __('Statuspage'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
                 <!-- Hosts start -->
 
+                <span ng-if="post.Statuspage.hostgroups.length > 0">
+                    <table class="table">
+                        <thead>
+                        <tr class="d-flex">
+                            <th class="col-5"><?= __('Hostgroup name'); ?></th>
+                            <th class="col-7"><?= __('Display name'); ?></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="hostgroup in post.Statuspage.hostgroups" class="d-flex">
+                            <td class="col-5">{{hostgroup.name}}</td>
+                            <td class="col-7">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="hostgroup._joinData.display_alias">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </span>
+                <hr>
+
+                <span ng-if="post.Statuspage.servicegroups.length > 0">
+                    <table class="table">
+                        <thead>
+                        <tr class="d-flex">
+                            <th class="col-5"><?= __('Servicegroup name'); ?></th>
+                            <th class="col-7"><?= __('Display name'); ?></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="servicegroup in post.Statuspage.servicegroups" class="d-flex">
+                            <td class="col-5">{{servicegroup.name}}</td>
+                            <td class="col-7">
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="servicegroup._joinData.display_alias">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </span>
+                <hr>
+
                 <span ng-if="post.Statuspage.hosts.length > 0">
                     <table class="table">
                         <thead>
@@ -73,15 +119,15 @@
                             <td class="col-5">{{host.name}}</td>
                             <td class="col-7">
                                 <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="host._joinData.display_alias">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="host._joinData.display_alias">
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </span>
-                <hr>
+
                 <span ng-if="post.Statuspage.services.length > 0">
                     <table class="table">
                         <thead>

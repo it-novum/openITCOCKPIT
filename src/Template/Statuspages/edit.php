@@ -46,6 +46,7 @@
                 <div class="panel-hdr">
                     <h2>
                         <?php echo __('Edit status page'); ?>
+                        <span class="fw-300"><i>{{post.Statuspage.name }}</i></span>
                     </h2>
                     <div class="panel-toolbar">
                         <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
@@ -108,9 +109,6 @@
                                 <div ng-repeat="error in errors.description">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
-                                <div class="col col-xs-12 col-md-offset-2 help-block">
-                                    <?php echo __('This field can also be used to publish additional information on the status page'); ?>
-                                </div>
                             </div>
 
                             <div class="form-group" ng-class="{'has-error': errors.public}">
@@ -126,10 +124,6 @@
                                     <label class="custom-control-label" for="public">
                                         <?php echo __('Public'); ?>
                                     </label>
-                                </div>
-
-                                <div class="col col-xs-12 col-md-offset-2 help-block">
-                                    <?php echo __('If enabled the status page will be public available without authorization'); ?>
                                 </div>
                             </div>
 
@@ -147,9 +141,53 @@
                                         <?php echo __('Show comments'); ?>
                                     </label>
                                 </div>
+                            </div>
 
-                                <div class="col col-xs-12 col-md-offset-2 help-block">
-                                    <?php echo __('If enabled internal status page will show downtime and acknowledgement comments for each element. Public visible status pages will always show anonymized comments'); ?>
+                            <hr>
+
+                            <div class="form-group"
+                                 ng-class="{'has-error': errors.hostgroups}">
+                                <label class="control-label">
+                                    <?php echo __('Hostgroups'); ?>
+                                </label>
+                                <div class="input-group" style="width: 100%;">
+                                    <select
+                                        id="HostgroupsSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hostgroups"
+                                        callback="loadHostgroups"
+                                        multiple
+                                        ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                        ng-model="post.Statuspage.hostgroups._ids">
+                                    </select>
+                                </div>
+                                <div ng-repeat="error in errors.hostgroups">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="form-group"
+                                 ng-class="{'has-error': errors.servicegroups}">
+                                <label class="control-label">
+                                    <?php echo __('servicegroups'); ?>
+                                </label>
+                                <div class="input-group" style="width: 100%;">
+                                    <select
+                                        id="ServicegroupsSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="servicegroups"
+                                        callback="loadServicegroups"
+                                        multiple
+                                        ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
+                                        ng-model="post.Statuspage.servicegroups._ids">
+                                    </select>
+                                </div>
+                                <div ng-repeat="error in errors.servicegroups">
+                                    <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
 
@@ -176,6 +214,8 @@
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
+
+                            <hr>
 
                             <div class="form-group"
                                  ng-class="{'has-error': errors.services}">

@@ -2,7 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('StatuspagesEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService){
 
         $scope.id = $stateParams.id;
-
+        $scope.init = true;
         $scope.post = {
             Statuspage: {},
         };
@@ -76,6 +76,39 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadHostgroups = function(searchString){
+            if($scope.post.Statuspage.containers._ids.length === 0){
+                return;
+            }
+            $http.get("/statuspages/loadHostgroupsByContainerIds.json", {
+                params: {
+                    'angular': true,
+                    'containerIds[]': $scope.post.Statuspage.containers._ids,
+                    'filter[Hostgroups.name]': searchString,
+                    'selected[]': $scope.post.Statuspage.hostgroups._ids
+                }
+            }).then(function(result){
+                $scope.hostgroups = result.data.hostgroups;
+            });
+        };
+
+        $scope.loadServicegroups = function(searchString){
+            if($scope.post.Statuspage.containers._ids.length === 0){
+                return;
+            }
+            $http.get("/statuspages/loadServicegroupsByContainerIds.json", {
+                params: {
+                    'angular': true,
+                    'filter[Containers.name]': searchString,
+                    'selected[]': $scope.post.Statuspage.servicegroups._ids,
+                    'containerIds[]': $scope.post.Statuspage.containers._ids
+                }
+            }).then(function(result){
+                $scope.servicegroups = result.data.servicegroups;
+            });
+        };
+
+
 
 
         $scope.submit = function() {
@@ -105,19 +138,18 @@ angular.module('openITCOCKPIT')
             }
             $scope.loadHosts('');
             $scope.loadServices('');
-            // $scope.loadHostgroups('');
-            //$scope.loadServicegroups('');
+             $scope.loadHostgroups('');
+            $scope.loadServicegroups('');
 
             if($scope.post.Statuspage.containers._ids.length === 0){
-                //reset host,service hostgroup and service chosen boxes if all containers are deselected
                 $scope.post.Statuspage.hosts._ids = [];
                 $scope.hosts = [];
                 $scope.post.Statuspage.services._ids = [];
                 $scope.services = [];
-                //$scope.post.Statuspages.hostgroups._ids = [];
-               // $scope.hostgroups = [];
-               // $scope.post.Statuspages.servicegroups._ids = [];
-               // $scope.servicegroups = [];
+                $scope.post.Statuspages.hostgroups._ids = [];
+                $scope.hostgroups = [];
+                $scope.post.Statuspages.servicegroups._ids = [];
+                $scope.servicegroups = [];
             }
         }, true);
 
@@ -131,7 +163,9 @@ angular.module('openITCOCKPIT')
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-                $state.go('StatuspagesIndex');
+                $state.go('StatuspagesIndex').then(function(){
+                    NotyService.scrollTop();
+                });
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();
