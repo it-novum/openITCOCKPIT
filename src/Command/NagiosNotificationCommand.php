@@ -325,7 +325,8 @@ class NagiosNotificationCommand extends Command {
                     $ServicestatusFields = new ServicestatusFields($DbBackend);
                     $ServicestatusFields
                         ->currentState()
-                        ->isHardstate();
+                        ->isHardstate()
+                        ->scheduledDowntimeDepth();
 
                     /** @var \EventcorrelationModule\Model\Table\EventcorrelationSettingsTable $EventcorrelationSettingsTable */
                     $EventcorrelationSettingsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.EventcorrelationSettings');
@@ -360,6 +361,7 @@ class NagiosNotificationCommand extends Command {
                                     $Servicestatus->setCurrentState($Servicestatus->getLastHardState());
                                 }
 
+                                $evcTree[$layerNumber][$parentId][$childIndex]['service']['servicestatus']['scheduledDowntimeDepth'] = $Servicestatus->isInDowntime();
                                 $evcTree[$layerNumber][$parentId][$childIndex]['service']['servicestatus'] = $Servicestatus->toArray();
                             }
                         }
