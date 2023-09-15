@@ -540,8 +540,8 @@ class ChangelogsTable extends Table {
 
         try {
             return $Table->exists(['id' => $objectId]);
-        } catch (Exception $e) {
-            Log::error(sprintf('Changelog: Table %s not found!', $tableName));
+        } catch (\Exception $e) {
+            Log::error(sprintf('Changelog: Table %s not found! in %s on line %s', $tableName, __FILE__, __LINE__));
             Log::error($e->getMessage());
         }
         return false;
