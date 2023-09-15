@@ -16,6 +16,7 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 
@@ -137,6 +138,7 @@ class HostgroupContainerPermissionsCommand extends Command {
             ])
             ->all();
 
+        $ObjectsCacheChangelog = new ObjectsCache();
         foreach ($hosts as $host) {
             $host = $HostsTable->getHostForEdit($host->id);
             if (empty($host['Host']['hostgroups']['_ids'])) {
@@ -195,8 +197,8 @@ class HostgroupContainerPermissionsCommand extends Command {
                     $hostEntity->get('container_id'),
                     null,
                     $hostEntity->get('name'),
-                    array_merge($HostsTable->resolveDataForChangelog($mergedHost), $mergedHost),
-                    array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
+                    array_merge($HostsTable->resolveDataForChangelog($mergedHost, $ObjectsCacheChangelog), $mergedHost),
+                    array_merge($HostsTable->resolveDataForChangelog($hostForChangelog, $ObjectsCacheChangelog), $hostForChangelog)
                 );
                 if ($changelog_data) {
                     /** @var Changelog $changelogEntry */

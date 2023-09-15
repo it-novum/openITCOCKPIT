@@ -67,6 +67,7 @@ use CustomalertModule\Model\Table\CustomalertsTable;
 use DistributeModule\Model\Table\SatellitesTable;
 use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use GuzzleHttp\Exception\GuzzleException;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
@@ -988,6 +989,7 @@ class ServicesController extends AppController {
             $Cache = new KeyValueStore();
             $ServicetemplateCache = new KeyValueStore();
             $ServicetemplateEditCache = new KeyValueStore();
+            $ObjectsCacheChangelog = new ObjectsCache();
 
             $postData = $this->request->getData('data');
             $hostId = $this->request->getData('hostId');
@@ -1225,8 +1227,8 @@ class ServicesController extends AppController {
                             $host['Host']['container_id'],
                             $User->getId(),
                             $host['Host']['name'] . '/' . $servicename,
-                            array_merge($ServicesTable->resolveDataForChangelog($serviceData), $serviceData),
-                            array_merge($ServicesTable->resolveDataForChangelog($serviceForChangelog), $serviceForChangelog)
+                            array_merge($ServicesTable->resolveDataForChangelog($serviceData, $ObjectsCacheChangelog), $serviceData),
+                            array_merge($ServicesTable->resolveDataForChangelog($serviceForChangelog, $ObjectsCacheChangelog), $serviceForChangelog)
                         );
                     }
 
