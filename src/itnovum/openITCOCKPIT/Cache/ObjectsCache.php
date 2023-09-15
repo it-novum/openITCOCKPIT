@@ -78,7 +78,7 @@ class ObjectsCache {
             return $this->cache[$objectType][$key];
         }
 
-        throw new \Exception('Key not found in key value store');
+        throw new \Exception(sprintf('Key %s.%s not found in key value store', $objectType, $key));
     }
 
 }
