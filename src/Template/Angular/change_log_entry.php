@@ -114,7 +114,7 @@
                     ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
                     ng-if="fieldValueChanges.old === null">
                     <footer class="blockquote-footer">
-                        {{newFieldName}}:
+                        {{newFieldName.replace('_id', '')}}:
                         <span class="up">{{newFieldValue}}</span>
                     </footer>
 
@@ -133,7 +133,7 @@
                     ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
                     ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
                     <footer class="blockquote-footer">
-                        {{newFieldName}}:
+                        {{newFieldName.replace('_id', '')}}:
                         <span
                             ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
                             {{fieldValueChanges.old[newFieldName]}}

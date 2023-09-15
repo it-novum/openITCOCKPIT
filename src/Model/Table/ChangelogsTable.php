@@ -733,7 +733,7 @@ class ChangelogsTable extends Table {
                         'isArray' => Hash::dimensions($changes) === 3
                     ];
                 } else {
-                    //Back box Unicorn 🦄 Merge-O-Mat and Diff-O-Mat
+                    //Black box Unicorn 🦄 Merge-O-Mat and Diff-O-Mat
 
                     $diffs = [];
                     $isArray = Hash::dimensions($changes) === 3;
@@ -760,7 +760,6 @@ class ChangelogsTable extends Table {
 
                     if (!empty($changes['before']) && !empty($changes['after'])) {
                         //Data got modified (e.g. rename or so)
-
                         if (!$isArray) {
                             foreach (Hash::diff($changes['after'], $changes['before']) as $fieldName => $fieldValue) {
                                 if ($fieldName === 'id') {
@@ -774,34 +773,48 @@ class ChangelogsTable extends Table {
                         } else {
                             $idsBeforeSave = Hash::extract($changes['before'], '{n}.id');
                             $idsAfterSave = Hash::extract($changes['after'], '{n}.id');
-
-                            foreach ($idsBeforeSave as $id) {
-                                if (!in_array($id, $idsAfterSave, true)) {
-                                    //Object got deleted
-                                    $diffs[] = [
-                                        'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
-                                        'new' => null
-                                    ];
-                                } else {
-                                    //Object got edited
-                                    $diffs[] = [
-                                        'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
-                                        'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
-                                    ];
+                            if (!empty($idsBeforeSave) || !empty($idsAfterSave)) {
+                                foreach ($idsBeforeSave as $id) {
+                                    if (!in_array($id, $idsAfterSave, true)) {
+                                        //Object got deleted
+                                        $diffs[] = [
+                                            'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
+                                            'new' => null
+                                        ];
+                                    } else {
+                                        //Object got edited
+                                        $diffs[] = [
+                                            'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
+                                            'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
+                                        ];
+                                    }
                                 }
-                            }
-
-                            foreach ($changes['after'] as $after) {
-                                if (!isset($after['id'])) {
-                                    //New created object
-                                    $diffs[] = [
-                                        'old' => null,
-                                        'new' => $after
-                                    ];
+                            } else if (empty($idsBeforeSave) && empty($idsAfterSave)) {
+                                foreach ($changes['before'] as $key => $value) {
+                                    if (isset($changes['after'][$key])) {
+                                        $diffs[] = [
+                                            'old' => $value,
+                                            'new' => $changes['after'][$key]
+                                        ];
+                                    } else {
+                                        $diffs[] = [
+                                            'old' => $value,
+                                            'new' => null
+                                        ];
+                                    }
+                                }
+                            } else {
+                                foreach ($changes['after'] as $after) {
+                                    if (!isset($after['id'])) {
+                                        //New created object
+                                        $diffs[] = [
+                                            'old' => null,
+                                            'new' => $after
+                                        ];
+                                    }
                                 }
                             }
                         }
-
                     }
 
                     $dataUnserialized[$index][$tableName] = [
