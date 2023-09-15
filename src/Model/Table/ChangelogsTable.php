@@ -472,6 +472,10 @@ class ChangelogsTable extends Table {
                 foreach ($new_values as $new_value_key => $new_value) {
                     $flag = 0;
                     foreach ($old_values as $old_value) {
+                        if (!is_numeric($new_value_key)) {
+                            sort($new_value);
+                            sort($old_value);
+                        }
                         $flag |= ($new_value == $old_value);
                         if ($flag) break;
                     }
@@ -482,6 +486,10 @@ class ChangelogsTable extends Table {
                 foreach ($old_values as $old_value_key => $old_value) {
                     $flag = 0;
                     foreach ($new_values as $new_value) {
+                        if (!is_numeric($old_value_key)) {
+                            sort($new_value);
+                            sort($old_value);
+                        }
                         $flag |= ($new_value == $old_value);
                         if ($flag) break;
                     }
