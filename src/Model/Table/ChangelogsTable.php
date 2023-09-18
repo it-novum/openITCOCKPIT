@@ -754,8 +754,13 @@ class ChangelogsTable extends Table {
                     }
 
                     if (!empty($changes['before']) && empty($changes['after'])) {
+
+
                         //All data got removed from fields (fields where filled before)
                         foreach ($changes['before'] as $fieldName => $fieldValue) {
+                            if ($fieldName === 'id') {
+                                continue;
+                            }
                             $diffs[$fieldName] = [
                                 'old' => is_array($fieldValue) ? Hash::remove($fieldValue, 'id') : $fieldValue,
                                 'new' => null
