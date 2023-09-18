@@ -420,6 +420,8 @@ class ChangelogsTable extends Table {
             case 'deactivate':
             case 'activate':
             case 'export':
+            case 'import':
+            case 'synchronization':
                 return [
                     'action'        => $action,
                     'model'         => ucwords(Inflector::singularize($controller)),
@@ -564,7 +566,10 @@ class ChangelogsTable extends Table {
             case 'copy':
                 return 'fa fa-files-o';
             case 'export':
+            case 'synchronization':
                 return 'fa fa-retweet';
+            case 'import':
+                return 'fa-solid fa-file-import';
             default:
                 return 'fas fa-edit';
         }
