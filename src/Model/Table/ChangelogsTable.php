@@ -733,6 +733,10 @@ class ChangelogsTable extends Table {
         foreach ($dataUnserialized as $index => $record) {
             foreach ($record as $tableName => $changes) {
                 if ($action !== 'edit') {
+                    if(isset($changes['current_data']['container_id'])){
+                        unset($changes['current_data']['container_id']);
+                    }
+
                     $dataUnserialized[$index][$tableName] = [
                         'data'    => $changes['current_data'] ?? [],
                         'isArray' => Hash::dimensions($changes) === 3
@@ -754,11 +758,9 @@ class ChangelogsTable extends Table {
                     }
 
                     if (!empty($changes['before']) && empty($changes['after'])) {
-
-
                         //All data got removed from fields (fields where filled before)
                         foreach ($changes['before'] as $fieldName => $fieldValue) {
-                            if ($fieldName === 'id') {
+                            if ($fieldName === 'id' || $fieldName === 'container_id') {
                                 continue;
                             }
                             $diffs[$fieldName] = [
@@ -772,7 +774,7 @@ class ChangelogsTable extends Table {
                         //Data got modified (e.g. rename or so)
                         if (!$isArray) {
                             foreach (Hash::diff($changes['after'], $changes['before']) as $fieldName => $fieldValue) {
-                                if ($fieldName === 'id') {
+                                if ($fieldName === 'id' || $fieldName === 'container_id') {
                                     continue;
                                 }
                                 $diffs[$fieldName] = [
@@ -826,12 +828,10 @@ class ChangelogsTable extends Table {
                             }
                         }
                     }
-
                     $dataUnserialized[$index][$tableName] = [
                         'data'    => $diffs,
                         'isArray' => $isArray
                     ];
-
                 }
             }
         }
