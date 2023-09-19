@@ -801,6 +801,22 @@ class ChangelogsTable extends Table {
                                         ];
                                     }
                                 }
+                                foreach ($idsAfterSave as $id) {
+                                    if (!in_array($id, $idsBeforeSave, true)) {
+                                        //dd('hier');
+                                        //Object got added
+                                        $diffs[] = [
+                                            'old' => null,
+                                            'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
+                                        ];
+                                    } else {
+                                        //Object got edited
+                                        $diffs[] = [
+                                            'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
+                                            'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
+                                        ];
+                                    }
+                                }
                             } else if (empty($idsBeforeSave) && empty($idsAfterSave)) {
                                 foreach ($changes['before'] as $key => $value) {
                                     if (isset($changes['after'][$key])) {
