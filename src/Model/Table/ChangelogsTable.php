@@ -3,7 +3,6 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\Database\Exception;
 use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -733,7 +732,7 @@ class ChangelogsTable extends Table {
         foreach ($dataUnserialized as $index => $record) {
             foreach ($record as $tableName => $changes) {
                 if ($action !== 'edit') {
-                    if(isset($changes['current_data']['container_id'])){
+                    if (isset($changes['current_data']['container_id'])) {
                         unset($changes['current_data']['container_id']);
                     }
 
@@ -819,16 +818,37 @@ class ChangelogsTable extends Table {
                                 }
                             } else if (empty($idsBeforeSave) && empty($idsAfterSave)) {
                                 foreach ($changes['before'] as $key => $value) {
-                                    if (isset($changes['after'][$key])) {
-                                        $diffs[] = [
-                                            'old' => $value,
-                                            'new' => $changes['after'][$key]
-                                        ];
+                                    if ($key === '_ids') {
+                                        $dataBefore = $changes['before']['_ids'] ?? [];
+                                        $dataAfter = $changes['after']['_ids'] ?? [];
+                                        $changesFromOldToNew = array_diff($dataBefore, $dataAfter);
+                                        if (!empty($changesFromOldToNew)) {
+                                            $diffs[] = [
+                                                'old' => array_values($changesFromOldToNew),
+                                                'new' => null
+                                            ];
+                                        }
+
+                                        $changesFromNewToOld = array_diff($dataAfter, $dataBefore);
+                                        if (!empty($changesFromNewToOld)) {
+                                            $diffs[] = [
+                                                'old' => null,
+                                                'new' => array_values($changesFromNewToOld)
+                                            ];
+                                        }
+
                                     } else {
-                                        $diffs[] = [
-                                            'old' => $value,
-                                            'new' => null
-                                        ];
+                                        if (isset($changes['after'][$key])) {
+                                            $diffs[] = [
+                                                'old' => $value,
+                                                'new' => $changes['after'][$key]
+                                            ];
+                                        } else {
+                                            $diffs[] = [
+                                                'old' => $value,
+                                                'new' => null
+                                            ];
+                                        }
                                     }
                                 }
                             } else {
