@@ -65,6 +65,11 @@ class ChartRenderClient {
     private $startTimestamp = 0;
 
     /**
+     * @var string
+     */
+    private $timezone;
+
+    /**
      * @var int
      */
     private $endTimestamp = 0;
@@ -74,6 +79,8 @@ class ChartRenderClient {
         if (!empty($address)) {
             $this->address = $address;
         }
+
+        $this->timezone = date_default_timezone_get();
 
         $this->Client = new Client([
             'base_uri' => $this->address,
@@ -120,6 +127,16 @@ class ChartRenderClient {
     }
 
     /**
+     * This timezone will be sent to the ChartRenderServer
+     * The ChartRenderServer itself is responsible for timezone handlin !
+     * @param string $tz
+     * @return void
+     */
+    public function setTimezone(string $tz) {
+        $this->timezone = $tz;
+    }
+
+    /**
      * @return int
      */
     public function getGraphStartAsISO() {
@@ -153,7 +170,8 @@ class ChartRenderClient {
                         'height'      => $this->height,
                         'title'       => $this->title,
                         'graph_start' => $this->getGraphStartAsISO(),
-                        'graph_end'   => $this->getGraphEndAsISO()
+                        'graph_end'   => $this->getGraphEndAsISO(),
+                        'timezone'    => $this->timezone,
                     ]
                 ]
             ]);
