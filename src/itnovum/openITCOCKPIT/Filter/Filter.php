@@ -141,6 +141,20 @@ abstract class Filter {
                             }
                             break;
 
+                        case 'bitwise_and':
+                            $values = $this->getQueryFieldValue($field);
+                            if ($values || $values === '0') {
+                                $conditions[sprintf('%s &', $field)] = $values;
+                            }
+                            break;
+
+                        case 'bitwise_or':
+                            $values = $this->getQueryFieldValue($field);
+                            if ($values || $values === '0') {
+                                $conditions[sprintf('%s |', $field)] = $values;
+                            }
+                            break;
+
                         case 'greater':
                             $values = $this->getQueryFieldValue($field);
                             if ($values || $values === '0') {

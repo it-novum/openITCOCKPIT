@@ -15,6 +15,7 @@ use Cake\ORM\Entity;
  * @property int|null $user_id
  * @property string $data
  * @property string $name
+ * @property int $module_flag
  * @property \Cake\I18n\FrozenTime $created
  *
  * @property \App\Model\Entity\User $user
@@ -37,6 +38,7 @@ class Changelog extends Entity {
         'user_id'       => true,
         'data'          => true,
         'name'          => true,
+        'module_flag'   => true,
         'created'       => true,
         'user'          => true,
         'containers'    => true

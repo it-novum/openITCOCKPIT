@@ -41,9 +41,11 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServicetemplategroupsConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -830,6 +832,7 @@ class ServicetemplategroupsController extends AppController {
         $User = new User($this->getUser());
 
         $ServicetemplateCache = new KeyValueStore();
+        $ObjectsCacheChangelog = new ObjectsCache();
 
         if (!$ServicetemplategroupsTable->existsById($servicetemplategroupId)) {
             throw new NotFoundException('Invalid service template group');
@@ -942,7 +945,7 @@ class ServicetemplategroupsController extends AppController {
                     } else {
                         //No errors
 
-                        $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
+                        $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData], $ObjectsCacheChangelog);
                         /** @var  ChangelogsTable $ChangelogsTable */
                         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 

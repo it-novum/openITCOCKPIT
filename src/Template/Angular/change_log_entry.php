@@ -39,25 +39,25 @@
             </a>
             <span ng-if="!changelogentry.ngState"
                   ng-class="{'changelog_delete': changelogentry.action ==='delete'}">
-                                                    {{changelogentry.name}}
-                                                </span>
+                {{changelogentry.name}}
+            </span>
 
         </strong>
         <span class="font-xs" ng-if="changelogentry.includeUser && changelogentry.user.id > 0">
-                                                <?= __('by') ?>
+            <?= __('by') ?>
             <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
                 <a ui-sref="UsersEdit({id: changelogentry.user.id})">
-                                                        {{changelogentry.user.firstname}}
-                                                        {{changelogentry.user.lastname}}
-                                                    </a>
+                    {{changelogentry.user.firstname}}
+                    {{changelogentry.user.lastname}}
+                </a>
             <?php else: ?>
                 {{changelogentry.user.firstname}}
                 {{changelogentry.user.lastname}}
             <?php endif; ?>
                                             </span>
         <span class="font-xs" ng-if="changelogentry.includeUser && changelogentry.user === null">
-                                                <?= __('by Cronjob') ?>
-                                            </span>
+            <?= __('by Cronjob') ?>
+        </span>
     </h2>
 
 
@@ -72,22 +72,22 @@
 
             <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
                   ng-if="!tableChanges.isArray && fieldName !== 'id'">
-                                                    <footer class="padding-left-10 blockquote-footer">
-                                                        {{fieldName}}: <span class="text-primary">{{fieldValue}}</span>
-                                                    </footer>
-                                                </span>
+                <footer class="padding-left-10 blockquote-footer">
+                    {{fieldName}}: <span class="text-primary">{{fieldValue}}</span>
+                </footer>
+            </span>
 
             <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
-                  ng-if="tableChanges.isArray" class="padding-top-5">
-                                                    <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
-                                                        <footer class="padding-left-10 blockquote-footer"
-                                                                ng-if="subFieldName !== 'id'">
-                                                            {{subFieldName}}:
-                                                            <span class="text-primary">{{subFieldValue}}</span>
-                                                        </footer>
-                                                    </span>
-                                                    <div class="padding-top-5"></div>
-                                                </span>
+                  ng-if="tableChanges.isArray">
+                <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
+                    <footer class="padding-left-10 blockquote-footer"
+                            ng-if="subFieldName !== 'id'">
+                        {{subFieldName}}:
+                        <span class="text-primary">{{subFieldValue}}</span>
+                    </footer>
+                </span>
+                <div class="py-1"></div>
+            </span>
         </div>
     </blockquote>
 
@@ -100,54 +100,54 @@
 
             <span ng-repeat="(fieldName, fieldValueChanges) in tableChanges.data"
                   ng-if="!tableChanges.isArray">
-                                                    <footer class="padding-left-10 blockquote-footer">
-                                                        {{fieldName}}:
-                                                        <span class="down">{{fieldValueChanges.old}}</span>
-                                                        <i class="fa fa-caret-right"></i>
-                                                        <span class="up">{{fieldValueChanges.new}}</span>
-                                                    </footer>
-                                                </span>
+                <footer class="padding-left-10 blockquote-footer">
+                    {{fieldName}}:
+                    <span class="down">{{fieldValueChanges.old}}</span>
+                    <i class="fa fa-caret-right"></i>
+                    <span class="up">{{fieldValueChanges.new}}</span>
+                </footer>
+            </span>
 
             <span ng-repeat="(fieldIndex, fieldValueChanges) in tableChanges.data"
-                  ng-if="tableChanges.isArray" class="padding-top-5">
-                                                    <small
-                                                        ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
-                                                        ng-if="fieldValueChanges.old === null">
-                                                        <footer class="blockquote-footer">
-                                                            {{newFieldName}}:
-                                                            <span class="up">{{newFieldValue}}</span>
-                                                        </footer>
+                  ng-if="tableChanges.isArray">
+                <small
+                    ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                    ng-if="fieldValueChanges.old === null">
+                    <footer class="blockquote-footer">
+                        {{newFieldName.replace('_id', '')}}:
+                        <span class="up">{{newFieldValue}}</span>
+                    </footer>
 
-                                                    </small>
+                </small>
 
-                                                    <small
-                                                        ng-repeat="(oldFieldName, oldFieldValue) in fieldValueChanges.old"
-                                                        ng-if="fieldValueChanges.new === null">
-                                                        <footer class="blockquote-footer">
-                                                            {{oldFieldName}}:
-                                                            <span class="down changelog_delete">{{oldFieldValue}}</span>
-                                                        </footer>
-                                                    </small>
+                <small
+                    ng-repeat="(oldFieldName, oldFieldValue) in fieldValueChanges.old"
+                    ng-if="fieldValueChanges.new === null">
+                    <footer class="blockquote-footer">
+                        {{oldFieldName}}:
+                        <span class="down changelog_delete">{{oldFieldValue}}</span>
+                    </footer>
+                </small>
 
-                                                    <small
-                                                        ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
-                                                        ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
-                                                        <footer class="blockquote-footer">
-                                                            {{newFieldName}}:
-                                                            <span
-                                                                ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
-                                                                {{fieldValueChanges.old[newFieldName]}}
-                                                            </span>
-                                                            <i class="fa fa-caret-right"></i>
-                                                            <span
-                                                                ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'up': fieldValueChanges.old[newFieldName] !== newFieldValue}">
-                                                                {{newFieldValue}}
-                                                            </span>
-                                                        </footer>
-                                                    </small>
+                <small
+                    ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                    ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
+                    <footer class="blockquote-footer">
+                        {{newFieldName.replace('_id', '')}}:
+                        <span
+                            ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                            {{fieldValueChanges.old[newFieldName]}}
+                        </span>
+                        <i class="fa fa-caret-right"></i>
+                        <span
+                            ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'up': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                            {{newFieldValue}}
+                        </span>
+                    </footer>
+                </small>
 
-                                                    <div class="padding-top-5"></div>
-                                                </span>
+                <div class="py-1"></div>
+            </span>
         </div>
     </blockquote>
 </div>
