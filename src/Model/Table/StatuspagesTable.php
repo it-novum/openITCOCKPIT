@@ -26,6 +26,9 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Lib\Interfaces\ServicestatusTableInterface;
+use App\Model\Entity\Service;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Query;
@@ -34,6 +37,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+
 
 /**
  * Statuspages Model
@@ -203,17 +207,18 @@ class StatuspagesTable extends Table
             return;
         }
 
-        $conditions = array_merge(['Statuspages.id' => $id], $conditions);
+        $conditions = array_merge(['Statuspages.id' => $id]);
 
         $query = $this->find()
             ->contain('Hosts', function (Query $q) {
                 return $q
-                    ->select(['id', 'name']);
+                    ->select(['id', 'uuid', 'name']);
             })
             ->contain('Services', function (Query $q) {
                 return $q
                     ->select([
                         'id',
+                        'uuid',
                         'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
                         'hostname' => 'host.name'
 

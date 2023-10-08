@@ -26,12 +26,27 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Interfaces\HoststatusTableInterface;
+use App\Lib\Interfaces\ServicestatusTableInterface;
+use App\Model\Entity\Host;
+use App\Model\Entity\Service;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicesTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
+use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
+use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
@@ -99,10 +114,177 @@ class StatuspagesController extends AppController
      * @return \Cake\Http\Response|null|void Renders view
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
-    {
+    public function view($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
+            throw new NotFoundException('Statuspage not found');
+        }
+        //$statuspage = $StatuspagesTable->getStatuspage($id);
+        $statuspage = $StatuspagesTable->getStatuspageObjects($id);
+        $statuspageView = [
+            'statuspage'    => [
+                'name'         => $statuspage['name'],
+                'description'  => $statuspage['description'],
+                'public'       => $statuspage['public'],
+                'showComments' => $statuspage['show_comments'],
+            ],
+            'hosts'         => [],
+            'services'      => [],
+            'hostgroups'    => [],
+            'servicegroups' => []
+        ];
+
+        foreach($statuspage as $key => $objectData) {
+
+            if ($key === 'hosts' && count($objectData) > 0) {
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $HoststatusTable = $this->DbBackend->getHoststatusTable();
+                $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
+                $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+                $ServicesTable = TableRegistry::getTableLocator()->get(alias: 'Services');
+                /** @var ServicesTable $ServicesTable */
+                $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+                $hosts = $objectData;
+                $hostsViewData = [];
+                foreach ($hosts as $host) {
+                    $hostExtended = $HostsTable->getHostById($host['id']);
+                    $properties = $this->getHostInformation($ServicesTable, $HoststatusTable, $ServicestatusTable, $hostExtended);
+                    $hostViewData = [];
+                    $hostViewData['type'] = 'Host';
+                    $hostViewData['id'] = $host['id'];
+                    $hostViewData['uuid'] = $host['uuid'];
+                    $hostViewData['name'] = ($host['_joinData']['display_alias'] !== null && $host['_joinData']['display_alias'] !== '') ? $host['_joinData']['display_alias'] : $host['name'];
+
+                    $hostViewData = array_merge($hostViewData, $properties);
+                    if($hostViewData['isAcknowledged']){
+                        $acknowledgement = $AcknowledgementHostsTable->byhostUuid($host['uuid']);
+                        if (!empty($acknowledgement)) {
+                            $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime);
+                            $hostViewData['acknowledgeData'] = $Acknowledgement->toArray();
+                        }
+                    }
+                    if($hostViewData['isInDowntime']){
+                        $downtime = $this->getHostDowntime($host['uuid'], $DowntimehistoryHostsTable);
+                        if (!empty($downtime)) {
+                            $Downtime = new Downtime($downtime, false, $UserTime);
+                            $hostViewData['downtimeData'] = $Downtime->toArray();
+                        }
+                    }
+
+                    $hostsViewData[] = $hostViewData;
+                }
+                $statuspageView['hosts'] = $hostsViewData;
+            }
+
+            if ($key === 'services' && count($objectData) > 0) {
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+                $AcknowledgementServicesTable = $this->DbBackend->getAcknowledgementServicesTable();
+                $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+                $services = $objectData;
+                $servicesViewData = [];
+
+                foreach ($services as $service) {
+                    $serviceExtended = $ServicesTable->getServiceByIdWithHostAndServicetemplate($service['id']);
+                    $properties = $this->getServiceInformation($ServicestatusTable, $serviceExtended);
+
+                    $serviceViewData = [];
+                    $serviceViewData['type'] = 'Service';
+                    $serviceViewData['id'] = $service['id'];
+                    $serviceViewData['uuid'] = $service['uuid'];
+                    $serviceViewData['name'] = ($service['_joinData']['display_alias'] !== null && $service['_joinData']['display_alias'] !== '') ? $service['_joinData']['display_alias'] : $service['servicename'];
+                    $serviceViewData = array_merge($serviceViewData, $properties);
+                    if($serviceViewData['isAcknowledged'] && $statuspageView['statuspage']['showComments']){
+                        $acknowledgement = $AcknowledgementServicesTable->byServiceUuid($service['uuid']);
+                        if (!empty($acknowledgement)) {
+                            $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime);
+                            $serviceViewData['acknowledgeData'] = $Acknowledgement->toArray();
+                        }
+                    }
+                    if($serviceViewData['isInDowntime']){
+                        $downtime = $this->getserviceDowntime($service['uuid'], $DowntimehistoryServicesTable);
+                        //$downtime = $DowntimehistoryServicesTable->byServiceUuid($service['uuid']);
+                        if (!empty($downtime)) {
+                            $Downtime = new Downtime($downtime, false, $UserTime);
+                            $serviceViewData['downtimeData'] = $Downtime->toArray();
+                        }
+                    }
+                    $servicesViewData[] = $serviceViewData;
+                }
+                $statuspageView['services'] = $servicesViewData;
+            }
+        }
+        $items = array_merge($statuspageView['hosts'], $statuspageView['services']);
+        $itemsSortedState = Hash::sort($items, '{s}.type',  'desc');
+        $itemsSortedState = Hash::sort($itemsSortedState, '{n}.cumulatedState', 'desc' );
+        $statuspageView['items'] = $itemsSortedState;
+        $this->set('Statuspage', $statuspageView);
+        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
+
+    /**
+     * @param ServicesTable $Service
+     * @param HoststatusTableInterface $Hoststatus
+     * @param ServicestatusTableInterface $Servicestatus
+     * @param Host $host
+     * @return array
+     */
+    private function getHostInformation(ServicesTable $Service, HoststatusTableInterface $Hoststatus, ServicestatusTableInterface $Servicestatus, Host $host): array {
+        $info = [];
+        $HoststatusFields = new HoststatusFields(new DbBackend());
+        $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $hoststatus = $Hoststatus->byUuid($host->get('uuid'), $HoststatusFields);
+        $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($host->toArray());
+        $hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+        $info['currentState'] = $hoststatus->currentState();
+        $info['cumulatedState'] = $hoststatus->currentState();
+        $info['color'] = $hoststatus->HostStatusColor();
+        $info['isAcknowledged'] = $hoststatus->isAcknowledged();
+        $info['isInDowntime'] = $hoststatus->isInDowntime();
+        if($info['currentState'] == 1) { $info['cumulatedState'] = 2;}
+        if($info['currentState'] == 2) { $info['cumulatedState'] = 3;}
+        if($info['currentState'] == 0) {
+            $services = $Service->getActiveServicesByHostId($host->get('id'), false);
+            $services = $services->toArray();
+            $serviceUuids = Hash::extract($services, '{n}.uuid');
+            $servicestatus = [];
+            if (!empty($serviceUuids)) {
+                $ServicestatusFieds = new ServicestatusFields(new DbBackend());
+                $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+                $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
+                $ServicestatusConditions->servicesWarningCriticalAndUnknown();
+                $servicestatus = $Servicestatus->byUuid($serviceUuids, $ServicestatusFieds, $ServicestatusConditions);
+            }
+            if (!empty($servicestatus)) {
+                $worstServiceState = array_values(
+                    Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
+                );
+                $info['biggestServiceProblemState'] = $worstServiceState[0]['Servicestatus']['current_state'];
+                $info['color'] = $this->getServiceStatusColor($info['biggestServiceProblemState']);
+                $info['cumulatedState'] = $info['biggestServiceProblemState'];
+                $problems = count($servicestatus);
+                $problemsNotAcknowledged = 0;
+                foreach ($worstServiceState as $problemState) {
+                    if ($problemState['Servicestatus']['problem_has_been_acknowledged'] == false) {
+                        $problemsNotAcknowledged++;
+                    }
+                }
+                $problemsAcknowledged = $problems - $problemsNotAcknowledged;
+                if ($problemsNotAcknowledged > 0) {
+                    $info['problemtext'] = "{$problemsAcknowledged} of {$problems} problems acknowledged";
+                }
+            }
+        }
+        return $info;
+    }
+
 
     /**
      * Add method
@@ -130,8 +312,6 @@ class StatuspagesController extends AppController
             } else {
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($statuspage); // REST API ID serialization
-                 //   $this->set('statuspage', $statuspage);
-                 //   $this->viewBuilder()->setOption('serialize', ['statuspage']);
                     return;
                 }
 
@@ -447,4 +627,60 @@ class StatuspagesController extends AppController
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
 
     }
+
+
+    private function getServiceInformation(ServicestatusTableInterface $Servicestatus, Service $service, $includeServiceOutput = false){
+        $ServicestatusFields = new ServicestatusFields(new DbBackend());
+        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged()->isFlapping();
+        $serviceArray = $service->toArray();
+        $servicestatus = $Servicestatus->byUuid($service->get('uuid'), $ServicestatusFields);
+        $servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+        $tmpServicestatus = $servicestatus->toArray();
+        return [
+            'currentState' => $tmpServicestatus['currentState'],
+            'cumulatedState' => $tmpServicestatus['currentState'],
+            'isAcknowledged' => $servicestatus->isAcknowledged(),
+            'isInDowntime'   => $servicestatus->isInDowntime(),
+            'color'          => $servicestatus->ServiceStatusColor(),
+            'background'     => $servicestatus->ServiceStatusBackgroundColor(),
+        ];
+    }
+
+
+    private function getServiceDowntime ($uuid, $table)
+    {
+        $downtime = $table->byServiceUuid(($uuid));;
+        $downtime = $downtime->toArray();
+        return $downtime;
+    }
+
+    private function getHostDowntime ($uuid, $table)
+    {
+        $downtime = $table->byHostUuid(($uuid));;
+        $downtime = $downtime->toArray();
+        return $downtime;
+    }
+
+
+    private function getServiceStatusColor($state = null) {
+        if ($state === null) {
+            return 'text-primary';
+        }
+
+        switch ($state) {
+            case 0:
+                return 'ok';
+
+            case 1:
+                return 'warning';
+
+            case 2:
+                return 'critical';
+
+            default:
+                return 'unknown';
+        }
+    }
+
+
 }

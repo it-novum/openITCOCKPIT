@@ -1,120 +1,104 @@
 <?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
 /**
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Statuspage $statuspage
  */
+
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
+$logo = new Logo();
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('Edit Statuspage'), ['action' => 'edit', $statuspage->id], ['class' => 'side-nav-item']) ?>
-            <?= $this->Form->postLink(__('Delete Statuspage'), ['action' => 'delete', $statuspage->id], ['confirm' => __('Are you sure you want to delete # {0}?', $statuspage->id), 'class' => 'side-nav-item']) ?>
-            <?= $this->Html->link(__('List Statuspages'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-            <?= $this->Html->link(__('New Statuspage'), ['action' => 'add'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column-responsive column-80">
-        <div class="statuspages view content">
-            <h3><?= h($statuspage->name) ?></h3>
-            <table>
-                <tr>
-                    <th><?= __('Name') ?></th>
-                    <td><?= h($statuspage->name) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Description') ?></th>
-                    <td><?= h($statuspage->description) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Id') ?></th>
-                    <td><?= $this->Number->format($statuspage->id) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Created') ?></th>
-                    <td><?= h($statuspage->created) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Modified') ?></th>
-                    <td><?= h($statuspage->modified) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Public') ?></th>
-                    <td><?= $statuspage->public ? __('Yes') : __('No'); ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Show Comments') ?></th>
-                    <td><?= $statuspage->show_comments ? __('Yes') : __('No'); ?></td>
-                </tr>
-            </table>
-            <div class="related">
-                <h4><?= __('Related Containers') ?></h4>
-                <?php if (!empty($statuspage->containers)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Containertype Id') ?></th>
-                            <th><?= __('Name') ?></th>
-                            <th><?= __('Parent Id') ?></th>
-                            <th><?= __('Lft') ?></th>
-                            <th><?= __('Rght') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                        <?php foreach ($statuspage->containers as $containers) : ?>
-                        <tr>
-                            <td><?= h($containers->id) ?></td>
-                            <td><?= h($containers->containertype_id) ?></td>
-                            <td><?= h($containers->name) ?></td>
-                            <td><?= h($containers->parent_id) ?></td>
-                            <td><?= h($containers->lft) ?></td>
-                            <td><?= h($containers->rght) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'Containers', 'action' => 'view', $containers->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'Containers', 'action' => 'edit', $containers->id]) ?>
-                                <?= $this->Form->postLink(__('Delete'), ['controller' => 'Containers', 'action' => 'delete', $containers->id], ['confirm' => __('Are you sure you want to delete # {0}?', $containers->id)]) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
-                </div>
-                <?php endif; ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="StatuspagesIndex">
+            <i class="fas fa-info-circle"></i> <?php echo __('Status pages'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-plus"></i> <?php echo __('View'); ?>
+    </li>
+</ol>
+
+<div class="container" style="margin-top:75px;">
+    <div class="d-flex justify-content-center margin-top-25 margin-bottom-25">
+        <!--<div class="w-100 bg-{{Statuspage.items[0].color}} txt-color-white padding-bottom-2 margin-bottom-25"
+             style="border: 1px solid rgba(0,0,0,.125);">-->
+        <div class="w-100 padding-bottom-2 margin-bottom-25">
+            <div>
+                <!--<h5>Statuspage</h5>-->
+                <h1>{{Statuspage.statuspage.name}}</h1>
             </div>
-            <div class="related">
-                <h4><?= __('Related Statuspage Items') ?></h4>
-                <?php if (!empty($statuspage->statuspage_items)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Statuspage Id') ?></th>
-                            <th><?= __('Type') ?></th>
-                            <th><?= __('Object Id') ?></th>
-                            <th><?= __('Display Text') ?></th>
-                            <th><?= __('Created') ?></th>
-                            <th><?= __('Modified') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                        <?php foreach ($statuspage->statuspage_items as $statuspageItems) : ?>
-                        <tr>
-                            <td><?= h($statuspageItems->id) ?></td>
-                            <td><?= h($statuspageItems->statuspage_id) ?></td>
-                            <td><?= h($statuspageItems->type) ?></td>
-                            <td><?= h($statuspageItems->object_id) ?></td>
-                            <td><?= h($statuspageItems->display_text) ?></td>
-                            <td><?= h($statuspageItems->created) ?></td>
-                            <td><?= h($statuspageItems->modified) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'StatuspageItems', 'action' => 'view', $statuspageItems->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'StatuspageItems', 'action' => 'edit', $statuspageItems->id]) ?>
-                                <?= $this->Form->postLink(__('Delete'), ['controller' => 'StatuspageItems', 'action' => 'delete', $statuspageItems->id], ['confirm' => __('Are you sure you want to delete # {0}?', $statuspageItems->id)]) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
-                </div>
-                <?php endif; ?>
+            <div ng-if="Statuspage.statuspage.description != ''">
+            <!--<h5>Description</h5>-->
+            <p class="lead">{{Statuspage.statuspage.description}}</p>
             </div>
         </div>
     </div>
+
+<div class="margin-bottom-25">
+        <div class="col no-padding" ng-repeat="item in Statuspage.items">
+            <div class="card mt-5">
+                <div class="card-header bg-{{item.color}} txt-color-white">
+                    <h3>{{item.type}}</h3>
+                    <h4>{{item.name}}</h4>
+                </div>
+                <div class="card-body bg-color-lightGray">
+                    <div class="txt-color-blue">
+                        <div ng-if="item.currentState > 0 && !item.isAcknowledged" class="txt-color-orange">
+                            <h4><b><i class="far fa-user"></i> {{item.type}} is not acknowledged!</b></h4>
+                        </div>
+                        <div ng-if="item.currentState > 0 && item.isAcknowledged">
+                            <h4> <b><i class="fas fa-user"></i> {{item.type}} is acknowledged!</b></h4>
+                        </div>
+                        <div ng-if="item.isAcknowledged">
+                            <b ng-if="Statuspage.statuspage.showComments">Comment: {{item.acknowledgeData.comment_data }}</b>
+                            <b ng-if="!Statuspage.statuspage.showComments">Comment: Work in progress!</b>
+                        </div>
+                    </div>
+                    <div class="txt-color-red">
+                        <div ng-if="item.isInDowntime">
+                            <div>
+                                <h4><b><i class="fa fa-power-off"></i> {{item.type}} is currently in a planned maintenance period!</b></h4>
+                            </div>
+                        <div><b> From: {{item.downtimeData.scheduledStartTime}}</b></div>
+                        <div><b> To: {{item.downtimeData.scheduledEndTime}}</b></div>
+                        <div ng-if="Statuspage.statuspage.showComments"><b>Comment: {{item.downtimeData.commentData}}</b></div>
+                        </div>
+                    </div>
+                    <div ng-if="item.problemtext" class="txt-color-yellow"><h4><b>{{item.problemtext}}</b></h4></div>
+                    <div ng-if="item.cumulatedState == 0 &&item.currentState == 0 && !item.isInDowntime" class="txt-color-green">
+                        <h4><b>Full operational!</b></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
 </div>
