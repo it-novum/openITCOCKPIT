@@ -4,6 +4,7 @@
     "description": "",
     "main": "index.js",
     "dependencies": {
+        "@codemirror/autocomplete": "^6.9.1",
         "@egjs/hammerjs": "^2.0.17",
         "@fortawesome/fontawesome-free": "^6.1.1",
         "@fullcalendar/bootstrap": "^4.4.2",

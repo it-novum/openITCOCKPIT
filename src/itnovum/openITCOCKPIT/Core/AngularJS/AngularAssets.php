@@ -112,7 +112,12 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/luxon/build/global/luxon.min.js',
         'node_modules/uplot/dist/uPlot.iife.min.js',
         'node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js',
-        'node_modules/jsoneditor/dist/jsoneditor.min.js'
+        'node_modules/jsoneditor/dist/jsoneditor.min.js',
+        'node_modules/@codemirror/autocomplete/dist/index.js',
+        'node_modules/@codemirror/language/dist/index.js',
+        'node_modules/@codemirror/state/dist/index.js',
+        'node_modules/@codemirror/view/dist/index.js'
+
     ];
 
     /**
