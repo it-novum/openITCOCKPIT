@@ -4,8 +4,8 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: CakePHP 4.4.5\n"
-"POT-Creation-Date: 2022-10-04 09:53+0200\n"
+"Project-Id-Version: CakePHP 4.4.17\n"
+"POT-Creation-Date: 2023-10-09 09:40+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"

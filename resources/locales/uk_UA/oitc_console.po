@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-10-04 09:53+0200\n"
+"POT-Creation-Date: 2023-10-09 09:40+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -86,6 +86,14 @@ msgstr "Вимкнути смайли в темі"
 #: ./src/Command/CronjobsCommand.php:67
 msgid "All cronjobs will be forced to execute!"
 msgstr "Усі cronjobs будуть змушені виконуватись!"
+
+#: ./src/Command/CronjobsCommand.php:73
+msgid "List all available cronjobs!"
+msgstr ""
+
+#: ./src/Command/CronjobsCommand.php:79
+msgid "Only execute the given cronjob by Task name"
+msgstr ""
 
 #: ./src/Command/DebugCommand.php:66
 msgid "Tail and parse monitoring logfile"
@@ -322,15 +330,15 @@ msgstr "Ваш ключ користувача Pushover => $_CONTACTPUSHOVERUSER
 msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface."
 msgstr "Якщо встановлено, з'єднання буде встановлено за допомогою проксі -сервера, визначеного в інтерфейсі openITCOCKPIT."
 
-#: ./src/Command/QueryLogCommand.php:81
+#: ./src/Command/QueryLogCommand.php:80
 msgid "Pretty print sql queries"
 msgstr "Досить друкувати запити sql"
 
-#: ./src/Command/QueryLogCommand.php:82
+#: ./src/Command/QueryLogCommand.php:81
 msgid "Hide (ARO/ACO) permission queries"
 msgstr "Приховати запити на дозвіл (ARO/ACO)"
 
-#: ./src/Command/QueryLogCommand.php:83
+#: ./src/Command/QueryLogCommand.php:82
 msgid "Start a WebSocket server to make the query log accessible from openITCOCKPIT web interface"
 msgstr "Запустіть сервер WebSocket, щоб журнал запитів став доступним із веб -інтерфейсу openITCOCKPIT"
 
@@ -338,67 +346,67 @@ msgstr "Запустіть сервер WebSocket, щоб журнал запи�
 msgid "openITCOCKPIT User Id"
 msgstr "openITCOCKPIT Ідентифікатор користувача"
 
-#: ./src/Command/SetupCommand.php:147
+#: ./src/Command/SetupCommand.php:148
 msgid "[Y]es I want to continue the setup of openITCOCKPIT"
 msgstr "[Y] es Я хочу продовжити налаштування openITCOCKPIT"
 
-#: ./src/Command/SetupCommand.php:148
+#: ./src/Command/SetupCommand.php:149
 msgid "[N]o and exit shell"
 msgstr "[N] o і вийти з оболонки"
 
-#: ./src/Command/SetupCommand.php:150
+#: ./src/Command/SetupCommand.php:151
 msgid "Are you sure you want to continue?"
 msgstr "Ви впевнені, що хочете продовжити?"
 
-#: ./src/Command/SetupCommand.php:156
+#: ./src/Command/SetupCommand.php:157
 msgid "Setup aborted!"
 msgstr "Налаштування скасовано!"
 
-#: ./src/Command/SetupCommand.php:159
+#: ./src/Command/SetupCommand.php:160
 msgid "You have made an invalid selection. Please choose by entering Y or N."
 msgstr "Ви зробили недійсний вибір. Будь ласка, виберіть, ввівши Y або N."
 
-#: ./src/Command/SetupCommand.php:274
+#: ./src/Command/SetupCommand.php:277
 msgid "Please enter your first name"
 msgstr "Будь ласка, введіть своє ім'я"
 
-#: ./src/Command/SetupCommand.php:286
+#: ./src/Command/SetupCommand.php:289
 msgid "Please enter your last name"
 msgstr "Будь ласка, введіть своє прізвище"
 
-#: ./src/Command/SetupCommand.php:298
+#: ./src/Command/SetupCommand.php:301
 msgid "Please enter your email address. This will be the username for the login."
 msgstr "Будь ласка, введіть свою електронну адресу. Це буде ім'я користувача для входу."
 
-#: ./src/Command/SetupCommand.php:313
+#: ./src/Command/SetupCommand.php:316
 msgid "Please enter a password for the login."
 msgstr "Будь ласка, введіть пароль для входу."
 
-#: ./src/Command/SetupCommand.php:316
+#: ./src/Command/SetupCommand.php:319
 msgid "Please confirm your password"
 msgstr "Будь ласка, підтвердьте свій пароль"
 
-#: ./src/Command/SetupCommand.php:340
+#: ./src/Command/SetupCommand.php:343
 msgid "System Address or FQDN?"
 msgstr "Системна адреса або повне доменне ім'я?"
 
-#: ./src/Command/SetupCommand.php:374
+#: ./src/Command/SetupCommand.php:377
 msgid "Please enter a sender email address"
 msgstr "Будь ласка, введіть адресу електронної пошти відправника"
 
-#: ./src/Command/SetupCommand.php:388
+#: ./src/Command/SetupCommand.php:391
 msgid "Please enter the address of your mail server (e.g. mail.example.org)"
 msgstr "Будь ласка, введіть адресу свого поштового сервера (наприклад, mail.example.org)"
 
-#: ./src/Command/SetupCommand.php:400
+#: ./src/Command/SetupCommand.php:403
 msgid "Please enter the port of your mail server"
 msgstr "Будь ласка, введіть порт свого поштового сервера"
 
-#: ./src/Command/SetupCommand.php:414
+#: ./src/Command/SetupCommand.php:417
 msgid "If required, set a username, or leave it blank if you don't need a user"
 msgstr "За потреби встановіть ім’я користувача або залиште його порожнім, якщо вам не потрібен користувач"
 
-#: ./src/Command/SetupCommand.php:424
+#: ./src/Command/SetupCommand.php:427
 msgid "Please enter your password, or leave it blank if you don't need a password"
 msgstr "Будь ласка, введіть свій пароль або залиште його порожнім, якщо пароль вам не потрібен"
 
@@ -494,7 +502,43 @@ msgstr "Ідентифікатор стану поточного стану сл
 msgid "Write initial Checkmk configuration"
 msgstr "Написати початкову конфігурацію Checkmk"
 
-#: .-modules/CustomalertModule/src/Command/CustomAlertWorkerCommand.php:107
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:82
+msgid "ID of the container open alerts should be monitored. If empty, all alerts will be considered. There can be multiple container-id arguments"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:91
+msgid "Include alerts of all sub-container."
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:101
+msgid "0=New, 1=In Progress, 2=Done, 3=Manually Closed. There can be multiple statetype arguments"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:110
+msgid "Number of alerts before the plugin will output a warning state. There can be multiple warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --warning 5 --statetype 1 --warning 10"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:119
+msgid "Number of alerts before the plugin will output a critical state. There can be multiple critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --critical 10 --statetype 1 --critical 15"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:128
+msgid "Alerts older than the provided number in days will trigger a warning state. There can be multiple age-warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-warning 2 --statetype 1 --age-warning 5"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:136
+msgid "Alerts older than the provided number in days will trigger a critical state. There can be multiple age-critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-critical 4 --statetype 1 --age-critical 10"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:144
+msgid "Only consider alerts where the message contains provided string"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:153
+msgid "Determines if the plugin should print detailed information as long output."
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CustomAlertWorkerCommand.php:111
 msgid "Print UUIDs of dropped services"
 msgstr ""
 
@@ -548,11 +592,11 @@ msgstr "Стан служби"
 msgid "output"
 msgstr "вихід"
 
-#: .-modules/PrometheusModule/src/Command/PrometheusBridgeCommand.php:54
+#: .-modules/PrometheusModule/src/Command/PrometheusBridgeCommand.php:53
 msgid "Run PrometheusBridge as endless loop (Daemon)"
 msgstr "Запустіть PrometheusBridge як нескінченний цикл (демон)"
 
-#: .-modules/PrometheusModule/src/Command/PrometheusBridgeCommand.php:55
+#: .-modules/PrometheusModule/src/Command/PrometheusBridgeCommand.php:54
 msgid "Loop interval in seconds"
 msgstr "Інтервал циклу в секундах"
 

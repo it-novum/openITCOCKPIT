@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-10-04 09:53+0200\n"
+"POT-Creation-Date: 2023-10-09 09:40+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -86,6 +86,14 @@ msgstr ""
 #: ./src/Command/CronjobsCommand.php:67
 msgid "All cronjobs will be forced to execute!"
 msgstr "Tous les cronjobs seront exécuté !"
+
+#: ./src/Command/CronjobsCommand.php:73
+msgid "List all available cronjobs!"
+msgstr ""
+
+#: ./src/Command/CronjobsCommand.php:79
+msgid "Only execute the given cronjob by Task name"
+msgstr ""
 
 #: ./src/Command/DebugCommand.php:66
 msgid "Tail and parse monitoring logfile"
@@ -322,15 +330,15 @@ msgstr "Votre clé d'utilisateur Pushover => $_CONTACTPUSHOVERUSER$"
 msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface."
 msgstr ""
 
-#: ./src/Command/QueryLogCommand.php:81
+#: ./src/Command/QueryLogCommand.php:80
 msgid "Pretty print sql queries"
 msgstr ""
 
-#: ./src/Command/QueryLogCommand.php:82
+#: ./src/Command/QueryLogCommand.php:81
 msgid "Hide (ARO/ACO) permission queries"
 msgstr ""
 
-#: ./src/Command/QueryLogCommand.php:83
+#: ./src/Command/QueryLogCommand.php:82
 msgid "Start a WebSocket server to make the query log accessible from openITCOCKPIT web interface"
 msgstr ""
 
@@ -338,67 +346,67 @@ msgstr ""
 msgid "openITCOCKPIT User Id"
 msgstr "ID utilisateur openITCOCKPIT"
 
-#: ./src/Command/SetupCommand.php:147
+#: ./src/Command/SetupCommand.php:148
 msgid "[Y]es I want to continue the setup of openITCOCKPIT"
 msgstr "[Y] Oui je veux continuer la configuration de openITCOCKPIT"
 
-#: ./src/Command/SetupCommand.php:148
+#: ./src/Command/SetupCommand.php:149
 msgid "[N]o and exit shell"
 msgstr "[N]on et quitter le shell"
 
-#: ./src/Command/SetupCommand.php:150
+#: ./src/Command/SetupCommand.php:151
 msgid "Are you sure you want to continue?"
 msgstr ""
 
-#: ./src/Command/SetupCommand.php:156
+#: ./src/Command/SetupCommand.php:157
 msgid "Setup aborted!"
 msgstr ""
 
-#: ./src/Command/SetupCommand.php:159
+#: ./src/Command/SetupCommand.php:160
 msgid "You have made an invalid selection. Please choose by entering Y or N."
 msgstr "Vous avez fait une sélection non valide. Veuillez choisir en entrant Y ou N."
 
-#: ./src/Command/SetupCommand.php:274
+#: ./src/Command/SetupCommand.php:277
 msgid "Please enter your first name"
 msgstr "Veuillez entrer votre prénom"
 
-#: ./src/Command/SetupCommand.php:286
+#: ./src/Command/SetupCommand.php:289
 msgid "Please enter your last name"
 msgstr "Veuillez entrer votre nom de famille"
 
-#: ./src/Command/SetupCommand.php:298
+#: ./src/Command/SetupCommand.php:301
 msgid "Please enter your email address. This will be the username for the login."
 msgstr "S'il vous plaît entrez votre adresse email. Ce sera le nom d'utilisateur pour la connexion."
 
-#: ./src/Command/SetupCommand.php:313
+#: ./src/Command/SetupCommand.php:316
 msgid "Please enter a password for the login."
 msgstr "Veuillez saisir un mot de passe pour vous connecter."
 
-#: ./src/Command/SetupCommand.php:316
+#: ./src/Command/SetupCommand.php:319
 msgid "Please confirm your password"
 msgstr "Veuillez confirmer votre mot de passe"
 
-#: ./src/Command/SetupCommand.php:340
+#: ./src/Command/SetupCommand.php:343
 msgid "System Address or FQDN?"
 msgstr ""
 
-#: ./src/Command/SetupCommand.php:374
+#: ./src/Command/SetupCommand.php:377
 msgid "Please enter a sender email address"
 msgstr ""
 
-#: ./src/Command/SetupCommand.php:388
+#: ./src/Command/SetupCommand.php:391
 msgid "Please enter the address of your mail server (e.g. mail.example.org)"
 msgstr "Veuillez saisir l'adresse de votre serveur de messagerie (par exemple, mail.example.org)"
 
-#: ./src/Command/SetupCommand.php:400
+#: ./src/Command/SetupCommand.php:403
 msgid "Please enter the port of your mail server"
 msgstr "Veuillez entrer le port de votre serveur de messagerie"
 
-#: ./src/Command/SetupCommand.php:414
+#: ./src/Command/SetupCommand.php:417
 msgid "If required, set a username, or leave it blank if you don't need a user"
 msgstr ""
 
-#: ./src/Command/SetupCommand.php:424
+#: ./src/Command/SetupCommand.php:427
 msgid "Please enter your password, or leave it blank if you don't need a password"
 msgstr "Veuillez entrer votre mot de passe ou laissez le champ vide si vous n'avez pas besoin de mot de passe."
 
@@ -494,7 +502,43 @@ msgstr ""
 msgid "Write initial Checkmk configuration"
 msgstr ""
 
-#: .-modules/CustomalertModule/src/Command/CustomAlertWorkerCommand.php:107
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:82
+msgid "ID of the container open alerts should be monitored. If empty, all alerts will be considered. There can be multiple container-id arguments"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:91
+msgid "Include alerts of all sub-container."
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:101
+msgid "0=New, 1=In Progress, 2=Done, 3=Manually Closed. There can be multiple statetype arguments"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:110
+msgid "Number of alerts before the plugin will output a warning state. There can be multiple warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --warning 5 --statetype 1 --warning 10"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:119
+msgid "Number of alerts before the plugin will output a critical state. There can be multiple critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --critical 10 --statetype 1 --critical 15"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:128
+msgid "Alerts older than the provided number in days will trigger a warning state. There can be multiple age-warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-warning 2 --statetype 1 --age-warning 5"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:136
+msgid "Alerts older than the provided number in days will trigger a critical state. There can be multiple age-critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-critical 4 --statetype 1 --age-critical 10"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:144
+msgid "Only consider alerts where the message contains provided string"
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:153
+msgid "Determines if the plugin should print detailed information as long output."
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CustomAlertWorkerCommand.php:111
 msgid "Print UUIDs of dropped services"
 msgstr ""
 
@@ -548,11 +592,11 @@ msgstr ""
 msgid "output"
 msgstr ""
 
-#: .-modules/PrometheusModule/src/Command/PrometheusBridgeCommand.php:54
+#: .-modules/PrometheusModule/src/Command/PrometheusBridgeCommand.php:53
 msgid "Run PrometheusBridge as endless loop (Daemon)"
 msgstr ""
 
-#: .-modules/PrometheusModule/src/Command/PrometheusBridgeCommand.php:55
+#: .-modules/PrometheusModule/src/Command/PrometheusBridgeCommand.php:54
 msgid "Loop interval in seconds"
 msgstr ""
 
