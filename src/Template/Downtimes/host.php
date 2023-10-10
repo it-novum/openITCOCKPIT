@@ -328,9 +328,11 @@ use Cake\Core\Plugin;
                             <tbody>
                             <tr ng-repeat="downtime in downtimes">
                                 <td class="width-5">
+                                    <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
                                     <input type="checkbox"
                                            ng-model="massChange[downtime.DowntimeHost.internalDowntimeId]"
                                            ng-show="downtime.DowntimeHost.allowEdit && downtime.DowntimeHost.isCancellable">
+                                    <?php endif; ?>
                                 </td>
 
                                 <td class="text-center">

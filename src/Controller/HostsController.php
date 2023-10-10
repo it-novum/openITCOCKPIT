@@ -2132,6 +2132,7 @@ class HostsController extends AppController {
 
         $mergedHost['is_satellite_host'] = $hostObj->isSatelliteHost();
         $mergedHost['allowEdit'] = $allowEdit;
+        $mergedHost['showServices'] = $this->hasPermission('index', 'services');
 
         $replacePasswordInObjectMacros = false;
         try {

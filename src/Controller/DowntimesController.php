@@ -81,7 +81,7 @@ class DowntimesController extends AppController {
         //Load containers for hosts, for non root users
         $hostContainers = [];
         $hostIds = [];
-        if (!empty($hostDowntimes) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts')) {
+        if (!empty($hostDowntimes) && $this->hasRootPrivileges === false) {
             foreach ($hostDowntimes as $record) {
                 $hostIds[] = $record->get('Hosts')['id'];
             }
@@ -107,6 +107,7 @@ class DowntimesController extends AppController {
                 if (isset($hostContainers[$hostDowntime->get('Hosts')['id']])) {
                     $containerIds = $hostContainers[$hostDowntime->get('Hosts')['id']];
                 }
+
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
