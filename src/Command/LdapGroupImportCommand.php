@@ -34,10 +34,12 @@ use App\Model\Table\LdapgroupsTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
 use App\Model\Table\UsersTable;
+use Cake\Cache\Cache;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
@@ -79,6 +81,7 @@ class LdapGroupImportCommand extends Command implements CronjobInterface {
 
         $this->syncLdapGroupsWithDatabase($io);
         $this->assignUserContainerRolesToUsers($io);
+        Cache::clear('permissions');
     }
 
     /**
@@ -173,7 +176,11 @@ class LdapGroupImportCommand extends Command implements CronjobInterface {
 
                 // Keep manually assigned user container roles
                 $data = [
-                    'usercontainerroles' => []
+                    'usercontainerroles'      => [],
+                    // For validation only
+                    'usercontainerroles_ldap' => [
+                        '_ids'
+                    ],
                 ];
                 foreach ($user->usercontainerroles as $usercontainerrole) {
                     /** @var Usercontainerrole $usercontainerrole */
@@ -197,8 +204,16 @@ class LdapGroupImportCommand extends Command implements CronjobInterface {
                     }
                 }
 
-                $UsersTable->patchEntity($user, $data);
+                $user = $UsersTable->patchEntity($user, $data);
                 $UsersTable->save($user);
+                if ($user->hasErrors()) {
+                    Log::error(sprintf(
+                        'LdapGroupImportCommand: Could not save user [%s] %s',
+                        $user->id,
+                        $user->samaccountname
+                    ));
+                    Log::error(json_encode($user->getErrors()));
+                }
             }
 
         }
