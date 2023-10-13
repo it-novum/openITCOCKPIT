@@ -37,7 +37,7 @@ msgstr "Benutzerdefiniertes Grafana-Dashboard konnte nicht gelöscht werden."
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:663
 msgid "Metric not found"
-msgstr ""
+msgstr "Metrik nicht gefunden"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1029
 msgid "Synchronization finished successfully"
@@ -2101,23 +2101,23 @@ msgstr "Kopieren"
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:50
 #: ./src/Template/Automaps/copy.php:46
 msgid "Auto map"
-msgstr ""
+msgstr "Auto Map"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:51
 msgid "Copy user defined Grafana dashboard/s"
-msgstr ""
+msgstr "Kopiere benutzerdefinierte Grafana Dashboards"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:67
 msgid "Source dashboard:"
-msgstr ""
+msgstr "Ziel Dashboard:"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:74
 msgid "Dashboard name"
-msgstr ""
+msgstr "Dashboard Name"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:82
 msgid "Name of the new user defined Grafana dashboard"
-msgstr ""
+msgstr "Name des neuen benutzerdefinierten Grafana Dashboards"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:63
 msgid "Edit user defined Grafana dashboard"
@@ -2274,27 +2274,27 @@ msgstr "Balkendiagramm"
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:72
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:290
 msgid "Stat"
-msgstr ""
+msgstr "Stat"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:75
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:299
 msgid "Gauge"
-msgstr ""
+msgstr "Gauge"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:78
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:308
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:317
 msgid "Bar gauge"
-msgstr ""
+msgstr "Bar gauge"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:81
 msgid "Bar gauge (Retro LCD)"
-msgstr ""
+msgstr "Bar gauge (Retro LCD)"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:84
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:272
 msgid "Time series"
-msgstr ""
+msgstr "Time series"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:99
 msgid "This panel is empty. Start by adding metrics."
@@ -2307,7 +2307,7 @@ msgstr "Neue Metrik hinzufügen"
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:118
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:199
 msgid "Update metric"
-msgstr ""
+msgstr "Metrik aktualisieren"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:129
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:789
@@ -2336,23 +2336,23 @@ msgstr "Panel Einheit"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:263
 msgid "Visualization type"
-msgstr ""
+msgstr "Visualisierungstype"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:318
 msgid "Retro LCD"
-msgstr ""
+msgstr "Retro LCD"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:325
 msgid "Stack series"
-msgstr ""
+msgstr "Stack series"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:327
 msgid "only available for time series and bar charts"
-msgstr ""
+msgstr "nur verfügbar für Zeitreihen oder Balkendiagramm"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:337
 msgid "Off"
-msgstr ""
+msgstr "Aus"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:347
 #: ./src/Template/Automaps/add.php:333
@@ -2362,7 +2362,7 @@ msgstr "Normal"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:356
 msgid "100%"
-msgstr ""
+msgstr "100%"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:363
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:439
@@ -4160,27 +4160,27 @@ msgstr "Höhe"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1080
 msgid "Map background image is not available!"
-msgstr ""
+msgstr "Das Hintergrundbild der Karte ist nicht verfügbar"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1083
 msgid "You can choose a new background or manually remove the orphaned link"
-msgstr ""
+msgstr "Du kannst das neue Hintergrundbild auswählen oder den verwaisten Link löschen"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1087
 msgid " Remove the orphaned link"
-msgstr ""
+msgstr "Verwaisten Link löschen"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1106
 msgid "Remove background from map!"
-msgstr ""
+msgstr "Hintergrundbild der Karte entfernen"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1109
 msgid "If no background image is desired, it can be removed here"
-msgstr ""
+msgstr "Falls kein Hintergrundbild gewünscht ist, kann dieses hier entfernt werden"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1113
 msgid " Remove background"
-msgstr ""
+msgstr "Hintergrundbild entfernen"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1122
 msgid "Choose background image"
@@ -4781,7 +4781,7 @@ msgstr "Vollbildschirm verlassen"
 
 #: ./plugins/MapModule/templates/Mapeditors/view_directive.php:26
 msgid "{0} Map background image is not available!!!"
-msgstr ""
+msgstr "{0} Karten-Hintergrundbild ist nicht verfügbar!!!"
 
 #: ./plugins/MapModule/templates/Maps/add.php:51
 msgid "Create new map"
@@ -5082,7 +5082,7 @@ msgstr "Befehl erfolgreich zur Warteschlange hinzugefügt"
 #: ./plugins/NagiosModule/src/Controller/CmdController.php:173
 #: ./plugins/NagiosModule/src/Controller/CmdController.php:256
 msgid "Commands added successfully to queue"
-msgstr ""
+msgstr "Kommandos wurden erfolgreich zur Warteschlange hinzugefügt"
 
 #: ./plugins/NagiosModule/src/Lib/Menu.php:44
 msgid "API"
@@ -5297,7 +5297,7 @@ msgstr "Nach-Export Kommando ausführen"
 
 #: ./src/Command/GearmanWorkerCommand.php:1504
 msgid "Restarting containerized monitoring engine"
-msgstr ""
+msgstr "Containerisierte Monitoring-Engine wird neu gestartet"
 
 #: ./src/Command/GearmanWorkerCommand.php:1558
 msgid "Verifying new Prometheus configuration"
@@ -5341,23 +5341,23 @@ msgstr "Starte NSTA-Daemon neu"
 
 #: ./src/Command/GearmanWorkerCommand.php:1820
 msgid "Check if Event-Collectd daemon is running"
-msgstr ""
+msgstr "Überprüfe, ob der Event-Collectd-Daemon ausgeführt wird"
 
 #: ./src/Command/GearmanWorkerCommand.php:1834
 msgid "Reloading Event-Collectd daemon"
-msgstr ""
+msgstr "Event-Collectd-Daemon wird neu geladen"
 
 #: ./src/Command/GearmanWorkerCommand.php:1850
 msgid "Restarting Event-Collectd daemon"
-msgstr ""
+msgstr "Event-Collectd-Daemon wird neu gestartet"
 
 #: ./src/Command/HostgroupContainerPermissionsCommand.php:90
 msgid "Perform hostgroup container permission update on hosttemplate: \"{0}\". ContainerId: {1}"
-msgstr ""
+msgstr "Führen Sie eine Aktualisierung der Hostgruppen-Container-Berechtigungen für Hosttemplate durch: \"{0}\". Container-ID: {1}"
 
 #: ./src/Command/HostgroupContainerPermissionsCommand.php:154
 msgid "Perform hostgroup container permission update on host: \"{0}\". ContainerId: {1}"
-msgstr ""
+msgstr "Führen Sie eine Aktualisierung der Hostgruppen-Container-Berechtigungen auf dem Host durch: \"{0}\". Container-ID: {1}"
 
 #: ./src/Command/InstantReportCommand.php:99
 msgid "Never"
@@ -5702,7 +5702,7 @@ msgstr "Push Agent Konfiguration konnte nicht gefunden werden"
 
 #: ./src/Controller/AgentconnectorController.php:349
 msgid "Satellite Push Agent config not found"
-msgstr ""
+msgstr "Die Konfiguration des Satelliten-Push-Agenten wurde nicht gefunden"
 
 #: ./src/Controller/AngularController.php:509
 msgid "You are not permitted to access this object."
@@ -5749,7 +5749,7 @@ msgstr "Deaktiviert"
 
 #: ./src/Controller/AngularController.php:1325
 msgid "Refresh every 2m"
-msgstr ""
+msgstr "Alle 2 Minuten aktualisieren"
 
 #: ./src/Controller/AppController.php:334
 msgid "Permission denied"
@@ -5979,11 +5979,11 @@ msgstr "Aktualisierung der Monitoring Konfiguration wurde gestartet"
 
 #: ./src/Controller/FilterBookmarksController.php:169
 msgid "Filter successfully deleted"
-msgstr ""
+msgstr "Filter wurde erfolgreich gelöscht"
 
 #: ./src/Controller/FilterBookmarksController.php:180
 msgid "Error while deleting filter bookmark"
-msgstr ""
+msgstr "Fehler beim Löschen des Filterlesezeichens"
 
 #: ./src/Controller/HostdependenciesController.php:93
 #: ./src/Controller/HostdependenciesController.php:219
@@ -6104,7 +6104,7 @@ msgstr "Ungültiger Anforderungsparameter"
 #: ./src/Controller/ServicesController.php:3085
 #: .-modules/SLAModule/src/Controller/SlasController.php:590
 msgid "Invalid sla"
-msgstr ""
+msgstr "Ungültige sla"
 
 #: ./src/Controller/HosttemplatesController.php:197
 #: ./src/Controller/HosttemplatesController.php:268
@@ -6544,11 +6544,11 @@ msgstr "<warning>Datei: {0}</warning>"
 
 #: ./src/Model/Entity/FilterBookmark.php:37
 msgid "Filters"
-msgstr ""
+msgstr "Filter"
 
 #: ./src/Model/Entity/FilterBookmark.php:39
 msgid "Favorites"
-msgstr ""
+msgstr "Favoriten"
 
 #: ./src/Model/Entity/Host.php:432
 #: ./src/Model/Entity/Service.php:370
@@ -6783,11 +6783,11 @@ msgstr "Servicezeitspanne"
 
 #: ./src/Model/Table/ChangelogsTable.php:665
 msgid "Host command"
-msgstr ""
+msgstr "Host Kommando"
 
 #: ./src/Model/Table/ChangelogsTable.php:666
 msgid "Service command"
-msgstr ""
+msgstr "Service Kommando"
 
 #: ./src/Model/Table/ChangelogsTable.php:670
 #: ./src/Model/Table/ChangelogsTable.php:678
@@ -6892,11 +6892,11 @@ msgstr "Kontaktgruppen"
 
 #: ./src/Model/Table/ChangelogsTable.php:681
 msgid "Event handler command"
-msgstr ""
+msgstr "Event-Handler Kommando"
 
 #: ./src/Model/Table/ChangelogsTable.php:682
 msgid "Notify period"
-msgstr ""
+msgstr "Benachrichtigungszeitraum"
 
 #: ./src/Model/Table/ChangelogsTable.php:684
 #: ./src/Model/Table/ChangelogsTable.php:699
@@ -7334,7 +7334,7 @@ msgstr "Hostabhängigkeit #{0}"
 #: ./src/Model/Table/HostescalationsTable.php:123
 #: ./src/Model/Table/HostescalationsTable.php:129
 msgid "You have to choose at least one host or one host group."
-msgstr ""
+msgstr "Sie müssen mindestens einen Host oder eine Hostgruppe angeben."
 
 #: ./src/Model/Table/HostescalationsTable.php:135
 #: ./src/Model/Table/HostescalationsTable.php:141
@@ -7553,7 +7553,7 @@ msgstr "Serviceabhängigkeit #{0}"
 #: ./src/Model/Table/ServiceescalationsTable.php:136
 #: ./src/Model/Table/ServiceescalationsTable.php:142
 msgid "You have to choose at least one service or one service group."
-msgstr ""
+msgstr "Sie müssen mindestens ein Service oder eine Servicegruppe angeben."
 
 #: ./src/Model/Table/ServiceescalationsTable.php:713
 msgid "Service escalation #{0}"
@@ -7590,7 +7590,7 @@ msgstr "Agent Service"
 
 #: ./src/Model/Table/ServicesTable.php:3927
 msgid "External service"
-msgstr ""
+msgstr "Externer Service"
 
 #: ./src/Model/Table/ServicetemplategroupsTable.php:98
 msgid "You must select at least one service template."
@@ -7610,7 +7610,7 @@ msgstr "Agent Vorlagen"
 
 #: ./src/Model/Table/ServicetemplatesTable.php:1405
 msgid "External templates"
-msgstr ""
+msgstr "Externe Vorlagen"
 
 #: ./src/Model/Table/SystemdowntimesTable.php:96
 msgid "Please select at least on object."
@@ -7703,19 +7703,19 @@ msgstr "Maximalbetrag beträgt 1000"
 
 #: ./src/Model/Table/UsersTable.php:308
 msgid "The new password can not be the same as the old password is."
-msgstr ""
+msgstr "Das neue Passwort darf nicht mit dem alten Passwort identisch sein."
 
 #: ./src/Model/Table/UsersTable.php:1306
 msgid "Local user"
-msgstr ""
+msgstr "Lokaler Benutzer"
 
 #: ./src/Model/Table/UsersTable.php:1312
 msgid "LDAP user"
-msgstr ""
+msgstr "LDAP Benutzer"
 
 #: ./src/Model/Table/UsersTable.php:1318
 msgid "OAuth user"
-msgstr ""
+msgstr "OAuth Benutzer"
 
 #: ./src/Model/Table/WidgetsTable.php:78
 #: ./src/Model/Table/WidgetsTable.php:84
@@ -7807,7 +7807,7 @@ msgstr "Taktische Übersicht für Hosts"
 
 #: ./src/Model/Table/WidgetsTable.php:329
 msgid "Host status list (extended)"
-msgstr ""
+msgstr "Hoststatus Liste (erweitert)"
 
 #: ./src/Model/Table/WidgetsTable.php:340
 msgid "Service status list"
@@ -7824,7 +7824,7 @@ msgstr "Taktische Übersicht der Services"
 
 #: ./src/Model/Table/WidgetsTable.php:364
 msgid "Service status list (extended)"
-msgstr ""
+msgstr "Servicestatus Liste (erweitert)"
 
 #: ./src/Model/Table/WidgetsTable.php:375
 #: ./src/Template/Automaps/add.php:62
@@ -7974,12 +7974,12 @@ msgstr "Überwache Deine VMware Horizon Virtual Desktop Infrastruktur"
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:20
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:41
 msgid "VMware Snapshot"
-msgstr ""
+msgstr "VMware Snapshot"
 
 #: ./src/Model/Table/WizardAssignmentsTable.php:303
 #: .-modules/VMwareSnapshotModule/src/Lib/Wizards.php:40
 msgid "Monitor your VMware snapshots to avoid performance issues"
-msgstr ""
+msgstr "Überwachen Sie Ihre VMware-Snapshots, um Leistungsprobleme zu vermeiden"
 
 #: ./src/Model/Table/WizardAssignmentsTable.php:309
 #: .-modules/DB2Module/src/Lib/Wizards.php:38
@@ -8602,11 +8602,11 @@ msgstr "Informationen zur Fehlersuche"
 
 #: ./src/Template/Administrators/debug.php:56
 msgid "Set XDEBUG_TRIGGER cookie"
-msgstr ""
+msgstr "Setzen Sie das Cookie XDEBUG_TRIGGER"
 
 #: ./src/Template/Administrators/debug.php:60
 msgid "Remove XDEBUG_TRIGGER cookie"
-msgstr ""
+msgstr "Entfernen Sie das XDEBUG_TRIGGER-Cookie"
 
 #: ./src/Template/Administrators/debug.php:64
 msgid "Show SQL query log"
@@ -8625,17 +8625,17 @@ msgstr "Konnte keine Verbindung zum Gearman Job Server herstellen! Es werden kei
 #: ./src/Template/Administrators/debug.php:88
 #: ./src/Template/Packetmanager/index.php:61
 msgid "Ubuntu Bionic 18.04 is end of life soon!"
-msgstr ""
+msgstr "Ubuntu Bionic 18.04 hat bald das Ende seines Supports!"
 
 #: ./src/Template/Administrators/debug.php:90
 #: ./src/Template/Packetmanager/index.php:63
 msgid "Official end of life of Ubuntu Bionic scheduled for April 2023."
-msgstr ""
+msgstr "Das offizielle Ende des Supports von Ubuntu Bionic ist für April 2023 geplant."
 
 #: ./src/Template/Administrators/debug.php:91
 #: ./src/Template/Packetmanager/index.php:64
 msgid "Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Ubuntu Bionic. Please update to Ubuntu Focal to receive further updates."
-msgstr ""
+msgstr "Daher wird openITCOCKPIT 4.5.5 eine der letzten Veröffentlichungen für Ubuntu Bionic sein. Bitte aktualisieren Sie auf Ubuntu Focal, um weitere Updates zu erhalten."
 
 #: ./src/Template/Administrators/debug.php:93
 #: ./src/Template/Administrators/debug.php:107
@@ -8647,17 +8647,17 @@ msgstr "Brauchen Sie Hilfe bei der Aktualisierung Ihres Systems? Bitte zögern S
 #: ./src/Template/Administrators/debug.php:102
 #: ./src/Template/Packetmanager/index.php:75
 msgid "Debian Buster 10 end of life!"
-msgstr ""
+msgstr "Support für Debian Buster ended!"
 
 #: ./src/Template/Administrators/debug.php:104
 #: ./src/Template/Packetmanager/index.php:77
 msgid "Debian Buster is not supported by the Debian security team anymore!"
-msgstr ""
+msgstr "Debian Buster wird vom Debian-Sicherheitsteam nicht mehr unterstützt!"
 
 #: ./src/Template/Administrators/debug.php:105
 #: ./src/Template/Packetmanager/index.php:78
 msgid "Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Debian Buster. Please update to Debian Bullseye to receive further updates."
-msgstr ""
+msgstr "Daher wird openITCOCKPIT 4.5.5 eine der letzten Veröffentlichungen für Debian Buster sein. Bitte aktualisieren Sie auf Debian Bullseye, um weitere Updates zu erhalten."
 
 #: ./src/Template/Administrators/debug.php:118
 msgid "Interface information"
@@ -8800,7 +8800,7 @@ msgstr "Push-Benachrichtigungsdienst"
 
 #: ./src/Template/Administrators/debug.php:376
 msgid "Nodejs Backend"
-msgstr ""
+msgstr "Nodejs-Backend"
 
 #: ./src/Template/Administrators/debug.php:414
 msgid "Server information"
@@ -8844,7 +8844,7 @@ msgstr "Kernel"
 
 #: ./src/Template/Administrators/debug.php:436
 msgid "Containerized"
-msgstr ""
+msgstr "Containerisiert"
 
 #: ./src/Template/Administrators/debug.php:439
 msgid "PHP version"
@@ -9058,11 +9058,11 @@ msgstr "Protokoll kürzen"
 
 #: ./src/Template/Administrators/querylog.php:76
 msgid "Enable query logging"
-msgstr ""
+msgstr "Aktivieren Sie die Abfrageprotokollierung"
 
 #: ./src/Template/Administrators/querylog.php:77
 msgid "It is very important to set {0} to {1} in the file"
-msgstr ""
+msgstr "Es ist sehr wichtig, {0} in der Datei auf {1} zu setzen"
 
 #: ./src/Template/Administrators/querylog.php:88
 msgid "Connection error"
@@ -9282,7 +9282,7 @@ msgstr "Agent Prüfungsübersicht"
 #: ./src/Template/Agentchecks/index.php:60
 #: .-modules/CheckmkModule/templates/Mkchecks/index.php:60
 msgid "Go to Servicetemplates"
-msgstr ""
+msgstr "Gehe zu Servicevorlagen"
 
 #: ./src/Template/Agentchecks/index.php:92
 msgid "Filter by agent check name"
@@ -9398,7 +9398,7 @@ msgstr "Ausführung des Zertifikatsaustausch"
 
 #: ./src/Template/Agentconnector/autotls.php:127
 msgid "(via remote satellite system)"
-msgstr ""
+msgstr "über Remote-Satellitensystem)"
 
 #: ./src/Template/Agentconnector/autotls.php:157
 #: ./src/Template/MessagesOtd/add.php:198
@@ -9556,11 +9556,11 @@ msgstr "Externe Adresse des openITCOCKPIT Servers."
 
 #: ./src/Template/Agentconnector/config.php:310
 msgid "openITCOCKPIT Satellite Server Address"
-msgstr ""
+msgstr "Adresse des openITCOCKPIT-Satellitenservers"
 
 #: ./src/Template/Agentconnector/config.php:321
 msgid "External address of your openITCOCKPIT Satellite Server."
-msgstr ""
+msgstr "Externe Adresse Ihres openITCOCKPIT Satellite Servers."
 
 #: ./src/Template/Agentconnector/config.php:359
 msgid "HTTP Proxy"
@@ -9790,7 +9790,7 @@ msgstr "Wählen Sie den zu überwachenden Dienst."
 #: ./src/Template/Agentconnector/create_services.php:140
 #: ./src/Template/Agentconnector/select_agent.php:124
 msgid "Waiting for Agent data."
-msgstr ""
+msgstr "Warten auf Agentendaten."
 
 #: ./src/Template/Agentconnector/create_services.php:194
 msgid "There are no new services available"
@@ -10003,7 +10003,7 @@ msgstr "Push"
 #: ./src/Template/Agentconnector/push.php:81
 #: ./src/Template/Agentconnector/push_satellite.php:106
 msgid "Push via Satellite (Import Module)"
-msgstr ""
+msgstr "Push via Satellit (Importmodul)"
 
 #: ./src/Template/Agentconnector/pull.php:117
 #: ./src/Template/Agentconnector/push.php:117
@@ -10174,23 +10174,23 @@ msgstr "Zeige empfangene Daten"
 
 #: ./src/Template/Agentconnector/push_satellite.php:42
 msgid "Warning! You also need to delete the corresponding record on the Satellite System!"
-msgstr ""
+msgstr "Warnung! Sie müssen auch den entsprechenden Eintrag auf dem Satellitensystem löschen!"
 
 #: ./src/Template/Agentconnector/push_satellite.php:57
 msgid "Information may be not complete"
-msgstr ""
+msgstr "Die Informationen sind möglicherweise nicht vollständig"
 
 #: ./src/Template/Agentconnector/push_satellite.php:60
 msgid "This list will only show openITCOCKPIT Monitoring Agents, which are running in push mode and are related to the Import Module."
-msgstr ""
+msgstr "In dieser Liste werden nur openITCOCKPIT Monitoring Agents angezeigt, die im Push-Modus laufen und mit dem Importmodul in Zusammenhang stehen."
 
 #: ./src/Template/Agentconnector/push_satellite.php:61
 msgid "In case the Import Module is not in use, this list is probably empty."
-msgstr ""
+msgstr "Falls das Importmodul nicht verwendet wird, ist diese Liste wahrscheinlich leer."
 
 #: ./src/Template/Agentconnector/push_satellite.php:75
 msgid "Push mode via a Satellite system"
-msgstr ""
+msgstr "Push-Modus über ein Satellitensystem"
 
 #: ./src/Template/Agentconnector/select_agent.php:106
 msgid "Select Agent to create host assignment"
@@ -10433,11 +10433,11 @@ msgstr "In die Zwischenablage kopieren"
 
 #: ./src/Template/Angular/columns_config_import.php:35
 msgid "Column config is not for this table"
-msgstr ""
+msgstr "Die Spaltenkonfiguration gilt nicht für diese Tabelle"
 
 #: ./src/Template/Angular/columns_config_import.php:35
 msgid "Unable to import config"
-msgstr ""
+msgstr "Konfiguration konnte nicht importiert werden"
 
 #: ./src/Template/Angular/columns_config_import.php:40
 msgid "Import column configuration"
@@ -11261,27 +11261,27 @@ msgstr "Die Datei {{queryHandler.path}} existiert nicht"
 
 #: ./src/Template/Angular/regex_helper_tooltip.php:26
 msgid "RegEx Examples"
-msgstr ""
+msgstr "RegEx-Beispiele"
 
 #: ./src/Template/Angular/regex_helper_tooltip.php:31
 msgid "Match anything regex"
-msgstr ""
+msgstr "Passt zu allem RegEx"
 
 #: ./src/Template/Angular/regex_helper_tooltip.php:36
 msgid "Match any character"
-msgstr ""
+msgstr "Passt zu jedem Zeichen"
 
 #: ./src/Template/Angular/regex_helper_tooltip.php:41
 msgid "Match the beginning of a string"
-msgstr ""
+msgstr "Passt auf Anfang von einer Zeichenkette"
 
 #: ./src/Template/Angular/regex_helper_tooltip.php:46
 msgid "Match the end of a string"
-msgstr ""
+msgstr "Passt auf Ende von einer Zeichenkette"
 
 #: ./src/Template/Angular/regex_helper_tooltip.php:51
 msgid "Match either of the sequences"
-msgstr ""
+msgstr "Passt auf eines des Abschnitts"
 
 #: ./src/Template/Angular/reload_required.php:7
 msgid "Reload of interface required"
@@ -11557,7 +11557,7 @@ msgstr "Dienst push_notification läuft nicht!"
 
 #: ./src/Template/Angular/system_health.php:190
 msgid "Nodejs backend is not running"
-msgstr ""
+msgstr "Das Nodejs-Backend läuft nicht"
 
 #: ./src/Template/Angular/system_health.php:199
 #: ./src/Template/Angular/system_health_menu.php:200
@@ -11571,11 +11571,11 @@ msgstr "Synchronisierungsstatus"
 
 #: ./src/Template/Angular/system_health.php:212
 msgid "failed"
-msgstr ""
+msgstr "fehlgeschlagen"
 
 #: ./src/Template/Angular/system_health.php:214
 msgid "last seen"
-msgstr ""
+msgstr "zuletzt geprüft"
 
 #: ./src/Template/Angular/system_health.php:224
 #: ./src/Template/Angular/system_health_menu.php:215
@@ -11739,7 +11739,7 @@ msgstr "Filter nach Servicename"
 
 #: ./src/Template/Angular/wizard_interface_filter.php:37
 msgid "Filter by interface name"
-msgstr ""
+msgstr "Filtern Sie nach Schnittstellennamen"
 
 #: ./src/Template/Automaps/add.php:34
 #: ./src/Template/Automaps/copy.php:34
@@ -11986,19 +11986,19 @@ msgstr "Diese Option hat nur ein Effekt wenn \"Benutzer Pagination\" an ist"
 
 #: ./src/Template/Automaps/copy.php:47
 msgid "Copy auto map/s"
-msgstr ""
+msgstr "Auto-Map(s) kopieren"
 
 #: ./src/Template/Automaps/copy.php:63
 msgid "Source auto map:"
-msgstr ""
+msgstr "Quelle Auto-Map:"
 
 #: ./src/Template/Automaps/copy.php:70
 msgid "Automap name"
-msgstr ""
+msgstr "Auto-Map Name"
 
 #: ./src/Template/Automaps/copy.php:78
 msgid "Name of the new auto map"
-msgstr ""
+msgstr "Name der neuen Auto-Map"
 
 #: ./src/Template/Automaps/edit.php:48
 msgid "Edit auto map: "
@@ -12151,7 +12151,7 @@ msgstr "Diesem Knoten sind keine Hosts zugeordnet"
 
 #: ./src/Template/Browsers/index.php:151
 msgid "No services associated with this node"
-msgstr ""
+msgstr "Mit diesem Knoten sind keine Service verknüpft"
 
 #: ./src/Template/Browsers/index.php:206
 msgid "browser"
@@ -12159,7 +12159,7 @@ msgstr "Browser"
 
 #: ./src/Template/Browsers/index.php:223
 msgid "Fields"
-msgstr ""
+msgstr "Felder"
 
 #: ./src/Template/Browsers/index.php:250
 #: ./src/Template/Browsers/index.php:273
@@ -12188,7 +12188,7 @@ msgstr ""
 #: ./src/Template/Services/not_monitored.php:109
 #: ./src/Template/Services/not_monitored.php:132
 msgid "Enable RegEx"
-msgstr ""
+msgstr "Aktiviere RegEx"
 
 #: ./src/Template/Browsers/index.php:267
 #: ./src/Template/Dashboards/tactical_overview_hosts_widget.php:224
@@ -12229,7 +12229,7 @@ msgstr "Filter nach Tags"
 #: ./src/Template/Browsers/index.php:324
 #: ./src/Template/Hosts/index.php:259
 msgid "Filter by host types"
-msgstr ""
+msgstr "Filtern nach Hosttypen"
 
 #: ./src/Template/Browsers/index.php:345
 #: ./src/Template/Dashboards/host_status_overview_widget.php:76
@@ -12466,7 +12466,7 @@ msgstr "Hostnotizen"
 #: ./src/Template/Hosts/index.php:559
 #: ./src/Template/Hosts/index.php:731
 msgid "Host type"
-msgstr ""
+msgstr "Hosttyp"
 
 #: ./src/Template/Browsers/index.php:522
 #: ./src/Template/Hosts/index.php:593
@@ -12478,7 +12478,7 @@ msgstr "Teile Konfiguration"
 #: ./src/Template/Hosts/index.php:596
 #: ./src/Template/Services/index.php:608
 msgid "Share"
-msgstr ""
+msgstr "Teile"
 
 #: ./src/Template/Browsers/index.php:529
 #: ./src/Template/Hosts/index.php:600
@@ -12525,7 +12525,7 @@ msgstr "Klebrige (Sticky) Bestätigung"
 #: ./src/Template/Services/index.php:870
 #: ./src/Template/Services/service_list.php:316
 msgid "Notifications disabled"
-msgstr ""
+msgstr "Benachrichtigungen deaktiviert"
 
 #: ./src/Template/Browsers/index.php:740
 #: ./src/Template/Hosts/index.php:811
@@ -12716,17 +12716,17 @@ msgstr "Deaktivieren"
 
 #: ./src/Template/Changelogs/entity.php:173
 msgid "Show services"
-msgstr ""
+msgstr "Zeige Services"
 
 #: ./src/Template/Changelogs/index.php:63
 #: .-modules/ImportModule/templates/ImportChangelogs/index.php:39
 msgid "Main overview"
-msgstr ""
+msgstr "Hauptübersicht"
 
 #: ./src/Template/Changelogs/index.php:70
 #: .-modules/ImportModule/templates/ImportChangelogs/index.php:46
 msgid "Import Module Changes"
-msgstr ""
+msgstr "Änderungen des Importmoduls"
 
 #: ./src/Template/Changelogs/index.php:140
 #: .-modules/ImportModule/templates/Configurationitems/import.php:132
@@ -12911,12 +12911,12 @@ msgstr "Anzahl der definierten Argumente:"
 #: ./src/Template/Commands/add.php:341
 #: ./src/Template/Commands/edit.php:346
 msgid "Used in command line, but missing in arguments definition"
-msgstr ""
+msgstr "Wird in der Befehlszeile verwendet, fehlt jedoch in der Argumentdefinition"
 
 #: ./src/Template/Commands/add.php:348
 #: ./src/Template/Commands/edit.php:353
 msgid "Defined in arguments definition, but not used in command line"
-msgstr ""
+msgstr "In der Argumentdefinition definiert, aber nicht in der Befehlszeile verwendet"
 
 #: ./src/Template/Commands/add.php:356
 #: ./src/Template/Commands/edit.php:361
@@ -13123,7 +13123,7 @@ msgstr "Lokaler Carbon C Relay Port"
 
 #: ./src/Template/ConfigurationFiles/graphing_docker.php:253
 msgid "Enable Docker userland proxy"
-msgstr ""
+msgstr "Aktivieren Sie den Docker-Userland-Proxy"
 
 #: ./src/Template/ConfigurationFiles/graphing_docker.php:264
 msgid "Network configuration"
@@ -13149,11 +13149,11 @@ msgstr "Konfigurationsdatei Editor"
 #: ./src/Template/ConfigurationFiles/index.php:66
 #: ./src/Template/Packetmanager/index.php:95
 msgid "Containerized installation"
-msgstr ""
+msgstr "Containerisierte Installation"
 
 #: ./src/Template/ConfigurationFiles/index.php:69
 msgid "Containerized installations are configured through environment variables"
-msgstr ""
+msgstr "Containerisierte Installationen werden über Umgebungsvariablen konfiguriert"
 
 #: ./src/Template/ConfigurationFiles/index.php:81
 msgid "File name"
@@ -13727,11 +13727,11 @@ msgstr "Bearbeite Kontakt"
 
 #: ./src/Template/Contacts/edit.php:89
 msgid "Required containers"
-msgstr ""
+msgstr "Erforderliche Container"
 
 #: ./src/Template/Contacts/edit.php:111
 msgid "This contact is used by other configuration objects. Deleting these containers would result in a corrupted configuration."
-msgstr ""
+msgstr "Dieser Kontakt wird von anderen Konfigurationsobjekten verwendet. Das Löschen dieser Container würde zu einer fehlerhaften Konfiguration führen."
 
 #: ./src/Template/Contacts/edit.php:556
 msgid "Update contact"
@@ -14392,17 +14392,17 @@ msgstr "Abgelaufene ausblenden"
 #: ./src/Template/Dashboards/hosts_status_list_extended_widget.php:75
 #: ./src/Template/Dashboards/services_status_list_extended_widget.php:79
 msgid "Downtime comment"
-msgstr ""
+msgstr "Kommentar zur Wartungszeit"
 
 #: ./src/Template/Dashboards/hosts_status_list_extended_widget.php:78
 #: ./src/Template/Dashboards/services_status_list_extended_widget.php:82
 msgid "Acknowledgement comment"
-msgstr ""
+msgstr "Bestätigungskommentar"
 
 #: ./src/Template/Dashboards/hosts_status_list_extended_widget.php:138
 #: ./src/Template/Dashboards/services_status_list_extended_widget.php:151
 msgid "Show more information"
-msgstr ""
+msgstr "Weitere Informationen anzeigen"
 
 #: ./src/Template/Dashboards/hosts_status_list_extended_widget.php:189
 #: ./src/Template/Dashboards/hosts_status_list_widget.php:163
@@ -14687,24 +14687,24 @@ msgstr "Filter nach Serviceoutput"
 #: ./src/Template/Dashboards/services_status_list_widget.php:219
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:100
 msgid "Filter by host tags"
-msgstr ""
+msgstr "Nach Host-Tags filtern"
 
 #: ./src/Template/Dashboards/services_status_list_extended_widget.php:265
 #: ./src/Template/Dashboards/services_status_list_widget.php:239
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:123
 msgid "Filter by excluded host tags"
-msgstr ""
+msgstr "Filtern Sie nach ausgeschlossenen Host-Tags"
 
 #: ./src/Template/Dashboards/services_status_list_extended_widget.php:289
 #: ./src/Template/Dashboards/services_status_list_widget.php:263
 msgid "Filter by service tags"
-msgstr ""
+msgstr "Filtern Sie nach Service-Tags"
 
 #: ./src/Template/Dashboards/services_status_list_extended_widget.php:309
 #: ./src/Template/Dashboards/services_status_list_widget.php:283
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:171
 msgid "Filter by excluded service tags"
-msgstr ""
+msgstr "Filtern Sie nach ausgeschlossenen Service-Tags"
 
 #: ./src/Template/Dashboards/services_status_list_extended_widget.php:553
 #: ./src/Template/Services/browser.php:397
@@ -15227,7 +15227,7 @@ msgstr "Erstelle Container Wartungszeit"
 #: ./src/Template/Systemdowntimes/service.php:155
 #: .-modules/DistributeModule/templates/Satellites/downtime.php:155
 msgid "Create satellite downtime"
-msgstr ""
+msgstr "Erstellen Sie Wartungszeit für Satelliten"
 
 #: ./src/Template/Downtimes/host.php:201
 #: ./src/Template/Downtimes/service.php:214
@@ -15284,7 +15284,7 @@ msgstr "Es konnte keine Verbindung zum Gearman Job Server hergestellt werden"
 
 #: ./src/Template/Exports/index.php:75
 msgid "Gearman Worker background daemon is not running. Please contact your system administrator."
-msgstr ""
+msgstr "Gearman Worker-Hintergrunddaemon läuft nicht. Bitte kontaktieren Sie Ihren Systemadministrator."
 
 #: ./src/Template/Exports/index.php:94
 msgid "Create backup of current configuration"
@@ -15342,41 +15342,41 @@ msgstr "Starte Aktualisierung"
 #: ./src/Template/FilterBookmarks/directive.php:160
 #: ./src/Template/FilterBookmarks/directive.php:218
 msgid "Edit bookmark"
-msgstr ""
+msgstr "Lesezeichen bearbeiten"
 
 #: ./src/Template/FilterBookmarks/directive.php:59
 msgid "Share filter"
-msgstr ""
+msgstr "Filter teilen"
 
 #: ./src/Template/FilterBookmarks/directive.php:66
 msgid "Delete current filter"
-msgstr ""
+msgstr "Aktuellen Filter löschen"
 
 #: ./src/Template/FilterBookmarks/directive.php:71
 msgid "Update filter"
-msgstr ""
+msgstr "Filter aktualisieren"
 
 #: ./src/Template/FilterBookmarks/directive.php:78
 msgid "Save as new filter"
-msgstr ""
+msgstr "Als neuen Filter speichern"
 
 #: ./src/Template/FilterBookmarks/directive.php:123
 msgid "Bookmark URL"
-msgstr ""
+msgstr "Lesezeichen-URL"
 
 #: ./src/Template/FilterBookmarks/directive.php:195
 #: ./src/Template/FilterBookmarks/directive.php:253
 msgid "Add to favorites"
-msgstr ""
+msgstr "Zu den Favoriten hinzufügen"
 
 #: ./src/Template/FilterBookmarks/directive.php:203
 #: .-modules/CustomalertModule/templates/CustomalertRules/edit.php:259
 msgid "Update"
-msgstr ""
+msgstr "Aktualisieren"
 
 #: ./src/Template/FilterBookmarks/directive.php:261
 msgid "Create bookmark"
-msgstr ""
+msgstr "Lesezeichen erstellen"
 
 #: ./src/Template/Hostchecks/index.php:39
 #: ./src/Template/Servicechecks/index.php:39
@@ -15703,7 +15703,7 @@ msgstr "Sie können entweder nach  <b>\"Host\"</b> oder <b>\"ausgeschlossenem Ho
 
 #: ./src/Template/Hostescalations/index.php:112
 msgid "Filter by excluded host"
-msgstr ""
+msgstr "Filtern Sie nach ausgeschlossenem Host"
 
 #: ./src/Template/Hostescalations/index.php:140
 msgid "You can either search for  <b>\"host group\"</b> OR <b>\"excluded host group\"</b>.  Opposing Field will be reset automatically"
@@ -15818,15 +15818,15 @@ msgstr "Hosts, die aufgrund von Containerberechtigungen nicht der ausgewählten 
 
 #: ./src/Template/Hostgroups/copy.php:47
 msgid "Copy host group/s"
-msgstr ""
+msgstr "Hostgruppe(n) kopieren"
 
 #: ./src/Template/Hostgroups/copy.php:63
 msgid "Source host group:"
-msgstr ""
+msgstr "Quellhostgruppe:"
 
 #: ./src/Template/Hostgroups/copy.php:78
 msgid "Name of the new host group"
-msgstr ""
+msgstr "Name der neuen Hostgruppe"
 
 #: ./src/Template/Hostgroups/edit.php:47
 msgid "Edit host group:"
@@ -15876,7 +15876,7 @@ msgstr "Liste als PDF"
 #: ./src/Template/Servicegroups/index.php:272
 #: ./src/Template/Services/index.php:1095
 msgid "List as CSV"
-msgstr ""
+msgstr "Liste als CSV"
 
 #: ./src/Template/Hostgroups/pdf/list_to_pdf.php:70
 msgid "Number of Hostgroups: "
@@ -16364,7 +16364,7 @@ msgstr "Bevor Sie den Host über Prometheus abfragen können, müssen Sie die Mo
 #: .-modules/SLAModule/templates/Slas/hosts.php:33
 #: .-modules/SLAModule/templates/Slas/view_details.php:41
 msgid "Service Level Agreement"
-msgstr ""
+msgstr "Service-Level-Vereinbarung"
 
 #: ./src/Template/Hosts/add.php:1036
 #: ./src/Template/Hosts/add.php:1039
@@ -16382,12 +16382,12 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:483
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1039
 msgid "Service class"
-msgstr ""
+msgstr "Serviceklasse"
 
 #: ./src/Template/Hosts/add.php:1061
 #: ./src/Template/Hosts/edit.php:1109
 msgid "You can define service levels for this host."
-msgstr ""
+msgstr "Sie können Servicelevel für diesen Host definieren."
 
 #: ./src/Template/Hosts/add.php:1084
 msgid "Create host and setup agent"
@@ -16442,12 +16442,12 @@ msgstr "ServiceNow"
 
 #: ./src/Template/Hosts/browser.php:120
 msgid "CMDB"
-msgstr ""
+msgstr "CMDB"
 
 #: ./src/Template/Hosts/browser.php:142
 #: ./src/Template/Services/browser.php:132
 msgid "Not available"
-msgstr ""
+msgstr "Nicht verfügbar"
 
 #: ./src/Template/Hosts/browser.php:289
 msgid "This host is currently disabled!"
@@ -16582,7 +16582,7 @@ msgstr "Ausfälle"
 #: ./src/Template/Hosts/browser.php:1031
 #: ./src/Template/Services/browser.php:1208
 msgid "\n                                                No\n                                                data\n                                                available\n                                                !"
-msgstr ""
+msgstr "\n                                                Keine\n                                                Daten\n                                                verfügbar\n                                                !"
 
 #: ./src/Template/Hosts/browser.php:1045
 #: ./src/Template/Services/browser.php:1223
@@ -16638,11 +16638,11 @@ msgstr "Keine Berechtigungen"
 
 #: ./src/Template/Hosts/browser.php:1186
 msgid "Problem with host detected."
-msgstr ""
+msgstr "Problem mit dem Host erkannt."
 
 #: ./src/Template/Hosts/browser.php:1190
 msgid "Services output may not as expected!"
-msgstr ""
+msgstr "Die Ausgabe des Services entspricht möglicherweise nicht den Erwartungen!"
 
 #: ./src/Template/Hosts/browser.php:1203
 #: ./src/Template/Services/service_list.php:138
@@ -16868,11 +16868,11 @@ msgstr "Aktualisiere Teilen"
 #: ./src/Template/Hosts/used_by.php:121
 #: ./src/Template/Services/used_by.php:113
 msgid "Eventcorrelations"
-msgstr ""
+msgstr "Ereigniskorrelationen"
 
 #: ./src/Template/Hosts/used_by.php:178
 msgid "This host is not used by any object"
-msgstr ""
+msgstr "Dieser Host wird von keinem Objekt verwendet"
 
 #: ./src/Template/Hosttemplates/add.php:48
 msgid "Create new host template"
@@ -16909,7 +16909,7 @@ msgstr "Wenn diese Option aktiviert ist, prüft das System, ob passive Prüfunge
 #: ./src/Template/Hosttemplates/add.php:790
 #: ./src/Template/Hosttemplates/edit.php:784
 msgid "You can define service levels for all hosts using this host template."
-msgstr ""
+msgstr "Mithilfe dieser Host-Vorlage können Sie Servicelevel für alle Hosts definieren."
 
 #: ./src/Template/Hosttemplates/add.php:809
 msgid "Create host template"
@@ -17383,23 +17383,23 @@ msgstr "Ablaufdauer (in Tagen)"
 
 #: ./src/Template/Metrics/info.php:35
 msgid "{0} metrics"
-msgstr ""
+msgstr "{0} Metriken"
 
 #: ./src/Template/Metrics/info.php:48
 msgid "Prometheus metrics export of {0} internal metrics"
-msgstr ""
+msgstr "Prometheus-Metrikexport von {0} internen Metriken"
 
 #: ./src/Template/Metrics/info.php:58
 msgid "This Prometheus Exporter can be used to monitor internal metrics of {0} with a second instance of {1} or with Prometheus."
-msgstr ""
+msgstr "Dieser Prometheus-Exporter kann verwendet werden, um interne Metriken von {0} mit einer zweiten Instanz von {1} oder mit Prometheus zu überwachen."
 
 #: ./src/Template/Metrics/info.php:63
 msgid "How to use"
-msgstr ""
+msgstr "Wie benutzt man"
 
 #: ./src/Template/Metrics/info.php:66
 msgid "This exporter can be scraped by any Prometheus compatible client."
-msgstr ""
+msgstr "Dieser Exporter kann von jedem Prometheus-kompatiblen Client gescrapt werden."
 
 #: ./src/Template/Metrics/info.php:72
 #: .-modules/PrometheusModule/templates/PrometheusExporters/add.php:149
@@ -17409,11 +17409,11 @@ msgstr "Metrik-Pfad"
 
 #: ./src/Template/Metrics/info.php:75
 msgid "Full path"
-msgstr ""
+msgstr "Vollständigen Pfad"
 
 #: ./src/Template/Metrics/info.php:80
 msgid "Additional config"
-msgstr ""
+msgstr "Zusätzliche Konfiguration"
 
 #: ./src/Template/Metrics/info.php:96
 #: .-modules/PrometheusModule/templates/PrometheusQuery/edit_service.php:65
@@ -17423,7 +17423,7 @@ msgstr "Verfügbare Metriken"
 
 #: ./src/Template/Metrics/info.php:99
 msgid "This list shows all metrics that are exported."
-msgstr ""
+msgstr "In dieser Liste werden alle Metriken angezeigt, die exportiert werden."
 
 #: ./src/Template/Nagiostats/index.php:34
 #: ./src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:565
@@ -17562,11 +17562,11 @@ msgstr "Paketmanager"
 
 #: ./src/Template/Packetmanager/index.php:98
 msgid "Your installation of {0} is running in a container based environment like Docker."
-msgstr ""
+msgstr "Ihre Installation von {0} wird in einer Container-basierten Umgebung wie Docker ausgeführt."
 
 #: ./src/Template/Packetmanager/index.php:99
 msgid "Therefore all available module are installed by default."
-msgstr ""
+msgstr "Daher werden standardmäßig alle verfügbaren Module installiert."
 
 #: ./src/Template/Packetmanager/index.php:112
 msgid "Packagemanager"
@@ -17608,15 +17608,15 @@ msgstr "Ein Angebot anfordern"
 
 #: ./src/Template/Packetmanager/index.php:350
 msgid "Blog"
-msgstr ""
+msgstr "Blog"
 
 #: ./src/Template/Packetmanager/index.php:353
 msgid "News about IT monitoring from the experts behind openITCOCKPIT "
-msgstr ""
+msgstr "Neuigkeiten zum Thema IT-Monitoring von den Experten hinter openITCOCKPIT "
 
 #: ./src/Template/Packetmanager/index.php:356
 msgid "Visit our blog for more details:"
-msgstr ""
+msgstr "Besuchen Sie unseren Blog für weitere Details:"
 
 #: ./src/Template/Packetmanager/index.php:369
 msgid "Latest version"
@@ -17846,7 +17846,7 @@ msgstr "Bearbeite API-Key"
 
 #: ./src/Template/Profile/edit_apikey.php:75
 msgid "To transfer the API key to your mobile device, scan the QR code."
-msgstr ""
+msgstr "Um den API-Schlüssel auf Ihr Mobilgerät zu übertragen, scannen Sie den QR-Code."
 
 #: ./src/Template/Proxy/index.php:34
 #: ./src/Template/Proxy/index.php:47
@@ -18000,7 +18000,7 @@ msgstr "Ausgeschlossene Servicegruppen"
 #: ./src/Template/Serviceescalations/add.php:179
 #: ./src/Template/Serviceescalations/edit.php:179
 msgid "Excluded Services"
-msgstr ""
+msgstr "Ausgeschlossene Services"
 
 #: ./src/Template/Serviceescalations/add.php:236
 #: ./src/Template/Serviceescalations/edit.php:235
@@ -18096,15 +18096,15 @@ msgstr "An Servicegruppe anhängen"
 
 #: ./src/Template/Servicegroups/copy.php:47
 msgid "Copy service group/s"
-msgstr ""
+msgstr "Servicegruppe(n) kopieren"
 
 #: ./src/Template/Servicegroups/copy.php:63
 msgid "Source service group:"
-msgstr ""
+msgstr "Quellservicegruppe:"
 
 #: ./src/Template/Servicegroups/copy.php:78
 msgid "Name of the new service group"
-msgstr ""
+msgstr "Name der neuen Servicegruppe"
 
 #: ./src/Template/Servicegroups/edit.php:47
 msgid "Edit service group:"
@@ -18272,7 +18272,7 @@ msgstr "Service Informationen"
 #: ./src/Template/Services/browser.php:110
 #: .-modules/CustomalertModule/templates/Customalerts/service_history.php:15
 msgid "Custom alerts"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungen"
 
 #: ./src/Template/Services/browser.php:284
 msgid "This service is currently disabled!"
@@ -18326,7 +18326,7 @@ msgstr "Unbekannt (weich)"
 
 #: ./src/Template/Services/browser.php:1309
 msgid "Synchronize times for timeline and service graph"
-msgstr ""
+msgstr "Synchronisieren Sie Zeiten für Zeitleiste und Servicediagramm"
 
 #: ./src/Template/Services/browser.php:1369
 msgid "graphs"
@@ -18334,7 +18334,7 @@ msgstr "Graphen"
 
 #: ./src/Template/Services/browser.php:1381
 msgid "Smooth"
-msgstr ""
+msgstr "Glatt"
 
 #: ./src/Template/Services/browser.php:1393
 msgid "Show data points"
@@ -18407,7 +18407,7 @@ msgstr "Der Name der CHECK_MK-Service kann nicht geändert werden."
 
 #: ./src/Template/Services/edit.php:203
 msgid "The name of external monitored services has to be changed on the external system itself."
-msgstr ""
+msgstr "Der Name externer überwachter Dienste muss auf dem externen System selbst geändert werden."
 
 #: ./src/Template/Services/edit.php:1119
 msgid "Update service"
@@ -18419,11 +18419,11 @@ msgstr "Filtern nach Servicebeschreibung"
 
 #: ./src/Template/Services/index.php:238
 msgid "Filter by service types"
-msgstr ""
+msgstr "Filtern Sie nach Servicetypen"
 
 #: ./src/Template/Services/index.php:562
 msgid "Charts"
-msgstr ""
+msgstr "Diagramme"
 
 #: ./src/Template/Services/index.php:567
 #: ./src/Template/Services/index.php:715
@@ -18480,7 +18480,7 @@ msgstr "Servicename"
 
 #: ./src/Template/Services/used_by.php:169
 msgid "This service is not used by any object"
-msgstr ""
+msgstr "Dieser Dienst wird von keinem Objekt genutzt"
 
 #: ./src/Template/Servicetemplategroups/add.php:34
 #: ./src/Template/Servicetemplategroups/add.php:62
@@ -18590,11 +18590,11 @@ msgstr "Zu Servicevorlagengruppe zuweisen"
 
 #: ./src/Template/Servicetemplategroups/copy.php:47
 msgid "Copy service template group/s"
-msgstr ""
+msgstr "Servicevorlagengruppe(n) kopieren"
 
 #: ./src/Template/Servicetemplategroups/copy.php:63
 msgid "Source service template group:"
-msgstr ""
+msgstr "Quell-Service-Vorlagengruppe:"
 
 #: ./src/Template/Servicetemplategroups/copy.php:70
 #: ./src/Template/Servicetemplategroups/index.php:124
@@ -18603,7 +18603,7 @@ msgstr "Servicevorlagengruppename"
 
 #: ./src/Template/Servicetemplategroups/copy.php:78
 msgid "Name of the new service template group"
-msgstr ""
+msgstr "Name der neuen Dienstvorlagengruppe"
 
 #: ./src/Template/Servicetemplategroups/edit.php:47
 msgid "Edit service template group:"
@@ -19234,7 +19234,7 @@ msgstr "SSO oAuth2"
 
 #: ./src/Template/Systemsettings/index.php:129
 msgid "SSO oAuth2 and LDAP"
-msgstr ""
+msgstr "SSO oAuth2 und LDAP"
 
 #: ./src/Template/Systemsettings/index.php:136
 msgid "Active Directory LDAP"
@@ -19270,7 +19270,7 @@ msgstr "Ping Identity"
 
 #: ./src/Template/Systemsettings/index.php:199
 msgid "Azure Active Directory"
-msgstr ""
+msgstr "Azure Active Directory"
 
 #: ./src/Template/Tenants/add.php:165
 msgid "Create tenant"
@@ -19393,14 +19393,14 @@ msgstr "Rollenname"
 #: ./src/Template/Users/add_from_ldap.php:110
 #: ./src/Template/Users/edit.php:341
 msgid "LDAP groups"
-msgstr ""
+msgstr "LDAP Gruppen"
 
 #: ./src/Template/Usercontainerroles/add.php:95
 #: ./src/Template/Usercontainerroles/edit.php:97
 #: ./src/Template/Usergroups/add.php:108
 #: ./src/Template/Usergroups/edit.php:112
 msgid "LDAP users which are member of the selected LDAP groups will be assigned automatically to the user container role."
-msgstr ""
+msgstr "LDAP-Benutzer, die Mitglieder der ausgewählten LDAP-Gruppen sind, werden automatisch der Benutzercontainerrolle zugewiesen."
 
 #: ./src/Template/Usercontainerroles/add.php:130
 #: ./src/Template/Usercontainerroles/edit.php:132
@@ -19434,19 +19434,19 @@ msgstr "Erstelle Benutzer Container Rolle"
 
 #: ./src/Template/Usercontainerroles/copy.php:47
 msgid "Copy User container role/s"
-msgstr ""
+msgstr "Benutzercontainerrolle(n) kopieren"
 
 #: ./src/Template/Usercontainerroles/copy.php:63
 msgid "Source user container role:"
-msgstr ""
+msgstr "Quelle der Benutzercontainerrolle"
 
 #: ./src/Template/Usercontainerroles/copy.php:70
 msgid "User container role name"
-msgstr ""
+msgstr "Name der Benutzercontainerrolle"
 
 #: ./src/Template/Usercontainerroles/copy.php:78
 msgid "Name of the new user container role"
-msgstr ""
+msgstr "Name der neuen Benutzercontainerrolle"
 
 #: ./src/Template/Usercontainerroles/edit.php:49
 msgid "Edit user container role:"
@@ -19458,7 +19458,7 @@ msgstr "Aktualisiere Benutzer Container Rolle"
 
 #: ./src/Template/Usercontainerroles/index.php:146
 msgid "User container role through LDAP"
-msgstr ""
+msgstr "Benutzercontainerrolle über LDAP"
 
 #: ./src/Template/Usergroups/add.php:34
 #: ./src/Template/Usergroups/copy.php:34
@@ -19548,19 +19548,19 @@ msgstr "Erstelle Benutzer Rolle"
 
 #: ./src/Template/Usergroups/copy.php:47
 msgid "Copy user role/s"
-msgstr ""
+msgstr "Benutzerrolle(n) kopieren"
 
 #: ./src/Template/Usergroups/copy.php:63
 msgid "Source user role:"
-msgstr ""
+msgstr "Quellbenutzerrolle:"
 
 #: ./src/Template/Usergroups/copy.php:70
 msgid "User role name"
-msgstr ""
+msgstr "Name der Benutzerrolle"
 
 #: ./src/Template/Usergroups/copy.php:78
 msgid "Name of the new user role"
-msgstr ""
+msgstr "Name der neuen Benutzerrolle"
 
 #: ./src/Template/Usergroups/edit.php:48
 msgid "Edit user role:"
@@ -19605,7 +19605,7 @@ msgstr "Container Rollen sind praktisch, um mehreren Benutzern die gleichen Bere
 #: ./src/Template/Users/add_from_ldap.php:279
 #: ./src/Template/Users/edit.php:210
 msgid "The user permissions will be extended or adapted with additional containers"
-msgstr ""
+msgstr "Mit weiteren Containern werden die Benutzerrechte erweitert bzw. angepasst"
 
 #: ./src/Template/Users/add.php:151
 #: ./src/Template/Users/add_from_ldap.php:300
@@ -19684,44 +19684,44 @@ msgstr "DN"
 #: ./src/Template/Users/add_from_ldap.php:146
 #: ./src/Template/Users/edit.php:79
 msgid "Container Roles through LDAP"
-msgstr ""
+msgstr "Containerrollen über LDAP"
 
 #: ./src/Template/Users/add_from_ldap.php:150
 #: ./src/Template/Users/add_from_ldap.php:335
 #: ./src/Template/Users/edit.php:83
 #: ./src/Template/Users/edit.php:267
 msgid "No matches"
-msgstr ""
+msgstr "Keine Treffer"
 
 #: ./src/Template/Users/add_from_ldap.php:165
 #: ./src/Template/Users/edit.php:97
 msgid "Automatically assigned container roles based on the LDAP groups of the current user."
-msgstr ""
+msgstr "Automatisch zugewiesene Containerrollen basierend auf den LDAP-Gruppen des aktuellen Benutzers."
 
 #: ./src/Template/Users/add_from_ldap.php:213
 #: ./src/Template/Users/edit.php:141
 msgid "The user permissions will be extended or adapted with additional user roles or containers"
-msgstr ""
+msgstr "Die Benutzerrechte werden durch zusätzliche Benutzerrollen oder Container erweitert bzw. angepasst"
 
 #: ./src/Template/Users/add_from_ldap.php:235
 #: ./src/Template/Users/edit.php:163
 msgid "Container Roles are handy to grant the same permissions to multiple users. Container Roles will overwrite automatically assignments via LDAP groups."
-msgstr ""
+msgstr "Containerrollen sind praktisch, um mehreren Benutzern dieselben Berechtigungen zu erteilen. Containerrollen überschreiben automatisch Zuweisungen über LDAP-Gruppen."
 
 #: ./src/Template/Users/add_from_ldap.php:331
 #: ./src/Template/Users/edit.php:263
 msgid "User role through LDAP"
-msgstr ""
+msgstr "Benutzerrolle über LDAP"
 
 #: ./src/Template/Users/add_from_ldap.php:351
 #: ./src/Template/Users/edit.php:287
 msgid "Fallback User role"
-msgstr ""
+msgstr "Fallback Benutzerrolle"
 
 #: ./src/Template/Users/add_from_ldap.php:366
 #: ./src/Template/Users/edit.php:281
 msgid "Fall back user role that is used by the system, when no user role assignment through LDAP is possible."
-msgstr ""
+msgstr "Fallback-Benutzerrolle, die vom System verwendet wird, wenn keine Benutzerrollenzuweisung über LDAP möglich ist."
 
 #: ./src/Template/Users/add_from_ldap.php:676
 msgid "Create user from LDAP"
@@ -19737,7 +19737,7 @@ msgstr "Bearbeite LDAP Benutzer:"
 
 #: ./src/Template/Users/edit.php:75
 msgid "Hidden due to insufficient permissions"
-msgstr ""
+msgstr "Aufgrund unzureichender Berechtigungen ausgeblendet"
 
 #: ./src/Template/Users/edit.php:634
 msgid "Please leave the password fields blank if you don't want to change the password."
@@ -20109,7 +20109,7 @@ msgstr "Bitte aktualisieren Sie Ihre sources.list, um unser neues Repository zu 
 
 #: ./src/Template/element/repository_checker.php:90
 msgid "DNF Repository - Manually action required!"
-msgstr ""
+msgstr "DNF-Repository – Manuelle Aktion erforderlich!"
 
 #: ./src/Template/element/service_mass_changes.php:35
 msgid "Copy to host"
@@ -20479,7 +20479,7 @@ msgstr "Lokaler HTTP-Port, der von VictoriaMetrics verwendet wird."
 
 #: ./src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:272
 msgid "Enable the Docker userland proxy. Warning: This could lead to very high CPU usage."
-msgstr ""
+msgstr "Aktivieren Sie den Docker-Userland-Proxy. Warnung: Dies könnte zu einer sehr hohen CPU-Auslastung führen."
 
 #: ./src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:89
 msgid "IP-Address of the Graphite-Web server openITCOCKPIT should use to query data."
@@ -20633,62 +20633,62 @@ msgstr "Intervall zur Synchronisierung der Systemzeit"
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:54
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:716
 msgid "January"
-msgstr ""
+msgstr "Januar"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:55
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:717
 msgid "February"
-msgstr ""
+msgstr "Februar"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:56
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:718
 msgid "March"
-msgstr ""
+msgstr "März"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:57
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:719
 msgid "April"
-msgstr ""
+msgstr "April"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:58
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:720
 msgid "May"
-msgstr ""
+msgstr "Mai"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:59
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:721
 msgid "June"
-msgstr ""
+msgstr "Juni"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:60
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:722
 msgid "July"
-msgstr ""
+msgstr "Juli"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:61
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:723
 msgid "August"
-msgstr ""
+msgstr "August"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:62
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:724
 msgid "September"
-msgstr ""
+msgstr "September"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:63
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:725
 msgid "October"
-msgstr ""
+msgstr "Oktober"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:64
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:726
 msgid "November"
-msgstr ""
+msgstr "November"
 
 #: ./src/itnovum/openITCOCKPIT/Core/CalendarTime.php:65
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:727
 msgid "December"
-msgstr ""
+msgstr "Dezember"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Http.php:71
 msgid "PHP Extension php5-curl loaded successfully"
@@ -20844,7 +20844,7 @@ msgstr "Russisch"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Locales.php:142
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukrainisch"
 
 #: ./src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:113
 msgid "Happy Easter"
@@ -20876,15 +20876,15 @@ msgstr "Fröhliche Weihnachten"
 
 #: ./src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:217
 msgid "International Cat Day"
-msgstr ""
+msgstr "Internationaler Katzentag"
 
 #: ./src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:231
 msgid "International Chocolate Day"
-msgstr ""
+msgstr "Internationaler Schokoladentag"
 
 #: ./src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:245
 msgid "International Women's Day"
-msgstr ""
+msgstr "Internationaler Frauentag"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:57
 msgid "Dashboards"
@@ -21048,7 +21048,7 @@ msgstr "Proxy Einstellungen"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:718
 msgid "Prometheus Metrics"
-msgstr ""
+msgstr "Prometheus-Metriken"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Reports/DowntimeReportBarChartWidgetDataPreparer.php:46
 msgid "Availability in %"
@@ -23312,21 +23312,21 @@ msgstr "Vierteljährliche automatische Berichtsinformationen"
 #: .-modules/ChangecalendarModule/src/Controller/ChangecalendarsController.php:119
 #: .-modules/ChangecalendarModule/src/Controller/ChangecalendarsController.php:155
 msgid "Invalid changeCalendar"
-msgstr ""
+msgstr "Ungültiger Änderungskalender"
 
 #: .-modules/ChangecalendarModule/src/Controller/ChangecalendarsController.php:214
 #: .-modules/ChangecalendarModule/src/Controller/ChangecalendarsController.php:249
 #: .-modules/ChangecalendarModule/src/Controller/ChangecalendarsController.php:313
 msgid "Invalid Changecalendar"
-msgstr ""
+msgstr "Ungültiger Änderungskalender"
 
 #: .-modules/ChangecalendarModule/src/Controller/ChangecalendarsController.php:325
 msgid "Change calendar deleted successfully"
-msgstr ""
+msgstr "Änderungskalender erfolgreich gelöscht"
 
 #: .-modules/ChangecalendarModule/src/Controller/ChangecalendarsController.php:332
 msgid "Issue while deleting Changecalendar"
-msgstr ""
+msgstr "Problem beim Löschen des Änderungskalenders"
 
 #: .-modules/ChangecalendarModule/src/Lib/Menu.php:28
 #: .-modules/ChangecalendarModule/src/Lib/Widgets.php:34
@@ -23334,59 +23334,59 @@ msgstr ""
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:43
 #: .-modules/ChangecalendarModule/templates/Changecalendars/widget.php:37
 msgid "Change calendar"
-msgstr ""
+msgstr "Änderungskalender"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/add.php:15
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:15
 #: .-modules/ChangecalendarModule/templates/Changecalendars/index.php:15
 #: .-modules/ChangecalendarModule/templates/Changecalendars/index.php:28
 msgid "Change calendars"
-msgstr ""
+msgstr "Änderungskalender"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/add.php:27
 msgid "Create new change calendar"
-msgstr ""
+msgstr "Erstellen Sie einen neuen Änderungskalender"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/add.php:92
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:94
 msgid "Colour"
-msgstr ""
+msgstr "Farbe"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/add.php:120
 msgid "Create Changecalendar"
-msgstr ""
+msgstr "Änderungskalender erstellen"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:27
 msgid "Edit change calendar:"
-msgstr ""
+msgstr "Änderungskalender bearbeiten:"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:118
 msgid "Update changecalendar"
-msgstr ""
+msgstr "Änderungskalender aktualisieren"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:138
 msgid "Modify date"
-msgstr ""
+msgstr "Datum ändern"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/index.php:62
 msgid "Filter by changecalendar name"
-msgstr ""
+msgstr "Filtern nach Änderungskalender-Namen"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/index.php:102
 msgid "Change calendar name"
-msgstr ""
+msgstr "Änderungskalender-Namen ändern"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/widget.php:20
 msgid "No change calendar selected"
-msgstr ""
+msgstr "Kein Änderungskalender ausgewählt"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/widget.php:51
 msgid "Display Type"
-msgstr ""
+msgstr "Anzeigetyp"
 
 #: .-modules/ChangecalendarModule/templates/Changecalendars/widget.php:61
 msgid "List"
-msgstr ""
+msgstr "Liste"
 
 #: .-modules/CheckmkModule/src/Controller/MkLogfileController.php:59
 msgid "MkLogfile is empty or does not exist."
@@ -23737,69 +23737,69 @@ msgstr "Parameter"
 
 #: .-modules/CustomalertModule/src/Command/CustomAlertWorkerCommand.php:173
 msgid "CustomAlertWorker: Fork new worker child"
-msgstr ""
+msgstr "CustomAlertWorker: Neues Worker-Kind forken"
 
 #: .-modules/CustomalertModule/src/Controller/CustomalertRulesController.php:105
 #: .-modules/CustomalertModule/src/Controller/CustomalertRulesController.php:153
 #: .-modules/CustomalertModule/src/Controller/CustomalertRulesController.php:191
 msgid "Custom alert rule not found"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungsregel nicht gefunden"
 
 #: .-modules/CustomalertModule/src/Controller/CustomalertsController.php:343
 msgid "Custom alert not found"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigung nicht gefunden"
 
 #: .-modules/CustomalertModule/src/Lib/Menu.php:25
 #: .-modules/CustomalertModule/templates/Customalerts/history.php:32
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:30
 msgid "Custom Alerts"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungen"
 
 #: .-modules/CustomalertModule/src/Lib/Menu.php:30
 msgid "Service alerts"
-msgstr ""
+msgstr "Service Benachrichtigungen"
 
 #: .-modules/CustomalertModule/src/Lib/Menu.php:40
 msgid "Custom alerting rules"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungsregeln"
 
 #: .-modules/CustomalertModule/src/Lib/Widgets.php:37
 msgid "Custom Alerts Counter"
-msgstr ""
+msgstr "Zähler für benutzerdefinierte Benachrichtigungen"
 
 #: .-modules/CustomalertModule/src/Model/Table/CustomalertRulesTable.php:114
 msgid "Your service regex is an invalid regular expression."
-msgstr ""
+msgstr "Ihr Service-Regex ist ein ungültiger regulärer Ausdruck."
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:16
 #: .-modules/CustomalertModule/templates/CustomalertRules/edit.php:16
 msgid " Custom Alert Module"
-msgstr ""
+msgstr " Benutzerdefiniertes Alarmmodul"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:20
 #: .-modules/CustomalertModule/templates/CustomalertRules/edit.php:20
 #: .-modules/CustomalertModule/templates/CustomalertRules/services.php:19
 msgid "Custom Alert Rules "
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungsregeln "
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:24
 msgid "Add custom alert rule"
-msgstr ""
+msgstr "Fügen Sie eine benutzerdefinierte Benachrichtigungsregel hinzu"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:34
 #: .-modules/CustomalertModule/templates/CustomalertRules/edit.php:34
 msgid "Create new custom alert rule"
-msgstr ""
+msgstr "Erstellen Sie eine neue benutzerdefinierte Benachrichtigungsregel"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:49
 #: .-modules/CustomalertModule/templates/CustomalertRules/edit.php:49
 msgid "Custom alert rule"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungsregel"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:88
 #: .-modules/CustomalertModule/templates/CustomalertRules/edit.php:88
 msgid "When enabled, this alert rule will also apply to hosts in all sub-container."
-msgstr ""
+msgstr "Wenn diese Warnregel aktiviert ist, gilt sie auch für Hosts in allen Untercontainern."
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:123
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:184
@@ -23807,7 +23807,7 @@ msgstr ""
 #: .-modules/CustomalertModule/templates/CustomalertRules/edit.php:184
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:91
 msgid "Included tags"
-msgstr ""
+msgstr "Enthaltene Tags"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:149
 #: .-modules/CustomalertModule/templates/CustomalertRules/add.php:211
@@ -23815,265 +23815,265 @@ msgstr ""
 #: .-modules/CustomalertModule/templates/CustomalertRules/edit.php:211
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:116
 msgid "Excluded tags"
-msgstr ""
+msgstr "Ausgeschlossene Tags"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/edit.php:24
 msgid "Edit custom alert rule"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungsregel bearbeiten"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:15
 #: .-modules/CustomalertModule/templates/CustomalertRules/services.php:15
 #: .-modules/CustomalertModule/templates/Customalerts/history.php:15
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:15
 msgid "Custom Alert Module"
-msgstr ""
+msgstr "Benutzerdefiniertes Alarmmodul"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:18
 msgid "Custom Alert Rules"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungsregeln"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:30
 msgid "Custom Alert"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigung"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:31
 msgid "Rules"
-msgstr ""
+msgstr "Regeln"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:65
 msgid "Filter by rule name"
-msgstr ""
+msgstr "Nach Regelnamen filtern"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:78
 msgid "Filter by rule description"
-msgstr ""
+msgstr "Nach Regelbeschreibung filtern"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:147
 msgid "Filter service tags"
-msgstr ""
+msgstr "Filter nach Service Tags"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/index.php:294
 #: .-modules/CustomalertModule/templates/CustomalertRules/services.php:34
 msgid "Affected services"
-msgstr ""
+msgstr "Betroffen Services"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/services.php:23
 msgid "Custom Alert Rule Affected Services"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungsregel: Betroffene Services"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/services.php:33
 msgid "Custom Alert Rule"
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungsregel"
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/services.php:55
 msgid "Go to \"Custom rule configuration\""
-msgstr ""
+msgstr "Gehen Sie zu \"Benutzerdefinierte Regelkonfiguration\""
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/services.php:70
 msgid "Custom alert rule: "
-msgstr ""
+msgstr "Benutzerdefinierte Benachrichtigungsregel: "
 
 #: .-modules/CustomalertModule/templates/CustomalertRules/services.php:81
 msgid "Overview of all affected services. Please refresh your configuration after configuration changes!"
-msgstr ""
+msgstr "Übersicht aller betroffenen Dienste. Bitte aktualisieren Sie Ihre Konfiguration nach Konfigurationsänderungen!"
 
 #: .-modules/CustomalertModule/templates/Customalerts/customalerts_widget.php:82
 msgid "In progress "
-msgstr ""
+msgstr "Im Bearbeitung "
 
 #: .-modules/CustomalertModule/templates/Customalerts/customalerts_widget.php:94
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:109
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:215
 msgid "Done"
-msgstr ""
+msgstr "Erledigt"
 
 #: .-modules/CustomalertModule/templates/Customalerts/customalerts_widget.php:106
 msgid "Manually closed "
-msgstr ""
+msgstr "Manuell geschlossen "
 
 #: .-modules/CustomalertModule/templates/Customalerts/customalerts_widget.php:110
 msgid "Alerts older than"
-msgstr ""
+msgstr "Warnungen älter als"
 
 #: .-modules/CustomalertModule/templates/Customalerts/customalerts_widget.php:119
 msgid "Leave empty for all alerts"
-msgstr ""
+msgstr "Für alle Warnungen leer lassen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/history.php:19
 msgid "Service Alerts "
-msgstr ""
+msgstr "Servicewarnungen "
 
 #: .-modules/CustomalertModule/templates/Customalerts/history.php:23
 msgid "Custom Alerts State History"
-msgstr ""
+msgstr "Statusverlauf für benutzerdefinierte Warnungen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/history.php:33
 msgid "State History"
-msgstr ""
+msgstr "Statusverlauf"
 
 #: .-modules/CustomalertModule/templates/Customalerts/history.php:60
 msgid "Commented by "
-msgstr ""
+msgstr "Kommentiert von "
 
 #: .-modules/CustomalertModule/templates/Customalerts/history.php:83
 msgid "Service:"
-msgstr ""
+msgstr "Service:"
 
 #: .-modules/CustomalertModule/templates/Customalerts/history.php:101
 msgid "This alert was automatically generated by the alerting daemon"
-msgstr ""
+msgstr "Diese Warnung wurde automatisch vom Warnungs-Daemon generiert"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:18
 msgid "Custom Alerts Overview"
-msgstr ""
+msgstr "Übersicht über benutzerdefinierte Benachrichtigungen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:73
 msgid "New alerts"
-msgstr ""
+msgstr "Neue Warnungen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:113
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:226
 msgid "Manually closed"
-msgstr ""
+msgstr "Manuell geschlossen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:137
 msgid "Filter by custom alerts message"
-msgstr ""
+msgstr "Filtern nach benutzerdefinierten Warnmeldungen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:180
 msgid "Alert status"
-msgstr ""
+msgstr "Alarmstatus"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:238
 #: .-modules/SLAModule/templates/Slas/view_details.php:371
 msgid "Filter by container"
-msgstr ""
+msgstr "Nach Container filtern"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:286
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:290
 msgid "Group view by host"
-msgstr ""
+msgstr "Gruppieren nach Host"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:333
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:498
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:8
 #: .-modules/CustomalertModule/templates/Customalerts/service_history.php:119
 msgid "Annotation"
-msgstr ""
+msgstr "Anmerkung"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:338
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:503
 msgid "last 24h"
-msgstr ""
+msgstr "letzten 24h"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:348
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:513
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:180
 msgid "Modified"
-msgstr ""
+msgstr "Geändert"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:445
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:616
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:119
 msgid "Annotate"
-msgstr ""
+msgstr "Kommentieren"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:454
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:625
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:8
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:109
 msgid "Close manually"
-msgstr ""
+msgstr "Manuell schließen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:461
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:632
 msgid "History"
-msgstr ""
+msgstr "Historie"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:666
 msgid "Annotate selected"
-msgstr ""
+msgstr "Ausgewählte kommentieren"
 
 #: .-modules/CustomalertModule/templates/Customalerts/index.php:674
 msgid "Close selected manually"
-msgstr ""
+msgstr "Manuell ausgewählte schließen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:31
 msgid "No items are selected for annotations!"
-msgstr ""
+msgstr "Es sind keine Elemente für Anmerkungen ausgewählt!"
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:39
 msgid "Do you want annotate the selected objects?"
-msgstr ""
+msgstr "Möchten Sie die ausgewählten Objekte mit Anmerkungen versehen?"
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:58
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:79
 msgid "Add comment"
-msgstr ""
+msgstr "Einen Kommentar hinzufügen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:66
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:87
 msgid "The maximum length for this field is 1024."
-msgstr ""
+msgstr "Die maximale Länge für dieses Feld beträgt 1024."
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:67
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:88
 msgid " Characters available: "
-msgstr ""
+msgstr " Verfügbare Zeichen: "
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:78
 msgid "Determining host state..."
-msgstr ""
+msgstr "Host-Status wird ermittelt..."
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:82
 msgid "All hosts are Up."
-msgstr ""
+msgstr "Alle Hosts sind aktiv."
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:87
 msgid "At least one host is down or unreachable."
-msgstr ""
+msgstr "Mindestens ein Host ist ausgefallen oder nicht erreichbar."
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:98
 msgid "Set annotation comment as host acknowledgement"
-msgstr ""
+msgstr "Anmerkungskommentar als Bestätigung festlegen"
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_annotate.php:107
 msgid "Annotating..."
-msgstr ""
+msgstr "Kommentieren..."
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:31
 msgid "No items have been selected to close!"
-msgstr ""
+msgstr "Es wurden keine Elemente zum Schließen ausgewählt!"
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:48
 #: .-modules/ImportModule/templates/Configurationitems/import.php:113
 msgid "Information"
-msgstr ""
+msgstr "Information"
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:51
 msgid "Only custom notifications with a status of \"{0}\" or \"{1}\" can be closed. Custom notifications with a different status are automatically removed from the selection."
-msgstr ""
+msgstr "Es können nur benutzerdefinierte Benachrichtigungen mit dem Status \"{0}\" oder \"{1}\" geschlossen werden. Benutzerdefinierte Benachrichtigungen mit einem anderen Status werden automatisch aus der Auswahl entfernt."
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:60
 msgid "Do you want close the selected objects?"
-msgstr ""
+msgstr "Möchten Sie die ausgewählten Objekte schließen?"
 
 #: .-modules/CustomalertModule/templates/Customalerts/mass_close.php:97
 msgid "Closing..."
-msgstr ""
+msgstr "Schließen..."
 
 #: .-modules/CustomalertModule/templates/Customalerts/service_history.php:16
 msgid "history"
-msgstr ""
+msgstr "Historie"
 
 #: .-modules/CustomalertModule/templates/Customalerts/service_history.php:90
 #: .-modules/CustomalertModule/templates/Customalerts/service_history.php:125
 msgid "State time"
-msgstr ""
+msgstr "Statuszeit"
 
 #: .-modules/CustomalertModule/templates/Customalerts/service_history.php:146
 msgid "Automatically closed"
-msgstr ""
+msgstr "Automatisch geschlossen"
 
 #: .-modules/DB2Module/templates/Wizards/db2.php:19
 msgid "DB2"
@@ -24496,12 +24496,12 @@ msgstr "Fehlschlagen"
 #: .-modules/DistributeModule/src/Model/Entity/SatelliteTask.php:62
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:126
 msgid "Queued"
-msgstr ""
+msgstr "In Warteschlange"
 
 #: .-modules/DistributeModule/src/Model/Entity/SatelliteTask.php:78
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:130
 msgid "Aborted"
-msgstr ""
+msgstr "Abgebrochen"
 
 #: .-modules/DistributeModule/src/Model/Table/SatellitesTable.php:148
 msgid "Synchronisation method is out of bounds: [{0}]"
@@ -24613,7 +24613,7 @@ msgstr "Erstelle Satelliten"
 
 #: .-modules/DistributeModule/templates/Satellites/add_satellite_downtime.php:32
 msgid "Create new satellite downtime"
-msgstr ""
+msgstr "Erstellen Sie neue Wartungszeit für Satelliten"
 
 #: .-modules/DistributeModule/templates/Satellites/downtime.php:183
 #: .-modules/DistributeModule/templates/Satellites/index.php:82
@@ -24653,12 +24653,12 @@ msgstr "Zeitzone"
 #: .-modules/DistributeModule/templates/Satellites/index.php:312
 #: .-modules/DistributeModule/templates/Satellites/index.php:315
 msgid "Enable notification"
-msgstr ""
+msgstr "Aktiviere Benachrichtigungen"
 
 #: .-modules/DistributeModule/templates/Satellites/status.php:61
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:61
 msgid "Satellite Tasks"
-msgstr ""
+msgstr "Satellitenaufgaben"
 
 #: .-modules/DistributeModule/templates/Satellites/status.php:144
 msgid "Filter by sync status"
@@ -24679,23 +24679,23 @@ msgstr "Letzter Fehler"
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:31
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:44
 msgid "Tasks overview"
-msgstr ""
+msgstr "Aufgabenübersicht"
 
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:106
 msgid "Filter by Task"
-msgstr ""
+msgstr "Nach Aufgabe filtern"
 
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:120
 msgid "Filter by status"
-msgstr ""
+msgstr "Nach Status filtern"
 
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:152
 msgid "Task ID"
-msgstr ""
+msgstr "Aufgaben-ID"
 
 #: .-modules/DistributeModule/templates/Satellites/tasks.php:170
 msgid "Task Result"
-msgstr ""
+msgstr "Aufgabenergebnis"
 
 #: .-modules/DistributeModule/templates/Satellites/used_by.php:42
 msgid "hosts."
@@ -25313,7 +25313,7 @@ msgstr "❗Fehler beim importieren der Hostdaten"
 #: .-modules/ImportModule/src/Command/ImportCommand.php:218
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:391
 msgid "Data imported successfully"
-msgstr ""
+msgstr "Daten erfolgreich importiert"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:239
 msgid "File not found!"
@@ -25390,43 +25390,43 @@ msgstr "Software"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:458
 msgid "Import data from iTop successfully finished!"
-msgstr ""
+msgstr "Datenimport aus iTop erfolgreich abgeschlossen!"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:471
 msgid "Generate preview for iTop data - maximal 10 rows will be shown"
-msgstr ""
+msgstr "Vorschau für iTop-Daten erstellen – maximal 10 Zeilen werden angezeigt"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:478
 msgid "⚠️  Connect to iTop works, but the elements are empty. Data preview is not possible!"
-msgstr ""
+msgstr "⚠️  Die Verbindung zu iTop funktioniert, aber es das Ergebnis ist leer. Eine Datenvorschau ist nicht möglich!"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:523
 msgid "Import data from push agents successfully finished!"
-msgstr ""
+msgstr "Datenimport von Push-Agenten erfolgreich abgeschlossen!"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:527
 msgid "Generate preview for push agents data - maximal 10 rows will be shown"
-msgstr ""
+msgstr "Vorschau für Push-Agentendaten erstellen – es werden maximal 10 Zeilen angezeigt"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:534
 msgid "⚠️  No push agents found. Data preview is not possible!"
-msgstr ""
+msgstr "⚠️ Keine Push-Agenten gefunden. Eine Datenvorschau ist nicht möglich!"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:575
 msgid "❗Error no external monitoring system defined"
-msgstr ""
+msgstr "❗Fehler, kein externes Überwachungssystem definiert"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:580
 msgid "Import data from External Monitoring System successfully finished!"
-msgstr ""
+msgstr "Datenimport aus externem Überwachungssystem erfolgreich abgeschlossen!"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:585
 msgid "Generate preview for External Monitoring System data - maximal 10 rows will be shown"
-msgstr ""
+msgstr "Vorschau für Daten des externen Überwachungssystems erstellen – es werden maximal 10 Zeilen angezeigt"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:587
 msgid "⚠️  Elements are empty. Data preview is not possible!"
-msgstr ""
+msgstr "⚠️ Ergebnis ist leer. Eine Datenvorschau ist nicht möglich!"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:647
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:401
@@ -25438,23 +25438,23 @@ msgstr "Fehler beim Importieren der Hostdaten"
 
 #: .-modules/ImportModule/src/Command/ImportCommand.php:694
 msgid "❗Could not save imported host!"
-msgstr ""
+msgstr "❗Der importierte Host konnte nicht gespeichert werden!"
 
 #: .-modules/ImportModule/src/Controller/ConfigurationitemsController.php:901
 msgid "Temporary uploaded JSON file successfully removed"
-msgstr ""
+msgstr "Die temporär hochgeladene JSON-Datei wurde erfolgreich entfernt"
 
 #: .-modules/ImportModule/src/Controller/ConfigurationitemsController.php:912
 msgid "Error while deleting uploaded JSON File."
-msgstr ""
+msgstr "Fehler beim Löschen der hochgeladenen JSON-Datei."
 
 #: .-modules/ImportModule/src/Controller/ExternalMonitoringsController.php:154
 msgid "External monitoring system not found"
-msgstr ""
+msgstr "Externes Überwachungssystem nicht gefunden"
 
 #: .-modules/ImportModule/src/Controller/ExternalMonitoringsController.php:267
 msgid "External Monitoring system not found"
-msgstr ""
+msgstr "Externes Überwachungssystem nicht gefunden"
 
 #: .-modules/ImportModule/src/Controller/ExternalSystemsController.php:181
 #: .-modules/ImportModule/src/Controller/ExternalSystemsController.php:294
@@ -25463,7 +25463,7 @@ msgstr "Externes System nicht gefunden"
 
 #: .-modules/ImportModule/src/Controller/ExternalSystemsController.php:311
 msgid "Used by Importer \"{0}\""
-msgstr ""
+msgstr "Wird vom Importeur \"{0}\" verwendet"
 
 #: .-modules/ImportModule/src/Controller/HostDefaultsController.php:135
 #: .-modules/ImportModule/src/Controller/HostDefaultsController.php:209
@@ -25523,15 +25523,15 @@ msgstr "Datenimport aus i-doit System erfolgreich abgeschlossen"
 
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:496
 msgid "Import data from OITC push agents successfully finished"
-msgstr ""
+msgstr "Der Datenimport von OITC-Push-Agents wurde erfolgreich abgeschlossen"
 
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:522
 msgid "Import data from iTop system successfully finished"
-msgstr ""
+msgstr "Der Datenimport aus dem iTop-System wurde erfolgreich abgeschlossen"
 
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:553
 msgid "Import data from External Monitoring system successfully finished"
-msgstr ""
+msgstr "Der Datenimport aus dem externen Überwachungssystem wurde erfolgreich abgeschlossen"
 
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:1442
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:1583
@@ -25565,11 +25565,11 @@ msgstr "Verbindungsfehler: {0}!"
 
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:1695
 msgid "No data available"
-msgstr ""
+msgstr "Keine Daten verfügbar"
 
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:1810
 msgid "No data received from external monitoring system"
-msgstr ""
+msgstr "Keine Daten vom externen Überwachungssystem empfangen"
 
 #: .-modules/ImportModule/src/Form/ConfigurationitemsExportForm.php:34
 #: .-modules/ImportModule/src/Form/ConfigurationitemsExportForm.php:39
@@ -25579,7 +25579,7 @@ msgstr ""
 #: .-modules/ImportModule/src/Form/ConfigurationitemsExportForm.php:59
 #: .-modules/ImportModule/templates/Configurationitems/export.php:59
 msgid "You must select at least one configuration item for export."
-msgstr ""
+msgstr "Sie müssen mindestens ein Konfigurationselement für den Export auswählen."
 
 #: .-modules/ImportModule/src/Lib/APIConnectors/IDoitConnector.php:151
 #: .-modules/ImportModule/src/Lib/APIConnectors/IDoitConnector.php:278
@@ -25600,7 +25600,7 @@ msgstr "Fehler beim Verbinden mit dem externen System."
 
 #: .-modules/ImportModule/src/Lib/APIConnectors/iTopConnector.php:100
 msgid "External system respond is HTML instead of JSON."
-msgstr ""
+msgstr "Die Antwort des externen Systems erfolgt in HTML statt in JSON."
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithHeaderJson.php:32
 #: .-modules/ImportModule/src/Lib/DataSourceForms/CsvWithoutHeaderJson.php:32
@@ -25696,55 +25696,55 @@ msgstr "Spaltennummer (Nummerierung beginnt mit 0) der CSV-Datei, die als Softwa
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:30
 msgid "Icinga2 API URL"
-msgstr ""
+msgstr "Icinga2 API URL"
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:31
 msgid "URL of your Icinga2 API endpoint"
-msgstr ""
+msgstr "URL Ihres Icinga2-API-Endpunkts"
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:41
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:205
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:204
 msgid "API User"
-msgstr ""
+msgstr "API Benutzer"
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:50
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:220
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:219
 msgid "API Password"
-msgstr ""
+msgstr "API Passwort"
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:79
 msgid "Check types"
-msgstr ""
+msgstr "Check Typen"
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:88
 msgid "All check results"
-msgstr ""
+msgstr "Alle Prüfergebnisse"
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:93
 msgid "Only state changes"
-msgstr ""
+msgstr "Nur Zustandsänderungen"
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:101
 msgid "Receive Downtimes"
-msgstr ""
+msgstr "Wartungszeiten empfangen"
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:102
 msgid "Determine if downtimes created in Icinga 2 should be transferred to openITCOCKPIT."
-msgstr ""
+msgstr "Legen Sie fest, ob in Icinga 2 erstellte Wartungszeiten an openITCOCKPIT übertragen werden sollen."
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:110
 msgid "Receive Acknowledgements"
-msgstr ""
+msgstr "Bestätigungen empfangen"
 
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:111
 msgid "Determine if acknowledgements created in Icinga 2 should be transferred to openITCOCKPIT."
-msgstr ""
+msgstr "Legen Sie fest, ob in Icinga 2 erstellte Bestätigungen an openITCOCKPIT übertragen werden sollen."
 
 #: .-modules/ImportModule/src/Lib/ExternalMonitoringTypes.php:14
 msgid "Icinga 2"
-msgstr ""
+msgstr "Icinga 2"
 
 #: .-modules/ImportModule/src/Lib/ExternalSystemTypes.php:14
 msgid "i-doit System"
@@ -25752,7 +25752,7 @@ msgstr "i-doit System"
 
 #: .-modules/ImportModule/src/Lib/ExternalSystemTypes.php:15
 msgid "iTop System"
-msgstr ""
+msgstr "iTop System"
 
 #: .-modules/ImportModule/src/Lib/ImporterCsvParser.php:200
 #: .-modules/ImportModule/src/Lib/ImporterCsvParser.php:299
@@ -25804,22 +25804,22 @@ msgstr "i-doit"
 
 #: .-modules/ImportModule/src/Lib/ImporterDataTypes.php:18
 msgid "iTop"
-msgstr ""
+msgstr "iTop"
 
 #: .-modules/ImportModule/src/Lib/ImporterDataTypes.php:19
 #: .-modules/ImportModule/src/Lib/Menu.php:80
 msgid "External Monitoring"
-msgstr ""
+msgstr "Externes Monitoring"
 
 #: .-modules/ImportModule/src/Lib/ImporterITopDataParser.php:235
 #: .-modules/ImportModule/src/Lib/ImporterIdoitDataParser.php:163
 #: .-modules/ImportModule/src/Lib/ImporterOITCAgentDataParser.php:191
 msgid "A possible cause for this could be the structure is not consistent. Please check your importer configuration."
-msgstr ""
+msgstr "Eine mögliche Ursache dafür könnte sein, dass die Struktur nicht valide ist. Bitte überprüfen Sie Ihre Importer-Konfiguration."
 
 #: .-modules/ImportModule/src/Lib/ImporterITopDataParser.php:243
 msgid "Connect to iTop works, but the elements are empty. Data preview is not possible."
-msgstr ""
+msgstr "Die Verbindung zu iTop funktioniert, aber das Ergebnis ist leer. Eine Datenvorschau ist nicht möglich."
 
 #: .-modules/ImportModule/src/Lib/ImporterITopDataParser.php:436
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:43
@@ -25827,7 +25827,7 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:604
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:925
 msgid "Production Critical"
-msgstr ""
+msgstr "Produktionskritisch"
 
 #: .-modules/ImportModule/src/Lib/ImporterITopDataParser.php:439
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:84
@@ -25839,7 +25839,7 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:968
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1004
 msgid "Production relevant"
-msgstr ""
+msgstr "Produktionsrelevant"
 
 #: .-modules/ImportModule/src/Lib/ImporterITopDataParser.php:442
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:80
@@ -25851,7 +25851,7 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:964
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1002
 msgid "No Production relevance"
-msgstr ""
+msgstr "Keine Produktionsrelevanz"
 
 #: .-modules/ImportModule/src/Lib/ImporterIdoitDataParser.php:171
 msgid "Connect to i-doit works, but the elements are empty. Data preview is not possible."
@@ -25859,7 +25859,7 @@ msgstr "Die Verbindung zu i-doit funktioniert, aber es sind keine Ergebnisse vor
 
 #: .-modules/ImportModule/src/Lib/ImporterOITCAgentDataParser.php:199
 msgid "Agent push agents are present, but the extracted elements are empty. Data preview is not possible."
-msgstr ""
+msgstr "Agent-Push-Agenten sind vorhanden, aber die extrahierten Elemente sind leer. Eine Datenvorschau ist nicht möglich"
 
 #: .-modules/ImportModule/src/Lib/Menu.php:25
 msgid "Object Import"
@@ -25899,13 +25899,13 @@ msgstr "Externe Systeme"
 
 #: .-modules/ImportModule/src/Lib/Menu.php:90
 msgid "Export / Import"
-msgstr ""
+msgstr "Export / Import"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:98
 #: .-modules/ImportModule/templates/HostDefaults/add.php:525
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:508
 msgid "Agent checks matches"
-msgstr ""
+msgstr "Agent checks Treffer"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:101
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:53
@@ -25921,26 +25921,26 @@ msgstr "Externes System"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:102
 msgid "External monitoring"
-msgstr ""
+msgstr "Externes Monitoring"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:103
 msgid "Host default"
-msgstr ""
+msgstr "Host-Standard"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:110
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:251
 msgid "Agent checks"
-msgstr ""
+msgstr "Agenten Checks"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:111
 msgid "Services to import"
-msgstr ""
+msgstr "Zu importierende Services"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:114
 #: .-modules/ImportModule/templates/HostDefaults/add.php:652
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:633
 msgid "External Monitoring Checks"
-msgstr ""
+msgstr "Externe Monitoring Checks"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:115
 #: .-modules/ImportModule/templates/HostDefaults/add.php:380
@@ -25951,51 +25951,51 @@ msgstr "Servicevorlagengruppen-Übereinstimmungen"
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:116
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:218
 msgid "Service template matches"
-msgstr ""
+msgstr "Servicevorlagen-Übereinstimmungen"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:301
 msgid "Start data import from \"{0}\""
-msgstr ""
+msgstr "Datenimport von \"{0}\" starten"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:320
 msgid "Finished data import from \"{0}\""
-msgstr ""
+msgstr "Datenimport aus \"{0}\" abgeschlossen"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:322
 msgid "An error occurred while data import from \"{0}\""
-msgstr ""
+msgstr "Beim Datenimport aus \"{0}\" ist ein Fehler aufgetreten."
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:357
 msgid "Start synchronization with monitoring"
-msgstr ""
+msgstr "Starten Sie die Synchronisierung mit dem Monitoring System"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:375
 msgid "Finished synchronization with monitoring"
-msgstr ""
+msgstr "Synchronisierung mit dem Monitoring System abgeschlossen"
 
 #: .-modules/ImportModule/src/Model/Table/ChangelogsTable.php:377
 msgid "while synchronizing imported data with monitoring"
-msgstr ""
+msgstr "während importierte Daten dem Monitoring System synchronisiert werden"
 
 #: .-modules/ImportModule/src/Model/Table/ExternalMonitoringsTable.php:117
 msgid "Unsupported external monitoring system"
-msgstr ""
+msgstr "Nicht unterstütztes externes Monitoring System"
 
 #: .-modules/ImportModule/src/Model/Table/ExternalMonitoringsTable.php:164
 msgid "Valid options are CheckResult or StateChange"
-msgstr ""
+msgstr "Gültige Optionen sind CheckResult oder StateChange"
 
 #: .-modules/ImportModule/src/Model/Table/ExternalSystemsTable.php:109
 msgid "API key cannot be empty if data source is i-doit."
-msgstr ""
+msgstr "Der API-Schlüssel darf nicht leer sein, wenn die Datenquelle i-doit ist."
 
 #: .-modules/ImportModule/src/Model/Table/ExternalSystemsTable.php:118
 msgid "API user cannot be empty if data source is iTop."
-msgstr ""
+msgstr "Der API-Benutzer darf nicht leer sein, wenn die Datenquelle iTop ist."
 
 #: .-modules/ImportModule/src/Model/Table/ExternalSystemsTable.php:127
 msgid "API password cannot be empty if data source is iTop."
-msgstr ""
+msgstr "Das API-Passwort darf nicht leer sein, wenn die Datenquelle iTop ist."
 
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:822
 msgid "Host template missing"
@@ -26007,7 +26007,7 @@ msgstr "Container fehlt"
 
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:831
 msgid "No service template groups and service templates defined"
-msgstr ""
+msgstr "Keine Servicevorlagengruppen und Servicevorlagen definiert"
 
 #: .-modules/ImportModule/src/Model/Table/ImportersTable.php:140
 msgid "External system can not be blank if data source is i-doit / iTop."
@@ -26015,7 +26015,7 @@ msgstr "Das Feld \"Externes System\" darf nicht leer sein, wenn die Datenquelle 
 
 #: .-modules/ImportModule/src/Model/Table/ImportersTable.php:196
 msgid "You have to pick exactly one external monitoring system."
-msgstr ""
+msgstr "Sie müssen genau ein externes Monitoring System auswählen."
 
 #: .-modules/ImportModule/templates/Configurationitems/export.php:15
 #: .-modules/ImportModule/templates/Configurationitems/import.php:20
@@ -26040,79 +26040,79 @@ msgstr "Import-Modul"
 
 #: .-modules/ImportModule/templates/Configurationitems/export.php:27
 msgid "Export configuration items for /root Container"
-msgstr ""
+msgstr "Exportieren Sie Konfigurationselemente für den /root-Container"
 
 #: .-modules/ImportModule/templates/Configurationitems/export.php:56
 msgid "Configuration items"
-msgstr ""
+msgstr "Konfigurationselemente"
 
 #: .-modules/ImportModule/templates/Configurationitems/export.php:157
 msgid "Export configuration items"
-msgstr ""
+msgstr "Konfigurationselemente exportieren"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:32
 msgid "Import configuration items from JSON File"
-msgstr ""
+msgstr "Importieren Sie Konfigurationselemente aus einer JSON-Datei"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:69
 msgid "Drop JSON file here or click to upload."
-msgstr ""
+msgstr "Legen Sie die JSON-Datei hier ab oder klicken Sie zum Hochladen."
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:82
 msgid "File information"
-msgstr ""
+msgstr "Dateiinformationen"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:85
 msgid "Uploaded file contains errors!"
-msgstr ""
+msgstr "Hochgeladene Datei enthält Fehler!"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:118
 msgid "Created with {0} version"
-msgstr ""
+msgstr "Erstellt mit der Version {0}"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:124
 msgid "Checksum"
-msgstr ""
+msgstr "Prüfsumme"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:133
 msgid "Count"
-msgstr ""
+msgstr "Zähler"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:190
 msgid "It is recommended that you create a backup before starting the import!"
-msgstr ""
+msgstr "Es wird empfohlen, vor Beginn des Imports ein Backup zu erstellen!"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:193
 msgid "No changes were applied yet. If not already done make sure that you have a backup of your current configuration."
-msgstr ""
+msgstr "Es wurden noch keine Änderungen übernommen. Falls noch nicht geschehen, stellen Sie sicher, dass Sie über eine Sicherungskopie Ihrer aktuellen Konfiguration verfügen."
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:199
 msgid "Go to \"Backup / Restore\""
-msgstr ""
+msgstr "Gehen Sie zu \"Sichern/Wiederherstellen\""
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:214
 msgid "Error while importing data!"
-msgstr ""
+msgstr "Fehler beim Datenimport!"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:231
 msgid "Error while importing "
-msgstr ""
+msgstr "Fehler beim Importieren "
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:233
 msgid "Source UUID:"
-msgstr ""
+msgstr "Quell-UUID:"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:242
 msgid "Please see the log file for more information."
-msgstr ""
+msgstr "Weitere Informationen finden Sie in der Protokolldatei."
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:267
 msgid "Ready to import"
-msgstr ""
+msgstr "Bereit zum Import"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:270
 msgid "No conflicts were found."
-msgstr ""
+msgstr "Es wurden keine Konflikte gefunden."
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:289
 #: .-modules/ImportModule/templates/ImportChangelogs/index.php:211
@@ -26122,81 +26122,81 @@ msgstr "Import starten"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:308
 msgid "Possible dangerous changes detected"
-msgstr ""
+msgstr "Mögliche gefährliche Veränderungen erkannt"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:311
 msgid "Importing this configuration could break your currently running monitoring configuration."
-msgstr ""
+msgstr "Das Importieren dieser Konfiguration könnte Ihre derzeit ausgeführte Überwachungskonfiguration beschädigen."
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:312
 msgid "Before importing, please check the shown comparison."
-msgstr ""
+msgstr "Bitte prüfen Sie vor dem Import den angezeigten Vergleich."
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:330
 msgid "Start import anyway"
-msgstr ""
+msgstr "Starten Sie trotzdem den Import"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:341
 msgid "This overview will only show potential dangerous changes. For example if command arguments get removed from an existing check command."
-msgstr ""
+msgstr "In dieser Übersicht werden nur potenziell gefährliche Änderungen angezeigt. Zum Beispiel, wenn Befehlsargumente aus einem vorhandenen Prüfbefehl entfernt werden."
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:343
 msgid "It will not mean that the change will break something. {0} can not detected if a change was made intentionally or by accident."
-msgstr ""
+msgstr "Das bedeutet nicht, dass die Änderung etwas kaputt macht. {0} kann nicht erkannt werden, ob eine Änderung absichtlich oder versehentlich vorgenommen wurde."
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:352
 msgid "Current configuration"
-msgstr ""
+msgstr "Aktuelle Konfiguration"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:356
 msgid "New configuration after import"
-msgstr ""
+msgstr "Neue Konfiguration nach dem Import"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:386
 msgid "Service templates groups"
-msgstr ""
+msgstr "Servicevorlagengruppen"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:513
 msgid "Import finished successfully"
-msgstr ""
+msgstr "Der Import wurde erfolgreich abgeschlossen"
 
 #: .-modules/ImportModule/templates/Configurationitems/import.php:516
 msgid "The new configuration got imported successfully. All changes where documented within the change log."
-msgstr ""
+msgstr "Die neue Konfiguration wurde erfolgreich importiert. Alle Änderungen wurden im Änderungsprotokoll dokumentiert."
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/add.php:24
 #: .-modules/ImportModule/templates/ExternalMonitorings/edit.php:24
 #: .-modules/ImportModule/templates/ExternalMonitorings/index.php:30
 msgid "External Monitoring Systems"
-msgstr ""
+msgstr "Externe Monitoring Systeme"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/add.php:28
 msgid "Add external monitoring system"
-msgstr ""
+msgstr "Fügen Sie ein externes Monitoring System hinzu"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/add.php:38
 msgid "Create new external monitoring system"
-msgstr ""
+msgstr "Erstellen Sie ein neues externes Monitoring System"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/add.php:53
 #: .-modules/ImportModule/templates/ExternalMonitorings/edit.php:54
 msgid "External Monitoring system"
-msgstr ""
+msgstr "Externes Monitoring System"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/add.php:99
 #: .-modules/ImportModule/templates/ExternalMonitorings/edit.php:100
 msgid "System type"
-msgstr ""
+msgstr "Systemtyp"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/add.php:111
 #: .-modules/ImportModule/templates/ExternalMonitorings/edit.php:112
 msgid "Synchronize status information from Icinga 2 with openITCOCKPIT."
-msgstr ""
+msgstr "Statusinformationen von Icinga 2 mit openITCOCKPIT synchronisieren."
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/add.php:125
 #: .-modules/ImportModule/templates/ExternalMonitorings/edit.php:126
 msgid "Data source settings"
-msgstr ""
+msgstr "Datenquelleneinstellungen"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/add.php:210
 #: .-modules/ImportModule/templates/ExternalMonitorings/edit.php:211
@@ -26207,24 +26207,24 @@ msgstr "Drücken Sie die Eingabetaste, um zu trennen"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/edit.php:28
 msgid "Edit external monitoring system"
-msgstr ""
+msgstr "Bearbeiten Sie das externe Monitoring System"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/edit.php:38
 #: .-modules/ImportModule/templates/ExternalMonitorings/edit.php:281
 msgid "Update external monitoring system"
-msgstr ""
+msgstr "Externes Monitoring System aktualisieren"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/index.php:18
 msgid "External Monitoring Systems Overview"
-msgstr ""
+msgstr "Übersicht über externe Monitoring Systeme"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/index.php:66
 msgid "Filter by monitoring system name"
-msgstr ""
+msgstr "Filtern Sie nach dem Namen des Monitoring Systems"
 
 #: .-modules/ImportModule/templates/ExternalMonitorings/index.php:79
 msgid "Filter by monitoring system description"
-msgstr ""
+msgstr "Filtern Sie nach der Beschreibung des Monitoring Systems"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:28
 msgid "Add external system"
@@ -26249,7 +26249,7 @@ msgstr "i-doit ermöglicht externen Zugriff auf die IT-Dokumentation über eine 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:114
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:113
 msgid "iTop enables external access to the IT documentation via an application programming interface (API)"
-msgstr ""
+msgstr "iTop ermöglicht den externen Zugriff auf die IT-Dokumentation über eine Anwendungsprogrammierschnittstelle (API)"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:124
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:123
@@ -26299,47 +26299,47 @@ msgstr "Objekttypen"
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:371
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:369
 msgid "Custom object type mappings"
-msgstr ""
+msgstr "Benutzerdefinierte Objekttypzuordnungen"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:381
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:379
 msgid "Class name"
-msgstr ""
+msgstr "Klassenname"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:393
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:391
 msgid "Interface type"
-msgstr ""
+msgstr "Schnittstellentyp"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:398
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:396
 msgid "Custom"
-msgstr ""
+msgstr "Benutzerdefiniert"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:399
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:397
 msgid "PhysicalInterface"
-msgstr ""
+msgstr "Physische Schnittstelle"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:400
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:398
 msgid "LogicalInterface"
-msgstr ""
+msgstr "Logische Schnittstelle"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:409
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:407
 msgid "Remove mapping"
-msgstr ""
+msgstr "Zuordnung entfernen"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:429
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:427
 msgid "IP-Address"
-msgstr ""
+msgstr "IP Adresse"
 
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:469
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:467
 msgid "Add custom mapping"
-msgstr ""
+msgstr "Fügen Sie eine benutzerdefinierte Zuordnung hinzu"
 
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:27
 msgid "Edit external system"
@@ -26347,7 +26347,7 @@ msgstr "Externes System bearbeiten"
 
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:37
 msgid "Update external system"
-msgstr ""
+msgstr "Externes System aktualisieren"
 
 #: .-modules/ImportModule/templates/ExternalSystems/index.php:18
 msgid "External Systems Overview"
@@ -26427,7 +26427,7 @@ msgstr "Verwenden Sie diese Hostvorlage als Standard"
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:236
 msgid "Service templates matches"
-msgstr ""
+msgstr "Servicevorlagen Übereinstimmungen"
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:237
 #: .-modules/ImportModule/templates/HostDefaults/add.php:381
@@ -26444,7 +26444,7 @@ msgstr "(optional):"
 #: .-modules/ImportModule/templates/HostDefaults/add.php:655
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:636
 msgid "If the match is successful, these service templates are assigned to the imported hosts."
-msgstr ""
+msgstr "Bei erfolgreichem Abgleich werden diese Service-Vorlagen den importierten Hosts zugewiesen."
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:243
 #: .-modules/ImportModule/templates/HostDefaults/add.php:388
@@ -26463,13 +26463,13 @@ msgstr "Geben Sie keine leeren Übereinstimmungen ein"
 #: .-modules/ImportModule/templates/HostDefaults/add.php:673
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:654
 msgid "No service templates are defined"
-msgstr ""
+msgstr "Es sind keine Servicevorlagen definiert"
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:259
 #: .-modules/ImportModule/templates/HostDefaults/add.php:676
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:657
 msgid "Please create at least one \"Service template\""
-msgstr ""
+msgstr "Bitte erstellen Sie mindestens eine \"Servicevorlage\""
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:294
 #: .-modules/ImportModule/templates/HostDefaults/add.php:439
@@ -26520,7 +26520,7 @@ msgstr "RegEx, das übereinstimmen muss"
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:324
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:719
 msgid "Service template to assign on match"
-msgstr ""
+msgstr "Servicevorlage, die bei Übereinstimmung zugewiesen werden soll"
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:383
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:221
@@ -26554,28 +26554,28 @@ msgstr "Service-Vorlagengruppe, die bei Übereinstimmung zugewiesen werden soll"
 #: .-modules/ImportModule/templates/HostDefaults/add.php:528
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:511
 msgid "If the match is successful, these agent checks are assigned to the imported hosts."
-msgstr ""
+msgstr "Bei erfolgreichem Abgleich werden diese Agenten Checks dem importierten Hosts zugewiesen."
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:546
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:529
 msgid "No agent checks are defined"
-msgstr ""
+msgstr "Es sind keine Agenten Checks definiert"
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:549
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:532
 msgid "Please create at least one \"Agent check\""
-msgstr ""
+msgstr "Bitte erstellen Sie mindestens einen \"Agenten Check\""
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:556
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:539
 msgid "Go to \"Agent checks\""
-msgstr ""
+msgstr "Gehen Sie zu \"Agent Checks\""
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:583
 #: .-modules/ImportModule/templates/HostDefaults/edit.php:565
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:274
 msgid "Agent check to assign on match"
-msgstr ""
+msgstr "Agenten Check zur Zuweisung bei Übereinstimmung"
 
 #: .-modules/ImportModule/templates/HostDefaults/add.php:777
 msgid "Create host defaults"
@@ -26613,15 +26613,15 @@ msgstr "Importierte Hosts"
 
 #: .-modules/ImportModule/templates/ImportChangelogs/index.php:126
 msgid "External systems"
-msgstr ""
+msgstr "Externe Systeme"
 
 #: .-modules/ImportModule/templates/ImportChangelogs/index.php:127
 msgid "External monitorings"
-msgstr ""
+msgstr "Externe Monitoring Systeme"
 
 #: .-modules/ImportModule/templates/ImportChangelogs/index.php:128
 msgid "Start import data"
-msgstr ""
+msgstr "Datenimport starten"
 
 #: .-modules/ImportModule/templates/ImportChangelogs/index.php:129
 #: .-modules/ImportModule/templates/ImportChangelogs/index.php:227
@@ -26692,13 +26692,13 @@ msgstr "Importierten Host bearbeiten"
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:453
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:456
 msgid "In monitoring (disabled)"
-msgstr ""
+msgstr "Im Monitoring System (deaktiviert)"
 
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:50
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:289
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:439
 msgid "Marked for disable"
-msgstr ""
+msgstr "Zur Deaktivierung markiert"
 
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:68
 msgid "Imported host"
@@ -26706,11 +26706,11 @@ msgstr "Importierter Host"
 
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:82
 msgid "Identifier"
-msgstr ""
+msgstr "Identifikator"
 
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:89
 msgid "The identifier is used by the Importer to be able to identify and update records."
-msgstr ""
+msgstr "Der Identifikator wird vom Importeur verwendet, um Datensätze identifizieren und aktualisieren zu können."
 
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:316
 msgid "Update imported host"
@@ -26770,11 +26770,11 @@ msgstr "Bereit zur Synchronisation"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:257
 msgid "Flags"
-msgstr ""
+msgstr "Flags"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:271
 msgid "Imported hosts with changes"
-msgstr ""
+msgstr "Importierte Hosts mit Änderungen"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:304
 msgid "Filter by importer"
@@ -26798,7 +26798,7 @@ msgstr "Fortschritt"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:444
 msgid "Imported host with changes"
-msgstr ""
+msgstr "Importierter Host mit Änderungen"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:514
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:527
@@ -26827,11 +26827,11 @@ msgstr "Satellit:"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:559
 msgid "Service templates:"
-msgstr ""
+msgstr "Servicevorlagen:"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:577
 msgid "No service templates defined"
-msgstr ""
+msgstr "Keine Servicevorlagen definiert"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:582
 msgid "Service template groups:"
@@ -26853,19 +26853,19 @@ msgstr " Service, der von anderen Objekten verwendet wird."
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:648
 msgid "Agent Checks:"
-msgstr ""
+msgstr "Agenten Checks:"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:667
 msgid "Regular expression used to create the agent check"
-msgstr ""
+msgstr "Regulärer Ausdruck, der zum Erstellen der Agentenprüfung verwendet wird"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:677
 msgid "openITCOCKPIT Agent Services:"
-msgstr ""
+msgstr "openITCOCKPIT Agenten Services:"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:720
 msgid "External Services:"
-msgstr ""
+msgstr "Externe Services:"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:885
 msgid "Import CSV File with header"
@@ -26913,7 +26913,7 @@ msgstr "Diese Vorschau zeigt maximal 10 erste gültige Datensätze aus der CSV-D
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1782
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1919
 msgid "Furthermore are all hosts displayed and no filter rules get applied."
-msgstr ""
+msgstr "Darüber hinaus werden alle Hosts angezeigt und es werden keine Filterregeln angewendet."
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1086
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1323
@@ -26957,39 +26957,39 @@ msgstr "Diese Vorschau zeigt maximal 10 erste gültige Datensätze aus dem i-doi
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1399
 msgid "Import data from openITCOCKPIT Agent"
-msgstr ""
+msgstr "Daten vom openITCOCKPIT Agenten importieren"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1532
 msgid "openITCOCKPIT Agent Data preview"
-msgstr ""
+msgstr "Vorschau der openITCOCKPIT-Agentendaten"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1549
 msgid "This preview shows maximal 10 first valid records from openITCOCKPIT Agent."
-msgstr ""
+msgstr "Diese Vorschau zeigt maximal 10 erste gültige Datensätze vom openITCOCKPIT Agenten."
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1630
 msgid "Import data from iTop system"
-msgstr ""
+msgstr "Importieren Sie Daten aus dem iTop-System"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1763
 msgid "iTop Data preview"
-msgstr ""
+msgstr "iTop Daten-Vorschau"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1780
 msgid "This preview shows maximal 10 first valid records from iTop system."
-msgstr ""
+msgstr "Diese Vorschau zeigt maximal 10 erste gültige Datensätze aus dem iTop-System."
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1860
 msgid "Import data from External Monitoring System system"
-msgstr ""
+msgstr "Importieren Sie Daten aus dem externen Monitoring System"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1900
 msgid "External Monitoring System Data preview"
-msgstr ""
+msgstr "Vorschau der Daten des externen Monitoring Systems"
 
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1917
 msgid "This preview shows maximal 10 first valid records from External Monitoring System."
-msgstr ""
+msgstr "Diese Vorschau zeigt maximal 10 erste gültige Datensätze vom externen Monitoring System."
 
 #: .-modules/ImportModule/templates/Importers/add.php:26
 msgid "Add importer"
@@ -27027,42 +27027,42 @@ msgstr "Externes System verwenden, um zusätzliche Host-Informationen anzuzeigen
 #: .-modules/ImportModule/templates/Importers/add.php:157
 #: .-modules/ImportModule/templates/Importers/edit.php:160
 msgid "External monitoring system"
-msgstr ""
+msgstr "Externes Monitoring System"
 
 #: .-modules/ImportModule/templates/Importers/add.php:170
 #: .-modules/ImportModule/templates/Importers/edit.php:173
 msgid "openITCOCKPIT will query the selected external monitoring to import devices monitored by the remote system. openITCOCKPIT will synchronize  the status. The monitoring itself is still done by the external monitoring system."
-msgstr ""
+msgstr "openITCOCKPIT fragt die ausgewählten externe Monitoring Systeme ab, um vom Remote-System überwachte Geräte zu importieren. openITCOCKPIT synchronisiert den Status. Die Überwachung selbst erfolgt weiterhin durch das externe Monitoring System."
 
 #: .-modules/ImportModule/templates/Importers/add.php:186
 #: .-modules/ImportModule/templates/Importers/edit.php:189
 msgid "Import empty hosts"
-msgstr ""
+msgstr "Leere Hosts importieren"
 
 #: .-modules/ImportModule/templates/Importers/add.php:193
 #: .-modules/ImportModule/templates/Importers/edit.php:196
 msgid "If enabled, all hosts will be imported even without at least one match"
-msgstr ""
+msgstr "Wenn aktiviert, werden alle Hosts importiert, auch ohne mindestens eine Übereinstimmung"
 
 #: .-modules/ImportModule/templates/Importers/add.php:205
 #: .-modules/ImportModule/templates/Importers/edit.php:208
 msgid "Disable updates"
-msgstr ""
+msgstr "Deaktivieren Sie Updates"
 
 #: .-modules/ImportModule/templates/Importers/add.php:212
 #: .-modules/ImportModule/templates/Importers/edit.php:215
 msgid "If enabled, only new hosts will be imported. Already synchronized hosts are not changed"
-msgstr ""
+msgstr "Wenn aktiviert, werden nur neue Hosts importiert. Bereits synchronisierte Hosts werden nicht geändert"
 
 #: .-modules/ImportModule/templates/Importers/add.php:226
 #: .-modules/ImportModule/templates/Importers/edit.php:229
 msgid "Force disable hosts if they are not present in the imported data"
-msgstr ""
+msgstr "Erzwingen Sie die Deaktivierung von Hosts, wenn diese nicht in den importierten Daten vorhanden sind"
 
 #: .-modules/ImportModule/templates/Importers/add.php:233
 #: .-modules/ImportModule/templates/Importers/edit.php:236
 msgid "If enabled all hosts outside of import data will get disabled automatically"
-msgstr ""
+msgstr "Wenn diese Option aktiviert ist, werden alle Hosts außerhalb der Importdaten automatisch deaktiviert"
 
 #: .-modules/ImportModule/templates/Importers/add.php:247
 #: .-modules/ImportModule/templates/Importers/edit.php:249
@@ -27071,27 +27071,27 @@ msgstr "Löschen von Services erzwingen, wenn nicht im Mapping"
 
 #: .-modules/ImportModule/templates/Importers/add.php:254
 msgid "If enabled all services outside of the service template group assignment will get deleted automatically"
-msgstr ""
+msgstr "Wenn diese Option aktiviert ist, werden alle Services außerhalb der Servicevorlagengruppenzuweisung automatisch gelöscht"
 
 #: .-modules/ImportModule/templates/Importers/add.php:268
 #: .-modules/ImportModule/templates/Importers/edit.php:270
 msgid "Keep container settings"
-msgstr ""
+msgstr "Behalten Sie die Containereinstellungen bei"
 
 #: .-modules/ImportModule/templates/Importers/add.php:273
 #: .-modules/ImportModule/templates/Importers/edit.php:275
 msgid "Keep container settings for hosts that have already been synchronized"
-msgstr ""
+msgstr "Behalten Sie die Containereinstellungen für Hosts bei, die bereits synchronisiert wurden"
 
 #: .-modules/ImportModule/templates/Importers/add.php:287
 #: .-modules/ImportModule/templates/Importers/edit.php:289
 msgid "Keep satellite settings"
-msgstr ""
+msgstr "Behalten Sie die Satelliteneinstellungen bei"
 
 #: .-modules/ImportModule/templates/Importers/add.php:292
 #: .-modules/ImportModule/templates/Importers/edit.php:294
 msgid "Keep satellite settings for hosts that have already been synchronized"
-msgstr ""
+msgstr "Behalten Sie die Satelliteneinstellungen für Hosts bei, die bereits synchronisiert wurden"
 
 #: .-modules/ImportModule/templates/Importers/add.php:302
 #: .-modules/ImportModule/templates/Importers/edit.php:304
@@ -27360,7 +27360,7 @@ msgstr "Status der Garantiezeit / Basis der Garantiezeit"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:3
 msgid "iTop overview"
-msgstr ""
+msgstr "iTop-Übersicht"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:34
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:354
@@ -27368,13 +27368,13 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:916
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1218
 msgid "General information"
-msgstr ""
+msgstr "Allgemeine Informationen"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:40
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:601
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1224
 msgid "Operations"
-msgstr ""
+msgstr "Operationen"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:57
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:377
@@ -27382,14 +27382,14 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:939
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1238
 msgid "implementation"
-msgstr ""
+msgstr "Implementierung"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:60
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:380
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:621
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:942
 msgid "production"
-msgstr ""
+msgstr "Produktion"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:63
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:383
@@ -27397,7 +27397,7 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:945
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1244
 msgid "stock"
-msgstr ""
+msgstr "Lager"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:66
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:386
@@ -27405,21 +27405,21 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:948
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1247
 msgid "obsolete"
-msgstr ""
+msgstr "veraltet"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:81
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:403
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:641
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:965
 msgid "low"
-msgstr ""
+msgstr "niedrig"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:85
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:407
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:645
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:969
 msgid "medium"
-msgstr ""
+msgstr "mittel"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:88
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:120
@@ -27430,24 +27430,24 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:972
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1006
 msgid "Production relevance high"
-msgstr ""
+msgstr "Produktionsrelevanz hoch"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:89
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:411
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:649
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:973
 msgid "high"
-msgstr ""
+msgstr "hoch"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:96
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:655
 msgid "DNS domain"
-msgstr ""
+msgstr "DNS-Domäne"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:109
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:632
 msgid "Server role"
-msgstr ""
+msgstr "Serverrolle"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:127
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:451
@@ -27455,7 +27455,7 @@ msgstr ""
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1013
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1285
 msgid "External ID"
-msgstr ""
+msgstr "Externe ID"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:138
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:698
@@ -27465,291 +27465,291 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:46
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:44
 msgid "Uptime"
-msgstr ""
+msgstr "Betriebszeit"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:147
 msgid "Organisation"
-msgstr ""
+msgstr "Organisation"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:162
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:763
 msgid "Short description"
-msgstr ""
+msgstr "Kurze Beschreibung"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:168
 msgid "Host or cluster"
-msgstr ""
+msgstr "Host oder Cluster"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:183
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:715
 msgid "Last OS Patching"
-msgstr ""
+msgstr "Letztes Betriebssystem-Patching"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:193
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:781
 msgid "Application solutions"
-msgstr ""
+msgstr "Anwendungen"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:203
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:732
 msgid "Next OS Patching"
-msgstr ""
+msgstr "Nächstes Betriebssystem-Patching"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:229
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:539
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:794
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1087
 msgid "Server details"
-msgstr ""
+msgstr "Serverdetails"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:234
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:823
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1109
 msgid "OS Family"
-msgstr ""
+msgstr "OS Familie"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:242
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:831
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1117
 msgid "OS Version"
-msgstr ""
+msgstr "OS Version"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:250
 msgid "Management url"
-msgstr ""
+msgstr "Verwaltungs-URL"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:260
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:839
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1125
 msgid "Cpu type"
-msgstr ""
+msgstr "CPU-Typ"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:269
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:848
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1134
 msgid "Cpu count"
-msgstr ""
+msgstr "CPU-Anzahl"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:277
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:856
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1142
 msgid "Cpu cores"
-msgstr ""
+msgstr "CPU-Kerne"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:285
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:864
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1150
 msgid "RAM"
-msgstr ""
+msgstr "RAM"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:299
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:886
 msgid "Provider HW"
-msgstr ""
+msgstr "Anbieter-HW"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:305
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:892
 msgid "Provider OS"
-msgstr ""
+msgstr "Anbieter-Betriebssystem"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:314
 msgid "Provider contract"
-msgstr ""
+msgstr "Anbietervertrag"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:320
 msgid "Provider SLA"
-msgstr ""
+msgstr "Anbieter-SLA"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:329
 msgid "PSP operations department"
-msgstr ""
+msgstr "PSP-Betriebsabteilung"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:360
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:922
 msgid "Network component"
-msgstr ""
+msgstr "Netzwerkkomponent"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:392
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:994
 msgid "Scope"
-msgstr ""
+msgstr "Umfang"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:432
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1069
 msgid "Wanedge type"
-msgstr ""
+msgstr "Wanedge-Typ"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:462
 msgid "Network other information"
-msgstr ""
+msgstr "Sonstige Netzwerkinformationen"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:468
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1057
 msgid "Risk class"
-msgstr ""
+msgstr "Risikoklasse"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:474
 msgid "Provider ID"
-msgstr ""
+msgstr "Anbieter-ID"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:489
 msgid "Monitoring template"
-msgstr ""
+msgstr "Monitoring-Vorlage"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:498
 msgid "HW support service class"
-msgstr ""
+msgstr "HW-Support-Serviceklasse"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:504
 msgid "Service CI Dummy CI"
-msgstr ""
+msgstr "Service-CI Dummy-CI"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:519
 msgid "Operation risk class"
-msgstr ""
+msgstr "Betriebsrisikoklasse"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:528
 msgid "Building room"
-msgstr ""
+msgstr "Einbauraum"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:545
 msgid "Network type"
-msgstr ""
+msgstr "Netzwerkart"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:554
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:873
 msgid "Serial number"
-msgstr ""
+msgstr "Seriennummer"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:563
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:799
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1093
 msgid "Brand name"
-msgstr ""
+msgstr "Markenname"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:572
 msgid "K number"
-msgstr ""
+msgstr "K-Nummer"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:669
 msgid "Server window"
-msgstr ""
+msgstr "Serverfenster"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:726
 msgid "Rack"
-msgstr ""
+msgstr "Rack"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:743
 msgid "Rack position"
-msgstr ""
+msgstr "Rackposition"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:754
 msgid "Rack units"
-msgstr ""
+msgstr "Rack-Einheiten"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:815
 msgid "Hardware type full"
-msgstr ""
+msgstr "Hardwaretyp voll"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:954
 msgid "Hierarchy"
-msgstr ""
+msgstr "Hierarchie"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1024
 msgid "Service window"
-msgstr ""
+msgstr "Servicefenster"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1033
 msgid "Final class"
-msgstr ""
+msgstr "Final class"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1078
 msgid "Provider name"
-msgstr ""
+msgstr "Anbietername"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1230
 msgid "man_wan_id"
-msgstr ""
+msgstr "man_wan_id"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1241
 msgid "active"
-msgstr ""
+msgstr "aktiv"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1253
 msgid "finalclass"
-msgstr ""
+msgstr "finalclass"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1261
 msgid "hostname"
-msgstr ""
+msgstr "Hostname"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1276
 msgid "monitoring_template"
-msgstr ""
+msgstr "monitoring_template"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1296
 msgid "wan_interface"
-msgstr ""
+msgstr "wan_interface"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1304
 msgid "org_id_friendlyname"
-msgstr ""
+msgstr "org_id_friendlyname"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1310
 msgid "loopback_ip"
-msgstr ""
+msgstr "loopback_ip"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1319
 msgid "organization_name"
-msgstr ""
+msgstr "organization_name"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1325
 msgid "location_name"
-msgstr ""
+msgstr "location_name"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1334
 msgid "wan_scope"
-msgstr ""
+msgstr "wan_scope"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1347
 msgid "WANLine details"
-msgstr ""
+msgstr "WANLine-Details"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1352
 msgid "router_asset_id"
-msgstr ""
+msgstr "router_asset_id"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1360
 msgid "topsite"
-msgstr ""
+msgstr "topsite"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1368
 msgid "linetype"
-msgstr ""
+msgstr "linetype"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1376
 msgid "wan_edge_type"
-msgstr ""
+msgstr "wan_edge_type"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1390
 msgid "provider_id_friendlyname"
-msgstr ""
+msgstr "provider_id_friendlyname"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1396
 msgid "wan_serviceclass"
-msgstr ""
+msgstr "wan_serviceclass"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1405
 msgid "provider_linenumber"
-msgstr ""
+msgstr "provider_linenumber"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1411
 msgid "wan_risk_class"
-msgstr ""
+msgstr "wan_risk_class"
 
 #: .-modules/ImportModule/templates/element/CMDB/itop.php:1419
 msgid "service_number"
-msgstr ""
+msgstr "service_number"
 
 #: .-modules/MSSQLModule/templates/Wizards/mssql.php:19
 msgid "Microsoft SQL Server"
@@ -27980,7 +27980,7 @@ msgstr "Markiere Wartungszeiten und Bestätigungen"
 
 #: .-modules/PRINTERModule/templates/Wizards/printer.php:29
 msgid "Configuration Wizard: Printer"
-msgstr ""
+msgstr "Konfigurationsassistent: Drucker"
 
 #: .-modules/PRINTERModule/templates/Wizards/printer.php:43
 msgid "Configure SNMP for Printer Monitoring"
@@ -28343,7 +28343,7 @@ msgstr "Prometheus Statusübersicht"
 
 #: .-modules/PrometheusModule/templates/PrometheusQuery/browser_directive.php:15
 msgid "Metric count"
-msgstr ""
+msgstr "Metrikanzahl"
 
 #: .-modules/PrometheusModule/templates/PrometheusQuery/browser_directive.php:25
 #: .-modules/PrometheusModule/templates/PrometheusQuery/index.php:158
@@ -28771,102 +28771,102 @@ msgstr "SAP Services"
 #: .-modules/SLAModule/src/Controller/SlasController.php:198
 #: .-modules/SLAModule/src/Controller/SlasController.php:251
 msgid "SLA not found"
-msgstr ""
+msgstr "SLA nicht gefunden"
 
 #: .-modules/SLAModule/src/Lib/CsvReport.php:67
 msgid "UP_%"
-msgstr ""
+msgstr "UP_%"
 
 #: .-modules/SLAModule/src/Lib/CsvReport.php:68
 msgid "DOWN_%"
-msgstr ""
+msgstr "DOWN_%"
 
 #: .-modules/SLAModule/src/Lib/CsvReport.php:69
 msgid "UP_Seconds"
-msgstr ""
+msgstr "UP_Seconds"
 
 #: .-modules/SLAModule/src/Lib/CsvReport.php:70
 msgid "DOWN_Seconds"
-msgstr ""
+msgstr "DOWN_Seconds"
 
 #: .-modules/SLAModule/src/Lib/CsvReport.php:140
 msgid "Start Date"
-msgstr ""
+msgstr "Startdatum"
 
 #: .-modules/SLAModule/src/Lib/CsvReport.php:141
 msgid "Start Time"
-msgstr ""
+msgstr "Startzeit"
 
 #: .-modules/SLAModule/src/Lib/CsvReport.php:142
 msgid "End Date"
-msgstr ""
+msgstr "Enddatum"
 
 #: .-modules/SLAModule/src/Lib/CsvReport.php:143
 msgid "End Time"
-msgstr ""
+msgstr "Endzeit"
 
 #: .-modules/SLAModule/src/Lib/CsvReport.php:144
 msgid "Down Period"
-msgstr ""
+msgstr "Ausfallzeitraum"
 
 #: .-modules/SLAModule/src/Lib/Menu.php:25
 msgid "SLA Management"
-msgstr ""
+msgstr "SLA-Management"
 
 #: .-modules/SLAModule/src/Lib/Menu.php:30
 msgid "SLAs"
-msgstr ""
+msgstr "SLAs"
 
 #: .-modules/SLAModule/src/Lib/Menu.php:47
 msgid "SLA Globals"
-msgstr ""
+msgstr "SLA Globals"
 
 #: .-modules/SLAModule/src/Lib/Sla.php:42
 msgid "SLA \"{0}\" cannot be evaluated. Time evaluation sla data is not available for the selected period \"{1}\""
-msgstr ""
+msgstr "SLA \"{0}\" kann nicht ausgewertet werden. Die SLA-Daten der Zeitauswertung sind für den ausgewählten Zeitraum „{1}“ nicht verfügbar"
 
 #: .-modules/SLAModule/src/Lib/Sla.php:56
 msgid "SLA \"{0}\" cannot be evaluated. The start date of the evaluation is in the future \"{1}\""
-msgstr ""
+msgstr "SLA \"{0}\" kann nicht ausgewertet werden. Das Startdatum der Auswertung liegt in der Zukunft \"{1}\""
 
 #: .-modules/SLAModule/src/Lib/Sla.php:74
 msgid "SLA \"{0}\" cannot be calculated. No hosts are available in selected SLA"
-msgstr ""
+msgstr "SLA \"{0}\" kann nicht berechnet werden. Im ausgewählten SLA sind keine Hosts verfügbar"
 
 #: .-modules/SLAModule/src/Lib/SlaHost.php:418
 #: .-modules/SLAModule/src/Lib/SlaService.php:419
 msgid "Time evaluation sla data is not available for the selected period ({0} with calendar: {1})"
-msgstr ""
+msgstr "Für den ausgewählten Zeitraum ({0} mit Kalender: {1}) sind keine Daten für de Auswertungs verfügbar."
 
 #: .-modules/SLAModule/src/Lib/SlaReport.php:271
 msgid "SLA \"{0}\" cannot be evaluated. The \"from\" and \"to\" date of the evaluation is before sla start date \"{1}\""
-msgstr ""
+msgstr "SLA \"{0}\" kann nicht ausgewertet werden. Das \"Von\"- und \"Bis\"-Datum der Bewertung liegt vor dem SLA-Startdatum \"{1}\""
 
 #: .-modules/SLAModule/src/Lib/SlaReport.php:282
 msgid "SLA \"{0}\" cannot be evaluated. The \"from\" date of the evaluation is before sla start date \"{1}\""
-msgstr ""
+msgstr "SLA \"{0}\" kann nicht ausgewertet werden. Das \"Von\"-Datum der Bewertung liegt vor dem SLA-Startdatum \"{1}\""
 
 #: .-modules/SLAModule/src/Lib/Widgets.php:36
 msgid "SLA Status"
-msgstr ""
+msgstr "SLA-Status"
 
 #: .-modules/SLAModule/src/Lib/Widgets.php:45
 msgid "SLA Calendar Overview"
-msgstr ""
+msgstr "SLA Kalender-Übersicht"
 
 #: .-modules/SLAModule/src/Lib/Widgets.php:54
 msgid "SLA Summary"
-msgstr ""
+msgstr "SLA-Zusammenfassung"
 
 #: .-modules/SLAModule/src/Model/Table/HostMappingRulesTable.php:86
 #: .-modules/SLAModule/src/Model/Table/HostMappingRulesTable.php:97
 #: .-modules/SLAModule/src/Model/Table/HostMappingRulesTable.php:109
 msgid "Please select at least one option"
-msgstr ""
+msgstr "Bitte wählen Sie mindestens eine Option aus"
 
 #: .-modules/SLAModule/src/Model/Table/HostMappingRulesTable.php:118
 msgid "Your host name regex is an invalid regular expression."
-msgstr ""
+msgstr "Der reguläre Ausdruck Ihres Hostnamens ist ein ungültiger regulärer Ausdruck."
 
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:662
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:673
@@ -28874,11 +28874,11 @@ msgstr ""
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:699
 #: .-modules/SLAModule/src/Reports/SlaDaterangesCreator.php:708
 msgid "Week {0}"
-msgstr ""
+msgstr "Woche {0}"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:16
 msgid " Service Level Agreement Module"
-msgstr ""
+msgstr " Service-Level-Agreement-Modul"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:20
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:19
@@ -28891,64 +28891,64 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/index.php:30
 #: .-modules/SLAModule/templates/Slas/view_details.php:28
 msgid "Service Level Agreements"
-msgstr ""
+msgstr "Service Level Agreements"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:24
 msgid "Manage mapping rules"
-msgstr ""
+msgstr "Zuordnungsregeln verwalten"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:34
 msgid "Host mapping rules"
-msgstr ""
+msgstr "Host-Zuordnungsregeln"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:57
 #: .-modules/SLAModule/templates/Slas/hosts.php:67
 msgid "Service level Agreement: "
-msgstr ""
+msgstr "Service-Level-Agreement: "
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:68
 msgid "Please note: This in an one-time assignment. Hosts that will be created later on, are not automatically assigned to the given SLA. You would need to execute the rule manually to add new hosts."
-msgstr ""
+msgstr "Bitte beachten Sie: Dies ist eine einmalige Zuweisung. Hosts, die später erstellt werden, werden nicht automatisch dem angegebenen SLA zugewiesen. Sie müssten die Regel manuell ausführen, um neue Hosts hinzuzufügen."
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:70
 msgid "It is recommended to assign the SLA via the host templates."
-msgstr ""
+msgstr "Es empfiehlt sich, das SLA über die Host-Vorlagen zuzuweisen."
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:79
 msgid "Host mapping rule"
-msgstr ""
+msgstr "Hostzuordnungsregel"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:183
 msgid "Only unassigned hosts"
-msgstr ""
+msgstr "Nur nicht zugewiesene Hosts"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:199
 msgid "Show affected hosts"
-msgstr ""
+msgstr "Betroffene Hosts anzeigen"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:202
 msgid "This host list is <b><u>ONLY</u></b> for previewing which hosts will be updated."
-msgstr ""
+msgstr "Diese Hostliste dient <b><u>NUR</u></b> der Vorschau, welche Hosts aktualisiert werden."
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:203
 msgid "Please note this list is paginated! Verify the hosts before running \"Assign to hosts\"."
-msgstr ""
+msgstr "Bitte beachten Sie, dass diese Liste paginiert ist! Überprüfen Sie die Hosts, bevor Sie \"Hosts zuweisen\" ausführen."
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:236
 #: .-modules/SLAModule/templates/Slas/add.php:49
 #: .-modules/SLAModule/templates/Slas/edit.php:49
 #: .-modules/SLAModule/templates/Slas/generate.php:95
 msgid "SLA"
-msgstr ""
+msgstr "SLA"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:295
 #: .-modules/SLAModule/templates/Slas/index.php:282
 msgid "Assign to hosts"
-msgstr ""
+msgstr "Hosts zuweisen"
 
 #: .-modules/SLAModule/templates/HostMappingRules/assign_to_hosts.php:307
 msgid "Save mapping rule and assign to hosts"
-msgstr ""
+msgstr "Zuordnungsregel speichern und Hosts zuweisen"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:15
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusServicesLog/index.php:15
@@ -28959,30 +28959,30 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/index.php:15
 #: .-modules/SLAModule/templates/Slas/view_details.php:24
 msgid "Service Level Agreement Module"
-msgstr ""
+msgstr "Service-Level-Agreement-Modul"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:23
 msgid "SLA Host Overview"
-msgstr ""
+msgstr "SLA-Host-Übersicht"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:32
 msgid "SLA Host Status Log"
-msgstr ""
+msgstr "SLA-Hoststatusprotokoll"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:123
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusServicesLog/index.php:121
 msgid "Evaluation range"
-msgstr ""
+msgstr "Auswertungsbereich"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:126
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusServicesLog/index.php:124
 msgid "State summary"
-msgstr ""
+msgstr "Statuszusammenfassung"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:129
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusServicesLog/index.php:127
 msgid "Outage overview"
-msgstr ""
+msgstr "Ausfallübersicht"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:132
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusServicesLog/index.php:130
@@ -28990,68 +28990,68 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:124
 #: .-modules/SLAModule/templates/Slas/view_details.php:416
 msgid "Goal"
-msgstr ""
+msgstr "Ziel"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:135
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusServicesLog/index.php:133
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:348
 #: .-modules/SLAModule/templates/Slas/view_details.php:419
 msgid " Achieved"
-msgstr ""
+msgstr "Erreicht"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusServicesLog/index.php:23
 msgid "SLA Service Overview"
-msgstr ""
+msgstr "SLA-Serviceübersicht"
 
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusServicesLog/index.php:32
 msgid "SLA Service Status Log"
-msgstr ""
+msgstr "SLA-Dienststatusprotokoll"
 
 #: .-modules/SLAModule/templates/SlaSettings/index.php:15
 msgid "SLA Module"
-msgstr ""
+msgstr "SLA-Modul"
 
 #: .-modules/SLAModule/templates/SlaSettings/index.php:47
 msgid "SLA Settings"
-msgstr ""
+msgstr "SLA-Einstellungen"
 
 #: .-modules/SLAModule/templates/SlaSettings/index.php:71
 msgid "Max storage age"
-msgstr ""
+msgstr "Maximale Aufbewahrungsdauer"
 
 #: .-modules/SLAModule/templates/SlaSettings/index.php:86
 msgid "Time in weeks how long SLA related data will be stored"
-msgstr ""
+msgstr "Zeit in Wochen, wie lange SLA-bezogene Daten gespeichert werden"
 
 #: .-modules/SLAModule/templates/Slas/add.php:24
 msgid "Add SLA"
-msgstr ""
+msgstr "SLA hinzufügen"
 
 #: .-modules/SLAModule/templates/Slas/add.php:34
 msgid "Create Service Level Agreement"
-msgstr ""
+msgstr "Erstellen Sie eine Service-Level-Vereinbarung"
 
 #: .-modules/SLAModule/templates/Slas/add.php:121
 #: .-modules/SLAModule/templates/Slas/edit.php:121
 msgid "If no start date is defined, 1. January of the current year will be used automatically."
-msgstr ""
+msgstr "Wenn kein Startdatum definiert ist, wird automatisch der 1. Januar des aktuellen Jahres verwendet."
 
 #: .-modules/SLAModule/templates/Slas/add.php:130
 #: .-modules/SLAModule/templates/Slas/edit.php:130
 #: .-modules/SLAModule/templates/Slas/pdf/generate.php:94
 msgid "Guaranteed availability as percentage"
-msgstr ""
+msgstr "Garantierte Verfügbarkeit in Prozent"
 
 #: .-modules/SLAModule/templates/Slas/add.php:144
 #: .-modules/SLAModule/templates/Slas/edit.php:144
 msgid "An uptime guarantee that indicates the percentage of time the system is available"
-msgstr ""
+msgstr "Eine Verfügbarkeitsgarantie, die angibt, wie viel Prozent der Zeit das System verfügbar ist"
 
 #: .-modules/SLAModule/templates/Slas/add.php:152
 #: .-modules/SLAModule/templates/Slas/edit.php:152
 #: .-modules/SLAModule/templates/Slas/pdf/generate.php:84
 msgid "Warning threshold as percentage"
-msgstr ""
+msgstr "Warnschwelle in Prozent"
 
 #: .-modules/SLAModule/templates/Slas/add.php:174
 #: .-modules/SLAModule/templates/Slas/add.php:176
@@ -29060,35 +29060,35 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/edit.php:176
 #: .-modules/SLAModule/templates/Slas/edit.php:178
 msgid "Operating time"
-msgstr ""
+msgstr "Betriebszeit"
 
 #: .-modules/SLAModule/templates/Slas/add.php:238
 msgid "Save SLA"
-msgstr ""
+msgstr "SLA speichern"
 
 #: .-modules/SLAModule/templates/Slas/add.php:255
 msgid "Save and go to host assignments"
-msgstr ""
+msgstr "Speicher und gehe zu den Host-Zuweisungen"
 
 #: .-modules/SLAModule/templates/Slas/edit.php:24
 msgid "Edit SLA"
-msgstr ""
+msgstr "SLA bearbeiten"
 
 #: .-modules/SLAModule/templates/Slas/edit.php:34
 msgid "Update Service Level Agreement"
-msgstr ""
+msgstr "Aktualisieren Sie die Service-Level-Vereinbarung"
 
 #: .-modules/SLAModule/templates/Slas/edit.php:237
 msgid "Update SLA"
-msgstr ""
+msgstr "SLA aktualisieren"
 
 #: .-modules/SLAModule/templates/Slas/edit.php:254
 msgid "Update and go to host assignments"
-msgstr ""
+msgstr "Aktualisiere und gehe zu den Host-Zuweisungen"
 
 #: .-modules/SLAModule/templates/Slas/generate.php:34
 msgid "Generate sla report"
-msgstr ""
+msgstr "SLA-Report erstellen"
 
 #: .-modules/SLAModule/templates/Slas/generate.php:285
 #: .-modules/SLAModule/templates/Slas/generate.php:418
@@ -29097,7 +29097,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:78
 #: .-modules/SLAModule/templates/Slas/view_details.php:404
 msgid "Total time"
-msgstr ""
+msgstr "Gesamtzeit"
 
 #: .-modules/SLAModule/templates/Slas/generate.php:291
 #: .-modules/SLAModule/templates/Slas/generate.php:424
@@ -29106,46 +29106,46 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:100
 #: .-modules/SLAModule/templates/Slas/view_details.php:410
 msgid "Outage time"
-msgstr ""
+msgstr "Ausfallzeit"
 
 #: .-modules/SLAModule/templates/Slas/generate.php:297
 #: .-modules/SLAModule/templates/Slas/generate.php:430
 msgid "Goal(%)"
-msgstr ""
+msgstr "Ziel(%)"
 
 #: .-modules/SLAModule/templates/Slas/generate.php:300
 #: .-modules/SLAModule/templates/Slas/generate.php:433
 msgid "Achieved(%)"
-msgstr ""
+msgstr "Erreicht(%)"
 
 #: .-modules/SLAModule/templates/Slas/hosts.php:23
 msgid "Service Level Agreement Affected Hosts"
-msgstr ""
+msgstr "Von der Service Level Agreement betroffene Hosts"
 
 #: .-modules/SLAModule/templates/Slas/hosts.php:34
 #: .-modules/SLAModule/templates/Slas/index.php:292
 msgid "Affected hosts"
-msgstr ""
+msgstr "Betroffene Hosts"
 
 #: .-modules/SLAModule/templates/Slas/hosts.php:52
 msgid "Go to \"SLA configuration\""
-msgstr ""
+msgstr "Gehe zu \"SLA-Konfiguration\""
 
 #: .-modules/SLAModule/templates/Slas/hosts.php:78
 msgid "Overview of all affected hosts.  Please refresh your configuration after configuration changes!"
-msgstr ""
+msgstr "Übersicht aller betroffenen Hosts. Bitte aktualisieren Sie Ihre Konfiguration nach Konfigurationsänderungen!"
 
 #: .-modules/SLAModule/templates/Slas/hosts.php:132
 msgid "Direct assignment or via the host template"
-msgstr ""
+msgstr "Direkte Zuweisung oder über die Hostvorlage"
 
 #: .-modules/SLAModule/templates/Slas/index.php:65
 msgid "Filter by sla name"
-msgstr ""
+msgstr "Nach SLA-Namen filtern"
 
 #: .-modules/SLAModule/templates/Slas/index.php:78
 msgid "Filter by sla description"
-msgstr ""
+msgstr "Nach SLA-Beschreibung filtern"
 
 #: .-modules/SLAModule/templates/Slas/index.php:115
 #: .-modules/SLAModule/templates/Slas/pdf/generate.php:75
@@ -29153,21 +29153,21 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:249
 #: .-modules/SLAModule/templates/Slas/view_details.php:74
 msgid "Evaluation interval"
-msgstr ""
+msgstr "Auswertungsintervall"
 
 #: .-modules/SLAModule/templates/Slas/index.php:132
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:229
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:254
 #: .-modules/SLAModule/templates/Slas/view_details.php:82
 msgid "Thresholds"
-msgstr ""
+msgstr "Schwellenwerte"
 
 #: .-modules/SLAModule/templates/Slas/index.php:136
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:121
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:127
 #: .-modules/SLAModule/templates/Slas/view_details.php:299
 msgid "Achieved"
-msgstr ""
+msgstr "Erreicht"
 
 #: .-modules/SLAModule/templates/Slas/pdf/generate.php:180
 #: .-modules/SLAModule/templates/Slas/pdf/generate.php:290
@@ -29175,117 +29175,117 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/slas_summary_widget.php:176
 #: .-modules/SLAModule/templates/Slas/view_details.php:226
 msgid "Passed"
-msgstr ""
+msgstr "Erfüllt"
 
 #: .-modules/SLAModule/templates/Slas/pdf/generate.php:228
 #: .-modules/SLAModule/templates/Slas/pdf/generate.php:338
 msgid "Outages in downtime"
-msgstr ""
+msgstr "Ausfälle in der Wartungszeit"
 
 #: .-modules/SLAModule/templates/Slas/sla_availability_overview.php:11
 msgid "Availability"
-msgstr ""
+msgstr "Verfügbarkeit"
 
 #: .-modules/SLAModule/templates/Slas/sla_availability_overview.php:13
 msgid "Outage"
-msgstr ""
+msgstr "Ausfall"
 
 #: .-modules/SLAModule/templates/Slas/sla_calendar_widget.php:142
 #: .-modules/SLAModule/templates/Slas/sla_summary_widget.php:229
 #: .-modules/SLAModule/templates/Slas/sla_widget.php:316
 #: .-modules/SLAModule/templates/Slas/slas_summary_widget.php:316
 msgid "Sla"
-msgstr ""
+msgstr "Sla"
 
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:34
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:33
 msgid "Information!"
-msgstr ""
+msgstr "Information!"
 
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:84
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:333
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:84
 #: .-modules/SLAModule/templates/Slas/view_details.php:407
 msgid "Availability time"
-msgstr ""
+msgstr "Verfügbarkeitszeit"
 
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:93
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:336
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:93
 msgid "Total outages"
-msgstr ""
+msgstr "Gesamtausfälle"
 
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:117
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:117
 #: .-modules/SLAModule/templates/Slas/view_details.php:295
 msgid "limit 10"
-msgstr ""
+msgstr "Limit 10"
 
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:144
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:169
 msgid "Currently available"
-msgstr ""
+msgstr "Derzeit verfügbar"
 
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:198
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:223
 msgid "Minimal availability"
-msgstr ""
+msgstr "Minimale Verfügbarkeit"
 
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:205
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:230
 msgid "Days total"
-msgstr ""
+msgstr "Tage insgesamt"
 
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:289
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:314
 #: .-modules/SLAModule/templates/Slas/view_details.php:144
 msgid "hard state only"
-msgstr ""
+msgstr "Nur harter Zustand"
 
 #: .-modules/SLAModule/templates/Slas/sla_hosts_overview.php:7
 msgid "Top 10 hosts with the lowest availability"
-msgstr ""
+msgstr "Top 10 Hosts mit der niedrigsten Verfügbarkeit"
 
 #: .-modules/SLAModule/templates/Slas/sla_summary_widget.php:44
 #: .-modules/SLAModule/templates/Slas/sla_widget.php:41
 msgid "Number of hosts"
-msgstr ""
+msgstr "Anzahl der Hosts"
 
 #: .-modules/SLAModule/templates/Slas/sla_summary_widget.php:47
 #: .-modules/SLAModule/templates/Slas/sla_widget.php:44
 msgid "Number of services"
-msgstr ""
+msgstr "Anzahl der Services"
 
 #: .-modules/SLAModule/templates/Slas/sla_summary_widget.php:65
 msgid "Host UP"
-msgstr ""
+msgstr "Host UP"
 
 #: .-modules/SLAModule/templates/Slas/sla_summary_widget.php:71
 msgid "Host DOWN"
-msgstr ""
+msgstr "Host DOWN"
 
 #: .-modules/SLAModule/templates/Slas/sla_summary_widget.php:77
 msgid "Service UP"
-msgstr ""
+msgstr "Service UP"
 
 #: .-modules/SLAModule/templates/Slas/sla_summary_widget.php:83
 msgid "Service DOWN"
-msgstr ""
+msgstr "Service DOWN"
 
 #: .-modules/SLAModule/templates/Slas/sla_widget.php:230
 #: .-modules/SLAModule/templates/Slas/slas_summary_widget.php:230
 #: .-modules/SLAModule/templates/Slas/view_details.php:252
 msgid "Not calculated"
-msgstr ""
+msgstr "Nicht berechnet"
 
 #: .-modules/SLAModule/templates/Slas/timeperiod_details_tooltip.php:10
 msgid "Timeperiod details"
-msgstr ""
+msgstr "Details zum Zeitraum"
 
 #: .-modules/SLAModule/templates/Slas/view_details.php:498
 #: .-modules/SLAModule/templates/Slas/view_details.php:569
 msgid "View status log"
-msgstr ""
+msgstr "Statusprotokoll anzeigen"
 
 #: .-modules/ServicenowModule/templates/Elements/host_configuration.php:9
 #: .-modules/ServicenowModule/templates/Elements/service_configuration.php:9
@@ -29638,7 +29638,7 @@ msgstr "USV"
 
 #: .-modules/UPSModule/templates/Wizards/ups.php:29
 msgid "Configuration Wizard: UPS"
-msgstr ""
+msgstr "Konfigurationsassistent: USV"
 
 #: .-modules/UPSModule/templates/Wizards/ups.php:43
 msgid "Configure SNMP for UPS Monitoring"
@@ -29733,13 +29733,12 @@ msgstr "VMware Services"
 
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:29
 msgid "Configuration Wizard: VMware Snapshot"
-msgstr ""
+msgstr "Konfigurationsassistent: VMware Snapshot"
 
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:57
 msgid "VMware Host"
-msgstr ""
+msgstr "VMware Host"
 
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:96
 msgid "VMware Snapshot services"
-msgstr ""
-
+msgstr "VMware Snapshot Services"
