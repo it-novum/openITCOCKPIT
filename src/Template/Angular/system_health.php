@@ -187,7 +187,7 @@
                                     <?php echo __('Warning'); ?>
                                 </h6>
 
-                                <i><?php echo __('NodeJS Server is not running'); ?></i>
+                                <i><?php echo __('Nodejs backend is not running'); ?></i>
                             </div>
                         </span>
                     </li>
@@ -200,6 +200,18 @@
                                     <br/>
                                     <i>{{ systemHealth.load.load1 }}, {{ systemHealth.load.load5 }}, {{
                                         systemHealth.load.load15 }}</i>
+                                </p>
+                            </div>
+                        </span>
+                    </li>
+
+                    <li ng-repeat="satellite in systemHealth.satellites" ng-if="satellite.satellite_status.status !== 1">
+                        <span>
+                            <div class="padding-5">
+                                <p class="margin-bottom-5">
+                                    <i><?php echo __('Sync status'); ?> <?php echo __('failed')?></i>
+                                    <br/>
+                                    <i>{{ satellite.name }}, <?php echo __('last seen')?> {{ satellite.satellite_status.last_seen }}</i>
                                 </p>
                             </div>
                         </span>

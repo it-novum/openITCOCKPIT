@@ -30,7 +30,7 @@
      ng-mouseover="stopInterval()"
      ng-mouseleave="startInterval()">
     <section>
-        <div class="bg-color-white padding-top-10 padding-left-10 padding-bottom-10">
+        <div class="bg-panel-default padding-top-10 padding-left-10 padding-bottom-10">
             <header>
                 <h5 class="text-primary">
                     <i class="fa fa-desktop text-primary"></i>

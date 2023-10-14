@@ -30,7 +30,10 @@ namespace App\Command;
 
 use App\itnovum\openITCOCKPIT\Database\Backup;
 use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
+use App\itnovum\openITCOCKPIT\Supervisor\Binarydctl;
+use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use App\Model\Entity\Changelog;
+use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ExportsTable;
 use App\Model\Table\SystemsettingsTable;
@@ -40,7 +43,9 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Filesystem\Folder;
+use Cake\I18n\FrozenDate;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use CheckmkModule\Command\CheckmkNagiosExportCommand;
@@ -48,6 +53,9 @@ use CheckmkModule\Lib\CmkHttpApi;
 use CheckmkModule\Lib\MkParser;
 use CheckmkModule\Model\Table\MkSatTasksTable;
 use DistributeModule\Model\Entity\Satellite;
+use DistributeModule\Model\Entity\SatelliteTask;
+use DistributeModule\Model\Table\SatelliteTasksTable;
+use ImportModule\Model\Table\SatellitePushAgentsTable;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
@@ -746,26 +754,49 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'export_verify_config':
+                if (IS_CONTAINER === false) {
+                    // Normal installation of openITCOCKPIT via apt, dnf or git
+                    /** @var SystemsettingsTable $SystemsettingsTable */
+                    $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                    $systemsettings = $SystemsettingsTable->findAsArray();
 
-                /** @var SystemsettingsTable $SystemsettingsTable */
-                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-                $systemsettings = $SystemsettingsTable->findAsArray();
+                    $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
+                    $naemonCfg = Configure::read('nagios.nagios_cfg');
 
-                $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
-                $naemonCfg = Configure::read('nagios.nagios_cfg');
+                    $cmd = sprintf(
+                        'sudo -u %s %s -v %s',
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                        $naemonBin,
+                        $naemonCfg
+                    );
 
-                $cmd = sprintf(
-                    'sudo -u %s %s -v %s',
-                    escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-                    $naemonBin,
-                    $naemonCfg
-                );
+                    exec($cmd, $output, $returncode);
+                    $return = [
+                        'output'     => $output,
+                        'returncode' => $returncode,
+                    ];
+                } else {
+                    // openITCOCKPIT is running in a container like docker
+                    $Binarydctl = new Binarydctl();
+                    // Naemon is running in a remote container, so we can only communicate through the XML RCP API of Supervisor
+                    $BinarydEndpoint = $Binarydctl->getBinarydApiEndpointByServiceName('naemon-verify');
 
-                exec($cmd, $output, $returncode);
-                $return = [
-                    'output'     => $output,
-                    'returncode' => $returncode,
-                ];
+                    //Run naemon-verify
+                    try {
+                        $result = $BinarydEndpoint->executeJson('naemon-verify');
+                        $returncode = $result['rc'] ?? 1;
+                        $output = [
+                            $result['stdout'] ?? ''
+                        ];
+                    } catch (\Exception $e) {
+                        Log::error($e->getMessage());
+                    }
+
+                    $return = [
+                        'output'     => $output ?? ['Unknown'],
+                        'returncode' => $returncode ?? 1,
+                    ];
+                }
                 break;
 
             case 'export_verify_prometheus_config':
@@ -819,11 +850,6 @@ class GearmanWorkerCommand extends Command {
             //    unset($entity);
             //    $return = ['task' => $payload['task']];
             //    break;
-
-            case 'idoit_sync':
-                //@todo implement me
-                //$this->Synchronisation->runImport($payload['isCron'], $payload['authUser']);
-                break;
 
             case 'make_sql_backup':
                 $filename = Configure::read('nagios.export.backupTarget') . '/' . $payload['filename'];
@@ -896,49 +922,68 @@ class GearmanWorkerCommand extends Command {
                     'isNodeJsServerRunning'     => false
                 ];
 
-                exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNagiosRunning'] = true;
-                }
+                if (IS_CONTAINER === false) {
+                    // Normal installation of openITCOCKPIT via apt, dnf or git
+                    exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNagiosRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.NDO_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNdoRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.NDO_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNdoRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.STATUSENIGNE_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isStatusengineRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.STATUSENIGNE_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isStatusengineRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.NPCD_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNpcdRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.NPCD_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNpcdRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.OITC_CMD_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isOitcCmdRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.OITC_CMD_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isOitcCmdRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.SUDO_SERVER_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isSudoServerRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.SUDO_SERVER_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isSudoServerRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.NSTA_STATUS'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNstaRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.NSTA_STATUS'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNstaRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isPushNotificationRunning'] = true;
-                }
+                    exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isPushNotificationRunning'] = true;
+                    }
 
-                exec($systemsetting['INIT']['INIT.NODEJS_SERVER'] . $errorRedirect, $output, $returncode);
-                if ($returncode == 0) {
-                    $state['isNodeJsServerRunning'] = true;
+                    exec($systemsetting['INIT']['INIT.OPENITCOCKPIT_NODE'] . $errorRedirect, $output, $returncode);
+                    if ($returncode == 0) {
+                        $state['isNodeJsServerRunning'] = true;
+                    }
+                } else {
+                    // openITCOCKPIT is running inside a container like docker
+                    $Supervisorctl = new Supervisorctl();
+                    $state = [
+                        'isNagiosRunning'           => $Supervisorctl->isRunning('naemon'),
+                        'isNdoRunning'              => false,
+                        'isStatusengineRunning'     => $Supervisorctl->isRunning('statusengine'),
+                        'isNpcdRunning'             => false,
+                        'isOitcCmdRunning'          => $Supervisorctl->isRunning('oitc_cmd'),
+                        'isSudoServerRunning'       => $Supervisorctl->isRunning('sudo_server'),
+                        'isNstaRunning'             => $Supervisorctl->isRunning('nsta'),
+                        'isGearmanWorkerRunning'    => true,
+                        'isPushNotificationRunning' => $Supervisorctl->isRunning('push_notification'),
+                        'isNodeJsServerRunning'     => $Supervisorctl->isRunning('openitcockpit-node')
+                    ];
+
                 }
 
                 $return = $state;
@@ -992,6 +1037,113 @@ class GearmanWorkerCommand extends Command {
                         'exception' => 'ProcessFailedException'
                     ];
                 }
+                break;
+
+            case 'OitcAgentSatResult':
+                // Got openITCOCKPIT Agent Query Result from Satellite
+                $hasError = !empty($payload['Error']);
+
+                if (!Plugin::isLoaded('DistributeModule')) {
+                    break;
+                }
+
+                /** @var SatelliteTasksTable $SatelliteTasksTable */
+                $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
+
+                $IsGetAllPushAgentsRequest = $payload['IsGetAllPushAgentsRequest'] ?? false;
+
+                if ($IsGetAllPushAgentsRequest === true) {
+                    // Import Module wants to query all Push agents
+                    // Process get_all_push_agents result
+                    if (!Plugin::isLoaded('ImportModule')) {
+                        break;
+                    }
+
+                    $task = $SatelliteTasksTable->find()
+                        ->where([
+                            'id'           => $payload['TaskID'],
+                            'satellite_id' => $payload['SatelliteID']
+                        ])
+                        ->firstOrFail();
+
+                    $task = $SatelliteTasksTable->patchEntity($task, [
+                        'result' => 'Result gets stored to satellite_push_agents table',
+                        'error'  => $payload['Error'] ?? null,
+                        'status' => $hasError ? SatelliteTask::SatelliteTaskFinishedError : SatelliteTask::SatelliteTaskFinishedSuccessfully
+                    ]);
+                    $SatelliteTasksTable->save($task);
+
+                    /** @var SatellitePushAgentsTable $SatellitePushAgentsTable */
+                    $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+                    if (!empty($payload['RawResult'])) {
+                        $jsonResults = json_decode($payload['RawResult'], true);
+                        foreach ($jsonResults as $result) {
+                            $lastUpdate = new FrozenDate($result['last_update']);
+                            $created = new FrozenDate($result['created']);
+                            $modified = new FrozenDate($result['modified']);
+                            $data = [
+                                'uuid'                 => $result['uuid'], // Agent UUID
+                                'satellite_id'         => $payload['SatelliteID'],
+                                'hostname'             => $result['hostname'],
+                                'ipaddress'            => $result['ipaddress'],
+                                'remote_address'       => $result['remote_address'],
+                                'http_x_forwarded_for' => $result['http_x_forwarded_for'],
+                                'checkresults'         => $result['checkresults'],
+                                'last_update'          => $lastUpdate->format('Y-m-d H:i:s'),
+                                'created'              => $created->format('Y-m-d H:i:s'),
+                                'modified'             => $modified->format('Y-m-d H:i:s'),
+                            ];
+                            if ($SatellitePushAgentsTable->exists([
+                                'SatellitePushAgents.uuid' => $result['uuid']
+                            ])) {
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->find()
+                                    ->where([
+                                            'SatellitePushAgents.uuid' => $result['uuid']
+                                        ]
+                                    )->first();
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->patchEntity($satellitePushAgentEntity, $data);
+
+                            } else {
+                                $satellitePushAgentEntity = $SatellitePushAgentsTable->newEntity($data);
+
+                            }
+                            $SatellitePushAgentsTable->save($satellitePushAgentEntity);
+                        }
+                    }
+                }
+
+                if ($IsGetAllPushAgentsRequest === false) {
+                    // Process Satellite Response for oITC Agent triggered by Wizard
+                    try {
+                        /** @var AgentconfigsTable $AgentconfigsTable */
+                        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+                        $record = $AgentconfigsTable->getConfigById($payload['AgentConfigId']);
+
+                        $task = $SatelliteTasksTable->find()
+                            ->where([
+                                'id'           => $payload['TaskID'],
+                                'satellite_id' => $payload['SatelliteID']
+                            ])
+                            ->firstOrFail();
+
+                        $task = $SatelliteTasksTable->patchEntity($task, [
+                            'result' => $payload['RawResult'] ?? null,
+                            'error'  => $payload['Error'] ?? null,
+                            'status' => $hasError ? SatelliteTask::SatelliteTaskFinishedError : SatelliteTask::SatelliteTaskFinishedSuccessfully
+                        ]);
+
+                        if ($hasError === false && $record->use_autossl) {
+                            $record->set('autossl_successful', true);
+                            $AgentconfigsTable->save($record);
+                        }
+
+                        $SatelliteTasksTable->save($task);
+                    } catch (RecordNotFoundException $e) {
+                        Log::error('Could not find any satellite task for: ' . json_encode($payload));
+                    }
+                }
+
                 break;
         }
 
@@ -1224,16 +1376,38 @@ class GearmanWorkerCommand extends Command {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $SystemsettingsTable->findAsArray();
 
-        $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
-        $naemonCfg = Configure::read('nagios.nagios_cfg');
-        $cmd = sprintf(
-            'sudo -u %s %s -v %s',
-            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
-            $naemonBin,
-            $naemonCfg
-        );
-        $output = null;
-        exec($cmd, $output, $returncode);
+        $Supervisorctl = new Supervisorctl();
+
+        if (IS_CONTAINER) {
+            // Naemon is running inside a container - query remote supervisor to run "naemon -v naemon.cfg"
+            // openITCOCKPIT is running in a container like docker
+            $Binarydctl = new Binarydctl();
+            // Naemon is running in a remote container, so we can only communicate through the XML RCP API of Supervisor
+            $BinarydEndpoint = $Binarydctl->getBinarydApiEndpointByServiceName('naemon-verify');
+
+            //Run naemon-verify
+            try {
+                $result = $BinarydEndpoint->executeJson('naemon-verify');
+                $returncode = $result['rc'] ?? 1;
+                $output = [
+                    $result['stdout'] ?? ''
+                ];
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+            }
+        } else {
+            // Local running Naemon
+            $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
+            $naemonCfg = Configure::read('nagios.nagios_cfg');
+            $cmd = sprintf(
+                'sudo -u %s %s -v %s',
+                escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                $naemonBin,
+                $naemonCfg
+            );
+            $output = null;
+            exec($cmd, $output, $returncode);
+        }
         $verifyEntity->set('finished', 1);
         if ($returncode === 0) {
             //New configuration is valid :-)
@@ -1242,84 +1416,133 @@ class GearmanWorkerCommand extends Command {
             $ExportsTable->save($verifyEntity);
 
             //Reloading the monitoring system
-
-            //Check if Naemon/Nagios is running.
-            //If Nagios is running, we reload the config, if not we need to restart
-            $entity = $ExportsTable->newEntity([
-                'task' => 'is_monitoring_engine_running',
-                'text' => __('Check if monitoring engine is running')
-            ]);
-            $ExportsTable->save($entity);
-            exec($systemsettings['MONITORING']['MONITORING.STATUS'], $statusOutput, $statusRc);
-            $entity->set('finished', 1);
-            $entity->set('successfully', 1);
-            $ExportsTable->save($entity);
-            unset($entity);
-
-            $isMonitoringRunning = false;
-            if ($statusRc === 0) {
-                //Nagios/Naemon is running (reload)
+            if (IS_CONTAINER === false) {
+                //Check if Naemon/Nagios is running.
+                //If Nagios is running, we reload the config, if not we need to restart
                 $entity = $ExportsTable->newEntity([
-                    'task' => 'export_reload_monitoring',
-                    'text' => __('Reloading monitoring engine')
+                    'task' => 'is_monitoring_engine_running',
+                    'text' => __('Check if monitoring engine is running')
                 ]);
                 $ExportsTable->save($entity);
-                exec($systemsettings['MONITORING']['MONITORING.RELOAD'], $reloadOutput, $reloadRc);
+                exec($systemsettings['MONITORING']['MONITORING.STATUS'], $statusOutput, $statusRc);
                 $entity->set('finished', 1);
-                $entity->set('successfully', 0);
-                if ($reloadRc === 0) {
-                    $entity->set('successfully', 1);
-                    $isMonitoringRunning = true;
-                }
+                $entity->set('successfully', 1);
                 $ExportsTable->save($entity);
                 unset($entity);
-            } else {
-                //Nagios/Naemon is stopped (restart)
-                $entity = $ExportsTable->newEntity([
-                    'task' => 'export_restart_monitoring',
-                    'text' => __('Restarting monitoring engine')
-                ]);
-                $ExportsTable->save($entity);
-                exec($systemsettings['MONITORING']['MONITORING.RESTART'], $restartOutput, $restartRc);
-                $entity->set('finished', 1);
-                $entity->set('successfully', 0);
-                if ($restartRc === 0) {
-                    $entity->set('successfully', 1);
-                    $isMonitoringRunning = true;
+
+                $isMonitoringRunning = false;
+                if ($statusRc === 0) {
+                    //Nagios/Naemon is running (reload)
+                    $entity = $ExportsTable->newEntity([
+                        'task' => 'export_reload_monitoring',
+                        'text' => __('Reloading monitoring engine')
+                    ]);
+                    $ExportsTable->save($entity);
+                    exec($systemsettings['MONITORING']['MONITORING.RELOAD'], $reloadOutput, $reloadRc);
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 0);
+                    if ($reloadRc === 0) {
+                        $entity->set('successfully', 1);
+                        $isMonitoringRunning = true;
+                    }
+                    $ExportsTable->save($entity);
+                    unset($entity);
+                } else {
+                    //Nagios/Naemon is stopped (restart)
+                    $entity = $ExportsTable->newEntity([
+                        'task' => 'export_restart_monitoring',
+                        'text' => __('Restarting monitoring engine')
+                    ]);
+                    $ExportsTable->save($entity);
+                    exec($systemsettings['MONITORING']['MONITORING.RESTART'], $restartOutput, $restartRc);
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 0);
+                    if ($restartRc === 0) {
+                        $entity->set('successfully', 1);
+                        $isMonitoringRunning = true;
+                    }
+                    $ExportsTable->save($entity);
+                    unset($entity);
                 }
-                $ExportsTable->save($entity);
-                unset($entity);
-            }
 
 
-            if ($isMonitoringRunning) {
-                //Run After Export command
-                $entity = $ExportsTable->newEntity([
-                    'task' => 'export_after_export_command',
-                    'text' => __('Execute after export command')
-                ]);
-                $output = null;
-                exec($systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'], $output, $returncode);
+                if ($isMonitoringRunning) {
+                    //Run After Export command
+                    $entity = $ExportsTable->newEntity([
+                        'task' => 'export_after_export_command',
+                        'text' => __('Execute after export command')
+                    ]);
+                    $output = null;
+                    exec($systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'], $output, $returncode);
 
-                // Avoid "MySQL server has gone away"
-                $connection = $SystemsettingsTable->getConnection();
-                $connection->disconnect();
-                $connection->connect();
+                    // Avoid "MySQL server has gone away"
+                    $connection = $SystemsettingsTable->getConnection();
+                    $connection->disconnect();
+                    $connection->connect();
 
-                $entity->set('finished', 1);
-                $entity->set('successfully', 0);
-                if ($returncode == 0) {
-                    $entity->set('successfully', 1);
-                    $this->distributedMonitoringAfterExportCommand();
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 0);
+                    if ($returncode == 0) {
+                        $entity->set('successfully', 1);
+                        $this->distributedMonitoringAfterExportCommand();
+                        $this->importModuleAfterExportCommand();
+                    } else {
+                        $successfully = 0;
+                    }
+
+                    $ExportsTable->save($entity);
+                    unset($entity);
+
                 } else {
                     $successfully = 0;
                 }
-
-                $ExportsTable->save($entity);
-                unset($entity);
-
             } else {
-                $successfully = 0;
+                // Containerized openITCOCKPIT
+                // Restart remote Naemon
+                $entity = $ExportsTable->newEntity([
+                    'task' => 'export_restart_monitoring',
+                    'text' => __('Restarting containerized monitoring engine')
+                ]);
+                $ExportsTable->save($entity);
+                $result = $Supervisorctl->restart('naemon');
+                $entity->set('finished', 1);
+                $entity->set('successfully', 0);
+                if ($result === true) {
+                    $entity->set('successfully', 1);
+                    $isMonitoringRunning = true;
+                }
+                $ExportsTable->save($entity);
+
+                if ($isMonitoringRunning) {
+                    //Run After Export command
+                    $entity = $ExportsTable->newEntity([
+                        'task' => 'export_after_export_command',
+                        'text' => __('Execute after export command')
+                    ]);
+                    $output = null;
+                    exec($systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'], $output, $returncode);
+
+                    // Avoid "MySQL server has gone away"
+                    $connection = $SystemsettingsTable->getConnection();
+                    $connection->disconnect();
+                    $connection->connect();
+
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 0);
+                    if ($returncode == 0) {
+                        $entity->set('successfully', 1);
+                        $this->distributedMonitoringAfterExportCommand();
+                        $this->importModuleAfterExportCommand();
+                    } else {
+                        $successfully = 0;
+                    }
+
+                    $ExportsTable->save($entity);
+                    unset($entity);
+
+                } else {
+                    $successfully = 0;
+                }
             }
         } else {
             //Error with new configuration :-(
@@ -1405,7 +1628,7 @@ class GearmanWorkerCommand extends Command {
         /** @var  ChangelogsTable $ChangelogsTable */
         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-        $statusMsg = __('with an error');
+        $successfullyMsg = __('with an error');
         if ($successfully) {
             $successfullyMsg = __('successfully');
         }
@@ -1414,7 +1637,7 @@ class GearmanWorkerCommand extends Command {
             'export',
             'exports',
             1,
-            OBJECT_HOST,
+            OBJECT_EXPORT,
             ROOT_CONTAINER,
             0,
             __('Refresh of monitoring configuration finished {0}', $successfullyMsg),
@@ -1568,6 +1791,71 @@ class GearmanWorkerCommand extends Command {
             if ($restartRc === 0) {
                 $entity->set('successfully', 1);
                 $isNstaRunning = true;
+            }
+            $ExportsTable->save($entity);
+            unset($entity);
+        }
+    }
+
+    public function importModuleAfterExportCommand() {
+        if (!Plugin::isLoaded('ImportModule')) {
+            // ImportModule not loaded
+            return;
+        }
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        /** @var ExportsTable $ExportsTable */
+        $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+
+        $eventCollectdReloadCommand = $SystemsettingsTable->getSystemsettingByKey('INIT.EVENT_COLLECTD_RELOAD');
+        $eventCollectdRestartCommand = $SystemsettingsTable->getSystemsettingByKey('INIT.EVENT_COLLECTD_RESTART');
+        $eventCollectdStatusCommand = $SystemsettingsTable->getSystemsettingByKey('INIT.EVENT_COLLECTD_STATUS');
+
+
+        //Check if event-collectd is running.
+        //If event-collectd is running, we reload the config, if not we need to restart
+        $entity = $ExportsTable->newEntity([
+            'task' => 'is_event-collectd_running',
+            'text' => __('Check if Event-Collectd daemon is running')
+        ]);
+        $ExportsTable->save($entity);
+        exec($eventCollectdStatusCommand->get('value'), $statusOutput, $statusRc);
+        $entity->set('finished', 1);
+        $entity->set('successfully', 1);
+        $ExportsTable->save($entity);
+        unset($entity);
+
+        $isEventCollectdRunning = false;
+        if ($statusRc === 0) {
+            //event-collectd is running (reload)
+            $entity = $ExportsTable->newEntity([
+                'task' => 'export_reload_event-collectd',
+                'text' => __('Reloading Event-Collectd daemon')
+            ]);
+            $ExportsTable->save($entity);
+            exec($eventCollectdReloadCommand->get('value'), $reloadOutput, $reloadRc);
+            $entity->set('finished', 1);
+            $entity->set('successfully', 0);
+            if ($reloadRc === 0) {
+                $entity->set('successfully', 1);
+                $isEventCollectdRunning = true;
+            }
+            $ExportsTable->save($entity);
+            unset($entity);
+        } else {
+            //event-collectd is stopped (restart)
+            $entity = $ExportsTable->newEntity([
+                'task' => 'export_restart_event-collectd',
+                'text' => __('Restarting Event-Collectd daemon')
+            ]);
+            $ExportsTable->save($entity);
+            exec($eventCollectdRestartCommand->get('value'), $restartOutput, $restartRc);
+            $entity->set('finished', 1);
+            $entity->set('successfully', 0);
+            if ($restartRc === 0) {
+                $entity->set('successfully', 1);
+                $isEventCollectdRunning = true;
             }
             $ExportsTable->save($entity);
             unset($entity);

@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace GrafanaModule\Model\Table;
 
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -80,6 +81,31 @@ class GrafanaUserdashboardMetricsTable extends Table {
             'joinType'   => 'INNER',
             'className'  => 'Services',
         ]);
+    }
+
+    /**
+     * Bind Core2Plugin associations
+     *
+     * @param RepositoryInterface $coreTable
+     */
+    public function bindCoreAssociations(RepositoryInterface $coreTable) {
+        switch ($coreTable->getAlias()) {
+            case 'Hosts':
+                $coreTable->hasOne('GrafanaUserdashboardMetrics', [
+                    'className'  => 'GrafanaModule.GrafanaUserdashboardMetrics',
+                    'foreignKey' => 'host_id',
+                    'dependent'  => true
+                ]);
+                break;
+
+            case 'Services':
+                $coreTable->hasOne('GrafanaUserdashboardMetrics', [
+                    'className'  => 'GrafanaModule.GrafanaUserdashboardMetrics',
+                    'foreignKey' => 'service_id',
+                    'dependent'  => true
+                ]);
+                break;
+        }
     }
 
     /**
@@ -138,6 +164,19 @@ class GrafanaUserdashboardMetricsTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['GrafanaUserdashboardMetrics.id' => $id]);
+    }
+
+    /**
+     * @param int $panelId
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getMetricsByPanelIdForCopy(int $panelId) {
+        $result = $this->find()
+            ->where([
+                'GrafanaUserdashboardMetrics.panel_id' => $panelId
+            ])
+            ->all();
+        return $result;
     }
 
 }

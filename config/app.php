@@ -18,6 +18,11 @@ return [
     'debug'    => filter_var(env('OITC_DEBUG', false), FILTER_VALIDATE_BOOLEAN),
 
     /**
+     * If set to true, openITCOCKPIT is running inside a container like Docker
+     */
+    'container'    => filter_var(env('IS_CONTAINER', false), FILTER_VALIDATE_BOOLEAN),
+
+    /**
      * Configure basic information about the application.
      *
      * - namespace - The namespace to find app classes under.
@@ -74,7 +79,7 @@ return [
      *   You should treat it as extremely sensitive data.
      */
     'Security' => [
-        'salt' => 'cf4515a2c1833f4aed69591f81598da0124cbd460449b2812495a64d8d70aadc'
+        'salt' => env('OITC_SECURITY_SALT', 'cf4515a2c1833f4aed69591f81598da0124cbd460449b2812495a64d8d70aadc')
     ],
 
     /**
@@ -105,8 +110,8 @@ return [
             'serialize' => true,
             'prefix'    => 'oitc_',
             'duration'  => '+30 minute',
-            'host'      => '127.0.0.1',
-            'port'      => 6379
+            'host'      => env('OITC_REDIS_HOST', '127.0.0.1'),
+            'port'      => filter_var(env('OITC_REDIS_PORT', 6379), FILTER_VALIDATE_INT)
         ],
 
         'permissions'   => [
@@ -114,8 +119,17 @@ return [
             'serialize' => true,
             'prefix'    => 'permissions_',
             'duration'  => '+600 seconds',
-            'host'      => '127.0.0.1',
-            'port'      => 6379
+            'host'      => env('OITC_REDIS_HOST', '127.0.0.1'),
+            'port'      => filter_var(env('OITC_REDIS_PORT', 6379), FILTER_VALIDATE_INT)
+        ],
+
+        'long_time_cache'   => [
+            'className' => \Cake\Cache\Engine\RedisEngine::class,
+            'serialize' => true,
+            'prefix'    => 'ltc_',
+            'duration'  => '+24 hours',
+            'host'      => env('OITC_REDIS_HOST', '127.0.0.1'),
+            'port'      => filter_var(env('OITC_REDIS_PORT', 6379), FILTER_VALIDATE_INT)
         ],
 
         /**
@@ -194,7 +208,7 @@ return [
      */
     'Error'    => [
         'errorLevel'        => E_ALL,
-        'exceptionRenderer' => \Cake\Error\ExceptionRenderer::class,
+        'exceptionRenderer' => \Cake\Error\Renderer\WebExceptionRenderer::class,
         'skipLog'           => [],
         'log'               => true,
         'trace'             => true,
@@ -271,6 +285,6 @@ return [
      * To use database sessions, load the SQL file located at config/schema/sessions.sql
      */
     'Session'  => [
-        'defaults' => env('SESSION_DEFAULTS', 'php'),
+        'defaults' => env('OITC_SESSION_DEFAULTS', 'php'),
     ],
 ];

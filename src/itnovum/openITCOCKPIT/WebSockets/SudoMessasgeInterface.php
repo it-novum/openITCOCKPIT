@@ -69,6 +69,11 @@ class SudoMessasgeInterface implements MessageComponentInterface {
     private $checkForExport;
 
     /**
+     * @var null|string
+     */
+    private $requestor;
+
+    /**
      * @var ExportsTable
      */
     private $ExportsTable;
@@ -100,13 +105,13 @@ class SudoMessasgeInterface implements MessageComponentInterface {
     }
 
     /**
-     * @param ConnectionInterface $connection
+     * @param ConnectionInterface $conn
      */
-    public function onOpen(ConnectionInterface $connection) {
+    public function onOpen(ConnectionInterface $conn) {
         $uniqid = UUID::v4();
-        $this->clients->attach($connection);
+        $this->clients->attach($conn);
 
-        $connection->send(json_encode($this->merge([
+        $conn->send(json_encode($this->merge([
             'payload' => 'Connection established',
             'uniqid'  => $uniqid,
             'type'    => 'connection',

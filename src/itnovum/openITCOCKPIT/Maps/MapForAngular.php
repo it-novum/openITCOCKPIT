@@ -49,6 +49,11 @@ class MapForAngular {
      */
     private $max_z_index = null;
 
+    /**
+     * @var array
+     */
+    private $mapAsArray = [];
+
 
     /**
      * MapForAngular constructor.

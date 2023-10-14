@@ -36,6 +36,7 @@ use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
+use App\Model\Entity\Servicetemplate;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -45,6 +46,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\InstantreportsTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicecommandargumentvaluesTable;
 use App\Model\Table\ServiceeventcommandargumentvaluesTable;
@@ -53,13 +55,19 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use AutoreportModule\Model\Table\AutoreportsTable;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use CustomalertModule\Model\Table\CustomalertsTable;
+use DistributeModule\Model\Table\SatellitesTable;
+use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use GuzzleHttp\Exception\GuzzleException;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
@@ -109,6 +117,8 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
 use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
+use MapModule\Model\Table\MapsTable;
+use SLAModule\Model\Table\SlasTable;
 use Statusengine\PerfdataParser;
 
 /**
@@ -123,12 +133,21 @@ class ServicesController extends AppController {
      * @throws MissingDbBackendException
      */
     public function index() {
-        if (!$this->isApiRequest()) {
-            $User = new User($this->getUser());
-            $this->set('username', $User->getFullName());
-            //Only ship HTML template
-            return;
+        $User = new User($this->getUser());
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+        $satellites = [];
+
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
         }
+
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
@@ -136,8 +155,16 @@ class ServicesController extends AppController {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
+        if (!$this->isApiRequest()) {
+            $this->set('username', $User->getFullName());
+            $this->set('satellites', $satellites);
+            $this->set('types', $ServicesTable->getServiceTypes());
+
+            //Only ship HTML template
+            return;
+        }
+
         $ServiceFilter = new ServiceFilter($this->request);
-        $User = new User($this->getUser());
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions(
@@ -185,6 +212,9 @@ class ServicesController extends AppController {
 
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
+        $AcknowledgementServicesTable = $this->DbBackend->getAcknowledgementServicesTable();
+        $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
         }
@@ -198,20 +228,20 @@ class ServicesController extends AppController {
         }
 
         $hostContainers = [];
+        $typesForView = $ServicesTable->getServiceTypesWithStyles();
         foreach ($services as $index => $service) {
             $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+
         }
         if ($this->hasRootPrivileges === false) {
-            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                foreach ($services as $index => $service) {
-                    $hostId = $service['_matchingData']['Hosts']['id'];
-                    if (!isset($hostContainers[$hostId])) {
-                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
-                    }
-
-                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
-                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
+            foreach ($services as $index => $service) {
+                $hostId = $service['_matchingData']['Hosts']['id'];
+                if (!isset($hostContainers[$hostId])) {
+                    $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
                 }
+
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
             }
         }
 
@@ -243,13 +273,43 @@ class ServicesController extends AppController {
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend, $service['service_type']);
 
+            $downtime = [];
+            if ($ServiceControllerRequest->includeDowntimeInformation() && $Servicestatus->isInDowntime()) {
+                $downtime = $DowntimehistoryServicesTable->byServiceUuid($Service->getUuid());
+                if (!empty($downtime)) {
+                    $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
+                    $downtime = $Downtime->toArray();
+                }
+            }
+
+            $acknowledgement = [];
+            if ($ServiceControllerRequest->includeAcknowledgementInformation() && $Servicestatus->isAcknowledged()) {
+                $acknowledgement = $AcknowledgementServicesTable->byServiceUuid($Service->getUuid());
+                if (!empty($acknowledgement)) {
+                    $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime, $allowEdit);
+                    $acknowledgement = $Acknowledgement->toArray();
+                }
+            }
+
             $tmpRecord = [
-                'Service'       => $Service->toArray(),
-                'Host'          => $Host->toArray(),
-                'Hoststatus'    => $Hoststatus->toArray(),
-                'Servicestatus' => $Servicestatus->toArray(),
-                'ServiceType'   => $serviceTypes[$service['service_type']]
+                'Service'         => $Service->toArray(),
+                'Host'            => $Host->toArray(),
+                'Hoststatus'      => $Hoststatus->toArray(),
+                'Servicestatus'   => $Servicestatus->toArray(),
+                'ServiceType'     => $serviceTypes[$service['service_type']],
+                'Downtime'        => $downtime,
+                'Acknowledgement' => $acknowledgement
             ];
+
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+
+            if ($Host->isSatelliteHost() && isset($satellites[$Host->getSatelliteId()])) {
+                $satelliteName = $satellites[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
+            $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['satelliteId'] = $satellite_id;
             $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
         }
@@ -388,6 +448,7 @@ class ServicesController extends AppController {
         $all_services = [];
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
+        $serviceTypes = $ServicesTable->getServiceTypesWithStyles();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
             $Host = new Host($service['_matchingData']['Hosts'], $allowEdit);
@@ -399,9 +460,10 @@ class ServicesController extends AppController {
             $Service = new Service($service, null, $allowEdit);
 
             $tmpRecord = [
-                'Service'    => $Service->toArray(),
-                'Host'       => $Host->toArray(),
-                'Hoststatus' => $Hoststatus->toArray()
+                'Service'     => $Service->toArray(),
+                'ServiceType' => $serviceTypes[$service['service_type']],
+                'Host'        => $Host->toArray(),
+                'Hoststatus'  => $Hoststatus->toArray()
             ];
             $all_services[] = $tmpRecord;
         }
@@ -927,6 +989,7 @@ class ServicesController extends AppController {
             $Cache = new KeyValueStore();
             $ServicetemplateCache = new KeyValueStore();
             $ServicetemplateEditCache = new KeyValueStore();
+            $ObjectsCacheChangelog = new ObjectsCache();
 
             $postData = $this->request->getData('data');
             $hostId = $this->request->getData('hostId');
@@ -936,6 +999,12 @@ class ServicesController extends AppController {
             }
 
             $host = $HostsTable->getHostForServiceEdit($hostId);
+
+            if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+                $this->render403();
+                return;
+            }
+
             $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
             $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
 
@@ -1158,8 +1227,8 @@ class ServicesController extends AppController {
                             $host['Host']['container_id'],
                             $User->getId(),
                             $host['Host']['name'] . '/' . $servicename,
-                            array_merge($ServicesTable->resolveDataForChangelog($serviceData), $serviceData),
-                            array_merge($ServicesTable->resolveDataForChangelog($serviceForChangelog), $serviceForChangelog)
+                            array_merge($ServicesTable->resolveDataForChangelog($serviceData, $ObjectsCacheChangelog), $serviceData),
+                            array_merge($ServicesTable->resolveDataForChangelog($serviceForChangelog, $ObjectsCacheChangelog), $serviceForChangelog)
                         );
                     }
 
@@ -1397,7 +1466,6 @@ class ServicesController extends AppController {
         }
 
         $service = $ServicesTable->getServiceForBrowser($id);
-        $serviceObj = new Service($service);
 
         //Check permissions
         $host = $HostsTable->getHostForServiceEdit($service['host_id']);
@@ -1411,6 +1479,8 @@ class ServicesController extends AppController {
             $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $host['Host']['hosts_to_containers_sharing']['_ids']);
             $allowEdit = $ContainerPermissions->hasPermission();
         }
+
+        $serviceObj = new Service($service, $allowEdit);
 
         //Load required data to merge and display inheritance data
         $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsByIdForServiceBrowser($host['Host']['id']);
@@ -1582,43 +1652,54 @@ class ServicesController extends AppController {
         $servicestatus['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicestatus->getOutput(), true));
         $servicestatus['longOutputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicestatus->getLongOutput(), true));
 
-        //Add parsed perfdata information
-        $PerfdataChecker = new PerfdataChecker(
-            $hostObj,
-            $serviceObj,
-            $this->PerfdataBackend,
-            $Servicestatus,
-            $this->DbBackend,
-            $mergedService['service_type']
-        );
-        $mergedService['has_graph'] = $PerfdataChecker->hasPerfdata();
         $mergedService['allowEdit'] = $allowEdit;
 
-        if (empty($Servicestatus->getPerfdata()) && $mergedService['has_graph'] === true && $this->PerfdataBackend->isWhisper()) {
-            //Query graphite backend to get available metrics - used if perfdata string is empty for example on unknown state
-
-            $mergedService['Perfdata'] = [];
-
-            $GraphiteConfig = new GraphiteConfig();
-            $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
-            $metrics = $GraphiteLoader->findMetricsByUuid($hostObj->getUuid(), $serviceObj->getUuid());
-
-            foreach ($metrics as $metric) {
-                $mergedService['Perfdata'][$metric] = [
-                    'current'  => null,
-                    'unit'     => null,
-                    'warning'  => null,
-                    'critical' => null,
-                    'min'      => null,
-                    'max'      => null
-                ];
-            }
-
+        //Add parsed perfdata information
+        if (Plugin::isLoaded('PrometheusModule') && $serviceObj->getServiceType() === PROMETHEUS_SERVICE) {
+            // Query Prometheus to get all metrics
+            $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+            $mergedService['Perfdata'] = $PrometheusPerfdataLoader->getAvailableMetricsByService($serviceObj, false, true);
+            $mergedService['has_graph'] = !empty($mergedService['Perfdata']); // Usually a prometheus service has always a graph
         } else {
-            //Parse perfdata string from database to get metrics - this is the default
-            $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
-            $mergedService['Perfdata'] = $PerfdataParser->parse();
+            // "Normal" Naemon service (not a PROMETHEUS_SERVICE!)
+            $PerfdataChecker = new PerfdataChecker(
+                $hostObj,
+                $serviceObj,
+                $this->PerfdataBackend,
+                $Servicestatus,
+                $this->DbBackend,
+                $mergedService['service_type']
+            );
+            $mergedService['has_graph'] = $PerfdataChecker->hasPerfdata();
+
+            if (empty($Servicestatus->getPerfdata()) && $mergedService['has_graph'] === true && $this->PerfdataBackend->isWhisper()) {
+                //Query graphite backend to get available metrics - used if perfdata string is empty for example on unknown state
+
+                $mergedService['Perfdata'] = [];
+
+                $GraphiteConfig = new GraphiteConfig();
+                $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
+                $metrics = $GraphiteLoader->findMetricsByUuid($hostObj->getUuid(), $serviceObj->getUuid());
+
+                foreach ($metrics as $metric) {
+                    $mergedService['Perfdata'][$metric] = [
+                        'current'  => null,
+                        'unit'     => null,
+                        'warning'  => null,
+                        'critical' => null,
+                        'min'      => null,
+                        'max'      => null,
+                        'metric'   => $metric // ITC-2824 make classical metrics look the same
+                    ];
+                }
+
+            } else {
+                //Parse perfdata string from database to get metrics - this is the default
+                $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
+                $mergedService['Perfdata'] = $PerfdataParser->parse();
+            }
         }
+
 
         $systemsettingsEntity = $SystemsettingsTable->getSystemsettingByKey('TICKET_SYSTEM.URL');
         $ticketSystem = $systemsettingsEntity->get('value');
@@ -1708,6 +1789,42 @@ class ServicesController extends AppController {
             $checkCommand = 'Removed due to insufficient permissions';
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the service is used by Instantreports
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByServiceId((int)$id, $MY_RIGHTS);
+
+        //Check if the service is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the service is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        $objects['Servicegroups'] = $ServicegroupsTable->getServiceGroupsByServiceId((int)$id, $MY_RIGHTS);
+
+
         // Set data to fronend
         $this->set('mergedService', $mergedService);
         $this->set('serviceType', $serviceType);
@@ -1728,7 +1845,8 @@ class ServicesController extends AppController {
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
-
+        $this->set('objects', $objects);
+        $this->set('usageFlag', $serviceObj->getUsageFlag());
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedService',
@@ -1749,7 +1867,10 @@ class ServicesController extends AppController {
             'notifyPeriod',
             'canSubmitExternalCommands',
             'mainContainer',
-            'sharedContainers'
+            'sharedContainers',
+            'objects',
+            'usageFlag',
+            'mapModule'
         ]);
     }
 
@@ -1874,6 +1995,148 @@ class ServicesController extends AppController {
                 'filename' => __('Services_') . date('dmY_his') . '.pdf',
             ]
         );
+    }
+
+    public function listToCsv() {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $ServiceFilter = new ServiceFilter($this->request);
+        $User = new User($this->getUser());
+
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions(
+            $ServiceFilter->indexFilter()
+        );
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+        if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+        }
+
+        if ($ServiceControllerRequest->isRequestFromBrowser() === true) {
+            $browserContainerIds = $ServiceControllerRequest->getBrowserContainerIdsByRequest();
+            foreach ($browserContainerIds as $containerIdToCheck) {
+                if (!in_array($containerIdToCheck, $this->MY_RIGHTS)) {
+                    $this->render403();
+                    return;
+                }
+            }
+
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setContainerIds($browserContainerIds);
+
+            if ($User->isRecursiveBrowserEnabled()) {
+                //get recursive container ids
+                $containerIdToResolve = $browserContainerIds;
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = Hash::extract($children, '{n}.id');
+                $recursiveContainerIds = [];
+                foreach ($containerIds as $containerId) {
+                    if (in_array($containerId, $this->MY_RIGHTS)) {
+                        $recursiveContainerIds[] = $containerId;
+                    }
+                }
+                $ServiceConditions->setContainerIds(array_merge($ServiceConditions->getContainerIds(), $recursiveContainerIds));
+            }
+        }
+
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
+            'Hosts.name'  => 'asc',
+            'servicename' => 'asc'
+        ]));
+
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $services = $ServicesTable->getServiceIndex($ServiceConditions);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions);
+        }
+
+        $all_services = [];
+        $UserTime = $User->getUserTime();
+        foreach ($services as $service) {
+            $Host = new Host($service['_matchingData']['Hosts']);
+            $Service = new Service($service);
+            $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
+
+            $tags = $Service->getTags();
+            if (empty($tags)) {
+                $tags = $service['_matchingData']['Servicetemplates']['tags'];
+            }
+
+            $all_services[] = [
+                $Service->getServicename(),
+                $Service->getId(),
+                $Service->getUuid(),
+                $Service->getDescription(),
+                $tags,
+                $service['_matchingData']['Servicetemplates']['id'],
+                $service['_matchingData']['Servicetemplates']['name'],
+
+                $Host->getHostname(),
+                $Host->getId(),
+                $Host->getUuid(),
+                $Host->getAddress(),
+                $Host->getSatelliteId(),
+
+                $Servicestatus->currentState(),
+                $Servicestatus->isAcknowledged() ? 1 : 0,
+                $Servicestatus->isInDowntime() ? 1 : 0,
+                $Servicestatus->getLastCheck(),
+                $Servicestatus->getNextCheck(),
+                $Servicestatus->isActiveChecksEnabled() ? 1 : 0,
+                $Servicestatus->getOutput()
+            ];
+        }
+
+        $header = [
+            'service_name',
+            'service_id',
+            'service_uuid',
+            'service_description',
+            'service_tags',
+            'servicetemplate_id',
+            'servicetemplate_name',
+
+            'host_name',
+            'host_id',
+            'host_uuid',
+            'host_address',
+            'satellite_id',
+
+            'current_state',
+            'problem_has_been_acknowledged',
+            'in_downtime',
+            'last_check',
+            'next_check',
+            'active_checks_enabled',
+            'output'
+        ];
+
+        $this->set('data', $all_services);
+
+        $filename = __('Services_') . date('dmY_his') . '.csv';
+        $this->setResponse($this->getResponse()->withDownload($filename));
+        $this->viewBuilder()
+            ->setClassName('CsvView.Csv')
+            ->setOptions([
+                'delimiter' => ';', // Excel prefers ; over ,
+                'bom'       => true, // Fix UTF-8 umlauts in Excel
+                'serialize' => 'data',
+                'header'    => $header,
+            ]);
     }
 
     /**
@@ -2016,7 +2279,7 @@ class ServicesController extends AppController {
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
-
+        $offset = $UserTime->getUserTimeToServerOffset();
 
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(false));
@@ -2024,6 +2287,12 @@ class ServicesController extends AppController {
         $start = $this->request->getQuery('start', -1);
         $end = $this->request->getQuery('end', -1);
 
+        if ($start > 0) {
+            $start -= $offset;
+        }
+        if ($end > 0) {
+            $end -= $offset;
+        }
 
         if (!is_numeric($start) || $start < 0) {
             $start = time() - 2 * 24 * 3600;
@@ -2052,6 +2321,15 @@ class ServicesController extends AppController {
         $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->lastHardStateChange();
+
+        $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
+
         //Process conditions
         $Conditions = new StatehistoryHostConditions();
         $Conditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
@@ -2067,24 +2345,35 @@ class ServicesController extends AppController {
 
         $statehistoryRecords = [];
 
-        //Host has no state history record for selected time range
         //Get last available state history record for this host
         $record = $StatehistoryHostsTable->getLastRecord($Conditions);
         if (!empty($record)) {
-            $record->set('state_time', $start);
-            $StatehistoryHost = new StatehistoryHost($record->toArray());
-            $statehistoryRecords[] = $StatehistoryHost;
+            if (!empty($hoststatus)) {
+                $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+                $hostStatusLastStateChange = $Hoststatus->getLastStateChange();
+                if ($record->get('state_time') < $hostStatusLastStateChange && $hostStatusLastStateChange <= $start) {
+                    $stateHistoryHostTmp = [
+                        'StatehistoryHost' => [
+                            'state_time'      => $start,
+                            'state'           => $Hoststatus->currentState(),
+                            'last_state'      => $Hoststatus->currentState(),
+                            'last_hard_state' => $Hoststatus->getLastHardState(),
+                            'state_type'      => (int)$Hoststatus->isHardState()
+                        ]
+                    ];
+
+                    $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                    $statehistoryRecords[] = $StatehistoryHost;
+                } else {
+                    $record->set('state_time', $start);
+                    $StatehistoryHost = new StatehistoryHost($record->toArray());
+                    $statehistoryRecords[] = $StatehistoryHost;
+                }
+            }
         }
 
-        if (empty($statehistories) && empty($record)) {
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields
-                ->currentState()
-                ->isHardstate()
-                ->lastStateChange()
-                ->lastHardStateChange();
-
-            $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
+        //Host has no state history record for selected time range
+        if (empty($statehistoryRecords)) {
             if (!empty($hoststatus)) {
                 $isHardstate = false;
                 if (isset($hoststatus['Hoststatus']['state_type'])) {
@@ -2118,6 +2407,16 @@ class ServicesController extends AppController {
         $StatehistoryServicesTable = $this->DbBackend->getStatehistoryServicesTable();
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->lastHardStateChange();
+
+        $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+
+
         //Process conditions
         $StatehistoryServiceConditions = new StatehistoryServiceConditions();
         $StatehistoryServiceConditions->setOrder(['StatehistoryServices.state_time' => 'asc']);
@@ -2129,24 +2428,34 @@ class ServicesController extends AppController {
         $statehistoriesService = $StatehistoryServicesTable->getStatehistoryIndex($StatehistoryServiceConditions);
         $statehistoryServiceRecords = [];
 
-        //Service has no state history record for selected time range
-        //Get last available state history record for this host
+        //Get last available state history record for this service
         $record = $StatehistoryServicesTable->getLastRecord($StatehistoryServiceConditions);
         if (!empty($record)) {
-            $record->set('state_time', $start);
-            $StatehistoryService = new StatehistoryService($record->toArray());
-            $statehistoryServiceRecords[] = $StatehistoryService;
+            if (!empty($servicestatus)) {
+                $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+                $serviceStatusLastStateChange = $Servicestatus->getLastStateChange();
+                if ($record->get('state_time') < $serviceStatusLastStateChange && $serviceStatusLastStateChange <= $start) {
+                    $stateHistoryServiceTmp = [
+                        'StatehistoryService' => [
+                            'state_time'      => $start,
+                            'state'           => $Servicestatus->currentState(),
+                            'last_state'      => $Servicestatus->currentState(),
+                            'last_hard_state' => $Servicestatus->getLastHardState(),
+                            'state_type'      => (int)$Servicestatus->isHardState()
+                        ]
+                    ];
+
+                    $StatehistoryService = new StatehistoryService($stateHistoryServiceTmp['StatehistoryService']);
+                    $statehistoryServiceRecords[] = $StatehistoryService;
+                } else {
+                    $record->set('state_time', $start);
+                    $StatehistoryService = new StatehistoryService($record->toArray());
+                    $statehistoryServiceRecords[] = $StatehistoryService;
+                }
+            }
         }
-
-        if (empty($statehistoriesService) && empty($record)) {
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields
-                ->currentState()
-                ->isHardstate()
-                ->lastStateChange()
-                ->lastHardStateChange();
-
-            $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+        //Service has no state history record for selected time range
+        if (empty($statehistoryServiceRecords)) {
             if (!empty($servicestatus)) {
                 $isHardstate = false;
                 if (isset($servicestatus['Servicestatus']['state_type'])) {
@@ -2164,7 +2473,7 @@ class ServicesController extends AppController {
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
-                $statehistoriesService[] = $StatehistoryService->toArray();
+                $statehistoryServiceRecords[] = $StatehistoryService;
             }
         }
 
@@ -2172,6 +2481,7 @@ class ServicesController extends AppController {
             $StatehistoryService = new StatehistoryService($statehistoryService);
             $statehistoryServiceRecords[] = $StatehistoryService;
         }
+
 
         $StatehistorySerializer = new StatehistorySerializer($statehistoryServiceRecords, $UserTime, $end, 'service');
         $this->set('servicestatehistory', $StatehistorySerializer->serialize());
@@ -2242,6 +2552,9 @@ class ServicesController extends AppController {
 
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
         $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
+
+        $start += $offset;
+        $end += $offset;
 
         $this->set('start', $start);
         $this->set('end', $end);
@@ -2683,6 +2996,9 @@ class ServicesController extends AppController {
         }
 
         $ServiceFilter = new ServiceFilter($this->request);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $containerIds = [ROOT_CONTAINER, $containerId];
 
         /** @var $ContainersTable ContainersTable */
@@ -2707,5 +3023,177 @@ class ServicesController extends AppController {
 
         $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);
+    }
+
+    public function loadCustomalerts() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+
+        $customalertsExists = false;
+
+        if (Plugin::isLoaded('CustomalertModule')) {
+            /** @var CustomalertsTable $CustomalertsTable */
+            $CustomalertsTable = TableRegistry::getTableLocator()->get('CustomalertModule.Customalerts');
+            $customalertsExists = $CustomalertsTable->existsCustomalertsByServiceId($id);
+        }
+
+        $this->set('CustomalertsExists', $customalertsExists);
+        $this->viewBuilder()->setOption('serialize', ['CustomalertsExists']);
+    }
+
+    public function loadSlaInformation() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+        $service = $ServicesTable->get($id, [
+            'contain' => [
+                'Hosts'
+            ]
+        ]);
+        if (!$HostsTable->existsById($service->get('host_id'))) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+            $this->render403();
+            return;
+        }
+        $slaOverview = false;
+
+        if (Plugin::isLoaded('SLAModule')) {
+            /** @var SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+            $hostSlaId = $host['Host']['sla_id'];
+            if (!empty($hostSlaId)) {
+                if (!$SlasTable->existsById($hostSlaId)) {
+                    throw new NotFoundException(__('Invalid sla'));
+                }
+
+                $SlaInformation = $SlasTable->getSlaStatusInformationByServiceIdAndSlaId($id, $hostSlaId);
+                $slaOverview = [
+                    'state'          => 'not_available',
+                    'evaluation_end' => time()
+                ];
+
+                $currentlyAvailabilityService = null;
+                $serviceSlaStatusData = null;
+                if (!empty($SlaInformation['sla_availability_status_services'][0])) {
+                    $serviceSlaStatusData = $SlaInformation['sla_availability_status_services'][0];
+                    $currentlyAvailabilityService = $serviceSlaStatusData['determined_availability_percent'];
+                }
+
+                if ($currentlyAvailabilityService) {
+                    $slaOverview = [
+                        'evaluation_end'                  => $serviceSlaStatusData['evaluation_end'],
+                        'determined_availability_percent' => $currentlyAvailabilityService,
+                        'warning_threshold'               => $SlaInformation['warning_threshold'],
+                        'minimal_availability'            => $SlaInformation['minimal_availability']
+                    ];
+                    if ($currentlyAvailabilityService < $SlaInformation['minimal_availability']) {
+                        $state = 'danger';
+                    } else if (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] > $currentlyAvailabilityService) {
+                        $state = 'warning';
+                    } else {
+                        $state = 'success';
+                    }
+                    $slaOverview['state'] = $state;
+                }
+
+            }
+
+        }
+        $this->set('slaOverview', $slaOverview);
+        $this->viewBuilder()->setOption('serialize', ['slaOverview']);
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function usedBy($id = null): void {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+        $service = $ServicesTable->getServiceById($id);
+        $Service = new Service($service->toArray());
+
+        $service['name'] = $Service->getServicename();
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        /** @var InstantreportsTable $InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByServiceId((int)$id, $MY_RIGHTS);
+
+        //Check if the service is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the service is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByServiceId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        $objects['Servicegroups'] = $ServicegroupsTable->getServiceGroupsByServiceId((int)$id, $MY_RIGHTS);
+
+        $total = 0;
+        $total += sizeof($objects['Instantreports']);
+        if (isset($objects['Autoreports'])) {
+            $total += sizeof($objects['Autoreports']);
+        }
+        if (isset($objects['Eventcorrelations'])) {
+            $total += sizeof($objects['Eventcorrelations']);
+        }
+        if (isset($objects['Maps'])) {
+            $total += sizeof($objects['Maps']);
+        }
+        $total += sizeof($objects['Servicegroups']);
+
+        $this->set('service', $service->toArray());
+        $this->set('objects', $objects);
+        $this->set('total', $total);
+        $this->viewBuilder()->setOption('serialize', ['service', 'objects', 'total']);
     }
 }

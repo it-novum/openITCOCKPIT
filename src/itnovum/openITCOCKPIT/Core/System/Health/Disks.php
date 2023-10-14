@@ -26,8 +26,12 @@ namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 class Disks {
 
-
-    public function getDiskUsage() {
+    /**
+     * @param $warning
+     * @param $critical
+     * @return array
+     */
+    public function getDiskUsage($warning = null, $critical = null) {
         exec('LANG=C df -h', $output, $returncode);
         $disks = [];
         if ($returncode == 0) {
@@ -44,10 +48,14 @@ class Disks {
 
                     $percentage = (int)str_replace('%', '', $value[4]);
                     $state = 'ok';
-                    if ($percentage > 80) {
+
+                    $warning = (is_numeric($warning) && $warning > 0) ? $warning : 80;
+                    if ($percentage > $warning) {
                         $state = 'warning';
                     }
-                    if ($percentage > 90) {
+
+                    $critical = (is_numeric($critical) && $critical > 0) ? $critical : 90;
+                    if ($percentage > $critical) {
                         $state = 'critical';
                     }
 

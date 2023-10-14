@@ -39,7 +39,7 @@ class ContainersUsercontainerrolesMembershipsTable extends Table {
         $this->setEntityClass('ContainerUsercontainerroleMembership');
         $this->setTable('usercontainerroles_to_containers');
 
-        $this->belongsTo('Usercontainers');
+        $this->belongsTo('Usercontainerroles');
         $this->belongsTo('Containers');
     }
 }

@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -121,6 +124,12 @@
                                     <?php echo __('Create container downtime'); ?>
                                 </a>
                             <?php endif; ?>
+                            <?php if (Plugin::isLoaded('DistributeModule') && $this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+                                <a ui-sref="SystemdowntimesAddSatelliteDowntime" class="dropdown-item">
+                                    <i class="fas fa-satellite"></i>
+                                    <?php echo __('Create satellite downtime'); ?>
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <button class="btn btn-xs btn-primary shadow-0 " ng-click="triggerFilter()">
@@ -146,11 +155,11 @@
                                                 <span
                                                     class="input-group-text filter-text"><?php echo __('From'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="datetime-local" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('From date'); ?>"
-                                                   ng-model="filter.from"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="from_time"
+                                                   ng-model-options="{debounce: 500, timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                                         </div>
                                     </div>
                                 </div>
@@ -174,11 +183,11 @@
                                                 <span
                                                     class="input-group-text filter-text"><?php echo __('To'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="datetime-local" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('To date'); ?>"
-                                                   ng-model="filter.to"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="to_time"
+                                                   ng-model-options="{debounce: 500, timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                                         </div>
                                     </div>
                                 </div>
@@ -203,7 +212,7 @@
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by user'); ?>"
-                                                   ng-model="filter.DowntimeHosts.author_name"
+                                                   ng-model="filter.DowntimeServices.author_name"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -216,7 +225,7 @@
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by comment'); ?>"
-                                                   ng-model="filter.DowntimeHosts.comment_data"
+                                                   ng-model="filter.DowntimeServices.comment_data"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -245,7 +254,7 @@
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
-                                                       ng-model="filter.DowntimeHosts.was_not_cancelled"
+                                                       ng-model="filter.DowntimeServices.was_not_cancelled"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label"
                                                        for="statusFilterWasNotCancelled"><?php echo __('Was not cancelled'); ?></label>
@@ -257,7 +266,7 @@
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
-                                                       ng-model="filter.DowntimeHosts.was_cancelled"
+                                                       ng-model="filter.DowntimeServices.was_cancelled"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label"
                                                        for="statusFilterWasCancelled"><?php echo __('Was cancelled'); ?></label>
@@ -298,8 +307,8 @@
                                     <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                     <?php echo __('Host'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Services.name')">
-                                    <i class="fa" ng-class="getSortClass('Services.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('servicename')">
+                                    <i class="fa" ng-class="getSortClass('servicename')"></i>
                                     <?php echo __('Service'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('DowntimeServices.author_name')">
@@ -432,7 +441,8 @@
                             </div>
                             <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
                                 <div class="col-xs-12 col-md-2 txt-color-red">
-                                    <span ng-click="confirmServiceDowntimeDelete(getObjectsForDelete())" class="pointer">
+                                    <span ng-click="confirmServiceDowntimeDelete(getObjectsForDelete())"
+                                          class="pointer">
                                         <i class="fas fa-trash"></i>
                                         <?php echo __('Cancel selected'); ?>
                                     </span>

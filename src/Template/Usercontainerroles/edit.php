@@ -51,7 +51,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'usercontainerroles')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='UsercontainerrolesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='UsercontainerrolesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -72,6 +73,28 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 ng-model="post.Usercontainerrole.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.ldapgroups}" ng-show="isLdapAuth">
+                            <label class="control-label" for="ldapGroups">
+                                <?php echo __('LDAP groups'); ?>
+                            </label>
+                            <select
+                                id="ldapGroups"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="ldapgroups"
+                                callback="loadLdapGroups"
+                                multiple
+                                ng-options="ldapgroup.key as ldapgroup.value for ldapgroup in ldapgroups"
+                                ng-model="post.Usercontainerrole.ldapgroups._ids">
+                            </select>
+                            <div ng-repeat="error in errors.ldapgroups">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <?= __('LDAP users which are member of the selected LDAP groups will be assigned automatically to the user container role.'); ?>
                             </div>
                         </div>
 

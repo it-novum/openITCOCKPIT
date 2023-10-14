@@ -265,7 +265,13 @@ class InstantreportsTable extends Table {
         }
 
         $query->where($indexFilter);
-        $query->order($InstantreportFilter->getOrderForPaginator('Instantreports.name', 'asc'));
+        $query->order(
+            array_merge(
+                $InstantreportFilter->getOrderForPaginator('Instantreports.name', 'asc'),
+                ['Instantreports.id' => 'asc']
+            )
+
+        );
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();
@@ -533,28 +539,28 @@ class InstantreportsTable extends Table {
                             }
                         }
                     }
-
-                    if (!empty($hostgroup['hosttemplates']['hosts'])) {
-                        foreach ($hostgroup['hosttemplates']['hosts'] as $host) {
-                            if (isset($instantReportObjects['Hosts'][$host['id']])) {
-                                continue;
-                            }
-                            $instantReportObjects['Hosts'][$host['id']] = [
-                                'id'   => $host['id'],
-                                'uuid' => $host['uuid'],
-                                'name' => $host['name']
-                            ];
-                            if (!empty($host['services'])) {
-
-                                foreach ($host['services'] as $service) {
-                                    if (isset($instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']])) {
-                                        continue;
+                    if (!empty($hostgroup['hosttemplates'])) {
+                        foreach ($hostgroup['hosttemplates'] as $hosttemplate) {
+                            foreach ($hosttemplate['hosts'] as $host) {
+                                if (isset($instantReportObjects['Hosts'][$host['id']])) {
+                                    continue;
+                                }
+                                $instantReportObjects['Hosts'][$host['id']] = [
+                                    'id'   => $host['id'],
+                                    'uuid' => $host['uuid'],
+                                    'name' => $host['name']
+                                ];
+                                if (!empty($host['services'])) {
+                                    foreach ($host['services'] as $service) {
+                                        if (isset($instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']])) {
+                                            continue;
+                                        }
+                                        $instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']] = [
+                                            'id'   => $service['id'],
+                                            'uuid' => $service['uuid'],
+                                            'name' => ($service['name']) ? $service['name'] : $service['servicetemplate']['name']
+                                        ];
                                     }
-                                    $instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']] = [
-                                        'id'   => $service['id'],
-                                        'uuid' => $service['uuid'],
-                                        'name' => ($service['name']) ? $service['name'] : $service['servicetemplate']['name']
-                                    ];
                                 }
                             }
                         }
@@ -928,10 +934,80 @@ class InstantreportsTable extends Table {
 
         $list = [];
         foreach ($result as $row) {
-            $list[$row[$index]] =  $row['name'];
+            $list[$row[$index]] = $row['name'];
         }
 
         return $list;
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedInstantreportsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param int $hostId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getInstantReportsByHostId(int $hostId, array $MY_RIGHTS): array {
+        $query = $this->find();
+        $query->select([
+            'Instantreports.id',
+            'Instantreports.name'
+        ])
+            ->innerJoin(
+                ['InstantreportsToHosts' => 'instantreports_to_hosts'],
+                [
+                    'InstantreportsToHosts.instantreport_id = Instantreports.id',
+                    'InstantreportsToHosts.host_id' => $hostId,
+                ]
+            );
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Instantreports.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration();
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param int $serviceId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getInstantReportsByServiceId(int $serviceId, array $MY_RIGHTS): array {
+        $query = $this->find();
+        $query->select([
+            'Instantreports.id',
+            'Instantreports.name'
+        ])
+            ->innerJoin(
+                ['Instantreportstoservices' => 'instantreports_to_services'],
+                [
+                    "Instantreportstoservices.service_id" => $serviceId,
+                    'Instantreportstoservices.instantreport_id = Instantreports.id'
+                ]
+            );
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Instantreports.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration();
+
+        return $query->toArray();
     }
 
 }

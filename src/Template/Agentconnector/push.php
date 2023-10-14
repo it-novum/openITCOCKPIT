@@ -34,12 +34,12 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fas fa-magic"></i> <?php echo __('Overview'); ?>
+        <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Overview'); ?>
     </li>
 </ol>
 
 <massdelete
-        help="<?= __('By deleting, the corresponding openITCOCKPIT Agent is not able to send data to the openITCOCKPIT server anymore.'); ?>"></massdelete>
+    help="<?= __('By deleting, the corresponding openITCOCKPIT Agent is not able to send data to the openITCOCKPIT server anymore.'); ?>"></massdelete>
 
 <div class="row">
     <div class="col-xl-12">
@@ -62,11 +62,26 @@
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('overview', 'agentconnector')): ?>
                             <li class="nav-item">
-                                <a class="nav-link  active" data-toggle="tab" ui-sref="AgentconnectorsPush" role="tab">
+                                <a class="nav-link active" data-toggle="tab" ui-sref="AgentconnectorsPush" role="tab">
                                     <i class="fas fa-upload"></i>&nbsp;
                                     <?php echo __('Push'); ?>
                                 </a>
                             </li>
+                        <?php endif; ?>
+                        <?php if (\Cake\Core\Plugin::isLoaded('DistributeModule') && \Cake\Core\Plugin::isLoaded('ImportModule')): ?>
+                            <?php if ($this->Acl->hasPermission('overview', 'agentconnector')): ?>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" ui-sref="AgentconnectorsPushSatellite"
+                                       role="tab">
+                                        <div class="icon-stack">
+                                            <i class="fas fa-satellite opacity-100 "></i>
+                                            <i class="fas fa-upload opacity-100 fa-xs text-primary cornered cornered-lr"></i>
+                                        </div>
+                                        &nbsp;
+                                        <?php echo __('Push via Satellite (Import Module)'); ?>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </ul>
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
@@ -219,7 +234,7 @@
                                     {{ agent.ipaddress}}
                                 </td>
                                 <td>
-                                    {{agent.http_x_forwarded_for?agent.http_x_forwarded_for:agent.remote_address}}
+                                    {{agent.http_x_forwarded_for ? agent.http_x_forwarded_for : agent.remote_address}}
                                 </td>
                                 <td>
                                     {{ agent.last_update}}

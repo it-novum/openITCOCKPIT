@@ -36,13 +36,16 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 
-class MyRightsFactory{
+class MyRightsFactory {
     /**
      * @param $userId
      * @param $userGroupId
      * @return array
      */
     public static function getUserPermissions($userId, $usergroupId) {
+        $userId = (int)$userId;
+        $usergroupId = (int)$usergroupId;
+
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
         $hasRootPrivileges = false;
@@ -82,6 +85,9 @@ class MyRightsFactory{
 
         $containerPermissions = $containerPermissionsUser + $containerPermissions;
 
+        // The ROOT_CONTAINER is always available for ALL users. (READ permissions)
+        // For this reason, in the Web-GUI the only option for the ROOT_CONTAINER is to grant WRITE permissions.
+        // It is unnecessary to select the ROOT_CONTAINER, which is available to all users by default with READ permissions.
         $MY_RIGHTS = [ROOT_CONTAINER];
         $MY_RIGHTS_LEVEL = [ROOT_CONTAINER => READ_RIGHT];
 
@@ -101,6 +107,21 @@ class MyRightsFactory{
             }
         }
 
+        $userPermissions = [
+            'MY_RIGHTS'         => array_unique($MY_RIGHTS),
+            'MY_RIGHTS_LEVEL'   => $MY_RIGHTS_LEVEL,
+            'PERMISSIONS'       => self::getAcoPermissions($usergroupId),
+            'hasRootPrivileges' => $hasRootPrivileges
+        ];
+
+        return $userPermissions;
+    }
+
+    /**
+     * @param int $usergroupId
+     * @return array
+     */
+    protected static function getAcoPermissions(int $usergroupId) {
         /** @var ArosTable $ArosTable */
         $ArosTable = TableRegistry::getTableLocator()->get('Acl.Aros');
         /** @var AcosTable $AcosTable */
@@ -165,13 +186,6 @@ class MyRightsFactory{
             }
         }
 
-        $userPermissions = [
-            'MY_RIGHTS'         => array_unique($MY_RIGHTS),
-            'MY_RIGHTS_LEVEL'   => $MY_RIGHTS_LEVEL,
-            'PERMISSIONS'       => $permissions,
-            'hasRootPrivileges' => $hasRootPrivileges
-        ];
-
-        return $userPermissions;
+        return $permissions;
     }
 }

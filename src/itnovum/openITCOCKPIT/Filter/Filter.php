@@ -24,7 +24,9 @@
 
 namespace itnovum\openITCOCKPIT\Filter;
 
+use App\itnovum\openITCOCKPIT\Database\SanitizeOrder;
 use Cake\Http\ServerRequest;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 abstract class Filter {
 
@@ -76,7 +78,11 @@ abstract class Filter {
                                 if (!is_array($value)) {
                                     $value = [$value];
                                 }
-                                $conditions[sprintf('%s rlike', $field)] = sprintf('.*(%s).*', implode('|', $value));
+                                $regularExpression = sprintf('.*(%s).*', implode('|', $value));
+                                if ($this->isValidRegularExpression($regularExpression)) {
+                                    $conditions[sprintf('%s rlike', $field)] = $regularExpression;
+                                }
+
                             }
                             break;
                         case 'notrlike':
@@ -85,7 +91,43 @@ abstract class Filter {
                                 if (!is_array($value)) {
                                     $value = [$value];
                                 }
-                                $conditions[sprintf('%s not rlike', $field)] = sprintf('.*(%s).*', implode('|', $value));
+                                $regularExpression = sprintf('.*(%s).*', implode('|', $value));
+                                if ($this->isValidRegularExpression($regularExpression)) {
+                                    $conditions[sprintf('%s not rlike', $field)] = $regularExpression;
+                                }
+                            }
+                            break;
+                        case 'like_or_rlike':
+                            // This filter is special. It is to resolve performance issues after ITC-2440 get implemented.
+                            // It searches in the request data for $field_regex. If this field is set to true, the filter will
+                            // return a regular expression (slower). Otherwise, the filter will return a simple LIKE query (faster)
+                            $enableRegexSearch = $this->getQueryFieldValue($field . '_regex', false);
+
+                            if ($enableRegexSearch === '1' || $enableRegexSearch === 1 || $enableRegexSearch === 'true' || $enableRegexSearch === true) {
+                                // The user enabled regex search for this field
+                                $value = $this->getQueryFieldValue($field, true);
+                                if ($value) {
+                                    if (!is_array($value)) {
+                                        $value = [$value];
+                                    }
+                                    $regularExpression = sprintf('.*(%s).*', implode('|', $value));
+                                    if ($this->isValidRegularExpression($regularExpression)) {
+                                        $conditions[sprintf('%s rlike', $field)] = $regularExpression;
+                                    }
+
+                                }
+                                break;
+                            }
+
+                            // Use a normale like condition
+                            $value = $this->getQueryFieldValue($field);
+                            if ($value) {
+                                $value = str_replace('\\', '\\\\', $value);
+
+                                $conditions[sprintf('%s LIKE', $field)] = sprintf(
+                                    '%%%s%%',
+                                    $value
+                                );
                             }
                             break;
                         case 'equals':
@@ -96,6 +138,20 @@ abstract class Filter {
                                 if ($values || $values === '0') {
                                     $conditions[$field] = $values;
                                 }
+                            }
+                            break;
+
+                        case 'bitwise_and':
+                            $values = $this->getQueryFieldValue($field);
+                            if ($values || $values === '0') {
+                                $conditions[sprintf('%s &', $field)] = $values;
+                            }
+                            break;
+
+                        case 'bitwise_or':
+                            $values = $this->getQueryFieldValue($field);
+                            if ($values || $values === '0') {
+                                $conditions[sprintf('%s |', $field)] = $values;
                             }
                             break;
 
@@ -147,6 +203,15 @@ abstract class Filter {
                             if ($value === '0' || $value === 0 || $value === 'false' || $value === false) {
                                 $conditions[sprintf('%s =', $field)] = 0;
                             }
+                            break;
+
+                        case 'range':
+                            $values = $this->getQueryFieldValue($field);
+                            if (is_array($values) && !empty($values) && sizeof($values) === 2) {
+                                $conditions[sprintf('%s >=', $field)] = $values[0];
+                                $conditions[sprintf('%s <=', $field)] = $values[1];
+                            }
+
                             break;
 
                         default:
@@ -247,17 +312,22 @@ abstract class Filter {
 
     /**
      * This parameter needs to be passed via the query string (GET)
+     * WARNING: Order fields/directions are not sanitized by the CakePHP query builder.
+     * You should use an allowed list of fields/directions when passing in user-supplied data to order().
      *
      * @param string $default
      * @return string|array
      */
-    public function getSort($default = '') {
-        $sort = $this->Request->getQuery('sort');
+    protected function getSort($default = '') {
+        $unsafeSort = $this->Request->getQuery('sort');
 
-        if ($sort !== null && $sort !== '') {
-            return $sort;
+        if ($unsafeSort !== null && $unsafeSort !== '') {
+            if (is_array($unsafeSort)) {
+                return $this->validateArrayDirection($unsafeSort);
+            }
+            return SanitizeOrder::filterOrderColumn($unsafeSort);
         }
-        return $default;
+        return SanitizeOrder::filterOrderColumn($default);
     }
 
     /**
@@ -266,7 +336,7 @@ abstract class Filter {
      * @param string $default
      * @return string
      */
-    public function getDirection($default = '') {
+    protected function getDirection($default = '') {
         if ($this->Request->getQuery('direction', null) === 'desc') {
             return 'desc';
         }
@@ -275,20 +345,21 @@ abstract class Filter {
             return 'asc';
         }
 
-        if ($default === '') {
+        if ($default === '' || $default === 'asc') {
             return 'asc';
         }
 
-        return $default;
+        return 'desc';
     }
 
     /**
      * @param array $sortAsArray
      * @return array
      */
-    public function validateArrayDirection($sortAsArray = []) {
+    protected function validateArrayDirection($sortAsArray = []) {
         $validatedSort = [];
         foreach ($sortAsArray as $sortField => $sortDirection) {
+            $sortField = SanitizeOrder::filterOrderColumn($sortField);
             $validatedSort[$sortField] = ($sortDirection === 'desc') ? 'desc' : 'asc';
         }
         return $validatedSort;
@@ -316,11 +387,17 @@ abstract class Filter {
      * @return int
      */
     public function getPage($default = 1) {
-
         if ($this->Request->getQuery('page', 0) > 0) {
             return (int)$this->Request->getQuery('page');
         }
-        return $default;
+        return (int)$default;
     }
 
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    public function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
+    }
 }

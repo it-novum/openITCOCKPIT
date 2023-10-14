@@ -31,11 +31,11 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="WizardsIndex">
-            <i class="fas fa-magic"></i> <?php echo __('Wizards'); ?>
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Wizards'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fas fa-magic"></i> <?php echo __('Linux Server'); ?>
+        <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Linux Server'); ?>
     </li>
 </ol>
 

@@ -203,6 +203,16 @@ $hasHostIndexPermissions = $this->Acl->hasPermission('index', 'hosts', '');
                                        placeholder="<?php echo __('Filter by host name'); ?>"
                                        ng-model="filter.Host.name"
                                        ng-model-options="{debounce: 500}">
+                                <div class="input-group-append">
+                                    <span class="input-group-text pt-0 pb-0">
+                                        <label>
+                                            <?= __('Enable RegEx'); ?>
+                                            <input type="checkbox"
+                                                   ng-model="filter.Host.name_regex">
+                                        </label>
+                                        <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-lg-6 margin-bottom-5">
@@ -214,6 +224,16 @@ $hasHostIndexPermissions = $this->Acl->hasPermission('index', 'hosts', '');
                                        placeholder="<?php echo __('Filter by IP address'); ?>"
                                        ng-model="filter.Host.address"
                                        ng-model-options="{debounce: 500}">
+                                <div class="input-group-append">
+                                    <span class="input-group-text pt-0 pb-0">
+                                        <label>
+                                            <?= __('Enable RegEx'); ?>
+                                            <input type="checkbox"
+                                                   ng-model="filter.Host.address_regex">
+                                        </label>
+                                        <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-lg-6 margin-bottom-5">
@@ -225,7 +245,7 @@ $hasHostIndexPermissions = $this->Acl->hasPermission('index', 'hosts', '');
                                     <input type="text"
                                            class="form-control form-control-sm"
                                            data-role="tagsinput"
-                                           id="ServicesKeywordsInput"
+                                           id="HostsKeywordsInput{{widget.id}}"
                                            placeholder="<?php echo __('Filter by tags'); ?>"
                                            ng-model="filter.Host.keywords"
                                            ng-model-options="{debounce: 500}"
@@ -241,7 +261,7 @@ $hasHostIndexPermissions = $this->Acl->hasPermission('index', 'hosts', '');
                                 <div class="col tagsinputFilter">
                                     <input type="text" class="input-sm"
                                            data-role="tagsinput"
-                                           id="ServicesNotKeywordsInput"
+                                           id="HostsNotKeywordsInput{{widget.id}}"
                                            placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                            ng-model="filter.Host.not_keywords"
                                            ng-model-options="{debounce: 500}">

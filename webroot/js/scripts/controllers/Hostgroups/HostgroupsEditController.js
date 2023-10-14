@@ -58,12 +58,17 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHosts = function(searchString){
-            $scope.params = {
-                'angular': true,
-                'containerId': $scope.post.Hostgroup.container.parent_id,
-                'filter[Hosts.name]': searchString,
-                'selected': $scope.post.Hostgroup.hosts._ids
+            if($scope.post.Hostgroup.container.parent_id == 0){
+                return;
             }
+            $scope.params = {
+                'containerId': $scope.post.Hostgroup.container.parent_id,
+                'filter': {
+                    'Hosts.name': searchString
+
+                },
+                'selected': $scope.post.Hostgroup.hosts._ids
+            };
 
             $http.post("/hostgroups/loadHosts.json?angular=true",
                 $scope.params
@@ -73,6 +78,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHosttemplates = function(searchString){
+            if($scope.post.Hostgroup.container.parent_id == 0){
+                return;
+            }
             $http.get("/hostgroups/loadHosttemplates.json", {
                 params: {
                     'angular': true,
@@ -86,6 +94,16 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
+            //clean up host and host templates -> remove not visible ids
+            $scope.post.Hostgroup.hosts._ids = _.intersection(
+                _.map($scope.hosts, 'key'),
+                $scope.post.Hostgroup.hosts._ids
+            );
+            $scope.post.Hostgroup.hosttemplates._ids = _.intersection(
+                _.map($scope.hosttemplates, 'key'),
+                $scope.post.Hostgroup.hosttemplates._ids
+            );
+
             $http.post("/hostgroups/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){

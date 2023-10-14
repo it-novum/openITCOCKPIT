@@ -13,12 +13,14 @@ use App\Model\Entity\Hostescalation;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
 use Cake\Database\Expression\QueryExpression;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -115,6 +117,14 @@ class HostsTable extends Table {
             'className'        => 'Hosts',
             'foreignKey'       => 'host_id',
             'targetForeignKey' => 'parenthost_id',
+            'joinTable'        => 'hosts_to_parenthosts',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
+
+        $this->belongsToMany('ChildHosts', [
+            'className'        => 'Hosts',
+            'foreignKey'       => 'parenthost_id',
+            'targetForeignKey' => 'host_id',
             'joinTable'        => 'hosts_to_parenthosts',
             'saveStrategy'     => 'replace'
         ])->setDependent(true);
@@ -492,6 +502,21 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     * @throws RecordNotFoundException
+     */
+    public function getHostByIdOrFail($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain('HostsToContainersSharing')
+            ->firstOrFail();
+        return $query;
+    }
+
+    /**
      * @param string $uuid
      * @param bool $enableHydration
      * @return array|Host
@@ -649,48 +674,6 @@ class HostsTable extends Table {
     }
 
     /**
-     * @param $id
-     * @return array|\Cake\Datasource\EntityInterface|null
-     */
-    public function getHostByIdForEditDetails($id) {
-        $query = $this->find()
-            ->where([
-                'Hosts.id' => $id
-            ])
-            ->contain([
-                'HostsToContainersSharing',
-                'Contacts'      => [
-                    'Containers' => [
-                        'fields' => [
-                            'ContactsToContainers.contact_id',
-                            'Containers.id'
-                        ]
-                    ],
-                    'fields'     => [
-                        'ContactsToHosts.host_id',
-                        'Contacts.id'
-                    ]
-                ],
-                'Contactgroups' => [
-                    'Containers' => [
-                        'fields' => [
-                            'Containers.parent_id'
-                        ]
-                    ],
-                    'fields'     => [
-                        'ContactgroupsToHosts.host_id',
-                        'Contactgroups.id'
-                    ]
-                ],
-                'Hostcommandargumentvalues' => [
-                    'Commandarguments'
-                ]
-            ])
-            ->first();
-        return $query;
-    }
-
-    /**
      * @param int|array $ids
      * @return array
      */
@@ -785,7 +768,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         $result = $query->toArray();
@@ -816,8 +800,10 @@ class HostsTable extends Table {
             'Hosts.satellite_id',
             'Hosts.container_id',
             'Hosts.tags',
+            'Hosts.usage_flag',
             'Hosts.priority',
-
+            'Hosts.notes',
+            'Hosts.host_type',
             'Hoststatus.current_state',
             'Hoststatus.last_check',
             'Hoststatus.next_check',
@@ -865,6 +851,7 @@ class HostsTable extends Table {
                     'Hosttemplates.uuid',
                     'Hosttemplates.name',
                     'Hosttemplates.description',
+                    'Hosttemplates.notes',
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
@@ -929,7 +916,12 @@ class HostsTable extends Table {
 
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -962,11 +954,13 @@ class HostsTable extends Table {
             'Hosts.address',
             'Hosts.satellite_id',
             'Hosts.container_id',
+            'Hosts.hosttemplate_id',
             'Hosts.tags',
             'Hosts.priority',
             //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
             //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-
+            'Hosts.notes',
+            'Hosts.host_type',
             'Hoststatus.current_state',
             'Hoststatus.last_check',
             'Hoststatus.next_check',
@@ -1008,12 +1002,12 @@ class HostsTable extends Table {
                     'Hosttemplates.uuid',
                     'Hosttemplates.name',
                     'Hosttemplates.description',
+                    'Hosttemplates.notes',
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
                     'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
                     'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
-
                 ]
             ]
         ]);
@@ -1070,7 +1064,12 @@ class HostsTable extends Table {
         $query->where($where);
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1144,7 +1143,12 @@ class HostsTable extends Table {
 
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1218,7 +1222,12 @@ class HostsTable extends Table {
 
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1277,7 +1286,12 @@ class HostsTable extends Table {
         ]);
         $query->disableHydration();
         $query->group(['Hosts.id']);
-        $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        $query->order(
+            array_merge(
+                $HostFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                ['Hosts.id' => 'asc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1363,7 +1377,12 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         if (!empty($HostConditions->getOrder())) {
-            $query->order($HostConditions->getOrder());
+            $query->order(
+                array_merge(
+                    $HostConditions->getOrder(),
+                    ['Hosts.id' => 'asc']
+                )
+            );
         }
 
         if ($PaginateOMat === null) {
@@ -1449,7 +1468,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         if ($PaginateOMat === null) {
@@ -1502,7 +1522,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         $result = $query->toArray();
@@ -1548,10 +1569,17 @@ class HostsTable extends Table {
     }
 
     /**
+     * This method will lookup the name of objects based on the given ID.
+     *
+     * Objects like ObjectsCache are passed by reference in php which is very good for performance
+     * The Cache is optional (to be backwards compatible) and should be used, whenever this method get's called in a look
+     * A good example for Caching is the Import Module for example
+     *
      * @param array $dataToParse
-     * @return array
+     * @param ObjectsCache|null $Cache
+     * @return array|array[]
      */
-    public function resolveDataForChangelog($dataToParse = []) {
+    public function resolveDataForChangelog(array $dataToParse, ?ObjectsCache $Cache = null) {
         $extDataForChangelog = [
             'Contact'      => [],
             'Contactgroup' => [],
@@ -1578,74 +1606,194 @@ class HostsTable extends Table {
 
 
         if (!empty($dataToParse['Host']['contacts']['_ids'])) {
-            foreach ($ContactsTable->getContactsAsList($dataToParse['Host']['contacts']['_ids']) as $contactId => $contactName) {
-                $extDataForChangelog['Contact'][] = [
-                    'id'   => $contactId,
-                    'name' => $contactName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($ContactsTable->getContactsAsList($dataToParse['Host']['contacts']['_ids']) as $contactId => $contactName) {
+                    $extDataForChangelog['Contact'][] = [
+                        'id'   => $contactId,
+                        'name' => $contactName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Host']['contacts']['_ids'] as $contactId) {
+                    if (!$Cache->has(OBJECT_CONTACT, $contactId)) {
+                        foreach ($ContactsTable->getContactsAsList($contactId) as $contactName) {
+                            $Cache->set(OBJECT_CONTACT, $contactId, [
+                                'id'   => $contactId,
+                                'name' => $contactName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Contact'][] = $Cache->get(OBJECT_CONTACT, $contactId);
+                }
             }
         }
 
         if (!empty($dataToParse['Host']['contactgroups']['_ids'])) {
-            foreach ($ContactgroupsTable->getContactgroupsAsList($dataToParse['Host']['contactgroups']['_ids']) as $contactgroupId => $contactgroupName) {
-                $extDataForChangelog['Contactgroup'][] = [
-                    'id'   => $contactgroupId,
-                    'name' => $contactgroupName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($ContactgroupsTable->getContactgroupsAsList($dataToParse['Host']['contactgroups']['_ids']) as $contactgroupId => $contactgroupName) {
+                    $extDataForChangelog['Contactgroup'][] = [
+                        'id'   => $contactgroupId,
+                        'name' => $contactgroupName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Host']['contactgroups']['_ids'] as $contactgroupId) {
+                    if (!$Cache->has(OBJECT_CONTACTGROUP, $contactgroupId)) {
+                        foreach ($ContactgroupsTable->getContactgroupsAsList($contactgroupId) as $contactgroupName) {
+                            $Cache->set(OBJECT_CONTACTGROUP, $contactgroupId, [
+                                'id'   => $contactgroupId,
+                                'name' => $contactgroupName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Contactgroup'][] = $Cache->get(OBJECT_CONTACTGROUP, $contactgroupId);
+                }
             }
         }
 
         if (!empty($dataToParse['Host']['check_period_id'])) {
-            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['check_period_id']) as $timeperiodId => $timeperiodName) {
-                $extDataForChangelog['CheckPeriod'] = [
-                    'id'   => $timeperiodId,
-                    'name' => $timeperiodName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['check_period_id']) as $timeperiodId => $timeperiodName) {
+                    $extDataForChangelog['CheckPeriod'] = [
+                        'id'   => $timeperiodId,
+                        'name' => $timeperiodName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                if (!$Cache->has(OBJECT_TIMEPERIOD, $dataToParse['Host']['check_period_id'])) {
+                    foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['check_period_id']) as $timeperiodId => $timeperiodName) {
+                        $Cache->set(OBJECT_TIMEPERIOD, $dataToParse['Host']['check_period_id'], [
+                            'id'   => $timeperiodId,
+                            'name' => $timeperiodName
+                        ]);
+                    }
+                }
+                $extDataForChangelog['CheckPeriod'] = $Cache->get(OBJECT_TIMEPERIOD, $dataToParse['Host']['check_period_id']);
             }
         }
 
         if (!empty($dataToParse['Host']['notify_period_id'])) {
-            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['notify_period_id']) as $timeperiodId => $timeperiodName) {
-                $extDataForChangelog['NotifyPeriod'] = [
-                    'id'   => $timeperiodId,
-                    'name' => $timeperiodName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['notify_period_id']) as $timeperiodId => $timeperiodName) {
+                    $extDataForChangelog['NotifyPeriod'] = [
+                        'id'   => $timeperiodId,
+                        'name' => $timeperiodName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                if (!$Cache->has(OBJECT_TIMEPERIOD, $dataToParse['Host']['notify_period_id'])) {
+                    foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['notify_period_id']) as $timeperiodId => $timeperiodName) {
+                        $Cache->set(OBJECT_TIMEPERIOD, $dataToParse['Host']['notify_period_id'], [
+                            'id'   => $timeperiodId,
+                            'name' => $timeperiodName
+                        ]);
+                    }
+                }
+                $extDataForChangelog['NotifyPeriod'] = $Cache->get(OBJECT_TIMEPERIOD, $dataToParse['Host']['notify_period_id']);
             }
         }
 
         if (!empty($dataToParse['Host']['command_id'])) {
-            foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Host']['command_id']) as $commandId => $commandName) {
-                $extDataForChangelog['CheckCommand'] = [
-                    'id'   => $commandId,
-                    'name' => $commandName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Host']['command_id']) as $commandId => $commandName) {
+                    $extDataForChangelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                if (!$Cache->has(OBJECT_COMMAND, $dataToParse['Host']['command_id'])) {
+                    foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Host']['command_id']) as $commandId => $commandName) {
+                        $Cache->set(OBJECT_COMMAND, $dataToParse['Host']['command_id'], [
+                            'id'   => $commandId,
+                            'name' => $commandName
+                        ]);
+                    }
+                }
+                $extDataForChangelog['CheckCommand'] = $Cache->get(OBJECT_COMMAND, $dataToParse['Host']['command_id']);
             }
         }
 
         if (!empty($dataToParse['Host']['hostgroups']['_ids'])) {
-            foreach ($HostgroupsTable->getHostgroupsAsList($dataToParse['Host']['hostgroups']['_ids']) as $hostgroupId => $hostgroupName) {
-                $extDataForChangelog['Hostgroup'][] = [
-                    'id'   => $hostgroupId,
-                    'name' => $hostgroupName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($HostgroupsTable->getHostgroupsAsList($dataToParse['Host']['hostgroups']['_ids']) as $hostgroupId => $hostgroupName) {
+                    $extDataForChangelog['Hostgroup'][] = [
+                        'id'   => $hostgroupId,
+                        'name' => $hostgroupName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Host']['hostgroups']['_ids'] as $hostgroupId) {
+                    if (!$Cache->has(OBJECT_HOSTGROUP, $hostgroupId)) {
+                        foreach ($HostgroupsTable->getHostgroupsAsList($hostgroupId) as $hostgroupName) {
+                            $Cache->set(OBJECT_HOSTGROUP, $hostgroupId, [
+                                'id'   => $hostgroupId,
+                                'name' => $hostgroupName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Hostgroup'][] = $Cache->get(OBJECT_HOSTGROUP, $hostgroupId);
+                }
             }
         }
 
         if (!empty($dataToParse['Host']['parenthosts']['_ids'])) {
-            foreach ($this->getHostsAsList($dataToParse['Host']['parenthosts']['_ids']) as $parentHostId => $parentHostName) {
-                $extDataForChangelog['Parenthost'][] = [
-                    'id'   => $parentHostId,
-                    'name' => $parentHostName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($this->getHostsAsList($dataToParse['Host']['parenthosts']['_ids']) as $parentHostId => $parentHostName) {
+                    $extDataForChangelog['Parenthost'][] = [
+                        'id'   => $parentHostId,
+                        'name' => $parentHostName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Host']['parenthosts']['_ids'] as $parentHostId) {
+                    if (!$Cache->has(OBJECT_HOST, $parentHostId)) {
+                        foreach ($this->getHostsAsList($parentHostId) as $parentHostName) {
+                            $Cache->set(OBJECT_HOST, $parentHostId, [
+                                'id'   => $parentHostId,
+                                'name' => $parentHostName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Parenthost'][] = $Cache->get(OBJECT_HOST, $parentHostId);
+                }
             }
         }
 
         if (!empty($dataToParse['Host']['hosttemplate_id'])) {
-            foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Host']['hosttemplate_id']) as $hosttemplateId => $hosttemplateName) {
-                $extDataForChangelog['Hosttemplate'][] = [
-                    'id'   => $hosttemplateId,
-                    'name' => $hosttemplateName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Host']['hosttemplate_id']) as $hosttemplateId => $hosttemplateName) {
+                    $extDataForChangelog['Hosttemplate'][] = [
+                        'id'   => $hosttemplateId,
+                        'name' => $hosttemplateName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                if (!$Cache->has(OBJECT_HOSTTEMPLATE, $dataToParse['Host']['hosttemplate_id'])) {
+                    foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Host']['hosttemplate_id']) as $hosttemplateId => $hosttemplateName) {
+                        $Cache->set(OBJECT_HOSTTEMPLATE, $dataToParse['Host']['hosttemplate_id'], [
+                            'id'   => $hosttemplateId,
+                            'name' => $hosttemplateName
+                        ]);
+                    }
+                }
+                $extDataForChangelog['Hosttemplate'][] = $Cache->get(OBJECT_HOSTTEMPLATE, $dataToParse['Host']['hosttemplate_id']);
             }
         }
 
@@ -1848,7 +1996,8 @@ class HostsTable extends Table {
         }
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
         $query->limit(ITN_AJAX_LIMIT);
 
@@ -1875,6 +2024,10 @@ class HostsTable extends Table {
             if ($HostConditions->includeDisabled() === false) {
                 $where['Hosts.disabled'] = 0;
             }
+            $satelliteId = $HostConditions->getSatelliteId();
+            if ($satelliteId !== null) {
+                $where['Hosts.satellite_id'] = $satelliteId;
+            }
             if ($HostConditions->hasNotConditions()) {
                 if (!empty($where['NOT'])) {
                     $where['NOT'] = array_merge($where['NOT'], $HostConditions->getNotConditions());
@@ -1895,7 +2048,8 @@ class HostsTable extends Table {
             }
             $query->group(['Hosts.id']);
             $query->order([
-                'Hosts.name' => 'asc'
+                'Hosts.name' => 'asc',
+                'Hosts.id'   => 'asc'
             ]);
 
             $selectedHosts = $query->toArray();
@@ -2181,7 +2335,8 @@ class HostsTable extends Table {
                             'Services.name',
                             'Services.host_id',
                             'Services.servicetemplate_id',
-                            'Services.disabled'
+                            'Services.disabled',
+                            'Services.service_type'
                         ])
                         ->contain([
                             'Servicetemplates' => function (Query $query) {
@@ -2287,7 +2442,10 @@ class HostsTable extends Table {
                 ['Hosts.eventhandler_command_id' => $commandId]
             ]
         ])
-            ->order(['Hosts.name' => 'asc'])
+            ->order([
+                'Hosts.name' => 'asc',
+                'Hosts.id'   => 'asc'
+            ])
             ->enableHydration($enableHydration)
             ->group(['Hosts.id'])
             ->all();
@@ -2346,7 +2504,8 @@ class HostsTable extends Table {
         $query->where($where);
         $query->enableHydration($enableHydration);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
         $query->group([
             'Hosts.id'
@@ -2411,9 +2570,10 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param int $satelliteId
      * @return array
      */
-    public function getHostsThatUseOitcAgentForExport() {
+    public function getHostsThatUseOitcAgentForExport(int $satelliteId = 0) {
         $query = $this->find()
             ->disableHydration()
             ->select([
@@ -2425,7 +2585,10 @@ class HostsTable extends Table {
                 'Agentconfigs.host_id',
                 'Agentconfigs.config',
             ])
-            ->innerJoinWith('Agentconfigs');
+            ->innerJoinWith('Agentconfigs')
+            ->where([
+                'Hosts.satellite_id' => $satelliteId
+            ]);
         $query->all();
 
         return $this->emptyArrayIfNull($query->toArray());
@@ -2520,7 +2683,12 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         if ($type === 'all') {
-            $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+            $query->order(
+                array_merge(
+                    $HostFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                    ['Hosts.id' => 'asc']
+                )
+            );
         }
 
         if ($type === 'count') {
@@ -2882,9 +3050,9 @@ class HostsTable extends Table {
 
             if ($conditions['Hoststatus']['in_downtime'] ^ $conditions['Hoststatus']['not_in_downtime']) {
                 $inDowntime = $conditions['Hoststatus']['in_downtime'] === true;
-                if($inDowntime === false){
+                if ($inDowntime === false) {
                     $where['Hoststatus.scheduled_downtime_depth'] = 0;
-                }else{
+                } else {
                     $where['Hoststatus.scheduled_downtime_depth > '] = 0;
                 }
             }
@@ -2952,9 +3120,9 @@ class HostsTable extends Table {
 
             if ($conditions['Hoststatus']['in_downtime'] ^ $conditions['Hoststatus']['not_in_downtime']) {
                 $inDowntime = $conditions['Hoststatus']['in_downtime'] === true;
-                if($inDowntime === false){
+                if ($inDowntime === false) {
                     $where['Hoststatus.scheduled_downtime_depth'] = 0;
-                }else{
+                } else {
                     $where['Hoststatus.scheduled_downtime_depth > '] = 0;
                 }
             }
@@ -2992,9 +3160,10 @@ class HostsTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHostsForCopy($ids = []) {
+    public function getHostsForCopy($ids = [], array $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'Hosts.id',
@@ -3004,7 +3173,18 @@ class HostsTable extends Table {
                 'Hosts.host_url'
             ])
             ->where(['Hosts.id IN' => $ids])
-            ->order(['Hosts.id' => 'asc'])
+            ->order(['Hosts.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query
             ->disableHydration()
             ->all();
 
@@ -3120,7 +3300,8 @@ class HostsTable extends Table {
                     function (Query $q) {
                         return $q->enableAutoFields(false)->select([
                             'id',
-                            'name'
+                            'name',
+                            'satellite_id'
                         ]);
                     },
                 'Hostcommandargumentvalues' => [
@@ -3199,12 +3380,27 @@ class HostsTable extends Table {
      */
     public function getHostStateSummary($hoststatus, $extended = true) {
         $hostStateSummary = [
-            'state' => [
+            'state'        => [
                 0 => 0,
                 1 => 0,
                 2 => 0
             ],
-            'total' => 0
+            'acknowledged' => [
+                0 => 0,
+                1 => 0,
+                2 => 0
+            ],
+            'in_downtime'  => [
+                0 => 0,
+                1 => 0,
+                2 => 0
+            ],
+            'not_handled'  => [
+                0 => 0,
+                1 => 0,
+                2 => 0
+            ],
+            'total'        => 0
         ];
         if ($extended === true) {
             $hostStateSummary = [
@@ -3265,7 +3461,7 @@ class HostsTable extends Table {
             return $hostStateSummary;
         }
         foreach ($hoststatus as $host) {
-            //Check for randome exit codes like 255...
+            //Check for random exit codes like 255...
             if ($host['Hoststatus']['current_state'] > 2) {
                 $host['Hoststatus']['current_state'] = 2;
             }
@@ -3276,7 +3472,7 @@ class HostsTable extends Table {
                     if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
                         $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
                         $hostStateSummary['acknowledged']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
-                    } else {
+                    } else if ($host['Hoststatus']['problem_has_been_acknowledged'] == 0 && $host['Hoststatus']['scheduled_downtime_depth'] == 0) {
                         $hostStateSummary['not_handled'][$host['Hoststatus']['current_state']]++;
                         $hostStateSummary['not_handled']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
                     }
@@ -3290,20 +3486,16 @@ class HostsTable extends Table {
                     $hostStateSummary['passive'][$host['Hoststatus']['current_state']]++;
                     $hostStateSummary['passive']['hostIds'][$host['Hoststatus']['current_state']][] = $host['id'];
                 }
-            }else{
+            } else {
                 if ($host['Hoststatus']['current_state'] > 0) {
                     if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
                         $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
-                    } else {
+                    } else if ($host['Hoststatus']['problem_has_been_acknowledged'] == 0 && $host['Hoststatus']['scheduled_downtime_depth'] == 0) {
                         $hostStateSummary['not_handled'][$host['Hoststatus']['current_state']]++;
                     }
                 }
-
                 if ($host['Hoststatus']['scheduled_downtime_depth'] > 0) {
                     $hostStateSummary['in_downtime'][$host['Hoststatus']['current_state']]++;
-                }
-                if ($host['Hoststatus']['active_checks_enabled'] == 0) {
-                    $hostStateSummary['passive'][$host['Hoststatus']['current_state']]++;
                 }
             }
             $hostStateSummary['total']++;
@@ -3414,22 +3606,59 @@ class HostsTable extends Table {
 
 
     /**
-     * @param int $id
-     * @param bool $enableHydration
-     * @return array|\Cake\Datasource\EntityInterface
+     * @param $id
+     * @return array
      */
-    public function getHostsbyIdWithDetails($id, $enableHydration = true) {
+    public function getHostByIdWithDetails($id) {
+        $contain = [
+            'Contactgroups',
+            'Contacts',
+            'Hostgroups',
+            'Customvariables',
+            'Parenthosts',
+            'HostsToContainersSharing',
+            'Hostcommandargumentvalues' => [
+                'Commandarguments'
+            ],
+            'CheckPeriod',
+            'NotifyPeriod'
+        ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $contain[] = 'PrometheusExporters';
+        };
+
         $query = $this->find()
             ->where([
                 'Hosts.id' => $id
             ])
-            ->contain([
-                'HostsToContainersSharing',
-                'Hosttemplates'
-            ])
-            ->enableHydration($enableHydration);
+            ->contain($contain)
+            ->disableHydration()
+            ->first();
 
-        return $query->firstOrFail();
+        $host = $query;
+        $host['hostgroups'] = [
+            '_ids' => Hash::extract($query, 'hostgroups.{n}.id')
+        ];
+        $host['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $host['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+        $host['parenthosts'] = [
+            '_ids' => Hash::extract($query, 'parenthosts.{n}.id')
+        ];
+        $host['hosts_to_containers_sharing'] = [
+            '_ids' => Hash::extract($query, 'hosts_to_containers_sharing.{n}.id')
+        ];
+        $host['prometheus_exporters'] = [
+            '_ids' => Hash::extract($query, 'prometheus_exporters.{n}.id')
+        ];
+
+        return [
+            'Host' => $host
+        ];
     }
 
     /**
@@ -3671,7 +3900,7 @@ class HostsTable extends Table {
      * @param int $satelliteId
      * @return array
      */
-    public function getHostBySatelliteId($satelliteId) {
+    public function getHostsBySatelliteId($satelliteId) {
         $query = $this->find()
             ->where([
                 'Hosts.satellite_id' => $satelliteId
@@ -3685,7 +3914,7 @@ class HostsTable extends Table {
      * @param int $satelliteId
      * @return array
      */
-    public function getHostBySatelliteIdForDelete($satelliteId) {
+    public function getHostsBySatelliteIdForDelete($satelliteId) {
         $query = $this->find()
             ->where([
                 'Hosts.satellite_id' => $satelliteId
@@ -3756,7 +3985,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         $result = $query->toArray();
@@ -3885,7 +4115,8 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
         ]);
 
         $result = $query->toArray();
@@ -3894,6 +4125,14 @@ class HostsTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostTypes() {
+        $types = $this->getHostTypesWithStyles();
+        return array_combine(array_keys($types), Hash::extract($types, '{n}.title'));
     }
 
     /**
@@ -4356,12 +4595,40 @@ class HostsTable extends Table {
                 'hostgroup_ids IS NOT NULL',
                 'count > 0'
             ]);
-            $query->group('Hosts.id');
         }
 
         $where = [];
+
+
         if (!empty($conditions['Host']['name'])) {
-            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+            if (isset($conditions['Host']['name_regex']) && $conditions['Host']['name_regex'] === true || $conditions['Host']['name_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['Host']['name'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                // Use LIKE
+                $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+            }
+        }
+
+        if (!empty($conditions['Host']['address'])) {
+            if (isset($conditions['Host']['address_regex']) && $conditions['Host']['address_regex'] === true || $conditions['Host']['address_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['address'])) {
+                    $where[] = new Comparison(
+                        'Hosts.address',
+                        $conditions['Host']['address'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                $where['Hosts.address LIKE'] = sprintf('%%%s%%', $conditions['Host']['address']);
+            }
         }
 
         if (!empty($conditions['Host']['keywords'])) {
@@ -4382,6 +4649,7 @@ class HostsTable extends Table {
             );
         }
         $query->andWhere($where);
+        $query->group('Hosts.id');
         $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
@@ -4417,5 +4685,401 @@ class HostsTable extends Table {
                 }
             ]);
         return $query->first();
+    }
+
+    /**
+     * @param array $containerIds
+     * @param array $where
+     * @return array
+     */
+    public function getParenthostsForDashboard($containerIds = [], $where = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $joins = [
+            [
+                'table'      => 'hosts_to_parenthosts',
+                'type'       => 'INNER',
+                'alias'      => 'Parenthosts',
+                'conditions' => 'Parenthosts.parenthost_id = Hosts.id'
+            ]
+        ];
+        if (!empty($containerIds)) {
+            $joins[] = [
+                'table'      => 'hosts_to_containers',
+                'alias'      => 'HostsToContainers',
+                'type'       => 'LEFT',
+                'conditions' => [
+                    'HostsToContainers.host_id = Hosts.id',
+                ],
+            ];
+            $query['conditions'][''] = $containerIds;
+        }
+
+
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                //'Parenthosts.parenthost_id'
+            ])
+            ->distinct('Hosts.uuid')
+            ->join($joins);
+
+
+        if (!empty($where)) {
+            $query->where($where);
+        }
+
+        if (!empty($containerIds)) {
+            $query->andWhere([
+                'HostsToContainers.container_id IN' => $containerIds
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->all();
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param $containerIds
+     * @param $hostgroupIds
+     * @param $type
+     * @param $index
+     * @param $where
+     * @return array
+     */
+    public function getHostsByContainerIdAndHostgroupIds($containerIds, $hostgroupIds, $type = 'all', $index = 'id', $where = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        if (!is_array($hostgroupIds)) {
+            $hostgroupIds = [$hostgroupIds];
+        }
+
+        $_where = [
+            'Hosts.disabled IN' => [0]
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Hosts.' . $index,
+            'Hosts.name'
+        ])->innerJoinWith('Hostgroups')
+            ->where([
+                'Hostgroups.id IN' => $hostgroupIds
+            ]);
+
+        $query->where($where);
+        if (!empty($containerIds)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $containerIds
+            ]);
+        }
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
+        ]);
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row['name'];
+        }
+
+        return $list;
+    }
+
+    /**
+     * @param HostConditions $HostConditions
+     * @param int|array $selected
+     * @param bool $returnEmptyArrayIfMyRightsIsEmpty
+     * @return array|null
+     * @deprecated since ITC-2819
+     * See https://github.com/it-novum/openITCOCKPIT/pull/1377/files?diff=split&w=0 how to restore <= 4.4.1 behavior
+     */
+    public function getHostsForHostgroupForAngular(HostConditions $HostConditions, $selected = []) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+
+        $query = $this->find('list');
+        $containerIds = $HostConditions->getContainerIds();
+        if (empty($containerIds)) {
+            //User has no permissions to edit hosts/services
+            return [];
+        }
+        $query->where([
+            'Hosts.container_id IN' => $containerIds
+        ]);
+
+        $where = $HostConditions->getWhereForFind();
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $where['NOT'] = [
+                'Hosts.id IN' => $selected
+            ];
+        }
+
+
+        if (!empty($where['NOT'])) {
+            // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+            $where['NOT'] = [
+                'OR' => $where['NOT']
+            ];
+        }
+        if (!empty($where)) {
+            $query->where($where);
+        }
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc',
+            'Hosts.id'   => 'asc'
+        ]);
+        $query->limit(ITN_AJAX_LIMIT);
+
+        $hostsWithLimit = $query->toArray();
+
+        $selectedHosts = [];
+        if (!empty($selected)) {
+            $query = $this->find('list');
+
+            $query->where([
+                'Hosts.container_id IN' => $containerIds
+            ]);
+
+            $where = [
+                'Hosts.id IN' => $selected
+            ];
+            if ($HostConditions->includeDisabled() === false) {
+                $where['Hosts.disabled'] = 0;
+            }
+
+            if (!empty($where['NOT'])) {
+                // https://github.com/cakephp/cakephp/issues/14981#issuecomment-694770129
+                $where['NOT'] = [
+                    'OR' => $where['NOT']
+                ];
+            }
+
+            if (!empty($where)) {
+                $query->where($where);
+            }
+            $query->group(['Hosts.id']);
+            $query->order([
+                'Hosts.name' => 'asc',
+                'Hosts.id'   => 'asc'
+            ]);
+
+            $selectedHosts = $query->toArray();
+
+        }
+
+        $hosts = $hostsWithLimit + $selectedHosts;
+        asort($hosts, SORT_FLAG_CASE | SORT_NATURAL);
+        return $hosts;
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHostsForDesktopWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
+        $query = $this->find();
+        $query
+            ->select([
+                'Hosts.id',
+                'Hoststatus.current_state',
+                'Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.problem_has_been_acknowledged'
+            ]);
+        $query->where([
+            'Hosts.disabled' => 0
+        ])
+            ->join([
+                'b'             => [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Hosts.uuid',
+                ],
+                'hosttemplates' => [
+                    'table'      => 'hosttemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hosttemplates',
+                    'conditions' => 'Hosttemplates.id = Hosts.hosttemplate_id',
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+
+        if (!empty($conditions['Hostgroup']['_ids'])) {
+            $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
+            $query->select([
+                'hostgroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
+                'count'         => $query->newExpr(
+                    'SELECT COUNT(hostgroups.id)
+                                FROM hostgroups
+                                WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
+                                AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
+            ]);
+            $query->join([
+                'hosts_to_hostgroups'         => [
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HostToHostgroups',
+                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
+                ],
+                'hosttemplates_to_hostgroups' => [
+                    'table'      => 'hosttemplates_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HosttemplatesToHostgroups',
+                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
+                ]
+            ]);
+            $query->having([
+                'hostgroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+        }
+
+        $where = [];
+        $where[] = ['Hoststatus.current_state IN' => $conditions['filter[Hoststatus.current_state][]']];
+        if ($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignore') {
+            $where[] = ['Hoststatus.problem_has_been_acknowledged' => $conditions['filter[Hoststatus.problem_has_been_acknowledged]']];
+        }
+        if ($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === true) {
+            $where[] = ['Hoststatus.scheduled_downtime_depth >' => 0];
+        }
+        if ($conditions['filter[Hoststatus.scheduled_downtime_depth]'] === false) {
+            $where[] = ['Hoststatus.scheduled_downtime_depth' => 0];
+        }
+        if (!empty($conditions['filter[Hosts.keywords][]'])) {
+            $compareValue = $conditions['filter[Hosts.keywords][]'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                //implode(',',$conditions['filter[Hosts.keywords][]']),
+                $compareValue,
+                'string',
+                'RLIKE'
+            );
+        }
+        if (!empty($conditions['filter[Hosts.not_keywords][]'])) {
+            $compareValue = $conditions['filter[Hosts.not_keywords][]'];
+            if (is_string($compareValue)) {
+                $compareValue = explode(',', $compareValue);
+            }
+            $compareValue = sprintf('.*(%s).*', implode('|', $compareValue));
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                //implode(',',$conditions['filter[Hosts.not_keywords][]']),
+                $compareValue,
+                'string',
+                'NOT RLIKE'
+            );
+        }
+
+        $query->andWhere($where);
+        $query->group('Hosts.id');
+        $query->disableHydration();
+        $result = $query->all();
+        if ($result === null) {
+            return [];
+        }
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    private function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
+    }
+
+    /**
+     * @param HostFilter $HostFilter
+     * @param HostConditions $HostConditions
+     * @return array
+     */
+    public function getHostStatusGlobalOverview(HostFilter $HostFilter, HostConditions $HostConditions): array {
+        $MY_RIGHTS = $HostConditions->getContainerIds();
+        $where = $HostFilter->indexFilter();
+        $where['Hosts.disabled'] = 0;
+        if ($HostConditions->getHostIds()) {
+            $hostIds = $HostConditions->getHostIds();
+            if (!is_array($hostIds)) {
+                $hostIds = [$hostIds];
+            }
+
+            $where['Hosts.id IN'] = $hostIds;
+        }
+        $query = $this->find();
+        $query->select([
+            'Hoststatus.current_state',
+            'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.hostname)'),
+        ])
+            ->innerJoin(['Hoststatus' => 'statusengine_hoststatus'], [
+                'Hoststatus.hostname = Hosts.uuid'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+
+        $query->disableHydration();
+        $query->group(['Hoststatus.current_state']);
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }

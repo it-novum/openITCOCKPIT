@@ -613,8 +613,10 @@ angular.module('openITCOCKPIT')
                     var tabIdsOrdered = [];
                     $tabs.each(function(key, tab){
                         var $tab = $(tab);
-                        var tabId = parseInt($tab.data('tab-id'), 10);
-                        tabIdsOrdered.push(tabId);
+                        if($tab.data('tab-id')){
+                            var tabId = parseInt($tab.data('tab-id'), 10);
+                            tabIdsOrdered.push(tabId);
+                        }
                     });
                     $http.post("/dashboards/saveTabOrder.json?angular=true",
                         {

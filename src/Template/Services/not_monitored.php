@@ -103,6 +103,16 @@
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                     <label>
+                                                            <?= __('Enable RegEx'); ?>
+                                                            <input type="checkbox"
+                                                                   ng-model="filter.Hosts.name_regex">
+                                                        </label>
+                                                    <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -116,6 +126,16 @@
                                                    placeholder="<?php echo __('Filter by service name'); ?>"
                                                    ng-model="filter.Services.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                     <label>
+                                                            <?= __('Enable RegEx'); ?>
+                                                            <input type="checkbox"
+                                                                   ng-model="filter.Services.name_regex">
+                                                        </label>
+                                                    <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -141,6 +161,9 @@
                                 <?php echo __('Service name'); ?>
                             </th>
 
+                            <td class="no-sort">
+                                <?php echo __('Service type'); ?>
+                            </td>
 
                             <th class="no-sort text-center editItemWidth width-50">
                                 <i class="fa fa-gear"></i>
@@ -195,6 +218,13 @@
                                 <?php endif; ?>
                             </td>
 
+                            <td>
+                                    <span
+                                        class="badge border margin-right-10 {{service.ServiceType.class}} {{service.ServiceType.color}}">
+                                            <i class="{{service.ServiceType.icon}}"></i>
+                                            {{service.ServiceType.title}}
+                                    </span>
+                            </td>
 
                             <td class="width-50">
                                 <div class="btn-group btn-group-xs" role="group">
@@ -232,10 +262,26 @@
                                                 <?php echo __('Disable'); ?>
                                             </a>
                                         <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                            <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                               class="dropdown-item">
+                                                <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                <?php echo __('Changelog'); ?>
+                                            </a>
+                                        <?php endif; ?>
                                         <?php
                                         $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                         echo $AdditionalLinks->getLinksAsHtmlList('services', 'notMonitored', 'list');
                                         ?>
+                                        <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                            <div class="dropdown-divider"></div>
+                                            <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                               ng-if="service.Service.allow_edit"
+                                               class="dropdown-item">
+                                                <i class="fas fa-files-o"></i>
+                                                <?php echo __('Copy'); ?>
+                                            </a>
+                                        <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                             <div class="dropdown-divider"></div>
                                             <a href="javascript:void(0);"

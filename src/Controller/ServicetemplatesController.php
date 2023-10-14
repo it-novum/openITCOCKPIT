@@ -164,7 +164,11 @@ class ServicetemplatesController extends AppController {
             $servicetemplate = $ServicetemplatesTable->patchEntity($servicetemplate, $request);
             $servicetemplate->set('uuid', UUID::v4());
 
-            $ServicetemplatesTable->save($servicetemplate);
+            $User = new User($this->getUser());
+            $requestData = $this->request->getData();
+
+            $servicetemplate = $ServicetemplatesTable->createServicetemplate($servicetemplate, $requestData, $User->getId());
+
             if ($servicetemplate->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicetemplate->getErrors());
@@ -172,30 +176,6 @@ class ServicetemplatesController extends AppController {
                 return;
             } else {
                 //No errors
-
-                $User = new User($this->getUser());
-                $requestData = $this->request->getData();
-
-                $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($requestData);
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'servicetemplates',
-                    $servicetemplate->get('id'),
-                    OBJECT_SERVICETEMPLATE,
-                    $servicetemplate->get('container_id'),
-                    $User->getId(),
-                    $servicetemplate->get('template_name'),
-                    array_merge($extDataForChangelog, $requestData)
-                );
-
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplate); // REST API ID serialization
@@ -269,7 +249,15 @@ class ServicetemplatesController extends AppController {
             $servicetemplateEntity = $ServicetemplatesTable->patchEntity($servicetemplateEntity, $this->request->getData('Servicetemplate'));
             $servicetemplateEntity->id = $id;
 
-            $ServicetemplatesTable->save($servicetemplateEntity);
+            $requestData = $this->request->getData();
+
+            $servicetemplateEntity = $ServicetemplatesTable->updateServicetemplate(
+                $servicetemplateEntity,
+                $requestData,
+                $servicetemplateForChangeLog,
+                $User->getId()
+            );
+
             if ($servicetemplateEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicetemplateEntity->getErrors());
@@ -277,39 +265,6 @@ class ServicetemplatesController extends AppController {
                 return;
             } else {
                 //No errors
-                $requestData = $this->request->getData();
-
-                /**
-                 * update dependent services if service template command has been changed and their
-                 * command arguments values are not empty
-                 */
-                if ($requestData['Servicetemplate']['command_id'] != $servicetemplateForChangeLog['Servicetemplate']['command_id'] &&
-                    !empty($servicetemplateForChangeLog['Servicetemplate']['servicetemplatecommandargumentvalues'])) {
-                    $oldCommandId = $servicetemplateForChangeLog['Servicetemplate']['command_id'];
-                    /** @var $ServicesTable ServicesTable */
-                    $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                    $ServicesTable->updateServiceCommandIdIfServiceHasOwnCommandArguments($id, $oldCommandId);
-                }
-
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'servicetemplates',
-                    $servicetemplateEntity->id,
-                    OBJECT_SERVICETEMPLATE,
-                    $servicetemplateEntity->get('container_id'),
-                    $User->getId(),
-                    $servicetemplateEntity->template_name,
-                    array_merge($ServicetemplatesTable->resolveDataForChangelog($requestData), $requestData),
-                    array_merge($ServicetemplatesTable->resolveDataForChangelog($servicetemplateForChangeLog), $servicetemplateForChangeLog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplateEntity); // REST API ID serialization
@@ -390,8 +345,13 @@ class ServicetemplatesController extends AppController {
         /** @var $ServicetemplatesTable ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         if ($this->request->is('get')) {
-            $servicetemplates = $ServicetemplatesTable->getServicetemplatesForCopy(func_get_args());
+            $servicetemplates = $ServicetemplatesTable->getServicetemplatesForCopy(func_get_args(), $MY_RIGHTS);
             /** @var $CommandsTable CommandsTable */
             $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
             $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
@@ -459,6 +419,8 @@ class ServicetemplatesController extends AppController {
                     //This happens, if a user copy multiple servicetemplates, and one run into an validation error
                     //All servicetemplates without validation errors got already saved to the database
                     $newServicetemplateEntity = $ServicetemplatesTable->get($servicetemplateData['Servicetemplate']['id']);
+                    $newServicetemplateEntity->setAccess('*', false);
+                    $newServicetemplateEntity->setAccess(['template_name', 'name', 'description', 'command_id', 'servicetemplatecommandargumentvalues'], true);
                     $newServicetemplateEntity = $ServicetemplatesTable->patchEntity($newServicetemplateEntity, $servicetemplateData['Servicetemplate']);
                     $newServicetemplateData = $newServicetemplateEntity->toArray();
                     $action = 'edit';

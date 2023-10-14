@@ -269,8 +269,8 @@ class HostAndServiceSummaryIcon {
             $this->image,
             (int)($this->sizeInnerCircle / 5),
             0,
-            $this->center - ($this->sizeInnerCircle / 2) + $this->border * 2,
-            $this->center + $this->sizeInnerCircle / 10,
+            intval($this->center - ($this->sizeInnerCircle / 2) + $this->border * 2),
+            intval($this->center + $this->sizeInnerCircle / 10),
             $white,
             WWW_ROOT . "/node_modules/font-awesome/fonts/fontawesome-webfont.ttf",
             '&#xf108;'
@@ -279,8 +279,8 @@ class HostAndServiceSummaryIcon {
             $this->image,
             (int)($this->sizeInnerCircle / 5),
             0,
-            $this->center - $this->sizeOuterCircle / 2 + $this->border * 2,
-            $this->center + $this->sizeInnerCircle / 10,
+            intval($this->center - $this->sizeOuterCircle / 2 + $this->border * 2),
+            intval($this->center + $this->sizeInnerCircle / 10),
             $white,
             WWW_ROOT . "/node_modules/font-awesome/fonts/fontawesome-webfont.ttf",
             '&#xf013;'

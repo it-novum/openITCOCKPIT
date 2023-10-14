@@ -50,6 +50,10 @@ class CommandArgReplacer {
      * @return string
      */
     public function replace($cmdStr) {
+        if (is_null($cmdStr)) {
+            return $cmdStr;
+        }
+
         $mapping = $this->buildMapping('basic');
 
         return str_replace($mapping['search'], $mapping['replace'], $cmdStr);

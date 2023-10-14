@@ -1,19 +1,16 @@
 var GraphDefaults = (function(){
     function GraphDefaults(){
-        this.defaultFillColor = '#4285F4';
-        this.defaultBorderColor = '#4073E0';
+        this.defaultFillColor = '#3274D9';
+        this.defaultBorderColor = '#3274D9';
 
-        this.okFillColor = '#00C851';
-        this.okBorderColor = '#00B44D';
+        this.okFillColor = '#56A64B';
+        this.okBorderColor = '#56A64B';
 
         this.criticalFillColor = '#CC0000';
-        this.criticalBorderColor = '#C00000';
+        this.criticalBorderColor = '#CC0000';
 
-        this.warningFillColor = '#ffbb33';
-        this.warningBorderColor = '#E7931D';
-
-        this.unknownFillColor = '#9B9B9B';
-        this.unknownBorderColor = '#757575';
+        this.warningFillColor = '#EAB839';
+        this.warningBorderColor = '#EAB839';
 
         this.defaultColors = [
             [this.defaultFillColor, this.defaultBorderColor],
@@ -124,7 +121,7 @@ var GraphDefaults = (function(){
             },
             lines: {
                 show: true,
-                lineWidth: 1,
+                lineWidth: 2,
                 fill: true,
                 fillColor: {
                     colors: [{opacity: 0.1}, {brightness: 1, opacity: 0.2}]
@@ -136,6 +133,9 @@ var GraphDefaults = (function(){
                 labelFormatter: function(label, series){
                     // series is the series object for the label
                     return '<a href="#' + label + '">' + label + '</a>';
+                },
+                curvedLines: {
+                    active: true
                 }
             },
             selection: {

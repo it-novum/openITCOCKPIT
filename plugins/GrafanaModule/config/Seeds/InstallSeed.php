@@ -28,7 +28,7 @@ class InstallSeed extends AbstractSeed {
      *
      * @return void
      */
-    public function run() {
+    public function run(): void {
         //Cronjobs
         $table = $this->table('cronjobs');
 

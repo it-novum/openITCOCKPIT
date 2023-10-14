@@ -73,7 +73,7 @@ class GraphiteLoader {
     /**
      * @var int
      */
-    private $maxDataPoints = 2000;
+    private $maxDataPoints = 20000;
 
     /**
      * @var bool

@@ -16,6 +16,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
 /**
@@ -630,9 +631,10 @@ class HosttemplatesTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHosttemplatesForCopy($ids = []) {
+    public function getHosttemplatesForCopy($ids = [], array $MY_RIGHTS = []) {
         $contain = [
             'Hosttemplatecommandargumentvalues' => [
                 'Commandarguments'
@@ -653,7 +655,13 @@ class HosttemplatesTable extends Table {
             ])
             ->contain($contain)
             ->where(['Hosttemplates.id IN' => $ids])
-            ->order(['Hosttemplates.id' => 'asc'])
+            ->order(['Hosttemplates.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere(['Hosttemplates.container_id IN' => $MY_RIGHTS]);
+        }
+
+        $query
             ->disableHydration()
             ->all();
 
@@ -1327,4 +1335,155 @@ class HosttemplatesTable extends Table {
         }
         return $types;
     }
+
+    /**
+     * Delete old SLA records because the SLA of the host template was changed
+     * So the SLA for all hosts that are using this host template has changed as well
+     * @param int $hosttemplateId
+     * @return bool
+     */
+    public function deleteSlaRecords(int $hosttemplateId) {
+        if (!Plugin::isLoaded('SLAModule')) {
+            return false;
+        }
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $query = $HostsTable->find()
+            ->select([
+                'Hosts.id'
+            ])
+            ->where([
+                'Hosts.hosttemplate_id' => $hosttemplateId,
+                'Hosts.sla_id IS NULL'
+            ]);
+
+        $hosts = $query
+            ->disableHydration()
+            ->all();
+
+        if (!empty($hosts)) {
+            $hosts = $hosts->toArray();
+        } else {
+            $hosts = [];
+        }
+
+        $hostIds = Hash::extract($hosts, '{n}.id');
+
+        if (!empty($hostIds)) {
+            /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+            $SlasTable->deleteSlaRecordsByHostIds($hostIds);
+        }
+
+        return true;
+    }
+
+    /**
+     * This method provides a unified way to create new hosttemplates. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Hosttemplate $entity The entity that will be saved by the Table
+     * @param array $hosttemplate The command as array ( [ Hosttemplate => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Hosttemplate
+     */
+    public function createHosttemplate(Hosttemplate $entity, array $hosttemplate, int $userId): Hosttemplate {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($hosttemplate);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'hosttemplates',
+            $entity->get('id'),
+            OBJECT_HOSTTEMPLATE,
+            $entity->get('container_id'),
+            $userId,
+            $entity->get('name'),
+            array_merge($hosttemplate, $extDataForChangelog)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing hosttemplates. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Hosttemplate $entity The entity that will be updated by the Table
+     * @param array $newHosttemplate The new hosttemplate as array ( [ Hosttemplate => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldHosttemplate The old hosttemplate as array ( [ Hosttemplate => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Hosttemplate
+     */
+    public function updateHosttemplate(Hosttemplate $entity, array $newHosttemplate, array $oldHosttemplate, int $userId): Hosttemplate {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        /**
+         * ITC-2522
+         * update dependent hosts if host template command has been changed and their
+         * command arguments values are not empty
+         */
+        if ($newHosttemplate['Hosttemplate']['command_id'] != $oldHosttemplate['Hosttemplate']['command_id'] &&
+            !empty($oldHosttemplate['Hosttemplate']['hosttemplatecommandargumentvalues'])) {
+            $oldCommandId = $oldHosttemplate['Hosttemplate']['command_id'];
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            $HostsTable->updateHostCommandIdIfHostHasOwnCommandArguments($entity->get('id'), $oldCommandId);
+        }
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'hosttemplates',
+            $entity->get('id'),
+            OBJECT_HOSTTEMPLATE,
+            $entity->get('container_id'),
+            $userId,
+            $entity->get('name'),
+            array_merge($this->resolveDataForChangelog($newHosttemplate), $newHosttemplate),
+            array_merge($this->resolveDataForChangelog($oldHosttemplate), $oldHosttemplate)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+
+        // Update SLA tables
+        $oldSlaId = $oldHosttemplate['Hosttemplate']['sla_id'] ?? null;
+        $newSlaId = $entity->get('sla_id');
+        if (intval($oldSlaId) !== intval($newSlaId) && Plugin::isLoaded('SLAModule')) {
+            $this->deleteSlaRecords(intval($entity->get('id')));
+        }
+
+        return $entity;
+    }
+
 }

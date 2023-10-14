@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Form\AgentConfigurationForm;
+use App\itnovum\openITCOCKPIT\Agent\AgentSatelliteTasks;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Host;
 use App\Model\Table\AgentconfigsTable;
@@ -37,6 +38,8 @@ use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\PushAgentsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Core\Exception\MissingPluginException;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -44,11 +47,15 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use DistributeModule\Model\Table\SatellitesTable;
+use DistributeModule\Model\Table\SatelliteTasksTable;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -172,6 +179,56 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['agents']);
     }
 
+    public function push_satellite() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        if (!Plugin::isLoaded('DistributeModule') || !Plugin::isLoaded('ImportModule')) {
+            throw new MissingPluginException('DistributeModule or ImportModule is not loaded');
+        }
+
+        /** @var \ImportModule\Model\Table\SatellitePushAgentsTable $SatellitePushAgentsTable */
+        $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+
+
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Hosts.name'
+            ],
+            'bool' => [
+                'hasHostAssignment'
+            ]
+        ]);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $GenericFilter->getPage());
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        $agents = $SatellitePushAgentsTable->getSatellitePushAgents($GenericFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($agents as $index => $agent) {
+            $agents[$index]['last_update'] = $UserTime->format($agent['last_update']);
+            $agents[$index]['allow_edit'] = true;
+            if (!empty($agent['host']) && $this->hasRootPrivileges === false) {
+
+                $containerIds = explode(',', $agent['container_ids']);
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
+
+                $agents[$index]['allow_edit'] = $allowEdit;
+            }
+        }
+
+        $this->set('agents', $agents);
+        $this->viewBuilder()->setOption('serialize', ['agents']);
+    }
+
     /**
      * @param null $id
      */
@@ -267,13 +324,76 @@ class AgentconnectorController extends AppController {
         return;
     }
 
+    /**
+     * @param null $id
+     */
+    public function delete_satellite_push_agent($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!Plugin::isLoaded('DistributeModule') || !Plugin::isLoaded('ImportModule')) {
+            throw new MissingPluginException('DistributeModule or ImportModule is not loaded');
+        }
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        /** @var \ImportModule\Model\Table\SatellitePushAgentsTable $SatellitePushAgentsTable */
+        $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+
+
+        if (!$SatellitePushAgentsTable->existsById($id)) {
+            throw new NotFoundException(__('Satellite Push Agent config not found'));
+        }
+
+        $satellitePushAgent = $SatellitePushAgentsTable->get($id, [
+            'contain' => [
+                'Agentconfigs'
+            ]
+        ]);
+
+        if (!empty($satellitePushAgent->get('agentconfig'))) {
+            // SatellitePushAgent has a host assignment via the Agentconfig.
+            // Check permissions if the user is allowed to delete it.
+
+            $hostId = $satellitePushAgent->get('agentconfig')->get('host_id');
+            $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+
+            if (!$this->allowedByContainerId($host->getContainerIds(), true)) {
+                $this->render403();
+                return;
+            }
+        }
+
+        // If the SatellitePushAgent has no host assignment anyone can delete it
+        $agentConfig = $satellitePushAgent->get('agentconfig');
+
+        if ($SatellitePushAgentsTable->delete($satellitePushAgent)) {
+            if (!empty($agentConfig)) {
+                $AgentconfigsTable->delete($agentConfig);
+            }
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+
+            return;
+        }
+
+        $this->response = $this->response->withStatus(400);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        return;
+    }
+
     public function showOutput() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
         }
 
-        $isPullMode = $this->request->getQuery('mode', 'pull') === 'pull';
+        $mode = $this->request->getQuery('mode', 'pull');
         $id = $this->request->getQuery('id', 0);
 
         $host = [];
@@ -286,7 +406,7 @@ class AgentconnectorController extends AppController {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        if ($isPullMode === true) {
+        if ($mode === 'pull') {
             // The Agent is running in Pull mode so we have an host association and an agent config.
 
             $hostId = $id;
@@ -314,6 +434,45 @@ class AgentconnectorController extends AppController {
             $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
             $outputAsArray = $AgentHttpClient->getResults();
             $outputAsJson = json_encode($outputAsArray, JSON_PRETTY_PRINT);
+        } else if ($mode === 'push_satellite') {
+            // The Agent is running in Push mode from a satellite via the Import Module
+            // Agents from a Satellite (without the Import Module) are not handled by this
+            if (!Plugin::isLoaded('DistributeModule') || !Plugin::isLoaded('ImportModule')) {
+                throw new MissingPluginException('DistributeModule or ImportModule is not loaded');
+            }
+
+            /** @var \ImportModule\Model\Table\SatellitePushAgentsTable $SatellitePushAgentsTable */
+            $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+
+            $pushAgentId = $id;
+            if (!$SatellitePushAgentsTable->existsById($pushAgentId)) {
+                throw new NotFoundException();
+            }
+
+            $record = $SatellitePushAgentsTable->get($pushAgentId);
+
+            //Has this agent already a configuration?
+            if ($record->agentconfig_id !== null && $AgentconfigsTable->existsById($record->agentconfig_id)) {
+                $configEntity = $AgentconfigsTable->get($record->agentconfig_id);
+
+                /** @var Host $host */
+                $host = $HostsTable->getHostByIdForPermissionCheck($configEntity->host_id);
+                if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+                    $this->render403();
+                    return;
+                }
+
+                $AgentConfiguration = new AgentConfiguration();
+                $config = $AgentConfiguration->unmarshal($configEntity->config);
+            }
+
+            $checkresults = $record->checkresults;
+            if (empty($checkresults)) {
+                $checkresults = '[]';
+            }
+
+            $outputAsJson = json_encode(json_decode($checkresults, true), JSON_PRETTY_PRINT);
+
         } else {
             // Agent is running in Push mode. Maybe has no config and host yet
             /** @var PushAgentsTable $PushAgentsTable */
@@ -407,6 +566,14 @@ class AgentconnectorController extends AppController {
 
             $host = $HostsTable->get($hostId);
 
+            $satellite = null;
+            if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
+                /** @var SatellitesTable $SatellitesTable */
+                $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+                $satellite = $SatellitesTable->getSatelliteByIdForAgent($host->satellite_id);
+            }
+
+
             $agentConfigAsJsonFromDatabase = '';
             $isOldAgent1Config = false;
             $isNewConfig = true;
@@ -430,7 +597,6 @@ class AgentconnectorController extends AppController {
                 $config['bool']['use_http_basic_auth'] = $record->basic_auth;
                 $config['string']['username'] = $record->username;
                 $config['string']['password'] = $record->password;
-                $config['int']['bind_port'] = (int)$record->port;
                 $config['bool']['use_proxy'] = $record->proxy;
                 $config['bool']['enable_push_mode'] = false;
                 if ($record->push_noticed) {
@@ -441,7 +607,8 @@ class AgentconnectorController extends AppController {
             $this->set('config', $config);
             $this->set('isNewConfig', $isNewConfig);
             $this->set('host', $host);
-            $this->viewBuilder()->setOption('serialize', ['config', 'host', 'isNewConfig']);
+            $this->set('satellite', $satellite);
+            $this->viewBuilder()->setOption('serialize', ['config', 'host', 'isNewConfig', 'satellite']);
         }
 
         if ($this->request->is('post')) {
@@ -608,15 +775,53 @@ class AgentconnectorController extends AppController {
             throw new BadRequestException('AutoTLS is only available in Pull mode');
         }
 
-        $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+        $connection_test = null;
+        $satellite_task_id = null;
+        if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
+            // Run Auto TLS on the Satellite System
 
-        $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
+            $AgentSatelliteTasks = new AgentSatelliteTasks();
+
+            //Send a background job to the NSTA to run query the oITC Agent from the Satellite
+            //The NSTA will put the result into the oitc_gearman queue, handled by the gearman_worker
+            //The frontend will ask frequently if the result has arrived
+            $NSTAOptions = [
+                'SatelliteID' => $host->satellite_id,
+                'Command'     => 'agent',
+                'Data'        => [
+                    //'TaskID'           => $task->id, //This will be added by the AgentSatelliteTasks class
+                    'AgentConfigId'      => $record->id,
+                    'Task'               => 'query',
+                    'Address'            => $host->address,
+                    'Port'               => $config['int']['bind_port'],
+                    'UseAutossl'         => $config['bool']['use_autossl'],
+                    'TestConnectionOnly' => true, //Only test the connection do not query the output from the Agent
+                    'AutosslSuccessful'  => $record->autossl_successful,
+                    'UseHttps'           => $config['bool']['use_https'],
+                    'Insecure'           => !$config['bool']['use_https_verify'],
+                    'BasicAuth'          => $config['bool']['use_http_basic_auth'],
+                    'Username'           => $config['string']['username'],
+                    'Password'           => $config['string']['password'],
+                ]
+            ];
+            $satellite_task_id = $AgentSatelliteTasks->sendRequestToSatelliteNonBlocking(
+                'oitc_agent_autotls',
+                $host->satellite_id,
+                $NSTAOptions
+            );
+        } else {
+            // Master System
+            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+            $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
+        }
 
         $this->set('config', $config);
         $this->set('host', $host);
         $this->set('connection_test', $connection_test);
+        $this->set('satellite_task_id', $satellite_task_id);
 
-        $this->viewBuilder()->setOption('serialize', ['config', 'host', 'connection_test']);
+
+        $this->viewBuilder()->setOption('serialize', ['config', 'host', 'connection_test', 'satellite_task_id']);
     }
 
     // Step 4 (In Push mode)
@@ -653,12 +858,40 @@ class AgentconnectorController extends AppController {
         if ($this->request->is('get')) {
             $selectedPushAgentId = 0;
 
-            $pushAgents = $PushAgentsTable->getPushAgentsForAssignments($config->id);
+            if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
+                // Query the available push agents from the Satellite System
+                // Run request on Satellite System and wait for response
+
+                // Long-running request so we release the session
+                $session = $this->request->getSession();
+                $session->close();
+
+                $AgentSatelliteTasks = new AgentSatelliteTasks();
+
+                $NSTAOptions = [
+                    'SatelliteID' => $host->satellite_id,
+                    'Command'     => 'agent',
+                    'Data'        => [
+                        //'TaskID'        => $task->id, //This will be added by the AgentSatelliteTasks class
+                        'AgentConfigId' => $config->id,
+                        'Task'          => 'get_push_agents',
+                        'HostUuid'      => $host->uuid
+                    ]
+                ];
+                $pushAgents = $AgentSatelliteTasks->sendRequestToSatelliteBlocking(
+                    'get_available_push_agents',
+                    $host->satellite_id,
+                    $NSTAOptions
+                );
+            } else {
+                // Host/Agent on the Master System
+                $pushAgents = $PushAgentsTable->getPushAgentsForAssignments($config->id);
+            }
 
             $hostnameMatchingPercentages = [];
             foreach ($pushAgents as $index => $pushAgent) {
-                if ($pushAgent['agentconfig_id'] == $config->id) {
-                    // The user already assigned this Agent to an Agent Config
+                if (isset($pushAgent['agentconfig_id']) && $pushAgent['agentconfig_id'] == $config->id) {
+                    // The user already assigned this Agent to an Agent Config (Master System only)
                     $selectedPushAgentId = $pushAgent['id'];
                     break;
                 }
@@ -668,7 +901,7 @@ class AgentconnectorController extends AppController {
                 if (empty($ip)) {
                     $ip = $pushAgent['http_x_forwarded_for']; // Agent used a proxy server?
                     if (empty($ip)) {
-                        $ip = $pushAgent['remote_address']; // This is the IP we recived data from the agent
+                        $ip = $pushAgent['remote_address']; // This is the IP we received data from the agent
                     }
                 }
 
@@ -705,7 +938,7 @@ class AgentconnectorController extends AppController {
                 if (empty($ip)) {
                     $ip = $pushAgent['http_x_forwarded_for']; // Agent used a proxy server?
                     if (empty($ip)) {
-                        $ip = $pushAgent['remote_address']; // This is the IP we recived data from the agent
+                        $ip = $pushAgent['remote_address']; // This is the IP we received data from the agent
                     }
                 }
 
@@ -717,8 +950,9 @@ class AgentconnectorController extends AppController {
 
 
                 $pushAgentsForSelectbox[] = [
-                    'id'   => $pushAgent['id'],
-                    'name' => $name
+                    'id'         => $pushAgent['id'],
+                    'agent_uuid' => $pushAgent['uuid'],
+                    'name'       => $name
                 ];
             }
 
@@ -733,37 +967,78 @@ class AgentconnectorController extends AppController {
 
         if ($this->request->is('post')) {
             $pushAgentId = (int)$this->request->getData('pushagent.id', 0);
+            $agentUuid = $this->request->getData('pushagent.agent_uuid', 'Unknown');
+            if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
+                // Send corresponding HostUuid to the Satellite so the satellite
+                // knows which Agent monitors which host.
 
-            if (!$PushAgentsTable->existsById($pushAgentId)) {
-                throw new NotFoundException();
-            }
+                // Long-running request so we release the session
+                $session = $this->request->getSession();
+                $session->close();
 
-            // Was this Host already assigned to an Agent?
-            $oldPushAgent = $PushAgentsTable->getByAgentconfigId($config->id);
+                $AgentSatelliteTasks = new AgentSatelliteTasks();
 
-            if (!is_null($oldPushAgent)) {
-                if ($pushAgentId !== $oldPushAgent->id) {
-                    // User assigned a new Agent to this host
-                    $oldPushAgent->set('agentconfig_id', null);
-                    $PushAgentsTable->save($oldPushAgent);
+                $NSTAOptions = [
+                    'SatelliteID' => $host->satellite_id,
+                    'Command'     => 'agent',
+                    'Data'        => [
+                        //'TaskID'      => $task->id, //This will be added by the AgentSatelliteTasks class
+                        'AgentConfigId' => $config->id,
+                        'Task'          => 'assign_host',
+                        'PushAgentId'   => $pushAgentId,
+                        'HostUuid'      => $host->uuid
+                    ]
+                ];
+                $AgentSatelliteTasks->sendRequestToSatelliteBlocking(
+                    'oitc_agent_assign_host',
+                    $host->satellite_id,
+                    $NSTAOptions);
+
+                if (Plugin::isLoaded('ImportModule') && UUID::is_valid($agentUuid)) {
+                    // ITC-2932
+                    // Save manual assigment in SatellitePushAgentsTable so that the Import Module knows, this Agent got assigned by a user
+                    /** @var \ImportModule\Model\Table\SatellitePushAgentsTable $SatellitePushAgentsTable */
+                    $SatellitePushAgentsTable = TableRegistry::getTableLocator()->get('ImportModule.SatellitePushAgents');
+                    $SatellitePushAgentsTable->manuallyAssignSatellitePushAgentIfExistsByUuid($agentUuid, $config->id);
                 }
-            }
 
-            $pushAgent = $PushAgentsTable->get($pushAgentId);
-            $pushAgent->set('agentconfig_id', $config->id);
-            $PushAgentsTable->save($pushAgent);
 
-            if ($pushAgent->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('success', false);
-                $this->set('error', $pushAgent->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+                $this->set('success', true);
+                $this->viewBuilder()->setOption('serialize', ['success']);
+                return;
+            } else {
+                // Host/Agent monitored by Master System
+                if (!$PushAgentsTable->existsById($pushAgentId)) {
+                    throw new NotFoundException();
+                }
+
+                // Was this Host already assigned to an Agent?
+                $oldPushAgent = $PushAgentsTable->getByAgentconfigId($config->id);
+
+                if (!is_null($oldPushAgent)) {
+                    if ($pushAgentId !== $oldPushAgent->id) {
+                        // User assigned a new Agent to this host
+                        $oldPushAgent->set('agentconfig_id', null);
+                        $PushAgentsTable->save($oldPushAgent);
+                    }
+                }
+
+                $pushAgent = $PushAgentsTable->get($pushAgentId);
+                $pushAgent->set('agentconfig_id', $config->id);
+                $PushAgentsTable->save($pushAgent);
+
+                if ($pushAgent->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('success', false);
+                    $this->set('error', $pushAgent->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+                    return;
+                }
+
+                $this->set('success', true);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
-
-            $this->set('success', true);
-            $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
         }
 
         throw new MethodNotAllowedException();
@@ -816,13 +1091,17 @@ class AgentconnectorController extends AppController {
 
             $errors = [];
             $newServiceIds = [];
+
+            $ObjectsCacheChangelog = new ObjectsCache();
+
             foreach ($servicesPost as $servicePost) {
                 $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicePost['servicetemplate_id']);
-
                 $servicename = $servicePost['name'];
 
                 $serviceData = ServiceComparisonForSave::getServiceSkeleton($servicePost['host_id'], $servicePost['servicetemplate_id'], OITC_AGENT_SERVICE);
                 $serviceData['name'] = $servicename;
+                $serviceData['command_id'] = $servicetemplate['Servicetemplate']['command_id'];
+
                 $serviceData['servicecommandargumentvalues'] = $servicePost['servicecommandargumentvalues'];
                 $ServiceComparisonForSave = new ServiceComparisonForSave(
                     ['Service' => $serviceData],
@@ -832,14 +1111,12 @@ class AgentconnectorController extends AppController {
                 );
                 $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
                 $serviceData['uuid'] = UUID::v4();
-
                 //Add required fields for validation
                 $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
                 $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
                 $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
                 $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
                 $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
-
                 $service = $ServicesTable->newEntity($serviceData);
 
                 $ServicesTable->save($service);
@@ -848,7 +1125,7 @@ class AgentconnectorController extends AppController {
                 } else {
                     //No errors
 
-                    $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
+                    $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData], $ObjectsCacheChangelog);
                     /** @var  ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
                     $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -893,13 +1170,80 @@ class AgentconnectorController extends AppController {
 
         $agentresponse = []; // Empty agent response
         if ($config['bool']['enable_push_mode'] === true) {
-            /** @var PushAgentsTable $PushAgentsTable */
-            $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
-            $agentresponse = $PushAgentsTable->getAgentOutputByAgentconfigId($record->id);
+            // Push Mode
+
+            if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
+                // Satellite (Push Mode)
+                // Long-running request so we release the session
+                $session = $this->request->getSession();
+                $session->close();
+
+                $AgentSatelliteTasks = new AgentSatelliteTasks();
+
+                $NSTAOptions = [
+                    'SatelliteID' => $host->satellite_id,
+                    'Command'     => 'agent',
+                    'Data'        => [
+                        //'TaskID'      => $task->id, //This will be added by the AgentSatelliteTasks class
+                        'AgentConfigId' => $record->id,
+                        'Task'          => 'query_push',
+                        'HostUuid'      => $host->uuid
+                    ]
+                ];
+
+                $agentresponse = $AgentSatelliteTasks->sendRequestToSatelliteBlocking(
+                    'oitc_agent_query',
+                    $host->satellite_id,
+                    $NSTAOptions
+                );
+            } else {
+                // Master Server (Push Mode)
+                /** @var PushAgentsTable $PushAgentsTable */
+                $PushAgentsTable = TableRegistry::getTableLocator()->get('PushAgents');
+                $agentresponse = $PushAgentsTable->getAgentOutputByAgentconfigId($record->id);
+            }
         } else {
             // Pull Mode
-            $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
-            $agentresponse = $AgentHttpClient->getResults();
+            if ($host->satellite_id > 0 && Plugin::isLoaded('DistributeModule')) {
+                // Run request on Satellite System and wait for response (Pull Mode)
+
+                // Long-running request so we release the session
+                $session = $this->request->getSession();
+                $session->close();
+
+                $AgentSatelliteTasks = new AgentSatelliteTasks();
+
+                $NSTAOptions = [
+                    'SatelliteID' => $host->satellite_id,
+                    'Command'     => 'agent',
+                    'Data'        => [
+                        //'TaskID'           => $task->id, //This will be added by the AgentSatelliteTasks class
+                        'AgentConfigId'      => $record->id,
+                        'Task'               => 'query',
+                        'Address'            => $host->address,
+                        'Port'               => $config['int']['bind_port'],
+                        'UseAutossl'         => $config['bool']['use_autossl'],
+                        'TestConnectionOnly' => false, //Get the JSON output from the Agent
+                        'AutosslSuccessful'  => $record->autossl_successful,
+                        'UseHttps'           => $config['bool']['use_https'],
+                        'Insecure'           => !$config['bool']['use_https_verify'],
+                        'BasicAuth'          => $config['bool']['use_http_basic_auth'],
+                        'Username'           => $config['string']['username'],
+                        'Password'           => $config['string']['password'],
+                    ]
+                ];
+
+                $agentresponse = $AgentSatelliteTasks->sendRequestToSatelliteBlocking(
+                    'oitc_agent_query',
+                    $host->satellite_id,
+                    $NSTAOptions
+                );
+
+            } else {
+                // Run on Master System (Pull Mode)
+                $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
+                $agentresponse = $AgentHttpClient->getResults();
+            }
         }
 
 
@@ -915,7 +1259,7 @@ class AgentconnectorController extends AppController {
         $services = $AgentResponseToServices->getAllServices();
 
         $connection_test = null;
-        if ($config['bool']['enable_push_mode'] === false && $testConnection) {
+        if ($config['bool']['enable_push_mode'] === false && $testConnection && $host->satellite_id == 0) {
             // Agent is running in PULL Mode and the user clicked on the First Wizard Page on "Create new services"
             $AgentHttpClient = new AgentHttpClient($record, $host->get('address'));
             $connection_test = $AgentHttpClient->testConnectionAndExchangeAutotls();
@@ -989,6 +1333,27 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
+    public function satellite_response() {
+        $taskId = $this->request->getQuery('task_id', 0);
+
+        /** @var SatelliteTasksTable $SatelliteTasksTable */
+        $SatelliteTasksTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteTasks');
+
+        try {
+            $task = $SatelliteTasksTable->find()
+                ->where([
+                    'id' => $taskId
+                ])
+                ->firstOrFail();
+        } catch (RecordNotFoundException $e) {
+            $this->response = $this->response->withStatus(404);
+            return;
+        }
+
+        $this->set('task', $task);
+        $this->viewBuilder()->setOption('serialize', ['task']);
+    }
+
 
     /************************************
      *    AGENT API METHODS FOR PUSH    *
@@ -1002,7 +1367,9 @@ class AgentconnectorController extends AppController {
      * The Agent send it's UUID and an empty Password to the openITCOCKPIT Server. If no password was generated for the given UUID
      * openITCOCKPIT will generate a new Password and respond this password to the Agent. Respond with 201
      *
-     * If an Agent sends an password which is not found in the database, openITCOCKPIT will respond with an 403 Forbidden
+     * If an Agent sends a password which is not found in the database, openITCOCKPIT will respond with a 403 Forbidden
+     *
+     * IF you change this method PLEASE MAKE SURE TO CHANGE IT ON THE SATELLITE IN THE SAME WAY!
      */
     public function register_agent() {
         $agentUuid = $this->request->getData('agentuuid', null);
@@ -1112,6 +1479,7 @@ class AgentconnectorController extends AppController {
                 $agentPassword
             );
 
+
             $hostUuid = $pushAgent->get('agentconfig')->get('host')->get('uuid');
             $GearmanClient = new Gearman();
 
@@ -1181,7 +1549,16 @@ class AgentconnectorController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['success', 'received_checks']);
             return;
         } catch (RecordNotFoundException $e) {
-            //No host for given agent config found
+            //No host for given agent config found - only save agent result into database
+            if ($PushAgentsTable->existsByUuidAndPassword($agentUuid, $agentPassword)) {
+                $pushAgent = $PushAgentsTable->getPushAgentByUuidAndPassword(
+                    $agentUuid,
+                    $agentPassword
+                );
+                $pushAgent->set('last_update', new FrozenTime());
+                $pushAgent->set('checkresults', json_encode($checkdata));
+                $PushAgentsTable->save($pushAgent);
+            }
         }
 
         $this->response = $this->response->withStatus(400);

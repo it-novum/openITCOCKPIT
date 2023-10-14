@@ -75,7 +75,7 @@ class MapsController extends AppController {
             }
 
             foreach ($all_map->getContainerIds() as $containerId) {
-                if ($this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT) {
+                if (isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT) {
                     $map['allowEdit'] = true;
                     $map['allowCopy'] = true;
                     continue;
@@ -314,6 +314,12 @@ class MapsController extends AppController {
                         ]
                     ]);
                     $mapData['Map']['containers']['_ids'] = $newMapEntity->getContainerIds();
+                    if (isset($mapData['Map']['refresh_interval'])) {
+                        $mapData['Map']['refresh_interval'] = $mapData['Map']['refresh_interval'] * 1000;
+                    }
+
+                    $newMapEntity->setAccess('*', false);
+                    $newMapEntity->setAccess(['name', 'title', 'refresh_interval'], true);
                     $newMapEntity = $MapsTable->patchEntity($newMapEntity, $mapData['Map']);
                     $action = 'edit';
                 } else {

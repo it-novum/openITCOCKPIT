@@ -5,6 +5,8 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Contact;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -143,13 +145,13 @@ class ContactsTable extends Table {
         $validator
             ->integer('host_timeperiod_id')
             ->allowEmptyString('host_timeperiod_id', null, false)
-            ->requirePresence('host_timeperiod_id')
+            ->requirePresence('host_timeperiod_id', 'create')
             ->greaterThan('host_timeperiod_id', 0);
 
         $validator
             ->integer('service_timeperiod_id')
             ->allowEmptyString('service_timeperiod_id', null, false)
-            ->requirePresence('service_timeperiod_id')
+            ->requirePresence('service_timeperiod_id', 'create')
             ->greaterThan('service_timeperiod_id', 0);
 
         $validator
@@ -165,21 +167,21 @@ class ContactsTable extends Table {
             ], __('You have to choose at least one command.'));
 
         $validator
-            ->requirePresence('notify_host_recovery', true, __('You have to choose at least one option.'))
+            ->requirePresence('notify_host_recovery', 'create', __('You have to choose at least one option.'))
             ->add('notify_host_recovery', 'custom', [
                 'rule'    => [$this, 'checkHostNotificationOptions'],
                 'message' => 'You have to choose at least one option.',
             ]);
 
         $validator
-            ->requirePresence('notify_service_recovery', true, __('You have to choose at least one option.'))
+            ->requirePresence('notify_service_recovery', 'create', __('You have to choose at least one option.'))
             ->add('notify_service_recovery', 'custom', [
                 'rule'    => [$this, 'checkHostNotificationOptions'],
                 'message' => 'You have to choose at least one option.',
             ]);
 
         $validator
-            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->requirePresence('containers', 'create', __('You have to choose at least one option.'))
             ->allowEmptyString('containers', null, false)
             ->multipleOptions('containers', [
                 'min' => 1
@@ -375,9 +377,10 @@ class ContactsTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getContactsForCopy($ids = []) {
+    public function getContactsForCopy($ids = [], array $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'Contacts.id',
@@ -386,8 +389,21 @@ class ContactsTable extends Table {
                 'Contacts.email',
                 'Contacts.phone'
             ])
+            ->contain('Containers')
             ->where(['Contacts.id IN' => $ids])
-            ->order(['Contacts.id' => 'asc'])
+            ->order(['Contacts.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            });
+        }
+
+        $query
+            ->distinct('Contacts.id')
             ->disableHydration()
             ->all();
 
@@ -396,14 +412,34 @@ class ContactsTable extends Table {
 
 
     /**
-     * @param int $id
+     * @param $id
      * @return array
      */
-    public function getContactForEdit($id) {
+    public function getContactForEdit($id): array {
+        $where = [
+            'Contacts.id' => $id
+        ];
+        return $this->getContactForEditByWhere($where);
+    }
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getContactForEditByUuid(string $uuid): array {
+        $where = [
+            'Contacts.uuid' => $uuid
+        ];
+        return $this->getContactForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    private function getContactForEditByWhere(array $where): array {
         $query = $this->find()
-            ->where([
-                'Contacts.id' => $id
-            ])
+            ->where($where)
             ->contain([
                 'Containers',
                 'HostCommands',
@@ -411,7 +447,7 @@ class ContactsTable extends Table {
                 'Customvariables'
             ])
             ->disableHydration()
-            ->first();
+            ->firstOrFail();
 
 
         $contact = $query;
@@ -686,8 +722,16 @@ class ContactsTable extends Table {
      * @param int $id
      * @return bool
      */
-    public function existsById($id) {
+    public function existsById($id): bool {
         return $this->exists(['Contacts.id' => $id]);
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid): bool {
+        return $this->exists(['Contacts.uuid' => $uuid]);
     }
 
     /**
@@ -869,7 +913,8 @@ class ContactsTable extends Table {
 
         $query->enableHydration($enableHydration);
         $query->order([
-            'Contacts.name' => 'asc'
+            'Contacts.name' => 'asc',
+            'Contacts.id'
         ]);
 
         $result = $query->all();
@@ -922,5 +967,490 @@ class ContactsTable extends Table {
         }
 
         return $list;
+    }
+
+    // Containers check for contact
+
+    /**
+     * ContactsToContactgroups
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getContactgroupContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.parent_id'
+            ])
+            ->innerJoin(
+                ['ContactsToContactgroups' => 'contacts_to_contactgroups'],
+                ['ContactsToContactgroups.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Contactgroups' => 'contactgroups'],
+                ['Contactgroups.id = ContactsToContactgroups.contactgroup_id']
+            )
+            ->innerJoin(
+                ['Containers' => 'containers'],
+                ['Containers.id = Contactgroups.container_id']
+            )
+            ->where([
+                'Contacts.id'             => $contactId,
+                'Containers.parent_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Containers.parent_id');
+    }
+
+    /**
+     * ContactsToHosttemplates
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getHosttemplateContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToHosttemplates' => 'contacts_to_hosttemplates'],
+                ['ContactsToHosttemplates.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Hosttemplates' => 'hosttemplates'],
+                ['Hosttemplates.id = ContactsToHosttemplates.hosttemplate_id']
+            )
+            ->where([
+                'Contacts.id'                   => $contactId,
+                'Hosttemplates.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Hosttemplates.container_id');
+    }
+
+
+    /**
+     * ContactsToServicetemplates
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getServicetemplateContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToServicetemplates' => 'contacts_to_servicetemplates'],
+                ['ContactsToServicetemplates.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Servicetemplates' => 'servicetemplates'],
+                ['Servicetemplates.id = ContactsToServicetemplates.servicetemplate_id']
+            )
+            ->where([
+                'Contacts.id'                      => $contactId,
+                'Servicetemplates.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Servicetemplates.container_id');
+    }
+
+    /**
+     * ContactsToHosts
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getHostContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Hosts.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToHosts' => 'contacts_to_hosts'],
+                ['ContactsToHosts.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['Hosts.id = ContactsToHosts.host_id']
+            )
+            ->where([
+                'Contacts.id'           => $contactId,
+                'Hosts.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Hosts.container_id');
+    }
+
+    /**
+     * ContactsToHostescalations,
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getHostescalationContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Hostescalations.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToHostescalations' => 'contacts_to_hostescalations'],
+                ['ContactsToHostescalations.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Hostescalations' => 'hostescalations'],
+                ['Hostescalations.id = ContactsToHostescalations.hostescalation_id']
+            )
+            ->where([
+                'Contacts.id'                     => $contactId,
+                'Hostescalations.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Hostescalations.container_id');
+    }
+
+    /**
+     * ContactsToServiceescalations,
+     * @param int $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getServiceescalationContainerIdsForContact(int $contactId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Serviceescalations.container_id'
+            ])
+            ->innerJoin(
+                ['ContactsToServiceescalations' => 'contacts_to_serviceescalations'],
+                ['ContactsToServiceescalations.contact_id = Contacts.id']
+            )
+            ->innerJoin(
+                ['Serviceescalations' => 'serviceescalations'],
+                ['Serviceescalations.id = ContactsToServiceescalations.serviceescalation_id']
+            )
+            ->where([
+                'Contacts.id'                        => $contactId,
+                'Serviceescalations.container_id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Serviceescalations.container_id');
+    }
+
+    /**
+     * @param $contactId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getRequiredContainerIdsFoContact($contactId, array $containerIds) {
+        $requiredIds = [];
+        if (empty($containerIds)) {
+            return $requiredIds;
+        }
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $ids = array_unique(
+            array_merge_recursive(
+                $this->getContactgroupContainerIdsForContact($contactId, $containerIds),
+                $this->getHosttemplateContainerIdsForContact($contactId, $containerIds),
+                $this->getServicetemplateContainerIdsForContact($contactId, $containerIds),
+                $this->getHostContainerIdsForContact($contactId, $containerIds),
+                $this->getHostescalationContainerIdsForContact($contactId, $containerIds),
+                $this->getServiceescalationContainerIdsForContact($contactId, $containerIds)
+            )
+        );
+
+        foreach ($ids as $requiredId) {
+            $requiredIds[] = (int)$requiredId;
+        }
+        return $requiredIds;
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedContactsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $contacts = $result->toArray();
+
+        // Check each contact, if it as more than one container.
+        // If the contact has more than 1 container, we can keep this contact because is not orphaned
+        $orphanedContacts = [];
+        foreach ($contacts as $contact) {
+            if (empty($contact->containers)) {
+                $orphanedContacts[] = $contact;
+            }
+        }
+
+        return $orphanedContacts;
+    }
+
+    public function getContactsByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->contain([
+                'HostCommands'       => function (Query $q) {
+                    return $q->select([
+                        'HostCommands.id',
+                        'HostCommands.uuid',
+                        'HostCommands.name'
+                    ]);
+                },
+                'ServiceCommands'    => function (Query $q) {
+                    return $q->select([
+                        'ServiceCommands.id',
+                        'ServiceCommands.uuid',
+                        'ServiceCommands.name'
+                    ]);
+                },
+                'HostTimeperiods'    => function (Query $q) {
+                    return $q->select([
+                        'HostTimeperiods.id',
+                        'HostTimeperiods.uuid',
+                        'HostTimeperiods.name'
+                    ]);
+                },
+                'ServiceTimeperiods' => function (Query $q) {
+                    return $q->select([
+                        'ServiceTimeperiods.id',
+                        'ServiceTimeperiods.uuid',
+                        'ServiceTimeperiods.name'
+                    ]);
+                },
+                'Customvariables'
+            ])
+            ->innerJoinWith('Containers', function (Query $q) {
+                return $q->where(['Containers.id IN' => ROOT_CONTAINER]);
+            })->where([
+                'Contacts.id IN' => $ids
+            ])
+            ->group(['Contacts.id'])
+            ->disableHydration();
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * This method provides a unified way to create new contact. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Contact $entity The entity that will be saved by the Table
+     * @param array $contact The contact as array ( [ Contact => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Contact
+     */
+    public function createContact(Contact $entity, array $contact, int $userId): Contact {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($contact);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'contacts',
+            $entity->get('id'),
+            OBJECT_CONTACT,
+            $contact['Contact']['containers']['_ids'],
+            $userId,
+            $entity->get('name'),
+            array_merge($extDataForChangelog, $contact)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing contact. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Contact $entity The entity that will be updated by the Table
+     * @param array $newContact The new contact as array ( [ Contact => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldContact The old contact as array ( [ Contact => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Contact
+     */
+    public function updateContact(Contact $entity, array $newContact, array $oldContact, int $userId): Contact {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'contacts',
+            $entity->get('id'),
+            OBJECT_CONTACT,
+            $newContact['Contact']['containers']['_ids'],
+            $userId,
+            $entity->get('name'),
+            array_merge($this->resolveDataForChangelog($newContact), $newContact),
+            array_merge($this->resolveDataForChangelog($oldContact), $oldContact)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getContactByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->select([
+                'Contacts.id',
+                'Contacts.name',
+                'Contacts.email',
+                'Contacts.phone',
+                'HostTimeperiods.name',
+                'HostTimeperiods.uuid',
+                'ServiceTimeperiods.name',
+                'ServiceTimeperiods.uuid'
+            ])
+            ->contain([
+                'HostCommands'    => function (Query $query) {
+                    return $query->select([
+                        'name' => 'HostCommands.name',
+                        'uuid' => 'HostCommands.uuid'
+                    ]);
+                },
+                'ServiceCommands' => function (Query $query) {
+                    return $query->select([
+                        'name' => 'ServiceCommands.name',
+                        'uuid' => 'ServiceCommands.uuid'
+                    ]);
+                },
+                'HostTimeperiods',
+                'ServiceTimeperiods',
+                'Customvariables' => function (Query $query) {
+                    return $query->select([
+                        'Customvariables.id',
+                        'Customvariables.objecttype_id',
+                        'Customvariables.name',
+                        'Customvariables.value',
+                        'Customvariables.password',
+                        'Customvariables.object_id'
+                    ]);
+                }
+            ])
+            ->where(['Contacts.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $contact = $this->emptyArrayIfNull($query);
+        if (!empty($contact)) {
+            $contact['host_timeperiod_id'] = $contact['host_timeperiod'];
+            unset($contact['host_timeperiod']);
+            $contact['service_timeperiod_id'] = $contact['service_timeperiod'];
+            unset($contact['service_timeperiod']);
+            $contact['host_commands'] = Hash::remove($contact['host_commands'], '{n}._joinData');
+            $contact['service_commands'] = Hash::remove($contact['service_commands'], '{n}._joinData');
+        }
+        return $contact;
     }
 }

@@ -109,6 +109,9 @@
                                     <i class="fa" ng-class="getSortClass('Usercontainerroles.name')"></i>
                                     <?php echo __('Name'); ?>
                                 </th>
+                                <th>
+                                    <?= __('Users'); ?>
+                                </th>
                                 <th class="no-sort text-center width-80">
                                     <i class="fa fa-cog"></i>
                                 </th>
@@ -123,6 +126,28 @@
                                 </td>
 
                                 <td>{{usercontainerrole.name}}</td>
+
+                                <td>
+                                    <ul class="padding-left-10">
+                                        <li ng-repeat="user in usercontainerrole.users">
+                                            <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                                <a ui-sref="UsersEdit({id: user.id})"
+                                                   ng-show="user.allow_edit">
+                                                    {{user.full_name}}
+                                                </a>
+                                            <span ng-hide="user.allow_edit">
+                                                {{user.full_name}}
+                                            </span>
+                                            <?php else: ?>
+                                                {{user.full_name}}
+                                            <?php endif; ?>
+                                            <span ng-show="user._joinData.through_ldap"
+                                                  class="badge border margin-right-10 border-warning text-warning">
+                                                <i class="fas fa-key"></i> <?= __('User container role through LDAP'); ?>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </td>
 
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
@@ -156,8 +181,17 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'usercontainerroles')): ?>
+                                                <div class="dropdown-divider" ng-if="usercontainerrole.allow_edit"></div>
+                                                <a ui-sref="UsercontainerrolesCopy({ids: usercontainerrole.id})"
+                                                   ng-if="usercontainerrole.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
-                                                <div class="dropdown-divider"></div>
+                                                <div class="dropdown-divider" ng-if="usercontainerrole.allow_edit"></div>
                                                 <a ng-if="usercontainerrole.allow_edit"
                                                    ng-click="confirmDelete(getObjectForDelete(usercontainerrole))"
                                                    href="javascript:void(0);"
@@ -193,6 +227,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
+                            <?php if ($this->Acl->hasPermission('copy', 'usercontainerroles')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="UsercontainerrolesCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">

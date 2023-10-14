@@ -493,7 +493,10 @@ class MapsTable extends Table {
             ]);
         }
 
-        $query->order(['Maps.name' => 'ASC'])->group('Maps.id');
+        $query->order([
+            'Maps.name' => 'asc',
+            'Maps.id'   => 'asc'
+        ])->group('Maps.id');
         $mapsWithLimit = $query->toArray();
         $selectedMaps = [];
         if (!empty($selected)) {
@@ -519,7 +522,10 @@ class MapsTable extends Table {
                     'MapsToContainers.container_id IN' => $MapConditions->getContainerIds()
                 ]);
             }
-            $query->order(['Maps.name' => 'ASC'])->group('Maps.id');
+            $query->order([
+                'Maps.name' => 'asc',
+                'Maps.id'   => 'asc'
+            ])->group('Maps.id');
 
             $selectedMaps = $query->toArray();
         }
@@ -747,7 +753,18 @@ class MapsTable extends Table {
             $iconProperty = $this->ackAndDowntimeIcon;
         }
 
-        $perfdata = new PerfdataParser($servicestatus->getPerfdata());
+        $perfdata = [];
+        if (Plugin::isLoaded('PrometheusModule') && $serviceArray['service_type'] === PROMETHEUS_SERVICE) {
+            // Query Prometheus to get all metrics
+            $ServiceObj = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceArray);
+
+            $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+            $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj);
+        } else {
+            // Classic service - parse Naemon perfdata string to get current perfdata information
+            $PerfdataParser = new PerfdataParser($servicestatus->getPerfdata());
+            $perfdata = $PerfdataParser->parse();
+        }
 
         $tmpServicestatus = $servicestatus->toArray();
         if ($includeServiceOutput === true) {
@@ -765,7 +782,7 @@ class MapsTable extends Table {
             'background'     => $servicestatus->ServiceStatusBackgroundColor(),
             'Host'           => $HostView->toArray(),
             'Service'        => $ServiceView->toArray(),
-            'Perfdata'       => $perfdata->parse(),
+            'Perfdata'       => $perfdata,
             'Servicestatus'  => $tmpServicestatus
         ];
     }
@@ -1011,9 +1028,8 @@ class MapsTable extends Table {
             'servicegroup' => []
         ];
         $allDependentMapElements = Hash::filter($allDependentMapElements);
-
         foreach ($allDependentMapElements as $allDependentMapElementArray) {
-            foreach ($allDependentMapElementArray as $mapElementKey => $mapElementData) {
+            foreach ($allDependentMapElementArray as $mapElementData) {
                 if (is_array($mapElementData)) {
                     foreach ($mapElementData as $mapElement) {
                         $mapElementsByCategory[$mapElement['type']][$mapElement['object_id']] = $mapElement['object_id'];
@@ -1022,67 +1038,27 @@ class MapsTable extends Table {
             }
         }
 
-        if (!empty($mapElementsByCategory['hostgroup'])) {
-            $query = $HostgroupsTable->find()
-                ->join([
-                    [
-                        'table'      => 'hosts_to_hostgroups',
-                        'type'       => 'INNER',
-                        'alias'      => 'HostsToHostgroups',
-                        'conditions' => 'HostsToHostgroups.hostgroup_id = Hostgroups.id',
-                    ]
-                ])
-                ->select([
-                    'HostsToHostgroups.host_id'
-                ])
-                ->where([
-                    'Hostgroups.id IN' => $mapElementsByCategory['hostgroup']
-                ]);
-            if (!empty($MY_RIGHTS)) {
-                $query->where([
-                    'Hostgroups.container_id IN' => $MY_RIGHTS
-                ]);
-            }
-            $query->disableHydration()
-                ->all()
-                ->toArray();
-            $hostIdsByHostgroup = $query;
-            foreach ($hostIdsByHostgroup as $hostIdByHostgroup) {
-                $hostIds[$hostIdByHostgroup['HostsToHostgroups']['host_id']] = $hostIdByHostgroup['HostsToHostgroups']['host_id'];
-            }
-        }
-        if (!empty($mapElementsByCategory['servicegroup'])) {
-            $query = $ServicegroupsTable->find()
-                ->join([
-                    [
-                        'table'      => 'services_to_servicegroups',
-                        'type'       => 'INNER',
-                        'alias'      => 'ServicesToServicegroups',
-                        'conditions' => 'ServicesToServicegroups.servicegroup_id = Servicegroups.id',
-                    ]
-                ])
-                ->select([
-                    'ServicesToServicegroups.service_id'
-                ])
-                ->where([
-                    'Servicegroups.id IN' => $mapElementsByCategory['servicegroup']
-                ]);
-
-            if (!empty($MY_RIGHTS)) {
-                $query->where([
-                    'Servicegroups.container_id IN' => $MY_RIGHTS
-                ]);
-            }
-
-            $serviceIdsByServicegroup = $query->all()->toArray();
-            foreach ($serviceIdsByServicegroup as $serviceIdByServicegroup) {
-                $serviceIds[$serviceIdByServicegroup['ServicesToServicegroups']['service_id']] = $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
-            }
-        }
-
-
         $hostIds = $mapElementsByCategory['host'];
         $serviceIds = $mapElementsByCategory['service'];
+
+        if (!empty($mapElementsByCategory['hostgroup'])) {
+            foreach ($mapElementsByCategory['hostgroup'] as $hostgroupId) {
+                $hostIds = array_merge(
+                    $hostIds,
+                    $HostgroupsTable->getHostsIdsByHostgroupForMaps($hostgroupId, $MY_RIGHTS)
+                );
+            }
+
+        }
+
+        if (!empty($mapElementsByCategory['servicegroup'])) {
+            foreach ($mapElementsByCategory['servicegroup'] as $servicegroupId) {
+                $serviceIds = array_merge(
+                    $serviceIds,
+                    $ServicegroupsTable->getServiceIdsByServicegroupForMaps($servicegroupId, $MY_RIGHTS)
+                );
+            }
+        }
 
         return [
             'hostIds'    => $hostIds,
@@ -2297,5 +2273,162 @@ class MapsTable extends Table {
             return $this->getDefaultMapeditorSettings();
         }
         return json_decode($config, true);
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedMapsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $maps = $result->toArray();
+
+        // Check each map, if it as more than one container.
+        // If the map has more than 1 container, we can keep this map because is not orphaned
+        $orphanedMaps = [];
+        foreach ($maps as $map) {
+            if (empty($map->containers)) {
+                $orphanedMaps[] = $map;
+            }
+        }
+
+        return $orphanedMaps;
+    }
+
+    /**
+     * I will return the list of map.id where the given $serviceId is shown on the map.
+     * @param int $serviceId
+     * @return array
+     */
+    public function getMapsByServiceId(int $serviceId, array $MY_RIGHTS): array {
+        $query = $this->find();
+        $query->select([
+            'Maps.id',
+            'Maps.name'
+        ])
+            ->leftJoin(
+                ['Mapitems' => 'mapitems'],
+                [
+                    'Mapitems.map_id = Maps.id',
+                    'Mapitems.type'      => 'service',
+                    'Mapitems.object_id' => $serviceId
+                ]
+            )
+            ->leftJoin(
+                ['Maplines' => 'maplines'],
+                [
+                    'Maplines.map_id = Maps.id',
+                    'Maplines.type'      => 'service',
+                    'Maplines.object_id' => $serviceId
+                ]
+            )
+            ->leftJoin(
+                ['Mapsummaryitems' => 'mapsummaryitems'],
+                [
+                    'Mapsummaryitems.map_id = Maps.id',
+                    'Mapsummaryitems.type'      => 'service',
+                    'Mapsummaryitems.object_id' => $serviceId
+                ]
+            )
+            ->leftJoin(
+                ['Mapgadgets' => 'mapgadgets'],
+                [
+                    'Mapgadgets.map_id = Maps.id',
+                    'Mapgadgets.type'      => 'service',
+                    'Mapgadgets.object_id' => $serviceId
+                ]
+            );
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(
+                ['MapsToContainers' => 'maps_to_containers'],
+                [
+                    'MapsToContainers.map_id = Maps.id',
+                    'MapsToContainers.container_id IN' => $MY_RIGHTS
+                ]
+            );
+        }
+        $query->andWhere([
+            'OR' => [
+                'Mapitems.id IS NOT NULL',
+                'Maplines.id IS NOT NULL',
+                'Mapsummaryitems.id IS NOT NULL',
+                'Mapgadgets.id IS NOT NULL'
+            ]
+        ]);
+        $query->group(['Maps.id'])
+            ->disableHydration();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * I will return the list of map Ids where the given $hostId is shown on the map.
+     * @param int $hostId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getMapsByHostId(int $hostId, array $MY_RIGHTS): array {
+        $query = $this->find();
+        $query->select([
+            'Maps.id',
+            'Maps.name'
+        ])
+            ->leftJoin(
+                ['Mapitems' => 'mapitems'],
+                [
+                    'Mapitems.map_id = Maps.id',
+                    'Mapitems.type'      => 'host',
+                    'Mapitems.object_id' => $hostId
+                ]
+            )
+            ->leftJoin(
+                ['Maplines' => 'maplines'],
+                [
+                    'Maplines.map_id = Maps.id',
+                    'Maplines.type'      => 'host',
+                    'Maplines.object_id' => $hostId
+                ]
+            )
+            ->leftJoin(
+                ['Mapsummaryitems' => 'mapsummaryitems'],
+                [
+                    'Mapsummaryitems.map_id = Maps.id',
+                    'Mapsummaryitems.type'      => 'host',
+                    'Mapsummaryitems.object_id' => $hostId
+                ]
+            );
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(
+                ['MapsToContainers' => 'maps_to_containers'],
+                [
+                    'MapsToContainers.map_id = Maps.id',
+                    'MapsToContainers.container_id IN' => $MY_RIGHTS
+                ]
+            );
+        }
+        $query->andWhere([
+            'OR' => [
+                'Mapitems.id IS NOT NULL',
+                'Maplines.id IS NOT NULL',
+                'Mapsummaryitems.id IS NOT NULL'
+            ]
+        ]);
+        $query->group(['Maps.id'])
+            ->disableHydration();
+
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }

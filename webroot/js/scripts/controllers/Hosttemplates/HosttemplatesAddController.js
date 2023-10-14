@@ -67,7 +67,8 @@ angular.module('openITCOCKPIT')
                     hosttemplatecommandargumentvalues: [],
                     prometheus_exporters: {
                         _ids: []
-                    }
+                    },
+                    sla_id : null
                 }
             };
         };
@@ -139,6 +140,7 @@ angular.module('openITCOCKPIT')
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.hostgroups = result.data.hostgroups;
                 $scope.exporters = result.data.exporters;
+                $scope.slas = result.data.slas;
             });
         };
 

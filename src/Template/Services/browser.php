@@ -41,7 +41,8 @@ use Cake\Core\Plugin;
 <service-browser-menu
     ng-if="serviceBrowserMenuConfig"
     config="serviceBrowserMenuConfig"
-    last-load-date="lastLoadDate"></service-browser-menu>
+    last-load-date="lastLoadDate"
+    root-copy-to-clipboard="rootCopyToClipboard"></service-browser-menu>
 
 
 <reschedule-service callback="showFlashMsg"></reschedule-service>
@@ -57,7 +58,8 @@ use Cake\Core\Plugin;
 <enable-service-notifications callback="showFlashMsg"></enable-service-notifications>
 <send-service-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-service-notification>
 <mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>
-<mass-delete-acknowledgements delete-url="/acknowledgements/delete/" callback="showFlashMsg"></mass-delete-acknowledgements>
+<mass-delete-acknowledgements delete-url="/acknowledgements/delete/"
+                              callback="showFlashMsg"></mass-delete-acknowledgements>
 
 
 <div class="row">
@@ -101,8 +103,37 @@ use Cake\Core\Plugin;
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <?php if (Plugin::isLoaded('CustomalertModule')): ?>
+                            <li class="nav-item pointer" ng-show="CustomalertsExists">
+                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
+                                   role="tab">
+                                    <i class="fa-solid fa-bullhorn">&nbsp;</i> <?php echo __('Custom alerts'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
+                <?php if (Plugin::isLoaded('SLAModule')): ?>
+                    <div ng-show="slaOverview" ng-click="selectedTab = 'tab6'; hideTimeline()">
+                        <button
+                            class="btn btn-labeled btn-{{slaOverview.state}} btn-xs btn-w-m waves-effect waves-themed"
+                            ng-hide="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fa-lg" ng-class="{'fa fa-check':slaOverview.state === 'success',
+                                'fa-solid fa-triangle-exclamation':slaOverview.state === 'warning',
+                                'fa-solid fa-bolt': slaOverview.state === 'danger'}"></i>
+                            </span>{{slaOverview.determined_availability_percent}} %
+                        </button>
+                        <button
+                            class="btn btn-labeled btn-primary btn-xs btn-w-m waves-effect waves-themed"
+                            ng-show="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fas fa-question fa-lg"></i>
+                            </span><?= __('Not available'); ?>
+                        </button>
+                    </div>
+                <?php endif; ?>
+
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
@@ -128,7 +159,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('State since'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ servicestatus.last_state_change_user }}">
                                         {{ servicestatus.last_state_change }}
                                     </div>
                                 </div>
@@ -136,7 +167,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('Last check'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ servicestatus.lastCheckUser }}">
                                         {{ servicestatus.lastCheck }}
                                     </div>
                                 </div>
@@ -146,7 +177,8 @@ use Cake\Core\Plugin;
                                     </div>
                                     <div class="col-6">
                                             <span
-                                                ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false"
+                                                title="{{ servicestatus.nextCheckUser }}">
                                                 {{ servicestatus.nextCheck }}
                                             </span>
                                         <span
@@ -441,29 +473,29 @@ use Cake\Core\Plugin;
 
                                             <div class="row">
                                                 <div class="col-12">
-                                            <div>
-                                                <h4 class="no-padding">
-                                                    <i class="far fa-user"
-                                                       ng-show="!hostAcknowledgement.is_sticky"></i>
-                                                    <i class="fas fa-user"
-                                                       ng-show="hostAcknowledgement.is_sticky"></i>
-                                                    <?php echo __('State of host is acknowledged'); ?>
-                                                    <span ng-show="hostAcknowledgement.is_sticky">
+                                                    <div>
+                                                        <h4 class="no-padding">
+                                                            <i class="far fa-user"
+                                                               ng-show="!hostAcknowledgement.is_sticky"></i>
+                                                            <i class="fas fa-user"
+                                                               ng-show="hostAcknowledgement.is_sticky"></i>
+                                                            <?php echo __('State of host is acknowledged'); ?>
+                                                            <span ng-show="hostAcknowledgement.is_sticky">
                                                             (<?php echo __('Sticky'); ?>)
                                                         </span>
-                                                </h4>
-                                            </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Acknowledgement was set by'); ?>
-                                                <b>{{hostAcknowledgement.author_name}}</b>
-                                                <?php echo __('at'); ?>
-                                                {{hostAcknowledgement.entry_time}}
-                                            </div>
-                                            <div class="padding-top-5">
-                                                <?php echo __('Comment: '); ?>
-                                                <div style="display:inline"
-                                                     ng-bind-html="hostAcknowledgement.commentDataHtml | trustAsHtml"></div>
-                                            </div>
+                                                        </h4>
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Acknowledgement was set by'); ?>
+                                                        <b>{{hostAcknowledgement.author_name}}</b>
+                                                        <?php echo __('at'); ?>
+                                                        {{hostAcknowledgement.entry_time}}
+                                                    </div>
+                                                    <div class="padding-top-5">
+                                                        <?php echo __('Comment: '); ?>
+                                                        <div style="display:inline"
+                                                             ng-bind-html="hostAcknowledgement.commentDataHtml | trustAsHtml"></div>
+                                                    </div>
                                                 </div>
 
                                                 <div class="col-12">
@@ -501,27 +533,21 @@ use Cake\Core\Plugin;
 
                                                 <tr>
                                                     <td><?php echo __('Command line'); ?></td>
-                                                    <td class="copy-to-clipboard-container"
+                                                    <td class="copy-to-clipboard-container-text"
                                                         style="display: block; position: relative;">
                                                         <code
                                                             class="no-background <?php echo $blurryCommandLine ? 'unblur-on-hover' : '' ?>">
                                                             {{ mergedService.serviceCommandLine }}
                                                         </code>
 
-                                                        <div
-                                                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
-                                                            rel="tooltip"
-                                                            data-toggle="tooltip"
-                                                            data-trigger="click"
-                                                            data-placement="left"
-                                                            data-original-title="<?= __('Copied'); ?>">
-                                                            <div
-                                                                class="btn btn-default btn-xs waves-effect waves-themed"
-                                                                ng-click="clipboardCommand()"
-                                                                title="<?php echo __('Copy to clipboard'); ?>">
-                                                                <i class="fa fa-copy"></i>
-                                                            </div>
-                                                        </div>
+                                                        <span
+                                                            ng-click="rootCopyToClipboard(mergedService.serviceCommandLine, $event)"
+                                                            class="copy-action text-primary animated copy-action-top-right"
+                                                            data-copied="<?= __('Copied'); ?>"
+                                                            data-copy="<?= __('Copy'); ?>"
+                                                        >
+                                                            <?= __('Copy'); ?>
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             <?php endif; ?>
@@ -820,19 +846,24 @@ use Cake\Core\Plugin;
                                 <div ng-show="servicestatus.isInMonitoring">
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('State since'); ?></div>
-                                        <h3 class="margin-top-0">{{ servicestatus.last_state_change }}</h3>
+                                        <h3 class="margin-top-0" title="{{ servicestatus.last_state_change_user }}">
+                                            {{ servicestatus.last_state_change }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Last check'); ?></div>
-                                        <h3 class="margin-top-0">{{ servicestatus.lastCheck }}</h3>
+                                        <h3 class="margin-top-0" title="{{ servicestatus.lastCheckUser }}">
+                                            {{ servicestatus.lastCheck }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Next check'); ?></div>
                                         <h3 class="margin-top-0">
                                                 <span
-                                                    ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                    ng-if="mergedService.active_checks_enabled && host.Host.is_satellite_host === false"
+                                                    title="{{ servicestatus.nextCheckUser }}">
                                                     {{ servicestatus.nextCheck }}
                                                     <small style="color: #333;" ng-show="servicestatus.latency > 1">
                                                         (+ {{ servicestatus.latency }})
@@ -978,30 +1009,28 @@ use Cake\Core\Plugin;
                                             </tr>
                                             <tr>
                                                 <td><?php echo __('Host UUID'); ?></td>
-                                                <td>
+                                                <td class="copy-to-clipboard-container-text">
                                                     <code>{{ host.Host.uuid }}</code>
-                                                    <span
-                                                        class="btn btn-default btn-xs"
-                                                        onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
-                                                        title="<?php echo __('Copy to clipboard'); ?>">
-                                                            <i class="fa fa-copy"></i>
-                                                        </span>
-                                                    <input type="text" style="display:none;" id="host-uuid-copy"
-                                                           value="{{ host.Host.uuid }}"
+                                                    <span ng-click="rootCopyToClipboard(host.Host.uuid, $event)"
+                                                          class="copy-action-visibility text-primary animated"
+                                                          data-copied="<?= __('Copied'); ?>"
+                                                          data-copy="<?= __('Copy'); ?>"
+                                                    >
+                                                        <?= __('Copy'); ?>
+                                                    </span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td><?php echo __('Service UUID'); ?></td>
-                                                <td>
+                                                <td class="copy-to-clipboard-container-text">
                                                     <code>{{ mergedService.uuid }}</code>
-                                                    <span
-                                                        class="btn btn-default btn-xs"
-                                                        onclick="$('#service-uuid-copy').show().select();document.execCommand('copy');$('#service-uuid-copy').hide();"
-                                                        title="<?php echo __('Copy to clipboard'); ?>">
-                                                            <i class="fa fa-copy"></i>
-                                                        </span>
-                                                    <input type="text" style="display:none;" id="service-uuid-copy"
-                                                           value="{{ mergedService.uuid }}"
+                                                    <span ng-click="rootCopyToClipboard(mergedService.uuid, $event)"
+                                                          class="copy-action-visibility text-primary animated"
+                                                          data-copied="<?= __('Copied'); ?>"
+                                                          data-copy="<?= __('Copy'); ?>"
+                                                    >
+                                                        <?= __('Copy'); ?>
+                                                    </span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -1017,7 +1046,7 @@ use Cake\Core\Plugin;
                                         </table>
                                     </div>
 
-                                    <div class="col-lg-12">
+                                    <div class="col-lg-6">
                                         <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Container'); ?></td>
@@ -1109,8 +1138,56 @@ use Cake\Core\Plugin;
                                                     {{mergedService.description}}
                                                 </td>
                                             </tr>
+                                            <tr ng-if="objects.Autoreports || objects.Eventcorrelations || objects.serviceGroups || objects.instantReports || objects.maps">
+                                                <td><?php echo __('Used by'); ?></td>
+                                                <td>
+                                                    <?php if ($this->Acl->hasPermission('usedBy', 'services')): ?>
+
+                                                        <a ng-if="objects.Instantreports.length > 0"
+                                                           ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fa fa-file-invoice"></i> <?php echo __('Instant reports'); ?> ({{objects.Instantreports.length}})
+                                                           </span>
+                                                        </a>
+
+                                                        <?php if (Plugin::isLoaded('AutoreportModule')): ?>
+                                                            <a ng-if="objects.Autoreports.length > 0"
+                                                               ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?> ({{objects.Autoreports.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                        <?php if (Plugin::isLoaded('EventcorrelationModule')): ?>
+                                                            <a ng-if="objects.Eventcorrelations.length > 0"
+                                                               ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                                <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?> ({{objects.Eventcorrelations.length}})
+                                                                </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <?php if (Plugin::isLoaded('MapModule')): ?>
+                                                            <a ng-if="objects.Maps.length > 0"
+                                                               ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-map-marker"></i> <?= __('Map') ?> ({{objects.Maps.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <a ng-if="objects.Servicegroups.length > 0"
+                                                           ui-sref="ServicesUsedBy({id: mergedService.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fas fa-server"></i> <?php echo __('Service Groups'); ?> ({{objects.Servicegroups.length}})
+                                                           </span>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -1121,17 +1198,18 @@ use Cake\Core\Plugin;
                         <div class="row">
                             <div class="col-lg-12 padding-10">
                                 <div class="row">
-
                                     <div class="col-lg-12">
-
                                         <h3 class="margin-top-0">
                                             <?php echo __('Outages: '); ?>
                                             <span ng-hide="failureDurationInPercent">
                                                     <i class="fa fa-refresh fa-spin txt-primary"></i>
                                                 </span>
-                                            <span
-                                                ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent + ' %' :
-                                                    '<?php echo __('No data available!'); ?>'}}
+                                            <span ng-show="failureDurationInPercent">
+                                                {{ (failureDurationInPercent) ? failureDurationInPercent + ' %' : '<?= __('
+                                                No
+                                                data
+                                                available
+                                                !'); ?>'}}
                                             </span>
                                         </h3>
                                     </div>
@@ -1140,13 +1218,17 @@ use Cake\Core\Plugin;
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="row">
-                                            <div class="col-lg-12 bold"><?php echo __('Legend'); ?></div>
-                                            <div class="col-lg-12">
-                                                <?php echo __('State types'); ?>
+                                        <div class="row margin-top-10">
+                                            <div class="col-lg-12 bold">
+                                                <?= __('Legend'); ?>
+                                                <span class="fw-300">
+                                                    <i class="ng-binding">
+                                                         <?= __('State types'); ?>
+                                                    </i>
+                                                </span>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row margin-top-5">
                                             <div class="col-xs-12 col-lg-3">
                                                 <i class="fa fa-square ok-soft"></i>
                                                 <?php echo __('Ok soft'); ?>
@@ -1212,6 +1294,26 @@ use Cake\Core\Plugin;
                                 </div>
                             </div>
                         </div>
+                        <div class="row" ng-show="mergedService.has_graph">
+                            <div class="col-lg-12 padding-10">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       class="custom-control-input"
+                                                       id="SynchronizeTimes"
+                                                       ng-model="synchronizeTimes">
+                                                <label class="custom-control-label no-margin"
+                                                       for="SynchronizeTimes">
+                                                    <?= __('Synchronize times for timeline and service graph'); ?>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!-- Timeline tab end -->
                     <!-- ServiceNow tab start -->
@@ -1230,6 +1332,27 @@ use Cake\Core\Plugin;
                         </div>
                     </div>
                     <!-- ServiceNow tab end -->
+                    <!-- Customalert tab start -->
+                    <div ng-show="selectedTab == 'tab5'">
+                        <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
+                            <?php if (Plugin::isLoaded('CustomalertModule') && $this->Acl->hasPermission('history', 'customalerts', 'CustomalertModule')): ?>
+                                <customalerts-history service-id="mergedService.id"></customalerts-history>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <!-- Customalert tab end -->
+                    <!-- SLA Module start -->
+                    <div ng-show="selectedTab == 'tab6'" ng-if="slaOverview && selectedTab == 'tab6'">
+                        <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaServiceInformation', 'Slas', 'SLAModule')): ?>
+                            <sla-service-information-element
+                                service-id="{{mergedService.id}}"></sla-service-information-element>
+                        <?php else: ?>
+                            <label class="text-danger">
+                                <?php echo __('No permissions'); ?>
+                            </label>
+                        <?php endif; ?>
+                    </div>
+                    <!-- SLA Module end -->
                 </div>
             </div>
         </div>
@@ -1247,6 +1370,19 @@ use Cake\Core\Plugin;
                 </h2>
                 <div class="panel-toolbar">
                     <div class="panel-toolbar">
+
+                        <div class="form-group panelToolbarInput">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="ServiceGraphSmoothInterpolation"
+                                       ng-model="graph.smoothInterpolation">
+                                <label class="custom-control-label no-margin" for="ServiceGraphSmoothInterpolation">
+                                    <?php echo __('Smooth'); ?>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="form-group panelToolbarInput">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox"
@@ -1295,9 +1431,9 @@ use Cake\Core\Plugin;
                             <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
                                  style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
 
-                                <a class="dropdown-item dropdown-item-xs" ng-repeat="dsName in dataSources"
-                                   ng-click="changeDataSource(dsName)" href="javascript:void(0);">
-                                    {{dsName}}
+                                <a class="dropdown-item dropdown-item-xs" ng-repeat="ds in dataSources"
+                                   ng-click="changeDataSource(ds.key)" href="javascript:void(0);">
+                                    {{ds.displayName}}
                                 </a>
                             </div>
                         </div>

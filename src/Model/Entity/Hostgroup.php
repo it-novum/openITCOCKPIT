@@ -35,19 +35,4 @@ class Hostgroup extends Entity {
         'hosts'         => true,
         'hosttemplates' => true
     ];
-
-    /**
-     * @return array
-     */
-    /*public function getContainerIds() {
-        $containerIds = [
-            $this->hostgroup->container_id
-        ];
-
-        foreach ($this->hostgroup->hosts_to_containers_sharing as $container) {
-            $containerIds[] = $container->get('id');
-        }
-
-        return array_unique($containerIds);
-    }*/
 }

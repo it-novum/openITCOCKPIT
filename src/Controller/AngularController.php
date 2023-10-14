@@ -38,7 +38,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Cache\Cache;
-use \Laminas\Diactoros\CallbackStream;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Table;
@@ -63,6 +63,7 @@ use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+use Laminas\Diactoros\CallbackStream;
 use RuntimeException;
 
 /**
@@ -146,7 +147,10 @@ class AngularController extends AppController {
             'user_offset'                => $UserTime->getOffset(),
             'server_time_utc'            => time(),
             'server_time'                => date('F d, Y H:i:s'),
-            'server_timezone_offset'     => $ServerTime->getOffset()
+            'server_timezone_offset'     => $ServerTime->getOffset(),
+            //ISO 8601
+            'server_time_iso'            => date('c'),
+            'server_timezone'            => $ServerTimeZone->getName()
         ];
         $this->set('timezone', $timezone);
         $this->viewBuilder()->setOption('serialize', ['timezone']);
@@ -291,7 +295,16 @@ class AngularController extends AppController {
             $recursive = true;
         }
 
-        $containerIds = $this->request->getQuery('containerIds', [ROOT_CONTAINER]);
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+
+        $containerIds = $this->request->getQuery('containerIds', $MY_RIGHTS);
         if (!is_numeric($containerIds) && !is_array($containerIds)) {
             $containerIds = ROOT_CONTAINER;
         }
@@ -305,7 +318,11 @@ class AngularController extends AppController {
 
         if ($recursive) {
             //get recursive container ids
+            if (empty($containerIds)) {
+                $containerIds[] = ROOT_CONTAINER;
+            }
             $containerIdToResolve = $containerIds;
+
             $children = $ContainersTable->getChildren($containerIdToResolve[0]);
             $containerIdsResolved = Hash::extract($children, '{n}.id');
             $recursiveContainerIds = [];
@@ -322,27 +339,16 @@ class AngularController extends AppController {
         foreach ($containerIds as $containerId) {
             $containerIdsForQuery[] = (int)$containerId;
         }
-
-        $hoststatusCount = [
-            '0' => 0,
-            '1' => 0,
-            '2' => 0,
-        ];
-
-        $servicestatusCount = [
-            '0' => 0,
-            '1' => 0,
-            '2' => 0,
-            '3' => 0,
-        ];
-
+        $hoststatus = [];
+        $servicestatus = [];
 
         if ($this->DbBackend->isNdoUtils()) {
             /** @var HostsTable $HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-            $hoststatusCount = $HostsTable->getHoststatusCount($containerIdsForQuery, true);
-            $servicestatusCount = $HostsTable->getServicestatusCount($containerIdsForQuery, true);
+            $hoststatus = $HostsTable->getHostsWithStatusByConditions($containerIdsForQuery, []);
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $servicestatus = $ServicesTable->getServicesWithStatusByConditions($containerIdsForQuery, []);
         }
 
         if ($this->DbBackend->isCrateDb()) {
@@ -352,13 +358,20 @@ class AngularController extends AppController {
         if ($this->DbBackend->isStatusengine3()) {
             /** @var HostsTable $HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-            $hoststatusCount = $HostsTable->getHoststatusCountStatusengine3($containerIdsForQuery, true);
-            $servicestatusCount = $HostsTable->getServicestatusCountStatusengine3($containerIdsForQuery, true);
+            $hoststatus = $HostsTable->getHostsWithStatusByConditionsStatusengine3($containerIdsForQuery, []);
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $servicestatus = $ServicesTable->getServicesWithStatusByConditionsStatusengine3($containerIdsForQuery, []);
         }
 
-        $hoststatusSum = array_sum($hoststatusCount);
-        $servicestatusSum = array_sum($servicestatusCount);
+        $hoststatusSummary = $HostsTable->getHostStateSummary($hoststatus, false);
+        $servicestatusSummary = $ServicesTable->getServiceStateSummary($servicestatus, false);
+        $hoststatusSum = $hoststatusSummary['total'];
+        $servicestatusSum = $servicestatusSummary['total'];
+
+        $hoststatusCount = $hoststatusSummary['state'];
+        $servicestatusCount = $servicestatusSummary['state'];
+
 
         $hoststatusCountPercentage = [];
         $servicestatusCountPercentage = [];
@@ -378,24 +391,37 @@ class AngularController extends AppController {
             }
         }
 
+        $unhandledHosts = $hoststatusSummary['not_handled'];
+        $unhandledHostsSum = array_sum($hoststatusSummary['not_handled']);
+        $unhandledServices = $servicestatusSummary['not_handled'];
+        $unhandledServicesSum = array_sum($servicestatusSummary['not_handled']);
 
-        $this->set(compact([
-            'hoststatusCount',
-            'servicestatusCount',
-            'hoststatusSum',
-            'servicestatusSum',
-            'hoststatusCountPercentage',
-            'servicestatusCountPercentage'
-        ]));
+        $this->set('hoststatusCount', $hoststatusCount);
+        $this->set('servicestatusCount', $servicestatusCount);
+        $this->set('hoststatusSum', $hoststatusSum);
+        $this->set('servicestatusSum', $servicestatusSum);
+        $this->set('hoststatusCountPercentage', $hoststatusCountPercentage);
+        $this->set('servicestatusCountPercentage', $servicestatusCountPercentage);
+        $this->set('unhandledHosts', $unhandledHosts);
+        $this->set('unhandledHostsSum', $unhandledHostsSum);
+        $this->set('unhandledServices', $unhandledServices);
+        $this->set('unhandledServicesSum', $unhandledServicesSum);
+
+
         $this->viewBuilder()->setOption('serialize', [
             'hoststatusCount',
             'servicestatusCount',
             'hoststatusSum',
             'servicestatusSum',
             'hoststatusCountPercentage',
-            'servicestatusCountPercentage'
+            'servicestatusCountPercentage',
+            'unhandledHosts',
+            'unhandledHostsSum',
+            'unhandledServices',
+            'unhandledServicesSum'
         ]);
     }
+
 
     public function menu() {
         if (!$this->isApiRequest()) {
@@ -646,6 +672,8 @@ class AngularController extends AppController {
         $UserTime = $User->getUserTime();
 
         $defaultValues = [
+            'js_from'         => $UserTime->customFormat('Y, m, d, H, i', time()),
+            'js_to'           => $UserTime->customFormat('Y, m, d, H, i', time() + 60 * 15),
             'from_date'       => $UserTime->customFormat('d.m.Y', time()),
             'from_time'       => $UserTime->customFormat('H:i', time()),
             'to_date'         => $UserTime->customFormat('d.m.Y', time()),
@@ -731,6 +759,23 @@ class AngularController extends AppController {
         $this->setHealthState($cache['load']['state']);
         foreach ($cache['disk_usage'] as $disk) {
             $this->setHealthState($disk['state']);
+        }
+
+        if (Plugin::isLoaded('DistributeModule')) {
+            $User = new User($this->getUser());
+            $UserTime = $User->getUserTime();
+            foreach (($cache['satellites'] ?? []) as $index => $satellite) {
+                // Put date to users time-zone
+                $date = $UserTime->format($cache['satellites'][$index]['satellite_status']['last_seen']);
+                $cache['satellites'][$index]['satellite_status']['last_seen'] = $date;
+
+                // Check if user may edit satellite
+                if ($this->hasRootPrivileges) {
+                    $cache['satellites'][$index]['allow_edit'] = true;
+                } else {
+                    $cache['satellites'][$index]['allow_edit'] = $this->isWritableContainer($satellite['container_id']);
+                }
+            }
         }
 
         $user = $this->getUser();
@@ -976,8 +1021,9 @@ class AngularController extends AppController {
         $QueryHandler = new QueryHandler($SystemsettingsTable->getQueryHandlerPath());
 
         $this->set('QueryHandler', [
-            'exists' => $QueryHandler->exists(),
-            'path'   => $QueryHandler->getPath()
+            'exists'      => $QueryHandler->exists(),
+            'path'        => $QueryHandler->getPath(),
+            'isContainer' => $QueryHandler->isContainer()
         ]);
         $this->viewBuilder()->setOption('serialize', ['QueryHandler']);
 
@@ -1224,6 +1270,71 @@ class AngularController extends AppController {
 
     public function thresholds() {
         //Return HTML Template for PaginatorDirective
+        return;
+    }
+
+    public function regexHelperTooltip() {
+        //Return HTML Template for PaginatorDirective
+        return;
+    }
+
+    public function ackTooltip() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function downtimeTooltip() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function wizardFilter() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function wizardInterfaceFilter() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function columns_config_import() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function columns_config_export() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function autoRefresher() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        if ($this->isAngularJsRequest()) {
+            $timeranges = [
+                'refresh_interval' => [
+                    0   => __('Disabled'),
+                    5   => __('Refresh every 5s'),
+                    10  => __('Refresh every 10s'),
+                    30  => __('Refresh every 30s'),
+                    60  => __('Refresh every 1m'),
+                    120 => __('Refresh every 2m'),
+                    300 => __('Refresh every 5m'),
+                    900 => __('Refresh every 15m')
+                ]
+            ];
+            $this->set('timeranges', $timeranges);
+            $this->viewBuilder()->setOption('serialize', ['timeranges']);
+        }
+
+    }
+
+    public function changeLogEntry() {
+        //Return HTML Template for ChangeLogEntries
         return;
     }
 }

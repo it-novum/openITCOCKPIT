@@ -37,6 +37,7 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validation;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\System\Health\SystemId;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigurator;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValue;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValueInt;
@@ -167,6 +168,8 @@ class SetupCommand extends Command {
         }
 
 
+        // Generate new SystemId
+        $SystemId = new SystemId();
         $this->io->out('');
         $this->io->hr();
         $this->io->success(__('You can now open the web frontend in your browser and login. Have a nice day!'));

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('BrowsersIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, $state){
+    .controller('BrowsersIndexController', function($scope, $http, $window, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, $state){
         SortService.setSort('Hoststatus.current_state');
         SortService.setDirection('desc');
 
@@ -11,8 +11,8 @@ angular.module('openITCOCKPIT')
         };
         $scope.recursiveBrowser = false;
 
+        $scope.popoverTimer = null;
 
-        /*** Filter Settings ***/
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -26,13 +26,66 @@ angular.module('openITCOCKPIT')
                 },
                 Host: {
                     name: QueryStringService.getValue('filter[Hosts.name]', ''),
+                    name_regex: false,
                     keywords: '',
                     address: QueryStringService.getValue('filter[Hosts.address]', ''),
-                    satellite_id: []
+                    address_regex: false,
+                    satellite_id: [],
+                    host_type: []
                 }
             };
         };
         /*** Filter end ***/
+
+        /*** column vars ***/
+        $scope.fields = [];
+        $scope.columnsLength = 17;
+        $scope.columnsTableKey = 'HostsBrowserColumns';
+
+        /*** columns functions
+         columns:
+         ['Hoststatus',
+         'is acknowledged',
+         'is in downtime',
+         'Notifications enabled',
+         'Shared',
+         'Passively transferred host',
+         'Priority',
+         'Host name',
+         'Host description',
+         'IP address',
+         'Last state change',
+         'Last check',
+         'Host output',
+         'Instance',
+         'Service Summary ',
+         'Host notes',
+         'Host type'] ***/
+        $scope.defaultColumns = function(){
+            $scope.fields = [true, true, true, false, true, true, false, true, false, true, true, true, true, true, false, false, false];
+            $window.localStorage.removeItem($scope.columnsTableKey);
+        };
+
+        $scope.saveColumns = function(){
+            $window.localStorage.removeItem($scope.columnsTableKey);
+            $window.localStorage.setItem($scope.columnsTableKey, JSON.stringify($scope.fields));
+
+        }
+
+        $scope.loadColumns = function(){
+            var fields = JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
+            if(typeof fields !== undefined && Array.isArray(fields)){
+                $scope.fields = fields;
+            }else{
+                $scope.defaultColumns()
+            }
+        }
+
+        $scope.triggerLoadColumns = function(fields){
+            $scope.fields = fields;
+        };
+        /*** end columns functions ***/
+
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/hosts/delete/';
@@ -40,9 +93,8 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.showFilter = false;
-
+        $scope.showFields = false;
         $scope.load = function(){
-
             $http.get("/browsers/index/" + $scope.containerId + ".json", {
                 params: {
                     angular: true
@@ -77,13 +129,16 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Hosts.name]': $scope.filter.Host.name,
+                'filter[Hosts.name_regex]': $scope.filter.Host.name_regex,
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                 'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
+                'filter[Hosts.address_regex]': $scope.filter.Host.address_regex,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
+                'filter[Hosts.host_type][]': $scope.filter.Host.host_type,
                 'BrowserContainerId': $scope.containerId
             };
 
@@ -131,6 +186,10 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
+        };
+
+        $scope.triggerFields = function(){
+            $scope.showFields = !$scope.showFields === true;
         };
 
         $scope.resetFilter = function(){
@@ -209,6 +268,7 @@ angular.module('openITCOCKPIT')
 
 
         //Fire on page load
+        $scope.loadColumns(); // load column config
         defaultFilter();
         SortService.setCallback($scope.load);
 
@@ -238,7 +298,7 @@ angular.module('openITCOCKPIT')
 
             $scope.containers = [];
             for(var key in $scope.containersFromApi){
-                var containerName = $scope.containersFromApi[key].value.toLowerCase();
+                var containerName = $scope.containersFromApi[key].value.name.toLowerCase();
                 if(containerName.match(searchString)){
                     $scope.containers.push($scope.containersFromApi[key]);
                 }

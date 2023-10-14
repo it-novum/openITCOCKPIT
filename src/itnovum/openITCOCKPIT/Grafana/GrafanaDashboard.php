@@ -43,10 +43,6 @@ class GrafanaDashboard {
      */
     private $editable = false;
 
-    /**
-     * @var bool
-     */
-    private $hideControls = true;
 
     /**
      * @var array
@@ -56,31 +52,22 @@ class GrafanaDashboard {
     /**
      * @var array
      */
+
     private $grafanaDashboardDataArray = [
-        'annotations'   => [
-            'list' => []
-        ],
-        "editable"      => false, // testing true
-        "gnetId"        => null,
-        "graphTooltip"  => 0,
-        "hideControls"  => true, // testing false
-        "id"            => null,
-        "links"         => [],
-        "rows"          => [
-            //Insert rows here
-        ],
-        "schemaVersion" => 14,
+        "id"           => null,
+        "uid"          => null,
+        "title"        => "",
+        "tags"         => [],
         //"style" => "light",
-        "tags"          => [],
-        "templating"    => [
-            "list" => []
-        ],
-        "time"          => [
+        "timezone"     => "browser",
+        "editable"     => false, // testing true
+        "graphTooltip" => 0,
+        "panels"       => [],
+        "time"         => [
             "from" => "now-6h",
             "to"   => "now"
         ],
-
-        "timepicker" => [
+        "timepicker"   => [
             "refresh_intervals" => [
                 "5s",
                 "10s",
@@ -105,10 +92,17 @@ class GrafanaDashboard {
                 "30d"
             ],
         ],
-
-        "timezone" => "browser",
-        "title"    => "",
-        "version"  => 0,
+        "templating"   => [
+            "list" => []
+        ],
+        'annotations'  => [
+            'list' => []
+        ],
+        "links"        => [],
+        "rows"         => [
+            //Insert rows here
+        ],
+        "version"      => 0,
     ];
 
     /**
@@ -118,9 +112,7 @@ class GrafanaDashboard {
         $this->grafanaDashboardDataArray['title'] = $this->title;
         $this->grafanaDashboardDataArray['rows'] = $this->rows;
         $this->grafanaDashboardDataArray['editable'] = $this->editable;
-        $this->grafanaDashboardDataArray['hideControls'] = $this->hideControls;
         $this->grafanaDashboardDataArray['tags'] = $this->tags;
-
         return json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/]/*, JSON_PRETTY_PRINT*/);
     }
 
@@ -156,12 +148,5 @@ class GrafanaDashboard {
      */
     public function setEditable($editable) {
         $this->editable = $editable;
-    }
-
-    /**
-     * @param bool $hideControls
-     */
-    public function setHideControls($hideControls) {
-        $this->hideControls = $hideControls;
     }
 }

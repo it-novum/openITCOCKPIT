@@ -33,10 +33,11 @@ angular.module('openITCOCKPIT').directive('grafanaWidget', function($http, $sce)
                 });
             };
 
-            $scope.loadGrafanaDashboards = function(){
+            $scope.loadGrafanaDashboards = function(searchString){
                 $http.get("/grafana_module/grafana_configuration/getGrafanaDashboards.json", {
                     params: {
-                        'angular': true
+                        'angular': true,
+                        'filter[Host.name]': searchString
                     }
                 }).then(function(result){
                     $scope.availableGrafanaDashboards = result.data.grafana_dashboards;

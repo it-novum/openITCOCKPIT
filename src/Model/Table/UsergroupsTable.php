@@ -5,9 +5,9 @@ namespace App\Model\Table;
 use Acl\Model\Table\AcosTable;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\Core\Configure;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
@@ -56,6 +56,14 @@ class UsergroupsTable extends Table {
         $this->hasOne('Aros', [
             'className'  => 'Acl.Aros',
             'foreignKey' => 'foreign_key',
+        ]);
+
+        $this->belongsToMany('Ldapgroups', [
+            'className'        => 'Ldapgroups',
+            'joinTable'        => 'ldapgroups_to_usergroups',
+            'foreignKey'       => 'usergroup_id',
+            'targetForeignKey' => 'ldapgroup_id',
+            'saveStrategy'     => 'replace'
         ]);
     }
 
@@ -193,5 +201,78 @@ class UsergroupsTable extends Table {
         }
 
         return $acosAsList;
+    }
+
+    /**
+     * @param array $memberOfGroups
+     * @return array
+     */
+    public function getUsergroupByLdapUserMemberOf($memberOfGroups = []) {
+        if (empty($memberOfGroups)) {
+            return [];
+        }
+        if (!is_array($memberOfGroups)) {
+            $memberOfGroups = [$memberOfGroups];
+        }
+        $query = $this->find()
+            ->innerJoinWith('Ldapgroups')
+            ->where([
+                'Ldapgroups.dn IN' => $memberOfGroups
+            ])
+            ->order(['Usergroups.name' => 'asc'])
+            ->disableHydration()
+            ->first();
+
+        return $this->emptyArrayIfNull($query);
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getUsergroupsForCopy($ids = []) {
+        $query = $this->find()
+            ->select([
+                'Usergroups.id',
+                'Usergroups.name',
+                'Usergroups.description',
+            ])
+            ->where(['Usergroups.id IN' => $ids])
+            ->order(['Usergroups.id' => 'asc']);
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getSourceUsergroupForCopy($id) {
+        $usergroup = $this->find()
+            ->contain([
+                'Aros'       => [
+                    'Acos'
+                ],
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
+                ]
+            ])
+            ->where([
+                'Usergroups.id' => $id
+            ])
+            ->firstOrFail();
+
+        $usergroup = $usergroup->toArray();
+
+        $usergroup['ldapgroups'] = [
+            '_ids' => Hash::extract($usergroup, 'ldapgroups.{n}.id')
+        ];
+
+        return $usergroup;
     }
 }

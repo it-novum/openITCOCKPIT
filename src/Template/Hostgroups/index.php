@@ -140,7 +140,13 @@
                                            ng-show="hostgroup.allowEdit">
                                 </td>
                                 <td>
-                                    {{ hostgroup.container.name }}
+                                    <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
+                                        <a ui-sref="HostgroupsExtended({id: hostgroup.id})">
+                                            {{ hostgroup.container.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ hostgroup.container.name }}
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     {{ hostgroup.description }}
@@ -185,6 +191,21 @@
                                                     <?php echo __('Extended view'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'hostgroup', objectId: hostgroup.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'hostgroups')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="HostgroupsCopy({ids: hostgroup.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hostgroups')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(hostgroup))"
@@ -221,12 +242,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <a ng-href="{{ linkForPdf() }}" class="a-clean" class="pointer">
-                                    <i class="fa fa-lg fa-file-pdf-o"></i>
-                                    <?php echo __('List as PDF'); ?>
-                                </a>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('copy', 'hostgroups')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="HostgroupsCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('delete', 'hostgroups')): ?>
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
@@ -235,6 +258,21 @@
                                     </span>
                                 </div>
                             <?php endif; ?>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <?php echo __('More actions'); ?>
+                                </button>
+                                <div class="dropdown-menu" x-placement="bottom-start"
+                                     style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+                                    <a ng-href="{{ linkFor('pdf') }}" class="dropdown-item">
+                                        <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
+                                    </a>
+                                    <a ng-href="{{ linkFor('csv') }}" class="dropdown-item">
+                                        <i class="fa-solid fa-file-csv"></i> <?php echo __('List as CSV'); ?>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

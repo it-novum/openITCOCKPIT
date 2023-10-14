@@ -149,7 +149,7 @@ class SystemdowntimesController extends AppController {
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $containerIds = explode(',', $recurringServiceDowntime['container_ids'], '{n}.id');
+                $containerIds = explode(',', $recurringServiceDowntime['container_ids']);
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }

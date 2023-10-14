@@ -254,6 +254,16 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                        placeholder="<?php echo __('Filter by host name'); ?>"
                                        ng-model="filter.Host.name"
                                        ng-model-options="{debounce: 500}">
+                                <div class="input-group-append">
+                                    <span class="input-group-text pt-0 pb-0">
+                                       <label>
+                                        <?= __('Enable RegEx'); ?>
+                                        <input type="checkbox"
+                                               ng-model="filter.Host.name_regex">
+                                        </label>
+                                        <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-lg-6 margin-bottom-5">
@@ -265,6 +275,16 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                        placeholder="<?php echo __('Filter by service name'); ?>"
                                        ng-model="filter.Service.servicename"
                                        ng-model-options="{debounce: 500}">
+                                <div class="input-group-append">
+                                    <span class="input-group-text pt-0 pb-0">
+                                        <label>
+                                            <?= __('Enable RegEx'); ?>
+                                            <input type="checkbox"
+                                                   ng-model="filter.Service.servicename_regex">
+                                        </label>
+                                        <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-lg-6 margin-bottom-5">
@@ -276,7 +296,7 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                     <input type="text"
                                            class="form-control form-control-sm"
                                            data-role="tagsinput"
-                                           id="ServicesKeywordsInput"
+                                           id="ServicesKeywordsInput{{widget.id}}"
                                            placeholder="<?php echo __('Filter by tags'); ?>"
                                            ng-model="filter.Service.keywords"
                                            ng-model-options="{debounce: 500}"
@@ -292,7 +312,7 @@ $hasServiceIndexPermissions = $this->Acl->hasPermission('index', 'services', '')
                                 <div class="col tagsinputFilter">
                                     <input type="text" class="input-sm"
                                            data-role="tagsinput"
-                                           id="ServicesNotKeywordsInput"
+                                           id="ServicesNotKeywordsInput{{widget.id}}"
                                            placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                            ng-model="filter.Service.not_keywords"
                                            ng-model-options="{debounce: 500}">

@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="AutomapsIndex">
-            <i class="fa fa-magic"></i> <?php echo __('Auto Maps'); ?>
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Auto Maps'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">

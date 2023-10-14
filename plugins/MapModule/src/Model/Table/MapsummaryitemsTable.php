@@ -74,10 +74,37 @@ class MapsummaryitemsTable extends Table {
             'className'  => 'MapModule.Maps',
         ]);
 
-        $this->hasMany('Hosts');
-        $this->hasMany('Hostgroups');
-        $this->hasMany('Services');
-        $this->hasMany('Servicegroups');
+        $this->belongsTo('Hosts', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'conditions' => [
+                'type' => 'host'
+            ]
+        ]);
+
+        $this->belongsTo('Services', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'conditions' => [
+                'type' => 'service'
+            ]
+        ]);
+
+        $this->belongsTo('Hostgroups', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'conditions' => [
+                'type' => 'hostgroup'
+            ]
+        ]);
+
+        $this->belongsTo('Servicegroups', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'conditions' => [
+                'type' => 'servicegroup'
+            ]
+        ]);
     }
 
     public function bindCoreAssociations(RepositoryInterface $coreTable) {
@@ -258,13 +285,14 @@ class MapsummaryitemsTable extends Table {
                 'Mapsummaryitems.object_id',
             ])
             ->where([
-                'Mapsummaryitems.type'       => 'map',
-                'Mapsummaryitems.map_id != ' => $mapId
+                'Mapsummaryitems.type'          => 'map',
+                'Mapsummaryitems.map_id != '    => $mapId,
+                'Mapsummaryitems.object_id != ' => $mapId
             ]);
         if (!empty($MY_RIGHTS)) {
             $query->where(['MapsToContainers.container_id IN' => $MY_RIGHTS]);
         }
-
+        $query->disableHydration();
         $result = $query->all();
         if (empty($result)) {
             return [];

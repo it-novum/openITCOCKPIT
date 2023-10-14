@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use App\itnovum\openITCOCKPIT\Database\SanitizeOrder;
+
 class HostgroupConditions {
 
     /**
@@ -124,6 +126,6 @@ class HostgroupConditions {
      * @return array
      */
     public function getOrder() {
-        return $this->order;
+        return SanitizeOrder::filterOrderArray($this->order);
     }
 }

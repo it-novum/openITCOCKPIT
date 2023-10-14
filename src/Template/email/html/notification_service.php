@@ -67,7 +67,7 @@ echo $this->element('emails/style');
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
-                        <td align="right" class="notification_type" >
+                        <td align="right" class="notification_type">
                             <?= h($args->getOption('notificationtype')) ?>
                         </td>
                     </tr>
@@ -169,7 +169,13 @@ echo $this->element('emails/style');
                             <br/>
                             <?php if ($args->getOption('servicelongoutput') !== ''): ?>
                                 <strong><?php echo __('Service long output'); ?>:</strong>
-                                <p class="lead"> <?php echo str_replace(['\n', '\r\n', '\r'], "<br/>", h($args->getOption('servicelongoutput'))); ?> </p>
+
+                                <?php
+                                $BBCodeParser = new \itnovum\openITCOCKPIT\Core\Views\BBCodeParser();
+                                $longoutputHtml = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml(h($args->getOption('servicelongoutput')), true));
+                                ?>
+
+                                <p class="lead"> <?php echo $longoutputHtml; ?> </p>
                                 <br/>
                             <?php endif; ?>
 
@@ -187,13 +193,12 @@ echo $this->element('emails/style');
                                 endif; ?>
 
 
-                                <table class="social" width="100%">
+                                <table class="social" style="width:100%;">
                                     <?php foreach ($charts as $filename => $chart): ?>
                                         <tr>
-                                            <td>
+                                            <td style="text-align: center;">
                                                 <img src="cid:<?= h($chart['contentId']) ?>" alt='<?= h($filename); ?>'
-                                                     width="560"
-                                                     height="180" style="background:#fff;background-color:#fff;"/>
+                                                     style="background:#fff;background-color:#fff;padding-top:15px;"/>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -233,9 +238,9 @@ echo $this->element('emails/style');
             <div class="content">
                 <table>
                     <tr>
-                        <hr noshade width="560" size="3" align="left">
+                        <hr noshade width="560" size="3" align="center">
                         <br>
-                        <td align="center">
+                        <td style="text-align: center;">
                             <p>
                                 <a href="https://openitcockpit.io/"><?php echo __('openITCOCKPIT'); ?></a> |
                                 <a href="https://it-novum.com/"><?php echo __('it-novum'); ?></a>

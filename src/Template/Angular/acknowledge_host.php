@@ -40,6 +40,11 @@
                             <input type="text" class="form-control" placeholder="<?php echo __('Comment'); ?>"
                                    ng-model="ack.comment">
                         </div>
+                        <div class="col-md-12 no-padding" ng-show="ack.error">
+                            <div class="help-block text-danger">
+                                <?= __('Comment can not be empty'); ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -84,8 +89,8 @@
                     <h4><?php echo __('Executing command'); ?></h4>
                 </div>
                 <div class="col-lg-12 margin-top-10" ng-show="doHostAck">
-                    <div class="progress progress-striped active">
-                        <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped bg-primary" style="width: {{percentage}}%"></div>
                     </div>
                 </div>
             </div>

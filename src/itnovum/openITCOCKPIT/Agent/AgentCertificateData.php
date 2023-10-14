@@ -92,7 +92,7 @@ class AgentCertificateData {
             $csr,
             file_get_contents($this->getCaCertFile()),
             file_get_contents($this->getCaKeyFile()),
-            $days = 365,
+            3650,
             [
                 'digest_alg'      => 'sha512',
                 'x509_extensions' => 'v3_req'

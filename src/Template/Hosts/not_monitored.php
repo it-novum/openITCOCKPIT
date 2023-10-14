@@ -118,6 +118,16 @@
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.Host.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                      <label>
+                                                            <?= __('Enable RegEx'); ?>
+                                                            <input type="checkbox"
+                                                                   ng-model="filter.Host.name_regex">
+                                                        </label>
+                                                    <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -131,6 +141,16 @@
                                                    placeholder="<?php echo __('Filter by IP address'); ?>"
                                                    ng-model="filter.Host.address"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                      <label>
+                                                            <?= __('Enable RegEx'); ?>
+                                                            <input type="checkbox"
+                                                                   ng-model="filter.Host.address_regex">
+                                                        </label>
+                                                    <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -223,8 +243,16 @@
                                     <?php endif; ?>
                                 </td>
 
-                                <td>
+                                <td ng-click="rootCopyToClipboard(host.Host.address, $event)"
+                                    class="copy-to-clipboard-container-text pointer">
                                     {{ host.Host.address }}
+                                    <span ng-click="rootCopyToClipboard(host.Host.address, $event)"
+                                          class="copy-action text-primary animated"
+                                          data-copied="<?= __('Copied'); ?>"
+                                          data-copy="<?= __('Copy'); ?>"
+                                    >
+                                        <?= __('Copy'); ?>
+                                    </span>
                                 </td>
 
                                 <td>
@@ -273,6 +301,13 @@
                                                    ng-click="confirmDeactivate(getObjectForDelete(host))">
                                                     <i class="fa fa-plug"></i>
                                                     <?php echo __('Disable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'host', objectId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>

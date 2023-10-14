@@ -19,9 +19,11 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
             $scope.filter = {
                 Host: {
                     name: '',
+                    name_regex: false,
                     keywords: '',
                     not_keywords: '',
-                    address: ''
+                    address: '',
+                    address_regex: false
                 },
                 Hostgroup: {
                     _ids: []
@@ -39,42 +41,14 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Hostgroup._ids = result.data.config.Hostgroup._ids.split(',').map(Number);
 
+                    $('#HostsKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
+                    $('#HostsNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
+
                     $scope.hoststatusSummary = result.data.hoststatusSummary;
+
                     $scope.loadHostgroups();
-                    //$scope.load();
                 });
             };
-
-/*
-            $scope.load = function(options){
-
-                options = options || {};
-                options.save = options.save || false;
-
-
-                var params = {
-                    'angular': true,
-                    'filter[Hosts.name]': $scope.filter.Host.name,
-                    'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
-                    'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
-                    'filter[Hosts.address]': $scope.filter.Host.address
-                };
-
-                $http.get("/hosts/index.json", {
-                    params: params
-                }).then(function(result){
-                    $scope.hosts = result.data.all_hosts;
-                    $scope.scroll = result.data.scroll;
-
-                    if(options.save === true){
-                        $scope.saveSettings(params);
-                    }
-
-                    $scope.init = false;
-                });
-            };
-
- */
 
             $scope.loadHostgroups = function(searchString){
                 var selected = [];

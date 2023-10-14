@@ -6,9 +6,10 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
             var graphStart = 0;
             var graphEnd = 0;
             $scope.currentServiceDetailsId = null;
+            $scope.interval = null;
+
 
             $scope.showServiceDetailsFlashMsg = function(){
-
                 new Noty({
                     theme: 'metroui',
                     type: 'success',
@@ -19,11 +20,11 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
 
                 $scope.showFlashSuccess = true;
                 $scope.autoRefreshCounter = 5;
-                var interval = $interval(function(){
+                $scope.interval = $interval(function(){
                     $scope.autoRefreshCounter--;
                     if($scope.autoRefreshCounter === 0){
                         $scope.loadServicestatusDetails($scope.currentServiceDetailsId);
-                        $interval.cancel(interval);
+                        $interval.cancel($scope.interval);
                         $scope.showFlashSuccess = false;
                     }
                 }, 1000);
@@ -118,8 +119,15 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                 return object;
             };
 
+            //Disable interval if object gets removed from DOM.
+            $scope.$on('$destroy', function(){
+                if($scope.interval !== null){
+                    $interval.cancel($scope.interval);
+                }
+            });
+
             var loadGraph = function(hostUuid, serviceUuid){
-                var serverTime = new Date($scope.timezone.server_time);
+                var serverTime = new Date($scope.timezone.server_time_iso);
                 graphEnd = Math.floor(serverTime.getTime() / 1000);
                 graphStart = graphEnd - (3600 * 4);
 
@@ -210,7 +218,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                 var humanTime = fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
 
                 $graph_data_tooltip
-                    .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><strong>' + contents + '</strong>')
+                    .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><b>' + contents + '</b>')
                     .css({
                         top: y,
                         left: x + 10
@@ -227,7 +235,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
 
                     var gaugeData = [];
                     for(var timestamp in performance_data[dsCount].data){
-                        var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
+                        var frontEndTimestamp = parseInt(timestamp, 10);
                         gaugeData.push([frontEndTimestamp, performance_data[dsCount].data[timestamp]]);
                     }
                     graph_data.push({
@@ -246,14 +254,8 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                 var options = GraphDefaultsObj.getDefaultOptions();
                 options.colors = colors.border;
                 options.xaxis.tickFormatter = function(val, axis){
-                    var fooJS = new Date(val);
-                    var fixTime = function(value){
-                        if(value < 10){
-                            return '0' + value;
-                        }
-                        return value;
-                    };
-                    return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
+                    var date = luxon.DateTime.fromJSDate(new Date(val)).setZone($scope.timezone.user_timezone);
+                    return date.toFormat('HH:mm:ss');
                 };
                 options.legend = {
                     show: true,
@@ -268,8 +270,8 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                     show: false,
                     radius: 1
                 };
-                options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
-                options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
+                options.xaxis.min = graphStart * 1000;
+                options.xaxis.max = graphEnd * 1000;
 
                 self.plot = $.plot('#graphCanvas', graph_data, options);
             };
@@ -279,7 +281,6 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
         link: function($scope, element, attr){
             $scope.showServiceStatusDetails = function(serviceId){
                 $scope.loadServicestatusDetails(serviceId);
-                $( ".page-inner" ).append( $('#angularServiceStatusDetailsModal'));
                 $('#angularServiceStatusDetailsModal').modal('show');
             };
         }

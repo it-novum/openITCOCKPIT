@@ -54,6 +54,11 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <span ng-repeat="UserType in UserTypes"
+                        class="badge border margin-right-10 {{UserType.class}} {{UserType.color}}">
+                        {{UserType.title}}
+                    </span>
+
                     <?php if ($this->Acl->hasPermission('index', 'users')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='UsersIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
@@ -66,7 +71,76 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
-            {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+            {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'};
+containerMessage = '<?= __('Hidden due to insufficient permissions'); ?>'">
+
+                        <div class="form-group" ng-class="{'has-error': errors.usercontainerroles}" ng-if="isLdapUser">
+                            <label class="control-label hintmark" for="UserContainerrolesLdap">
+                                <?php echo __('Container Roles through LDAP'); ?>
+                            </label>
+                            <select
+                                id="UserContainerrolesLdap"
+                                data-placeholder="<?php echo __('No matches'); ?>"
+                                class="form-control"
+                                chosen="usercontainerroles"
+                                readonly="readonly"
+                                disabled="disabled"
+                                multiple
+                                ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
+                                ng-model="post.User.usercontainerroles_ldap._ids">
+                            </select>
+                            <div ng-repeat="error in errors.usercontainerroles">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Automatically assigned container roles based on the LDAP groups of the current user.'); ?>
+                            </div>
+                        </div>
+
+                        <!-- User Container Roles permissions read/write (LDAP) -->
+                        <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissionsLdap"
+                             ng-if="isLdapUser">
+                            <div class="col col-md-1"></div>
+                            <div class="col col-md-11">
+                                <legend class="no-padding font-sm txt-ack">
+                                    {{userContainerRole.path}}
+                                    <i class="fas fa-minus-square text-danger"
+                                       ng-if="selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1"></i>
+                                </legend>
+                                <div class="d-inline-block"
+                                     ng-class="{'strike' : selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1}">
+                                    <input name="group-ldap-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 1">
+                                    <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+
+                                    <input name="group-ldap-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 2">
+                                    <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                </div>
+                                <span ng-repeat="userRole in userContainerRole.user_roles">
+                                    <span class="badge border-info border text-primary">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
+                                            <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
+                                                    {{userRole.name}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{userRole.name}}
+                                        <?php endif; ?>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col col-md-4 text-right div-bottom-arrow font-xs text-primary italic"
+                             ng-show="post.User.usercontainerroles_ldap._ids.length > 0 &&
+                             (post.User.usercontainerroles._ids.length > 0 || selectedUserContainers.length > 0)">
+                            <?= __('The user permissions will be extended or adapted with additional user roles or containers'); ?>
+
+                        </div>
                         <div class="form-group" ng-class="{'has-error': errors.usercontainerroles}">
                             <label class="control-label hintmark" for="UserContainerroles">
                                 <?php echo __('Container Roles'); ?>
@@ -75,6 +149,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 id="UserContainerroles"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
+                                callback="loadUserContainerRoles"
                                 chosen="usercontainerroles"
                                 multiple
                                 ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
@@ -83,31 +158,57 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div ng-repeat="error in errors.usercontainerroles">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
-                            <div class="help-block">
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Container Roles are handy to grant the same permissions to multiple users. Container Roles will overwrite automatically assignments via LDAP groups.'); ?>
+                            </div>
+                            <div class="help-block text-info" ng-hide="isLdapUser">
+                                <i class="fa fa-info-circle"></i>
                                 <?php echo __('Container Roles are handy to grant the same permissions to multiple users.'); ?>
                             </div>
                         </div>
 
                         <!-- User Container Roles permissions read/write -->
                         <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissions">
-                            <div class="col col-12 padding-left-30">
+                            <div class="col col-md-2"></div>
+                            <div class="col col-md-10">
                                 <legend class="no-padding font-sm txt-ack">
                                     {{userContainerRole.path}}
+                                    <i class="fas fa-minus-square text-danger"
+                                       ng-if="selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1"></i>
                                 </legend>
-                                <input name="group-{{userContainerRole.id}}"
-                                       type="radio"
-                                       disabled="disabled"
-                                       ng-checked="userContainerRole._joinData.permission_level === 1">
-                                <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+                                <div class="d-inline-block"
+                                     ng-class="{'strike' : selectedUserContainers.indexOf(userContainerRole._joinData.container_id) !== -1}">
+                                    <input name="group-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 1">
+                                    <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
-                                <input name="group-{{userContainerRole.id}}"
-                                       type="radio"
-                                       disabled="disabled"
-                                       ng-checked="userContainerRole._joinData.permission_level === 2">
-                                <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                    <input name="group-{{userContainerRole.id}}"
+                                           type="radio"
+                                           disabled="disabled"
+                                           ng-checked="userContainerRole._joinData.permission_level === 2">
+                                    <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                </div>
+                                <span
+                                    ng-repeat="userRole in userContainerRole.user_roles| orderObjectBy:'name':order_revers">
+                                    <span class="badge border-info border text-primary">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
+                                            <a ui-sref="UsercontainerrolesEdit({id: userRole.id})">
+                                                    {{userRole.name}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{userRole.name}}
+                                        <?php endif; ?>
+                                    </span>
+                                </span>
                             </div>
                         </div>
-
+                        <div class="col col-md-4 text-right div-bottom-arrow font-xs text-primary italic"
+                             ng-show="post.User.usercontainerroles._ids.length > 0 && selectedUserContainers.length > 0">
+                            <?= __('The user permissions will be extended or adapted with additional containers'); ?>
+                        </div>
                         <div class="form-group" ng-class="{'has-error': errors.containers}">
                             <label class="control-label hintmark" for="UserContainers">
                                 <?php echo __('Container'); ?>
@@ -118,6 +219,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 class="form-control"
                                 chosen="containers"
                                 multiple
+                                ng-disabled="notPermittedContainerIds.length > 0"
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="selectedUserContainers">
                             </select>
@@ -132,7 +234,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <!-- Container permissions read/write -->
                         <div class="row" ng-repeat="userContainer in selectedUserContainerWithPermission">
-                            <div class="col col-12 padding-left-30">
+                            <div class="col col-md-3"></div>
+                            <div class="col col-md-9">
                                 <legend class="no-padding font-sm text-primary">
                                     {{userContainer.name}}
                                 </legend>
@@ -140,7 +243,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        type="radio"
                                        value="1"
                                        ng-model="userContainer.permission_level"
-                                       ng-disabled="userContainer.container_id === 1"
+                                       ng-disabled="userContainer.container_id === 1 || containerIdsWithWritePermissions.indexOf(userContainer.container_id) === -1"
                                        ng-checked="userContainer.permission_level == 1">
                                 <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
@@ -148,14 +251,42 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        type="radio"
                                        value="2"
                                        ng-model="userContainer.permission_level"
-                                       ng-disabled="userContainer.container_id === 1"
+                                       ng-disabled="userContainer.container_id === 1 || containerIdsWithWritePermissions.indexOf(userContainer.container_id) === -1"
                                        ng-checked="userContainer.permission_level == 2">
                                 <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                             </div>
                         </div>
 
+                        <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}"
+                             ng-if="isLdapUser">
+                            <label class="control-label" for="UsergroupsLdap">
+                                <?php echo __('User role through LDAP'); ?>
+                            </label>
+                            <select
+                                id="UsergroupsLdap"
+                                data-placeholder="<?php echo __('No matches'); ?>"
+                                class="form-control"
+                                chosen="usergroups"
+                                readonly="readonly"
+                                disabled="disabled"
+                                ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                ng-model="ldapUser.usergroupLdap.id">
+                                <!-- ng-model is just for AngularJS. The data get's pull from the LDAP server on login -->
+                            </select>
+                            <div ng-repeat="error in errors.usergroup_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Fall back user role that is used by the system, when no user role assignment through LDAP is possible.'); ?>
+                            </div>
+                        </div>
+
                         <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
-                            <label class="control-label" for="Usergroups">
+                            <label class="control-label" for="Usergroups" ng-if="isLdapUser === true">
+                                <?php echo __('Fallback User role'); ?>
+                            </label>
+                            <label class="control-label" for="Usergroups" ng-if="isLdapUser === false">
                                 <?php echo __('User role'); ?>
                             </label>
                             <select
@@ -203,6 +334,21 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <div class="help-block text-info">
                                 <?php echo __('Username for the login'); ?>
                             </div>
+                        </div>
+
+                        <div class="form-group" ng-if="isLdapUser">
+                            <label class="control-label" for="LdapGroupsOfUser">
+                                <?php echo __('LDAP groups'); ?>
+                            </label>
+                            <select
+                                id="LdapGroupsOfUser"
+                                class="form-control"
+                                disabled="disabled"
+                                readonly="readonly"
+                                multiple
+                                ng-options="ldapgroup.dn as ldapgroup.cn for ldapgroup in ldapUser.ldapgroups"
+                                ng-model="WeNeedAModelToMakeAngularHappy">
+                            </select>
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.email}">
@@ -488,43 +634,53 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <?php echo __('Please leave the password fields blank if you don\'t want to change the password.'); ?>
                             </div>
                         </div>
-                        <!-- api key start-->
 
+                        <!-- api key start-->
                         <fieldset>
                             <legend class="margin-0 padding-top-10">
                                 <h4><?php echo __('Api keys'); ?> </h4>
                             </legend>
                             <div ng-repeat="(index,apikey) in post.User.apikeys">
-                                <table class="table-default col-lg-12">
-                                    <tr class="col-lg-12">
-                                        <td class=""><?php echo __('Description'); ?></td>
-                                        <td class="col-8"><?php echo __('Api key'); ?></td>
-                                    </tr>
-                                </table>
-                                <!--label></label-->
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control col-lg-4 mr-2"
-                                           ng-model="apikey.description" maxlength="255"
-                                           id="description_{{ index }}">
-                                    <input ng-model="apikey.apikey"
-                                           class="form-control col-lg-6"
-                                           readonly
-                                           maxlength="255"
-                                           type="text"
-                                           id="ApiKey_{{ index }}">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-success"
-                                                ng-click="createApiKey(index)"
-                                                type="button"
-                                                aria-haspopup="true" aria-expanded="false">
-                                            <i class="fa fa-key"></i>
-                                            <?= __('Generate new API key'); ?>
-                                        </button>
+                                <div class="form-row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="control-label" for="description_{{ index }}">
+                                            <?php echo __('Description'); ?>
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" id="description_{{ index }}"
+                                               ng-model="apikey.description" maxlength="255">
+                                        <div ng-repeat="error in errors.apikeys[index].description">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
-                                    <button class="btn btn-danger btn-sm waves-effect waves-themed ml-2" type="button"
-                                            ng-click="removeApikey(index)">
-                                        <i class="fa fa-trash fa-lg"></i>
-                                    </button>
+                                    <div class="col-md-8 mb-3">
+                                        <label class="control-label" for="ApiKey_{{ index }}">
+                                            <?php echo __('Api key'); ?>
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="ApiKey_{{ index }}"
+                                                   readonly
+                                                   ng-model="apikey.apikey">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-success waves-effect waves-themed"
+                                                        ng-click="createApiKey(index)"
+                                                        type="button"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    <i class="fa fa-key"></i>
+                                                    <?= __('Generate new API key'); ?>
+                                                </button>
+                                            </div>
+                                            <button class="btn btn-danger btn-sm waves-effect waves-themed ml-2"
+                                                    type="button"
+                                                    ng-click="removeApikey(index)">
+                                                <i class="fa fa-trash fa-lg"></i>
+                                            </button>
+                                        </div>
+                                        <div ng-repeat="error in errors.apikeys[index].apikey">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </fieldset>
@@ -553,5 +709,3 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </div>
     </div>
 </div>
-
-

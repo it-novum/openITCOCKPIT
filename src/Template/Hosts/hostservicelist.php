@@ -31,7 +31,7 @@
                                ng-model="servicesStateFilter[$index]"
                                ng-value="$index">
                         <label
-                            class="custom-control-label custom-control-label-{{state}} no-margin"
+                            class="extended-list custom-control-label custom-control-label-{{state}} no-margin"
                             for="statusFilter{{state}}-{{host.Host.id}}">{{stateCount}} {{state}}</label>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
                 <?php echo __('P'); ?>
             </strong>
         </th>
-        <th>
+        <th class="w-25">
             <?php echo __('Service name'); ?>
         </th>
         <th>
@@ -68,7 +68,7 @@
         <th>
             <?php echo __('Next check'); ?>
         </th>
-        <th class="width-240">
+        <th class="w-25">
             <?php echo __('Output'); ?>
         </th>
         <th></th>
@@ -185,4 +185,3 @@
     </tr>
     </tbody>
 </table>
-

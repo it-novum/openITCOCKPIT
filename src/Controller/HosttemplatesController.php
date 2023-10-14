@@ -155,7 +155,11 @@ class HosttemplatesController extends AppController {
             $hosttemplate = $HosttemplatesTable->patchEntity($hosttemplate, $this->request->getData('Hosttemplate'));
             $hosttemplate->set('uuid', UUID::v4());
 
-            $HosttemplatesTable->save($hosttemplate);
+            $User = new User($this->getUser());
+            $requestData = $this->request->getData();
+
+            $hosttemplate = $HosttemplatesTable->createHosttemplate($hosttemplate, $requestData, $User->getId());
+
             if ($hosttemplate->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $hosttemplate->getErrors());
@@ -163,31 +167,6 @@ class HosttemplatesController extends AppController {
                 return;
             } else {
                 //No errors
-
-                $User = new User($this->getUser());
-                $requestData = $this->request->getData();
-
-                $extDataForChangelog = $HosttemplatesTable->resolveDataForChangelog($requestData);
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'hosttemplates',
-                    $hosttemplate->get('id'),
-                    OBJECT_HOSTTEMPLATE,
-                    $hosttemplate->get('container_id'),
-                    $User->getId(),
-                    $hosttemplate->get('name'),
-                    array_merge($requestData, $extDataForChangelog)
-                );
-
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hosttemplate); // REST API ID serialization
@@ -247,7 +226,15 @@ class HosttemplatesController extends AppController {
             $hosttemplateEntity = $HosttemplatesTable->patchEntity($hosttemplateEntity, $this->request->getData('Hosttemplate'));
             $hosttemplateEntity->id = $id;
 
-            $HosttemplatesTable->save($hosttemplateEntity);
+            $requestData = $this->request->getData();
+
+            $hosttemplateEntity = $HosttemplatesTable->updateHosttemplate(
+                $hosttemplateEntity,
+                $requestData,
+                $hosttemplateForChangeLog,
+                $User->getId()
+            );
+
             if ($hosttemplateEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $hosttemplateEntity->getErrors());
@@ -255,38 +242,6 @@ class HosttemplatesController extends AppController {
                 return;
             } else {
                 //No errors
-                $requestData = $this->request->getData();
-
-                /**
-                 * update dependent hosts if host template command has been changed and their
-                 * command arguments values are not empty
-                 */
-                if ($requestData['Hosttemplate']['command_id'] != $hosttemplateForChangeLog['Hosttemplate']['command_id'] &&
-                    !empty($hosttemplateForChangeLog['Hosttemplate']['hosttemplatecommandargumentvalues'])) {
-                    $oldCommandId = $hosttemplateForChangeLog['Hosttemplate']['command_id'];
-                    /** @var $HostsTable HostsTable */
-                    $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                    $HostsTable->updateHostCommandIdIfHostHasOwnCommandArguments($id, $oldCommandId);
-                }
-
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'hosttemplates',
-                    $hosttemplateEntity->id,
-                    OBJECT_HOSTTEMPLATE,
-                    $hosttemplateEntity->get('container_id'),
-                    $User->getId(),
-                    $hosttemplateEntity->name,
-                    array_merge($HosttemplatesTable->resolveDataForChangelog($requestData), $requestData),
-                    array_merge($HosttemplatesTable->resolveDataForChangelog($hosttemplateForChangeLog), $hosttemplateForChangeLog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hosttemplateEntity); // REST API ID serialization
@@ -365,8 +320,13 @@ class HosttemplatesController extends AppController {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         if ($this->request->is('get')) {
-            $hosttemplates = $HosttemplatesTable->getHosttemplatesForCopy(func_get_args());
+            $hosttemplates = $HosttemplatesTable->getHosttemplatesForCopy(func_get_args(), $MY_RIGHTS);
             /** @var $CommandsTable CommandsTable */
             $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
             $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
@@ -426,6 +386,8 @@ class HosttemplatesController extends AppController {
                     //This happens, if a user copy multiple hosttemplates, and one run into an validation error
                     //All hosttemplates without validation errors got already saved to the database
                     $newHosttemplateEntity = $HosttemplatesTable->get($hosttemplateData['Hosttemplate']['id']);
+                    $newHosttemplateEntity->setAccess('*', false);
+                    $newHosttemplateEntity->setAccess(['name', 'description', 'command_id', 'hosttemplatecommandargumentvalues'], true);
                     $newHosttemplateEntity = $HosttemplatesTable->patchEntity($newHosttemplateEntity, $hosttemplateData['Hosttemplate']);
                     $newHosttemplateData = $newHosttemplateEntity->toArray();
                     $action = 'edit';
@@ -567,8 +529,15 @@ class HosttemplatesController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
-        $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
-        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        if ($container_id == ROOT_CONTAINER) {
+            // ITC-2819
+            // Hosts in the /root container can be a member of any host group
+            $hostgroups = $HostgroupsTable->getHostgroupsAsList();
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        } else {
+            $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        }
 
         $exporters = [];
         if (Plugin::isLoaded('PrometheusModule')) {
@@ -578,6 +547,14 @@ class HosttemplatesController extends AppController {
             $exporters = $PrometheusExportersTable->getExportersByContainerId($containerIds, 'list', 'id');
             $exporters = Api::makeItJavaScriptAble($exporters);
         }
+        $slas = [];
+        if (Plugin::isLoaded('SLAModule')) {
+            /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+
+            $slas = $SlasTable->getSlasByContainerId($containerIds, 'list', 'id');
+            $slas = Api::makeItJavaScriptAble($slas);
+        }
 
         $this->set('timeperiods', $timeperiods);
         $this->set('checkperiods', $checkperiods);
@@ -585,7 +562,16 @@ class HosttemplatesController extends AppController {
         $this->set('contactgroups', $contactgroups);
         $this->set('hostgroups', $hostgroups);
         $this->set('exporters', $exporters);
-        $this->viewBuilder()->setOption('serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups', 'exporters']);
+        $this->set('slas', $slas);
+        $this->viewBuilder()->setOption('serialize', [
+            'timeperiods',
+            'checkperiods',
+            'contacts',
+            'contactgroups',
+            'hostgroups',
+            'exporters',
+            'slas'
+        ]);
     }
 
     /**

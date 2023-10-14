@@ -39,10 +39,14 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     output: ''
                 },
                 Host: {
-                    name: ''
+                    name: '',
+                    name_regex: false,
+                    keywords: '',
+                    not_keywords: ''
                 },
                 Service: {
                     name: '',
+                    name_regex: false,
                     keywords: '',
                     not_keywords: ''
                 }
@@ -52,8 +56,10 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                 $http.get("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
-                    $('#ServiceTags').tagsinput('add', $scope.filter.Service.keywords);
-                    $('#ServiceExcludedTags').tagsinput('add', $scope.filter.Service.not_keywords);
+                    $('#HostTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
+                    $('#HostExcludedTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
+                    $('#ServiceTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Service.keywords);
+                    $('#ServiceExcludedTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Service.not_keywords);
 
                     $scope.filter.Servicestatus = result.data.config.Servicestatus;
                     $scope.filter.Servicestatus.current_state.ok = result.data.config.Servicestatus.current_state.ok ? 1 : 0;
@@ -67,6 +73,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
+                    $scope.filter.Host.name_regex = result.data.config.Host.name_regex;
+                    $scope.filter.Service.name_regex = result.data.config.Service.name_regex;
                     var scrollInterval = parseInt(result.data.config.scroll_interval);
                     if(scrollInterval < 5000){
                         scrollInterval = 5000;
@@ -105,7 +113,11 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     'page': $scope.currentPage,
                     'direction': $scope.direction,
                     'filter[Hosts.name]': $scope.filter.Host.name,
+                    'filter[Hosts.name_regex]': $scope.filter.Host.name_regex,
+                    'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
+                    'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                     'filter[servicename]': $scope.filter.Service.name,
+                    'filter[servicename_regex]': $scope.filter.Service.name_regex,
                     'filter[keywords][]': $scope.filter.Service.keywords.split(','),
                     'filter[not_keywords][]': $scope.filter.Service.not_keywords.split(','),
                     'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,

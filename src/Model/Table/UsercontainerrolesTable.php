@@ -1,14 +1,40 @@
 <?php
+// Copyright (C) <2019>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
 
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Database\Query;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 
 
@@ -37,15 +63,24 @@ class UsercontainerrolesTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('usercontainerroles');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->hasMany('UsersToUsercontainerroles', [
+        /*$this->hasMany('UsersToUsercontainerroles', [
             'foreignKey' => 'usercontainerrole_id'
+        ]);*/
+
+        $this->belongsToMany('Users', [
+            'through'          => 'UsercontainerrolesMemberships',
+            'className'        => 'Users',
+            'joinTable'        => 'users_to_usercontainerroles',
+            'foreignKey'       => 'usercontainerrole_id',
+            'targetForeignKey' => 'user_id',
+            //'saveStrategy'     => 'replace'
         ]);
 
         $this->belongsToMany('Containers', [
@@ -55,6 +90,15 @@ class UsercontainerrolesTable extends Table {
             'targetForeignKey' => 'container_id',
             'joinTable'        => 'usercontainerroles_to_containers'
         ]);
+
+        $this->belongsToMany('Ldapgroups', [
+            'className'        => 'Ldapgroups',
+            'joinTable'        => 'ldapgroups_to_usercontainerroles',
+            'foreignKey'       => 'usercontainerrole_id',
+            'targetForeignKey' => 'ldapgroup_id',
+            'saveStrategy'     => 'replace'
+        ]);
+
     }
 
     /**
@@ -63,7 +107,7 @@ class UsercontainerrolesTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -75,7 +119,7 @@ class UsercontainerrolesTable extends Table {
             ->allowEmptyString('name', null, false);
 
         $validator
-            ->requirePresence('containers', true, __('You have to choose at least one container.'))
+            ->requirePresence('containers', 'create', __('You have to choose at least one container.'))
             ->allowEmptyString('containers', null, false)
             ->multipleOptions('containers', [
                 'min' => 1
@@ -124,35 +168,74 @@ class UsercontainerrolesTable extends Table {
 
 
     /**
-     * @param array $MY_RIGHTS
+     * @param GenericFilter $GenericFilter
+     * @param $selected
+     * @param $MY_RIGHTS
      * @return array
      */
-    public function getUsercontainerrolesAsList($MY_RIGHTS = []) {
+    public function getUsercontainerrolesAsList(GenericFilter $GenericFilter, $selected = [], $MY_RIGHTS = []) {
         if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
+        $query = $this->find();
+        if (!empty($GenericFilter->genericFilters())) {
+            $query->where($GenericFilter->genericFilters());
+        }
 
-        $query = $this->find()
-            ->select([
-                'Usercontainerroles.id',
-                'Usercontainerroles.name'
-            ])
+        $query->select([
+            'Usercontainerroles.id',
+            'Usercontainerroles.name'
+        ])
             ->contain('Containers')
-            ->matching('Containers')
-            ->where([
-                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
-            ])
-            ->group([
-                'Usercontainerroles.id'
-            ])
+            ->matching('Containers');
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                    'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+                ]
+            );
+        }
+        $query->group([
+            'Usercontainerroles.id'
+        ])
             ->order([
-                'Usercontainerroles.name' => 'asc'
+                'Usercontainerroles.name' => 'asc',
+                'Usercontainerroles.id'   => 'asc'
             ])
             ->disableHydration();
 
         $result = [];
         foreach ($query->toArray() as $record) {
             $result[$record['id']] = $record['name'];
+        }
+        if (!empty($selected)) {
+            $query = $this->find()
+                ->select([
+                    'Usercontainerroles.id',
+                    'Usercontainerroles.name'
+                ])
+                ->contain('Containers')
+                ->matching('Containers');
+            if (!empty($MY_RIGHTS)) {
+                $query->where([
+                        'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+                    ]
+                );
+            }
+            $query
+                ->where([
+                    'Usercontainerroles.id IN' => $selected
+                ])
+                ->group([
+                    'Usercontainerroles.id'
+                ])
+                ->order([
+                    'Usercontainerroles.name' => 'asc',
+                    'Usercontainerroles.id'   => 'asc'
+                ])->disableHydration();
+
+            foreach ($query->toArray() as $record) {
+                $result[$record['id']] = $record['name'];
+            }
         }
 
         return $result;
@@ -172,14 +255,37 @@ class UsercontainerrolesTable extends Table {
         $query = $this->find()
             ->disableHydration()
             ->contain([
-                'Containers'
+                'Containers',
+                'Users' => function (Query $q) {
+                    $q->disableAutoFields();
+                    $q->contain([
+                        'Usercontainerroles' => [
+                            'Containers'
+                        ]
+                    ])
+                        ->select([
+                            'Users.id',
+                            'Users.firstname',
+                            'Users.lastname',
+                            'full_name' => $q->func()->concat([
+                                'Users.firstname' => 'literal',
+                                ' ',
+                                'Users.lastname'  => 'literal'
+                            ])
+                        ])->order('full_name');
+                    return $q;
+                }
             ])
             ->matching('Containers')
             ->where([
                 'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS,
                 $UsercontainerrolesFilter->indexFilter()
             ])
-            ->order($UsercontainerrolesFilter->getOrderForPaginator('Usercontainerroles.name', 'asc'))
+            ->order(array_merge(
+                    $UsercontainerrolesFilter->getOrderForPaginator('Usercontainerroles.name', 'asc'),
+                    ['Usercontainerroles.id' => 'asc']
+                )
+            )
             ->group([
                 'Usercontainerroles.id'
             ]);
@@ -209,6 +315,11 @@ class UsercontainerrolesTable extends Table {
             ])
             ->contain([
                 'Containers',
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
+                ]
             ])
             ->disableHydration()
             ->first();
@@ -219,7 +330,9 @@ class UsercontainerrolesTable extends Table {
         $usercontainerrole['containers'] = [
             '_ids' => Hash::extract($query, 'containers.{n}.id')
         ];
-
+        $usercontainerrole['ldapgroups'] = [
+            '_ids' => Hash::extract($query, 'ldapgroups.{n}.id')
+        ];
 
         //Build up data struct for radio inputs
         $usercontainerrole['ContainersUsercontainerrolesMemberships'] = [];
@@ -258,5 +371,192 @@ class UsercontainerrolesTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $memberOfGroups
+     * @return array
+     */
+    public function getContainerPermissionsByLdapUserMemberOf($memberOfGroups = []) {
+        if (empty($memberOfGroups)) {
+            return [];
+        }
+        if (!is_array($memberOfGroups)) {
+            $memberOfGroups = [$memberOfGroups];
+        }
+        $query = $this->find()
+            ->contain([
+                'Containers'
+            ])
+            ->innerJoinWith('Ldapgroups')
+            ->where([
+                'Ldapgroups.dn IN' => $memberOfGroups
+            ])
+            ->disableHydration()
+            ->all();
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $result = [];
+        foreach ($query->toArray() as $record) {
+            foreach ($record['containers'] as $index => $container) {
+                $record['containers'][$index]['path'] = $ContainersTable->getPathByIdAsString($container['id']);
+            }
+            $result[$record['id']] = $record;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getUsercontainerrolesForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Usercontainerroles.id IN' => $ids])
+            ->contain([
+                'Containers',
+            ])
+            ->matching('Containers')
+            ->order(['Usercontainerroles.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->group([
+            'Usercontainerroles.id'
+        ]);
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param $id
+     * @param array $MY_RIGHTS
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getSourceUserContainerRoleForCopy($id, array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where([
+                'Usercontainerroles.id' => $id
+            ])
+            ->contain([
+                'Containers',
+                'Ldapgroups' => [
+                    'fields' => [
+                        'Ldapgroups.id'
+                    ]
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $usercontainerrole = $query;
+
+
+        $usercontainerrole['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $usercontainerrole['ldapgroups'] = [
+            '_ids' => Hash::extract($query, 'ldapgroups.{n}.id')
+        ];
+
+
+        //Build up data struct for radio inputs
+        $usercontainerrole['ContainersUsercontainerrolesMemberships'] = [];
+        foreach ($query['containers'] as $container) {
+            $usercontainerrole['ContainersUsercontainerrolesMemberships'][$container['id']] = (int)$container['_joinData']['permission_level'];
+        }
+
+        return $usercontainerrole;
+    }
+
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedUsercontainerrolesByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (\Cake\ORM\Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $usercontainerroles = $result->toArray();
+
+        // Check each user container role, if it as more than one container.
+        // If user container role has more than 1 container, we can keep this each user container role because is not orphaned
+        $orphanedUsercontainerroles = [];
+        foreach ($usercontainerroles as $usercontainerrole) {
+            if (empty($usercontainerrole->containers)) {
+                $orphanedUsercontainerroles[] = $usercontainerrole;
+            }
+        }
+
+        return $orphanedUsercontainerroles;
+    }
+
+    /**
+     * @param int $containerId
+     * @param string $type
+     * @param string $index
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getContainerRoleByContainerIdExact( int $containerId, $type= 'all', $index = 'id', $MY_RIGHTS = []){
+        $query = $this->find()
+            ->select([
+                'Usercontainerroles.id',
+                'Usercontainerroles.name'
+            ])
+            ->innerJoinWith('Containers', function (\Cake\ORM\Query $q) use ($containerId, $MY_RIGHTS) {
+                $q->disableAutoFields()
+                    ->select([
+                        'Containers.id'
+                    ])
+                    ->where([
+                        'Containers.id' => $containerId
+                    ]);
+                if (!empty($MY_RIGHTS)) {
+                    $q->andWhere([
+                        'Containers.id IN' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })
+            ->disableHydration();
+        $result = $query->toArray();
+
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row['name'];
+        }
+
+        return $list;
     }
 }

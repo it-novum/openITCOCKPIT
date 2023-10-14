@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService){
+    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, NotyService, $window){
         $rootScope.lastObjectName = null;
         var startTimestamp = new Date().getTime();
 
@@ -12,40 +12,96 @@ angular.module('openITCOCKPIT')
 
         $scope.useScroll = true;
 
-        /*** Filter Settings ***/
-        var defaultFilter = function(){
-            $scope.filter = {
-                Servicestatus: {
-                    current_state: QueryStringService.servicestate($stateParams),
-                    acknowledged: QueryStringService.getStateValue($stateParams, 'has_been_acknowledged', false) == '1',
-                    not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) == '1',
-                    in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) == '1',
-                    not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
-                    passive: QueryStringService.getStateValue($stateParams, 'passive', false) == '1',
-                    active: QueryStringService.getValue('active', false) === '1',
-                    notifications_enabled: QueryStringService.getStateValue($stateParams, 'notifications_not_enabled', false) == '1',
-                    output: ''
-                },
-                Services: {
-                    id: QueryStringService.getStateValue($stateParams, 'id', []),
-                    name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
-                    keywords: '',
-                    not_keywords: '',
-                    servicedescription: '',
-                    priority: {
-                        1: false,
-                        2: false,
-                        3: false,
-                        4: false,
-                        5: false
-                    }
-                },
-                Hosts: {
-                    id: QueryStringService.getStateValue($stateParams, 'host_id', []),
-                    name: QueryStringService.getStateValue($stateParams, 'hostname', '')
-                }
-            };
+        $scope.popoverTimer = null;
+
+        /*** column vars ***/
+        $scope.fields = [];
+        $scope.columnsLength = 14;
+        $scope.columnsTableKey = 'ServicesIndexColumns';
+
+        /*** columns functions
+         columns:
+         [
+         'Servicestatus'
+         'is acknowledged'
+         'is in downtime'
+         'Notifications enabled'
+         'Charts'
+         'Passively transferred service'
+         'Priority'
+         'Service name'
+         'Service type'
+         'Service description'
+         'Last state change'
+         'Last check'
+         'Next check'
+         'Service output'
+         ] ***/
+        $scope.defaultColumns = function(){
+            $scope.fields = [true, true, true, true, true, true, true, true, false, false, true, true, true, true];
+            $window.localStorage.removeItem($scope.columnsTableKey);
         };
+
+        $scope.saveColumns = function(){
+            $window.localStorage.removeItem($scope.columnsTableKey);
+            $window.localStorage.setItem($scope.columnsTableKey, JSON.stringify($scope.fields));
+
+        }
+
+        $scope.loadColumns = function(){
+            var fields = JSON.parse($window.localStorage.getItem($scope.columnsTableKey));
+            if(typeof fields !== undefined && Array.isArray(fields)){
+                $scope.fields = fields;
+            }else{
+                $scope.defaultColumns()
+            }
+        }
+
+        $scope.triggerLoadColumns = function(fields){
+            $scope.fields = fields;
+        };
+        /*** end columns functions ***/
+
+
+        /*** Filter Settings ***/
+            //filterId = QueryStringService.getStateValue($stateParams, 'filter');
+        var defaultFilter = function(){
+                $scope.filter = {
+                    Servicestatus: {
+                        current_state: QueryStringService.servicestate($stateParams),
+                        acknowledged: QueryStringService.getStateValue($stateParams, 'has_been_acknowledged', false) == '1',
+                        not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) == '1',
+                        in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) == '1',
+                        not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
+                        passive: QueryStringService.getStateValue($stateParams, 'passive', false) == '1',
+                        active: QueryStringService.getValue('active', false) === '1',
+                        notifications_enabled: QueryStringService.getStateValue($stateParams, 'notifications_not_enabled', false) == '1',
+                        output: ''
+                    },
+                    Services: {
+                        id: QueryStringService.getStateValue($stateParams, 'id', []),
+                        name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
+                        name_regex: false,
+                        keywords: '',
+                        not_keywords: '',
+                        servicedescription: '',
+                        priority: {
+                            1: false,
+                            2: false,
+                            3: false,
+                            4: false,
+                            5: false
+                        },
+                        service_type: []
+                    },
+                    Hosts: {
+                        id: QueryStringService.getStateValue($stateParams, 'host_id', []),
+                        name: QueryStringService.getStateValue($stateParams, 'hostname', ''),
+                        name_regex: false,
+                        satellite_id: []
+                    }
+                };
+            };
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
@@ -54,6 +110,8 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.showFilter = false;
+
+        $scope.showBookmarkFilter = false;
 
         $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
@@ -66,7 +124,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-
             var hasBeenAcknowledged = '';
             var inDowntime = '';
             var notificationsEnabled = '';
@@ -101,8 +158,12 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Hosts.id]': $scope.filter.Hosts.id,
                 'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[Hosts.name_regex]': $scope.filter.Hosts.name_regex,
+                'filter[Hosts.satellite_id][]': $scope.filter.Hosts.satellite_id,
                 'filter[Services.id][]': $scope.filter.Services.id,
+                'filter[Services.service_type][]': $scope.filter.Services.service_type,
                 'filter[servicename]': $scope.filter.Services.name,
+                'filter[servicename_regex]': $scope.filter.Services.name_regex,
                 'filter[servicedescription]': $scope.filter.Services.servicedescription,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
@@ -131,14 +192,19 @@ angular.module('openITCOCKPIT')
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter;
+            if($scope.showFilter === true){
+            }
         };
+
+        $scope.triggerBookmarkFilter = function(){
+            $scope.showBookmarkFilter = !$scope.showBookmarkFilter === true;
+        };
+
 
         $scope.resetFilter = function(){
             defaultFilter();
-            $('#ServicesKeywordsInput').tagsinput('removeAll');
-            $('#ServicesNotKeywordsInput').tagsinput('removeAll');
-
             $scope.undoSelection();
+
         };
 
         $scope.selectAll = function(){
@@ -198,9 +264,11 @@ angular.module('openITCOCKPIT')
             return ids.join(',');
         };
 
-        $scope.linkForPdf = function(){
-
+        $scope.linkFor = function(format){
             var baseUrl = '/services/listToPdf.pdf?';
+            if(format === 'csv'){
+                baseUrl = '/services/listToCsv?';
+            }
 
             var hasBeenAcknowledged = '';
             var inDowntime = '';
@@ -223,7 +291,9 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Hosts.id]': $scope.filter.Hosts.id,
                 'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[Hosts.satellite_id][]': $scope.filter.Hosts.satellite_id,
                 'filter[Services.id]': $scope.filter.Services.id,
+                'filter[Services.service_type][]': $scope.filter.Services.service_type,
                 'filter[servicename]': $scope.filter.Services.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
@@ -265,9 +335,30 @@ angular.module('openITCOCKPIT')
             SortService.setDirection('desc');
         };
 
+        $scope.triggerLoadByBookmark = function(filter){
+            if(typeof filter !== "undefined"){
+                $scope.init = true; //Disable $watch to avoid two HTTP requests
+                $scope.filter = filter;
+            }else{
+                $scope.init = true;
+                $scope.resetFilter();
+            }
+
+            $("#ServicesKeywordsInput").tagsinput('removeAll');
+            $("#ServicesKeywordsInput").tagsinput('add', $scope.filter.Services.keywords);
+
+            $("#ServicesNotKeywordsInput").tagsinput('removeAll');
+            $("#ServicesNotKeywordsInput").tagsinput('add', $scope.filter.Services.not_keywords);
+
+            $scope.currentPage = 1;
+            $scope.undoSelection();
+            $scope.load();
+        };
+
 
         //Fire on page load
         defaultFilter();
+        $scope.loadColumns(); // load column config
         $scope.loadTimezone();
         SortService.setCallback($scope.load);
 
@@ -276,9 +367,11 @@ angular.module('openITCOCKPIT')
         });
 
         $scope.$watch('filter', function(){
-            $scope.currentPage = 1;
-            $scope.undoSelection();
-            $scope.load();
+            if($scope.init === false){
+                $scope.currentPage = 1;
+                $scope.undoSelection();
+                $scope.load();
+            }
         }, true);
 
         $scope.changeMode = function(val){

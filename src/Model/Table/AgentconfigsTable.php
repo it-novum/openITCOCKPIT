@@ -164,6 +164,18 @@ class AgentconfigsTable extends Table {
      * @param $hostId
      * @return Agentconfig|\Cake\Datasource\EntityInterface
      */
+    public function getConfigById($id) {
+        return $this->find()
+            ->where([
+                'Agentconfigs.id' => $id
+            ])
+            ->firstOrFail();
+    }
+
+    /**
+     * @param $hostId
+     * @return Agentconfig|\Cake\Datasource\EntityInterface
+     */
     public function getConfigByHostId($hostId) {
         return $this->find()
             ->where([

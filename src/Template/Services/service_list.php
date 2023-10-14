@@ -81,6 +81,23 @@
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                        <a ui-sref="ChangelogsEntity({objectTypeId: 'host', objectId: data.hostId})"
+                           class="dropdown-item">
+                            <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                            <?php echo __('Changelog'); ?>
+                        </a>
+                    <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
+                        <div class="dropdown-divider" ng-if="host.allow_edit"></div>
+                        <a ui-sref="HostsCopy({ids: data.hostId})"
+                           ng-if="host.allow_edit"
+                           class="dropdown-item">
+                            <i class="fas fa-files-o"></i>
+                            <?php echo __('Copy'); ?>
+                        </a>
+                        <div class="dropdown-divider" ng-if="host.allow_edit"></div>
+                    <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
                         <a class="dropdown-item"
                            ui-sref="ServicetemplategroupsAllocateToHostgroup({id: servicetemplategroup.Servicetemplategroup.id})">
@@ -174,11 +191,15 @@
                                         <?php echo __('State'); ?>
                                     </th>
 
-                                    <th class="no-sort text-center">
+                                    <th class="no-sort text-center"
+                                        ng-click="orderBy('Servicestatus.acknowledgement_type')">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.acknowledgement_type')"></i>
                                         <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                     </th>
 
-                                    <th class="no-sort text-center">
+                                    <th class="no-sort text-center"
+                                        ng-click="orderBy('Servicestatus.scheduled_downtime_depth')">
+                                        <i class="fa" ng-class="getSortClass('Servicestatus.scheduled_downtime_depth')"></i>
                                         <i class="fa fa-power-off"
                                            title="<?php echo __('is in downtime'); ?>"></i>
                                     </th>
@@ -249,18 +270,39 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <i class="far fa-user"
-                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                           ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            <i class="far fa-user"
+                                               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                               id="ackServicetip_{{service.Service.id}}"
+                                               ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                               ng-mouseleave="leaveAckEl()"
+                                               ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                            </i>
+                                            <i class="fas fa-user"
+                                               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                               id="ackServicetip_{{service.Service.id}}"
+                                               ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                               ng-mouseleave="leaveAckEl()"
+                                               ng-if="service.Servicestatus.acknowledgement_type == 2">
+                                            </i>
+                                        <?php else: ?>
+                                            <i class="far fa-user"
+                                               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                               ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
 
-                                        <i class="fas fa-user"
-                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                           ng-if="service.Servicestatus.acknowledgement_type == 2"
-                                           title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                            <i class="fas fa-user"
+                                               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                               ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                               title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                            </i>
+                                        <?php endif; ?>
                                     </td>
-
                                     <td class="text-center">
                                         <i class="fa fa-power-off"
+                                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                ng-mouseenter="enterDowntimeEl($event, 'services', service.Service.id)"
+                                                ng-mouseleave="leaveDowntimeEl()"
+                                            <?php endif; ?>
                                            ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                     </td>
                                     <td class="text-center">
@@ -393,10 +435,26 @@
                                                         <?php echo __('Disable'); ?>
                                                     </a>
                                                 <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                    <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                       class="dropdown-item">
+                                                        <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                        <?php echo __('Changelog'); ?>
+                                                    </a>
+                                                <?php endif; ?>
                                                 <?php
                                                 $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                                 echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
                                                 ?>
+                                                <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                                       ng-if="service.Service.allow_edit"
+                                                       class="dropdown-item">
+                                                        <i class="fas fa-files-o"></i>
+                                                        <?php echo __('Copy'); ?>
+                                                    </a>
+                                                <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <div class="dropdown-divider"></div>
                                                     <a ng-click="confirmDelete(getObjectForDelete(service))"
@@ -600,7 +658,19 @@
                                                         <?php echo __('Disable'); ?>
                                                     </a>
                                                 <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                                    <div class="dropdown-divider"
+                                                         ng-if="service.Service.allow_edit"></div>
+                                                    <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                                       ng-if="service.Service.allow_edit"
+                                                       class="dropdown-item">
+                                                        <i class="fas fa-files-o"></i>
+                                                        <?php echo __('Copy'); ?>
+                                                    </a>
+                                                <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                                    <div class="dropdown-divider"
+                                                         ng-if="service.Service.allow_edit"></div>
                                                     <a href="javascript:void(0);"
                                                        ng-click="confirmDelete(getObjectForDelete(service))"
                                                        ng-if="service.Service.allow_edit"
@@ -747,7 +817,19 @@
                                                         <?php echo __('Enable'); ?>
                                                     </a>
                                                 <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                                    <div class="dropdown-divider"
+                                                         ng-if="service.Service.allow_edit"></div>
+                                                    <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                                       ng-if="service.Service.allow_edit"
+                                                       class="dropdown-item">
+                                                        <i class="fas fa-files-o"></i>
+                                                        <?php echo __('Copy'); ?>
+                                                    </a>
+                                                <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                                    <div class="dropdown-divider"
+                                                         ng-if="service.Service.allow_edit"></div>
                                                     <a href="javascript:void(0);"
                                                        ng-click="confirmDelete(getObjectForDelete(service))"
                                                        ng-if="service.Service.allow_edit"
@@ -866,12 +948,13 @@
                     </div>
                 </div>
             </div>
-
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
             <div id="serviceGraphContainer" class="popup-graph-container">
                 <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
                     <i class="fa fa-refresh fa-4x fa-spin"></i>
                 </div>
-                <div id="serviceGraphFlot"></div>
+                <div id="serviceGraphUPlot"></div>
             </div>
 
         </div>

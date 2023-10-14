@@ -5,6 +5,7 @@ namespace App\Model\Entity;
 use App\Lib\Constants;
 use Cake\ORM\Entity;
 use Cake\Utility\Hash;
+use SLAModule\Model\Entity\Sla;
 
 /**
  * Host Entity
@@ -83,6 +84,7 @@ use Cake\Utility\Hash;
  * @property \App\Model\Entity\Customvariable[] $customvariables
  * @property \PrometheusModule\Model\Entity\PrometheusExporter[] $prometheus_exporters
  * @property \PrometheusModule\Model\Entity\PrometheusAlertRule prometheus_alert_rule
+ * @property Sla $sla
  */
 class Host extends Entity {
 
@@ -165,7 +167,9 @@ class Host extends Entity {
         'services'                      => true,
         'customvariables'               => true,
         'prometheus_exporters'          => true,
-        'prometheus_alert_rule'         => true
+        'prometheus_alert_rule'         => true,
+        'sla_id'                        => true,
+        'sla'                           => true
     ];
 
     /**

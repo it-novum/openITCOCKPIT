@@ -70,8 +70,10 @@ class ContactgroupsController extends AppController {
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
             /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+            $MY_RIGHTS = $this->MY_RIGHTS;
         }
         $contactgroups = $ContactgroupsTable->getContactgroupsIndex($ContactgroupsFilter, $PaginateOMat, $MY_RIGHTS);
         foreach ($contactgroups as $index => $contactgroup) {
@@ -115,12 +117,21 @@ class ContactgroupsController extends AppController {
             /** @var $ContactgroupsTable ContactgroupsTable */
             $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $requestData = $this->request->getData();
 
             $contactgroup = $ContactgroupsTable->newEmptyEntity();
             $contactgroup = $ContactgroupsTable->patchEntity($contactgroup, $this->request->getData('Contactgroup'));
             $contactgroup->set('uuid', UUID::v4());
             $contactgroup->get('container')->set('containertype_id', CT_CONTACTGROUP);
+
+            $User = new User($this->getUser());
+
+            $contactgroup = $ContactgroupsTable->createContactgroup($contactgroup, $requestData, $User->getId());
 
             $ContactgroupsTable->save($contactgroup);
             if ($contactgroup->hasErrors()) {
@@ -130,27 +141,7 @@ class ContactgroupsController extends AppController {
                 return;
             } else {
                 //No errors
-                $User = new User($this->getUser());
-                $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($requestData);
                 Cache::clear('permissions');
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'contactgroups',
-                    $contactgroup->get('id'),
-                    OBJECT_CONTACTGROUP,
-                    $contactgroup->get('container')->get('parent_id'),
-                    $User->getId(),
-                    $contactgroup->get('container')->get('name'),
-                    array_merge($requestData, $extDataForChangelog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contactgroup); // REST API ID serialization
@@ -195,6 +186,11 @@ class ContactgroupsController extends AppController {
             //Update contact data
             $User = new User($this->getUser());
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $contactgroupEntity = $ContactgroupsTable->get($id, [
                 'contain' => [
                     'Containers'
@@ -204,6 +200,15 @@ class ContactgroupsController extends AppController {
             $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->getData('Contactgroup'));
             $contactgroupEntity->id = $id;
 
+            $requestData = $this->request->getData();
+
+            $contactgroupEntity = $ContactgroupsTable->updateContactgroup(
+                $contactgroupEntity,
+                $requestData,
+                $contactgroupForChangeLog,
+                $User->getId()
+            );
+
             $ContactgroupsTable->save($contactgroupEntity);
             if ($contactgroupEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -212,27 +217,6 @@ class ContactgroupsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                $requestData = $this->request->getData();
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'contactgroups',
-                    $contactgroupEntity->get('id'),
-                    OBJECT_CONTACTGROUP,
-                    $contactgroupEntity->get('container')->get('parent_id'),
-                    $User->getId(),
-                    $contactgroupEntity->get('container')->get('name'),
-                    array_merge($ContactgroupsTable->resolveDataForChangelog($requestData), $requestData),
-                    array_merge($ContactgroupsTable->resolveDataForChangelog($contactgroupForChangeLog), $contactgroupForChangeLog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contactgroupEntity); // REST API ID serialization
@@ -252,9 +236,14 @@ class ContactgroupsController extends AppController {
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if (!$ContactgroupsTable->existsById($id)) {
             throw new NotFoundException(__('Contact group not found'));
         }
+
+        $ContainersTable->acquireLock();
 
         $contactgroupEntity = $ContactgroupsTable->get($id, [
             'contain' => [
@@ -286,14 +275,12 @@ class ContactgroupsController extends AppController {
             return;
         }
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $container = $ContainersTable->get($contactgroupEntity->get('container')->get('id'), [
             'contain' => [
                 'Contactgroups'
             ]
         ]);
-        if($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)){
+        if ($ContainersTable->allowDelete($container->id, CT_CONTACTGROUP)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 Cache::clear('permissions');
@@ -345,8 +332,13 @@ class ContactgroupsController extends AppController {
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         if ($this->request->is('get')) {
-            $contactgroups = $ContactgroupsTable->getContactgroupsForCopy(func_get_args());
+            $contactgroups = $ContactgroupsTable->getContactgroupsForCopy(func_get_args(), $MY_RIGHTS);
             $this->set('contactgroups', $contactgroups);
             $this->viewBuilder()->setOption('serialize', ['contactgroups']);
             return;
@@ -401,6 +393,8 @@ class ContactgroupsController extends AppController {
                     //This happens, if a user copy multiple contacts, and one run into an validation error
                     //All contacts without validation errors got already saved to the database
                     $newContactgroupEntity = $ContactgroupsTable->get($contactgroupData['Contactgroup']['id']);
+                    $newContactgroupEntity->setAccess('*', false);
+                    $newContactgroupEntity->setAccess(['name', 'description'], true);
                     $newContactgroupEntity = $ContactgroupsTable->patchEntity($newContactgroupEntity, $contactgroupData['Contactgroup']);
                     $newContactgroupData = $newContactgroupEntity->toArray();
                     $action = 'edit';
@@ -440,6 +434,7 @@ class ContactgroupsController extends AppController {
         if ($hasErrors) {
             $this->response = $this->response->withStatus(400);
         }
+        Cache::clear('permissions');
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
     }

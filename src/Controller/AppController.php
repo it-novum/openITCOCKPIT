@@ -310,7 +310,6 @@ class AppController extends Controller {
 
             if (Cache::read($cacheKey, 'permissions') === null) {
                 $permissions = $this->getUserPermissions($user);
-
                 Cache::write($cacheKey, $permissions, 'permissions');
             }
 
@@ -406,6 +405,8 @@ class AppController extends Controller {
     private function getUserPermissions(Identity $identity) {
         $userId = $identity->get('id');
         $usergroupId = $identity->get('usergroup_id');
+
+        //FileDebugger::dump(sprintf('user_id %s uses usergroup_id: %s', $userId, $usergroupId));
         $userPermissions = MyRightsFactory::getUserPermissions($userId, $usergroupId);
         $this->hasRootPrivileges = $userPermissions['hasRootPrivileges'];
         return $userPermissions;

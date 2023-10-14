@@ -67,16 +67,16 @@
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                    id="ContactContainers"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    multiple
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-disabled="data.areContainersChangeable === false"
-                                    ng-model="post.Contact.containers._ids">
+                                id="ContactContainers"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                multiple
+                                ng-options="container.key as container.value for container in containers | filter:{editable:true}"
+                                ng-disabled="data.areContainersChangeable === false"
+                                ng-model="post.Contact.containers._ids">
                             </select>
-                            <div ng-show="post.Contact.containers._ids.length === 0" class="warning-glow">
+                            <div ng-show="post.Contact.containers._ids.length === 0 && requiredContainers.length === 0" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
                             </div>
                             <div ng-repeat="error in errors.containers">
@@ -84,14 +84,46 @@
                             </div>
                         </div>
 
+                        <div class="form-group" ng-show="requiredContainers.length > 0">
+                            <label class="control-label">
+                                <?php echo __('Required containers'); ?>
+                                <?php if ($this->Acl->hasPermission('usedBy', 'contacts')): ?>
+                                    <a ui-sref="ContactsUsedBy({id:id, containerIds: requiredContainers})"
+                                    class="margin-left-5">
+                                        <i class="fa fa-reply-all fa-flip-horizontal text-primary"></i>
+                                        <?php echo __('Used by'); ?>
+                                        <sup>
+                                            <i class="fas fa-info-circle"></i>
+                                        </sup>
+                                    </a>
+                                <?php endif; ?>
+                            </label>
+
+                            <select data-placeholder=" "
+                                    class="form-control"
+                                    chosen="{containers}"
+                                    multiple
+                                    ng-disabled="true"
+                                    ng-options="container.key as container.value +' 🔒' disable when true for container in containers | filter:{editable:false}"
+                                    ng-model="requiredContainers">
+                            </select>
+                            <div class="help-block">
+                                <?= __('This contact is used by other configuration objects. Deleting these containers would result in a corrupted configuration.') ?>
+                            </div>
+                            <div class="help-block">
+
+                            </div>
+                        </div>
+
+
                         <div class="form-group required" ng-class="{'has-error': errors.name}">
                             <label class="control-label">
                                 <?php echo __('Name'); ?>
                             </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Contact.name">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Contact.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -102,9 +134,9 @@
                                 <?php echo __('Description'); ?>
                             </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Contact.description">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Contact.description">
                             <div ng-repeat="error in errors.description">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -115,10 +147,10 @@
                                 <?php echo __('Email'); ?>
                             </label>
                             <input
-                                    class="form-control"
-                                    type="email"
-                                    placeholder="user@example.org"
-                                    ng-model="post.Contact.email">
+                                class="form-control"
+                                type="email"
+                                placeholder="user@example.org"
+                                ng-model="post.Contact.email">
                             <div ng-repeat="error in errors.email">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -129,10 +161,10 @@
                                 <?php echo __('Phone'); ?>
                             </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="0049123456789"
-                                    ng-model="post.Contact.phone">
+                                class="form-control"
+                                type="text"
+                                placeholder="0049123456789"
+                                ng-model="post.Contact.phone">
                             <div ng-repeat="error in errors.phone">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -151,12 +183,12 @@
                                 <?php endif; ?>
                             </label>
                             <select
-                                    id="ContactUser"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="users"
-                                    ng-options="user.key as user.value for user in users"
-                                    ng-model="post.Contact.user_id">
+                                id="ContactUser"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="users"
+                                ng-options="user.key as user.value for user in users"
+                                ng-model="post.Contact.user_id">
                             </select>
                             <div ng-repeat="error in errors.user_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -183,18 +215,19 @@
                                                        ng-if="post.Contact.host_timeperiod_id > 0">
                                                         <?php echo __('Host time period'); ?>
                                                     </a>
-                                                    <span ng-if="!post.Contact.host_timeperiod_id"><?php echo __('Host time period'); ?></span>
+                                                    <span
+                                                        ng-if="!post.Contact.host_timeperiod_id"><?php echo __('Host time period'); ?></span>
                                                 <?php else: ?>
                                                     <?php echo __('Host time period'); ?>
                                                 <?php endif; ?>
                                             </label>
                                             <select
-                                                    id="HostTimeperiodSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="timeperiods"
-                                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                                    ng-model="post.Contact.host_timeperiod_id">
+                                                id="HostTimeperiodSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="timeperiods"
+                                                ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                                ng-model="post.Contact.host_timeperiod_id">
                                             </select>
                                             <div ng-repeat="error in errors.host_timeperiod_id">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -206,13 +239,13 @@
                                                 <?php echo __('Host commands'); ?>
                                             </label>
                                             <select
-                                                    id="HostCommands"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="commands"
-                                                    multiple
-                                                    ng-options="command.key as command.value for command in commands"
-                                                    ng-model="post.Contact.host_commands._ids">
+                                                id="HostCommands"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="commands"
+                                                multiple
+                                                ng-options="command.key as command.value for command in commands"
+                                                ng-model="post.Contact.host_commands._ids">
                                             </select>
                                             <div ng-repeat="error in errors.host_commands">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -306,7 +339,8 @@
                                                            ng-model="post.Contact.<?php echo $hostOption['field']; ?>">
                                                     <label class="custom-control-label"
                                                            for="<?php echo $hostOption['field']; ?>">
-                                                        <span class="badge badge-<?php echo $hostOption['class']; ?> notify-label"><?php echo $hostOption['text']; ?></span>
+                                                        <span
+                                                            class="badge badge-<?php echo $hostOption['class']; ?> notify-label"><?php echo $hostOption['text']; ?></span>
                                                         <i class="checkbox-<?php echo $hostOption['class']; ?>"></i>
                                                     </label>
                                                 </div>
@@ -330,18 +364,19 @@
                                                        ng-if="post.Contact.service_timeperiod_id > 0">
                                                         <?php echo __('Service time period'); ?>
                                                     </a>
-                                                    <span ng-if="!post.Contact.service_timeperiod_id"><?php echo __('Service time period'); ?></span>
+                                                    <span
+                                                        ng-if="!post.Contact.service_timeperiod_id"><?php echo __('Service time period'); ?></span>
                                                 <?php else: ?>
                                                     <?php echo __('Service time period'); ?>
                                                 <?php endif; ?>
                                             </label>
                                             <select
-                                                    id="ServiceTimeperiodSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="timeperiods"
-                                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                                    ng-model="post.Contact.service_timeperiod_id">
+                                                id="ServiceTimeperiodSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="timeperiods"
+                                                ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                                ng-model="post.Contact.service_timeperiod_id">
                                             </select>
                                             <div ng-repeat="error in errors.service_timeperiod_id">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -354,13 +389,13 @@
                                                 <?php echo __('Service commands'); ?>
                                             </label>
                                             <select
-                                                    id="ServiceCommands"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="commands"
-                                                    multiple
-                                                    ng-options="command.key as command.value for command in commands"
-                                                    ng-model="post.Contact.service_commands._ids">
+                                                id="ServiceCommands"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="commands"
+                                                multiple
+                                                ng-options="command.key as command.value for command in commands"
+                                                ng-model="post.Contact.service_commands._ids">
                                             </select>
                                             <div ng-repeat="error in errors.service_commands">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -457,7 +492,8 @@
                                                            ng-model="post.Contact.<?php echo $serviceOption['field']; ?>">
                                                     <label class="custom-control-label"
                                                            for="<?php echo $serviceOption['field']; ?>">
-                                                        <span class="badge badge-<?php echo $serviceOption['class']; ?> notify-label"><?php echo $serviceOption['text']; ?></span>
+                                                        <span
+                                                            class="badge badge-<?php echo $serviceOption['class']; ?> notify-label"><?php echo $serviceOption['text']; ?></span>
                                                         <i class="checkbox-<?php echo $serviceOption['class']; ?>"></i>
                                                     </label>
                                                 </div>

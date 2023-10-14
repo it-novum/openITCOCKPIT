@@ -213,8 +213,8 @@
                                 <th class="no-sort sorting_disabled width-15">
                                     <i class="fa fa-check-square"></i>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Instantreport.name')">
-                                    <i class="fa" ng-class="getSortClass('Instantreport.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('Instantreports.name')">
+                                    <i class="fa" ng-class="getSortClass('Instantreports.name')"></i>
                                     <?php echo __('Name'); ?>
                                 </th>
                                 <th class="no-sort">
@@ -223,16 +223,16 @@
                                 <th class="no-sort">
                                     <?php echo __('Evaluation'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Timeperiod.name')">
-                                    <i class="fa" ng-class="getSortClass('Timeperiod.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('Timeperiods.name')">
+                                    <i class="fa" ng-class="getSortClass('Timeperiods.name')"></i>
                                     <?php echo __('Time period'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Instantreport.summary')">
-                                    <i class="fa" ng-class="getSortClass('Instantreport.summary')"></i>
+                                <th class="no-sort" ng-click="orderBy('Instantreports.summary')">
+                                    <i class="fa" ng-class="getSortClass('Instantreports.summary')"></i>
                                     <?php echo __('Summary display'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Instantreport.downtimes')">
-                                    <i class="fa" ng-class="getSortClass('Instantreport.downtimes')"></i>
+                                <th class="no-sort" ng-click="orderBy('Instantreports.downtimes')">
+                                    <i class="fa" ng-class="getSortClass('Instantreports.downtimes')"></i>
                                     <?php echo __('Consider downtimes'); ?>
                                 </th>
                                 <th class="no-sort">
@@ -289,8 +289,8 @@
                                         <?php echo __('Services'); ?>
                                     </span>
                                 </td>
-                                <td>
-                                    {{ instantreport.Instantreport.timeperiod.name }}
+                                <td class="text-center">
+                                    {{ instantreport.Timeperiod.name }}
                                 </td>
                                 <td class="text-center">
                                     <label class="badge badge-success"

@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use App\itnovum\openITCOCKPIT\Monitoring\Naemon\IllegalCharacters;
 use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -231,7 +232,9 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
         $DbBackend = new \itnovum\openITCOCKPIT\Core\DbBackend();
 
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
-        $configToExport = [];
+        $configToExport = [
+            'illegal_object_name_chars' => IllegalCharacters::$illegal_object_name_chars
+        ];
 
         $configToExport['STATUSENGINE_VERSION'] = 3;
         if($DbBackend->isNdoUtils()){
@@ -250,8 +253,10 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
         }
 
         $statusenginePath = 'naemon';
+        $configToExport['monitoring_engine'] = 'naemon';
         if ($MonitoringEngine->isNagios()) {
             $statusenginePath = 'nagios';
+            $configToExport['monitoring_engine'] = 'nagios';
         }
 
         $configToExport['statusengine_path'] = $statusenginePath;

@@ -52,11 +52,11 @@
         </td>
         <td class="padding-5">
             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                <a ui-sref="HostsBrowser({id: host.Hosts.id})">
-                    {{host.Hosts.name}}
+                <a ui-sref="HostsBrowser({id: host.id})">
+                    {{host.name}}
                 </a>
             <?php else: ?>
-                {{host.Hosts.name}}
+                {{host.name}}
             <?php endif; ?>
         </td>
     </tr>

@@ -111,7 +111,7 @@
                                 <input
                                     id="SystemfailureFromDate"
                                     class="form-control col-lg-2"
-                                    type="text"
+                                    type="date"
                                     placeholder="DD.MM.YYYY"
                                     ng-model="post.Systemfailure.from_date">
                                 <div class="input-group-append input-group-prepend">
@@ -119,9 +119,10 @@
                                 </div>
                                 <input
                                     class="form-control col"
-                                    type="text"
+                                    type="time"
                                     placeholder="hh:mm"
-                                    ng-model="post.Systemfailure.from_time">
+                                    ng-model="post.Systemfailure.from_time"
+                                    ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                                 <div ng-repeat="error in errors.start_time">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -141,7 +142,7 @@
                                 <input
                                     id="SystemfailureToDate"
                                     class="form-control col-lg-2"
-                                    type="text"
+                                    type="date"
                                     placeholder="DD.MM.YYYY"
                                     ng-model="post.Systemfailure.to_date">
                                 <div class="input-group-append input-group-prepend">
@@ -149,9 +150,10 @@
                                 </div>
                                 <input
                                     class="form-control col"
-                                    type="text"
+                                    type="time"
                                     placeholder="hh:mm"
-                                    ng-model="post.Systemfailure.to_time">
+                                    ng-model="post.Systemfailure.to_time"
+                                    ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                                 <div ng-repeat="error in errors.end_time">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>

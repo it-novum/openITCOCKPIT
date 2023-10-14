@@ -97,13 +97,21 @@ class ExportsController extends AppController {
             }
         }
 
+        $isGearmanWorkerRunning = false;
+        exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
+        if (sizeof($output) > 0) {
+            $isGearmanWorkerRunning = true;
+        }
+
         $this->set('gearmanReachable', $gearmanReachable);
+        $this->set('isGearmanWorkerRunning', $isGearmanWorkerRunning);
         $this->set('exportRunning', $exportRunning);
         $this->set('tasks', $tasks);
         $this->set('useSingleInstanceSync', $useSingleInstanceSync);
         $this->set('satellites', $satellites);
         $this->viewBuilder()->setOption('serialize', [
             'gearmanReachable',
+            'isGearmanWorkerRunning',
             'exportRunning',
             'tasks',
             'useSingleInstanceSync',
@@ -213,7 +221,7 @@ class ExportsController extends AppController {
             'export',
             'exports',
             1,
-            OBJECT_HOST,
+            OBJECT_EXPORT,
             ROOT_CONTAINER,
             $User->getId(),
             __('Refresh of monitoring configuration started'),

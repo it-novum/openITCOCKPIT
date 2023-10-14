@@ -136,7 +136,16 @@ class AclDependencies {
             ->allow('Angular', 'popover_graph')
             ->allow('Angular', 'thresholds')
             ->allow('Angular', 'mass_delete_acknowledgements')
-            ->allow('Angular', 'message_of_the_day');
+            ->allow('Angular', 'message_of_the_day')
+            ->allow('Angular', 'regexHelperTooltip')
+            ->allow('Angular', 'ackTooltip')
+            ->allow('Angular', 'downtimeTooltip')
+            ->allow('Angular', 'wizardFilter')
+            ->allow('Angular', 'wizardInterfaceFilter')
+            ->allow('Angular', 'columns_config_import')
+            ->allow('Angular', 'columns_config_export')
+            ->allow('Angular', 'autoRefresher')
+            ->allow('Angular', 'changeLogEntry');
 
         $this
             ->allow('Agentconnector', 'register_agent')
@@ -218,7 +227,9 @@ class AclDependencies {
             ->allow('Dashboards', 'servicesPiechartWidget')
             ->allow('Dashboards', 'servicesPiechart180Widget')
             ->allow('Dashboards', 'hostsStatusListWidget')
+            ->allow('Dashboards', 'hostsStatusListExtendedWidget')
             ->allow('Dashboards', 'servicesStatusListWidget')
+            ->allow('Dashboards', 'servicesStatusListExtendedWidget')
             ->allow('Dashboards', 'saveTabRotateInterval')
             ->allow('Dashboards', 'parentOutagesWidget')
             ->allow('Dashboards', 'hostsDowntimeWidget')
@@ -231,7 +242,19 @@ class AclDependencies {
             ->allow('Dashboards', 'serviceStatusOverviewWidget')
             ->allow('Dashboards', 'websiteWidget')
             ->allow('Dashboards', 'todayWidget')
-            ->allow('Dashboards', 'calendarWidget');
+            ->allow('Dashboards', 'getPerformanceDataMetrics')
+            ->allow('Dashboards', 'tacticalOverviewWidget')
+            ->allow('Dashboards', 'tacticalOverviewHostsWidget')
+            ->allow('Dashboards', 'tacticalOverviewServicesWidget')
+            ->allow('Dashboards', 'calendarWidget')
+            ->allow('Dashboards', 'desktopWidget');
+
+        $this
+            ->allow('FilterBookmarks', 'index')
+            ->allow('FilterBookmarks', 'add')
+            ->allow('FilterBookmarks', 'edit')
+            ->allow('FilterBookmarks', 'delete')
+            ->allow('FilterBookmarks', 'directive');
 
         $this
             ->allow('Hosts', 'view')
@@ -250,7 +273,8 @@ class AclDependencies {
         $this
             ->allow('Users', 'login')
             ->allow('Users', 'logout')
-            ->allow('Users', 'getLocaleOptions');
+            ->allow('Users', 'getLocaleOptions')
+            ->allow('Users', 'getUserPermissions');
 
         ///////////////////////////////
         //    Add dependencies       //
@@ -264,10 +288,13 @@ class AclDependencies {
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'loadHostsByString')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'install')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'autotls')
+            ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'satellite_response')
             ->dependency('Agentconnector', 'wizard', 'Agentconnector', 'select_agent')
             ->dependency('Agentconnector', 'overview', 'Agentconnector', 'pull')
             ->dependency('Agentconnector', 'overview', 'Agentconnector', 'push')
-            ->dependency('Agentconnector', 'delete', 'Agentconnector', 'delete_push_agent');
+            ->dependency('Agentconnector', 'overview', 'Agentconnector', 'push_satellite')
+            ->dependency('Agentconnector', 'delete', 'Agentconnector', 'delete_push_agent')
+            ->dependency('Agentconnector', 'delete', 'Agentconnector', 'delete_satellite_push_agent');
 
         $this
             ->dependency('Automaps', 'add', 'Automaps', 'getMatchingHostAndServices')
@@ -290,6 +317,8 @@ class AclDependencies {
         $this
             ->dependency('Commands', 'index', 'Commands', 'view');
 
+        $this
+            ->dependency('Changelogs', 'index', 'Changelogs', 'entity');
 
         $this
             ->dependency('Timeperiods', 'index', 'Timeperiods', 'view')
@@ -347,15 +376,20 @@ class AclDependencies {
             ->dependency('Hostescalations', 'index', 'Hostescalations', 'view')
             ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadContainers')
             ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadElementsByContainerId')
+            ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadExcludedHostgroupsByContainerIdAndHostIds')
+            ->dependency('Hostescalations', 'add', 'Hostescalations', 'loadExcludedHostsByContainerIdAndHostgroupIds')
             ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadContainers')
-            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadElementsByContainerId');
+            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadElementsByContainerId')
+            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadExcludedHostgroupsByContainerIdAndHostIds')
+            ->dependency('Hostescalations', 'edit', 'Hostescalations', 'loadExcludedHostsByContainerIdAndHostgroupIds');
 
 
         $this
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'listToPdf')
+            ->dependency('Hostgroups', 'index', 'Hostgroups', 'listToCsv')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'view')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByString')
-            ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHosgroupsByContainerId')
+            ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByContainerId')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosts')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosttemplates')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadContainers')
@@ -372,6 +406,7 @@ class AclDependencies {
 
         $this
             ->dependency('Hosts', 'index', 'Hosts', 'listToPdf')
+            ->dependency('Hosts', 'index', 'Hosts', 'listToCsv')
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostsByContainerId')
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostsByString')
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostById')
@@ -379,6 +414,7 @@ class AclDependencies {
             ->dependency('Hosts', 'deactivate', 'Hosts', 'mass_deactivate')
             ->dependency('Hosts', 'browser', 'Hosts', 'getGrafanaIframeUrlForDatepicker')
             ->dependency('Hosts', 'browser', 'Hosts', 'loadAdditionalInformation')
+            ->dependency('Hosts', 'browser', 'Hosts', 'loadSlaInformation')
             ->dependency('Hosts', 'add', 'Hosts', 'loadContainers')
             ->dependency('Hosts', 'add', 'Hosts', 'loadCommands')
             ->dependency('Hosts', 'add', 'Hosts', 'loadElementsByContainerId')
@@ -433,19 +469,24 @@ class AclDependencies {
             ->dependency('Servicedependencies', 'add', 'Servicedependencies', 'loadContainers')
             ->dependency('Servicedependencies', 'add', 'Servicedependencies', 'loadElementsByContainerId')
             ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadContainers')
-            ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadElementsByContianerId');
+            ->dependency('Servicedependencies', 'edit', 'Servicedependencies', 'loadElementsByContainerId');
 
 
         $this
             ->dependency('Serviceescalations', 'index', 'Serviceescalations', 'view')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadContainers')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadElementsByContainerId')
+            ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
+            ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds')
             ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadContainers')
-            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadElementsByContainerId');
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadElementsByContainerId')
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds');
 
 
         $this
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'listToPdf')
+            ->dependency('Servicegroups', 'index', 'Servicegroups', 'listToCsv')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'view')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByContainerId')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByString')
@@ -464,6 +505,7 @@ class AclDependencies {
         $this
             ->dependency('Services', 'deactivate', 'Services', 'mass_deactivate')
             ->dependency('Services', 'index', 'Services', 'listToPdf')
+            ->dependency('Services', 'index', 'Services', 'listToCsv')
             ->dependency('Services', 'index', 'Services', 'view')
             ->dependency('Services', 'index', 'Services', 'loadServicesByContainerId')
             ->dependency('Services', 'index', 'Services', 'loadServicesByString')
@@ -477,7 +519,9 @@ class AclDependencies {
             ->dependency('Services', 'edit', 'Services', 'loadCommands')
             ->dependency('Services', 'edit', 'Services', 'loadCommandArguments')
             ->dependency('Services', 'edit', 'Services', 'loadEventhandlerCommandArguments')
-            ->dependency('Services', 'serviceList', 'Services', 'deleted');
+            ->dependency('Services', 'serviceList', 'Services', 'deleted')
+            ->dependency('Services', 'browser', 'Services', 'loadCustomalerts')
+            ->dependency('Services', 'browser', 'Services', 'loadSlaInformation');
 
 
         $this
@@ -517,15 +561,19 @@ class AclDependencies {
             ->dependency('Users', 'index', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'addFromLdap')
             ->dependency('Users', 'add', 'Users', 'loadLdapUserByString')
+            ->dependency('Users', 'add', 'Users', 'loadLdapUserDetails')
             ->dependency('Users', 'add', 'Users', 'loadDateformats')
             ->dependency('Users', 'add', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'loadContainerRoles')
             ->dependency('Users', 'add', 'Users', 'loadContainerPermissions')
+            ->dependency('Users', 'add', 'Users', 'loadContainersForAngular')
             ->dependency('Users', 'edit', 'Users', 'resetPassword')
             ->dependency('Users', 'edit', 'Users', 'loadDateformats')
             ->dependency('Users', 'edit', 'Users', 'loadUsergroups')
             ->dependency('Users', 'edit', 'Users', 'loadContainerRoles')
-            ->dependency('Users', 'edit', 'Users', 'loadContainerPermissions');
+            ->dependency('Users', 'edit', 'Users', 'loadLdapUserDetails')
+            ->dependency('Users', 'edit', 'Users', 'loadContainerPermissions')
+            ->dependency('Users', 'edit', 'Users', 'loadContainersForAngular');
 
 
         $this
@@ -561,8 +609,14 @@ class AclDependencies {
 
 
         $this
-            ->dependency('Usergroups', 'index', 'Usergroups', 'view');
+            ->dependency('Usergroups', 'index', 'Usergroups', 'view')
+            ->dependency('Usergroups', 'add', 'Usergroups', 'loadLdapgroupsForAngular')
+            ->dependency('Usergroups', 'edit', 'Usergroups', 'loadLdapgroupsForAngular');
 
+
+        $this
+            ->dependency('Usercontainerroles', 'add', 'Usercontainerroles', 'loadLdapgroupsForAngular')
+            ->dependency('Usercontainerroles', 'edit', 'Usercontainerroles', 'loadLdapgroupsForAngular');
 
         $this
             ->dependency('Backups', 'index', 'Backups', 'checkBackupFinished');
@@ -598,19 +652,22 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'PhpFpmOitc');
 
         $this
-            ->dependency('Wizards', 'index', 'Wizards', 'mysqlserver')
-            ->dependency('Wizards', 'index', 'Wizards', 'linuxserverssh')
-            ->dependency('Wizards', 'index', 'Wizards', 'agent')
-            ->dependency('Wizards', 'agent', 'Wizards', 'wizardHostConfiguration')
-            ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular')
-            ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadElementsByContainerId')
-            ->dependency('Wizards', 'wizardHostConfiguration', 'Wizards', 'loadHostsByString')
-            ->dependency('Wizards', 'linuxserverssh', 'Wizards', 'loadServicetemplatesByWizardType');
+            ->dependency('Services', 'add', 'Wizards', 'mysqlserver')
+            ->dependency('Services', 'add', 'Wizards', 'linuxserverssh')
+            ->dependency('Services', 'add', 'Wizards', 'agent')
+            ->dependency('Services', 'add', 'Wizards', 'wizardHostConfiguration')
+            ->dependency('Services', 'add', 'Wizards', 'validateInputFromAngular')
+            ->dependency('Services', 'add', 'Wizards', 'loadElementsByContainerId')
+            ->dependency('Services', 'add', 'Wizards', 'loadHostsByString')
+            ->dependency('Services', 'add', 'Wizards', 'loadServicetemplatesByWizardType');
 
 
         $this
             ->dependency('MessagesOtd', 'add', 'MessagesOtd', 'notifyUsersViaMail')
             ->dependency('MessagesOtd', 'edit', 'MessagesOtd', 'notifyUsersViaMail');
+
+        $this
+            ->dependency('Metrics', 'index', 'Metrics', 'info');
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {
@@ -623,7 +680,6 @@ class AclDependencies {
                 $this->dependencies[$pluginName] = $PluginAclDependencies->getDependencies();
             }
         }
-
     }
 
     /**
@@ -748,12 +804,23 @@ class AclDependencies {
                                 //    $dependentPluginAction
                                 //));
 
+                                // Action exists in plugin ?
                                 if (isset($acos[$pluginName][$pluginController]['actions'][$pluginAction]['id'])) {
                                     if (isset($acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'])) {
                                         $acoId = $acos[$pluginName][$pluginController]['actions'][$pluginAction]['id'];
                                         $dependentAcoId = $acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'];
 
                                         $dependencyTree[$acoId][] = $dependentAcoId;
+                                    }
+                                } else {
+                                    // Action exists in core ?
+                                    if (isset($acos[$pluginController]['actions'][$pluginAction]['id'])) {
+                                        if (isset($acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'])) {
+                                            $acoId = $acos[$pluginController]['actions'][$pluginAction]['id'];
+                                            $dependentAcoId = $acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'];
+                                            $dependencyTree[$acoId][] = $dependentAcoId;
+
+                                        }
                                     }
                                 }
                             }

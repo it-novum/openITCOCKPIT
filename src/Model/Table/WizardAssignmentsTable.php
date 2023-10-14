@@ -290,11 +290,18 @@ class WizardAssignmentsTable extends Table {
                 'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
             ],
-            'vmware-horizon'    => [
+            'vmware-horizon'         => [
                 'type_id'     => 'vmware-horizon',
                 'title'       => __('VMware Horizon'),
                 'description' => __('Monitor your VMware Horizon Virtual Desktop Infrastructure'),
                 'image'       => 'vmware-horizon.png',
+                'category'    => ['virtualization', 'cloud'],
+            ],
+            'vmware-snapshot'        => [
+                'type_id'     => 'vmware-snapshot',
+                'title'       => __('VMware Snapshot'),
+                'description' => __('Monitor your VMware snapshots to avoid performance issues'),
+                'image'       => 'VMware_logo.svg',
                 'category'    => ['virtualization', 'cloud'],
             ],
             'db2'                    => [

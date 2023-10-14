@@ -49,34 +49,57 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     </li>
 </ol>
 
+<?php if (IS_CONTAINER === false): ?>
+    <!-- openITCOCKPIT is installed via apt dnf or git -->
+    <?php echo $this->element('repository_checker'); ?>
 
-<?php echo $this->element('repository_checker'); ?>
+    <?php if ($LsbRelease->getCodename() === 'bionic'): ?>
+        <div class="alert alert-danger alert-block">
+            <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
+            <h4 class="alert-heading">
+                <i class="fa fa-warning"></i>
+                <?php echo __('Ubuntu Bionic 18.04 is end of life soon!'); ?>
+            </h4>
+            <?php echo __('Official end of life of Ubuntu Bionic scheduled for April 2023.'); ?>
+            <?php echo __('Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Ubuntu Bionic. Please update to Ubuntu Focal to receive further updates.'); ?>
+            <br/>
+            <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        </div>
+    <?php endif; ?>
 
-<?php if ($LsbRelease->getCodename() === 'trusty'): ?>
-    <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
-        <h4 class="alert-heading">
-            <i class="fa fa-warning"></i>
-            <?php echo __('Ubuntu Trusty 14.04 end of life!'); ?>
-        </h4>
-        <?php echo __('Official end of life of Ubuntu Trusty scheduled for April 2019.'); ?>
-        <?php echo __('Therefore openITCOCKPIT 3.5 will be the last release for Ubuntu Trusty. Please update to Ubuntu Xenial to receive further updates.'); ?>
-        <br/>
-        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
-    </div>
-<?php endif; ?>
+    <?php if ($LsbRelease->getCodename() === 'buster'): ?>
+        <div class="alert alert-danger alert-block">
+            <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
+            <h4 class="alert-heading">
+                <i class="fa fa-warning"></i>
+                <?php echo __('Debian Buster 10 end of life!'); ?>
+            </h4>
+            <?php echo __('Debian Buster is not supported by the Debian security team anymore!'); ?>
+            <?php echo __('Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Debian Buster. Please update to Debian Bullseye to receive further updates.'); ?>
+            <br/>
+            <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        </div>
+    <?php endif; ?>
+<?php else: ?>
+    <!-- openITCOCKPIT is running inside a Container like Docker -->
+    <div class="alert alert-primary border-faded">
+        <div class="d-flex align-items-center">
+            <div class="alert-icon">
+                    <span class="icon-stack icon-stack-md">
+                        <i class="base-7 icon-stack-3x color-info-600"></i>
+                        <i class="fas fa-info icon-stack-1x text-white"></i>
+                    </span>
+            </div>
+            <div class="flex-1 color-info-600">
+                    <span class="h5 color-info-600">
+                        <?= __('Containerized installation'); ?>
+                    </span>
+                <br>
+                <?= __('Your installation of {0} is running in a container based environment like Docker.', h($systemname)) ?>
+                <?= __('Therefore all available module are installed by default.'); ?>
+            </div>
 
-<?php if ($LsbRelease->getCodename() === 'jessie'): ?>
-    <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
-        <h4 class="alert-heading">
-            <i class="fa fa-warning"></i>
-            <?php echo __('Debian Jessie 8 end of life!'); ?>
-        </h4>
-        <?php echo __('Debian Jessie is not supported by the Debian security team anymore!'); ?>
-        <?php echo __('Therefore openITCOCKPIT 3.5 will be the last release for Debian Jessie. Please update to Debian Stretch to receive further updates.'); ?>
-        <br/>
-        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        </div>
     </div>
 <?php endif; ?>
 
@@ -312,6 +335,33 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                 </button>
             </div>
             <div class="modal-body">
+                <div class="alert alert-primary">
+                    <div class="d-flex flex-start w-100">
+                        <div class="mr-2 hidden-md-down">
+                            <span class="icon-stack icon-stack-lg">
+                                <i class="base base-6 icon-stack-3x opacity-100 color-primary-500"></i>
+                                <i class="base base-10 icon-stack-2x opacity-100 color-primary-300 fa-flip-vertical"></i>
+                                <i class="ni ni-info icon-stack-1x opacity-100 color-white"></i>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-fill">
+                            <div class="flex-fill">
+                                <span class="h5">
+                                    <?= __('Blog'); ?>
+                                </span>
+                                <p>
+                                    <?= __('News about IT monitoring from the experts behind openITCOCKPIT '); ?>
+                                </p>
+                                <p class="m-0">
+                                    <?= __('Visit our blog for more details:'); ?>
+                                    <a href="https://openitcockpit.io/blog/" target="_blank">
+                                        https://openitcockpit.io/blog/
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="container">
                     <div class="row">
                         <div class="col-12">

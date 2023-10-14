@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fas fa-magic"></i> <?php echo __('Wizards'); ?>
+        <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Wizards'); ?>
     </li>
     <li class="breadcrumb-item">
         <i class="fa fa-link"></i> <?php echo __('Assignments'); ?>

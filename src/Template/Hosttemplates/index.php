@@ -191,6 +191,13 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'hosttemplate', objectId: hosttemplate.Hosttemplate.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('usedBy', 'hosttemplates')): ?>
                                                 <a class="dropdown-item"
                                                    ui-sref="HosttemplatesUsedBy({id:hosttemplate.Hosttemplate.id})">
@@ -204,6 +211,14 @@
                                                    ui-sref="DocumentationsView({uuid:hosttemplate.Hosttemplate.uuid, type:'hosttemplate'})">
                                                     <i class="fa fa-book"></i>
                                                     <?php echo __('Documentation'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'hosttemplates')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="HosttemplatesCopy({ids: hosttemplate.Hosttemplate.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosttemplates')): ?>

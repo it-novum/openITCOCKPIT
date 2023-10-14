@@ -40,10 +40,12 @@ class ArosAcosTable extends Table {
         $this->setPrimaryKey('id');
 
         $this->belongsTo('Aros', [
+            'className'  => 'Acl.Aros',
             'foreignKey' => 'aro_id',
             'joinType'   => 'INNER',
         ]);
         $this->belongsTo('Acos', [
+            'className'  => 'Acl.Acos',
             'foreignKey' => 'aco_id',
             'joinType'   => 'INNER',
         ]);

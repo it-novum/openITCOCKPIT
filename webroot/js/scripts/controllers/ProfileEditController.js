@@ -94,7 +94,7 @@ angular.module('openITCOCKPIT')
             $('.profileImg-dropzone').dropzone({
                 method: 'post',
                 maxFilesize: $scope.maxUploadLimit.value, //MB
-                acceptedFiles: 'image/*', //mimetypes
+                acceptedFiles: 'image/gif,image/jpeg,image/png', //mimetypes
                 paramName: "Picture",
                 headers: {
                     'X-CSRF-TOKEN': $rootScope._csrfToken
@@ -154,6 +154,8 @@ angular.module('openITCOCKPIT')
                 .then(function(result){
                     $scope.newApiKey = result.data.apikey;
                     $scope.post.Apikey.apikey = $scope.newApiKey;
+
+                    $scope.currentQrCode = result.data.qrcode;
                 });
         };
 

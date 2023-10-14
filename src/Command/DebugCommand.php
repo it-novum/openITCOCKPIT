@@ -33,7 +33,6 @@ use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 
 /**
  * Dump command.
@@ -64,9 +63,10 @@ class DebugCommand extends Command {
         $parser = parent::buildOptionParser($parser);
 
         $parser->addOptions([
-            'tail'  => ['boolean' => true, 'help' => __d('oitc_console', 'Tail and parse monitoring logfile')],
-            'tailf' => ['short' => 't', 'boolean' => true, 'help' => __d('oitc_console', 'Tailf and parse monitoring logfile')],
-            'stdin' => ['short' => 's', 'boolean' => true, 'help' => __d('oitc_console', 'Read and translate from stdin. Example: cat file.cfg | oitc debug -s')],
+            'tail'      => ['boolean' => true, 'help' => __d('oitc_console', 'Tail and parse monitoring logfile')],
+            'tailf'     => ['short' => 't', 'boolean' => true, 'help' => __d('oitc_console', 'Tailf and parse monitoring logfile')],
+            'stdin'     => ['short' => 's', 'boolean' => true, 'help' => __d('oitc_console', 'Read and translate from stdin. Example: cat file.cfg | oitc debug -s')],
+            'timestamp' => ['boolean' => true, 'help' => __d('oitc_console', 'Replace timestamps in output - only for --stdin')],
         ]);
 
         return $parser;
@@ -91,7 +91,8 @@ class DebugCommand extends Command {
 
         if ($args->getOption('stdin')) {
             $this->DebugConfigNagios->setup($this->conf);
-            $this->DebugConfigNagios->translateStdin();
+            $replaceTimestamps = $args->getOption('timestamp') === true;
+            $this->DebugConfigNagios->translateStdin($replaceTimestamps);
             exit(0);
         }
         if ($args->getOption('debug')) {
@@ -112,19 +113,27 @@ class DebugCommand extends Command {
     private function monitoringMenu() {
         $this->io->out(__d('oitc_console', '[T]ail and parse monitoring log file'));
         $this->io->out(__d('oitc_console', '[TF] Tail -f and parse monitoring log file'));
-        $this->io->out(__d('oitc_console', '[H] Debug host configuratgion files'));
+        $this->io->out(__d('oitc_console', '[H] Debug host configuration files'));
+        $this->io->out(__d('oitc_console', '[HG] Debug host group configuration files'));
         $this->io->out(__d('oitc_console', '[HT] Debug host template configuration files'));
         $this->io->out(__d('oitc_console', '[S] Debug service configuration files'));
+        $this->io->out(__d('oitc_console', '[SG] Debug service group configuration files'));
         $this->io->out(__d('oitc_console', '[ST] Debug service template configuration files'));
-        $this->io->out(__d('oitc_console', '[TP] Debug timeperiod configuration files'));
+        $this->io->out(__d('oitc_console', '[TP] Debug time period configuration files'));
         $this->io->out(__d('oitc_console', '[CM] Debug command configuration files'));
         $this->io->out(__d('oitc_console', '[C] Debug contact configuration files'));
         $this->io->out(__d('oitc_console', '[CG] Debug contact group configuration files'));
         $this->io->out(__d('oitc_console', '[HE] Debug host escalation configuration files'));
+        $this->io->out(__d('oitc_console', '[SE] Debug service escalation configuration files'));
+        $this->io->out(__d('oitc_console', '[HD] Debug host dependency configuration files'));
+        $this->io->out(__d('oitc_console', '[SD] Debug service dependency configuration files'));
         $this->io->out(__d('oitc_console', '[UUID] Search object by UUID'));
         $this->io->out(__d('oitc_console', '[Q]uit'));
 
-        $menuSelection = strtoupper($this->io->askChoice(__d('oitc_console', 'What would you like to do?'), ['T', 'TF', 'H', 'HT', 'S', 'ST', 'TP', 'CM', 'C', 'CG', 'HE', 'UUID', 'Q']));
+        $menuSelection = strtoupper($this->io->askChoice(
+            __d('oitc_console',
+                'What would you like to do?'),
+            ['T', 'TF', 'H', 'HG', 'HT', 'S', 'SG', 'ST', 'TP', 'CM', 'C', 'CG', 'HE', 'SE', 'HD', 'SD', 'UUID', 'Q']));
         $this->DebugConfigNagios->setup($this->conf);
         switch ($menuSelection) {
             case 'T':
@@ -136,11 +145,17 @@ class DebugCommand extends Command {
             case 'H':
                 $this->DebugConfigNagios->debug('Hosts', 'hosts');
                 break;
+            case 'HG':
+                $this->DebugConfigNagios->debug('Hostgroups', 'hostgroups');
+                break;
             case 'HT':
                 $this->DebugConfigNagios->debug('Hosttemplates', 'hosttemplates');
                 break;
             case 'S':
                 $this->DebugConfigNagios->debug('Services', 'services');
+                break;
+            case 'SG':
+                $this->DebugConfigNagios->debug('Servicegroups', 'servicegroups');
                 break;
             case 'ST':
                 $this->DebugConfigNagios->debug('Servicetemplates', 'servicetemplates');
@@ -160,6 +175,15 @@ class DebugCommand extends Command {
             case 'HE':
                 $this->DebugConfigNagios->debug('Hostescalations', 'hostescalations');
                 break;
+            case 'SE':
+                $this->DebugConfigNagios->debug('Serviceescalations', 'serviceescalations');
+                break;
+            case 'HD':
+                $this->DebugConfigNagios->debug('Hostdependencies', 'hostdependencies');
+                break;
+            case 'SD':
+                $this->DebugConfigNagios->debug('Servicedependencies', 'servicedependencies');
+                break;
             case 'UUID':
                 $this->DebugConfigNagios->debugByUuid();
                 break;
@@ -178,5 +202,4 @@ class DebugCommand extends Command {
         $this->io->out(__d('oitc_console', 'Thanks for using me, bye'));
         exit();
     }
-
 }

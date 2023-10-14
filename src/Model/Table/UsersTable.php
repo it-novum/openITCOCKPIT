@@ -1,4 +1,27 @@
 <?php
+// Copyright (C) <2019>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
 
 namespace App\Model\Table;
 
@@ -6,6 +29,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\User;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
+use Cake\Database\Query;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
@@ -82,11 +106,12 @@ class UsersTable extends Table {
         ]);
 
         $this->belongsToMany('Usercontainerroles', [
+            'through'          => 'UsercontainerrolesMemberships',
             'className'        => 'Usercontainerroles',
             'joinTable'        => 'users_to_usercontainerroles',
             'foreignKey'       => 'user_id',
             'targetForeignKey' => 'usercontainerrole_id',
-            'saveStrategy'     => 'replace'
+            //'saveStrategy'     => 'replace'
         ]);
     }
 
@@ -102,23 +127,16 @@ class UsersTable extends Table {
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->allowEmptyString('containers', __('You need to select at least one container or container role.'), function ($context) {
-                return $this->validateHasContainerOrContainerUserRolePermissions(null, $context);
-            })
             ->add('containers', 'custom', [
                 'rule'    => [$this, 'validateHasContainerOrContainerUserRolePermissions'],
                 'message' => __('You need to select at least one container or container role.')
             ]);
 
         $validator
-            ->allowEmptyString('usercontainerroles', __('You need to select at least one container or container role.'), function ($context) {
-                return $this->validateHasContainerOrContainerUserRolePermissions(null, $context);
-            })
             ->add('usercontainerroles', 'custom', [
                 'rule'    => [$this, 'validateHasContainerOrContainerUserRolePermissions'],
                 'message' => __('You need to select at least one container or container role.')
             ]);
-
         $validator
             ->integer('usergroup_id')
             ->requirePresence('usergroup_id', 'create')
@@ -254,29 +272,39 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param null $value
+     * @param mixed $value
      * @param array $context
      * @return bool
+     *
+     * Custom validation rule for containers and or user container roles
      */
     public function validateHasContainerOrContainerUserRolePermissions($value, $context) {
-        if (isset($context['data']['containers']) && is_array($context['data']['containers'])) {
-            if (!empty($context['data']['containers']) && sizeof($context['data']['containers']) > 0) {
+        // return !empty($context['data']['containers']) || !empty($context['data']['usercontainerroles']['_ids']) || !empty($context['data']['usercontainerroles_ldap']['_ids']);
 
-                //User has own containers
-                return true;
-            }
+        // ITC-3073
+        if (!empty($context['data']['containers'])) {
+            return true;
         }
 
-        //Has the user an user container role assignment?
-        if (isset($context['data']['usercontainerroles']['_ids']) && is_array($context['data']['usercontainerroles']['_ids'])) {
-            if (!empty($context['data']['usercontainerroles']['_ids']) && sizeof($context['data']['usercontainerroles']['_ids']) > 0) {
-
-                //User has a user container role assignment
-                return true;
-            }
+        // Validation of POST request data (openITCOCKPIT Frontend)
+        if (!empty($context['data']['usercontainerroles']['_ids']) || !empty($context['data']['usercontainerroles_ldap']['_ids'])) {
+            return true;
         }
 
-        //No own containers, no user container role
+        // Validation of POST request data (openITCOCKPIT Frontend)
+        // _ids is set - so it is an empty array
+        // When it is a POST request from the openITCOCKPIT frontend we should never reach this code
+        if (isset($context['data']['usercontainerroles']['_ids']) || isset($context['data']['usercontainerroles_ldap']['_ids'])) {
+            return false;
+        }
+
+        // Validate LdapGroupImportCommand data
+        // The usercontainerroles array holds both manually assigned user container roles and those, which got assigned through LDPA
+        // This is use a through_ldap (0 or 1) field in the linking table
+        if (!empty($context['data']['usercontainerroles'])) {
+            return true;
+        }
+
         return false;
     }
 
@@ -290,6 +318,21 @@ class UsersTable extends Table {
     public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['email']));
         $rules->add($rules->existsIn(['usergroup_id'], 'Usergroups'));
+        $rules->add(function (User $entity, $options) {
+            if ($entity->isDirty('password') && !empty($entity->get('password'))) {
+                // Password was changed - make sure it is not the same as the old one
+                $oldPasswordHashed = $entity->getOriginal('password');
+
+                $Hasher = $this->getDefaultPasswordHasher();
+                $hasChanged = $Hasher->check($entity->get('password'), $oldPasswordHashed) !== true;
+
+                return $hasChanged;
+            }
+            return true;
+        }, 'notSamePassword', [
+            'errorField' => 'password',
+            'message'    => __('The new password can not be the same as the old password is.'),
+        ]);
 
         return $rules;
     }
@@ -300,7 +343,7 @@ class UsersTable extends Table {
      * @param \ArrayObject $options
      * @return bool
      */
-    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options) {
+    public function beforeSave(Event $event, User $entity, \ArrayObject $options) {
         if ($entity->isDirty('password')) {
             $Hasher = $this->getDefaultPasswordHasher();
             $entity->password = $Hasher->hash($entity->password);
@@ -338,7 +381,6 @@ class UsersTable extends Table {
                 'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
             ]);
         }
-
         $userIds = Hash::extract($query->toArray(), '{n}.id');
 
         //Get all user ids where container assigned are made through an user container role
@@ -377,6 +419,7 @@ class UsersTable extends Table {
             'Users.phone',
             'Users.is_active',
             'Users.samaccountname',
+            'Users.is_oauth',
             'Usergroups.id',
             'Usergroups.name',
             'full_name' => $query->func()->concat([
@@ -406,7 +449,12 @@ class UsersTable extends Table {
             $query->having($having);
         }
 
-        $query->order($UsersFilter->getOrderForPaginator('full_name', 'asc'));
+        $query->order(
+            array_merge(
+                $UsersFilter->getOrderForPaginator('full_name', 'asc'),
+                ['Users.id' => 'asc']
+            )
+        );
         $query->group([
             'Users.id'
         ]);
@@ -483,10 +531,13 @@ class UsersTable extends Table {
         $user['containers'] = [
             '_ids' => Hash::extract($query, 'containers.{n}.id')
         ];
-        $user['usercontainerroles'] = [
-            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.id')
-        ];
 
+        $user['usercontainerroles'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}._joinData[through_ldap=false].usercontainerrole_id')
+        ];
+        $user['usercontainerroles_ldap'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}._joinData[through_ldap=true].usercontainerrole_id')
+        ];
         $user['usercontainerroles_containerids'] = [
             '_ids' => Hash::extract($query, 'usercontainerroles.{n}.containers.{n}.id')
         ];
@@ -508,6 +559,43 @@ class UsersTable extends Table {
         ];
     }
 
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getUserForPermissionCheck($id) {
+        $query = $this->find()
+            ->select([
+                'Users.id',
+                'Users.usergroup_id'
+            ])
+            ->where([
+                'Users.id' => $id
+            ])
+            ->contain([
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ],
+            ])
+            ->disableHydration()
+            ->first();
+
+        $user = $query;
+
+        $user['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $user['usercontainerroles'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.id')
+        ];
+
+        $user['usercontainerroles_containerids'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.containers.{n}.id')
+        ];
+
+        return $user;
+    }
 
     /**
      * @param array $containerPermissions
@@ -722,16 +810,17 @@ class UsersTable extends Table {
             'Users.image',
             'Users.onetimetoken',
             'full_name' => $query->func()->concat([
-                'Users.firstname' => 'literal',
+                'Users.lastname'  => 'literal',
                 ' ',
-                'Users.lastname'  => 'literal'
+                'Users.firstname' => 'literal'
             ])
         ])
             ->where([
                 'Users.id IN' => $userIds
             ])
             ->order([
-                'full_name' => 'asc'
+                'full_name' => 'asc',
+                'Users.id'  => 'asc'
             ])
             ->group([
                 'Users.id'
@@ -748,6 +837,15 @@ class UsersTable extends Table {
         }
 
         return $query->toArray();
+    }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @return array
+     */
+    public function getUsersByContainerIdExact($containerId, $type = 'list') {
+        return $this->getUsersByContainerIds($containerId, $type);
     }
 
     /**
@@ -1205,15 +1303,15 @@ class UsersTable extends Table {
             ->where([
                 'Users.is_active' => 1
             ]);
-        if(!empty($usergroupsIds)){
+        if (!empty($usergroupsIds)) {
             $query->innerJoinWith('Usergroups')
                 ->where([
                     'Usergroups.id IN ' => $usergroupsIds
                 ]);
         }
         $query->group([
-                'Users.id'
-            ])
+            'Users.id'
+        ])
             ->disableAutoFields()
             ->disableHydration()
             ->all();
@@ -1223,5 +1321,87 @@ class UsersTable extends Table {
             return [];
         }
         return $users;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUserTypesWithStyles() {
+        $types = [
+            'LOCAL_USER' => [
+                'title' => __('Local user'),
+                'color' => 'text-generic',
+                'class' => 'border-generic'
+            ],
+
+            'LDAP_USER' => [
+                'title' => __('LDAP user'),
+                'color' => 'text-prometheus',
+                'class' => 'border-prometheus'
+            ],
+
+            'OAUTH_USER' => [
+                'title' => __('OAuth user'),
+                'color' => 'text-evc',
+                'class' => 'border-evc'
+            ]
+
+        ];
+
+        return $types;
+    }
+
+    /**
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getLdapUsersForSync(bool $enableHydration = true) {
+        $query = $this->find()
+            ->contain([
+                'Usercontainerroles' => function (Query $q) {
+                    $q->where([
+                        'UsercontainerrolesMemberships.through_ldap' => 0
+                    ]);
+                    return $q;
+                },
+            ])
+            ->whereNotNull([
+                'samaccountname'
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedUsersByContainerId(int $containerId) {
+        $query = $this->find()
+            ->innerJoinWith('Containers')
+            ->contain([
+                'Containers' => function (\Cake\ORM\Query $query) use ($containerId) {
+                    return $query->select([
+                        'Containers.id',
+                    ])->whereNotInList('Containers.id', [$containerId]);
+                }
+            ])
+            ->where(['Containers.id' => $containerId]);
+
+        $result = $query->all();
+        $users = $result->toArray();
+
+        // Check each user, if it as more than one container.
+        // If the user has more than 1 container, we can keep this user because is not orphaned
+        $orphanedUsers = [];
+        foreach ($users as $user) {
+            if (empty($user->containers)) {
+                $orphanedUsers[] = $user;
+            }
+        }
+
+        return $orphanedUsers;
     }
 }

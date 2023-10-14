@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GrafanaModule\Command;
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ProxiesTable;
@@ -29,15 +30,14 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
-use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
+use itnovum\openITCOCKPIT\Grafana\GrafanaOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
-use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
 use Statusengine\PerfdataParser;
 
 /**
@@ -276,7 +276,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         $grafanaDashboard->setTitle($host['uuid']);
         $grafanaDashboard->setEditable(false);
         $grafanaDashboard->setTags($this->tag);
-        $grafanaDashboard->setHideControls(true);
+        $grafanaDashboard->setTags('🖥️ ' . $host['name']);
         $panelId = 1;
         $grafanaRow = new GrafanaRow();
 
@@ -318,15 +318,30 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                     );
                 }
             } else {
-                //Prometheus services have only one metric per service
+                //Prometheus service
+                $metricCount = 1;
+                if (Plugin::isLoaded('PrometheusModule')) {
+                    // Query Prometheus to get all metrics
+                    $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $metricCount = $PrometheusPerfdataLoader->getMetricsCountByPromQl($service['prometheus_alert_rule']['promql']);
+                }
+
+                $alias = $serviceName;
+                if ($metricCount > 1) {
+                    // The given PromQL returns more than 1 metric
+                    // So we let Grafana generate a legend
+                    $alias = null;
+                }
+
                 $grafanaPanel = new GrafanaPanel($panelId, 6);
                 $grafanaPanel->setTitle(sprintf('%s - %s', $host['name'], $serviceName));
+                $grafanaPanel->setMetricCount($metricCount);
                 $grafanaTargetCollection->addTarget(
                     new GrafanaTargetPrometheus(
                         $service['prometheus_alert_rule']['promql'],
                         new GrafanaTargetUnit($service['prometheus_alert_rule']['unit']),
                         new GrafanaThresholds($service['prometheus_alert_rule']['warning_min'], $service['prometheus_alert_rule']['critical_min']),
-                        $serviceName
+                        $alias
                     )
                 );
             }
@@ -334,8 +349,8 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
 
             $grafanaPanel->addTargets(
                 $grafanaTargetCollection,
-                new GrafanaSeriesOverrides($grafanaTargetCollection),
-                new GrafanaYAxes($grafanaTargetCollection),
+                new GrafanaOverrides($grafanaTargetCollection),
+                new GrafanaColorOverrides($grafanaTargetCollection),
                 new GrafanaThresholdCollection($grafanaTargetCollection)
             );
 
@@ -393,7 +408,17 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
 
             foreach ($dashboardUuids as $dashboard) {
                 $hostUuid = $dashboard['host_uuid'];
-                $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $hostUuid);
+                $grafanaUid = $dashboard['grafana_uid'];
+                //New grafana >= 8.0
+                if ($grafanaUid !== null) {
+                    $request = new Request('DELETE', sprintf('%s/dashboards/uid/%s',
+                            $this->GrafanaApiConfiguration->getApiUrl(),
+                            $grafanaUid
+                        )
+                    );
+                } else {
+                    $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $hostUuid);
+                }
 
                 try {
                     $response = $this->client->send($request);

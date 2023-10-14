@@ -637,7 +637,7 @@ class CmdCommand extends Command {
      */
     public function fixUtf8($str) {
         if (mb_detect_encoding($str) !== 'UTF-8') {
-            return utf8_encode($str);
+            return mb_convert_encoding($str, 'UTF-8');
         }
         return $str;
     }

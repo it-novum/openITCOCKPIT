@@ -18,8 +18,6 @@ angular.module('openITCOCKPIT')
                 }
             };
         };
-        /*** Filter end ***/
-
 
         $scope.init = true;
         $scope.showFilter = false;

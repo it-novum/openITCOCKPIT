@@ -11,7 +11,10 @@ angular.module('openITCOCKPIT')
             $scope.post = {
                 Usercontainerrole: {
                     name: '',
-                    ContainersUsercontainerrolesMemberships: {}
+                    ContainersUsercontainerrolesMemberships: {},
+                    ldapgroups: {
+                        _ids: []
+                    }
                 }
             };
         };
@@ -35,6 +38,19 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.containers = result.data.containers;
+            });
+        };
+
+        $scope.loadLdapGroups = function(searchString){
+            $http.get("/usercontainerroles/loadLdapgroupsForAngular.json", {
+                params: {
+                    'angular': true,
+                    'filter[Ldapgroups.cn]': searchString,
+                    'selected[]': $scope.post.Usercontainerrole.ldapgroups._ids
+                }
+            }).then(function(result){
+                $scope.isLdapAuth = result.data.isLdapAuth;
+                $scope.ldapgroups = result.data.ldapgroups;
             });
         };
 
@@ -115,8 +131,6 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         $scope.loadContainer();
+        $scope.loadLdapGroups();
 
     });
-
-
-

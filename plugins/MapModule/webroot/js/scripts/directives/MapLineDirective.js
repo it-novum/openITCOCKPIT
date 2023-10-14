@@ -40,27 +40,27 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http, $interval){
                 $scope.arctan = atan * 180 / Math.PI;
             };
 
-            var getLable = function(data){
-                $scope.lable = '';
+            var getLabel = function(data){
+                $scope.label = '';
                 switch($scope.item.type){
                     case 'host':
-                        $scope.lable = data.Host.hostname;
+                        $scope.label = data.Host.hostname;
                         break;
 
                     case 'service':
-                        $scope.lable = data.Host.hostname + '/' + data.Service.servicename;
+                        $scope.label = data.Host.hostname + '/' + data.Service.servicename;
                         break;
 
                     case 'hostgroup':
-                        $scope.lable = data.Hostgroup.name;
+                        $scope.label = data.Hostgroup.name;
                         break;
 
                     case 'servicegroup':
-                        $scope.lable = data.Servicegroup.name;
+                        $scope.label = data.Servicegroup.name;
                         break;
 
                     case 'map':
-                        $scope.lable = data.Map.name;
+                        $scope.label = data.Map.name;
                         break;
                 }
             };
@@ -88,7 +88,9 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http, $interval){
                     $scope.background = result.data.data.background;
                     $scope.allowView = result.data.allowView;
                     $scope.init = false;
-                    getLable(result.data.data);
+                    if($scope.allowView){
+                        getLabel(result.data.data);
+                    }
                     initRefreshTimer();
                 });
             };

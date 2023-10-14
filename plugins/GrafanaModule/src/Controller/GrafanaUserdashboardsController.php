@@ -25,14 +25,18 @@
 
 namespace GrafanaModule\Controller;
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\WidgetsTable;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use GrafanaModule\Model\Entity\GrafanaUserdashboardMetric;
+use GrafanaModule\Model\Entity\GrafanaUserdashboardPanel;
 use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardMetricsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardPanelsTable;
@@ -41,7 +45,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
@@ -49,18 +52,17 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
+use itnovum\openITCOCKPIT\Grafana\GrafanaOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
-use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
-use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
 use Statusengine\PerfdataParser;
 
 /**
@@ -403,6 +405,127 @@ class GrafanaUserdashboardsController extends AppController {
     }
 
     /**
+     * @param int|null $id
+     */
+    public function copy($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+        /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
+        $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
+        /** @var GrafanaUserdashboardMetricsTable $GrafanaUserdashboardMetricsTable */
+        $GrafanaUserdashboardMetricsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardMetrics');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $dashboards = $GrafanaUserdashboardsTable->getGrafanaUserdashboardsForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('dashboards', $dashboards);
+            $this->viewBuilder()->setOption('serialize', ['dashboards']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData('data', []);
+
+            foreach ($postData as $index => $dashboardData) {
+                if (!isset($dashboardData['Dashboard']['id'])) {
+                    //Create/clone Grafana User Dashboard
+                    $sourceId = $dashboardData['Source']['id'];
+                    $sourceDashboard = $GrafanaUserdashboardsTable->getSourceGrafanaUserdashboardForCopy($sourceId, $MY_RIGHTS);
+
+                    $newDashboardData = $sourceDashboard;
+                    $newDashboardData['name'] = $dashboardData['Dashboard']['name'];
+
+                    $newDashboardEntity = $GrafanaUserdashboardsTable->newEntity($newDashboardData);
+                }
+
+                $action = 'copy';
+                if (isset($dashboardData['Dashboard']['id'])) {
+                    //Update existing Grafana Userdashboard
+                    //This happens, if a user copy multiple dashboards, and one run into an validation error
+                    //All dashboards without validation errors got already saved to the database
+                    $newDashboardEntity = $GrafanaUserdashboardsTable->get($dashboardData['Dashboard']['id']);
+                    $newDashboardEntity->setAccess('id', false);
+                    $newDashboardEntity->setAccess('container_id', false);
+                    $newDashboardEntity->set('name', $dashboardData['Dashboard']['name']);
+                    $action = 'edit';
+                }
+                $GrafanaUserdashboardsTable->save($newDashboardEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newDashboardEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newDashboardEntity->getErrors();
+                } else {
+                    //No errors
+
+                    // Due to Grafana User Dashboards are a bit special, we need to create the Dashboard first,
+                    // than add panels and in the last step we can add metrics to the panels :/
+                    // Therefor we only do this for new copies, not for an update (due to validation errors)
+                    if ($action === 'copy') {
+                        $sourcePanels = $GrafanaUserdashboardPanelsTable->getPanelsByUserdashboardIdForCopy($dashboardData['Source']['id']);
+                        if (!empty($sourcePanels)) {
+                            foreach ($sourcePanels as $sourcePanel) {
+                                /** @var GrafanaUserdashboardPanel $sourcePanel */
+                                $newPanelEntity = $GrafanaUserdashboardPanelsTable->newEntity([
+                                    'userdashboard_id'   => $newDashboardEntity->get('id'),
+                                    'row'                => $sourcePanel->row,
+                                    'unit'               => $sourcePanel->unit,
+                                    'title'              => $sourcePanel->title,
+                                    'visualization_type' => $sourcePanel->visualization_type,
+                                    'stacking_mode'      => $sourcePanel->stacking_mode
+                                ]);
+
+                                $GrafanaUserdashboardPanelsTable->save($newPanelEntity);
+                                if (!$newPanelEntity->hasErrors()) {
+                                    // Copy metrics form source dashboard/panel into the new panel
+                                    $sourceMetrics = $GrafanaUserdashboardMetricsTable->getMetricsByPanelIdForCopy($sourcePanel->get('id'));
+                                    if (!empty($sourceMetrics)) {
+                                        foreach ($sourceMetrics as $sourceMetric) {
+                                            /** @var GrafanaUserdashboardMetric $sourceMetric */
+                                            $newMetricEntity = $GrafanaUserdashboardMetricsTable->newEntity([
+                                                'panel_id'   => $newPanelEntity->get('id'),
+                                                'metric'     => $sourceMetric->metric,
+                                                'host_id'    => $sourceMetric->host_id,
+                                                'service_id' => $sourceMetric->service_id,
+                                                'color'      => $sourceMetric->color
+                                            ]);
+                                            $GrafanaUserdashboardMetricsTable->save($newMetricEntity);
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+
+                    $postData[$index]['Dashboard']['id'] = $newDashboardEntity->get('id');
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    /**
      * @throws \Exception
      */
     public function loadContainers() {
@@ -457,8 +580,17 @@ class GrafanaUserdashboardsController extends AppController {
 
 
         $service = $ServicesTable->getServiceById($serviceId);
+        if (Plugin::isLoaded('PrometheusModule') && $service->service_type === PROMETHEUS_SERVICE) {
+            // Query Prometheus to get all metrics
+            $ServiceObj = new Service($service->toArray());
 
+            $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+            $this->set('perfdata', $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj, true));
+            $this->viewBuilder()->setOption('serialize', ['perfdata']);
+            return;
+        }
 
+        // Normal Naemon services
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->perfdata();
         $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
@@ -516,6 +648,64 @@ class GrafanaUserdashboardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['metric']);
     }
 
+    /**
+     * @param int|null $id
+     */
+    public function editMetricFromPanel($id = null) {
+        if (!$this->request->is('get') && !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var GrafanaUserdashboardMetricsTable $GrafanaUserdashboardMetricsTable */
+        $GrafanaUserdashboardMetricsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardMetrics');
+
+        if (!$GrafanaUserdashboardMetricsTable->existsById($id)) {
+            throw new NotFoundException(__('Metric not found'));
+        }
+
+        $metric = $GrafanaUserdashboardMetricsTable->get($id);
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            $this->set('metric', $metric);
+            $this->viewBuilder()->setOption('serialize', ['metric']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $metric = $GrafanaUserdashboardMetricsTable->patchEntity(
+                $metric,
+                $this->request->getData('GrafanaUserdashboardMetric', [])
+            );
+
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $service = $ServicesTable->getServiceById($this->request->getData('GrafanaUserdashboardMetric.service_id', 0));
+
+            $GrafanaUserdashboardMetricsTable->save($metric);
+            if ($metric->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $metric->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+            $Host = new Host($service->get('host'));
+            $Service = new Service($service->toArray());
+
+            $metric = $metric->toArray();
+            $metric['Host'] = $Host->toArray();
+            $metric['Service'] = $Service->toArray();
+
+            $this->set('success', true);
+            $this->set('metric', $metric);
+            $this->viewBuilder()->setOption('serialize', ['success', 'metric']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+    }
+
     public function removeMetricFromPanel() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -558,11 +748,13 @@ class GrafanaUserdashboardsController extends AppController {
         }
 
         $this->set('panel', [
-            'id'               => $panel->get('id'),
-            'row'              => $panel->get('row'),
-            'userdashboard_id' => $panel->get('userdashboard_id'),
-            'unit'             => '',
-            'metrics'          => []
+            'id'                 => $panel->get('id'),
+            'row'                => $panel->get('row'),
+            'userdashboard_id'   => $panel->get('userdashboard_id'),
+            'unit'               => '',
+            'visualization_type' => $panel->get('visualization_type'),
+            'stacking_mode'      => $panel->get('stacking_mode'),
+            'metrics'            => []
         ]);
         $this->viewBuilder()->setOption('serialize', ['panel']);
     }
@@ -653,6 +845,8 @@ class GrafanaUserdashboardsController extends AppController {
         $id = $this->request->getData('id', 0);
         $unit = $this->request->getData('unit', 'none');
         $title = $this->request->getData('title', '');
+        $visualization_type = $this->request->getData('visualization_type', '');
+        $stacking_mode = $this->request->getData('stacking_mode', '');
 
         /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
         $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
@@ -662,6 +856,8 @@ class GrafanaUserdashboardsController extends AppController {
             $panel = $GrafanaUserdashboardPanelsTable->get($id);
             $panel->set('title', $title);
             $panel->set('unit', $unit);
+            $panel->set('visualization_type', $visualization_type);
+            $panel->set('stacking_mode', $stacking_mode);
 
             if ($GrafanaUserdashboardPanelsTable->save($panel)) {
                 $this->set('success', true);
@@ -706,14 +902,12 @@ class GrafanaUserdashboardsController extends AppController {
 
         $dashboard = $GrafanaUserdashboardsTable->getGrafanaUserDashboardEdit($id);
         $rows = $GrafanaUserdashboardsTable->extractRowsWithPanelsAndMetricsFromFindResult($dashboard);
-
         if ($client instanceof Client) {
             $tag = new GrafanaTag();
             $GrafanaDashboard = new GrafanaDashboard();
             $GrafanaDashboard->setTitle($dashboard['name']);
             $GrafanaDashboard->setEditable(true);
             $GrafanaDashboard->setTags($tag->getTag());
-            $GrafanaDashboard->setHideControls(false);
             $GrafanaDashboard->setAutoRefresh('1m');
             $GrafanaDashboard->setTimeInHours('3');
 
@@ -725,6 +919,8 @@ class GrafanaUserdashboardsController extends AppController {
                     $SpanSize = 12 / sizeof($row);
                     $GrafanaPanel = new GrafanaPanel($panel['id'], $SpanSize);
                     $GrafanaPanel->setTitle($panel['title']);
+                    $GrafanaPanel->setVisualizationType($panel['visualization_type']);
+                    $GrafanaPanel->setStackingMode($panel['stacking_mode']);
 
                     foreach ($panel['metrics'] as $metric) {
                         if ($metric['service']['service_type'] !== PROMETHEUS_SERVICE) {
@@ -749,26 +945,55 @@ class GrafanaUserdashboardsController extends AppController {
                                     ),//Alias
                                     $metric['color'] ?? null
                                 ));
-                        }else{
+                        } else {
                             //Prometheus Service
+                            $promql = $metric['metric'];
+                            if ($metric['metric'] === 'value') {
+                                // Before ITC-2824 openITCOCKPIT always used the value of
+                                // $metric['service']['prometheus_alert_rule']['promql']
+                                // as Datasource and in the DB table grafana_userdashboard_metrics was always "value" stored as metric
+                                // If the metric is "value" than we use the PromQL from the Alert Rule
+                                // Otherwise the user selected a specific metric provided by the PromQL, so we sync the user defined metric
+                                // This is only relevant for PromQL's which return more than one value/metric
+                                // Also this is described in detail (and german) in Jira (ITC-2824)
+
+                                $promql = $metric['service']['prometheus_alert_rule']['promql'];
+                            }
+
+                            $metricCount = 1;
+                            if (Plugin::isLoaded('PrometheusModule')) {
+                                // Query Prometheus to get all metrics
+                                $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                                $metricCount = $PrometheusPerfdataLoader->getMetricsCountByPromQl($metric['service']['prometheus_alert_rule']['promql']);
+                            }
+
+                            $alias = sprintf(
+                                '%s/%s',
+                                $this->replaceUmlauts($metric['Host']['hostname']),
+                                $this->replaceUmlauts($metric['Service']['servicename'])
+                            );
+
+                            if ($metricCount > 1) {
+                                // The given PromQL returns more than 1 metric
+                                // So we let Grafana generate a legend
+                                $alias = null;
+                            }
+                            $GrafanaPanel->setMetricCount($metricCount);
+
                             $GrafanaTargetCollection->addTarget(
                                 new GrafanaTargetPrometheus(
-                                    $metric['service']['prometheus_alert_rule']['promql'],
+                                    $promql,
                                     new GrafanaTargetUnit($panel['unit'], true),
                                     new GrafanaThresholds($metric['service']['prometheus_alert_rule']['warning_min'], $metric['service']['prometheus_alert_rule']['critical_min']),
-                                    sprintf(
-                                        '%s/%s',
-                                        $this->replaceUmlauts($metric['Host']['hostname']),
-                                        $this->replaceUmlauts($metric['Service']['servicename'])
-                                    ),//Alias
+                                    $alias,
                                     $metric['color'] ?? null
                                 ));
                         }
                     }
                     $GrafanaPanel->addTargets(
                         $GrafanaTargetCollection,
-                        new GrafanaSeriesOverrides($GrafanaTargetCollection),
-                        new GrafanaYAxes($GrafanaTargetCollection),
+                        new GrafanaOverrides($GrafanaTargetCollection),
+                        new GrafanaColorOverrides($GrafanaTargetCollection),
                         new GrafanaThresholdCollection($GrafanaTargetCollection)
                     );
                     $GrafanaRow->addPanel($GrafanaPanel);
@@ -848,8 +1073,7 @@ class GrafanaUserdashboardsController extends AppController {
             }
 
             if (!empty($grafanaDashboardId)) {
-                $dashboard = $GrafanaUserdashboardsTable->get($grafanaDashboardId);
-
+                $dashboard = $GrafanaUserdashboardsTable->getGrafanaUserdashboardsWithPanelsAndMetricsById($grafanaDashboardId);
                 if (!empty($dashboard)) {
                     $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
                     /** @var ProxiesTable $ProxiesTable */

@@ -291,7 +291,7 @@
                     <div class="col-lg-12 padding-10">
                         <div id="graph_legend" class="graph_legend"></div>
                         <div id="graph_data_tooltip"></div>
-                        <div id="graphCanvas" style="height: 150px;"></div>
+                        <div id="graphCanvas" class="graph-placeholder"></div>
                     </div>
                 </div>
             </div>
@@ -321,4 +321,3 @@
                        callback="showServiceDetailsFlashMsg"></submit-service-result>
 <enable-service-flap-detection callback="showServiceDetailsFlashMsg"></enable-service-flap-detection>
 <disable-service-flap-detection callback="showServiceDetailsFlashMsg"></disable-service-flap-detection>
-

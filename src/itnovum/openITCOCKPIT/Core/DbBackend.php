@@ -45,6 +45,11 @@ use Cake\ORM\TableRegistry;
 class DbBackend {
 
     /**
+     * @var string
+     */
+    private $backend;
+
+    /**
      * DbBackend constructor.
      */
     public function __construct() {

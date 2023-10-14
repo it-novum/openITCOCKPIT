@@ -34,12 +34,18 @@ class TacticalOverviewJson extends DashboardJsonStandardizer {
      */
     protected $fields = [
         'Host'         => [
-            'name' => ''
+            'name'          => '',
+            'name_regex'    => false,
+            'address'       => '',
+            'address_regex' => false,
+            'keywords'      => '',
+            'not_keywords'  => ''
         ],
         'Service'      => [
-            'servicename'  => '',
-            'keywords'     => '',
-            'not_keywords' => ''
+            'servicename'       => '',
+            'servicename_regex' => false,
+            'keywords'          => '',
+            'not_keywords'      => ''
         ],
         'Hostgroup'    => [
             '_ids' => ''
@@ -55,10 +61,19 @@ class TacticalOverviewJson extends DashboardJsonStandardizer {
      */
     public function standardizedData($request = []) {
         if (isset($request['Hostgroup']['_ids']) && is_array($request['Hostgroup']['_ids'])) {
+            $request['Hostgroup']['_ids'] = array_filter(
+                $request['Hostgroup']['_ids'], function ($value) {
+                return $value > 0;
+            });
+
             // POST request to save to database
             $request['Hostgroup']['_ids'] = implode(',', $request['Hostgroup']['_ids']);
         }
         if (isset($request['Servicegroup']['_ids']) && is_array($request['Servicegroup']['_ids'])) {
+            $request['Servicegroup']['_ids'] = array_filter(
+                $request['Servicegroup']['_ids'], function ($value) {
+                return $value > 0;
+            });
             // POST request to save to database
             $request['Servicegroup']['_ids'] = implode(',', $request['Servicegroup']['_ids']);
         }

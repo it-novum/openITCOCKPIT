@@ -80,7 +80,7 @@ class Hosttemplate {
         }
 
         if (isset($hosttemplate['Hosttemplate']['name'])) {
-            $this->hostname = $hosttemplate['Hosttemplate']['name'];
+            $this->name = $hosttemplate['Hosttemplate']['name'];
         }
 
 

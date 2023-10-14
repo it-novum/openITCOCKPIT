@@ -200,6 +200,21 @@
                                                     <?php echo __('Allocate to host'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'servicetemplategroup', objectId: servicetemplategroup.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'servicetemplategroups')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ServicetemplategroupsCopy({ids: servicetemplategroup.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'servicetemplategroups')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(servicetemplategroup))"
@@ -236,6 +251,16 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
+
+                            <?php if ($this->Acl->hasPermission('copy', 'servicetemplategroups')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="ServicetemplategroupsCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+
                             <?php if ($this->Acl->hasPermission('delete', 'servicetemplategroups')): ?>
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">

@@ -52,7 +52,7 @@ $logo = new Logo();
             </div>
         </div>
         <div class="info-card">
-            <img class="profile-image rounded-circle" alt="me" src="{{userImage}}">
+            <img class="profile-image rounded-circle" alt="me" ng-src="{{userImage}}">
             <div class="info-card-text">
                 <a class="d-flex align-items-center text-white" ui-sref="ProfileEdit">
                     <span class="text-truncate text-truncate-sm d-inline-block">

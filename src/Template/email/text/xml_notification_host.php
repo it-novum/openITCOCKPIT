@@ -43,7 +43,7 @@
  */
 ?>
 
-<? xml version = "1.0" encoding = "UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <notificationHost>
     <eventId><?= \itnovum\openITCOCKPIT\Core\UUID::v4(); ?></eventId>
     <host><?= $Host->getHostname(); ?></host>

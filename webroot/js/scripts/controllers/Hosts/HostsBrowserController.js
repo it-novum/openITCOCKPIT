@@ -5,8 +5,7 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
 
         $scope.activeTab = 'active';
-        SortService.setSort('Servicestatus.current_state');
-        SortService.setDirection('desc');
+
         $scope.currentPage = 1;
         $scope.selectedTab = 'tab1';
 
@@ -26,6 +25,13 @@ angular.module('openITCOCKPIT')
         $scope.tags = [];
 
         $scope.pingResult = [];
+
+        $scope.interval = null;
+
+        $scope.popoverTimer = null;
+
+        SortService.setSort('servicename');
+        SortService.setDirection('asc');
 
         $scope.priorityClasses = {
             1: 'ok-soft',
@@ -53,7 +59,8 @@ angular.module('openITCOCKPIT')
                 output: ''
             },
             Service: {
-                name: QueryStringService.getValue('filter[Service.servicename]', '')
+                name: QueryStringService.getValue('filter[Service.servicename]', ''),
+                name_regex: false
             }
         };
 
@@ -86,11 +93,11 @@ angular.module('openITCOCKPIT')
 
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $scope.loadHost();
-                    $interval.cancel(interval);
+                    $interval.cancel($scope.interval);
                     $scope.showFlashSuccess = false;
                 }
             }, 1000);
@@ -143,14 +150,20 @@ angular.module('openITCOCKPIT')
                     4: false,
                     5: false
                 };
+                $scope.objects = result.data.objects;
                 var priority = parseInt($scope.mergedHost.priority, 10);
                 for(var i = 1; i <= priority; i++){
                     $scope.priorities[i] = true;
                 }
 
+                if($scope.selectedTab === 'tab3'){
+                    $scope.loadTimelineData();
+                }
+
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
                 $scope.loadAdditionalInformation();
+                $scope.loadSlaInformation();
 
 
                 if(typeof $scope.hostBrowserMenuConfig === "undefined"){
@@ -188,9 +201,6 @@ angular.module('openITCOCKPIT')
             if(tab !== $scope.activeTab){
                 $scope.services = [];
                 $scope.activeTab = tab;
-
-                SortService.setSort('servicename');
-                SortService.setDirection('asc');
                 $scope.currentPage = 1;
 
                 $scope.load();
@@ -215,6 +225,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadActiveServices = function(){
+            $scope.resetSortServiceForServiceLists();
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -222,6 +233,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Hosts.id]': $scope.id,
                 'filter[servicename]': $scope.activeServiceFilter.Service.name,
+                'filter[servicename_regex]': $scope.activeServiceFilter.Service.name_regex,
                 'filter[Servicestatus.output]': $scope.activeServiceFilter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.activeServiceFilter.Servicestatus.current_state),
                 'filter[Service.disabled]': false
@@ -238,6 +250,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadNotMonitoredServices = function(){
+            $scope.resetSortServiceForServiceLists();
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -257,6 +270,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadDisabledServices = function(){
+            $scope.resetSortServiceForServiceLists();
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -327,6 +341,12 @@ angular.module('openITCOCKPIT')
             return !$scope.hoststatus.isInMonitoring;
         };
 
+        $scope.resetSortServiceForServiceLists = function(){
+            if(SortService.getSort().includes('Hosts')){
+                SortService.setSort('servicename');
+                SortService.setDirection('asc');
+            }
+        };
 
         var getHoststatusTextColor = function(){
             return StatusHelperService.getHoststatusTextColor($scope.hoststatus.currentState);
@@ -601,6 +621,18 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadSlaInformation = function(){
+            $http.get("/hosts/loadSlaInformation/.json", {
+                params: {
+                    'id': $scope.mergedHost.id,
+                    'sla_id': $scope.mergedHost.sla_id,
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.slaOverview = result.data.slaOverview;
+            });
+        };
+
 
         /*** Service mass change methods ***/
         $scope.selectAll = function(){
@@ -655,9 +687,12 @@ angular.module('openITCOCKPIT')
         };
         /*** End of service mass change methods ***/
 
-        $scope.clipboardCommand = function(){
-            navigator.clipboard.writeText($scope.mergedHost.hostCommandLine);
-        };
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
 
         //Fire on page load
         $scope.loadIdOrUuid();
@@ -683,5 +718,4 @@ angular.module('openITCOCKPIT')
                 jQuery('[data-toggle="tooltip"]').tooltip('hide');
             }, 1500);
         });
-
     });

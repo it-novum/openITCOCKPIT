@@ -381,6 +381,95 @@ class AutomapsController extends AppController {
         return;
     }
 
+    /**
+     * @param int|null $id
+     */
+    public function copy($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var AutomapsTable $AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $automaps = $AutomapsTable->getAutomapsForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('automaps', $automaps);
+            $this->viewBuilder()->setOption('serialize', ['automaps']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData('data');
+
+            foreach ($postData as $index => $automapData) {
+                if (!isset($automapData['Automap']['id'])) {
+                    //Create/clone automap
+                    $sourceAutomapId = $automapData['Source']['id'];
+                    $sourceAutomap = $AutomapsTable->getSourceAutomapForCopy($sourceAutomapId, $MY_RIGHTS);
+
+                    $newAutomapData = [
+                        'name'              => $automapData['Automap']['name'],
+                        'description'       => $automapData['Automap']['description'],
+                        'container_id'      => $sourceAutomap['container_id'],
+                        'recursive'         => $sourceAutomap['recursive'],
+                        'host_regex'        => $automapData['Automap']['host_regex'],
+                        'service_regex'     => $automapData['Automap']['service_regex'],
+                        'show_ok'           => $sourceAutomap['show_ok'],
+                        'show_warning'      => $sourceAutomap['show_warning'],
+                        'show_critical'     => $sourceAutomap['show_critical'],
+                        'show_unknown'      => $sourceAutomap['show_unknown'],
+                        'show_downtime'     => $sourceAutomap['show_downtime'],
+                        'show_acknowledged' => $sourceAutomap['show_acknowledged'],
+                        'show_label'        => $sourceAutomap['show_label'],
+                        'group_by_host'     => $sourceAutomap['group_by_host'],
+                        'use_paginator'     => $sourceAutomap['use_paginator'],
+                        'font_size'         => $sourceAutomap['font_size'],
+                    ];
+
+                    $newAutomapEntity = $AutomapsTable->newEntity($newAutomapData);
+                }
+
+                $action = 'copy';
+                if (isset($automapData['Automap']['id'])) {
+                    //Update existing automap
+                    //This happens, if a user copy multiple automaps, and one run into an validation error
+                    //All automaps without validation errors got already saved to the database
+                    $newAutomapEntity = $AutomapsTable->get($automapData['Automap']['id']);
+                    $newAutomapEntity->setAccess('*', false);
+                    $newAutomapEntity->setAccess(['name', 'description', 'host_regex', 'service_regex'], true);
+
+                    $newAutomapEntity = $AutomapsTable->patchEntity($newAutomapEntity, $automapData['Automap']);
+                    $action = 'edit';
+                }
+                $AutomapsTable->save($newAutomapEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newAutomapEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newAutomapEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Automap']['id'] = $newAutomapEntity->get('id');
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+    }
+
     /****************************
      *       AJAX METHODS       *
      ****************************/
@@ -516,7 +605,9 @@ class AutomapsController extends AppController {
             }
             $widgetEntity = $WidgetsTable->get($widgetId);
             $widget = $widgetEntity->toArray();
-
+            $config = [
+                'automap_id' => null
+            ];
             if ($widget['json_data'] !== null && $widget['json_data'] !== '') {
                 $config = json_decode($widget['json_data'], true);
                 if (!isset($config['automap_id'])) {
@@ -564,6 +655,9 @@ class AutomapsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        $AutomapsFilter = new AutomapsFilter($this->request);
+
+
         /** @var AutomapsTable $AutomapsTable */
         $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
         $selected = $this->request->getQuery('selected');
@@ -574,7 +668,7 @@ class AutomapsController extends AppController {
         }
 
         $automaps = Api::makeItJavaScriptAble(
-            $AutomapsTable->getAutomapsForAngular($selected, null, $MY_RIGHTS)
+            $AutomapsTable->getAutomapsForAngular($selected, $AutomapsFilter, $MY_RIGHTS)
         );
 
         $this->set('automaps', $automaps);

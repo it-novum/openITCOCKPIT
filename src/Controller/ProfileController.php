@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\QrCodeGenerator;
 use App\Model\Table\ApikeysTable;
 use App\Model\Table\UsersTable;
 use Cake\Cache\Cache;
@@ -76,7 +77,9 @@ class ProfileController extends AppController {
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('maxUploadLimit', $FileUploadSize->toArray());
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'maxUploadLimit']);
+            $this->set('newDesktopApi', true);
+            $this->set('oitcVersion', OPENITCOCKPIT_VERSION);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'maxUploadLimit', 'newDesktopApi', 'oitcVersion']);
             return;
         }
 
@@ -255,8 +258,14 @@ class ProfileController extends AppController {
                     $User->getId()
                 );
                 $Apikey = new Apikey($apikey);
-                $this->set('apikey', $Apikey->toArray());
-                $this->viewBuilder()->setOption('serialize', ['apikey']);
+                $Apikey = $Apikey->toArray();
+
+                $qr = new QrCodeGenerator($Apikey['apikey']);
+                $qrcode = $qr->getQrCodeAsBase64();
+
+                $this->set('apikey', $Apikey);
+                $this->set('qrcode', $qrcode);
+                $this->viewBuilder()->setOption('serialize', ['apikey', 'qrcode']);
                 return;
             }
 
@@ -323,8 +332,12 @@ class ProfileController extends AppController {
             $session = $this->request->getSession();
             $session->write('latest_api_key', $newApiKey);
 
+            $qr = new QrCodeGenerator($apikey);
+            $qrcode = $qr->getQrCodeAsBase64();
+
             $this->set('apikey', $apikey);
-            $this->viewBuilder()->setOption('serialize', ['apikey']);
+            $this->set('qrcode', $qrcode);
+            $this->viewBuilder()->setOption('serialize', ['apikey', 'qrcode']);
             return;
         }
 

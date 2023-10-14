@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -121,6 +124,12 @@
                                     <?php echo __('Create container downtime'); ?>
                                 </a>
                             <?php endif; ?>
+                            <?php if (Plugin::isLoaded('DistributeModule') && $this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+                                <a ui-sref="SystemdowntimesAddSatelliteDowntime" class="dropdown-item">
+                                    <i class="fas fa-satellite"></i>
+                                    <?php echo __('Create satellite downtime'); ?>
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <button class="btn btn-xs btn-primary shadow-0 " ng-click="triggerFilter()">
@@ -146,11 +155,11 @@
                                                 <span
                                                     class="input-group-text filter-text"><?php echo __('From'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="datetime-local" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('From date'); ?>"
-                                                   ng-model="filter.from"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="from_time"
+                                                   ng-model-options="{debounce: 500, timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                                         </div>
                                     </div>
                                 </div>
@@ -174,11 +183,11 @@
                                                 <span
                                                     class="input-group-text filter-text"><?php echo __('To'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="datetime-local" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('To date'); ?>"
-                                                   ng-model="filter.to"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="to_time"
+                                                   ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true, debounce: 500}">
                                         </div>
                                     </div>
                                 </div>

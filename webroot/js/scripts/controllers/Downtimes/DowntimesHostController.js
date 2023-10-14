@@ -4,7 +4,7 @@ angular.module('openITCOCKPIT')
         SortService.setSort(QueryStringService.getValue('sort', 'DowntimeHosts.scheduled_start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
-
+        $scope.interval = null;
 
         var now = new Date();
 
@@ -27,6 +27,12 @@ angular.module('openITCOCKPIT')
                 isRunning: false,
                 hideExpired: true
             };
+            var from = new Date(now.getTime() - (3600 * 24 * 30 * 1000));
+            from.setSeconds(0);
+            var to = new Date(now.getTime() + (3600 * 24 * 30 * 2 * 1000));
+            to.setSeconds(0);
+            $scope.from_time = from;
+            $scope.to_time = to;
         };
         /*** Filter end ***/
 
@@ -123,11 +129,11 @@ angular.module('openITCOCKPIT')
         $scope.showHostDowntimeFlashMsg = function(){
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $scope.load();
-                    $interval.cancel(interval);
+                    $interval.cancel($scope.interval);
                     $scope.showFlashSuccess = false;
                 }
             }, 1000);
@@ -138,6 +144,12 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
 
         //Fire on page load
         defaultFilter();
@@ -152,5 +164,18 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
+
+        $scope.$watch('from_time', function(dateObject){
+            if(dateObject !== undefined && dateObject instanceof Date){
+                var dateString = date('d.m.Y H:i', dateObject.getTime() / 1000);
+                $scope.filter.from = dateString;
+            }
+        });
+        $scope.$watch('to_time', function(dateObject){
+            if(dateObject !== undefined && dateObject instanceof Date){
+                var dateString = date('d.m.Y H:i', dateObject.getTime() / 1000);
+                $scope.filter.to = dateString;
+            }
+        });
 
     });

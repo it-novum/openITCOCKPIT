@@ -84,89 +84,116 @@ Once a host or service escalated, contacts, contact group and notification optio
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.hosts}">
-                            <label class="control-label">
-                                <i class="fa fa-plus up" aria-hidden="true"></i>
-                                <?php echo __('Hosts'); ?>
-                            </label>
-                            <div class="input-group">
-                                <select
-                                    id="HostescalationIncludeHosts"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="hosts"
-                                    callback="loadHosts"
-                                    ng-options="host.key as host.value disable when host.disabled for host in hosts"
-                                    ng-model="post.Hostescalation.hosts._ids">
-                                </select>
+                        <div class="col col-12 bordered-vertical-on-left-primary bg-color-lightGray-with-opacity padding-10">
+                            <div class="form-group required" ng-class="{'has-error': errors.hosts}">
+                                <label class="control-label">
+                                    <i class="fa fa-plus up" aria-hidden="true"></i>
+                                    <?php echo __('Hosts'); ?>
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-success text-white">
+                                            <i class="fas fa-desktop"></i>
+                                        </span>
+                                    </div>
+                                    <select
+                                        id="HostescalationIncludeHosts"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="hosts"
+                                        callback="loadHosts"
+                                        ng-options="host.key as host.value disable when host.disabled for host in hosts"
+                                        ng-model="post.Hostescalation.hosts._ids">
+                                    </select>
+                                </div>
+                                <div ng-repeat="error in errors.hosts">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
                             </div>
-                            <div ng-repeat="error in errors.hosts">
-                                <div class="help-block text-danger">{{ error }}</div>
+
+                            <div class="form-group arrowd-vertical-on-right" ng-class="{'has-error': errors.hostgroups_excluded}">
+                                <label class="control-label">
+                                    <i class="fa fa-minus down" aria-hidden="true"></i>
+                                    <?php echo __('Excluded host groups'); ?>
+                                </label>
+
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-danger text-white">
+                                            <i class="fas fa-server"></i>
+                                        </span>
+                                    </div>
+                                    <select
+                                        id="HostescalationExcludeHostgroups"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="hostgroups_excluded"
+                                        ng-disabled="post.Hostescalation.hosts._ids.length == 0"
+                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_excluded"
+                                        ng-model="post.Hostescalation.hostgroups_excluded._ids">
+                                    </select>
+                                </div>
+                                <div ng-repeat="error in errors.hostgroups_excluded">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.hosts_excluded}">
-                            <label class="control-label">
-                                <i class="fa fa-minus down" aria-hidden="true"></i>
-                                <?php echo __('Excluded Hosts'); ?>
-                            </label>
-                            <div class="input-group">
-                                <select
-                                    id="HostescalationExcludeHosts"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="hosts_excluded"
-                                    callback="loadExcludedHosts"
-                                    ng-options="host.key as host.value disable when host.disabled for host in hosts_excluded"
-                                    ng-model="post.Hostescalation.hosts_excluded._ids">
-                                </select>
+                        <div class="col col-12 margin-top-10 margin-bottom-10 bordered-vertical-on-left-primary bg-color-lightGray-with-opacity padding-10">
+                            <div class="form-group" ng-class="{'has-error': errors.hostgroups}">
+                                <label class="control-label">
+                                    <i class="fa fa-plus up" aria-hidden="true"></i>
+                                    <?php echo __('Host groups'); ?>
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-success text-white">
+                                            <i class="fas fa-server"></i>
+                                        </span>
+                                    </div>
+                                    <select
+                                        id="HostescalationIncludeHostgroups"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="hostgroups"
+                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
+                                        ng-model="post.Hostescalation.hostgroups._ids">
+                                    </select>
+                                </div>
+                                <div ng-repeat="error in errors.hostgroups">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
                             </div>
-                            <div ng-repeat="error in errors.hosts_excluded">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.hostgroups}">
-                            <label class="control-label">
-                                <i class="fa fa-plus up" aria-hidden="true"></i>
-                                <?php echo __('Host groups'); ?>
-                            </label>
-                            <div class="input-group">
-                                <select
-                                    id="HostescalationIncludeHostgroups"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="hostgroups"
-                                    ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
-                                    ng-model="post.Hostescalation.hostgroups._ids">
-                                </select>
-                            </div>
-                            <div ng-repeat="error in errors.hostgroups">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-
-                        <div class="form-group" ng-class="{'has-error': errors.hostgroups_excluded}">
-                            <label class="control-label">
-                                <i class="fa fa-minus down" aria-hidden="true"></i>
-                                <?php echo __('Excluded host groups'); ?>
-                            </label>
-                            <div class="input-group">
-                                <select
-                                    id="HostescalationExcludeHostgroups"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="custom-select"
-                                    multiple
-                                    chosen="hostgroups_excluded"
-                                    ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_excluded"
-                                    ng-model="post.Hostescalation.hostgroups_excluded._ids">
-                                </select>
-                            </div>
-                            <div ng-repeat="error in errors.hostgroups_excluded">
-                                <div class="help-block text-danger">{{ error }}</div>
+                            <div class="form-group form-group arrowd-vertical-on-right" ng-class="{'has-error': errors.hosts_excluded}">
+                                <label class="control-label">
+                                    <i class="fa fa-minus down" aria-hidden="true"></i>
+                                    <?php echo __('Excluded Hosts'); ?>
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-danger text-white">
+                                            <i class="fas fa-desktop"></i>
+                                        </span>
+                                    </div>
+                                    <select
+                                        id="HostescalationExcludeHosts"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="custom-select"
+                                        multiple
+                                        chosen="hosts_excluded"
+                                        callback="loadExcludedHosts"
+                                        ng-disabled="post.Hostescalation.hostgroups._ids.length == 0"
+                                        ng-options="host.key as host.value disable when host.disabled for host in hosts_excluded"
+                                        ng-model="post.Hostescalation.hosts_excluded._ids">
+                                    </select>
+                                </div>
+                                <div ng-repeat="error in errors.hosts_excluded">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
                             </div>
                         </div>
 

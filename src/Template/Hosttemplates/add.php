@@ -70,7 +70,7 @@
                         <!-- BASIC CONFIGURATION START -->
                         <div class="card margin-bottom-10">
                             <div class="card-header">
-                                <i class="fa fa-magic"></i> <?php echo __('Basic configuration'); ?>
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Basic configuration'); ?>
                             </div>
                             <div class="card-body">
                                 <div class="form-group required" ng-class="{'has-error': errors.container_id}">
@@ -205,7 +205,9 @@
                                                ng-if="post.Hosttemplate.check_period_id > 0">
                                                 <?= __('Check period'); ?>
                                             </a>
-                                            <span ng-if="post.Hosttemplate.check_period_id == 0"><?php echo __('Check period'); ?></span>
+                                            <span ng-if="post.Hosttemplate.check_period_id == 0">
+                                                <?php echo __('Check period'); ?>
+                                            </span>
                                         <?php else: ?>
                                             <?= __('Check period'); ?>
                                         <?php endif; ?>
@@ -281,7 +283,9 @@
                                                ng-if="post.Hosttemplate.command_id > 0">
                                                 <?= __('Check command'); ?>
                                             </a>
-                                            <span ng-if="post.Hosttemplate.command_id == 0"><?php echo __('Check command'); ?></span>
+                                            <span ng-if="post.Hosttemplate.command_id == 0">
+                                                <?php echo __('Check command'); ?>
+                                            </span>
                                         <?php else: ?>
                                             <?= __('Check command'); ?>
                                         <?php endif; ?>
@@ -305,7 +309,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.hosttemplatecommandargumentvalues}"
                                      ng-repeat="hosttemplatecommandargumentvalue in post.Hosttemplate.hosttemplatecommandargumentvalues">
-                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-10 control-label text-purple">
                                         {{hosttemplatecommandargumentvalue.commandargument.human_name}}
                                     </label>
                                     <div class="col-xs-12 col-lg-8">
@@ -432,7 +436,9 @@
                                                ng-if="post.Hosttemplate.notify_period_id > 0">
                                                 <?php echo __('Notification period'); ?>
                                             </a>
-                                            <span ng-if="post.Hosttemplate.notify_period_id == 0"><?php echo __('Notification period'); ?></span>
+                                            <span ng-if="post.Hosttemplate.notify_period_id == 0">
+                                                <?php echo __('Notification period'); ?>
+                                            </span>
                                         <?php else: ?>
                                             <?php echo __('Notification period'); ?>
                                         <?php endif; ?>
@@ -748,6 +754,48 @@
                                 </div>
                             </div>
                             <!-- PROMETHEUS CONFIGURATION END -->
+                        <?php endif; ?>
+
+                        <?php if (\Cake\Core\Plugin::isLoaded('SLAModule')): ?>
+                            <!-- SLA CONFIGURATION START -->
+                            <div class="card margin-bottom-10">
+                                <div class="card-header">
+                                    <i class="fa-solid fa-award"></i> <?= __('Service Level Agreement'); ?>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group" ng-class="{'has-error': errors.slas}">
+                                        <label class="control-label" for="SlasSelect">
+                                            <?php if ($this->Acl->hasPermission('edit', 'slas', 'SLAModule')): ?>
+                                                <a ui-sref="SlasEdit({id:post.Hosttemplate.sla_id})"
+                                                   ng-show="post.Hosttemplate.sla_id">
+                                                    <?= __('Service class'); ?>
+                                                </a>
+                                                <span ng-hide="post.Hosttemplate.sla_id">
+                                                        <?= __('Service class'); ?>
+                                                    </span>
+                                            <?php else: ?>
+                                                <?= __('Service class'); ?>
+                                            <?php endif; ?>
+                                        </label>
+                                        <select
+                                            id="SlasSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="slas"
+                                            ng-options="sla.key as sla.value for sla in slas"
+                                            ng-model="post.Hosttemplate.sla_id">
+                                            <option></option>
+                                        </select>
+                                        <div class="help-block">
+                                            <?= __('You can define service levels for all hosts using this host template.'); ?>
+                                        </div>
+                                        <div ng-repeat="error in errors.slas">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- SLA CONFIGURATION END -->
                         <?php endif; ?>
 
                         <div class="card margin-top-10">

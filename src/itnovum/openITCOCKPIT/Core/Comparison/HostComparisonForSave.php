@@ -145,7 +145,8 @@ class HostComparisonForSave {
             'freshness_checks_enabled',
             'freshness_threshold',
             'host_url',
-            'notifications_enabled'
+            'notifications_enabled',
+            'sla_id'
         ];
 
         $data = [];

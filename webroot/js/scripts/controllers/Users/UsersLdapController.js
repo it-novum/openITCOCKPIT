@@ -10,6 +10,7 @@ angular.module('openITCOCKPIT')
         var clearForm = function(){
             $scope.selectedUserContainers = [];
             $scope.selectedUserContainerWithPermission = {};
+            $scope.userContainerRoleContainerIds = [];
             $scope.data.selectedSamAccountNameIndex = null;
 
             $scope.post = {
@@ -34,6 +35,9 @@ angular.module('openITCOCKPIT')
 
                     usergroup_id: 0,
                     usercontainerroles: {
+                        _ids: []
+                    },
+                    usercontainerroles_ldap: {
                         _ids: []
                     },
                     ContainersUsersMemberships: {},
@@ -81,6 +85,25 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadLdapUserDetailsBySamAccountName = function(samAccountName){
+            $scope.data.selectedSamAccountNameIndex = null;
+            $http.get("/users/loadLdapUserDetails.json", {
+                params: {
+                    'angular': true,
+                    'samaccountname': samAccountName
+                }
+            }).then(function(result){
+                $scope.ldapUser = result.data.ldapUser;
+                $scope.selectedUserContainerRolesLdapReadOnly = [];
+                $scope.post.User.usercontainerroles_ldap._ids = Object.keys($scope.ldapUser.userContainerRoleContainerPermissionsLdap);
+                for(var i in $scope.ldapUser.userContainerRoleContainerPermissionsLdap){
+                    $scope.selectedUserContainerRolesLdapReadOnly.push(
+                        $scope.ldapUser.userContainerRoleContainerPermissionsLdap[i]._joinData.usercontainerrole_id
+                    );
+                }
+            });
+        };
+
         $scope.createApiKey = function(index){
             $http.get("/profile/create_apikey.json?angular=true")
                 .then(function(result){
@@ -96,7 +119,7 @@ angular.module('openITCOCKPIT')
 
             // Query new API Key from Server
             var index = $scope.post.User.apikeys.length;
-            if( index > 0 ) {
+            if(index > 0){
                 // Array is not empty so current array index is lenght - 1, arrays start at 0
                 index = index - 1;
             }
@@ -107,15 +130,18 @@ angular.module('openITCOCKPIT')
             $scope.post.User.apikeys.splice(index, 1);
         };
 
-        $scope.loadUserContaineRoles = function(){
+        $scope.loadUserContainerRoles = function(searchString){
             $http.get("/users/loadContainerRoles.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Usercontainerroles.name]': searchString,
+                    'selected[]': $scope.post.User.usercontainerroles._ids
                 }
             }).then(function(result){
                 $scope.usercontainerroles = result.data.usercontainerroles;
             });
         };
+
 
         $scope.loadContainer = function(){
             $http.get("/containers/loadContainersForAngular.json", {
@@ -161,6 +187,12 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.userContainerRoleContainerPermissions = result.data.userContainerRoleContainerPermissions;
+                $scope.userContainerRoleContainerIds = Object.keys($scope.userContainerRoleContainerPermissions).map(function(item){
+                    return parseInt(item, 10);
+                });
+                /*.map(function(key){
+                    return [Number(key), $scope.userContainerRoleContainerPermissions[key]];
+                });*/
             });
         };
 
@@ -280,12 +312,15 @@ angular.module('openITCOCKPIT')
                 $scope.post.User.email = $scope.ldapUsers[index].email;
                 $scope.post.User.samaccountname = $scope.ldapUsers[index].samaccountname;
                 $scope.post.User.ldap_dn = $scope.ldapUsers[index].dn;
+
+                // Load LDAP groups of selected user
+                $scope.loadLdapUserDetailsBySamAccountName($scope.ldapUsers[index].samaccountname);
             }
         });
 
         $scope.loadLdapConfig();
         $scope.loadLdapUsersByString('');
-        $scope.loadUserContaineRoles();
+        $scope.loadUserContainerRoles();
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();

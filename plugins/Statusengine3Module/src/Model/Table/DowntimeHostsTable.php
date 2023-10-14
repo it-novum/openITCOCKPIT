@@ -29,12 +29,10 @@ namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -115,6 +113,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
                 'DowntimeHosts.entry_time',
                 'DowntimeHosts.scheduled_start_time',
                 'DowntimeHosts.scheduled_end_time',
+                'DowntimeHosts.actual_end_time',
                 'DowntimeHosts.duration',
                 'DowntimeHosts.was_started',
                 'DowntimeHosts.internal_downtime_id',
@@ -133,13 +132,29 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
             ->leftJoin(
                 ['HostsToContainers' => 'hosts_to_containers'],
                 ['HostsToContainers.host_id = Hosts.id']
+            );
+
+        $startTimestamp = $DowntimeHostConditions->getFrom();
+        $endTimestamp = $DowntimeHostConditions->getTo();
+
+        $query->where([
+            'OR' => [
+                ['(:start1 BETWEEN DowntimeHosts.scheduled_start_time AND DowntimeHosts.scheduled_end_time)'],
+                ['(:end1   BETWEEN DowntimeHosts.scheduled_start_time AND DowntimeHosts.scheduled_end_time)'],
+                ['(DowntimeHosts.scheduled_start_time BETWEEN :start2 AND :end2)'],
+
+            ]
+        ])
+            ->bind(':start1', $startTimestamp, 'integer')
+            ->bind(':end1', $endTimestamp, 'integer')
+            ->bind(':start2', $startTimestamp, 'integer')
+            ->bind(':end2', $endTimestamp, 'integer');
+        $query->order(
+            array_merge(
+                $DowntimeHostConditions->getOrder(),
+                ['DowntimeHosts.internal_downtime_id' => 'asc']
             )
-            ->where([
-                'DowntimeHosts.scheduled_start_time >' => $DowntimeHostConditions->getFrom(),
-                'DowntimeHosts.scheduled_start_time <' => $DowntimeHostConditions->getTo(),
-            ])
-            ->order($DowntimeHostConditions->getOrder())
-            ->group('DowntimeHosts.internal_downtime_id');
+        )->group('DowntimeHosts.internal_downtime_id');
 
 
         if ($DowntimeHostConditions->hasContainerIds()) {
@@ -259,8 +274,12 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
                 ['HostsToContainers' => 'hosts_to_containers'],
                 ['HostsToContainers.host_id = Hosts.id']
             )
-            ->order($DowntimeHostConditions->getOrder())
-            ->group('DowntimeHosts.internal_downtime_id');
+            ->order(
+                array_merge(
+                    $DowntimeHostConditions->getOrder(),
+                    ['DowntimeHosts.internal_downtime_id' => 'asc']
+                )
+            )->group('DowntimeHosts.internal_downtime_id');
 
 
         if ($DowntimeHostConditions->hasHostUuids()) {

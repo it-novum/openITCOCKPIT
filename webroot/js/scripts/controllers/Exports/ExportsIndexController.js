@@ -4,6 +4,7 @@ angular.module('openITCOCKPIT')
         $scope.exportSuccessfully = true;
         $scope.selectedElements = 0;
         $scope.showLog = false;
+        $scope.isGearmanWorkerRunning = true; // Do not flash red error box for a split second on page load
 
         $scope.post = {
             create_backup: 1
@@ -37,11 +38,13 @@ angular.module('openITCOCKPIT')
                 $scope.tasks = result.data.tasks;
                 $scope.exportRunning = result.data.exportRunning;
                 $scope.gearmanReachable = result.data.gearmanReachable;
+                $scope.isGearmanWorkerRunning = result.data.isGearmanWorkerRunning;
                 $scope.satellites = result.data.satellites;
                 $scope.useSingleInstanceSync = result.data.useSingleInstanceSync;
                 $scope.init = false;
             }, function errorCallback(result){
                 $scope.gearmanReachable = false;
+                $scope.isGearmanWorkerRunning = false;
             });
         };
 
@@ -108,6 +111,7 @@ angular.module('openITCOCKPIT')
                 $scope.tasks = result.data.tasks;
                 $scope.exportRunning = result.data.exportRunning;
                 $scope.gearmanReachable = result.data.gearmanReachable;
+                $scope.isGearmanWorkerRunning = result.data.isGearmanWorkerRunning;
                 $scope.init = false;
             });
         };

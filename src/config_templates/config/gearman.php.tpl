@@ -7,6 +7,7 @@ return [
         'address'    => '{{address}}',
         'port'       => {{port}},
         'pidfile'    => '{{pidfile}}',
-        'worker'     => {{worker}}
+        'worker'     => {{worker}},
+        'timeout'    => 1000,
     ]
 ];

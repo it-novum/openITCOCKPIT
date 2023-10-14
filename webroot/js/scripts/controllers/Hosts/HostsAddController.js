@@ -50,6 +50,7 @@ angular.module('openITCOCKPIT')
                     container_id: 0,
                     host_url: '',
                     satellite_id: 0,
+                    sla_id: null,
                     contacts: {
                         _ids: []
                     },
@@ -118,7 +119,8 @@ angular.module('openITCOCKPIT')
                 'check_period_id',
                 'notify_period_id',
                 'tags',
-                'host_url'
+                'host_url',
+                'sla_id'
             ];
 
             for(var index in fields){
@@ -239,6 +241,7 @@ angular.module('openITCOCKPIT')
                 $scope.satellites = result.data.satellites;
                 $scope.sharingContainers = result.data.sharingContainers;
                 $scope.exporters = result.data.exporters;
+                $scope.slas = result.data.slas;
             });
         };
 
@@ -254,7 +257,8 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                     'filter[Hosts.name]': searchString,
                     'selected[]': $scope.post.Host.parenthosts._ids,
-                    'containerId': containerId
+                    'containerId': containerId,
+                    'satellite_id': ($scope.post.Host.satellite_id > 0) ? $scope.post.Host.satellite_id : null
                 }
             }).then(function(result){
                 $scope.parenthosts = result.data.hosts;
@@ -375,6 +379,19 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(redirectState){
+
+            //clean up parent host  -> remove not visible ids
+            $scope.post.Host.parenthosts._ids = _.intersection(
+                _.map($scope.parenthosts, 'key'),
+                $scope.post.Host.parenthosts._ids
+            );
+
+            //clean up host and host templates -> remove not visible ids
+            $scope.post.Host.hostgroups._ids = _.intersection(
+                _.map($scope.hostgroups, 'key'),
+                $scope.post.Host.hostgroups._ids
+            );
+
             $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -516,4 +533,10 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
+        $scope.$watch('post.Host.satellite_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadParentHosts('');
+        }, true);
     });

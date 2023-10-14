@@ -45,12 +45,14 @@ use App\Model\Table\HostcommandargumentvaluesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\InstantreportsTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -58,7 +60,9 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
+use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use ImportModule\Model\Table\ImportedHostsTable;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
@@ -106,6 +110,8 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use MapModule\Model\Table\MapsTable;
+use SLAModule\Model\Table\SlasTable;
 
 
 /**
@@ -124,19 +130,23 @@ class HostsController extends AppController {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         $satellites = [];
 
         if (Plugin::isLoaded('DistributeModule')) {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
 
         if (!$this->isApiRequest()) {
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
+            $this->set('types', $HostsTable->getHostTypes());
             //Only ship HTML template
             return;
         }
@@ -184,8 +194,9 @@ class HostsController extends AppController {
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
+        $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+
 
         if ($this->DbBackend->isNdoUtils()) {
             $hosts = $HostsTable->getHostsIndex($HostFilter, $HostCondition, $PaginateOMat);
@@ -208,6 +219,7 @@ class HostsController extends AppController {
 
         /** @var ServicesTable $ServiceTable */
         $ServiceTable = TableRegistry::getTableLocator()->get('Services');
+        $typesForView = $HostsTable->getHostTypesWithStyles();
 
         foreach ($hosts as $host) {
             $serviceUuids = $ServiceTable->find('list', [
@@ -255,15 +267,36 @@ class HostsController extends AppController {
                 $satellite_id = $Host->getSatelliteId();
             }
 
+            $downtime = [];
+            if ($HostControllerRequest->includeDowntimeInformation() && $Hoststatus->isInDowntime()) {
+                $downtime = $DowntimehistoryHostsTable->byHostUuid($Host->getUuid());
+                if (!empty($downtime)) {
+                    $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
+                    $downtime = $Downtime->toArray();
+                }
+            }
+
+            $acknowledgement = [];
+            if ($HostControllerRequest->includeAcknowledgementInformation() && $Hoststatus->isAcknowledged()) {
+                $acknowledgement = $AcknowledgementHostsTable->byHostUuid($Host->getUuid());
+                if (!empty($acknowledgement)) {
+                    $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime, $allowEdit);
+                    $acknowledgement = $Acknowledgement->toArray();
+                }
+            }
+
             $tmpRecord = [
                 'Host'                 => $Host->toArray(),
                 'Hoststatus'           => $Hoststatus->toArray(),
-                'ServicestatusSummary' => $serviceStateSummary
+                'ServicestatusSummary' => $serviceStateSummary,
+                'Downtime'             => $downtime,
+                'Acknowledgement'      => $acknowledgement
             ];
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
+            $tmpRecord['Host']['type'] = $typesForView[$host['Host']['host_type']];
 
             $all_hosts[] = $tmpRecord;
         }
@@ -364,7 +397,7 @@ class HostsController extends AppController {
             }
             /** @var $SatellitesTable \DistributeModule\Model\Table\SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-            $SatelliteNames = $SatellitesTable->getSatellitesAsList($MY_RIGHTS);
+            $SatelliteNames = $SatellitesTable->getSatellitesAsListWithDescription($MY_RIGHTS);
             $SatelliteNames[0] = $masterInstanceName;
         }
 
@@ -379,7 +412,6 @@ class HostsController extends AppController {
         }
 
         $HostFilter = new HostFilter($this->request);
-        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
         $HostCondition->setIncludeDisabled(false);
         $HostCondition->setContainerIds($this->MY_RIGHTS);
@@ -493,7 +525,8 @@ class HostsController extends AppController {
             $saveHostAndAssignMatchingServicetemplateGroups = $this->request->getData('save_host_and_assign_matching_servicetemplate_groups', false) === true;
 
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
-            $HostComparisonForSave = new HostComparisonForSave($this->request->getData(), $hosttemplate, true);
+            $requestData = $this->request->getData();
+            $HostComparisonForSave = new HostComparisonForSave($requestData, $hosttemplate, true);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
             $hostData['uuid'] = UUID::v4();
 
@@ -515,7 +548,7 @@ class HostsController extends AppController {
                 //No errors
 
                 $User = new User($this->getUser());
-                $requestData = $this->request->getData();
+
 
                 $extDataForChangelog = $HostsTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
@@ -712,7 +745,7 @@ class HostsController extends AppController {
             $dataForSave['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
             $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
-            //Update contact data
+            //Update host data
 
             $hostEntity = $HostsTable->get($id);
             $hostEntity = $HostsTable->patchEntity($hostEntity, $dataForSave);
@@ -786,6 +819,16 @@ class HostsController extends AppController {
 
                 }
 
+                // Update SLA tables
+                $oldSlaId = $hostForChangelog['Host']['sla_id'] ?? null;
+                $newSlaId = ($dataForSave['sla_id'] === null) ? $hosttemplate['Hosttemplate']['sla_id'] : $dataForSave['sla_id'];
+
+                if (intval($oldSlaId) !== intval($newSlaId) && Plugin::isLoaded('SLAModule')) {
+                    // SLA has changed - delete old SLA related records
+                    /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+                    $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+                    $SlasTable->deleteSlaRecordsByHostId($id);
+                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization
@@ -926,17 +969,22 @@ class HostsController extends AppController {
         $User = new User($this->getUser());
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        /** @var HosttemplatesTable $HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
 
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->request->is('get')) {
             $hosts = $HostsTable->getHostsForEditDetails(func_get_args());
-
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
             $contacts = $ContactsTable->contactsByContainerId($this->MY_RIGHTS, 'list');
             $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
@@ -953,7 +1001,7 @@ class HostsController extends AppController {
                 /** @var $SatellitesTable SatellitesTable */
                 $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-                $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+                $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
                 $satellites[0] = $masterInstanceName;
             }
             $satellites = Api::makeItJavaScriptAble($satellites);
@@ -975,24 +1023,38 @@ class HostsController extends AppController {
             return;
         }
 
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-        /** @var HosttemplatesTable $HosttemplatesTable */
-        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $hostIds = $this->request->getData('data.hosts', []);
             $detailsToEdit = $this->request->getData('data.details', []);
+            $HosttemplateCache = new KeyValueStore();
+            $ContactCache = new KeyValueStore();
+            $ContactgroupCache = new KeyValueStore();
+            $ObjectsCacheChangelog = new ObjectsCache();
             foreach ($hostIds as $hostId) {
-                $dataToSave = [];
+
+                $hostArray = $HostsTable->getHostByIdWithDetails($hostId);
+                $hosttemplateId = $hostArray['Host']['hosttemplate_id'];
+
+                if (!$HosttemplateCache->has($hosttemplateId)) {
+                    $HosttemplateCache->set($hosttemplateId, $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId));
+                }
+                $hosttemplate = $HosttemplateCache->get($hosttemplateId);
+
+                $HostMergerForView = new HostMergerForView($hostArray, $hosttemplate);
+                $mergedHost = $HostMergerForView->getDataForView();
+                $hostForChangelog = $mergedHost;
+
+                $currentContainerIds = [];
+                foreach ($hostArray['Host']['hosts_to_containers_sharing'] as $container) {
+                    $currentContainerIds = $hostArray['Host']['hosts_to_containers_sharing']['_ids'];
+                }
+
                 $sharedContainers = [];
-                $hostObject = $HostsTable->getHostByIdForEditDetails($hostId);
-                $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
                 $containerIdsForChangelog = [];
-                $primaryContainerId = $hostObject->get('container_id');
-                foreach ($hostObject->get('hosts_to_containers_sharing') as $container) {
-                    $containerId = $container->get('id');
+
+                $primaryContainerId = $hostArray['Host']['container_id'];
+                foreach ($currentContainerIds as $containerId) {
                     $containerIdsForChangelog[] = $containerId;
                     if ($primaryContainerId !== $containerId) {
                         $sharedContainers[] = $containerId;
@@ -1005,16 +1067,44 @@ class HostsController extends AppController {
                     $this->MY_RIGHTS
                 );
 
-
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
-                    $hostData = $hostObject->toArray();
-                    $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hostData['hosttemplate_id']);
-                    $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hosttemplate);
+                    $hasChanges = false;
 
+                    $editDetailKeysToFields = [
+                        'editDescription'              => 'description',
+                        'editTags'                     => 'tags',
+                        'editPriority'                 => 'priority',
+                        'editCheckInterval'            => 'check_interval',
+                        'editRetryInterval'            => 'retry_interval',
+                        'editMaxNumberOfCheckAttempts' => 'max_check_attempts',
+                        'editNotificationInterval'     => 'notification_interval',
+                        'editHostUrl'                  => 'host_url',
+                        'editNotes'                    => 'notes',
+
+                    ];
+
+                    $HostMergerForView = new HostMergerForView($hostArray, $hosttemplate);
+                    // Merge the Host with the host template to be able to compare description, tags, etc
                     $mergedHost = $HostMergerForView->getDataForView();
-                    $mergedHost['Host']['contacts'] = $hostData['contacts'];
-                    $mergedHost['Host']['contactgroups'] = $hostData['contactgroups'];
+
+                    foreach ($editDetailKeysToFields as $editDetailKey => $editDetailField) {
+                        if ($detailsToEdit[$editDetailKey] == 1) {
+                            if (!empty($detailsToEdit['Host'][$editDetailField]) && $detailsToEdit['Host'][$editDetailField] != $mergedHost['Host'][$editDetailField]) {
+                                $hostArray['Host'][$editDetailField] = $detailsToEdit['Host'][$editDetailField];
+                                $hasChanges = true;
+                            }
+                        }
+                    }
+
+                    if ($detailsToEdit['editSatellites'] == 1) {
+                        if ($hostArray['Host']['host_type'] !== EVK_HOST) {
+                            if (is_numeric($detailsToEdit['Host']['satellite_id']) && $detailsToEdit['Host']['satellite_id'] != $hostArray['Host']['satellite_id']) {
+                                $hostArray['Host']['satellite_id'] = $detailsToEdit['Host']['satellite_id'];
+                                $hasChanges = true;
+                            }
+                        }
+                    }
 
                     if ($detailsToEdit['editSharedContainers'] == 1) {
                         if (!empty($detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'])) {
@@ -1032,203 +1122,217 @@ class HostsController extends AppController {
                             }
                             $containerIds = array_unique($containerIds);
 
-                            $dataToSave['hosts_to_containers_sharing'] = [
-                                '_ids' => $containerIds
-                            ];
-
+                            $hostArray['Host']['hosts_to_containers_sharing']['_ids'] = $containerIds;
                             $containerIdsForChangelog = $containerIds;
+                            $hasChanges = true;
                         }
                     }
 
-                    if ($detailsToEdit['editDescription'] == 1) {
-                        $newDescription = $detailsToEdit['Host']['description'];
-                        if (!empty($newDescription) && $newDescription != $mergedHost['Host']['description']) {
-                            $dataToSave['description'] = $newDescription;
-                        }
-                    }
-                    if ($detailsToEdit['editTags'] == 1) {
-                        $newTags = $detailsToEdit['Host']['tags'];
-                        if (!empty($newTags) && $newTags != $mergedHost['Host']['tags']) {
-                            $dataToSave['tags'] = $newTags;
-                        }
-                    }
-                    if ($detailsToEdit['editPriority'] == 1) {
-                        $newPriority = $detailsToEdit['Host']['priority'];
-                        if (!empty($newPriority) && $newPriority != $mergedHost['Host']['priority']) {
-                            $dataToSave['priority'] = $newPriority;
-                        }
-                    }
-                    if ($detailsToEdit['editCheckInterval'] == 1) {
-                        $newCheckInterval = $detailsToEdit['Host']['check_interval'];
-                        if (!empty($newCheckInterval) && $newCheckInterval != $mergedHost['Host']['check_interval']) {
-                            $dataToSave['check_interval'] = $newCheckInterval;
-                        }
-                    }
-                    if ($detailsToEdit['editRetryInterval'] == 1) {
-                        $newRetryInterval = $detailsToEdit['Host']['retry_interval'];
-                        if (!empty($newRetryInterval) && $newRetryInterval != $mergedHost['Host']['retry_interval']) {
-                            $dataToSave['retry_interval'] = $newRetryInterval;
-                        }
-                    }
-                    if ($detailsToEdit['editMaxNumberOfCheckAttempts'] == 1) {
-                        $newMaxNumberOfCheckAttempts = $detailsToEdit['Host']['max_check_attempts'];
-                        if (!empty($newMaxNumberOfCheckAttempts) && $newMaxNumberOfCheckAttempts != $mergedHost['Host']['max_check_attempts']) {
-                            $dataToSave['max_check_attempts'] = $newMaxNumberOfCheckAttempts;
-                        }
-                    }
-                    if ($detailsToEdit['editNotificationInterval'] == 1) {
-                        $newNotificationInterval = $detailsToEdit['Host']['notification_interval'];
-                        if (!empty($newNotificationInterval) && $newNotificationInterval != $mergedHost['Host']['notification_interval']) {
-                            $dataToSave['notification_interval'] = $newNotificationInterval;
-                        }
-                    }
                     if ($detailsToEdit['editContacts'] == 1) {
                         $newContacts = $detailsToEdit['Host']['contacts']['_ids'];
-                        $allContactsAreVisibleForUser = false;
+                        $allContactsAreVisibleForUser = empty($mergedHost['Host']['contacts']) && empty($hosttemplate['Hosttemplate']['contacts']);
                         $contactsFromHost = [];
                         if (!empty($newContacts)) {
-                            //Check user permissions for already exists contacts. Are all existing contacts are visible for user
-                            if (!empty($mergedHost['Host']['contacts']) || !empty($mergedHost['Host']['hosttemplate']['contacts'])) {
-                                $contactsFromHost = $mergedHost['Host']['contacts'];
+                            //Check user permissions for already exists contacts. Are all existing contacts visible for the user
+                            if (!empty($mergedHost['Host']['contacts']) || !empty($hosttemplate['Hosttemplate']['contacts'])) {
+                                $contactsFromHost = $mergedHost['Host']['contacts']['_ids'];
+
                                 if (empty($contactsFromHost)) {
-                                    $contactsFromHost = $mergedHost['Host']['hosttemplate']['contacts'];
+                                    // Host has no own contacts, use the contacts of the host template
+                                    $contactsFromHost = $hosttemplate['Hosttemplate']['contacts']['_ids'];
                                 }
                                 if (!empty($contactsFromHost)) {
-                                    foreach ($contactsFromHost as $contact) {
+                                    foreach ($contactsFromHost as $contactId) {
+                                        if (!$ContactCache->has($contactId)) {
+                                            $ContactCache->set($contactId, $ContactsTable->get($contactId, [
+                                                'contain' => 'Containers'
+                                            ])->toArray());
+
+                                        }
+                                        $contact = $ContactCache->get($contactId);
                                         $contactContainerIds = Hash::extract($contact['containers'], '{n}.id');
                                         if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
+                                            // No permissions for this contact
+                                            // Leave foreach loop
+                                            $allContactsAreVisibleForUser = false;
                                             break;
                                         }
+
+                                        // User can see the current contact
+                                        $allContactsAreVisibleForUser = true;
                                     }
-                                    $allContactsAreVisibleForUser = true;
                                 } else {
                                     $allContactsAreVisibleForUser = true; //nothing to do
                                 }
+                            } else {
+                                // This host AND hosttemplate has no contacts yet - no old contacts no permission check required.
+                                $allContactsAreVisibleForUser = true; // All contacts are from GET self::edit_details() which uses MY_RIGHTS
                             }
+
                             if ($allContactsAreVisibleForUser === true) {
                                 //Container permissions check for contacts
-                                // Host can use this contacts
+                                // Current User can use this contacts
                                 // Check if the contacts can be used by the host
                                 $contactsAfterContainerCheck = $ContactsTable->removeContactsWhichAreNotInContainer(
                                     $newContacts,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContacts, $contactsAfterContainerCheck))) {
-                                    if ($detailsToEdit['keepContacts']) {
-                                        $dataToSave['contacts'] = [
-                                            '_ids' => array_unique(
-                                                array_merge(
-                                                    $contactsFromHost, $newContacts
-                                                )
-                                            )
-                                        ];
-                                    } else {
-                                        $dataToSave['contacts'] = [
-                                            '_ids' => $newContacts
+                                if (!empty($contactsAfterContainerCheck)) { // Only save the contacts the host can "see"
+                                    $contactsFromHost = $mergedHost['Host']['contacts']['_ids'];
 
-                                        ];
+                                    if (empty($contactsFromHost)) {
+                                        // Host has no own contacts, use the contacts of the host template
+                                        $contactsFromHost = $hosttemplate['Hosttemplate']['contacts']['_ids'];
                                     }
-                                    $dataToSave['own_contacts'] = 1;
+
+                                    if (!is_array($contactsFromHost)) {
+                                        $contactsFromHost = [];
+                                    }
+
+                                    if ($detailsToEdit['keepContacts']) {
+                                        $contactIds = array_unique(
+                                            array_merge(
+                                                $contactsFromHost, $contactsAfterContainerCheck
+                                            )
+                                        );
+                                    } else {
+                                        $contactIds = $contactsAfterContainerCheck;
+                                    }
+                                    $hostArray['Host']['contacts']['_ids'] = $contactIds;
+                                    $hasChanges = true;
                                 }
+                            }
+                        } else {
+                            if (!$detailsToEdit['keepContacts']) {
+                                // User has tick "editContacts" and posted an empty array - so we remove all contacts from the hosts
+                                // as long as keepContacts is disabled
+                                $hostArray['Host']['contacts']['_ids'] = [];
+                                $hasChanges = true;
                             }
                         }
                     }
+
                     if ($detailsToEdit['editContactgroups'] == 1) {
                         $newContactgroups = $detailsToEdit['Host']['contactgroups']['_ids'];
-                        $contactgroupsFromHost = [];
-                        $allContactGroupsAreVisibleForUser = false;
-                        if (!empty($newContacts)) {
-                            //Check user permissions for already exists contacts. Are all existing contact groups are visible for user
-                            if (!empty($mergedHost['Host']['contactgroups']) || !empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
-                                $contactgroupsFromHost = $mergedHost['Host']['contactgroups'];
+                        $allContactGroupsAreVisibleForUser = empty($mergedHost['Host']['contactgroups']) && empty($hosttemplate['Hosttemplate']['contactgroups']);
+                        if (!empty($newContactgroups)) {
+                            //Check user permissions for already exists contacts. Are all existing contact groups are visible for the user
+                            if (!empty($mergedHost['Host']['contactgroups']['_ids']) || !empty($hosttemplate['Hosttemplate']['contactgroups']['_ids'])) {
+                                $contactgroupsFromHost = $mergedHost['Host']['contactgroups']['_ids'];
                                 if (empty($contactgroupsFromHost)) {
-                                    $contactgroupsFromHost = $mergedHost['Host']['hosttemplate']['contactgroups'];
+                                    // Host has no own contact groups, use the contact groups of the host template
+                                    $contactgroupsFromHost = $hosttemplate['Hosttemplate']['contactgroups']['_ids'];
                                 }
                                 if (!empty($contactgroupsFromHost)) {
-                                    foreach ($contactgroupsFromHost as $contactgroup) {
-                                        $contactgroupContainerIds = Hash::extract($contactgroup['container'], '{n}.parent_id');
-                                        if (empty(array_intersect($contactgroupContainerIds, $this->MY_RIGHTS))) {
+                                    foreach ($contactgroupsFromHost as $contactgroupId) {
+                                        if (!$ContactgroupCache->has($contactgroupId)) {
+                                            $ContactgroupCache->set($contactgroupId, $ContactgroupsTable->get($contactgroupId, [
+                                                'contain' => 'Containers'
+                                            ])->toArray());
+
+                                        }
+                                        $contactgroup = $ContactgroupCache->get($contactgroupId);
+
+                                        if (!in_array($contactgroup['container']['parent_id'], $this->MY_RIGHTS, true)) {
+                                            // No permissions for this contact group
+                                            // Leave foreach loop
+                                            $allContactGroupsAreVisibleForUser = false;
                                             break;
                                         }
+
+                                        // User can see the current contact group
+                                        $allContactGroupsAreVisibleForUser = true;
                                     }
-                                    $allContactGroupsAreVisibleForUser = true;
                                 } else {
                                     $allContactGroupsAreVisibleForUser = true; //nothing to do
                                 }
+                            } else {
+                                // This host AND hosttemplate has no contact groups yet - no old contact groups no permission check required.
+                                $allContactGroupsAreVisibleForUser = true; // All contact groups are from GET self::edit_details() which uses MY_RIGHTS
                             }
+
                             if ($allContactGroupsAreVisibleForUser === true) {
                                 // Container permissions check for contact groups
-                                // Host can use this contact groups
+                                // The current User can use this contact groups
                                 // Check if the contact groups can be used by the host
                                 $contactgroupssAfterContainerCheck = $ContactgroupsTable->removeContactgroupsWhichAreNotInContainer(
                                     $newContactgroups,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContactgroups, $contactgroupssAfterContainerCheck))) {
-                                    if ($detailsToEdit['keepContactgroups']) {
-                                        $dataToSave['contactgroups'] = [
-                                            '_ids' => array_unique(
-                                                array_merge(
-                                                    $contactgroupsFromHost, $newContactgroups
-                                                )
-                                            )
-                                        ];
 
-                                    } else {
-                                        $dataToSave['contactgroups'] = [
-                                            '_ids' => $newContactgroups
+                                if (!empty($contactgroupssAfterContainerCheck)) { // Only save the contact groups the host can "see"
+                                    $contactgroupsFromHost = $mergedHost['Host']['contactgroups']['_ids'];
 
-                                        ];
+                                    if (empty($contactgroupsFromHost)) {
+                                        // Host has no own contact groups, use the contacts of the host template
+                                        $contactgroupsFromHost = $hosttemplate['Hosttemplate']['contactgroups']['_ids'];
                                     }
-                                    $dataToSave['own_contactgroups'] = 1;
+
+                                    if (!is_array($contactgroupsFromHost)) {
+                                        $contactgroupsFromHost = [];
+                                    }
+
+                                    if ($detailsToEdit['keepContactgroups']) {
+                                        $contactgroups =
+                                            array_unique(
+                                                array_merge(
+                                                    $contactgroupsFromHost, $contactgroupssAfterContainerCheck
+                                                )
+                                            );
+                                    } else {
+                                        $contactgroups = $contactgroupssAfterContainerCheck;
+                                    }
+
+                                    $hostArray['Host']['contactgroups']['_ids'] = $contactgroups;
+                                    $hasChanges = true;
                                 }
                             }
-                        }
-                    }
-
-                    if ($detailsToEdit['editHostUrl'] == 1) {
-                        $newHostUrl = $detailsToEdit['Host']['host_url'];
-                        if (!empty($newHostUrl) && $newHostUrl != $mergedHost['Host']['host_url']) {
-                            $dataToSave['host_url'] = $newHostUrl;
-                        }
-                    }
-                    if ($detailsToEdit['editNotes'] == 1) {
-                        $newNotes = $detailsToEdit['Host']['notes'];
-                        if (!empty($newNotes) && $newNotes != $mergedHost['Host']['notes']) {
-                            $dataToSave['notes'] = $newNotes;
-                        }
-                    }
-                    if ($detailsToEdit['editSatellites'] == 1) {
-                        if ($mergedHost['Host']['host_type'] !== EVK_HOST) {
-                            $newSatelliteId = $detailsToEdit['Host']['satellite_id'];
-                            if (is_numeric($newSatelliteId) && $newSatelliteId != $mergedHost['Host']['satellite_id']) {
-                                $dataToSave['satellite_id'] = $newSatelliteId;
+                        } else {
+                            if (!$detailsToEdit['keepContactgroups']) {
+                                // User has tick "editContactgroups" and posted an empty array - so we remove all contact groups from the hosts
+                                // as long as keepContactgroups is disabled
+                                $hostArray['Host']['contactgroups']['_ids'] = [];
+                                $hasChanges = true;
                             }
                         }
                     }
+                }
 
-                    if (!empty($dataToSave)) {
-                        $hostObject = $HostsTable->patchEntity($hostObject, $dataToSave);
-                        $HostsTable->save($hostObject);
-                        if (!$hostObject->hasErrors()) {
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                                'edit',
-                                'hosts',
-                                $hostObject->get('id'),
-                                OBJECT_HOST,
-                                $containerIdsForChangelog,
-                                $User->getId(),
-                                $hostObject->get('name'),
-                                $hostObjectForChangelog,
-                                ['Host' => $hostObject->toArray()]
-                            );
-                            if ($changelog_data) {
-                                /** @var Changelog $changelogEntry */
-                                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                                $ChangelogsTable->save($changelogEntry);
-                            }
+                if ($hasChanges === true) {
+                    $hostChanges = $hostArray;
+                    $HostComparisonForSave = new HostComparisonForSave($hostArray, $hosttemplate);
+                    $hostArray = $HostComparisonForSave->getDataForSaveForAllFields();
+
+
+                    $HostMergerForView = new HostMergerForView($hostChanges, $hosttemplate);
+                    // Merge the Host with the host template to be able to compare description, tags, etc
+                    $mergedHostToSave = $HostMergerForView->getDataForView();
+                    $hostArray['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
+                    $hostArray['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
+                    $hostArray['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
+                    $hostArray['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
+
+                    $hostObject = $HostsTable->get($hostId);
+
+                    $hostObject = $HostsTable->patchEntity($hostObject, $hostArray);
+                    $HostsTable->save($hostObject);
+                    if (!$hostObject->hasErrors()) {
+                        /** @var  ChangelogsTable $ChangelogsTable */
+                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                            'edit',
+                            'hosts',
+                            $hostObject->get('id'),
+                            OBJECT_HOST,
+                            $containerIdsForChangelog,
+                            $User->getId(),
+                            $hostObject->get('name'),
+                            array_merge($HostsTable->resolveDataForChangelog($mergedHostToSave, $ObjectsCacheChangelog), $mergedHostToSave),
+                            array_merge($HostsTable->resolveDataForChangelog($hostForChangelog, $ObjectsCacheChangelog), $hostForChangelog)
+                        );
+                        if ($changelog_data) {
+                            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                            $ChangelogsTable->save($changelogEntry);
                         }
                     }
                 }
@@ -1248,7 +1352,7 @@ class HostsController extends AppController {
             }
             /** @var $SatellitesTable \DistributeModule\Model\Table\SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-            $SatelliteNames = $SatellitesTable->getSatellitesAsList($MY_RIGHTS);
+            $SatelliteNames = $SatellitesTable->getSatellitesAsListWithDescription($MY_RIGHTS);
             $SatelliteNames[0] = $masterInstanceName;
         }
 
@@ -1558,8 +1662,13 @@ class HostsController extends AppController {
         /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         if ($this->request->is('get')) {
-            $hosts = $HostsTable->getHostsForCopy(func_get_args());
+            $hosts = $HostsTable->getHostsForCopy(func_get_args(), $MY_RIGHTS);
             $this->set('hosts', $hosts);
             $this->viewBuilder()->setOption('serialize', ['hosts']);
             return;
@@ -1568,6 +1677,7 @@ class HostsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             //We want to save/validate the data and save it
             $postData = $this->request->getData('data');
+            $ObjectsCacheChangelog = new ObjectsCache();
             foreach ($postData as $index => $host2copyData) {
                 $action = 'copy';
                 $currentDataForChangelog = [];
@@ -1586,6 +1696,7 @@ class HostsController extends AppController {
 
                     /** @var \App\Model\Entity\Host $sourceHost */
                     $sourceHost = $HostsTable->getHostDetailsForCopy($host2copyData['Source']['id']);
+
                     $hostDefaultValues = $sourceHost->extract([
                             'command_id',
                             'hosttemplate_id',
@@ -1615,12 +1726,16 @@ class HostsController extends AppController {
                             'tags',
                             'active_checks_enabled',
                             'satellite_id',
-                            'notifications_enabled'
+                            'notifications_enabled',
+                            'freshness_checks_enabled',
+                            'freshness_threshold',
+                            'sla_id'
                         ]
                     );
-                    /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
+
                     $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($sourceHost->get('hosttemplate_id'));
 
+                    /** @var \App\Model\Entity\Host $tmpHost */
                     $tmpHost = $HostsTable->newEmptyEntity();
                     $tmpHost->setNew(true);
                     if (!empty($hostDefaultValues)) {
@@ -1640,7 +1755,9 @@ class HostsController extends AppController {
                         $containerIds[] = $container->get('id');
                     }
                     foreach ($sourceHost->get('parenthosts') as $parenthost) {
-                        $parenthostsIds[] = $parenthost->get('id');
+                        if ($sourceHost->get('satellite_id') === 0 || $sourceHost->get('satellite_id') === $parenthost->get('satellite_id')) {
+                            $parenthostsIds[] = $parenthost->get('id');
+                        }
                     }
                     foreach ($sourceHost->get('contacts') as $contact) {
                         $contactsIds[] = $contact->get('id');
@@ -1692,11 +1809,9 @@ class HostsController extends AppController {
 
                     $tmpHost->hostcommandargumentvalues = $hostcommandargumentvalues;
                     $tmpHost->customvariables = $customvariables;
-
-
                     $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
                     $mergedHost = $HostMergerForView->getDataForView();
-                    $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost);
+                    $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost, $ObjectsCacheChangelog);
                     $extDataForChangelog = array_merge($mergedHost, $extDataForChangelog);
 
                     $hostData = $tmpHost->toArray();
@@ -1716,6 +1831,8 @@ class HostsController extends AppController {
                     $newHost->set('hosttemplate_flap_detection_on_up', $newHost->get('flap_detection_on_up'));
                     $newHost->set('hosttemplate_flap_detection_on_down', $newHost->get('flap_detection_on_down'));
                     $newHost->set('hosttemplate_flap_detection_on_unreachable', $newHost->get('flap_detection_on_unreachable'));
+                    $newHost->setAccess('*', false);
+                    $newHost->setAccess(['name', 'description', 'address', 'host_url'], true);
                     $newHost = $HostsTable->patchEntity($newHost, $host2copyData['Host']);
                     $extDataForChangelog = $newHost->toArray();
                 }
@@ -1856,7 +1973,7 @@ class HostsController extends AppController {
                                 //No errors
                                 /** @var  ChangelogsTable $ChangelogsTable */
                                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($sourceService);
+                                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($sourceService, $ObjectsCacheChangelog);
 
                                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                                     $action,
@@ -1949,6 +2066,15 @@ class HostsController extends AppController {
         }
 
         $host = $HostsTable->getHostForBrowser($id);
+        if (!empty($host['parenthosts']) && $host['satellite_id'] > 0) {
+            $parentHostsFiltered = [];
+            foreach ($host['parenthosts'] as $parentHost) {
+                if ($parentHost['satellite_id'] === 0 || $parentHost['satellite_id'] === $host['satellite_id']) {
+                    $parentHostsFiltered[] = $parentHost;
+                }
+            }
+            $host['parenthosts'] = $parentHostsFiltered;
+        }
 
         //Check permissions
         $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
@@ -2168,6 +2294,49 @@ class HostsController extends AppController {
             $checkCommand = 'Removed due to insufficient permissions';
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the host is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var MapsTable $MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $this->set('mapModule', !empty($MapsTable->getMapsByHostId((int)$hostObj->getId(), $MY_RIGHTS)));
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $objects['Hostgroups'] = $HostgroupsTable->getHostGroupsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Instantreports
+        /** @var InstantreportsTable $InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByHostId((int)$id, $MY_RIGHTS);
+        }
+
         // Set data to fronend
         $this->set('mergedHost', $mergedHost);
         $this->set('docuExists', $DocumentationsTable->existsByUuid($hostObj->getUuid()));
@@ -2184,6 +2353,8 @@ class HostsController extends AppController {
         $this->set('checkPeriod', $checkPeriod);
         $this->set('notifyPeriod', $notifyPeriod);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
+        $this->set('objects', $objects);
+        $this->set('satelliteId', $hostObj->getSatelliteId());
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
@@ -2200,7 +2371,10 @@ class HostsController extends AppController {
             'checkCommand',
             'checkPeriod',
             'notifyPeriod',
-            'canSubmitExternalCommands'
+            'canSubmitExternalCommands',
+            'objects',
+            'satelliteId',
+            'mapModule'
         ]);
     }
 
@@ -2216,7 +2390,7 @@ class HostsController extends AppController {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
 
@@ -2311,6 +2485,158 @@ class HostsController extends AppController {
                 'filename' => __('Hosts_') . date('dmY_his') . '.pdf',
             ]
         );
+    }
+
+    public function listToCsv() {
+        $User = new User($this->getUser());
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+        $satellites = [];
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
+        $HostCondition = new HostConditions();
+        if ($HostControllerRequest->isRequestFromBrowser() === false) {
+            $HostCondition->setIncludeDisabled(false);
+            $HostCondition->setContainerIds($this->MY_RIGHTS);
+        }
+
+        if ($HostControllerRequest->isRequestFromBrowser() === true) {
+            $browserContainerIds = $HostControllerRequest->getBrowserContainerIdsByRequest();
+            foreach ($browserContainerIds as $containerIdToCheck) {
+                if (!in_array($containerIdToCheck, $this->MY_RIGHTS)) {
+                    $this->render403();
+                    return;
+                }
+            }
+
+            $HostCondition->setIncludeDisabled(false);
+            $HostCondition->setContainerIds($browserContainerIds);
+
+            if ($User->isRecursiveBrowserEnabled()) {
+                //get recursive container ids
+                $containerIdToResolve = $browserContainerIds;
+
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = Hash::extract($children, '{n}.id');
+                $recursiveContainerIds = [];
+                foreach ($containerIds as $containerId) {
+                    if (in_array($containerId, $this->MY_RIGHTS)) {
+                        $recursiveContainerIds[] = $containerId;
+                    }
+                }
+                $HostCondition->setContainerIds(array_merge($HostCondition->getContainerIds(), $recursiveContainerIds));
+            }
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $hosts = $HostsTable->getHostsIndex($HostFilter, $HostCondition);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+            //$query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
+            //$modelName = 'Hoststatus';
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostCondition);
+        }
+
+        $all_hosts = [];
+        $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
+        foreach ($hosts as $host) {
+            $Host = new Host($host['Host']);
+            $Hosttemplate = new Hosttemplate($host);
+            $Hoststatus = new Hoststatus($host['Host']['Hoststatus'], $UserTime);
+
+            $satelliteName = $masterInstanceName;
+            if ($Host->isSatelliteHost()) {
+                $satelliteName = $satellites[$Host->getSatelliteId()];
+            }
+
+            $tags = $Host->getTags();
+            if (empty($tags)) {
+                $tags = $Hosttemplate->getTags();
+            }
+
+            $all_hosts[] = [
+                $Host->getHostname(),
+                $Host->getId(),
+                $Host->getUuid(),
+                $Host->getAddress(),
+                $Host->getDescription(),
+                $tags,
+                $Host->getHosttemplateId(),
+                $Hosttemplate->getName(),
+                $Host->getSatelliteId(),
+                $satelliteName,
+                $Host->getContainerId(),
+                $Host->isDisabled() ? 1 : 0,
+
+                $Hoststatus->currentState(),
+                $Hoststatus->isAcknowledged() ? 1 : 0,
+                $Hoststatus->isInDowntime() ? 1 : 0,
+                $Hoststatus->getLastCheck(),
+                $Hoststatus->getNextCheck(),
+                $Hoststatus->isActiveChecksEnabled() ? 1 : 0,
+                $Hoststatus->getOutput()
+            ];
+        }
+
+        $header = [
+            'host_name',
+            'host_id',
+            'host_uuid',
+            'host_address',
+            'host_description',
+            'host_tags',
+            'hosttemplate_id',
+            'hosttemplate_name',
+            'satellite_id',
+            'satellite_name',
+            'container_id',
+            'disabled',
+
+            'current_state',
+            'problem_has_been_acknowledged',
+            'in_downtime',
+            'last_check',
+            'next_check',
+            'active_checks_enabled',
+            'output'
+        ];
+
+
+        $this->set('data', $all_hosts);
+
+        $filename = __('Hosts_') . date('dmY_his') . '.csv';
+        $this->setResponse($this->getResponse()->withDownload($filename));
+        $this->viewBuilder()
+            ->setClassName('CsvView.Csv')
+            ->setOptions([
+                'delimiter' => ';', // Excel prefers ; over ,
+                'bom'       => true, // Fix UTF-8 umlauts in Excel
+                'serialize' => 'data',
+                'header'    => $header,
+            ]);
     }
 
     //Only for ACLs
@@ -2438,6 +2764,8 @@ class HostsController extends AppController {
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
+        $offset = $UserTime->getUserTimeToServerOffset();
+
 
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(true));
@@ -2449,6 +2777,11 @@ class HostsController extends AppController {
 
         $start = $this->request->getQuery('start', -1);
         $end = $this->request->getQuery('end', -1);
+
+        if ($start > 0 && $end > 0) {
+            $start -= $offset;
+            $end -= $offset;
+        }
 
 
         if (!is_numeric($start) || $start < 0) {
@@ -2482,58 +2815,79 @@ class HostsController extends AppController {
         $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState()
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->lastHardStateChange();
+
+        $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
+
         //Query state history records for host
         /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
         $statehistories = $StatehistoryHostsTable->getStatehistoryIndex($Conditions);
+        $statehistoriesHost = [];
 
-        $statehistoryRecords = [];
 
         //Host has no state history record for selected time range
+
         //Get last available state history record for this host
         $record = $StatehistoryHostsTable->getLastRecord($Conditions);
         if (!empty($record)) {
-            $record->set('state_time', $start);
-            $StatehistoryHost = new StatehistoryHost($record->toArray());
-            $statehistoryRecords[] = $StatehistoryHost;
-        }
-
-        if (empty($statehistories) && empty($record)) {
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()
-                ->currentState()
-                ->isHardstate()
-                ->lastStateChange()
-                ->lastHardStateChange();
-
-            $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
             if (!empty($hoststatus)) {
-                $isHardstate = false;
-                if (isset($hoststatus['Hoststatus']['state_type'])) {
-                    $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
+                $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+                $hostStatusLastStateChange = $Hoststatus->getLastStateChange();
+                if ($record->get('state_time') < $hostStatusLastStateChange && $hostStatusLastStateChange <= $start) {
+                    $stateHistoryHostTmp = [
+                        'StatehistoryHost' => [
+                            'state_time'      => $start,
+                            'state'           => $Hoststatus->currentState(),
+                            'last_state'      => $Hoststatus->currentState(),
+                            'last_hard_state' => $Hoststatus->getLastHardState(),
+                            'state_type'      => (int)$Hoststatus->isHardState()
+                        ]
+                    ];
+
+                    $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                    $statehistoriesHost[] = $StatehistoryHost;
+                } else {
+                    $record->set('state_time', $start);
+                    $StatehistoryHost = new StatehistoryHost($record->toArray());
+                    $statehistoriesHost[] = $StatehistoryHost;
                 }
-
-                if (isset($hoststatus['Hoststatus']['is_hardstate'])) {
-                    $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
-                }
-
-                $record = [
-                    'state_time' => $hoststatus['Hoststatus']['last_state_change'],
-                    'state'      => $hoststatus['Hoststatus']['current_state'],
-                    'state_type' => $isHardstate,
-                ];
-
-                $StatehistoryHost = new StatehistoryHost($record);
-                $statehistoryRecords[] = $StatehistoryHost;
             }
         }
-        foreach ($statehistories as $statehistory) {
-            $StatehistoryHost = new StatehistoryHost($statehistory);
-            $statehistoryRecords[] = $StatehistoryHost;
+
+        if (empty($statehistoriesHost) && !empty($hoststatus)) {
+            $isHardstate = false;
+            if (isset($hoststatus['Hoststatus']['state_type'])) {
+                $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
+            }
+
+            if (isset($hoststatus['Hoststatus']['is_hardstate'])) {
+                $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
+            }
+
+            $record = [
+                'state_time' => $hoststatus['Hoststatus']['last_state_change'],
+                'state'      => $hoststatus['Hoststatus']['current_state'],
+                'state_type' => $isHardstate,
+            ];
+
+            $StatehistoryHost = new StatehistoryHost($record);
+            $statehistoriesHost[] = $StatehistoryHost;
         }
 
-        $StatehistorySerializer = new StatehistorySerializer($statehistoryRecords, $UserTime, $end, 'host');
+        foreach ($statehistories as $statehistory) {
+            $StatehistoryHost = new StatehistoryHost($statehistory);
+            $statehistoriesHost[] = $StatehistoryHost;
+        }
+
+
+        $StatehistorySerializer = new StatehistorySerializer($statehistoriesHost, $UserTime, $end, 'host');
         $this->set('statehistory', $StatehistorySerializer->serialize());
-        unset($StatehistorySerializer, $statehistoryRecords);
+        unset($StatehistorySerializer, $statehistoriesHost);
 
         /*************  HOST DOWNTIMES *************/
         $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
@@ -2599,6 +2953,9 @@ class HostsController extends AppController {
 
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
         $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
+
+        $start += $offset;
+        $end += $offset;
 
         $this->set('start', $start);
         $this->set('end', $end);
@@ -2750,8 +3107,16 @@ class HostsController extends AppController {
         $hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $hosttemplateType);
         $hosttemplates = Api::makeItJavaScriptAble($hosttemplates);
 
-        $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
-        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        if ($containerId == ROOT_CONTAINER) {
+            // ITC-2819
+            // Hosts in the /root container can be a member of any host group
+            $hostgroups = $HostgroupsTable->getHostgroupsAsList();
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        } else {
+            $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
+            $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        }
+
 
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
@@ -2772,7 +3137,7 @@ class HostsController extends AppController {
             /** @var $SatellitesTable SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
         $satellites = Api::makeItJavaScriptAble($satellites);
@@ -2786,6 +3151,15 @@ class HostsController extends AppController {
             $exporters = Api::makeItJavaScriptAble($exporters);
         }
 
+        $slas = [];
+        if (Plugin::isLoaded('SLAModule')) {
+            /** @var \SLAModule\Model\Table\SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+
+            $slas = $SlasTable->getSlasByContainerId($containerIds, 'list', 'id');
+            $slas = Api::makeItJavaScriptAble($slas);
+        }
+
         $this->set('hosttemplates', $hosttemplates);
         $this->set('hostgroups', $hostgroups);
         $this->set('timeperiods', $timeperiods);
@@ -2795,6 +3169,7 @@ class HostsController extends AppController {
         $this->set('satellites', $satellites);
         $this->set('sharingContainers', $sharingContainers);
         $this->set('exporters', $exporters);
+        $this->set('slas', $slas);
 
         $this->viewBuilder()->setOption('serialize', [
             'hosttemplates',
@@ -2805,7 +3180,8 @@ class HostsController extends AppController {
             'contactgroups',
             'satellites',
             'sharingContainers',
-            'exporters'
+            'exporters',
+            'slas'
         ]);
     }
 
@@ -2974,6 +3350,7 @@ class HostsController extends AppController {
         $selected = $this->request->getQuery('selected');
         $hostId = $this->request->getQuery('hostId');
         $containerId = $this->request->getQuery('containerId');
+        $satelliteId = $this->request->getQuery('satellite_id');
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
             /** @var $ContainersTable ContainersTable */
@@ -2998,6 +3375,7 @@ class HostsController extends AppController {
                 'Hosts.id IN' => $hostId
             ]);
         }
+        $HostCondition->setSatelliteId($satelliteId);
         $hosts = Api::makeItJavaScriptAble(
             $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
@@ -3123,5 +3501,144 @@ class HostsController extends AppController {
 
         $this->set('isHostnameInUse', $isHostnameInUse);
         $this->viewBuilder()->setOption('serialize', ['isHostnameInUse']);
+    }
+
+    public function loadSlaInformation() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+        $sla_id = $this->request->getQuery('sla_id', null);
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostsTable->exists($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $slaOverview = false;
+
+        if (Plugin::isLoaded('SLAModule') && !empty($sla_id)) {
+            /** @var SlasTable $SlasTable */
+            $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
+
+            if (!$SlasTable->exists($sla_id)) {
+                throw new NotFoundException(__('Invalid sla'));
+            }
+
+            $SlaInformation = $SlasTable->getMinSlaStatusInformationByHostIdAndSlaId($id, $sla_id);
+            $slaOverview = [
+                'state'          => 'not_available',
+                'evaluation_end' => time()
+            ];
+            $currentlyAvailabilityHost = null;
+            $hostSlaStatusData = null;
+            if (!empty($SlaInformation['sla_availability_status_hosts'][0])) {
+                $hostSlaStatusData = $SlaInformation['sla_availability_status_hosts'][0];
+                $currentlyAvailabilityHost = $hostSlaStatusData['determined_availability_percent'];
+            }
+            if (!empty($SlaInformation['sla_availability_status_hosts'][0]['host']['services'][0]['sla_availability_status_service'])) {
+                $servicesSlaStatusData = $SlaInformation['sla_availability_status_hosts'][0]['host']['services'][0]['sla_availability_status_service'];
+                $servicesSlaStatusData['determined_availability_percent'] = $SlaInformation['sla_availability_status_hosts'][0]['host']['services'][0]['min_determined_services_availability_percent'];
+                if ($currentlyAvailabilityHost > $servicesSlaStatusData['determined_availability_percent']) {
+                    $currentlyAvailabilityHost = $servicesSlaStatusData['determined_availability_percent'];
+                }
+            }
+
+            if ($currentlyAvailabilityHost) {
+                $slaOverview = [
+                    'evaluation_end'                  => $hostSlaStatusData['evaluation_end'],
+                    'determined_availability_percent' => $currentlyAvailabilityHost,
+                    'warning_threshold'               => $SlaInformation['warning_threshold'],
+                    'minimal_availability'            => $SlaInformation['minimal_availability']
+                ];
+                if ($currentlyAvailabilityHost < $SlaInformation['minimal_availability']) {
+                    $state = 'danger';
+                } else if (!empty($SlaInformation['warning_threshold']) && $SlaInformation['warning_threshold'] > $currentlyAvailabilityHost) {
+                    $state = 'warning';
+                } else {
+                    $state = 'success';
+                }
+                $slaOverview['state'] = $state;
+            }
+        }
+
+        $this->set('slaOverview', $slaOverview);
+        $this->viewBuilder()->setOption('serialize', ['slaOverview']);
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function usedBy($id = null): void {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostsTable->get($id);
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the host is used by Hostgroups
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $objects['Hostgroups'] = $HostgroupsTable->getHostGroupsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Instantreports
+        /** @var InstantreportsTable $InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantReportsByHostId((int)$id, $MY_RIGHTS);
+
+        //Check if the host is used by Autoreports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoReportsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Eventcorrelations
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationsTable $EventcorrelationsTable */
+            $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $objects['Eventcorrelations'] = $EventcorrelationsTable->getEventCorrelationsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        //Check if the host is used by Maps
+        if (Plugin::isLoaded('MapModule')) {
+            /** @var $MapsTable MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+            $objects['Maps'] = $MapsTable->getMapsByHostId((int)$id, $MY_RIGHTS);
+        }
+
+        $total = 0;
+        $total += sizeof($objects['Instantreports']);
+        $total += sizeof($objects['Hostgroups']);
+
+        if (isset($objects['Autoreports'])) {
+            $total += sizeof($objects['Autoreports']);
+        }
+        if (isset($objects['Eventcorrelations'])) {
+            $total += sizeof($objects['Eventcorrelations']);
+        }
+        if (isset($objects['Maps'])) {
+            $total += sizeof($objects['Maps']);
+        }
+
+        $this->set('host', $host->toArray());
+        $this->set('objects', $objects);
+        $this->set('total', $total);
+        $this->viewBuilder()->setOption('serialize', ['host', 'objects', 'total']);
     }
 }

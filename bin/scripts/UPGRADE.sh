@@ -5,6 +5,11 @@ if ! [ $(id -u) = 0 ]; then
     exit 1
 fi
 
+# Enable debug mode so that CakePHP will create missing folders
+# https://github.com/it-novum/openITCOCKPIT/issues/1446
+# https://github.com/cakephp/migrations/issues/565
+export OITC_DEBUG=1
+
 # Stop phpnsta-client after upgrading from V3 to V4
 if systemctl is-active phpnsta.service; then
     systemctl stop phpnsta.service
@@ -110,7 +115,7 @@ systemctl enable\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service\
+ openitcockpit-node.service\
  openitcockpit-graphing.service\
  oitc_cronjobs.timer
 
@@ -268,10 +273,10 @@ if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
     while [ "$COUNTER" -lt 30 ]; do
         echo "Try to connect to Grafana API..."
         #Is Grafana Server Online?
-        STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+        STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 
         if [ "$STATUSCODE" == "200" ]; then
-            API_KEY=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/auth/keys' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{"role":"Editor","name":"openITCOCKPIT"}' | jq -r '.key')
+            API_KEY=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/auth/keys' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{"role":"Editor","name":"openITCOCKPIT"}' | jq -r '.key')
             echo "$API_KEY" >/opt/openitc/etc/grafana/api_key
             break
         fi
@@ -287,11 +292,10 @@ if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
 fi
 
 echo "Check if Graphite Datasource exists in Grafana"
-DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Graphite' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+DS_STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources/name/Graphite' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 if [ "$DS_STATUSCODE" == "404" ]; then
     echo "Create Graphite as default Datasource for Grafana"
-    export NO_PROXY="127.0.0.1"
-    RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+    RESPONSE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
       "name":"Graphite",
       "type":"graphite",
       "url":"http://graphite-web:8080",
@@ -307,11 +311,10 @@ fi
 echo "Ok: Graphite datasource exists."
 
 echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
-DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+DS_STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 if [ "$DS_STATUSCODE" == "404" ]; then
     echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
-    export NO_PROXY="127.0.0.1"
-    RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+    RESPONSE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
       "name":"Prometheus",
       "type":"prometheus",
       "url":"http://victoriametrics:8428",
@@ -392,6 +395,10 @@ mysql --defaults-extra-file=${INIFILE} -e "UPDATE servicetemplates SET flap_dete
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok IS NULL AND flap_detection_on_warning IS NULL AND flap_detection_on_unknown IS NULL AND flap_detection_on_critical IS NULL"
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET flap_detection_enabled=0 WHERE flap_detection_enabled=1 AND flap_detection_on_ok=0 AND flap_detection_on_warning=0 AND flap_detection_on_unknown=0 AND flap_detection_on_critical=0"
 
+# Enable graphs / performance data for all services ITC-2608
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE servicetemplates SET process_performance_data=1"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE services SET process_performance_data=NULL"
+
 #ALC dependencies config for itc core
 echo "---------------------------------------------------------------"
 echo "Scan for new user permissions. This will take a while..."
@@ -425,6 +432,7 @@ mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TA
     mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4;"
 done
 
+oitc usage_flag
 
 oitc nagios_export
 
@@ -450,7 +458,7 @@ systemctl restart\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service\
+ openitcockpit-node.service\
  oitc_cronjobs.timer
 
 for srv in supervisor.service; do

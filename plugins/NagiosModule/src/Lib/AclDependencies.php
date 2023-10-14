@@ -40,7 +40,9 @@ class AclDependencies extends PluginAclDependencies {
         //    Add dependencies       //
         //////////////////////////////
         $this
-            ->dependency('Cmd', 'submit', 'Cmd', 'ack');
+            ->dependency('Cmd', 'submit', 'Cmd', 'submit_bulk_naemon')
+            ->dependency('Cmd', 'submit', 'Cmd', 'ack')
+            ->dependency('Cmd', 'submit', 'Cmd', 'submit_bulk');
     }
 
 }

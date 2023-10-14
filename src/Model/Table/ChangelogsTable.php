@@ -3,7 +3,6 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\Database\Exception;
 use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -117,9 +116,10 @@ class ChangelogsTable extends Table {
      * @param array $MY_RIGHTS
      * @param bool $includeUser
      * @param bool $enableHydration
+     * @param bool $showInherit Use me to show inheritance of the main element queried. E.g. Hosts->Services.
      * @return array
      */
-    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $enableHydration = true) {
+    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $moduleFlag = CORE, $enableHydration = true, bool $showInherit = false) {
         $contain = ['Containers'];
         $select = [
             'id',
@@ -131,6 +131,8 @@ class ChangelogsTable extends Table {
             'name',
             'created'
         ];
+
+
         if ($includeUser === true) {
             $select[] = 'user_id';
             $select[] = 'Users.id';
@@ -154,14 +156,52 @@ class ChangelogsTable extends Table {
         $where = $ChangelogsFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {
             $where['Containers.id IN'] = $MY_RIGHTS;
-            $select[] = 'Containers.id';
         }
 
         $where['Changelogs.created >='] = date('Y-m-d H:i:s', $ChangelogsFilter->getFrom());
         $where['Changelogs.created <='] = date('Y-m-d H:i:s', $ChangelogsFilter->getTo());
+
+        // If only a host is queried and the services shall be shown, too...
+        if ($showInherit && $where['Changelogs.objecttype_id'] == OBJECT_HOST) {
+            $hostId = $where['Changelogs.object_id'];
+            $where['Changelogs.objecttype_id IN'] = [OBJECT_HOST, OBJECT_SERVICE];
+            unset($where['Changelogs.object_id']);
+            unset($where['Changelogs.objecttype_id']);
+
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            $subSelect = $ServicesTable->subquery();
+            $subSelect->select([
+                'Services.id'
+            ])
+                ->where(['Services.host_id' => $hostId]);
+
+            $where[] = [
+                'OR' => [
+                    [
+                        'Changelogs.Model'     => 'host',
+                        'Changelogs.object_id' => $hostId
+                    ],
+                    [
+                        'Changelogs.Model'        => 'service',
+                        'Changelogs.object_id IN' => $subSelect
+                    ]
+                ]
+            ];
+        }
+
         $query->group(['Changelogs.id']);
+        $query->where([
+            'Changelogs.module_flag' => $moduleFlag
+        ]);
         $query->where($where);
-        $query->order($ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'));
+        $query->order(
+            array_merge(
+                $ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'),
+                ['Changelogs.id' => 'desc']
+            )
+        );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -217,8 +257,8 @@ class ChangelogsTable extends Table {
                 'Hosttemplate.customvariables'                   => '{n}.{(id|name|value)}',
                 'Hosttemplate.hosttemplatecommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                        => '{n}.{(id|name)}',
-                'Contactgroup'                                   => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
-                'Hostgroup'                                      => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Contactgroup'                                   => '{n}.{(id|name)}',
+                'Hostgroup'                                      => '{n}.{(id|name)}'
             ],
             'servicetemplate'      => [
                 'Servicetemplate'                                           => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_|notifications_enabled$).*}',
@@ -230,8 +270,8 @@ class ChangelogsTable extends Table {
                 'Servicetemplate.servicetemplatecommandargumentvalues'      => '{n}.{(id|value)}',
                 'Servicetemplate.servicetemplateeventcommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                                   => '{n}.{(id|name)}',
-                'Contactgroup'                                              => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
-                'Servicegroup'                                              => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Contactgroup'                                              => '{n}.{(id|name)}',
+                'Servicegroup'                                              => '{n}.{(id|name)}',
             ],
             'servicegroup'         => [
                 'Servicegroup'           => '{(description|servicegroup_url)}',
@@ -379,6 +419,8 @@ class ChangelogsTable extends Table {
             case 'deactivate':
             case 'activate':
             case 'export':
+            case 'import':
+            case 'synchronization':
                 return [
                     'action'        => $action,
                     'model'         => ucwords(Inflector::singularize($controller)),
@@ -431,6 +473,10 @@ class ChangelogsTable extends Table {
                 foreach ($new_values as $new_value_key => $new_value) {
                     $flag = 0;
                     foreach ($old_values as $old_value) {
+                        if (!is_numeric($new_value_key)) {
+                            sort($new_value);
+                            sort($old_value);
+                        }
                         $flag |= ($new_value == $old_value);
                         if ($flag) break;
                     }
@@ -441,6 +487,10 @@ class ChangelogsTable extends Table {
                 foreach ($old_values as $old_value_key => $old_value) {
                     $flag = 0;
                     foreach ($new_values as $new_value) {
+                        if (!is_numeric($old_value_key)) {
+                            sort($new_value);
+                            sort($old_value);
+                        }
                         $flag |= ($new_value == $old_value);
                         if ($flag) break;
                     }
@@ -491,8 +541,8 @@ class ChangelogsTable extends Table {
 
         try {
             return $Table->exists(['id' => $objectId]);
-        } catch (Exception $e) {
-            Log::error(sprintf('Changelog: Table %s not found!', $tableName));
+        } catch (\Exception $e) {
+            Log::error(sprintf('Changelog: Table %s not found! in %s on line %s', $tableName, __FILE__, __LINE__));
             Log::error($e->getMessage());
         }
         return false;
@@ -515,7 +565,10 @@ class ChangelogsTable extends Table {
             case 'copy':
                 return 'fa fa-files-o';
             case 'export':
+            case 'synchronization':
                 return 'fa fa-retweet';
+            case 'import':
+                return 'fa-solid fa-file-import';
             default:
                 return 'fas fa-edit';
         }
@@ -606,23 +659,36 @@ class ChangelogsTable extends Table {
         $tablesToReplace = [
             'Command.commandarguments' => __('Command arguments'),
 
-            'Timeperiod.timeperiod_timeranges' => __('Time ranges'),
+            'Contact.customvariables'       => __('Custom variables'),
+            'Contact.host_timeperiod_id'    => __('Host time period'),
+            'Contact.service_timeperiod_id' => __('Service time period'),
+            'Contact.host_commands'         => __('Host command'),
+            'Contact.service_commands'      => __('Service command'),
 
-            'Contact.customvariables' => __('Custom variables'),
-            'Contactgroup.container'  => __('Container'),
+
+            'Contactgroup.container' => __('Container'),
+            'Contactgroup.contacts'  => __('Contacts'),
 
             'Hostgroup.container' => __('Container'),
 
             'Hosttemplate.customvariables'                   => __('Custom variables'),
             'Hosttemplate.hosttemplatecommandargumentvalues' => __('Command arguments'),
 
+            'Servicetemplate.check_period_id'                           => __('Check period'),
+            'Servicetemplate.contacts'                                  => __('Contacts'),
             'Servicetemplate.customvariables'                           => __('Custom variables'),
+            'Servicetemplate.contactgroups'                             => __('Contact groups'),
+            'Servicetemplate.eventhandler_command_id'                   => __('Event handler command'),
+            'Servicetemplate.notify_period_id'                          => __('Notify period'),
             'Servicetemplate.servicetemplatecommandargumentvalues'      => __('Command arguments'),
             'Servicetemplate.servicetemplateeventcommandargumentvalues' => __('Event handler command arguments'),
 
+
             'Servicegroup.container' => __('Container'),
 
-            'Servicetemplategroup.container' => __('Container'),
+
+            'Servicetemplategroup.container'        => __('Container'),
+            'Servicetemplategroup.servicetemplates' => __('Service templates'),
 
             'Host.customvariables'           => __('Custom variables'),
             'Host.hostcommandargumentvalues' => __('Command arguments'),
@@ -633,6 +699,8 @@ class ChangelogsTable extends Table {
             'Service.serviceeventcommandargumentvalues' => __('Event handler command arguments'),
 
             'tenant.container' => __('Container'),
+
+            'Timeperiod.timeperiod_timeranges' => __('Time ranges'),
 
             'location.container' => __('Container'),
         ];
@@ -664,12 +732,16 @@ class ChangelogsTable extends Table {
         foreach ($dataUnserialized as $index => $record) {
             foreach ($record as $tableName => $changes) {
                 if ($action !== 'edit') {
+                    if (isset($changes['current_data']['container_id'])) {
+                        unset($changes['current_data']['container_id']);
+                    }
+
                     $dataUnserialized[$index][$tableName] = [
                         'data'    => $changes['current_data'] ?? [],
                         'isArray' => Hash::dimensions($changes) === 3
                     ];
                 } else {
-                    //Back box Unicorn 🦄 Merge-O-Mat and Diff-O-Mat
+                    //Black box Unicorn 🦄 Merge-O-Mat and Diff-O-Mat
 
                     $diffs = [];
                     $isArray = Hash::dimensions($changes) === 3;
@@ -687,6 +759,9 @@ class ChangelogsTable extends Table {
                     if (!empty($changes['before']) && empty($changes['after'])) {
                         //All data got removed from fields (fields where filled before)
                         foreach ($changes['before'] as $fieldName => $fieldValue) {
+                            if ($fieldName === 'id' || $fieldName === 'container_id') {
+                                continue;
+                            }
                             $diffs[$fieldName] = [
                                 'old' => is_array($fieldValue) ? Hash::remove($fieldValue, 'id') : $fieldValue,
                                 'new' => null
@@ -696,10 +771,9 @@ class ChangelogsTable extends Table {
 
                     if (!empty($changes['before']) && !empty($changes['after'])) {
                         //Data got modified (e.g. rename or so)
-
                         if (!$isArray) {
                             foreach (Hash::diff($changes['after'], $changes['before']) as $fieldName => $fieldValue) {
-                                if ($fieldName === 'id') {
+                                if ($fieldName === 'id' || $fieldName === 'container_id') {
                                     continue;
                                 }
                                 $diffs[$fieldName] = [
@@ -710,41 +784,90 @@ class ChangelogsTable extends Table {
                         } else {
                             $idsBeforeSave = Hash::extract($changes['before'], '{n}.id');
                             $idsAfterSave = Hash::extract($changes['after'], '{n}.id');
-
-                            foreach ($idsBeforeSave as $id) {
-                                if (!in_array($id, $idsAfterSave, true)) {
-                                    //Object got deleted
-                                    $diffs[] = [
-                                        'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
-                                        'new' => null
-                                    ];
-                                } else {
-                                    //Object got edited
-                                    $diffs[] = [
-                                        'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
-                                        'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
-                                    ];
+                            if (!empty($idsBeforeSave) || !empty($idsAfterSave)) {
+                                foreach ($idsBeforeSave as $id) {
+                                    if (!in_array($id, $idsAfterSave, true)) {
+                                        //Object got deleted
+                                        $diffs[] = [
+                                            'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
+                                            'new' => null
+                                        ];
+                                    } else {
+                                        //Object got edited
+                                        $diffs[] = [
+                                            'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
+                                            'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
+                                        ];
+                                    }
                                 }
-                            }
+                                foreach ($idsAfterSave as $id) {
+                                    if (!in_array($id, $idsBeforeSave, true)) {
+                                        //dd('hier');
+                                        //Object got added
+                                        $diffs[] = [
+                                            'old' => null,
+                                            'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
+                                        ];
+                                    } else {
+                                        //Object got edited
+                                        $diffs[] = [
+                                            'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
+                                            'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
+                                        ];
+                                    }
+                                }
+                            } else if (empty($idsBeforeSave) && empty($idsAfterSave)) {
+                                foreach ($changes['before'] as $key => $value) {
+                                    if ($key === '_ids') {
+                                        $dataBefore = $changes['before']['_ids'] ?? [];
+                                        $dataAfter = $changes['after']['_ids'] ?? [];
+                                        $changesFromOldToNew = array_diff($dataBefore, $dataAfter);
+                                        if (!empty($changesFromOldToNew)) {
+                                            $diffs[] = [
+                                                'old' => array_values($changesFromOldToNew),
+                                                'new' => null
+                                            ];
+                                        }
 
-                            foreach ($changes['after'] as $after) {
-                                if (!isset($after['id'])) {
-                                    //New created object
-                                    $diffs[] = [
-                                        'old' => null,
-                                        'new' => $after
-                                    ];
+                                        $changesFromNewToOld = array_diff($dataAfter, $dataBefore);
+                                        if (!empty($changesFromNewToOld)) {
+                                            $diffs[] = [
+                                                'old' => null,
+                                                'new' => array_values($changesFromNewToOld)
+                                            ];
+                                        }
+
+                                    } else {
+                                        if (isset($changes['after'][$key])) {
+                                            $diffs[] = [
+                                                'old' => $value,
+                                                'new' => $changes['after'][$key]
+                                            ];
+                                        } else {
+                                            $diffs[] = [
+                                                'old' => $value,
+                                                'new' => null
+                                            ];
+                                        }
+                                    }
+                                }
+                            } else {
+                                foreach ($changes['after'] as $after) {
+                                    if (!isset($after['id'])) {
+                                        //New created object
+                                        $diffs[] = [
+                                            'old' => null,
+                                            'new' => $after
+                                        ];
+                                    }
                                 }
                             }
                         }
-
                     }
-
                     $dataUnserialized[$index][$tableName] = [
                         'data'    => $diffs,
                         'isArray' => $isArray
                     ];
-
                 }
             }
         }

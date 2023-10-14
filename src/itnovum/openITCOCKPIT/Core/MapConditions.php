@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use App\itnovum\openITCOCKPIT\Database\SanitizeOrder;
+
 class MapConditions {
 
     /**
@@ -106,7 +108,7 @@ class MapConditions {
      * @return array
      */
     public function getOrder() {
-        return $this->order;
+        return SanitizeOrder::filterOrderArray($this->order);
     }
 
 

@@ -40,16 +40,13 @@
                                 <?php echo __('From'); ?>:
                             </label>
                             <div class="col col-xs-5">
-                                <input class="form-control"
-                                       ng-model="downtimeModal.from_date"
-                                       ng-init="downtimeModal.from_date='<?php echo date('d.m.Y'); ?>'"
-                                       type="text">
+                                <input type="date" class="form-control"
+                                        ng-model="downtimeModal.from_date">
                             </div>
                             <div class="col col-xs-5">
-                                <input class="form-control"
+                                <input type="time" class="form-control"
                                        ng-model="downtimeModal.from_time"
-                                       ng-init="downtimeModal.from_time='<?php echo date('H:i'); ?>'"
-                                       type="text">
+                                       ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                             </div>
                             <div ng-repeat="error in errors.Downtime.from_date"
                                  class="col-md-offset-2 col-xs-12 col-md-10">
@@ -70,16 +67,13 @@
                                 <?php echo __('To'); ?>:
                             </label>
                             <div class="col col-xs-5">
-                                <input class="form-control"
-                                       ng-model="downtimeModal.to_date"
-                                       ng-init="downtimeModal.to_date='<?php echo date('d.m.Y', time() + 60 * 15); ?>'"
-                                       type="text">
+                                <input type="date" class="form-control"
+                                       ng-model="downtimeModal.to_date">
                             </div>
                             <div class="col col-xs-5">
-                                <input class="form-control"
+                                <input type="time" class="form-control"
                                        ng-model="downtimeModal.to_time"
-                                       ng-init="downtimeModal.to_time='<?php echo date('H:i', time() + 60 * 15); ?>'"
-                                       type="text">
+                                       ng-model-options="{timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                             </div>
                             <div ng-repeat="error in errors.Downtime.to_date"
                                  class="col-md-offset-2 col-xs-12 col-md-10">
@@ -92,12 +86,12 @@
                         </div>
 
                     </div>
-                    <div class="col-xs-12 margin-top-10" ng-show="doDowntime">
+                    <div class="col-12 margin-top-10" ng-show="doDowntime">
                         <h4><?php echo __('Executing command'); ?></h4>
                     </div>
-                    <div class="col-lg-12 margin-top-10" ng-show="doDowntime">
-                        <div class="progress progress-striped active">
-                            <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
+                    <div class="col-12 margin-top-10" ng-show="doDowntime">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-primary" style="width: {{percentage}}%"></div>
                         </div>
                     </div>
 

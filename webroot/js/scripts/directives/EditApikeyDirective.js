@@ -19,6 +19,7 @@ angular.module('openITCOCKPIT').directive('editApikeyDirective', function($http)
                     }
                 }).then(function(result){
                     $scope.currentApiKey = result.data.apikey;
+                    $scope.currentQrCode = result.data.qrcode;
                 });
             };
 

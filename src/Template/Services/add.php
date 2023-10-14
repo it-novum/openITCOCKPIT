@@ -66,7 +66,7 @@
 
                         <div class="card margin-bottom-10">
                             <div class="card-header">
-                                <i class="fa fa-magic"></i> <?php echo __('Basic configuration'); ?>
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo __('Basic configuration'); ?>
                             </div>
                             <div class="card-body">
                                 <div class="form-group required" ng-class="{'has-error': errors.host_id}">
@@ -383,7 +383,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.servicecommandargumentvalues}"
                                      ng-repeat="servicecommandargumentvalue in post.Service.servicecommandargumentvalues">
-                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-10 control-label text-purple">
                                         {{servicecommandargumentvalue.commandargument.human_name}}
                                     </label>
                                     <div class="col-xs-12 col-lg-8">
@@ -977,7 +977,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': errors.serviceeventcommandargumentvalues}"
                                      ng-repeat="serviceeventcommandargumentvalue in post.Service.serviceeventcommandargumentvalues">
-                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-purple">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-10 control-label text-purple">
                                         {{serviceeventcommandargumentvalue.commandargument.human_name}}
                                     </label>
                                     <div class="col-xs-12 col-lg-8">

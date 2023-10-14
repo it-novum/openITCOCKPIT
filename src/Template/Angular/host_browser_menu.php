@@ -37,8 +37,18 @@
 
             <i class="fa fa-desktop fa-fw"></i>
             {{ config.hostName }}
-            <span>
-                ({{ config.hostAddress }})
+            <span ng-click="rootCopyToClipboard(config.hostAddress, $event)"
+                  class="copy-to-clipboard-container-text pointer">
+                (
+                {{ config.hostAddress }}
+                <span ng-click="rootCopyToClipboard(config.hostAddress, $event)"
+                      class="copy-action text-primary animated"
+                      data-copied="<?= __('Copied'); ?>"
+                      data-copy="<?= __('Copy'); ?>"
+                >
+                    <?= __('Copy'); ?>
+                </span>
+                )
             </span>
         </h1>
     </div>
@@ -137,6 +147,13 @@
                             <?php echo __('Service list'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                        <a ui-sref="ChangelogsEntity({objectTypeId: 'host', objectId: config.hostId})"
+                           class="dropdown-item">
+                            <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                            <?php echo __('Changelog'); ?>
+                        </a>
+                    <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
                         <a class="dropdown-item"
                            ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: config.hostId})">
@@ -160,3 +177,4 @@
         </div>
     </div>
 </div>
+

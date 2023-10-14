@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
+use App\Model\Entity\Changelog;
 use App\Model\Entity\Servicegroup;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -434,7 +435,7 @@ class ServicegroupsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'Containers' => function (Query $q) use ($MY_RIGHTS) {
+                'Containers'       => function (Query $q) use ($MY_RIGHTS) {
                     $q->select([
                         'Containers.id',
                         'Containers.name'
@@ -444,7 +445,7 @@ class ServicegroupsTable extends Table {
                     }
                     return $q;
                 },
-                'Services'   => function (Query $q) {
+                'Services'         => function (Query $q) {
                     return $q->contain([
                         'Servicetemplates' => function (Query $q) {
                             return $q->select([
@@ -470,6 +471,50 @@ class ServicegroupsTable extends Table {
                     ])->where([
                         'Services.disabled' => 0
                     ]);
+                },
+                'Servicetemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Services' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Services.id',
+                                        'Services.servicetemplate_id',
+                                        'Services.uuid',
+                                        'Services.name'
+                                    ])
+                                    ->contain([
+                                        'Servicetemplates' => function (Query $q) {
+                                            return $q->select([
+                                                'Servicetemplates.id',
+                                                'Servicetemplates.name'
+                                            ]);
+                                        },
+                                        'Hosts'            => function (Query $q) {
+                                            return $q->contain([
+                                                'HostsToContainersSharing'
+                                            ])->select([
+                                                'Hosts.id',
+                                                'Hosts.uuid',
+                                                'Hosts.name'
+                                            ])->where([
+                                                'Hosts.disabled' => 0
+                                            ]);
+                                        }
+                                    ])
+                                    ->where([
+                                        'Services.disabled' => 0
+                                    ]);
+                                $query
+                                    ->leftJoinWith('Servicegroups')
+                                    ->whereNull('Servicegroups.id');
+                                return $query;
+                            }
+                        ]);
                 }
             ])
             ->where([
@@ -508,7 +553,7 @@ class ServicegroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Services' => function (Query $q) {
+                'Services'         => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Services.id',
@@ -534,6 +579,50 @@ class ServicegroupsTable extends Table {
                             },
                         ])
                         ->where(['Services.disabled' => 0]);
+                },
+                'Servicetemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Services' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Services.id',
+                                        'Services.servicetemplate_id',
+                                        'Services.uuid',
+                                        'Services.name'
+                                    ])
+                                    ->contain([
+                                        'Servicetemplates' => function (Query $q) {
+                                            return $q->select([
+                                                'Servicetemplates.id',
+                                                'Servicetemplates.name'
+                                            ]);
+                                        },
+                                        'Hosts'            => function (Query $q) {
+                                            return $q->contain([
+                                                'HostsToContainersSharing'
+                                            ])->select([
+                                                'Hosts.id',
+                                                'Hosts.uuid',
+                                                'Hosts.name'
+                                            ])->where([
+                                                'Hosts.disabled' => 0
+                                            ]);
+                                        }
+                                    ])
+                                    ->where([
+                                        'Services.disabled' => 0
+                                    ]);
+                                $query
+                                    ->leftJoinWith('Servicegroups')
+                                    ->whereNull('Servicegroups.id');
+                                return $query;
+                            }
+                        ]);
                 }
             ])
             ->where($where)
@@ -541,6 +630,99 @@ class ServicegroupsTable extends Table {
             ->firstOrFail();
 
         return $servicegroup;
+    }
+
+    /**
+     * @param $id
+     * @param $MY_RIGHTS
+     * @return array
+     */
+    public function getServiceIdsByServicegroupForMaps($id, $MY_RIGHTS = []) {
+        $where = [
+            'Servicegroups.id' => $id
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        $servicegroup = $this->find()
+            ->select([
+                'Servicegroups.id'
+            ])
+            ->contain([
+                'Containers',
+                'Services'         => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'Services.id'
+                        ])
+                        ->contain([
+                            'Hosts'            => function (Query $q) {
+                                return $q->enableAutoFields(false)
+                                    ->select([
+                                        'Hosts.id'
+                                    ])
+                                    ->contain(['HostsToContainersSharing'])
+                                    ->where(['Hosts.disabled' => 0]);
+                            },
+                            'Servicetemplates' => function (Query $q) {
+                                return $q->enableAutoFields(false)
+                                    ->select([
+                                        'Servicetemplates.name'
+                                    ]);
+                            },
+                        ])
+                        ->where(['Services.disabled' => 0]);
+                },
+                'Servicetemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Services' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Services.id',
+                                        'Services.servicetemplate_id'
+                                    ])
+                                    ->contain([
+                                        'Servicetemplates' => function (Query $q) {
+                                            return $q->select([
+                                                'Servicetemplates.id'
+                                            ]);
+                                        },
+                                        'Hosts'            => function (Query $q) {
+                                            return $q->contain([
+                                                'HostsToContainersSharing'
+                                            ])->select([
+                                                'Hosts.id'
+                                            ])->where([
+                                                'Hosts.disabled' => 0
+                                            ]);
+                                        }
+                                    ])
+                                    ->where([
+                                        'Services.disabled' => 0
+                                    ]);
+                                $query
+                                    ->leftJoinWith('Servicegroups')
+                                    ->whereNull('Servicegroups.id');
+                                return $query;
+                            }
+                        ]);
+                }
+            ])
+            ->where($where)
+            ->disableHydration()
+            ->firstOrFail();
+
+
+        return array_unique(array_merge(
+            Hash::extract($servicegroup, 'services.{n}.id'),
+            Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}.id')
+        ));
     }
 
     /**
@@ -572,7 +754,8 @@ class ServicegroupsTable extends Table {
 
         $query
             ->order([
-                'Containers.name' => 'ASC'
+                'Containers.name' => 'asc',
+                'Containers.id'   => 'asc'
             ])
             ->group([
                 'Containers.id'
@@ -606,7 +789,8 @@ class ServicegroupsTable extends Table {
 
             $query
                 ->order([
-                    'Containers.name' => 'ASC'
+                    'Containers.name' => 'asc',
+                    'Containers.id'   => 'asc'
                 ])
                 ->group([
                     'Containers.id'
@@ -735,15 +919,15 @@ class ServicegroupsTable extends Table {
 
         $services = [];
 
-        if(!empty($servicegroup['services'])) {
+        if (!empty($servicegroup['services'])) {
             foreach ($servicegroup['services'] as $service) {
                 $services[$service['id']] = $service;
             }
         }
 
-        if(!empty($servicegroup['servicetemplates'])) {
+        if (!empty($servicegroup['servicetemplates'])) {
             foreach ($servicegroup['servicetemplates'] as $servicetemplate) {
-                foreach($servicetemplate['services'] as $service){
+                foreach ($servicetemplate['services'] as $service) {
                     $services[$service['id']] = $service;
                 }
             }
@@ -894,5 +1078,320 @@ class ServicegroupsTable extends Table {
         }
 
         return $list;
+    }
+
+    /**
+     * @param $containerIds
+     * @param $hostIds
+     * @param $type
+     * @param $index
+     * @return array
+     */
+    public function getServicegroupsByContainerIdAndServiceIds($containerIds, $serviceIds, $type = 'all', $index = 'container_id') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        if (!is_array($serviceIds)) {
+            $serviceIds = [$serviceIds];
+        }
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ServicegroupServicegroupsByContainerId');
+
+                // Tenant host groups are available for all users of a tenant (oITC V2 legacy)
+                $tenantContainerIds[] = $path[1]['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+
+        switch ($type) {
+            case 'all':
+                $query = $this->find()
+                    ->contain([
+                        'Containers',
+                        'Services' => function (Query $query) use ($containerIds, $serviceIds) {
+                            $query->disableAutoFields()
+                                ->select([
+                                    'Services.id',
+                                    'Services.uuid',
+                                ])
+                                ->innerJoinWith('Hosts')
+                                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds, $serviceIds) {
+                                    if (!empty($MY_RIGHTS)) {
+                                        $q->where([
+                                            'HostsToContainersSharing.id IN ' => $containerIds
+                                        ]);
+                                    }
+                                    return $q;
+                                })->where([
+                                    'Services.id IN ' => $serviceIds
+                                ]);
+                            return $query;
+                        }
+                    ])
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_SERVICEGROUP
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+                return $this->emptyArrayIfNull($query->toArray());
+            default:
+                $query = $this->find()
+                    ->contain([
+                        'Containers',
+                        'Services' => function (Query $query) use ($containerIds, $serviceIds) {
+                            $query->disableAutoFields()
+                                ->select([
+                                    'Services.id',
+                                    'Services.uuid',
+                                ])
+                                ->innerJoinWith('Hosts')
+                                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds, $serviceIds) {
+                                    if (!empty($MY_RIGHTS)) {
+                                        $q->where([
+                                            'HostsToContainersSharing.id IN ' => $containerIds
+                                        ]);
+                                    }
+                                    return $q;
+                                })->where([
+                                    'Services.id IN ' => $serviceIds
+                                ]);
+                            return $query;
+                        }
+                    ])
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_SERVICEGROUP
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+                $query = $query->toArray();
+                if (empty($query)) {
+                    $query = [];
+                }
+                $return = [];
+                foreach ($query as $servicegroup) {
+                    if ($index === 'id') {
+                        $return[$servicegroup['id']] = $servicegroup['container']['name'];
+                    } else {
+                        $return[$servicegroup['container_id']] = $servicegroup['container']['name'];
+                    }
+                }
+
+                return $return;
+        }
+    }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicegroupsForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Servicegroups.id IN' => $ids])
+            ->contain([
+                'Containers'
+            ])
+            ->order(['Servicegroups.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    public function getSourceServicegroupForCopy($id, array $MY_RIGHTS) {
+        $query = $this->find()
+            ->where(['Servicegroups.id' => $id])
+            ->contain([
+                'Services',
+                'Servicetemplates',
+                'Containers'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $result = $query->firstOrFail();
+        $servicegroup = $result;
+        $servicegroup['services'] = [
+            '_ids' => Hash::extract($result, 'services.{n}.id')
+        ];
+        $servicegroup['servicetemplates'] = [
+            '_ids' => Hash::extract($result, 'servicetemplates.{n}.id')
+        ];
+        return $servicegroup;
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedServicegroupsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param int $serviceId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServiceGroupsByServiceId(int $serviceId, array $MY_RIGHTS): array {
+        $query = $this->find()
+            ->select([
+                'Servicegroups.id',
+                'Containers.name'
+            ])
+            ->innerJoin(
+                ['ServicesToServicegroupsTable' => 'services_to_servicegroups'],
+                [
+                    'ServicesToServicegroupsTable.servicegroup_id = Servicegroups.id',
+                    "ServicesToServicegroupsTable.service_id" => $serviceId
+                ]
+            )
+            ->innerJoin(
+                ['Containers' => 'containers'],
+                [
+                    'Servicegroups.container_id = Containers.id'
+                ]
+            )
+            ->disableHydration();
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $return = [];
+        foreach ($query->toArray() as $result) {
+            $return[] = [
+                'name' => $result['Containers']['name'],
+                'id'   => $result['id']
+            ];
+        }
+        return $return;
+    }
+
+    /**
+     * This method provides a unified way to create new servicegroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Servicegroup $entity The entity that will be saved by the Table
+     * @param array $servicegroup The servicegroup as array ( [ Servicegroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicegroup
+     */
+    public function createServicegroup(Servicegroup $entity, array $servicegroup, int $userId): Servicegroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($servicegroup);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'servicegroups',
+            $entity->get('id'),
+            OBJECT_SERVICEGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($servicegroup, $extDataForChangelog)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing servicegroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Servicegroup $entity The entity that will be updated by the Table
+     * @param array $newServicegroup The new servicegroup as array ( [ Servicegroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldServicegroup The old servicegroup as array ( [ Servicegroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Servicegroup
+     */
+    public function updateServicegroup(Servicegroup $entity, array $newServicegroup, array $oldServicegroup, int $userId): Servicegroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'servicegroups',
+            $entity->get('id'),
+            OBJECT_SERVICEGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($this->resolveDataForChangelog($newServicegroup), $newServicegroup),
+            array_merge($this->resolveDataForChangelog($oldServicegroup), $oldServicegroup)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
     }
 }

@@ -50,6 +50,29 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
+
+                    <?php if (IS_CONTAINER): ?>
+                        <!-- openITCOCKPIT is running inside a Container like Docker -->
+                        <div class="alert alert-primary border-faded">
+                            <div class="d-flex align-items-center">
+                                <div class="alert-icon">
+                                <span class="icon-stack icon-stack-md">
+                                    <i class="base-7 icon-stack-3x color-info-600"></i>
+                                    <i class="fas fa-info icon-stack-1x text-white"></i>
+                                </span>
+                                </div>
+                                <div class="flex-1 color-info-600">
+                                    <span class="h5 color-info-600">
+                                        <?= __('Containerized installation'); ?>
+                                    </span>
+                                    <br>
+                                    <?= __('Containerized installations are configured through environment variables') ?>
+                                </div>
+
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>

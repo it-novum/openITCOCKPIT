@@ -108,6 +108,7 @@
                         <div class="col-xs-12 col-lg-12">
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
+                                    callback="loadAutomaps"
                                     chosen="automaps"
                                     ng-options="available_automap.key as available_automap.value for available_automap in automaps"
                                     ng-model="automap_id">

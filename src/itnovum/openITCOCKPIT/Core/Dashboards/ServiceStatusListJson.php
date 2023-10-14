@@ -47,10 +47,14 @@ class ServiceStatusListJson extends DashboardJsonStandardizer {
             'output'           => '',
         ],
         'Host'            => [
-            'name' => ''
+            'name'         => '',
+            'name_regex'   => false,
+            'keywords'     => '',
+            'not_keywords' => ''
         ],
         'Service'         => [
             'name'         => '',
+            'name_regex'   => false,
             'keywords'     => '',
             'not_keywords' => ''
         ],

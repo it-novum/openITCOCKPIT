@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="HostgroupsIndex">
-            <i class="fas fa-server"></i> <?php echo __('Host group'); ?>
+            <i class="fas fa-server"></i> <?php echo __('Host groups'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -166,7 +166,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Create host group'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='HostgroupsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='HostgroupsIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

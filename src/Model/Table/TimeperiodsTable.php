@@ -4,6 +4,8 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Timeperiod;
 use Cake\Core\Plugin;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
@@ -62,6 +64,10 @@ class TimeperiodsTable extends Table {
             'foreignKey'   => 'timeperiod_id',
             'saveStrategy' => 'replace'
         ])->setDependent(true);
+
+        $this->belongsTo('Calendars', [
+            'joinType' => 'LEFT'
+        ]);
     }
 
     /**
@@ -85,7 +91,7 @@ class TimeperiodsTable extends Table {
         $validator
             ->integer('container_id')
             ->greaterThan('container_id', 0)
-            ->requirePresence('container_id')
+            ->requirePresence('container_id', 'create')
             ->allowEmptyString('container_id', null, false);
 
         $validator
@@ -329,18 +335,28 @@ class TimeperiodsTable extends Table {
 
     /**
      * @param array $ids
+     * @paran array $MY_RIGHTS
      * @return array
      */
-    public function getTimeperiodsForCopy($ids = []) {
+    public function getTimeperiodsForCopy($ids = [], array $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'Timeperiods.id',
                 'Timeperiods.name',
                 'Timeperiods.description'
             ])
-            ->where(['Timeperiods.id IN' => $ids])
-            ->order(['Timeperiods.id' => 'asc'])
-            ->disableHydration()
+            ->where([
+                'Timeperiods.id IN' => $ids
+            ])
+            ->order(['Timeperiods.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Timeperiods.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration()
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);
@@ -411,8 +427,16 @@ class TimeperiodsTable extends Table {
      * @param int $id
      * @return bool
      */
-    public function existsById($id) {
+    public function existsById($id): bool {
         return $this->exists(['Timeperiods.id' => $id]);
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid): bool {
+        return $this->exists(['Timeperiods.uuid' => $uuid]);
     }
 
     public function timeperiodsByContainerId($container_ids = [], $type = 'all') {
@@ -667,7 +691,7 @@ class TimeperiodsTable extends Table {
                     'daysOfWeek' => [$day],
                     'startTime'  => $event['start'],
                     'endTime'    => $event['end'],
-                    'title' => sprintf('%s - %s', $event['start'], $event['end'])
+                    'title'      => sprintf('%s - %s', $event['start'], $event['end'])
                 ];
             }
         }
@@ -679,16 +703,164 @@ class TimeperiodsTable extends Table {
                 'className'  => 'no-events'
             ];
         }
-         /** highlight non business days: saturday and sunday  */
+        /** highlight non business days: saturday and sunday  */
         $eventsFormated[] = [
             'daysOfWeek' => [0, 6],
             'rendering'  => 'background',
             'className'  => 'fc-nonbusiness',
-            'allDay' =>  true,
-            'overLap' =>  false
+            'allDay'     => true,
+            'overLap'    => false
         ];
 
         return $eventsFormated;
     }
 
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function getTimeperiodsByIdsForExport($ids) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->contain(['TimeperiodTimeranges'])
+            ->where([
+                'Timeperiods.id IN'        => $ids,
+                'Timeperiods.container_id' => ROOT_CONTAINER
+            ])
+            ->disableHydration();
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getTimeperiodForEdit($id) {
+        $where = [
+            'Timeperiods.id' => $id
+        ];
+        return $this->getTimeperiodForEditByWhere($where);
+    }
+
+    /**
+     * @param string $uuid
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getTimeperiodForEditByUuid(string $uuid) {
+        $where = [
+            'Timeperiods.uuid' => $uuid
+        ];
+        return $this->getTimeperiodForEditByWhere($where);
+    }
+
+    /**
+     * @param array $where
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    private function getTimeperiodForEditByWhere(array $where) {
+        return $this->find()
+            ->where($where)
+            ->contain(['TimeperiodTimeranges'])
+            ->firstOrFail();
+    }
+
+    /**
+     * This method provides a unified way to create new timeperiod. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Timeperiod $entity The entity that will be saved by the Table
+     * @param array $timeperiod The timeperiod as array ( [ Timeperiod => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Timeperiod
+     */
+    public function createTimeperiod(Timeperiod $entity, array $timeperiod, int $userId): Timeperiod {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'Timeperiods',
+            $entity->get('id'),
+            OBJECT_TIMEPERIOD,
+            [ROOT_CONTAINER],
+            $userId,
+            $entity->get('name'),
+            $timeperiod
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing timeperiod. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param Timeperiod $entity The entity that will be updated by the Table
+     * @param array $newTimeperiod The new timeperiod as array ( [ Timeperiod => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldTimeperiod The old timeperiod as array ( [ Timeperiod => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Timeperiod
+     */
+    public function updateTimeperiod(Timeperiod $entity, array $newTimeperiod, array $oldTimeperiod, int $userId): Timeperiod {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'Timeperiods',
+            $entity->get('id'),
+            OBJECT_TIMEPERIOD,
+            [$entity->get('container_id')],
+            $userId,
+            $entity->get('name'),
+            $newTimeperiod,
+            $oldTimeperiod
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getTimeperiodByUuidForImportDiff($uuid) {
+        $query = $this->find('all')
+            ->contain('TimeperiodTimeranges')
+            ->where(['Timeperiods.uuid' => $uuid])
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $this->emptyArrayIfNull($query);
+    }
 }

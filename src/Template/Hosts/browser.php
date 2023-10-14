@@ -42,7 +42,8 @@ use Cake\Core\Plugin;
 <host-browser-menu
     ng-if="hostBrowserMenuConfig"
     config="hostBrowserMenuConfig"
-    last-load-date="lastLoadDate"></host-browser-menu>
+    last-load-date="lastLoadDate"
+    root-copy-to-clipboard="rootCopyToClipboard"></host-browser-menu>
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
@@ -108,7 +109,7 @@ use Cake\Core\Plugin;
                             <li class="nav-item pointer" ng-show="GrafanaDashboardExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
                                    role="tab">
-                                    <i class="fas fa-info">&nbsp;</i> <?php echo __('Grafana'); ?>
+                                    <i class="far fa-chart-bar"></i>&nbsp;<?php echo __('Grafana'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
@@ -116,12 +117,32 @@ use Cake\Core\Plugin;
                             <li class="nav-item pointer" ng-show="AdditionalInformationExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab6'; hideTimeline()"
                                    role="tab">
-                                    <i class="fas fa-database">&nbsp;</i> <?php echo __('i-doit'); ?>
+                                    <i class="fas fa-database">&nbsp;</i> <?php echo __('CMDB'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
                     </ul>
                 </div>
+                <?php if (Plugin::isLoaded('SLAModule')): ?>
+                    <div ng-show="slaOverview" ng-click="selectedTab = 'tab7'; hideTimeline()">
+                        <button
+                            class="btn btn-labeled btn-{{slaOverview.state}} btn-xs btn-w-m waves-effect waves-themed"
+                            ng-hide="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fa-lg" ng-class="{'fa fa-check':slaOverview.state === 'success',
+                                'fa-solid fa-triangle-exclamation':slaOverview.state === 'warning',
+                                'fa-solid fa-bolt': slaOverview.state === 'danger'}"></i>
+                            </span>{{slaOverview.determined_availability_percent}} %
+                        </button>
+                        <button
+                            class="btn btn-labeled btn-primary btn-xs btn-w-m waves-effect waves-themed"
+                            ng-show="slaOverview.state === 'not_available'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fas fa-question fa-lg"></i>
+                            </span><?= __('Not available'); ?>
+                        </button>
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
@@ -145,7 +166,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('State since'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ hoststatus.last_state_change_user }}">
                                         {{ hoststatus.last_state_change }}
                                     </div>
                                 </div>
@@ -153,7 +174,7 @@ use Cake\Core\Plugin;
                                     <div class="col-6 padding-left-25">
                                         <?php echo __('Last check'); ?>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" title="{{ hoststatus.lastCheckUser }}">
                                         {{ hoststatus.lastCheck }}
                                     </div>
                                 </div>
@@ -163,8 +184,10 @@ use Cake\Core\Plugin;
                                     </div>
                                     <div class="col-6">
                                         <span
-                                            ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">{{
-                                            hoststatus.nextCheck }}</span>
+                                            ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false"
+                                            title="{{ hoststatus.nextCheckUser }}">
+                                            {{ hoststatus.nextCheck }}
+                                        </span>
                                         <span
                                             ng-if="mergedHost.active_checks_enabled === false || mergedHost.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
@@ -247,7 +270,6 @@ use Cake\Core\Plugin;
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div
                                 class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
@@ -421,27 +443,20 @@ use Cake\Core\Plugin;
 
                                                 <tr>
                                                     <td><?php echo __('Command line'); ?></td>
-                                                    <td class="copy-to-clipboard-container"
+                                                    <td class="copy-to-clipboard-container-text"
                                                         style="display: block; position: relative;">
                                                         <code
                                                             class="no-background <?php echo $blurryCommandLine ? 'unblur-on-hover' : '' ?>">
                                                             {{ mergedHost.hostCommandLine }}
                                                         </code>
 
-                                                        <div
-                                                            class="copy-to-clipboard-btn copy-to-clipboard-btn-top-right"
-                                                            rel="tooltip"
-                                                            data-toggle="tooltip"
-                                                            data-trigger="click"
-                                                            data-placement="left"
-                                                            data-original-title="<?= __('Copied'); ?>">
-                                                            <div
-                                                                class="btn btn-default btn-xs waves-effect waves-themed"
-                                                                ng-click="clipboardCommand()"
-                                                                title="<?php echo __('Copy to clipboard'); ?>">
-                                                                <i class="fa fa-copy"></i>
-                                                            </div>
-                                                        </div>
+                                                        <span
+                                                            ng-click="rootCopyToClipboard(mergedHost.hostCommandLine, $event)"
+                                                            class="copy-action text-primary animated copy-action-top-right"
+                                                            data-copied="<?= __('Copied'); ?>"
+                                                            data-copy="<?= __('Copy'); ?>">
+                                                            <?= __('Copy'); ?>
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             <?php endif; ?>
@@ -681,19 +696,24 @@ use Cake\Core\Plugin;
                                 <div ng-show="hoststatus.isInMonitoring">
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('State since'); ?></div>
-                                        <h3 class="margin-top-0">{{ hoststatus.last_state_change }}</h3>
+                                        <h3 class="margin-top-0" title="{{ hoststatus.last_state_change_user }}">
+                                            {{ hoststatus.last_state_change }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Last check'); ?></div>
-                                        <h3 class="margin-top-0">{{ hoststatus.lastCheck }}</h3>
+                                        <h3 class="margin-top-0" title="{{ hoststatus.lastCheckUser }}">
+                                            {{ hoststatus.lastCheck }}
+                                        </h3>
                                     </div>
 
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Next check'); ?></div>
                                         <h3 class="margin-top-0">
                                             <span
-                                                ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">
+                                                ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false"
+                                                title="{{ hoststatus.nextCheckUser }}">
                                                 {{ hoststatus.nextCheck }}
                                                 <small style="color: #333;"
                                                        ng-show="hoststatus.latency > 1">(+ {{ hoststatus.latency }})
@@ -833,16 +853,15 @@ use Cake\Core\Plugin;
                                             </tr>
                                             <tr>
                                                 <td><?php echo __('UUID'); ?></td>
-                                                <td>
+                                                <td class="copy-to-clipboard-container-text">
                                                     <code>{{ mergedHost.uuid }}</code>
-                                                    <span
-                                                        class="btn btn-default btn-xs"
-                                                        onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
-                                                        title="<?php echo __('Copy to clipboard'); ?>">
-                                                        <i class="fa fa-copy"></i>
+                                                    <span ng-click="rootCopyToClipboard(mergedHost.uuid, $event)"
+                                                          class="copy-action-visibility text-primary animated"
+                                                          data-copied="<?= __('Copied'); ?>"
+                                                          data-copy="<?= __('Copy'); ?>"
+                                                    >
+                                                        <?= __('Copy'); ?>
                                                     </span>
-                                                    <input type="text" style="display:none;" id="host-uuid-copy"
-                                                           value="{{ mergedHost.uuid }}"
                                                 </td>
                                             </tr>
                                         </table>
@@ -942,6 +961,53 @@ use Cake\Core\Plugin;
                                                     {{mergedHost.description}}
                                                 </td>
                                             </tr>
+                                            <tr ng-if="objects.Autoreports || objects.Eventcorrelations || objects.hostGroups || objects.instantReports || objects.maps">
+                                                <td><?php echo __('Used by'); ?></td>
+                                                <td>
+                                                    <?php if ($this->Acl->hasPermission('usedBy', 'hosts')): ?>
+
+                                                        <a ng-if="objects.Instantreports.length > 0"
+                                                           ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fa fa-file-invoice"></i> <?php echo __('Instant reports'); ?> ({{objects.Instantreports.length}})
+                                                           </span>
+                                                        </a>
+
+                                                        <?php if (Plugin::isLoaded('AutoreportModule')): ?>
+                                                            <a ng-if="objects.Autoreports.length > 0"
+                                                               ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?> ({{objects.Autoreports.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                        <?php if (Plugin::isLoaded('EventcorrelationModule')): ?>
+                                                            <a ng-if="objects.Eventcorrelations.length > 0"
+                                                               ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                                <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?> ({{objects.Eventcorrelations.length}})
+                                                                </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <?php if (Plugin::isLoaded('MapModule')): ?>
+                                                            <a ng-if="objects.Maps.length > 0"
+                                                               ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-map-marker"></i> <?= __('Map') ?> ({{objects.Maps.length}})
+                                                               </span>
+                                                            </a>
+                                                        <?php endif; ?>
+
+                                                        <a ng-if="objects.Hostgroups.length > 0"
+                                                           ui-sref="HostsUsedBy({id: mergedHost.id})">
+                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fas fa-server"></i> <?php echo __('Host Groups'); ?> ({{objects.Hostgroups.length}})
+                                                           </span>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
                                 </div>
@@ -962,7 +1028,11 @@ use Cake\Core\Plugin;
                                             </span>
                                             <span ng-show="failureDurationInPercent">
                                                 {{(failureDurationInPercent) ? failureDurationInPercent + ' %' :
-                                                    '<?= __('No data available!'); ?>'}}
+                                                    '<?= __('
+                                                No
+                                                data
+                                                available
+                                                !'); ?>'}}
                                             </span>
                                         </h3>
                                     </div>
@@ -1055,7 +1125,7 @@ use Cake\Core\Plugin;
                     <!-- Servicenow Module end -->
                     <!-- Grafana Module start -->
                     <div ng-show="GrafanaDashboardExists && selectedTab == 'tab5'">
-                        <div class="widget-toolbar">
+                        <div class="widget-toolbar text-right padding-bottom-5">
                             <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                         </div>
                         <iframe-directive url="GrafanaIframeUrl"
@@ -1065,9 +1135,9 @@ use Cake\Core\Plugin;
                     <!-- Import Module start -->
                     <div ng-show="selectedTab == 'tab6'" ng-if="AdditionalInformationExists && selectedTab == 'tab6'">
                         <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
-                            <idoit-additional-information-element host-id="{{mergedHost.id}}">
+                            <cmdb-additional-information-element host-id="{{mergedHost.id}}">
 
-                            </idoit-additional-information-element>
+                            </cmdb-additional-information-element>
                         <?php else: ?>
                             <label class="text-danger">
                                 <?php echo __('No permissions'); ?>
@@ -1075,6 +1145,17 @@ use Cake\Core\Plugin;
                         <?php endif; ?>
                     </div>
                     <!-- Import Module end -->
+                    <!-- SLA Module start -->
+                    <div ng-show="selectedTab == 'tab7'" ng-if="slaOverview && selectedTab == 'tab7'">
+                        <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostInformation', 'Slas', 'SLAModule')): ?>
+                            <sla-host-information-element host-id="{{mergedHost.id}}"></sla-host-information-element>
+                        <?php else: ?>
+                            <label class="text-danger">
+                                <?php echo __('No permissions'); ?>
+                            </label>
+                        <?php endif; ?>
+                    </div>
+                    <!-- SLA Module end -->
                 </div>
             </div>
         </div>
@@ -1089,6 +1170,31 @@ use Cake\Core\Plugin;
                 <h2>
                     <?php echo __('Service'); ?>
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+
+                    <div ng-show="hoststatus.currentState > 0"
+                         class="badge badge-pill bg-primary-100 padding-0 font-weight-normal font-sm margin-left-5">
+                        <div class="d-flex align-items-center padding-right-10">
+                            <div class="alert-icon">
+                                <span class="icon-stack icon-stack-md">
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-warning-700"></i>
+                                    <i class="base base-7 icon-stack-1x opacity-100 color-warning-900"></i>
+                                    <i class="ni ni-bell icon-stack-1x opacity-100 color-white"></i>
+                                </span>
+                            </div>
+                            <div class="flex-1">
+                                <span class="bold">
+                                    <?= __('Problem with host detected.'); ?>
+                                </span>
+                                <span class="fw-300">
+                                    <u>
+                                        <?= __('Services output may not as expected!'); ?>
+                                    </u>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">
@@ -1132,12 +1238,16 @@ use Cake\Core\Plugin;
                                     <?php echo __('Service status'); ?>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th class="no-sort text-center"
+                                    ng-click="orderBy('Servicestatus.acknowledgement_type')">
+                                    <i class="fa" ng-class="getSortClass('Servicestatus.acknowledgement_type')"></i>
                                     <i class="fa fa-user"
                                        title="<?php echo __('Acknowledgedment'); ?>"></i>
                                 </th>
 
-                                <th class="no-sort text-center">
+                                <th class="no-sort text-center"
+                                    ng-click="orderBy('Servicestatus.scheduled_downtime_depth')">
+                                    <i class="fa" ng-class="getSortClass('Servicestatus.scheduled_downtime_depth')"></i>
                                     <i class="fa fa-power-off"
                                        title="<?php echo __('in Downtime'); ?>"></i>
                                 </th>
@@ -1255,6 +1365,16 @@ use Cake\Core\Plugin;
                                                    placeholder="<?php echo __('Filter by service name'); ?>"
                                                    ng-model="activeServiceFilter.Service.name"
                                                    ng-model-options="{debounce: 500}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text pt-0 pb-0">
+                                                     <label>
+                                                            <?= __('Enable RegEx'); ?>
+                                                            <input type="checkbox"
+                                                                   ng-model="activeServiceFilter.Service.name_regex">
+                                                        </label>
+                                                    <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </th>
@@ -1292,18 +1412,41 @@ use Cake\Core\Plugin;
                                 </td>
 
                                 <td class="text-center">
-                                    <i class="far fa-user"
-                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                       ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
-
-                                    <i class="fas fa-user"
-                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                       ng-if="service.Servicestatus.acknowledgement_type == 2"
-                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        <i class="far fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           id="ackServicetip_{{service.Service.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           id="ackServicetip_{{service.Service.id}}"
+                                           ng-mouseenter="enterAckEl($event, 'services', service.Service.id)"
+                                           ng-mouseleave="leaveAckEl()"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 2">
+                                        </i>
+                                    <?php else: ?>
+                                        <i class="far fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 1">
+                                        </i>
+                                        <i class="fas fa-user"
+                                           ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                           title="<?php echo __('Sticky Acknowledgedment'); ?>">
+                                        </i>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td class="text-center">
                                     <i class="fa fa-power-off"
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            id="downtimeServicetip_{{service.Service.id}}"
+                                            ng-mouseenter="enterDowntimeEl($event, 'services', service.Service.id)"
+                                            ng-mouseleave="leaveDowntimeEl()"
+                                        <?php endif; ?>
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
@@ -1420,6 +1563,13 @@ use Cake\Core\Plugin;
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php
                                             $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
                                             echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
@@ -1533,6 +1683,7 @@ use Cake\Core\Plugin;
                         <?php echo $this->element('paginator_or_scroll'); ?>
 
                         <popover-graph-directive></popover-graph-directive>
+
                     </div>
 
                     <div id="serviceTab2" class="tab-pane" ng-if="activeTab === 'notMonitored'">
@@ -1603,6 +1754,22 @@ use Cake\Core\Plugin;
                                                    class="dropdown-item">
                                                     <i class="fa fa-plug"></i>
                                                     <?php echo __('Disable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                                   ng-if="service.Service.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
@@ -1706,6 +1873,22 @@ use Cake\Core\Plugin;
                                                     <?php echo __('Enable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'service', objectId: service.Service.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                                <div class="dropdown-divider"></div>
+                                                <a ui-sref="ServicesCopy({ids: service.Service.id})"
+                                                   ng-if="service.Service.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))"
@@ -1771,6 +1954,8 @@ use Cake\Core\Plugin;
                     </div>
                 </div>
             </div>
+            <ack-tooltip></ack-tooltip>
+            <downtime-tooltip></downtime-tooltip>
         </div>
     </div>
 </div>

@@ -67,7 +67,17 @@ class UserTime {
      * @return string
      */
     public function format($t_time) {
-        if (!is_numeric($t_time)) {
+        if (gettype($t_time) === 'object') {
+            if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
+                /** @var FrozenTime $t_time */
+                $t_time = $t_time->timestamp;
+            } else if (get_class($t_time) === 'DateTime') {
+                /** @var DateTime $t_time */
+                $t_time = $t_time->getTimestamp();
+            }
+        }
+
+        if (!is_numeric($t_time) && !is_null($t_time)) {
             $t_time = strtotime($t_time);
         }
         if (!is_numeric($t_time)) {
@@ -83,7 +93,18 @@ class UserTime {
      * @return string
      */
     public function customFormat($format, $t_time) {
-        if (!is_numeric($t_time)) {
+
+        if (gettype($t_time) === 'object') {
+            if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
+                /** @var FrozenTime $t_time */
+                $t_time = $t_time->timestamp;
+            } else if (get_class($t_time) === 'DateTime') {
+                /** @var DateTime $t_time */
+                $t_time = $t_time->getTimestamp();
+            }
+        }
+
+        if (!is_numeric($t_time) && !is_null($t_time)) {
             $t_time = strtotime($t_time);
         }
         if (!is_numeric($t_time)) {
@@ -177,7 +198,17 @@ class UserTime {
      * @return string
      */
     public function timeAgoInWords($t_time, $options = []) {
-        if (!is_numeric($t_time)) {
+        if (gettype($t_time) === 'object') {
+            if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
+                /** @var FrozenTime $t_time */
+                $t_time = $t_time->timestamp;
+            } else if (get_class($t_time) === 'DateTime') {
+                /** @var DateTime $t_time */
+                $t_time = $t_time->getTimestamp();
+            }
+        }
+
+        if (!is_numeric($t_time) && !is_null($t_time)) {
             $t_time = strtotime($t_time);
         }
         if (!is_numeric($t_time)) {
@@ -237,7 +268,7 @@ class UserTime {
         return $offset;
     }
 
-    public function getFormatString(){
+    public function getFormatString() {
         return $this->format;
     }
 

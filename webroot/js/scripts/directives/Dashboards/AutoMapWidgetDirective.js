@@ -17,6 +17,7 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $root
 
             $scope.automap_id = null;
 
+
             $scope.automapTimeout = null;
             $scope.currentPage = 1;
 
@@ -24,7 +25,7 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $root
             var loadWidgetConfig = function(){
                 $http.get("/automaps/automapWidget.json?angular=true&widgetId=" + $scope.widget.id).then(function(result){
                     $scope.useScroll = result.data.config.useScroll || true;
-                    $scope.automap_id = parseInt(result.data.config.automap_id, 10);
+                    $scope.automap_id = result.data.config.automap_id;
                     $scope.limit = parseInt(result.data.config.limit, 10);
                     var scrollInterval = parseInt(result.data.config.scroll_interval) || 30000;
                     if(scrollInterval < 5000){
@@ -78,7 +79,7 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $root
                 $http.get("/automaps/loadAutomapsByString.json", {
                     params: {
                         'angular': true,
-                        'filter[Automap.name]': searchString,
+                        'filter[Automaps.name]': searchString,
                         'selected[]': $scope.automap_id
                     }
                 }).then(function(result){

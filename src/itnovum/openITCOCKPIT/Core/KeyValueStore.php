@@ -64,14 +64,14 @@ class KeyValueStore {
     /**
      * @param string|int $key
      * @return mixed
-     * @throws \NotFoundException
+     * @throws \Exception
      */
     public function get($key) {
         if ($this->has($key)) {
             return $this->store[$key];
         }
 
-        throw new \NotFoundException('Key not found in key value store');
+        throw new \Exception('Key not found in key value store');
     }
 
     /**

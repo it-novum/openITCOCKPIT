@@ -1,11 +1,15 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsExtendedController', function($scope, $http, $interval, $stateParams){
+    .controller('HostgroupsExtendedController', function($rootScope, $scope, $http, $interval, $stateParams){
 
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
 
         $scope.deleteUrl = '/hosts/delete/';
         $scope.deactivateUrl = '/hosts/deactivate/';
+        $scope.interval = null;
+
+        $scope.currentPage = 1;
+        $scope.useScroll = true;
 
         $scope.post = {
             Hostgroup: {
@@ -25,6 +29,13 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Host: {
                     name: ''
+                },
+                Hoststatus: {
+                    current_state: {
+                        up: false,
+                        down: false,
+                        unreachable: false
+                    }
                 }
             };
         };
@@ -68,11 +79,17 @@ angular.module('openITCOCKPIT')
                 $http.get("/hostgroups/loadHostgroupWithHostsById/" + $scope.post.Hostgroup.id + ".json", {
                     params: {
                         'angular': true,
+                        'scroll': $scope.useScroll,
+                        'page': $scope.currentPage,
                         'selected': $scope.post.Hostgroup.id,
-                        'filter[Hosts.name]': $scope.filter.Host.name
+                        'filter[Hosts.name]': $scope.filter.Host.name,
+                        'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state)
+
                     }
                 }).then(function(result){
                     $scope.hostgroup = result.data.hostgroup;
+                    $scope.paging = result.data.paging;
+                    $scope.scroll = result.data.scroll;
 
                     for(var host in $scope.hostgroup.Hosts){
                         $scope.showServices[$scope.hostgroup.Hosts[host].Host.id] = false;
@@ -115,7 +132,7 @@ angular.module('openITCOCKPIT')
         $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $interval.cancel(interval);
@@ -133,6 +150,26 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
+
+
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
+
         //Fire on page load
         $scope.loadTimezone();
         $scope.load();
@@ -143,6 +180,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
             defaultFilter();
+            $scope.currentPage = 1;
             $scope.loadHostsWithStatus('');
         }, true);
 
@@ -150,6 +188,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+            $scope.currentPage = 1;
             $scope.loadHostsWithStatus();
         }, true);
     });

@@ -82,23 +82,29 @@ angular.module('openITCOCKPIT')
 
         $scope.checkForMisingArguments = function(){
             var commandLine = $scope.post.Command.command_line;
+            var usedCommandLineArgs = commandLine.match(/(\$ARG\d+\$)/g)??[];
+            var definedCommandArgumentsByName = _.map($scope.args, 'name');
+            var usedCommandLineArgsFiltered = usedCommandLineArgs.filter(
+                (value, index) => usedCommandLineArgs.indexOf(value) === index
+            );
 
-            var usedCommandLineArgs = commandLine.match(/(\$ARG\d+\$)/g);
-            if(usedCommandLineArgs !== null){
-                usedCommandLineArgs = usedCommandLineArgs.length;
-            }else{
-                usedCommandLineArgs = 0;
-            }
+            $scope.usedCommandLineArgs =  usedCommandLineArgsFiltered.length;
 
-            $scope.usedCommandLineArgs = usedCommandLineArgs;
+            $scope.usedCommandLineToDefinedCommandArguments = _.difference(
+                usedCommandLineArgsFiltered, definedCommandArgumentsByName
+            );
+
+            $scope.definedCommandArgumentsToUsedCommandLine = _.difference(
+                definedCommandArgumentsByName, usedCommandLineArgsFiltered
+            );
+
             $scope.definedCommandArguments = $scope.args.length;
 
-            if($scope.usedCommandLineArgs === $scope.definedCommandArguments){
+            if($scope.usedCommandLineToDefinedCommandArguments.length === 0 && $scope.definedCommandArgumentsToUsedCommandLine.length === 0){
                 $scope.submit();
             }else{
                 $('#argumentMisMatchModal').modal('show');
             }
-
         };
 
         $scope.submit = function(){

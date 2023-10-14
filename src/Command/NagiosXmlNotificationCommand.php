@@ -28,6 +28,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\itnovum\openITCOCKPIT\Core\EmailCharacters;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
@@ -53,7 +54,6 @@ use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 use Spatie\Emoji\Emoji;
-use function GuzzleHttp\default_ca_bundle;
 
 /**
  * NagiosNotification command.
@@ -230,6 +230,9 @@ class NagiosXmlNotificationCommand extends Command {
         $toName = null;
         if ($args->getOption('contactalias') !== '') {
             $toName = $args->getOption('contactalias');
+            if(!empty($toName) && is_string($toName)){
+                $toName = EmailCharacters::removeDangerousCharactersForToHeader($toName);
+            }
         }
         $Mailer->addTo($this->contactmail, $toName);
         $Mailer->setSubject($this->getHostSubject($Host, $HoststatusIcon));
@@ -278,6 +281,9 @@ class NagiosXmlNotificationCommand extends Command {
         $toName = null;
         if ($args->getOption('contactalias') !== '') {
             $toName = $args->getOption('contactalias');
+            if(!empty($toName) && is_string($toName)){
+                $toName = EmailCharacters::removeDangerousCharactersForToHeader($toName);
+            }
         }
         $Mailer->addTo($this->contactmail, $toName);
         $Mailer->setSubject($this->getServiceSubject(
@@ -639,12 +645,12 @@ class NagiosXmlNotificationCommand extends Command {
 
             if (!empty($graphData)) {
                 //Render graph data to png image blobs for pdf
-                $NodeJsChartRenderClient = new ChartRenderClient();
-                $NodeJsChartRenderClient->setGraphStartTimestamp($graphStart);
-                $NodeJsChartRenderClient->setGraphEndTimestamp(time());
-                $NodeJsChartRenderClient->setHeight(180);
-                $NodeJsChartRenderClient->setWidth(560);
-                $NodeJsChartRenderClient->setTitle(
+                $PuppeteerChartRenderClient = new ChartRenderClient();
+                $PuppeteerChartRenderClient->setGraphStartTimestamp($graphStart);
+                $PuppeteerChartRenderClient->setGraphEndTimestamp(time());
+                $PuppeteerChartRenderClient->setHeight(180);
+                $PuppeteerChartRenderClient->setWidth(560);
+                $PuppeteerChartRenderClient->setTitle(
                     sprintf(
                         '%s - %s',
                         $Host->getHostname(),
@@ -656,7 +662,7 @@ class NagiosXmlNotificationCommand extends Command {
                 foreach (array_chunk($graphData, 2) as $graphDataChunk) {
                     $fileName = sprintf('Chart_%s.png', $id);
                     $attachments[$fileName] = [
-                        'data'      => $NodeJsChartRenderClient->getAreaChartAsPngStream($graphDataChunk),
+                        'data'      => $PuppeteerChartRenderClient->getAreaChartAsPngStream($graphDataChunk),
                         'mimetype'  => 'image/png',
                         'contentId' => 'cid' . $id //Needs to be a string because of CakePHP
                     ];

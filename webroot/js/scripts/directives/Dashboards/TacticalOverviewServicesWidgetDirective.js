@@ -19,9 +19,11 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewServicesWidget', func
             $scope.filter = {
                 Host: {
                     name: '',
+                    name_regex: false
                 },
                 Service: {
                     servicename: '',
+                    servicename_regex: false,
                     keywords: '',
                     not_keywords: ''
                 },
@@ -41,6 +43,9 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewServicesWidget', func
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
                     $scope.filter.Servicegroup._ids = result.data.config.Servicegroup._ids.split(',').map(Number);
+
+                    $('#ServicesKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Service.keywords);
+                    $('#ServicesNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Service.not_keywords);
 
                     $scope.servicestatusSummary = result.data.servicestatusSummary;
                     $scope.loadServicegroups();

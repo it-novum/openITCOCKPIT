@@ -29,12 +29,17 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\PushAgent;
+use Cake\Controller\Exception\MissingComponentException;
+use Cake\Core\Plugin;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use ImportModule\Model\Table\ImportedHostsTable;
+use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
@@ -184,6 +189,20 @@ class PushAgentsTable extends Table {
     }
 
     /**
+     * @param $uuid
+     * @param $password
+     * @return array|EntityInterface
+     */
+    public function getPushAgentByUuidAndPassword($uuid, $password) {
+        return $this->find()
+            ->where([
+                'PushAgents.uuid'     => $uuid,
+                'PushAgents.password' => $password
+            ])
+            ->firstOrFail();
+    }
+
+    /**
      * @param int $agentConfigId
      * @return bool
      */
@@ -264,7 +283,7 @@ class PushAgentsTable extends Table {
             'PushAgents.ipaddress',
             'PushAgents.remote_address',
             'PushAgents.http_x_forwarded_for',
-            'PushAgents.checkresults',
+            //'PushAgents.checkresults', // The Agent check result is not necessary, slows down the query and uses A LOT of memory with large paginator limits
             'PushAgents.last_update'
         ])
             ->leftJoin(
@@ -324,7 +343,13 @@ class PushAgentsTable extends Table {
 
         $query->where($where);
         $query->disableHydration();
-        $query->order($GenericFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        $query->order(
+            array_merge(
+                $GenericFilter->getOrderForPaginator('Hosts.name', 'asc'),
+                ['PushAgents.id' => 'asc']
+            )
+
+        );
         $query->group('PushAgents.id');
         //FileDebugger::dieQuery($query);
 
@@ -384,4 +409,115 @@ class PushAgentsTable extends Table {
         return [];
     }
 
+    /**
+     * This method will return all Agents running in Push Mode which are
+     * a) Not assigned to a host yet or
+     * b) Where assigned automatically via the Import Module
+     *
+     * This method will NOT return Agents, which where assigned manually by a user!
+     *
+     * @param int $importerId
+     * @return array
+     */
+    public function getAllPushAgentsForImport(int $importerId = 3) {
+        if (!Plugin::isLoaded('ImportModule')) {
+            throw new MissingComponentException(
+                'ImportModule is required for this action'
+            );
+        }
+
+        /** @var ImportedHostsTable $ImportedHostsTable */
+        $ImportedHostsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHosts');
+
+        $query = $this->find();
+        $importedHostsSubSelect = $ImportedHostsTable->subquery()
+            ->select('ImportedHosts.id')
+            ->where([
+                'ImportedHosts.identifier = PushAgents.uuid',
+                'ImportedHosts.importer_id' => $importerId
+            ]);
+
+        $query->select([
+            'PushAgents.id',
+            'PushAgents.uuid',
+            'PushAgents.hostname',
+            'PushAgents.ipaddress',
+            'PushAgents.remote_address',
+            'PushAgents.http_x_forwarded_for',
+            'PushAgents.checkresults',
+            'PushAgents.last_update'
+        ])
+            ->where([
+                'OR' => [
+                    'PushAgents.agentconfig_id IS NULL',
+                    $importedHostsSubSelect
+                ]
+            ]);
+        $query->disableHydration();
+        $query->order('PushAgents.ipaddress', 'asc');
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param $pushAgentUuid
+     * @return array|EntityInterface|null
+     */
+    public function getByPushAgentByUuid($pushAgentUuid) {
+        return $this->find()
+            ->where([
+                'PushAgents.uuid' => $pushAgentUuid
+            ])
+            ->first();
+    }
+
+    /**
+     * @param string $agentUuid
+     * @param int $hostId
+     * Method used by ImportModule
+     */
+    public function assignHostToAgent(string $agentUuid, int $hostId) {
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        if ($AgentconfigsTable->existsByHostId($hostId)) {
+            $configEntity = $AgentconfigsTable->getConfigByHostId($hostId);
+        } else {
+            // Create new dummy/default config
+            $AgentConfiguration = new AgentConfiguration();
+            $config = $AgentConfiguration->unmarshal('');
+            $config['bool']['enable_push_mode'] = true;
+
+            // Legacy configuration for Agent version < 3.x
+            $AgentConfiguration->setConfigForJson($config);
+            $data = [
+                'host_id'       => $hostId,
+                'port'          => $config['int']['bind_port'],
+                'basic_auth'    => $config['bool']['use_http_basic_auth'],
+                'username'      => $config['bool']['use_http_basic_auth'] ? $config['string']['username'] : '',
+                'password'      => $config['bool']['use_http_basic_auth'] ? $config['string']['password'] : '',
+                'proxy'         => $config['bool']['use_proxy'],
+                'insecure'      => !$config['bool']['use_https_verify'], // Validate TLS certificate in PULL mode
+                'use_https'     => $config['bool']['use_https'], // Use own TLS certificate for the agent like Let's Encrypt
+                'use_autossl'   => $config['bool']['use_autossl'], // New field with agent 3.x
+                'use_push_mode' => $config['bool']['enable_push_mode'], // New field with agent 3.x
+                'config'        => $AgentConfiguration->marshal(), // New field with agent 3.x
+            ];
+
+            $configEntity = $AgentconfigsTable->newEmptyEntity();
+            $configEntity = $AgentconfigsTable->patchEntity($configEntity, $data);
+            $AgentconfigsTable->save($configEntity);
+        }
+        try {
+            $entity = $this->find()
+                ->where([
+                    'uuid' => $agentUuid
+                ])
+                ->firstOrFail();
+
+            $entity->set('agentconfig_id', $configEntity->get('id'));
+            return $this->save($entity);
+        } catch (RecordNotFoundException $e) {
+        }
+        return false;
+    }
 }

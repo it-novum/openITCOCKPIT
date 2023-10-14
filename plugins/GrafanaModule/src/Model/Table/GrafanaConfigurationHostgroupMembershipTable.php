@@ -69,10 +69,10 @@ class GrafanaConfigurationHostgroupMembershipTable extends Table {
             'className'  => 'GrafanaModule.GrafanaConfigurations'
         ]);
 
-        $this->belongsTo('Hostgroup', [
+        $this->belongsTo('Hostgroups', [
             'foreignKey' => 'hostgroup_id',
             'joinType'   => 'INNER',
-            'className'  => 'Hostgroup'
+            'className'  => 'Hostgroups'
         ]);
     }
 

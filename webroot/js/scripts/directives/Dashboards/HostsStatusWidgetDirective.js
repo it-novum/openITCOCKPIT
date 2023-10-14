@@ -39,6 +39,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                 },
                 Host: {
                     name: '',
+                    name_regex: false,
                     keywords: '',
                     not_keywords: ''
                 }
@@ -47,8 +48,8 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             $scope.loadWidgetConfig = function(){
                 $http.get("/dashboards/hostsStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
-                    $('#HostTags').tagsinput('add', $scope.filter.Host.keywords);
-                    $('#HostExcludedTags').tagsinput('add', $scope.filter.Host.not_keywords);
+                    $('#HostTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
+                    $('#HostExcludedTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
                     $scope.filter.Hoststatus = result.data.config.Hoststatus;
                     $scope.filter.Hoststatus.current_state.up = result.data.config.Hoststatus.current_state.up ? 1 : 0;
                     $scope.filter.Hoststatus.current_state.down = result.data.config.Hoststatus.current_state.down ? 1 : 0;
@@ -57,6 +58,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     $scope.filter.Hoststatus.not_acknowledged = result.data.config.Hoststatus.not_acknowledged;
                     $scope.filter.Hoststatus.in_downtime = result.data.config.Hoststatus.in_downtime;
                     $scope.filter.Hoststatus.not_in_downtime = result.data.config.Hoststatus.not_in_downtime;
+                    $scope.filter.Host.name_regex = result.data.config.Host.name_regex;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
@@ -99,6 +101,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     'page': $scope.currentPage,
                     'direction': $scope.direction,
                     'filter[Hosts.name]': $scope.filter.Host.name,
+                    'filter[Hosts.name_regex]': $scope.filter.Host.name_regex,
                     'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
                     'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                     'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,

@@ -59,10 +59,14 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServices = function(searchString){
+            if($scope.post.Servicegroup.container.parent_id == 0){
+                return;
+            }
             $scope.params = {
-                'angular': true,
                 'containerId': $scope.post.Servicegroup.container.parent_id,
-                'filter[servicename]': searchString,
+                'filter': {
+                    'servicename': searchString,
+                },
                 'selected': $scope.post.Servicegroup.services._ids
             };
             $http.post("/services/loadServicesByContainerIdCake4.json?angular=true",
@@ -73,6 +77,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServicetemplates = function(searchString){
+            if($scope.post.Servicegroup.container.parent_id == 0){
+                return;
+            }
             $http.get("/servicegroups/loadServicetemplates.json", {
                 params: {
                     'angular': true,
@@ -86,6 +93,15 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
+            //clean up services and service templates -> remove not visible ids
+            $scope.post.Servicegroup.services._ids = _.intersection(
+                _.map($scope.services, 'key'),
+                $scope.post.Servicegroup.services._ids
+            );
+            $scope.post.Servicegroup.servicetemplates._ids = _.intersection(
+                _.map($scope.servicetemplates, 'key'),
+                $scope.post.Servicegroup.servicetemplates._ids
+            );
             $http.post("/servicegroups/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -118,5 +134,3 @@ angular.module('openITCOCKPIT')
         //$scope.load();
         $scope.loadContainers();
     });
-
-

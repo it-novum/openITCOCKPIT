@@ -91,20 +91,37 @@ class PacketmanagerController extends AppController {
 
             $installedModules = [];
             $output = [];
-            exec('dpkg -l |grep openitcockpit-module', $output, $rc);
-            //$output = $this->getTestDpkgOutput();
-            foreach ($output as $line) {
-                preg_match_all('/(openitcockpit\-module\-)([^\s]+)/', $line, $matches);
-                if (isset($matches[0][0])) {
-                    $module = $matches[0][0];
-                    $installedModules[$module] = true;
+            if (IS_CONTAINER === false) {
+                $LsbRelease = new LsbRelease();
+                if ($LsbRelease->isDebianBased()) {
+                    exec('dpkg -l |grep openitcockpit-module', $output, $rc);
+                    //$output = $this->getTestDpkgOutput();
                 }
 
-                if (isset($matches)) {
-                    unset($matches);
+                if ($LsbRelease->isRhelBased()) {
+                    exec('dnf list installed | grep openitcockpit-module', $output, $rc);
+                    //$output = $this->getTestDnfOutput();
+                }
+
+                foreach ($output as $line) {
+                    preg_match_all('/(openitcockpit\-module\-[^\s|^\.]+)/', $line, $matches);
+                    if (isset($matches[0][0])) {
+                        $module = $matches[0][0];
+                        $installedModules[$module] = true;
+                    }
+
+                    if (isset($matches)) {
+                        unset($matches);
+                    }
+                }
+            } else {
+                // Container based version of openITCOCKPIT have always all modules enabled
+                if (isset($result['data']['modules'])) {
+                    foreach ($result['data']['modules'] as $module) {
+                        $installedModules[$module['Module']['apt_name']] = true;
+                    }
                 }
             }
-
 
             $this->set('result', $result);
             $this->set('installedModules', $installedModules);
@@ -131,6 +148,18 @@ class PacketmanagerController extends AppController {
             'ii  openitcockpit-module-wmi              3.7.3-4ubuntu16.04~201912170227                 amd64        WMI module for openITCOCKPIT',
             'ii  openitcockpit-module-wmi-plugins      1.3.15-0ubuntu16.04~201912170224                amd64        plugins for wmi module.',
             'ii  openitcockpit-module-windows-basic-monitoring-nscp 4.1.0-20200923181004focal          all          openITCOCKPIT Frontend module windows-basic-monitoring-nscp package'
+        ];
+        return $output;
+    }
+
+    /**
+     * @return array
+     */
+    private function getTestDnfOutput() {
+        $output = [
+            'openitcockpit-module-distribute.x86_64             4.6.3_20230330042510RHEL8-1.RHEL8            @openitcockpit',
+            'openitcockpit-module-grafana.x86_64                4.6.3_20230330042510RHEL8-1.RHEL8            @openitcockpit',
+            'openitcockpit-module-prometheus.x86_64             4.6.3_20230330042510RHEL8-1.RHEL8            @openitcockpit'
         ];
         return $output;
     }

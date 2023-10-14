@@ -91,6 +91,28 @@
                             </div>
                         </div>
 
+                        <div class="form-group" ng-class="{'has-error': errors.ldapgroups}" ng-show="isLdapAuth">
+                            <label class="control-label" for="ldapGroups">
+                                <?php echo __('LDAP groups'); ?>
+                            </label>
+                            <select
+                                id="ldapGroups"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="ldapgroups"
+                                callback="loadLdapGroups"
+                                multiple
+                                ng-options="ldapgroup.key as ldapgroup.value for ldapgroup in ldapgroups"
+                                ng-model="post.Usergroup.ldapgroups._ids">
+                            </select>
+                            <div ng-repeat="error in errors.ldapgroups">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <?= __('LDAP users which are member of the selected LDAP groups will be assigned automatically to the user container role.'); ?>
+                            </div>
+                        </div>
+
                         <hr>
 
                         <div class="row" ng-show="post.Usergroup.name === 'Administrator'">

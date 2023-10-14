@@ -31,7 +31,8 @@ class Usergroup extends Entity {
         'description' => true,
         'created'     => true,
         'modified'    => true,
-        'users'       => true
+        'users'       => true,
+        'ldapgroups'  => true
     ];
 
     public function parentNode() {

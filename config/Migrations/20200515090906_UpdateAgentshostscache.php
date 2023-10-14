@@ -14,7 +14,7 @@ use Migrations\AbstractMigration;
  */
 class UpdateAgentshostscache extends AbstractMigration {
 
-    public function up() {
+    public function up(): void {
         $this->table('agenthostscache')
             ->changeColumn('checkdata', 'text', ['limit' => \Phinx\Db\Adapter\MysqlAdapter::TEXT_MEDIUM])
             ->update();
@@ -27,7 +27,7 @@ class UpdateAgentshostscache extends AbstractMigration {
             ->update();
     }
 
-    public function down() {
+    public function down(): void {
         $this->table('agenthostscache')
             ->changeColumn('checkdata', 'text', ['limit' => \Phinx\Db\Adapter\MysqlAdapter::TEXT_REGULAR])
             ->update();

@@ -50,10 +50,20 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
     <div class="ml-auto mr-3" ng-show="interfaceInformation.oitc_is_debugging_mode">
         <div class="float-right">
-            <a ui-sref="AdministratorsQuerylog" class="btn btn-default btn-xl btn-block">
-                <i class="fa fa-database"></i>
-                <?php echo __('Show SQL query log'); ?>
-            </a>
+            <div class="btn-group" role="group">
+                <button class="btn btn-success btn-xl" ng-show="!hasXdebugCookie" ng-click="setXdebugCookie()">
+                    <i class="fa-solid fa-bug"></i>
+                    <?php echo __('Set XDEBUG_TRIGGER cookie'); ?>
+                </button>
+                <button class="btn btn-danger btn-xl" ng-show="hasXdebugCookie" ng-click="removeXdebugCookie()">
+                    <i class="fa-solid fa-bug-slash"></i>
+                    <?php echo __('Remove XDEBUG_TRIGGER cookie'); ?>
+                </button>
+                <a ui-sref="AdministratorsQuerylog" class="btn btn-default btn-xl">
+                    <i class="fa fa-database"></i>
+                    <?php echo __('Show SQL query log'); ?>
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -67,35 +77,36 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     </div>
 </div>
 
+<?php if (IS_CONTAINER === false): ?>
+    <?php echo $this->element('repository_checker'); ?>
 
-<?php echo $this->element('repository_checker'); ?>
+    <?php if ($LsbRelease->getCodename() === 'bionic'): ?>
+        <div class="alert alert-danger alert-block">
+            <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
+            <h4 class="alert-heading">
+                <i class="fa fa-warning"></i>
+                <?php echo __('Ubuntu Bionic 18.04 is end of life soon!'); ?>
+            </h4>
+            <?php echo __('Official end of life of Ubuntu Bionic scheduled for April 2023.'); ?>
+            <?php echo __('Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Ubuntu Bionic. Please update to Ubuntu Focal to receive further updates.'); ?>
+            <br/>
+            <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        </div>
+    <?php endif; ?>
 
-<?php if ($LsbRelease->getCodename() === 'trusty'): ?>
-    <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
-        <h4 class="alert-heading">
-            <i class="fa fa-warning"></i>
-            <?php echo __('Ubuntu Trusty 14.04 end of life!'); ?>
-        </h4>
-        <?php echo __('Official end of life of Ubuntu Trusty scheduled for April 2019.'); ?>
-        <?php echo __('Therefore openITCOCKPIT 3.5 will be the last release for Ubuntu Trusty. Please update to Ubuntu Xenial to receive further updates.'); ?>
-        <br/>
-        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
-    </div>
-<?php endif; ?>
-
-<?php if ($LsbRelease->getCodename() === 'jessie'): ?>
-    <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
-        <h4 class="alert-heading">
-            <i class="fa fa-warning"></i>
-            <?php echo __('Debian Jessie 8 end of life!'); ?>
-        </h4>
-        <?php echo __('Debian Jessie is not supported by the Debian security team anymore!'); ?>
-        <?php echo __('Therefore openITCOCKPIT 3.5 will be the last release for Debian Jessie. Please update to Debian Stretch to receive further updates.'); ?>
-        <br/>
-        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
-    </div>
+    <?php if ($LsbRelease->getCodename() === 'buster'): ?>
+        <div class="alert alert-danger alert-block">
+            <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
+            <h4 class="alert-heading">
+                <i class="fa fa-warning"></i>
+                <?php echo __('Debian Buster 10 end of life!'); ?>
+            </h4>
+            <?php echo __('Debian Buster is not supported by the Debian security team anymore!'); ?>
+            <?php echo __('Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Debian Buster. Please update to Debian Bullseye to receive further updates.'); ?>
+            <br/>
+            <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        </div>
+    <?php endif; ?>
 <?php endif; ?>
 
 <div class="row">
@@ -112,7 +123,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
                     <div class="row">
                         <div class="col-12 text-center">
-                            <img class="img-fluid" alt="Logo" src="<?= $Logo->getLogoForHtml() ?>" style="max-height: 209px;">
+                            <img class="img-fluid" alt="Logo" src="<?= $Logo->getLogoForHtml() ?>"
+                                 style="max-height: 209px;">
                         </div>
                     </div>
 
@@ -361,7 +373,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                     </tr>
 
                                     <tr>
-                                        <td><?= __('NodeJS Server'); ?></td>
+                                        <td><?= __('Nodejs Backend'); ?></td>
                                         <td>
                                             <span class="badge border border-success text-success"
                                                   ng-show="processInformation.backgroundProcesses.isNodeJsServerRunning">
@@ -373,7 +385,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <a data-original-title="<?php echo h('Service required to run server side JavaScript to render charts to email notifications and PDF reports.'); ?>"
+                                            <a data-original-title="<?php echo h('Service required to run server side JavaScript to render PDF files and charts for email notifications and PDF reports.'); ?>"
                                                data-placement="right" rel="tooltip" class="text-info"
                                                href="javascript:void(0);">
                                                 <i class="fa fa-info-circle"></i>
@@ -420,6 +432,9 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
                             <dt><?php echo __('Kernel'); ?>:</dt>
                             <dd>{{serverInformation.kernel}}</dd>
+
+                            <dt><?php echo __('Containerized'); ?>:</dt>
+                            <dd>{{serverInformation.containerized}}</dd>
 
                             <dt><?php echo __('PHP version'); ?>:</dt>
                             <dd>{{serverInformation.php_version}}</dd>

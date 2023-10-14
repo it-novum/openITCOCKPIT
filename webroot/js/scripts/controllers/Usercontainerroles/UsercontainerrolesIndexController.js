@@ -99,6 +99,11 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
+        $scope.linkForCopy = function(){
+            var ids = Object.keys(MassChangeService.getSelected());
+            return ids.join(',');
+        };
+
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);

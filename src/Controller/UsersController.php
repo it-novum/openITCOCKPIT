@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Entity\User;
-use App\Model\Table\ApikeysTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
@@ -40,20 +39,18 @@ use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Event\EventInterface;
-use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
-use itnovum\openITCOCKPIT\Core\Views\Apikey;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
 use itnovum\openITCOCKPIT\oAuth\oAuthClient;
@@ -79,7 +76,7 @@ class UsersController extends AppController {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
-        $isSsoEnabled = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.AUTH_METHOD')->get('value') === 'sso';
+        $isSsoEnabled = $SystemsettingsTable->isOAuth2();
         $redirectToSsoLoginPage = $this->request->getQuery('redirect_sso', null) === 'true';
 
         $forceRedirectSsousersToLoginScreen = false;
@@ -115,10 +112,11 @@ class UsersController extends AppController {
             $hasValidSslCertificate = $this->getUser() !== null;
         }
 
-        $isLoggedIn = $identy = $this->getUser() !== null;
+        $isLoggedIn = $this->getUser() !== null;
         $errorMessages = [];
 
         if ($this->request->is('GET') && $this->request->getQuery('code', null) !== null && $isSsoEnabled) {
+            //FileDebugger::dump($this->request->getQuery());
             // The user came back from the oAuth login page.
             // Check if we have any errors during the oAuth login
             $result = $this->Authentication->getResult();
@@ -126,11 +124,11 @@ class UsersController extends AppController {
                 if ($result->getStatus() === 'FAILURE_IDENTITY_NOT_FOUND') {
 
                     // The browser fires two requests.
-                    // One is is GET request, when the user gets redirrected from the oAuth Login Page back to openITCOCKPIT.
-                    // This is the request where the oauth Login happens.
+                    // One is a GET request, when the user gets redirected from the oAuth Login Page back to openITCOCKPIT.
+                    // This is the request where the oAuth Login happens.
                     //
                     // The second request is also a GET Request done by Angular to query status information.
-                    // S we need to store any errors to the session that we can return errors for angularjs
+                    // So we need to store any errors to the session that we can return errors for angularjs
                     $Session = $this->request->getSession();
                     try {
                         $oauth_error = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.NO_EMAIL_MESSAGE')->get('value');
@@ -191,17 +189,24 @@ class UsersController extends AppController {
 
     public function logout() {
         $Session = $this->request->getSession();
+        $identity = $this->getUser();
+        $userId = $identity->get('id');
         $isOAuthLogin = $Session->read('is_oauth_login') === true;
         $Session->delete('is_oauth_login');
         $Session->delete('MessageOtd.showMessage');
+        Cache::delete('ltc_ldap_usergroup_id_for_' . $userId, 'long_time_cache');
+        Cache::delete('userPermissions_' . $userId, 'permissions');
 
         $this->Authentication->logout();
 
         if ($isOAuthLogin === true) {
             $oAuthClient = new oAuthClient();
-            $this->redirect($oAuthClient->getLogoutUrl());
+            if ($oAuthClient->hasLogoutUrl()) {
+                $this->redirect($oAuthClient->getLogoutUrl());
+            }
             return;
         }
+
 
         $this->redirect([
             'action' => 'login'
@@ -222,34 +227,61 @@ class UsersController extends AppController {
 
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
-
         $UsersFilter = new UsersFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsersFilter->getPage());
-        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $this->MY_RIGHTS);
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            // root users can see all users
+            $MY_RIGHTS = [];
+        }
+        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $MY_RIGHTS);
         $all_users = [];
+
+        $types = $UsersTable->getUserTypesWithStyles();
+
         foreach ($all_tmp_users as $index => $_user) {
             /** @var User $_user */
             $user = $_user->toArray();
             $user['allow_edit'] = $this->hasRootPrivileges;
-
+            if (!empty($user['samaccountname'])) {
+                $user['UserTypes'] = [$types['LDAP_USER']];
+                if ($user['is_oauth'] === true) {
+                    $user['UserTypes'][] = $types['OAUTH_USER'];
+                }
+            } else if ($user['is_oauth'] === true) {
+                $user['UserTypes'] = [$types['OAUTH_USER']];
+            } else {
+                $user['UserTypes'] = [$types['LOCAL_USER']];
+            }
             if ($this->hasRootPrivileges === false) {
                 //Check permissions for non ROOT Users
-                $containerWithWritePermissionByUserContainerRoles = Hash::extract(
+                $containerWithWritePermissionByUserContainerRoles = Hash::combine(
                     $user['usercontainerroles'],
-                    '{n}.containers.{n}._joinData.container_id'
+                    '{n}.containers.{n}._joinData.container_id',
+                    '{n}.containers.{n}._joinData.permission_level'
                 );
 
-                $container = Hash::extract(
-                    $user['containers'],
-                    '{n}.id'
-                );
+                $notPermittedContainer = array_filter($containerWithWritePermissionByUserContainerRoles, function ($v, $k) {
+                    return (!isset($this->MY_RIGHTS_LEVEL[$k]) || (isset($this->MY_RIGHTS_LEVEL[$k]) && $this->MY_RIGHTS_LEVEL[$k] < $v));
 
-                $container = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
-                foreach ($container as $containerId) {
-                    if ($this->isWritableContainer($containerId)) {
-                        $user['allow_edit'] = true;
-                        break;
+                }, ARRAY_FILTER_USE_BOTH);
+                if (!empty($notPermittedContainer)) {
+                    $user['allow_edit'] = false;
+                } else {
+                    $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
+
+                    $container = Hash::extract(
+                        $user['containers'],
+                        '{n}.id'
+                    );
+
+                    $container = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
+                    foreach ($container as $containerId) {
+                        if ($this->isWritableContainer($containerId)) {
+                            $user['allow_edit'] = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -321,10 +353,19 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->getUserForEdit($id);
-        $containersToCheck = array_unique(array_merge(
-            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
-            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        $containersToCheck = array_unique(
+            array_merge(
+                $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+                $user['User']['containers']['_ids'] //Containers defined by the user itself
+            )
         );
+
+        $notPermittedContainerIds = [];
+        foreach ($user['User']['ContainersUsersMemberships'] as $containerId => $rightLevel) {
+            if (!isset($this->MY_RIGHTS_LEVEL[$containerId]) || (isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] < $rightLevel)) {
+                $notPermittedContainerIds[] = $containerId;
+            }
+        }
 
         if (!$this->allowedByContainerId($containersToCheck)) {
             $this->render403();
@@ -333,11 +374,24 @@ class UsersController extends AppController {
 
         $isLdapUser = !empty($user['User']['samaccountname']);
 
+        $types = $UsersTable->getUserTypesWithStyles();
+        if ($isLdapUser) {
+            $UserTypes = [$types['LDAP_USER']];
+            if ($user['User']['is_oauth'] === true) {
+                $UserTypes[] = $types['OAUTH_USER'];
+            }
+        } else if ($user['User']['is_oauth'] === true) {
+            $UserTypes = [$types['OAUTH_USER']];
+        } else {
+            $UserTypes = [$types['LOCAL_USER']];
+        }
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return user information
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser']);
+            $this->set('UserTypes', $UserTypes);
+            $this->set('notPermittedContainerIds', $notPermittedContainerIds);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds']);
             return;
         }
 
@@ -346,6 +400,30 @@ class UsersController extends AppController {
             $data = $this->request->getData('User', []);
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
+            }
+
+            if (!$this->hasRootPrivileges) {
+                $containerIdsWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
+                    return $v == WRITE_RIGHT;
+                }, ARRAY_FILTER_USE_BOTH);
+                $userToEditContainerIdsWithWritePermissions = array_filter($data['ContainersUsersMemberships'], function ($v) {
+                    return $v == WRITE_RIGHT;
+                }, ARRAY_FILTER_USE_BOTH);
+
+                $notPermittedContainerIds = array_keys(
+                    array_diff_key($userToEditContainerIdsWithWritePermissions, $containerIdsWithWritePermissions)
+                );
+
+                foreach ($data['ContainersUsersMemberships'] as $key => $value) {
+                    // do not overwrite container settings if the user does not have sufficient rights
+                    if (in_array($key, $notPermittedContainerIds, true)) {
+                        continue;
+                    }
+                    // reverting write permission to read permission due to insufficient user permission rights
+                    if ($key !== ROOT_CONTAINER && !array_key_exists($key, $containerIdsWithWritePermissions) && $value > 1) {
+                        $data['ContainersUsersMemberships'][$key] = READ_RIGHT;
+                    }
+                }
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
             $user = $UsersTable->get($id);
@@ -359,6 +437,44 @@ class UsersController extends AppController {
                 $user->setAccess('password', false);
                 $user->setAccess('samaccountname', false);
                 $user->setAccess('ldap_dn', false);
+
+                // Get User Container Roles from LDAP groups
+                /** @var SystemsettingsTable $SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+                $ldapUser = $Ldap->getUser($data['samaccountname'], true);
+
+                /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+                $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+                $userContainerRoleContainerPermissionsLdap = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                    $ldapUser['memberof']
+                );
+
+                // Convert old belongsToMany request into through join Membership data. (Only required for LDAP users to set through_ldap field in users_to_usercontainerroles join talbe)
+                $usercontainerroles = $data['usercontainerroles']['_ids'] ?? [];
+                $data['usercontainerroles'] = [];
+
+                // Add user container roles that are assigned via LDAP
+                foreach ($userContainerRoleContainerPermissionsLdap as $usercontainerrole) {
+                    $usercontainerroleId = $usercontainerrole['id'];
+                    $data['usercontainerroles'][$usercontainerroleId] = [
+                        'id'        => $usercontainerroleId,
+                        '_joinData' => [
+                            'through_ldap' => true // This got assigned automatically via LDAP
+                        ]
+                    ];
+                }
+
+                foreach ($usercontainerroles as $usercontainerroleId) {
+                    // Use the ID to be able to overwrite automatically assignments done by LDAP
+                    $data['usercontainerroles'][$usercontainerroleId] = [
+                        'id'        => $usercontainerroleId,
+                        '_joinData' => [
+                            'through_ldap' => false // This user container role got selected by the user
+                        ]
+                    ];
+                }
             }
 
             if ($user->is_oauth === true) {
@@ -411,10 +527,10 @@ class UsersController extends AppController {
             throw new NotFoundException(__('User not found'));
         }
 
-        $user = $UsersTable->getUserForEdit($id);
+        $user = $UsersTable->getUserForPermissionCheck($id);
         $containersToCheck = array_unique(array_merge(
-            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
-            $user['User']['containers']['_ids']) //Containers defined by the user itself
+            $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['containers']['_ids']) //Containers defined by the user itself
         );
 
         if (!$this->allowedByContainerId($containersToCheck)) {
@@ -439,6 +555,10 @@ class UsersController extends AppController {
     public function addFromLdap() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->set('isOAuth2', $SystemsettingsTable->isOAuth2());
             return;
         }
 
@@ -448,11 +568,63 @@ class UsersController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
 
             $data = $this->request->getData('User', []);
+
+            if (empty($data['samaccountname'])) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', [
+                    'samaccountname' => [
+                        '_empty' => __('This field cannot be left empty')
+                    ]
+                ]);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
             $data['is_ldap'] = true;
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+
+            // Get User Container Roles from LDAP groups
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+            $ldapUser = $Ldap->getUser($data['samaccountname'], true);
+
+            /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+            $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+            $userContainerRoleContainerPermissionsLdap = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                $ldapUser['memberof']
+            );
+
+
+            // Convert old belongsToMany request into through join Membership data.
+            $usercontainerroles = $data['usercontainerroles']['_ids'] ?? [];
+            $data['usercontainerroles'] = [];
+
+            // Add user container roles that are assigned via LDAP
+            foreach ($userContainerRoleContainerPermissionsLdap as $usercontainerrole) {
+                $usercontainerroleId = $usercontainerrole['id'];
+                $data['usercontainerroles'][$usercontainerroleId] = [
+                    'id'        => $usercontainerroleId,
+                    '_joinData' => [
+                        'through_ldap' => true // This got assigned automatically via LDAP
+                    ]
+                ];
+            }
+
+            foreach ($usercontainerroles as $usercontainerroleId) {
+                // Use the ID to be able to overwrite automatically assignments done by LDAP
+                $data['usercontainerroles'][$usercontainerroleId] = [
+                    'id'        => $usercontainerroleId,
+                    '_joinData' => [
+                        'through_ldap' => false // This user container role got selected by the user
+                    ]
+                ];
+            }
 
             //remove password validation when user is imported from ldap
             $UsersTable->getValidator()->remove('password');
@@ -492,10 +664,10 @@ class UsersController extends AppController {
             throw new NotFoundException(__('User not found'));
         }
 
-        $user = $UsersTable->getUserForEdit($id);
+        $user = $UsersTable->getUserForPermissionCheck($id);
         $containersToCheck = array_unique(array_merge(
-            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
-            $user['User']['containers']['_ids']) //Containers defined by the user itself
+            $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['containers']['_ids']) //Containers defined by the user itself
         );
 
         if (!$this->allowedByContainerId($containersToCheck)) {
@@ -647,8 +819,23 @@ class UsersController extends AppController {
         /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Usercontainerroles.name'
+            ]
+        ]);
+        $selected = $this->request->getQuery('selected', []);
+        $userContainerIds = $this->MY_RIGHTS;
+        if (!$this->hasRootPrivileges) {
+            $userContainerIds = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
+                return $v == WRITE_RIGHT;
+            }, ARRAY_FILTER_USE_BOTH);
+            $userContainerIds = array_keys($userContainerIds);
+        }
+
         $ucr = Api::makeItJavaScriptAble(
-            $UsercontainerrolesTable->getUsercontainerrolesAsList($this->MY_RIGHTS)
+            $UsercontainerrolesTable->getUsercontainerrolesAsList($GenericFilter, $selected, $userContainerIds)
         );
         $this->set('usercontainerroles', $ucr);
         $this->viewBuilder()->setOption('serialize', ['usercontainerroles']);
@@ -687,6 +874,10 @@ class UsersController extends AppController {
                     //Container is not yet in permissions - add it
                     $permissions[$container['id']] = $container;
                 }
+                $permissions[$container['id']]['user_roles'][$userContainerRole['id']] = [
+                    'id'   => $userContainerRole['id'],
+                    'name' => $userContainerRole['name']
+                ];
             }
         }
 
@@ -718,4 +909,90 @@ class UsersController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['localeOptions']);
     }
 
+    public function loadLdapUserDetails() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+
+        $samaccountname = (string)$this->request->getQuery('samaccountname', '');
+        $ldapUser = null;
+        if (!empty($samaccountname)) {
+            $ldapUser = $Ldap->getUser($samaccountname, true);
+            if ($ldapUser) {
+                /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+                $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+                $ldapUser['userContainerRoleContainerPermissionsLdap'] = $UsercontainerrolesTable->getContainerPermissionsByLdapUserMemberOf(
+                    $ldapUser['memberof']
+                );
+
+                $permissions = [];
+                foreach ($ldapUser['userContainerRoleContainerPermissionsLdap'] as $userContainerRole) {
+                    foreach ($userContainerRole['containers'] as $container) {
+                        if (isset($permissions[$container['id']])) {
+                            //Container permission is already set.
+                            //Only overwrite it, if it is a WRITE_RIGHT
+                            if ($container['_joinData']['permission_level'] === WRITE_RIGHT) {
+                                $permissions[$container['id']] = $container;
+                            }
+                        } else {
+                            //Container is not yet in permissions - add it
+                            $permissions[$container['id']] = $container;
+                        }
+                        $permissions[$container['id']]['user_roles'][$userContainerRole['id']] = [
+                            'id'   => $userContainerRole['id'],
+                            'name' => $userContainerRole['name']
+                        ];
+                    }
+                }
+                $ldapUser['userContainerRoleContainerPermissionsLdap'] = $permissions;
+
+                // Load matching user role (Adminisgtrator, Viewer, etc...)
+                /** @var UsergroupsTable $UsergroupsTable */
+                $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+                $ldapUser['usergroupLdap'] = $UsergroupsTable->getUsergroupByLdapUserMemberOf($ldapUser['memberof']);
+            }
+        }
+        $this->set('ldapUser', $ldapUser);
+        $this->viewBuilder()->setOption('serialize', ['ldapUser']);
+    }
+
+    public function loadContainersForAngular() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containers = $ContainersTable->easyPath(
+            $this->MY_RIGHTS,
+            OBJECT_HOST, [],
+            $this->hasRootPrivileges,
+            [CT_HOSTGROUP]
+        );
+        $containerIdsWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v, $k) use ($containers) {
+            return $v == WRITE_RIGHT && array_key_exists($k, $containers);
+        }, ARRAY_FILTER_USE_BOTH);
+
+        $containerIdsWithWritePermissions = array_keys($containerIdsWithWritePermissions);
+
+        $containers = Api::makeItJavaScriptAble($containers);
+        $this->set('containers', $containers);
+        $this->set('containerIdsWithWritePermissions', $containerIdsWithWritePermissions);
+        $this->viewBuilder()->setOption('serialize', ['containers', 'containerIdsWithWritePermissions']);
+    }
+
+    public function getUserPermissions() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $this->set('permissions', $this->PERMISSIONS);
+        $this->viewBuilder()->setOption('serialize', ['permissions']);
+    }
 }

@@ -179,7 +179,11 @@ class SystemsettingsTable extends Table {
     public function isLdapAuth() {
         if (!Cache::read('systemsettings_is_ldap_auth', 'permissions')) {
             $settings = $this->findAsArraySection('FRONTEND');
-            $value = $settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'ldap';
+            $value = false;
+            if ($settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'ldap' || $settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso_ldap') {
+                $value = true;
+            }
+
             Cache::write('systemsettings_is_ldap_auth', $value, 'permissions');
         }
         return Cache::read('systemsettings_is_ldap_auth', 'permissions');
@@ -188,7 +192,10 @@ class SystemsettingsTable extends Table {
     public function isOAuth2() {
         if (!Cache::read('systemsettings_is_o_auth_2', 'permissions')) {
             $settings = $this->findAsArraySection('FRONTEND');
-            $value = $settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso';
+            $value = false;
+            if ($settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' || $settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso_ldap') {
+                $value = true;
+            }
             Cache::write('systemsettings_is_o_auth_2', $value, 'permissions');
         }
         return Cache::read('systemsettings_is_o_auth_2', 'permissions');
@@ -258,7 +265,7 @@ class SystemsettingsTable extends Table {
         }
     }
 
-    public function getOAuthConfig(){
+    public function getOAuthConfig() {
         $query = $this->find()
             ->where([
                 'Systemsettings.key IN' => [

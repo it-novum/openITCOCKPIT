@@ -332,7 +332,7 @@ class MapUploadsTable extends Table {
                 $srcImg = imagecreatefrompng($file);
                 break;
             default:
-                throw new Exception('Filetype not supported!');
+                throw new \Exception('Filetype not supported!');
                 break;
         }
 
@@ -389,7 +389,7 @@ class MapUploadsTable extends Table {
                 imagepng($destImg, $Folder->path . DS . 'thumb' . DS . 'thumb_' . $imageConfig['uuidFilename'] . '.' . $imageConfig['fileExtension']);
                 break;
             default:
-                throw new Exception('Filetype not supported!');
+                throw new \Exception('Filetype not supported!');
                 break;
         }
         imagedestroy($destImg);

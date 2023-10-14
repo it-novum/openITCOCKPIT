@@ -71,10 +71,10 @@ class AgentResponseToServices {
 
     /**
      * AgentResponseToServices constructor.
-     * @param int $hostId
+     * @param int|null $hostId
      * @param array $agentResponse
      */
-    public function __construct($hostId, $agentResponse = [], $onlyMissingServices = false) {
+    public function __construct($hostId = null, $agentResponse = [], $onlyMissingServices = false) {
         $this->hostId = $hostId;
         $this->agentResponse = $agentResponse;
         $this->AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
@@ -88,7 +88,7 @@ class AgentResponseToServices {
         $this->maxLengthServiceName = $ServicesTable->getSchema()->getColumn('name')['length'];
 
         $this->onlyMissingServices = $onlyMissingServices;
-        if ($onlyMissingServices) {
+        if ($onlyMissingServices && is_numeric($hostId)) {
             $this->existingServicesCache = $ServicesTable->getAgentServicesByHostId($hostId);
         }
     }
@@ -103,25 +103,25 @@ class AgentResponseToServices {
         foreach ($this->agentResponse as $mainKey => $items) {
             switch ($mainKey) {
                 case 'memory':
-                    $memoryService = $this->getServiceStructByName('memory', __('Memory usage percentage'));
+                    $memoryService = $this->getServiceStructByName('memory', 'Memory usage percentage');
                     if ($memoryService) {
                         $services['memory'] = $memoryService;
                     }
                     break;
                 case 'swap':
-                    $swapService = $this->getServiceStructByName('swap', __('Swap usage percentage'));
+                    $swapService = $this->getServiceStructByName('swap', 'Swap usage percentage');
                     if ($swapService) {
                         $services['swap'] = $swapService;
                     }
                     break;
                 case 'cpu':
-                    $cpuService = $this->getServiceStructByName('cpu.cpu_percentage', __('CPU usage percentage'));
+                    $cpuService = $this->getServiceStructByName('cpu.cpu_percentage', 'CPU usage percentage');
                     if ($cpuService) {
                         $services['cpu_percentage'] = $cpuService;
                     }
                     break;
                 case 'system_load':
-                    $systemLoad = $this->getServiceStructForSystemLoad(__('CPU load'));
+                    $systemLoad = $this->getServiceStructForSystemLoad('CPU load');
                     if ($systemLoad) {
                         $services['system_load'] = $systemLoad;
                     }
@@ -228,12 +228,15 @@ class AgentResponseToServices {
      * @return array
      */
     private function getServiceStruct($servicetemplateId, $servicename, $commandargumentvalues = []) {
-        return [
-            'host_id'                      => $this->hostId,
+        $struct = [
             'servicetemplate_id'           => $servicetemplateId,
             'name'                         => $this->shortServiceName($servicename),
             'servicecommandargumentvalues' => $commandargumentvalues
         ];
+        if (is_numeric($this->hostId)) {
+            $struct['host_id'] = $this->hostId;
+        }
+        return $struct;
     }
 
     /**
@@ -315,7 +318,7 @@ class AgentResponseToServices {
                                 $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($items['label']);
                                 $services[] = $this->getServiceStruct(
                                     $agentcheck['servicetemplate_id'],
-                                    __('Sensor: {0}', $items['label']),
+                                    sprintf('Sensor: %s', $items['label']),
                                     $servicetemplatecommandargumentvalues
                                 );
                             }
@@ -325,7 +328,7 @@ class AgentResponseToServices {
                                 $servicetemplatecommandargumentvalues[2]['value'] = $items['id'];
                                 $services[] = $this->getServiceStruct(
                                     $agentcheck['servicetemplate_id'],
-                                    __('Battery: {0}', $items['id']),
+                                    sprintf('Battery: %s', $items['id']),
                                     $servicetemplatecommandargumentvalues
                                 );
                             }
@@ -356,7 +359,7 @@ class AgentResponseToServices {
                     $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($deviceName); //sda
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('Disk stats of: {0}', $deviceName),
+                        sprintf('Disk stats of: %s', $deviceName),
                         $servicetemplatecommandargumentvalues
                     );
                 }
@@ -385,7 +388,7 @@ class AgentResponseToServices {
 
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('Disk usage of: {0} ({1})', $device['disk']['mountpoint'], $device['disk']['device']),
+                        sprintf('Disk usage of: %s (%s)', $device['disk']['mountpoint'], $device['disk']['device']),
                         $servicetemplatecommandargumentvalues
                     );
                 }
@@ -433,7 +436,7 @@ class AgentResponseToServices {
 
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('Network stats of: {0}', $nicName),
+                        sprintf('Network stats of: %s', $nicName),
                         $servicetemplatecommandargumentvalues
                     );
                 }
@@ -463,7 +466,7 @@ class AgentResponseToServices {
 
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('Network state of: {0}', $nicName),
+                        sprintf('Network state of: %s', $nicName),
                         $servicetemplatecommandargumentvalues
                     );
                 }
@@ -486,18 +489,28 @@ class AgentResponseToServices {
         $services = [];
         if (isset($this->agentResponse['processes'])) {
             $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+            // ITC-2939 add support for process identifier via service template
+            $identifier = $servicetemplatecommandargumentvalues[8]['value'] ?? 'auto';
+            if (!in_array($identifier, ['cmdline', 'exec', 'name', 'auto'], true)) {
+                $identifier = 'auto';
+            }
+
             foreach ($this->agentResponse['processes'] as $item) {
-                $processName = $item['name'];
-                if (!empty($item['exec'])) {
-                    $processName = $item['exec'];
-                }
-                if (!empty($item['cmdline']) && is_array($item['cmdline'])) {
-                    // Agent 1.x
-                    $processName = implode(' ', $item['cmdline']);
-                }
-                if (!empty($item['cmdline']) && is_string($item['cmdline'])) {
-                    // Agent 3.x
-                    $processName = $item['cmdline'];
+                if ($identifier !== 'auto' && isset($item[$identifier])) {
+                    $processName = $item[$identifier];
+                } else {
+                    $processName = $item['name'];
+                    if (!empty($item['exec'])) {
+                        $processName = $item['exec'];
+                    }
+                    if (!empty($item['cmdline']) && is_array($item['cmdline'])) {
+                        // Agent 1.x
+                        $processName = implode(' ', $item['cmdline']);
+                    }
+                    if (!empty($item['cmdline']) && is_string($item['cmdline'])) {
+                        // Agent 3.x
+                        $processName = $item['cmdline'];
+                    }
                 }
 
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [6 => $this->shortCommandargumentValue($processName)])) {
@@ -505,7 +518,7 @@ class AgentResponseToServices {
 
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('Process: {0}', $processName),
+                        sprintf('Process: %s', $processName),
                         $servicetemplatecommandargumentvalues
                     );
                 }
@@ -613,7 +626,7 @@ class AgentResponseToServices {
                     $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($match); // wisvc
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('Service: {0}', $serviceName), // Windows Insider Service
+                        sprintf('Service: %s', $serviceName), // Windows Insider Service
                         $servicetemplatecommandargumentvalues
                     );
                 }
@@ -646,7 +659,7 @@ class AgentResponseToServices {
                     $servicetemplatecommandargumentvalues[0]['value'] = $this->shortCommandargumentValue($logType); // Application
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('Event log: {0}', $item),
+                        sprintf('Event log: %s', $item),
                         $servicetemplatecommandargumentvalues
                     );
                 }
@@ -675,7 +688,7 @@ class AgentResponseToServices {
 
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('Custom check: {0}', $checkName),
+                        sprintf('Custom check: %s', $checkName),
                         $servicetemplatecommandargumentvalues
                     );
                 }
@@ -712,7 +725,7 @@ class AgentResponseToServices {
                                 $servicetemplatecommandargumentvalues[1]['value'] = $this->shortCommandargumentValue($item['name']); // grafana
                                 $services[] = $this->getServiceStruct(
                                     $agentcheck['servicetemplate_id'],
-                                    __('Container {0} is running', $item['name']),
+                                    sprintf('Container %s is running', $item['name']),
                                     $servicetemplatecommandargumentvalues
                                 );
                             }
@@ -731,7 +744,7 @@ class AgentResponseToServices {
                                 $servicetemplatecommandargumentvalues[1]['value'] = $this->shortCommandargumentValue($item['name']); // grafana
                                 $services[] = $this->getServiceStruct(
                                     $agentcheck['servicetemplate_id'],
-                                    __('Container {0} CPU percentage', $item['name']),
+                                    sprintf('Container %s CPU percentage', $item['name']),
                                     $servicetemplatecommandargumentvalues
                                 );
                             }
@@ -757,7 +770,7 @@ class AgentResponseToServices {
                                 $servicetemplatecommandargumentvalues[4]['value'] = '0'; // 1 == % 0 == MiB
                                 $services[] = $this->getServiceStruct(
                                     $agentcheck['servicetemplate_id'],
-                                    __('Container {0} Memory used', $item['name']),
+                                    sprintf('Container %s Memory used', $item['name']),
                                     $servicetemplatecommandargumentvalues
                                 );
                             }
@@ -844,7 +857,7 @@ class AgentResponseToServices {
 
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        __('VM: {0}', $item['Name']),
+                        sprintf('VM: %s', $item['Name']),
                         $servicetemplatecommandargumentvalues
                     );
                 }

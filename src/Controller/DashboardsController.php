@@ -56,17 +56,14 @@ use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TacticalOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\WebsiteJson;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use ParsedownExtra;
 use RuntimeException;
 use Statusengine\PerfdataParser;
@@ -150,7 +147,7 @@ class DashboardsController extends AppController {
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
         if (!$DashboardTabsTable->existsById($tabId)) {
-            throw new NotFoundException(sprintf('Tab width id %s not found', $tabId));
+            throw new NotFoundException(sprintf('Tab with id %s not found', $tabId));
         }
 
         $User = new User($this->getUser());
@@ -916,12 +913,12 @@ class DashboardsController extends AppController {
         }
 
 
-        /** @var ParenthostsTable $ParenthostsTable */
-        $ParenthostsTable = TableRegistry::getTableLocator()->get('Parenthosts');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
-        $parentHosts = $ParenthostsTable->getParenthostsForDashboard($containerIds);
-        $hostUuids = Hash::extract($parentHosts, '{n}.Hosts.uuid');
+        $parentHosts = $HostsTable->getParenthostsForDashboard($containerIds);
+        $hostUuids = Hash::extract($parentHosts, '{n}.uuid');
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
@@ -946,11 +943,11 @@ class DashboardsController extends AppController {
         }
 
         $parent_outages = [];
-        foreach ($ParenthostsTable->getParenthostsForDashboard($containerIds, $where) as $parentHost) {
+        foreach ($HostsTable->getParenthostsForDashboard($containerIds, $where) as $parentHost) {
             $Hoststatus = new Hoststatus([], $UserTime);
 
-            if (isset($hoststatus[$parentHost['Hosts']['uuid']])) {
-                $Hoststatus = new Hoststatus($hoststatus[$parentHost['Hosts']['uuid']]['Hoststatus'], $UserTime);
+            if (isset($hoststatus[$parentHost['uuid']])) {
+                $Hoststatus = new Hoststatus($hoststatus[$parentHost['uuid']]['Hoststatus'], $UserTime);
             }
             $parentHost['Hoststatus'] = $Hoststatus->toArray();
             $parent_outages[] = $parentHost;
@@ -978,6 +975,7 @@ class DashboardsController extends AppController {
         return;
     }
 
+    // This gets also used by the hostsStatusListExtendedWidget to load and save the filters
     public function hostsStatusListWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -1021,6 +1019,12 @@ class DashboardsController extends AppController {
         }
 
         throw new MethodNotAllowedException();
+    }
+
+    public function hostsStatusListExtendedWidget() {
+        // Only ship the HTML template
+        // otherwise we need to copy&paste the self::hostsStatusListWidget() 1:1
+        return;
     }
 
     public function hostsDowntimeWidget() {
@@ -1114,6 +1118,7 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    // Gets also used by the servicesStatusListExtendedWidget
     public function servicesStatusListWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -1158,6 +1163,12 @@ class DashboardsController extends AppController {
         }
 
         throw new MethodNotAllowedException();
+    }
+
+    public function servicesStatusListExtendedWidget() {
+        // Only ship the HTML template
+        // otherwise we need to copy&paste the self::servicesStatusListWidget() 1:1
+        return;
     }
 
     public function noticeWidget() {
@@ -1368,7 +1379,7 @@ class DashboardsController extends AppController {
 
         $service = $ServicesTable->getServiceById($id);
         if ($service) {
-            if ($this->allowedByContainerId($service->get('host')->getContainerIds())) {
+            if ($this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
 
                 $ServicestatusFields = new ServicestatusFields($this->DbBackend);
                 $ServicestatusFields->currentState()->isFlapping()->perfdata();
@@ -1381,7 +1392,7 @@ class DashboardsController extends AppController {
                         'Servicestatus' => []
                     ]);
                 }
-                $Host = new Host($service['host']);
+                $Host = new Host($service->get('host')->toArray());
                 $Service = new Service($service->toArray());
                 $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
 
@@ -1393,14 +1404,13 @@ class DashboardsController extends AppController {
                     'Perfdata'      => $PerfdataParser->parse()
                 ];
 
-                $serviceForJs['Service']['isGenericService'] = $service['Service']['service_type'] == GENERIC_SERVICE;
-                $serviceForJs['Service']['isEVCService'] = $service['Service']['service_type'] == EVK_SERVICE;
-                $serviceForJs['Service']['isSLAService'] = $service['Service']['service_type'] == SLA_SERVICE;
-                $serviceForJs['Service']['isMkService'] = $service['Service']['service_type'] == MK_SERVICE;
+                $serviceForJs['Service']['isGenericService'] = $serviceForJs['Service']['serviceType'] == GENERIC_SERVICE;
+                $serviceForJs['Service']['isEVCService'] = $serviceForJs['Service']['serviceType'] == EVK_SERVICE;
+                $serviceForJs['Service']['isSLAService'] = $serviceForJs['Service']['serviceType'] == SLA_SERVICE;
+                $serviceForJs['Service']['isMkService'] = $serviceForJs['Service']['serviceType'] == MK_SERVICE;
 
                 $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
                 $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
-
                 return $serviceForJs;
             }
         }
@@ -1597,7 +1607,7 @@ class DashboardsController extends AppController {
 
         $service = $ServicesTable->getServiceById($serviceId);
         if ($service) {
-            if ($this->allowedByContainerId($service->get('host')->getContainerIds())) {
+            if ($this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
                 $ServicestatusFields = new ServicestatusFields($this->DbBackend);
                 $ServicestatusFields->perfdata();
                 $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
@@ -1704,8 +1714,10 @@ class DashboardsController extends AppController {
             $MY_RIGHTS = [];
             if ($this->hasRootPrivileges === false) {
                 /** @var $ContainersTable ContainersTable */
-                $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-                $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+                //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+                $MY_RIGHTS = $this->MY_RIGHTS;
             }
 
             $data = [];
@@ -1714,16 +1726,33 @@ class DashboardsController extends AppController {
             }
             $config = $TacticalOverviewJson->standardizedData($data);
 
+            $conditions = $config;
+            // Migrate keyword / tags from JSON string to SQL RLIKE query string
+            foreach (['Host', 'Service'] as $tableName) {
+                foreach (['keywords', 'not_keywords'] as $field) {
+                    if (empty($conditions[$tableName][$field])) {
+                        $conditions[$tableName][$field] = [];
+                    }
+
+                    if (isset($conditions[$tableName][$field]) && is_string($conditions[$tableName][$field])) {
+                        $arr = explode(',', $conditions[$tableName][$field]);
+                        $conditions[$tableName][$field] = [];
+                        if (!empty($arr)) {
+                            $conditions[$tableName][$field] = sprintf('.*(%s).*', implode('|', $arr));
+                        }
+                    }
+                }
+            }
+
             $hoststatusSummary = [];
             $servicestatusSummary = [];
             switch ($type) {
                 case 'hosts':
-                case 'hosts_services':
                     $hoststatus = [];
                     if ($this->DbBackend->isNdoUtils()) {
                         /** @var HostsTable $HostsTable */
                         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                        $hoststatus = $HostsTable->getHostsWithStatusByConditions($MY_RIGHTS, $config);
+                        $hoststatus = $HostsTable->getHostsWithStatusByConditions($MY_RIGHTS, $conditions);
                     }
 
                     if ($this->DbBackend->isCrateDb()) {
@@ -1733,7 +1762,7 @@ class DashboardsController extends AppController {
                     if ($this->DbBackend->isStatusengine3()) {
                         /** @var HostsTable $HostsTable */
                         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                        $hoststatus = $HostsTable->getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $config);
+                        $hoststatus = $HostsTable->getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions);
                     }
                     $hoststatusSummary = $HostsTable->getHostStateSummary($hoststatus, true);
 
@@ -1743,7 +1772,7 @@ class DashboardsController extends AppController {
                     if ($this->DbBackend->isNdoUtils()) {
                         /** @var ServicesTable $ServicesTable */
                         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                        $servicestatus = $ServicesTable->getServicesWithStatusByConditions($MY_RIGHTS, $config);
+                        $servicestatus = $ServicesTable->getServicesWithStatusByConditions($MY_RIGHTS, $conditions);
                     }
 
                     if ($this->DbBackend->isCrateDb()) {
@@ -1753,7 +1782,7 @@ class DashboardsController extends AppController {
                     if ($this->DbBackend->isStatusengine3()) {
                         /** @var ServicesTable $ServicesTable */
                         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                        $servicestatus = $ServicesTable->getServicesWithStatusByConditionsStatusengine3($MY_RIGHTS, $config);
+                        $servicestatus = $ServicesTable->getServicesWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions);
                     }
                     $servicestatusSummary = $ServicesTable->getServiceStateSummary($servicestatus, true);
                     break;
@@ -1772,7 +1801,6 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $TacticalOverviewJson->standardizedData($this->request->getData());
-
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
             ]);
@@ -1852,5 +1880,50 @@ class DashboardsController extends AppController {
             return;
         }
         throw new MethodNotAllowedException();
+    }
+
+    /*************************************************
+     *       openITCOCKPIT Desktop App METHODS       *
+     *************************************************/
+    public function desktopWidget() {
+        $queryData = [];
+        if ($this->request->is('post')) {
+            $queryData = $this->request->getData();
+        }
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+
+        $hostsConfig = $queryData['hostFilters'];
+        $servicesConfig = $queryData['serviceFilters'];
+        $hoststatus = [];
+        $servicestatus = [];
+        if ($this->DbBackend->isNdoUtils()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+        if ($this->DbBackend->isStatusengine3()) {
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            $hoststatus = $HostsTable->getHostsForDesktopWithStatusByConditionsStatusengine3($MY_RIGHTS, $hostsConfig);
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $servicestatus = $ServicesTable->getServicesForDesktopWithStatusByConditionsStatusengine3($MY_RIGHTS, $servicesConfig);
+
+        }
+        $hoststatusSummary = $HostsTable->getHostStateSummary($hoststatus, false);
+        $servicestatusSummary = $ServicesTable->getServiceStateSummary($servicestatus, false);
+
+        $this->set('hoststatusSummary', $hoststatusSummary);
+        $this->set('servicestatusSummary', $servicestatusSummary);
+        $this->viewBuilder()->setOption('serialize', ['hoststatusSummary', 'servicestatusSummary']);
     }
 }

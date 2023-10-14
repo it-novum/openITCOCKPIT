@@ -154,18 +154,13 @@ angular.module('openITCOCKPIT')
             var index = 0;
             $scope.post.Timeperiod.timeperiod_timeranges = [];
             for(var i in $scope.timeperiod.ranges){
-                for(var j in $scope.timeperiod.ranges){
-                    if(parseInt($scope.timeperiod.ranges[j].index) === parseInt(i)){
-                        $scope.post.Timeperiod.timeperiod_timeranges[index] = {
-                            'id': $scope.timeperiod.ranges[j].id,
-                            'day': $scope.timeperiod.ranges[j].day,
-                            'start': $scope.timeperiod.ranges[j].start,
-                            'end': $scope.timeperiod.ranges[j].end
-                        };
-                        index++;
-                        break;
-                    }
-                }
+                $scope.post.Timeperiod.timeperiod_timeranges[index] = {
+                    'id': $scope.timeperiod.ranges[i].id,
+                    'day': $scope.timeperiod.ranges[i].day,
+                    'start': $scope.timeperiod.ranges[i].start,
+                    'end': $scope.timeperiod.ranges[i].end
+                };
+                index++;
             }
 
             $http.post("/timeperiods/edit/" + $scope.id + ".json?angular=true",

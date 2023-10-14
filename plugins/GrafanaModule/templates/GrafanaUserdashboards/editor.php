@@ -71,7 +71,7 @@
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Dashboard'); ?>:
-                    <span class="fw-300"><i>{{post.name}}</i></span>
+                    <span class="fw-300"><i>{{name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>

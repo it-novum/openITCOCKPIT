@@ -41,6 +41,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
@@ -79,7 +80,6 @@ class ServicetemplategroupsController extends AppController {
 
         $all_servicetemplategroups = [];
         foreach ($servicetemplategroups as $servicetemplategroup) {
-           // debug($servicetemplategroup);
             $servicetemplategroup['allow_edit'] = $this->hasPermission('edit', 'servicetemplategroups');
             if ($this->hasRootPrivileges === false) {
                 $servicetemplategroup['allow_edit'] = $this->isWritableContainer($servicetemplategroup['Servicetemplategroup']['container_id']);
@@ -87,17 +87,6 @@ class ServicetemplategroupsController extends AppController {
             $all_servicetemplategroups[] = $servicetemplategroup;
         }
 
-       // debug($all_servicetemplategroups);
-
-        /* foreach ($hostgroups as $hostgroup) {
-             $hostgroup['allowEdit'] = $this->hasPermission('edit', 'hostgroups');
-             if ($this->hasRootPrivileges === false && $hostgroup['allowEdit'] === true) {
-                 $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup->get('container')->get('parent_id'));
-             }
-
-             $all_hostgroups[] = $hostgroup;
-         }
- */
         $this->set('all_servicetemplategroups', $all_servicetemplategroups);
         $this->viewBuilder()->setOption('serialize', ['all_servicetemplategroups']);
     }
@@ -145,7 +134,16 @@ class ServicetemplategroupsController extends AppController {
         $servicetemplategroup->set('uuid', UUID::v4());
         $servicetemplategroup->get('container')->set('containertype_id', CT_SERVICETEMPLATEGROUP);
 
-        $ServicetemplategroupsTable->save($servicetemplategroup);
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $ContainersTable->acquireLock();
+
+        $User = new User($this->getUser());
+        $requestData = $this->request->getData();
+
+        $servicetemplategroup = $ServicetemplategroupsTable->createServicetemplategroup($servicetemplategroup, $requestData, $User->getId());
+
         if ($servicetemplategroup->hasErrors()) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $servicetemplategroup->getErrors());
@@ -153,32 +151,6 @@ class ServicetemplategroupsController extends AppController {
             return;
         } else {
             //No errors
-
-            $User = new User($this->getUser());
-
-            $request = $this->request->getData();
-
-            $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($request);
-            /** @var  ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'add',
-                'servicetemplategroups',
-                $servicetemplategroup->get('id'),
-                OBJECT_SERVICETEMPLATEGROUP,
-                $servicetemplategroup->get('container')->get('parent_id'),
-                $User->getId(),
-                $servicetemplategroup->get('container')->get('name'),
-                array_merge($request, $extDataForChangelog)
-            );
-
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
-            }
-
 
             if ($this->isJsonRequest()) {
                 $this->serializeCake4Id($servicetemplategroup); // REST API ID serialization
@@ -225,6 +197,11 @@ class ServicetemplategroupsController extends AppController {
             //Update service template group data
             $User = new User($this->getUser());
 
+            /** @var ContainersTable $ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
             $servicetemplategroupEntity = $ServicetemplategroupsTable->get($id, [
                 'contain' => [
                     'Containers'
@@ -234,7 +211,15 @@ class ServicetemplategroupsController extends AppController {
             $servicetemplategroupEntity = $ServicetemplategroupsTable->patchEntity($servicetemplategroupEntity, $this->request->getData('Servicetemplategroup'));
             $servicetemplategroupEntity->id = $id;
 
-            $ServicetemplategroupsTable->save($servicetemplategroupEntity);
+            $requestData = $this->request->getData();
+
+            $servicetemplategroupEntity = $ServicetemplategroupsTable->updateServicetemplategroup(
+                $servicetemplategroupEntity,
+                $requestData,
+                $servicetemplategroupForChangeLog,
+                $User->getId()
+            );
+
             if ($servicetemplategroupEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicetemplategroupEntity->getErrors());
@@ -242,28 +227,6 @@ class ServicetemplategroupsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $request = $this->request->getData();
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'servicetemplategroups',
-                    $servicetemplategroupEntity->get('id'),
-                    OBJECT_SERVICETEMPLATEGROUP,
-                    $servicetemplategroupEntity->get('container')->get('parent_id'),
-                    $User->getId(),
-                    $servicetemplategroupEntity->get('container')->get('name'),
-                    array_merge($ServicetemplategroupsTable->resolveDataForChangelog($request), $request),
-                    array_merge($ServicetemplategroupsTable->resolveDataForChangelog($servicetemplategroupForChangeLog), $servicetemplategroupForChangeLog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplategroupEntity); // REST API ID serialization
@@ -303,6 +266,8 @@ class ServicetemplategroupsController extends AppController {
             if (!$ServicetemplategroupsTable->existsById($id)) {
                 throw new NotFoundException(__('Invalid service template group'));
             }
+
+            $ContainersTable->acquireLock();
 
             $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplategroupForEdit($id);
             $servicetemplategroupForChangelog = $servicetemplategroup;
@@ -425,6 +390,11 @@ class ServicetemplategroupsController extends AppController {
             throw new NotFoundException(__('Service template group not found'));
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $ContainersTable->acquireLock();
+
         $servicetemplategroupEntity = $ServicetemplategroupsTable->get($id, [
             'contain' => [
                 'Containers'
@@ -436,15 +406,12 @@ class ServicetemplategroupsController extends AppController {
             return;
         }
 
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $container = $ContainersTable->get($servicetemplategroupEntity->get('container')->get('id'), [
             'contain' => [
                 'Servicetemplategroups'
             ]
         ]);
-        if ($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)) {
+        if ($ContainersTable->allowDelete($container->id, CT_SERVICETEMPLATEGROUP)) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 Cache::clear('permissions');
@@ -485,6 +452,119 @@ class ServicetemplategroupsController extends AppController {
 
     }
 
+    public function copy() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var ServicetemplategroupsTable $ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $servicetemplategroups = $ServicetemplategroupsTable->getServicetemplategroupsForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('servicetemplategroups', $servicetemplategroups);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplategroups']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData('data');
+            $User = new User($this->getUser());
+            $userId = $User->getId();
+
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $ContainersTable->acquireLock();
+
+            foreach ($postData as $index => $servicetemplategroupData) {
+                if (!isset($servicetemplategroupData['Servicetemplategroup']['id'])) {
+                    //Create/clone service template group
+                    $sourceServicetemplategroupId = $servicetemplategroupData['Source']['id'];
+                    $sourceServicetemplategroup = $ServicetemplategroupsTable->getSourceServicetemplategroupForCopy($sourceServicetemplategroupId, $MY_RIGHTS);
+
+                    $newServicetemplategroupData = [
+                        'description'      => $servicetemplategroupData['Servicetemplategroup']['description'],
+                        'uuid'             => UUID::v4(),
+                        'container'        => [
+                            'name'             => $servicetemplategroupData['Servicetemplategroup']['container']['name'],
+                            'containertype_id' => CT_SERVICETEMPLATEGROUP,
+                            'parent_id'        => $sourceServicetemplategroup['container']['parent_id']
+                        ],
+                        'servicetemplates' => [
+                            '_ids' => $sourceServicetemplategroup['servicetemplates']['_ids']
+                        ]
+                    ];
+
+                    $newServicetemplategroupEntity = $ServicetemplategroupsTable->newEntity($newServicetemplategroupData);
+
+                }
+
+                $action = 'copy';
+                if (isset($servicetemplategroupData['Servicetemplategroup']['id'])) {
+                    //Update existing servicetemplategroup
+                    //This happens, if a user copy multiple servicetemplategroup, and one run into an validation error
+                    //All servicetemplategroup without validation errors got already saved to the database
+                    $newServicetemplategroupEntity = $ServicetemplategroupsTable->get($servicetemplategroupData['Servicetemplategroup']['id'], [
+                        'contain' => [
+                            'Containers'
+                        ]
+                    ]);
+                    $newServicetemplategroupEntity->setAccess('*', false);
+                    $newServicetemplategroupEntity->setAccess('description', true);
+                    $newServicetemplategroupEntity->container->setAccess('*', false);
+                    $newServicetemplategroupEntity->container->setAccess('name', true);
+                    $newServicetemplategroupEntity = $ServicetemplategroupsTable->patchEntity($newServicetemplategroupEntity, $servicetemplategroupData['Servicetemplategroup']);
+                    $newServicetemplategroupData = $newServicetemplategroupEntity->toArray();
+                    $action = 'edit';
+                }
+                $ServicetemplategroupsTable->save($newServicetemplategroupEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newServicetemplategroupEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newServicetemplategroupEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Servicetemplategroup']['id'] = $newServicetemplategroupEntity->get('id');
+
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        $action,
+                        'servicetemplategroups',
+                        $postData[$index]['Servicetemplategroup']['id'],
+                        OBJECT_SERVICETEMPLATEGROUP,
+                        $newServicetemplategroupEntity->get('container')->get('parent_id'),
+                        $userId,
+                        $newServicetemplategroupEntity->get('container')->get('name'),
+                        ['Servicetemplategroup' => $newServicetemplategroupData]
+                    );
+                    if ($changelog_data) {
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        Cache::clear('permissions');
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+    }
 
     /********************************
      *      ALLOCATION METHODS      *
@@ -752,6 +832,7 @@ class ServicetemplategroupsController extends AppController {
         $User = new User($this->getUser());
 
         $ServicetemplateCache = new KeyValueStore();
+        $ObjectsCacheChangelog = new ObjectsCache();
 
         if (!$ServicetemplategroupsTable->existsById($servicetemplategroupId)) {
             throw new NotFoundException('Invalid service template group');
@@ -864,7 +945,7 @@ class ServicetemplategroupsController extends AppController {
                     } else {
                         //No errors
 
-                        $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
+                        $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData], $ObjectsCacheChangelog);
                         /** @var  ChangelogsTable $ChangelogsTable */
                         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 

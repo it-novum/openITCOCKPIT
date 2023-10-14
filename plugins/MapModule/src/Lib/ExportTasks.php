@@ -7,9 +7,9 @@
 namespace MapModule\Lib;
 
 
-use Alchemy\Zippy\Zippy;
 use App\Lib\PluginExportTasks;
 use Cake\Core\Configure;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
@@ -17,6 +17,11 @@ use MapModule\Model\Table\MapsTable;
 use MapModule\Model\Table\RotationsTable;
 
 class ExportTasks implements PluginExportTasks {
+
+    /**
+     * @var false[]|mixed|mixed[]
+     */
+    private $conf;
 
     public function __construct() {
         Configure::load('nagios');
@@ -27,8 +32,6 @@ class ExportTasks implements PluginExportTasks {
         if (!\Cake\Core\Plugin::isLoaded('DistributeModule')) {
             return true;
         }
-
-        $zippy = Zippy::load();
 
         //Create zip file with all maps per satellite if DistributeModule is loaded
 
@@ -67,7 +70,26 @@ class ExportTasks implements PluginExportTasks {
 
             if (!empty($files)) {
                 //Cannot create an empty zip
-                $archive = $zippy->create($mapZipArchive, $files);
+                $zipArchive = new \ZipArchive();
+                if ($zipArchive->open($mapZipArchive, \ZipArchive::CREATE) !== true) {
+                    Log::error('Cant create zip file');
+                } else {
+                    $directories = [];
+
+                    foreach ($files as $filename => $file) {
+                        $path = pathinfo($filename)['dirname'];
+
+                        // Does directory already exists in zip?
+                        if (!isset($directories[$path])) {
+                            $zipArchive->addEmptyDir($path . DS);
+                            $directories[$path] = true;
+                        }
+
+                        $zipArchive->addFile($file, $filename);
+                    }
+                    $zipArchive->close();
+                }
+
             }
 
             if (file_exists($mapJson)) {
@@ -116,7 +138,14 @@ class ExportTasks implements PluginExportTasks {
         $iconsets = array_unique(Hash::extract($mapForSatellite, 'mapitems.{n}.iconset'));
         foreach ($iconsets as $iconset) {
             if (is_dir($basePath . 'items' . DS . $iconset)) {
-                $files['items' . DS . $iconset] = $basePath . 'items' . DS . $iconset;
+                // ITC-2906 Add all icons with pull path to the zip archive - not just the parent directory
+                foreach (scandir($basePath . 'items' . DS . $iconset) as $iconsetImageName) {
+                    if ($iconsetImageName === '.' || $iconsetImageName === '..') {
+                        continue;
+                    }
+                    $files['items' . DS . $iconset . DS . $iconsetImageName] = $basePath . 'items' . DS . $iconset . DS . $iconsetImageName;
+                }
+
             }
         }
 

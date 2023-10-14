@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TenantsTable;
 use Cake\Core\Plugin;
@@ -55,17 +56,20 @@ class BrowsersController extends AppController {
             $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
             $satellites = [];
 
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
             if (Plugin::isLoaded('DistributeModule')) {
                 /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
                 $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-                $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+                $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
                 $satellites[0] = $masterInstanceName;
             }
 
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
+            $this->set('types', $HostsTable->getHostTypes());
             //Only ship HTML template
             return;
         }
@@ -79,9 +83,10 @@ class BrowsersController extends AppController {
         $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
 
         $tenants = $TenantsTable->getTenantsForBrowsersIndex($this->MY_RIGHTS, $User->getId());
-        $tenants = Hash::sort($tenants, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
+        $tenants = Hash::sort($tenants, '{n}.container.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 
         $tenantsFiltered = [];
+        $tenantsOfContainerNotVisibleForUser = false;
         foreach ($tenants as $tenant) {
             if (in_array($tenant['container']['id'], $this->MY_RIGHTS, true)) {
                 $tenantsFiltered[$tenant['container']['id']] = [
@@ -89,20 +94,20 @@ class BrowsersController extends AppController {
                     'name'             => $tenant['container']['name'],
                     'containertype_id' => $tenant['container']['containertype_id']
                 ];
+            } else {
+                $tenantsOfContainerNotVisibleForUser = true;
             }
         }
         $tenants = $tenantsFiltered;
         /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($containerId === ROOT_CONTAINER && !empty($tenants)) {
+        if ($containerId === ROOT_CONTAINER && !empty($tenants) && $tenantsOfContainerNotVisibleForUser === false) {
             //First request if tenants are not empty or ROOT_CONTAINER
 
             $this->set('containers', Api::makeItJavaScriptAble($tenants));
             $this->set('breadcrumbs', Api::makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
             //Child container (or so)
-
             $containerNest = $ContainersTable->getChildren($containerId, true);
             $browser = $ContainersTable->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
 

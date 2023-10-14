@@ -27,7 +27,8 @@
 <service-browser-menu
     ng-if="serviceBrowserMenuConfig"
     config="serviceBrowserMenuConfig"
-    last-load-date="0"></service-browser-menu>
+    last-load-date="0"
+    root-copy-to-clipboard="rootCopyToClipboard"></service-browser-menu>
 
 <div class="row">
     <div class="col-xl-12">
@@ -63,11 +64,11 @@
                                                 <span
                                                     class="input-group-text filter-text"><?php echo __('From'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="datetime-local" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('From date'); ?>"
-                                                   ng-model="filter.from"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="from_time"
+                                                   ng-model-options="{debounce: 500, timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                                         </div>
                                     </div>
                                 </div>
@@ -91,11 +92,11 @@
                                                 <span
                                                     class="input-group-text filter-text"><?php echo __('To'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="datetime-local" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('To date'); ?>"
-                                                   ng-model="filter.to"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="to_time"
+                                                   ng-model-options="{debounce: 500, timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                                         </div>
                                     </div>
                                 </div>
@@ -241,18 +242,25 @@
                                     StatehistoryService.StatehistoryService.max_check_attempts }}
                                 </td>
                                 <td class="text-center">
-                                        <span ng-show="StatehistoryService.StatehistoryService.is_hardstate">
-                                            <?php echo __('Hard'); ?>
-                                        </span>
-
-                                    <span ng-show="!StatehistoryService.StatehistoryService.is_hardstate">
-                                            <?php echo __('Soft'); ?>
-                                        </span>
-
+                                    <span class="badge text-uppercase text-white"
+                                          ng-class="{'badge-success': StatehistoryService.StatehistoryService.state == 0,
+                                          'badge-warning': StatehistoryService.StatehistoryService.state == 1,
+                                          'badge-danger': StatehistoryService.StatehistoryService.state == 2,
+                                          'badge-secondary': StatehistoryService.StatehistoryService.state == 3}"
+                                          ng-show="StatehistoryService.StatehistoryService.is_hardstate">
+                                        <?= __('Hard'); ?>
+                                    </span>
+                                    <span class="badge text-uppercase opacity-50 text-white"
+                                          ng-class="{'badge-success': StatehistoryService.StatehistoryService.state == 0,
+                                          'badge-warning': StatehistoryService.StatehistoryService.state == 1,
+                                          'badge-danger': StatehistoryService.StatehistoryService.state == 2,
+                                          'badge-secondary': StatehistoryService.StatehistoryService.state == 3}"
+                                          ng-show="!StatehistoryService.StatehistoryService.is_hardstate">
+                                        <?= __('Soft'); ?>
+                                    </span>
                                 </td>
                                 <td>
-                                    <div
-                                            ng-bind-html="StatehistoryService.StatehistoryService.outputHtml | trustAsHtml"></div>
+                                    <div ng-bind-html="StatehistoryService.StatehistoryService.outputHtml | trustAsHtml"></div>
                                 </td>
                             </tr>
 

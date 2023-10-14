@@ -54,9 +54,10 @@ class ConfigGeneratorShellCommand extends Command {
         $parser = parent::buildOptionParser($parser);
 
         $parser->addOptions([
-            'generate' => ['help' => "Will generate all configuration files from database", 'boolean' => true, 'default' => false],
-            'reload'   => ['help' => "Reload services, where a new configuration file was generated for", 'boolean' => true, 'default' => false],
-            'migrate'  => ['help' => 'Will migrate existing configuration files to database', 'boolean' => true, 'default' => false]
+            'generate'           => ['help' => "Will generate all configuration files from database", 'boolean' => true, 'default' => false],
+            'generate-container' => ['help' => "Will generate all configuration files from environment variables. Only use this option if openITCOCKPIT is running inside a container.", 'boolean' => true, 'default' => false],
+            'reload'             => ['help' => "Reload services, where a new configuration file was generated for", 'boolean' => true, 'default' => false],
+            'migrate'            => ['help' => 'Will migrate existing configuration files to database', 'boolean' => true, 'default' => false]
         ]);
 
         return $parser;
@@ -82,12 +83,19 @@ class ConfigGeneratorShellCommand extends Command {
         }
 
         if ($args->getOption('generate')) {
+            // Full installation of openITCOCKPIT (via apt, dnf or git clone)
             $hadJob = true;
             if ($args->getOption('reload')) {
                 $this->generateAndReload($io);
             } else {
                 $this->generate($io);
             }
+        }
+
+        if ($args->getOption('generate-container')) {
+            // openITCOCKPIT is running inside a docker container
+            $hadJob = true;
+            $this->generateFromEnvironmentVariables($io);
         }
 
         if (!$hadJob) {
@@ -109,6 +117,24 @@ class ConfigGeneratorShellCommand extends Command {
             /** @var ConfigInterface $ConfigFileObject */
             $io->out(sprintf('Generate %s   ', $ConfigFileObject->getLinkedOutfile()), 0);
             $ConfigFileObject->writeToFile($ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigFileObject->getDbKey()));
+            $io->success('Ok');
+        }
+    }
+
+    /**
+     * @param ConsoleIo $io
+     */
+    private function generateFromEnvironmentVariables(ConsoleIo $io) {
+        $io->out('Generate all configuration files from environment variables...    ');
+        /** @var ConfigurationFilesTable $ConfigurationFilesTable */
+        $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
+
+        $GeneratorRegistry = new GeneratorRegistry();
+
+        foreach ($GeneratorRegistry->getAllConfigFilesForContainer() as $ConfigFileObject) {
+            /** @var ConfigInterface $ConfigFileObject */
+            $io->out(sprintf('Generate %s   ', $ConfigFileObject->getLinkedOutfile()), 0);
+            $ConfigFileObject->writeToFile($ConfigFileObject->getValuesFromEnvironment());
             $io->success('Ok');
         }
     }

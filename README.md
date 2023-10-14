@@ -7,8 +7,11 @@ The open source configuration interface for [Nagios](https://www.nagios.org/), [
 </center>
 
 [![Discord: ](https://img.shields.io/badge/Discord-Discord.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/G8KhxKuQ9G)
+[![Twitter: ](https://img.shields.io/twitter/follow/openitcockpit?style=social)](https://twitter.com/openitcockpit)
+[![Reddit: ](https://img.shields.io/reddit/subreddit-subscribers/openitcockpit?style=social)](https://www.reddit.com/r/openitcockpit/)
 [![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-Libera.Chat-blue.svg)](https://web.libera.chat/#openitcockpit)
-
+[![Build Status Stable](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&subject=stable)](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&subject=stable)
+[![Build Status Nightly](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&subject=nightly)](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&subject=nightly)
 
 # What is openITCOCKPIT?
 openITCOCKPIT is an Open Source system monitoring tool built for different monitoring engines like Nagios, Naemon and Prometheus.
@@ -30,17 +33,18 @@ Password: demo123
 
 | Distribution | Stable                                                                                                      | Nightly                                                                                                      |
 |--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| Focal       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| Focal        | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
 | Bionic       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
-| Buster      | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
+| Bullseye     | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
+| Buster       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
+| RHEL 8       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
 
 
 # System requirements
-* Ubuntu Linux 64 bit (20.04 LTS "focal" and 18.04 LTS "bionic"), Debian Linux 64 bit (10 "buster")
-* PHP >= 7.2
+* Ubuntu LTS or Debian
 * 2 CPU cores (x86-64)
 * 2 GB RAM
-* 25 GB space
+* 40 GB space
 
 ### Production system sizing
 Unfortunately there is no golden rule for the right sizing of a monitoring system. This depends on the amount of hosts and services you like to monitor.
@@ -80,7 +84,7 @@ After successful registration you can install the free community modules at Syst
 * LDAP authentication
 * Multitenancy
 * Object permissions
-* [Distributed Monitoring](http://www.it-novum.com/blog/distributed-monitoring-mit-openitcockpit-phpnsta/)
+* [Distributed Monitoring](https://docs.openitcockpit.io/en/configuration/distribute-module/)
 * [Mod-Gearman](http://mod-gearman.org/)
 * [Statusengine](http://statusengine.org/)
 * And much more to discover...
@@ -101,10 +105,10 @@ After successful registration you can install the free community modules at Syst
 # Developers welcome
 openITCOCKPIT's development is publicly available in GitHub. Everybody is welcome to join :-)
 
-- [Setup an openITCOCKPIT development system](https://docs.it-novum.com/display/ODE/Creating+a+openITCOCKPIT+Development+System)
-- [Create your own translation](https://docs.it-novum.com/display/ODE/Create+your+own+openITCOCKPIT+translation)
-- [Creating a new openITCOCKPIT module](https://docs.it-novum.com/display/ODE/Creating+a+new+openITCOCKPIT+Module)
-- [Creating a new check plugin](https://docs.it-novum.com/display/ODE/Creating+a+new+openITCOCKPIT+check+plugin)
+- [Creating an openITCOCKPIT development environment¶](https://docs.openitcockpit.io/en/development/setup-dev-env/)
+- [Create your own translation](https://github.com/it-novum/openITCOCKPIT/issues/1248)
+- [Creating a new openITCOCKPIT module](https://docs.openitcockpit.io/en/development/create-new-module/introduction/)
+- [Creating a new check plugin](https://docs.openitcockpit.io/en/development/new-check-plugin/)
 
 # Need help or support?
 * Official [Discord Server](https://discord.gg/G8KhxKuQ9G)

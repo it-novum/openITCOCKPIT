@@ -27,12 +27,16 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\LdapgroupsTable;
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
 use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\DbBackend;
+use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\LdapgroupFilter;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 
 /**
@@ -52,9 +56,21 @@ class UsercontainerrolesController extends AppController {
 
         /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        $all_usercontainerroles = $UsercontainerrolesTable->getUsercontainerRolesIndex($UsercontainerrolesFilter, $PaginateOMat, $this->MY_RIGHTS);
-
+        $all_usercontainerroles = $UsercontainerrolesTable->getUsercontainerRolesIndex(
+            $UsercontainerrolesFilter,
+            $PaginateOMat,
+            $this->MY_RIGHTS
+        );
+        $containerWithWritePermissions = array_filter($this->MY_RIGHTS_LEVEL, function ($v) {
+            return $v == WRITE_RIGHT;
+        }, ARRAY_FILTER_USE_BOTH);
+        $containerWithWritePermissions = array_keys($containerWithWritePermissions);
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
+            $userRoleContainerIds = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
+            if (!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIds, $containerWithWritePermissions))) {
+                unset($all_usercontainerroles[$index]);
+                continue; //insufficient user (container) rights
+            }
             $all_usercontainerroles[$index]['allow_edit'] = $this->hasRootPrivileges;
             if ($this->hasRootPrivileges === false) {
                 foreach ($usercontainerrole['containers'] as $key => $container) {
@@ -65,8 +81,45 @@ class UsercontainerrolesController extends AppController {
                     $all_usercontainerroles[$index]['allow_edit'] = false;
                 }
             }
-        }
 
+            foreach ($usercontainerrole['users'] as $userIndex => $user) {
+
+                $usercontainerrole['users'][$userIndex]['allow_edit'] = $this->hasRootPrivileges;
+                if ($this->hasRootPrivileges === false) {
+                    //Check permissions for non ROOT Users
+                    $containerWithWritePermissionByUserContainerRoles = Hash::combine(
+                        $user['usercontainerroles'],
+                        '{n}.containers.{n}._joinData.container_id',
+                        '{n}.containers.{n}._joinData.permission_level'
+                    );
+
+                    $notPermittedContainer = array_filter($containerWithWritePermissionByUserContainerRoles, function ($v, $k) {
+                        return (!isset($this->MY_RIGHTS_LEVEL[$k]) || (isset($this->MY_RIGHTS_LEVEL[$k]) && $this->MY_RIGHTS_LEVEL[$k] < $v));
+
+                    }, ARRAY_FILTER_USE_BOTH);
+                    if (!empty($notPermittedContainer)) {
+                        $usercontainerrole['users'][$userIndex]['allow_edit'] = false;
+                    } else {
+                        $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
+
+                        $container = Hash::extract(
+                            $user['containers'],
+                            '{n}.id'
+                        );
+
+                        $container = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
+                        foreach ($container as $containerId) {
+                            if ($this->isWritableContainer($containerId)) {
+                                $usercontainerrole['users'][$userIndex]['allow_edit'] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            $all_usercontainerroles[$index]['users'] = $usercontainerrole['users'];
+        }
 
         $this->set('all_usercontainerroles', $all_usercontainerroles);
         $toJson = ['paging', 'all_usercontainerroles'];
@@ -198,6 +251,117 @@ class UsercontainerrolesController extends AppController {
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function copy($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        if ($this->request->is('get')) {
+            $usercontainerroles = $UsercontainerrolesTable->getUserContainerRolesForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('usercontainerroles', $usercontainerroles);
+            $this->viewBuilder()->setOption('serialize', ['usercontainerroles']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData('data');
+
+            foreach ($postData as $index => $usercontainerroleData) {
+                if (!isset($usercontainerroleData['Usercontainerrole']['id'])) {
+                    //Create/clone Usercontainerrole
+                    $sourceUsercontainerroleId = $usercontainerroleData['Source']['id'];
+                    $sourceUsercontainerrole = $UsercontainerrolesTable->getSourceUserContainerRoleForCopy($sourceUsercontainerroleId, $MY_RIGHTS);
+
+
+                    $newUsercontainerroleData = [
+                        'name'       => $usercontainerroleData['Usercontainerrole']['name'],
+                        'containers' => $UsercontainerrolesTable->containerPermissionsForSave($sourceUsercontainerrole['ContainersUsercontainerrolesMemberships']),
+                        'ldapgroups' => [
+                            '_ids' => $sourceUsercontainerrole['ldapgroups']['_ids']
+                        ]
+                    ];
+
+                    $newUsercontainerroleEntity = $UsercontainerrolesTable->newEntity($newUsercontainerroleData);
+                }
+
+                $action = 'copy';
+                if (isset($usercontainerroleData['Usercontainerrole']['id'])) {
+                    //Update existing Usercontainerrole
+                    //This happens, if a user copy multiple Usercontainerroles, and one run into an validation error
+                    //All Usercontainerroles without validation errors got already saved to the database
+                    $newUsercontainerroleEntity = $UsercontainerrolesTable->get($usercontainerroleData['Usercontainerrole']['id']);
+                    $newUsercontainerroleEntity->setAccess('*', false);
+                    $newUsercontainerroleEntity->setAccess(['name'], true);
+
+                    $newUsercontainerroleEntity = $UsercontainerrolesTable->patchEntity($newUsercontainerroleEntity, $usercontainerroleData['Usercontainerrole']);
+                    $action = 'edit';
+                }
+                $UsercontainerrolesTable->save($newUsercontainerroleEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newUsercontainerroleEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newUsercontainerroleEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Usercontainerrole']['id'] = $newUsercontainerroleEntity->get('id');
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        Cache::clear('permissions');
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    public function loadLdapgroupsForAngular() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $isLdapAuth = $SystemsettingsTable->isLdapAuth();
+        $ldapgroups = [];
+
+        if ($isLdapAuth === true) {
+            $selected = $this->request->getQuery('selected', []);
+            $LdapgroupFilter = new LdapgroupFilter($this->request);
+            $where = $LdapgroupFilter->ajaxFilter();
+
+            /** @var $LdapgroupsTable LdapgroupsTable */
+            $LdapgroupsTable = TableRegistry::getTableLocator()->get('Ldapgroups');
+            $ldapgroups = $LdapgroupsTable->getLdapgroupsForAngular($where, $selected);
+
+            $ldapgroups = Api::makeItJavaScriptAble($ldapgroups);
+        }
+
+        $this->set('isLdapAuth', $isLdapAuth);
+        $this->set('ldapgroups', $ldapgroups);
+        $this->viewBuilder()->setOption('serialize', ['ldapgroups', 'isLdapAuth']);
     }
 
 }

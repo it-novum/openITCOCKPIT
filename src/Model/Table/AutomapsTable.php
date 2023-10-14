@@ -91,7 +91,7 @@ class AutomapsTable extends Table {
 
         $validator
             ->boolean('show_ok')
-            ->requirePresence('show_ok', true, __('You have to choose at least one option.'))
+            ->requirePresence('show_ok', 'create', __('You have to choose at least one option.'))
             ->notEmptyString('show_ok')
             ->add('show_ok', 'custom', [
                 'rule'    => [$this, 'checkStatusOptions'],
@@ -221,11 +221,12 @@ class AutomapsTable extends Table {
     }
 
     /**
-     * @param array $selected
-     * @param array $MY_RIGHTS
+     * @param $selected
+     * @param AutomapsFilter $AutomapsFilter
+     * @param $MY_RIGHTS
      * @return array
      */
-    public function getAutomapsForAngular($selected = [], $MY_RIGHTS = []) {
+    public function getAutomapsForAngular($selected, AutomapsFilter $AutomapsFilter, $MY_RIGHTS = []) {
         if (!is_array($selected)) {
             $selected = [$selected];
         }
@@ -234,7 +235,9 @@ class AutomapsTable extends Table {
             ->select([
                 'Automaps.id',
                 'Automaps.name'
-            ]);
+            ])->where(
+                $AutomapsFilter->indexFilter()
+            );
 
         if (!empty($MY_RIGHTS)) {
             $query->andWhere([
@@ -275,5 +278,45 @@ class AutomapsTable extends Table {
         $automaps = $automapsWithLimit + $selectedAutomaps;
         asort($automaps, SORT_FLAG_CASE | SORT_NATURAL);
         return $automaps;
+    }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getAutomapsForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Automaps.id IN' => $ids])
+            ->order(['Automaps.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Automaps.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param $sourceAutomapId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getSourceAutomapForCopy($sourceAutomapId, array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Automaps.id' => $sourceAutomapId]);
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Automaps.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $result = $query->firstOrFail();
+        return $this->emptyArrayIfNull($result->toArray());
     }
 }

@@ -239,6 +239,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconnectorsPushController"
             })
 
+            .state('AgentconnectorsPushSatellite', {
+                url: '/agentconnector/push_satellite',
+                templateUrl: "/agentconnector/push_satellite.html",
+                controller: "AgentconnectorsPushSatelliteController"
+            })
+
             .state('AgentconnectorsShowOutput', {
                 url: '/agentconnector/showOutput/:mode/:id',
                 templateUrl: "/agentconnector/showOutput.html",
@@ -377,7 +383,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicesIndex', {
-                url: '/services/index?servicename&servicestate&sort&host_id&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&not_in_downtime&passive',
+                url: '/services/index?servicename&servicestate&sort&host_id&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&not_in_downtime&passive&filter',
                 params: {
                     servicename: {
                         value: null
@@ -421,6 +427,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         array: true
                     },
                     hostname: {
+                        value: null
+                    },
+                    filter: {
                         value: null
                     },
                 },
@@ -474,6 +483,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/services/copy/:ids',
                 templateUrl: "/services/copy.html",
                 controller: "ServicesCopyController"
+            })
+
+            .state('ServicesUsedBy', {
+                url: '/services/usedBy/:id',
+                templateUrl: "/services/usedBy.html",
+                controller: "ServicesUsedByController"
             })
 
             .state('ServicechecksIndex', {
@@ -614,6 +629,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "HostgroupsAppendController"
             })
 
+            .state('HostgroupsCopy', {
+                url: '/hostgroups/copy/:ids',
+                templateUrl: "/hostgroups/copy.html",
+                controller: "HostgroupsCopyController"
+            })
+
             .state('HostchecksIndex', {
                 url: '/hostchecks/index/:id',
                 templateUrl: "/hostchecks/index.html",
@@ -718,6 +739,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     }
                 },
                 controller: "ServicegroupsExtendedController"
+            })
+
+            .state('ServicegroupsCopy', {
+                url: '/servicegroups/copy/:ids',
+                templateUrl: "/servicegroups/copy.html",
+                controller: "ServicegroupsCopyController"
             })
 
             .state('StatehistoriesHost', {
@@ -926,9 +953,15 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ContactsUsedBy', {
-                url: '/contacts/usedBy/:id',
+                url: '/contacts/usedBy/:id/:containerIds',
                 templateUrl: "/contacts/usedBy.html",
-                controller: "ContactsUsedByController"
+                controller: "ContactsUsedByController",
+                params: {
+                    containerIds: {
+                        value: null,
+                        squash: true
+                    }
+                },
             })
 
             .state('ContactgroupsIndex', {
@@ -1075,6 +1108,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "UsercontainerrolesEditController"
             })
 
+            .state('UsercontainerrolesCopy', {
+                url: '/usercontainerroles/copy/:ids',
+                templateUrl: "/usercontainerroles/copy.html",
+                controller: "UsercontainerrolesCopyController"
+            })
+
             .state('UsergroupsIndex', {
                 url: '/usergroups/index',
                 templateUrl: "/usergroups/index.html",
@@ -1093,6 +1132,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "UsergroupsEditController"
             })
 
+            .state('UsergroupsCopy', {
+                url: '/usergroups/copy/:ids',
+                templateUrl: "/usergroups/copy.html",
+                controller: "UsergroupsCopyController"
+            })
+
             .state('ProfileEdit', {
                 url: '/profile/edit/',
                 templateUrl: "/profile/edit.html",
@@ -1100,7 +1145,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('HostsIndex', {
-                url: '/hosts/index?hostname&hoststate&sort&direction&BrowserContainerId',
+                url: '/hosts/index?hostname&hoststate&sort&direction&BrowserContainerId&filter',
                 templateUrl: "/hosts/index.html",
                 params: {
                     hostname: {
@@ -1138,7 +1183,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     },
                     not_in_downtime: {
                         value: null
-                    }
+                    },
+                    filter: {
+                        value: null
+                    },
                 },
                 controller: "HostsIndexController"
             })
@@ -1189,6 +1237,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/hosts/edit_details/:ids',
                 templateUrl: "/hosts/edit_details.html",
                 controller: "HostsEditDetailsController"
+            })
+
+            .state('HostsUsedBy', {
+                url: '/hosts/usedBy/:id',
+                templateUrl: "/hosts/usedBy.html",
+                controller: "HostsUsedByController"
             })
 
             .state('HostdependenciesIndex', {
@@ -1329,6 +1383,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicetemplategroupsAllocateToHostgroupController"
             })
 
+            .state('ServicetemplategroupsCopy', {
+                url: '/servicetemplategroups/copy/:ids',
+                templateUrl: "/servicetemplategroups/copy.html",
+                controller: "ServicetemplategroupsCopyController"
+            })
+
             .state('LocationsIndex', {
                 url: '/locations/index',
                 templateUrl: "/locations/index.html",
@@ -1407,6 +1467,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AutomapsViewController"
             })
 
+            .state('AutomapsCopy', {
+                url: '/automaps/copy/:ids',
+                templateUrl: "/automaps/copy.html",
+                controller: "AutomapsCopyController"
+            })
+
             .state('SearchIndex', {
                 url: '/search/index',
                 templateUrl: "/search/index.html",
@@ -1423,6 +1489,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/changelogs/index',
                 templateUrl: "/changelogs/index.html",
                 controller: "ChangelogsIndexController"
+            })
+
+            .state('ChangelogsEntity', {
+                url: '/changelogs/entity/:objectTypeId/:objectId',
+                templateUrl: "/changelogs/entity.html",
+                controller: "ChangelogsEntityController"
             })
 
             .state('WizardsIndex', {
@@ -1508,6 +1580,11 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/messagesOtd/edit/:id',
                 templateUrl: "/messagesOtd/edit.html",
                 controller: "MessagesOTDEditController"
+            })
+            .state('MetricsInfo', {
+                url: '/metrics/info',
+                templateUrl: "/metrics/info.html",
+                controller: "MetricsInfoController"
             })
     })
 
@@ -1625,6 +1702,49 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         };
     })
 
+    .filter('orderObjectBy', function(){
+        return function(items, field, reverse){
+            var filtered = [];
+            angular.forEach(items, function(item){
+                filtered.push(item);
+            });
+            filtered.sort(function(a, b){
+                return (a[field] > b[field] ? 1 : -1);
+            });
+            if(reverse) filtered.reverse();
+            return filtered;
+        };
+    })
+
+    .filter('filterTagsinput', function(){
+        return function(values, search){
+            if(typeof search === "undefined"){
+                // No search string given
+                return values;
+            }
+
+            var results = [];
+            searchStrings = search.split(",");
+            searchStrings = searchStrings.map(function(v){
+                return new RegExp(v, 'i');
+            })
+
+            for(var i in values){
+                var value = values[i];
+                for(var k in searchStrings){
+                    var searchString = searchStrings[k];
+                    if(value.name.match(searchString)){
+                        results.push(value);
+                        // Avoid duplicates in result;
+                        break;
+                    }
+                }
+            }
+
+            return results;
+        }
+    })
+
     .run(function($rootScope, SortService, $state){
 
         $rootScope.$on('$stateChangeStart', function(event, to, toParams, from, fromParams){
@@ -1675,6 +1795,33 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             }
             SortService.triggerReload();
         };
+
+        $rootScope.rootCopyToClipboard = function(str, $event){
+            navigator.clipboard.writeText(str);
+            event.preventDefault();
+
+            let $target = $($event.target);
+            // Find a possible nested <copy> button
+            if($target.find('span').length > 0){
+                $target = $target.find('span.copy-action');
+            }
+            let copyText = $target.data('copy'),
+                copiedText = $target.data('copied');
+
+            //$target.addClass('fadeOut');
+            $target.text(copiedText);
+
+            setTimeout(function(){
+                //$target.removeClass('fadeOut');
+                $target.text(copyText);
+            }, 1000);
+        };
+
+        // You cannot use Bitwise or void operators in an Angular expression.
+        // https://stackoverflow.com/a/39295072
+        $rootScope.hasFlag = function(value, flag){
+            return value & flag;
+        }
 
     })
 ;

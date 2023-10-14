@@ -44,7 +44,17 @@ use Cake\Core\Configure\Engine\PhpConfig;
 use Cake\Database\TypeFactory;
 use Cake\Datasource\ConnectionManager;
 use Cake\Error\ConsoleErrorHandler;
+
+// CakePHP 4.3.x (for php 7.2, bionic)
 use Cake\Error\ErrorHandler;
+
+// CakePHP 4.3.x (for php 7.2, bionic)
+use Cake\Error\ErrorTrap;
+
+// CakePHP 4.4.x (requires php 7.4)
+use Cake\Error\ExceptionTrap;
+
+// CakePHP 4.4.x (requires php 7.4)
 use Cake\Http\ServerRequest;
 use Cake\Log\Log;
 use Cake\Mailer\Email;
@@ -102,6 +112,13 @@ if (!defined('ENVIRONMENT')) {
     }
 }
 
+if (!defined('IS_CONTAINER')) {
+    if (Configure::read('container') === true) {
+        define('IS_CONTAINER', true);
+    } else {
+        define('IS_CONTAINER', false);
+    }
+}
 
 /*
  * Load an environment local configuration file to provide overrides to your configuration.
@@ -120,6 +137,15 @@ if (Configure::read('debug')) {
     Configure::write('Cache._cake_core_.duration', '+2 minutes');
     // disable router cache during development
     Configure::write('Cache._cake_routes_.duration', '+2 seconds');
+
+    /*
+    // Open a new Browser windows and navigate to /debug-kit
+    Configure::write('DebugKit.forceEnable', true);
+    // Ignore image paths
+    Configure::write('DebugKit.ignorePathsPattern', '/\.(jpg|png|gif)$/');
+    Configure::write('DebugKit.ignoreAuthorization', true);
+    Configure::write('DebugKit.includeSchemaReflection', true);
+    */
 }
 
 /*
@@ -143,11 +169,22 @@ ini_set('intl.default_locale', Configure::read('App.defaultLocale'));
  * Register application error and exception handlers.
  */
 $isCli = PHP_SAPI === 'cli';
-if ($isCli) {
-    (new ConsoleErrorHandler(Configure::read('Error')))->register();
+if (class_exists('\Cake\Error\ErrorTrap')) {
+    // CakePHP 4.4 / php >=  7.4
+    if ($isCli) {
+        (new ErrorTrap(Configure::read('Error')))->register();
+    } else {
+        (new ExceptionTrap(Configure::read('Error')))->register();
+    }
 } else {
-    (new ErrorHandler(Configure::read('Error')))->register();
+    // CakePHP 4.3.x / php 7.2
+    if ($isCli) {
+        (new ConsoleErrorHandler(Configure::read('Error')))->register();
+    } else {
+        (new ErrorHandler(Configure::read('Error')))->register();
+    }
 }
+
 
 /*
  * Include the CLI bootstrap overrides.
@@ -222,29 +259,3 @@ TypeFactory::build('timestamp');
 //Inflector::rules('uninflected', ['dontinflectme']);
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
 
-
-//Configure CakePHP and WkHtmlToPdf
-//default path of apt-get install wkhtmltopdf (Mostly old and broken)
-$WkHtmlToPdfBinary = '/usr/bin/wkhtmltopdf';
-if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-    //Installed from deb file from https://wkhtmltopdf.org/ (newer version and working)
-    $WkHtmlToPdfBinary = '/usr/local/bin/wkhtmltopdf';
-}
-Configure::write('CakePdf', [
-    'engine' => [
-        'className' => 'CakePdf.WkHtmlToPdf',
-        // Mac OS X / Linux is usually like:
-        'binary'    => $WkHtmlToPdfBinary,
-        // On Windows environmnent you NEED to use the path like
-        // old fashioned MS-DOS Paths, otherwise you will keep getting:
-        // WKHTMLTOPDF didn't return any data
-        // 'binary' => 'C:\\Progra~1\\wkhtmltopdf\\bin\\wkhtmltopdf.exe',
-        // 'cwd' => 'C:\\Progra~1\\wkhtmltopdf\\bin',
-        'options'   => [
-            'print-media-type'         => true,
-            'outline'                  => true,
-            'dpi'                      => 96,
-            'enable-local-file-access' => true,
-        ],
-    ],
-]);

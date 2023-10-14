@@ -24,6 +24,7 @@ angular.module('openITCOCKPIT')
                     Service: 1,
                     Servicegroup: 1,
                     Servicetemplate: 1,
+                    Servicetemplategroup: 1,
                     Timeperiod: 1,
                     Location: 1,
                     Tenant: 1,
@@ -42,6 +43,12 @@ angular.module('openITCOCKPIT')
                 from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30 * 4)),
                 to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 5)),
             };
+            var from = new Date(now.getTime() - (3600 * 24 * 30 * 4 * 1000));
+            from.setSeconds(0);
+            var to = new Date(now.getTime() + (3600 * 24 * 5 * 1000));
+            to.setSeconds(0);
+            $scope.from_time = from;
+            $scope.to_time = to;
         };
 
         $scope.showFilter = false;
@@ -113,20 +120,6 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
-        $scope.data_unserialized_notEmpty = function(data_unserialized){
-            if(data_unserialized.constructor === Array){
-                if(data_unserialized.length === 0){
-                    return false;
-                }
-            }else if(data_unserialized.constructor === Object){
-                if(Object.keys(data_unserialized).length <= 0){
-                    return false;
-                }
-            }
-            return true;
-        };
-
-
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
@@ -136,5 +129,18 @@ angular.module('openITCOCKPIT')
             $scope.currentPage = 1;
             $scope.load();
         }, true);
-    });
 
+        $scope.$watch('from_time', function(dateObject){
+            if(dateObject !== undefined && dateObject instanceof Date){
+                var dateString = date('d.m.Y H:i', dateObject.getTime() / 1000);
+                $scope.filter.from = dateString;
+            }
+        });
+        $scope.$watch('to_time', function(dateObject){
+            if(dateObject !== undefined && dateObject instanceof Date){
+                var dateString = date('d.m.Y H:i', dateObject.getTime() / 1000);
+                $scope.filter.to = dateString;
+            }
+        });
+
+    });

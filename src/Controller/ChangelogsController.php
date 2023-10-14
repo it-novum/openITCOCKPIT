@@ -58,7 +58,10 @@ class ChangelogsController extends AppController {
         if ($this->hasRootPrivileges === true) {
             $MY_RIGHTS = [];
         }
-        $all_changes = $ChangelogsTable->getChangelogIndex($ChangelogsFilter, $PaginateOMat, $MY_RIGHTS, $includeUser, false);
+
+
+        $showInherit = (bool) ($this->request->getQueryParams()['filter']['ShowServices'] ?? false);
+        $all_changes = $ChangelogsTable->getChangelogIndex($ChangelogsFilter, $PaginateOMat, $MY_RIGHTS, $includeUser, CORE,false, $showInherit);
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
@@ -125,5 +128,9 @@ class ChangelogsController extends AppController {
         }
         $this->set('all_changes', $all_changes);
         $this->viewBuilder()->setOption('serialize', ['all_changes']);
+    }
+
+    //Only for ACLs
+    public function entity(): void {
     }
 }

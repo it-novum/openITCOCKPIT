@@ -60,7 +60,8 @@ $weekdays = [
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'timeperiods')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='TimeperiodsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='TimeperiodsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -137,6 +138,7 @@ $weekdays = [
                                 chosen="calendars"
                                 ng-options="calendar.key as calendar.value for calendar in calendars"
                                 ng-model="post.Timeperiod.calendar_id">
+                                <option></option>
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>

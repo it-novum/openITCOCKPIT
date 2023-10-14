@@ -147,7 +147,7 @@ class ContainerNestedSet {
      */
     public function getPathForContainer($containerId) {
         if (!isset($this->containers[$containerId])) {
-            throw new \Exception('Contianer id not found in local array');
+            throw new \Exception('Container id not found in local array');
         }
 
         $getParentFor = $containerId;
@@ -189,7 +189,7 @@ class ContainerNestedSet {
      */
     private function getParentContainer($containerId) {
         if (!isset($this->containers[$containerId])) {
-            throw new \Exception('Contianer id not found in local array');
+            throw new \Exception('Container id not found in local array');
         }
 
         $container = $this->containers[$containerId];

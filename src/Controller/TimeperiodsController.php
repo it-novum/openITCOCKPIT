@@ -153,7 +153,7 @@ class TimeperiodsController extends AppController {
             return;
         }
         $timeperiod['events'] = $TimeperiodsTable->parseTimerangesForCalendar($timeperiod['timeperiod_timeranges']);
-        
+
         $this->set('timeperiod', $timeperiod);
         $this->viewBuilder()->setOption('serialize', ['timeperiod']);
     }
@@ -174,7 +174,15 @@ class TimeperiodsController extends AppController {
             $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->getData('Timeperiod'));
             $timeperiod->set('uuid', UUID::v4());
             $TimeperiodsTable->checkRules($timeperiod);
-            $TimeperiodsTable->save($timeperiod);
+
+            $User = new User($this->getUser());
+            $requestData = $this->request->getData();
+
+            $timeperiod = $TimeperiodsTable->createTimeperiod(
+                $timeperiod,
+                $requestData,
+                $User->getId()
+            );
 
             if ($timeperiod->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -182,26 +190,6 @@ class TimeperiodsController extends AppController {
                 return;
             } else {
                 //No errors
-                $User = new User($this->getUser());
-                $requestData = $this->request->getData();
-                /** @var ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    $this->request->getParam('controller'),
-                    $timeperiod->get('id'),
-                    OBJECT_TIMEPERIOD,
-                    [ROOT_CONTAINER],
-                    $User->getId(),
-                    $requestData['Timeperiod']['name'],
-                    $requestData
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
                 $this->serializeCake4Id($timeperiod);
             }
             $this->set('timeperiod', $timeperiod);
@@ -224,9 +212,7 @@ class TimeperiodsController extends AppController {
         if (!$TimeperiodsTable->existsById($id)) {
             throw new NotFoundException('Time period not found');
         }
-        $timeperiod = $TimeperiodsTable->get($id, [
-            'contain' => 'TimeperiodTimeranges'
-        ]);
+        $timeperiod = $TimeperiodsTable->getTimeperiodForEdit($id);
         $timeperiodForChangeLog['Timeperiod'] = $timeperiod->toArray();
 
         if (!$this->allowedByContainerId($timeperiod->get('container_id'))) {
@@ -237,7 +223,16 @@ class TimeperiodsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->getData('Timeperiod'));
             $TimeperiodsTable->checkRules($timeperiod);
-            $TimeperiodsTable->save($timeperiod);
+
+            $requestData = $this->request->getData();
+            $User = new User($this->getUser());
+
+            $timeperiod = $TimeperiodsTable->updateTimeperiod(
+                $timeperiod,
+                $requestData,
+                $timeperiodForChangeLog,
+                $User->getId()
+            );
 
             if ($timeperiod->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -246,28 +241,7 @@ class TimeperiodsController extends AppController {
                 return;
             } else {
                 //No errors
-                $User = new User($this->getUser());
-                $requestData = $this->request->getData();
 
-                /** @var ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    $this->request->getParam('controller'),
-                    $timeperiod->get('id'),
-                    OBJECT_TIMEPERIOD,
-                    [$requestData['Timeperiod']['container_id']],
-                    $User->getId(),
-                    $requestData['Timeperiod']['name'],
-                    $requestData,
-                    $timeperiodForChangeLog
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($timeperiod); // REST API ID serialization
                     return;
@@ -363,11 +337,16 @@ class TimeperiodsController extends AppController {
             return;
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         if ($this->request->is('get')) {
-            $timeperiods = $TimeperiodsTable->getTimeperiodsForCopy(func_get_args());
+            $timeperiods = $TimeperiodsTable->getTimeperiodsForCopy(func_get_args(), $MY_RIGHTS);
             $this->set('timeperiods', $timeperiods);
             $this->viewBuilder()->setOption('serialize', ['timeperiods']);
             return;
@@ -419,6 +398,9 @@ class TimeperiodsController extends AppController {
                     //This happens, if a user copy multiple timeperiods, and one run into an validation error
                     //All timeperiods without validation errors got already saved to the database
                     $newTimeperiodEntity = $TimeperiodsTable->get($timeperiodData['Timeperiod']['id']);
+                    $newTimeperiodEntity->setAccess('*', false);
+                    $newTimeperiodEntity->setAccess('name', true);
+                    $newTimeperiodEntity->setAccess('description', true);
                     $newTimeperiodEntity = $TimeperiodsTable->patchEntity($newTimeperiodEntity, $timeperiodData['Timeperiod']);
                     $newTimeperiodData = $newTimeperiodEntity->toArray();
                     $action = 'edit';

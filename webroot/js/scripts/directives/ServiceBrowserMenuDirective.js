@@ -4,7 +4,8 @@ angular.module('openITCOCKPIT').directive('serviceBrowserMenu', function($http, 
         templateUrl: '/angular/serviceBrowserMenu.html',
         scope: {
             'config': '=',
-            'lastLoadDate': '='
+            'lastLoadDate': '=',
+            'rootCopyToClipboard': '=' // Passed from $rootScope
         },
 
         controller: function($scope){

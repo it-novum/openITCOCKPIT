@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use App\itnovum\openITCOCKPIT\ConfigGenerator\ContainerConfigInterface;
 use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
 
 /**
@@ -32,7 +33,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
  * NSTA written in Go by Johannes
  * @package itnovum\openITCOCKPIT\ConfigGenerator
  */
-class NSTAMaster extends ConfigGenerator implements ConfigInterface {
+class NSTAMaster extends ConfigGenerator implements ConfigInterface,ContainerConfigInterface {
 
     protected $templateDir = 'NSTA';
 
@@ -94,6 +95,31 @@ class NSTAMaster extends ConfigGenerator implements ConfigInterface {
         }
 
         return '';
+    }
+
+    public function getValuesFromEnvironment() {
+        return [
+            [
+                'key'   => 'listen_http',
+                'value' => env('OITC_NSTA_LISTEN_HTTP', '127.0.0.1:7473'),
+            ],
+            [
+                'key'   => 'listen_https',
+                'value' => env('OITC_NSTA_LISTEN_HTTPS', '127.0.0.1:7474'),
+            ],
+            [
+                'key'   => 'tls_key',
+                'value' => env('OITC_NSTA_TLS_KEY', '/etc/ssl/private/ssl-cert-snakeoil.key'),
+            ],
+            [
+                'key'   => 'tls_cert',
+                'value' => env('OITC_NSTA_TLS_CERT', '/etc/ssl/certs/ssl-cert-snakeoil.pem'),
+            ],
+            [
+                'key'   => 'use_nginx_proxy',
+                'value' => env('OITC_NSTA_USE_NGINX_PROXY', 1),
+            ]
+        ];
     }
 
     /**

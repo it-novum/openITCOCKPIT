@@ -62,8 +62,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    {{(hostgroup.Hostgroup.container.name) && hostgroup.Hostgroup.container.name ||
-                    '<?php echo __('Host Groups (0)'); ?>'}}
+                    {{hostgroup.Hostgroup.container.name}}
                     <span class="fw-300"><i><?php echo __('UUID: '); ?>{{hostgroup.Hostgroup.uuid}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
@@ -101,7 +100,8 @@
                         </div>
 
                         <div class="col-lg-2">
-                            <div class="btn-group btn-group-sm" style="padding-top:23px;" ng-show="hostgroup.Hostgroup.allowEdit">
+                            <div class="btn-group btn-group-sm" style="padding-top:23px;"
+                                 ng-show="hostgroup.Hostgroup.allowEdit">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
                                     <?php echo __('Action'); ?>
@@ -115,7 +115,23 @@
                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                         </button>
                                     <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                        <a ui-sref="ChangelogsEntity({objectTypeId: 'hostgroup', objectId: post.Hostgroup.id})"
+                                           class="dropdown-item">
+                                            <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                            <?php echo __('Changelog'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('copy', 'hostgroups')): ?>
+                                        <div class="dropdown-divider"></div>
+                                        <a ui-sref="HostgroupsCopy({ids: post.Hostgroup.id})"
+                                           class="dropdown-item">
+                                            <i class="fas fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                    <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
+                                        <div class="dropdown-divider"></div>
                                         <button data-toggle="modal"
                                                 data-target="#nag_command_reschedule"
                                                 ng-click="rescheduleHost(getObjectsForExternalCommand())"
@@ -159,7 +175,7 @@
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
-                            <tr ng-if="hostgroup.Hosts.length > 0">
+                            <tr>
                                 <td colspan="8" class="no-padding">
                                     <div class="form-group">
                                         <div class="input-group input-group-sm">
@@ -184,11 +200,12 @@
                                                        name="checkbox"
                                                        checked="checked"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-model="hostgroupsStateFilter[$index]"
-                                                       ng-value="$index">
+                                                       ng-value="{{state}}"
+                                                       ng-model="filter.Hoststatus.current_state[state]">
                                                 <label
-                                                    class="custom-control-label custom-control-label-{{state}} no-margin"
-                                                    for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
+                                                    class="extended-list custom-control-label custom-control-label-{{state}} no-margin"
+                                                    for="statusFilter{{state}}">{{stateCount}}
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -391,6 +408,24 @@
                                                     <?php echo __('Enable'); ?>
                                                 </a>
                                             <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                                                <a ui-sref="ChangelogsEntity({objectTypeId: 'host', objectId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa-solid fa-timeline fa-rotate-90"></i>
+                                                    <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
+                                                <div class="dropdown-divider" ng-if="host.Host.allow_edit"></div>
+                                                <a ui-sref="HostsCopy({ids: host.Host.id})"
+                                                   ng-if="host.Host.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host))"
@@ -417,12 +452,10 @@
                             </tr>
                             </tbody>
                         </table>
-                        <div class="margin-top-10" ng-show="hostgroup.Hosts.length == 0">
-                            <div class="text-center text-danger italic">
-                                <?php echo __('No entries match the selection'); ?>
-                            </div>
-                        </div>
                     </div>
+                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <?php echo $this->element('paginator_or_scroll'); ?>
                 </div>
             </div>
         </div>

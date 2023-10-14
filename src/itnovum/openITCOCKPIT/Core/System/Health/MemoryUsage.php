@@ -28,7 +28,7 @@ namespace itnovum\openITCOCKPIT\Core\System\Health;
 class MemoryUsage {
 
 
-    public function getMemoryUsage() {
+    public function getMemoryUsage($memoryWarningInPercent = null, $memoryCriticalInPercent = null, $swapWarningInPercent = null, $swapCriticalInPercent = null) {
         $memory = [
             'memory' => [
                 'total'   => 0,
@@ -59,10 +59,12 @@ class MemoryUsage {
         $percentage = $used / $meminfo['MemTotal'] * 100;
 
         $state = 'ok';
-        if ($percentage > 80) {
+        $memoryWarningInPercent = (is_numeric($memoryWarningInPercent) && $memoryWarningInPercent > 0) ? $memoryWarningInPercent : 80;
+        if ($percentage > $memoryWarningInPercent) {
             $state = 'warning';
         }
-        if ($percentage > 90) {
+        $memoryCriticalInPercent = (is_numeric($memoryCriticalInPercent) && $memoryCriticalInPercent > 0) ? $memoryCriticalInPercent : 90;
+        if ($percentage > $memoryCriticalInPercent) {
             $state = 'critical';
         }
 
@@ -87,14 +89,16 @@ class MemoryUsage {
         if ($meminfo['Active'] > 0 && $swapUsed > 0) {
             $memory['swap']['percentage'] = round($swapUsed / $meminfo['SwapTotal'] * 100);
         }
+
         $memory['swap']['state'] = 'ok';
-        if ($memory['swap']['percentage'] > 40) {
+        $swapWarningInPercent = (is_numeric($swapWarningInPercent) && $swapWarningInPercent > 0) ? $swapWarningInPercent : 40;
+        if ($memory['swap']['percentage'] > $swapWarningInPercent) {
             $memory['swap']['state'] = 'warning';
         }
-        if ($memory['swap']['percentage'] > 50) {
+        $swapCriticalInPercent = (is_numeric($swapCriticalInPercent) && $swapCriticalInPercent > 0) ? $swapCriticalInPercent : 50;
+        if ($memory['swap']['percentage'] > $swapCriticalInPercent) {
             $memory['swap']['state'] = 'critical';
         }
-
 
         return $memory;
     }

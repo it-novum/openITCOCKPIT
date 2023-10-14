@@ -9,6 +9,11 @@ if [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+# Enable debug mode so that CakePHP will create missing folders
+# https://github.com/it-novum/openITCOCKPIT/issues/1446
+# https://github.com/cakephp/migrations/issues/565
+export OITC_DEBUG=1
+
 APPDIR="/opt/openitc/frontend"
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
@@ -38,7 +43,12 @@ BACKUP_DIR='/opt/openitc/nagios/backup'
 mkdir -p $BACKUP_DIR
 #If you have mysql binlog enabled uses this command:
 #mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --master-data=1 --flush-logs --triggers --routines --events --hex-blob \
-mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --no-tablespaces --events --hex-blob \
+
+# ITC-2921
+# MySQL Bug: https://bugs.mysql.com/bug.php?id=109685
+# As with mysqldump 8.0.32 --single-transaction requires RELOAD or FLUSH_TABLES privilege(s) which the openitcockpit user does not have
+# So for now the workaround is to remove "--single-transaction"
+mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --triggers --routines --no-tablespaces --events --hex-blob \
   --ignore-table=$dbc_dbname.nagios_acknowledgements \
   --ignore-table=$dbc_dbname.nagios_commands \
   --ignore-table=$dbc_dbname.nagios_commenthistory \
@@ -118,6 +128,12 @@ mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-p
   --ignore-table=$dbc_dbname.statusengine_servicestatus \
   --ignore-table=$dbc_dbname.statusengine_tasks \
   --ignore-table=$dbc_dbname.statusengine_users \
+  --ignore-table=$dbc_dbname.customalerts \
+  --ignore-table=$dbc_dbname.customalert_statehistory \
+  --ignore-table=$dbc_dbname.sla_availability_status_hosts_log \
+  --ignore-table=$dbc_dbname.sla_availability_status_services_log \
+  --ignore-table=$dbc_dbname.sla_host_outages \
+  --ignore-table=$dbc_dbname.sla_service_outages \
   >$BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
 echo "---------------------------------------------------------------"
@@ -281,6 +297,14 @@ oitc agent --migrate
 echo "Checking that a server certificate for the openITCOCKPIT Monitoring Agent exists"
 oitc agent --generate-server-ca
 
+# ITC-2800 ITC-2819
+#echo "Apply strict checking of host group assignments by container permissions"
+#oitc HostgroupContainerPermissions
+
+# ITC-1911
+echo "Cleanup for invalid parent hosts on satellite instance"
+oitc ParentHostsVisibilityCleaning
+
 NORESTART=false
 NOSYSTEMFILES=false
 for i in "$@"; do
@@ -290,6 +314,8 @@ for i in "$@"; do
     rm -rf /opt/openitc/frontend/tmp/cache/models/*
     echo "Clear out CLI Model Cache /opt/openitc/frontend/tmp/cli/cache/cli/models/"
     rm -rf /opt/openitc/frontend/tmp/cli/cache/cli/models/*
+    echo "Clear out Nagios Model Cache /opt/openitc/frontend/tmp/nagios/cache/nagios/models/"
+    rm -rf /opt/openitc/frontend/tmp/nagios/cache/nagios/models/*
     ;;
 
   --rights)
@@ -337,6 +363,7 @@ PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 if [[ "$NOSYSTEMFILES" == "false" ]]; then
   echo "Copy required system files"
   rsync -K -a ${APPDIR}/system/etc/. /etc/
+  chown root:root /etc
   cp -r ${APPDIR}/system/lib/. /lib/
   cp -r ${APPDIR}/system/usr/. /usr/
   cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
@@ -404,16 +431,15 @@ if [ -f /opt/openitc/etc/grafana/api_key ]; then
     while [ "$COUNTER" -lt 30 ]; do
         echo "Try to connect to Grafana API..."
         #Is Grafana Server Online?
-        STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+        STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 
         if [ "$STATUSCODE" == "200" ]; then
           echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
-          DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+          DS_STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
 
           if [ "$DS_STATUSCODE" == "404" ]; then
             echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
-            export NO_PROXY="127.0.0.1"
-            RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+            RESPONSE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
               "name":"Prometheus",
               "type":"prometheus",
               "url":"http://victoriametrics:8428",
@@ -445,7 +471,7 @@ systemctl enable sudo_server.service\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service\
+ openitcockpit-node.service\
  openitcockpit-graphing.service\
  oitc_cronjobs.timer\
  statusengine.service
@@ -455,7 +481,7 @@ systemctl restart\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service\
+ openitcockpit-node.service\
  oitc_cronjobs.timer\
  statusengine.service
 
@@ -465,7 +491,7 @@ echo "Restart monitoring engine"
 systemctl restart nagios.service
 
 # Restart services if they are running
-for srv in openitcockpit-graphing.service nginx.service nsta.service; do
+for srv in openitcockpit-graphing.service nginx.service nsta.service event-collectd.service; do
   if systemctl is-active --quiet $srv; then
     echo "Restart service: $srv"
     systemctl restart $srv
@@ -526,4 +552,3 @@ chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios -R /opt/openitc/frontend/tmp/nagios
 chmod u+s /opt/openitc/nagios/libexec/check_icmp
 chmod u+s /opt/openitc/nagios/libexec/check_dhcp
-

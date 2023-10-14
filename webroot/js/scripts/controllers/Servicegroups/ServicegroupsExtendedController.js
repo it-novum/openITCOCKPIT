@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsExtendedController', function($scope, $http, $interval, $stateParams){
+    .controller('ServicegroupsExtendedController', function($rootScope, $scope, $http, $interval, $stateParams){
 
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
@@ -8,9 +8,21 @@ angular.module('openITCOCKPIT')
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';
         $scope.mouseout = true;
+        $scope.interval = null;
+
+        $scope.currentPage = 1;
+        $scope.useScroll = true;
 
         $scope.filter = {
-            servicename: ''
+            servicename: '',
+            Servicestatus: {
+                current_state: {
+                    ok: false,
+                    warning: false,
+                    critical: false,
+                    unknown: false
+                }
+            }
         };
 
         $scope.post = {
@@ -62,10 +74,15 @@ angular.module('openITCOCKPIT')
                 $http.get("/servicegroups/loadServicegroupWithServicesById/" + $scope.post.Servicegroup.id + ".json", {
                     params: {
                         'angular': true,
+                        'scroll': $scope.useScroll,
+                        'page': $scope.currentPage,
                         'filter[servicename]': $scope.filter.servicename,
+                        'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state)
                     }
                 }).then(function(result){
                     $scope.servicegroup = result.data.servicegroup;
+                    $scope.paging = result.data.paging;
+                    $scope.scroll = result.data.scroll;
                     $scope.servicegroupsStateFilter = {
                         0: true,
                         1: true,
@@ -135,7 +152,7 @@ angular.module('openITCOCKPIT')
         $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
                     $scope.loadServicesWithStatus('');
@@ -145,6 +162,25 @@ angular.module('openITCOCKPIT')
             }, 1000);
         };
 
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
+
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
+
         //Fire on page load
         $scope.loadTimezone();
         $scope.load();
@@ -153,6 +189,8 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+
+            $scope.currentPage = 1;
             $scope.loadServicesWithStatus('');
         }, true);
 
@@ -160,8 +198,8 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-
             if($scope.post.Servicegroup.id > 0){
+                $scope.currentPage = 1;
                 $scope.loadServicesWithStatus('');
             }
         }, true);

@@ -57,7 +57,7 @@ class NotificationSerializer {
      * @param UserTime $UserTime
      * @param string $type
      */
-    public function __construct($notificationRecords = [], UserTime $UserTime, $type = 'host') {
+    public function __construct(array $notificationRecords, UserTime $UserTime, $type = 'host') {
         $this->records = $notificationRecords;
         $this->UserTime = $UserTime;
 

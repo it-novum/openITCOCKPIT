@@ -20,6 +20,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.config = result.data.config;
                 $scope.host = result.data.host;
+                $scope.satellite = result.data.satellite; // object (null for hosts on the master system)
                 $scope.isNewConfig = result.data.isNewConfig;
                 if($scope.config.bool.use_autossl === false && $scope.config.bool.use_https === true){
                     $scope.connection_type = 'https';
@@ -42,6 +43,11 @@ angular.module('openITCOCKPIT')
 
                 if($scope.preselectedOs !== null && $scope.isNewConfig === true){
                     $scope.config.string.operating_system = $scope.preselectedOs;
+                }
+
+                if($scope.config.bool.enable_push_mode === true && $scope.config.string.push_oitc_server_url === '' && $scope.satellite !== null){
+                    //Set Satellite Address as default push target address
+                    $scope.config.string.push_oitc_server_url = 'https://' + $scope.satellite.address;
                 }
             });
         };

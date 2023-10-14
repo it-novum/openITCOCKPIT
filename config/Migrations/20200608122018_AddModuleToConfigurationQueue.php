@@ -14,7 +14,7 @@ use Migrations\AbstractMigration;
  */
 class AddModuleToConfigurationQueue extends AbstractMigration {
 
-    public function up() {
+    public function up(): void {
         $this->table('configuration_queue')
             ->addColumn('module', 'string', [
                 'default' => null,
@@ -25,7 +25,7 @@ class AddModuleToConfigurationQueue extends AbstractMigration {
             ->update();
     }
 
-    public function down() {
+    public function down(): void {
         $this->table('configuration_queue')
             ->removeColumn('module')
             ->update();

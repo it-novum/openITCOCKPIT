@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
+use App\Model\Entity\Changelog;
 use App\Model\Entity\Hostgroup;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
@@ -375,13 +376,13 @@ class HostgroupsTable extends Table {
     public function getHostgroupByIdForMapeditor($id) {
         $query = $this->find()
             ->contain([
-                'Containers' => function (Query $q) {
+                'Containers'    => function (Query $q) {
                     return $q->select([
                         'Containers.id',
                         'Containers.name'
                     ]);
                 },
-                'Hosts'      => function (Query $q) {
+                'Hosts'         => function (Query $q) {
                     return $q->contain([
                         'HostsToContainersSharing',
                         'Services' => function (Query $q) {
@@ -397,6 +398,32 @@ class HostgroupsTable extends Table {
                     ])->where([
                         'Hosts.disabled' => 0
                     ]);
+                },
+                'Hosttemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid',
+                                        'Hosts.name',
+                                        'Hosts.hosttemplate_id'
+                                    ])
+                                    ->contain([
+                                        'HostsToContainersSharing',
+                                        'Services'
+                                    ]);
+                                $query
+                                    ->leftJoinWith('Hostgroups')
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
                 }
             ])
             ->where([
@@ -407,7 +434,7 @@ class HostgroupsTable extends Table {
                 'Hostgroups.description'
             ]);
 
-        $result = $query->all();
+        $result = $query->first();
         if (empty($result)) {
             return [];
         }
@@ -576,6 +603,7 @@ class HostgroupsTable extends Table {
     /**
      * @param int $id
      * @return string
+     * @throws RecordNotFoundException
      */
     public function getHostgroupUuidById($id) {
         $query = $this->find()
@@ -750,7 +778,7 @@ class HostgroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Hosts' => function (Query $q) {
+                'Hosts'         => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Hosts.id',
@@ -759,6 +787,29 @@ class HostgroupsTable extends Table {
                             'Hosts.description'
                         ])
                         ->contain(['HostsToContainersSharing']);
+                },
+                'Hosttemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid',
+                                        'Hosts.name',
+                                        'Hosts.hosttemplate_id'
+                                    ])
+                                    ->contain(['HostsToContainersSharing']);
+                                $query
+                                    ->leftJoinWith('Hostgroups')
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
                 }
             ])
             ->where($where)
@@ -766,6 +817,65 @@ class HostgroupsTable extends Table {
             ->firstOrFail();
 
         return $hostgroup;
+    }
+
+    /**
+     * @param $id
+     * @param $MY_RIGHTS
+     * @return array
+     */
+    public function getHostsIdsByHostgroupForMaps($id, $MY_RIGHTS = []) {
+        $where = [
+            'Hostgroups.id' => $id
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        $hostgroup = $this->find()
+            ->select([
+                'Hostgroups.id'
+            ])
+            ->contain([
+                'Containers',
+                'Hosts'         => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'Hosts.id'
+
+                        ])
+                        ->contain(['HostsToContainersSharing']);
+                },
+                'Hosttemplates' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'id'
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.hosttemplate_id'
+                                    ])
+                                    ->contain(['HostsToContainersSharing']);
+                                $query
+                                    ->leftJoinWith('Hostgroups')
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
+                }
+            ])
+            ->where($where)
+            ->disableHydration()
+            ->firstOrFail();
+
+        return array_unique(array_merge(
+            Hash::extract($hostgroup, 'hosts.{n}.id'),
+            Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.id')
+        ));
     }
 
 
@@ -1100,5 +1210,288 @@ class HostgroupsTable extends Table {
 
         $results = $query->toArray() ?? [];
         return Hash::extract($results, '{n}.container.name');
+    }
+
+    /**
+     * @param $containerIds
+     * @param $hostIds
+     * @param $type
+     * @param $index
+     * @return array
+     */
+    public function getHostgroupsByContainerIdAndHostIds($containerIds, $hostIds, $type = 'all', $index = 'container_id') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'HostgroupHostgroupsByContainerId');
+
+                // Tenant host groups are available for all users of a tenant (oITC V2 legacy)
+                $tenantContainerIds[] = $path[1]['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+
+        switch ($type) {
+            case 'all':
+                $query = $this->find()
+                    ->contain([
+                        'Containers'
+                    ])
+                    ->innerJoinWith('Hosts')
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_HOSTGROUP,
+                        'Hosts.id IN '                => $hostIds
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+                return $this->emptyArrayIfNull($query->toArray());
+            default:
+                $query = $this->find()
+                    ->contain([
+                        'Containers'
+                    ])
+                    ->innerJoinWith('Hosts')
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_HOSTGROUP,
+                        'Hosts.id IN '                => $hostIds
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+                $query = $query->toArray();
+                if (empty($query)) {
+                    $query = [];
+                }
+                $return = [];
+                foreach ($query as $hostgroup) {
+                    if ($index === 'id') {
+                        $return[$hostgroup['id']] = $hostgroup['container']['name'];
+                    } else {
+                        $return[$hostgroup['container_id']] = $hostgroup['container']['name'];
+                    }
+                }
+
+                return $return;
+        }
+    }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostgroupsForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['Hostgroups.id IN' => $ids])
+            ->contain([
+                'Containers'
+            ])
+            ->order(['Hostgroups.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    public function getSourceHostgroupForCopy($id, array $MY_RIGHTS) {
+        $query = $this->find()
+            ->where(['Hostgroups.id' => $id])
+            ->contain([
+                'Hosts',
+                'Hosttemplates',
+                'Containers'
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $result = $query->firstOrFail();
+        $hostgroup = $result;
+        $hostgroup['hosts'] = [
+            '_ids' => Hash::extract($result, 'hosts.{n}.id')
+        ];
+        $hostgroup['hosttemplates'] = [
+            '_ids' => Hash::extract($result, 'hosttemplates.{n}.id')
+        ];
+        return $hostgroup;
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedHostgroupsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
+    }
+
+    /**
+     * @param int $hostId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostGroupsByHostId(int $hostId, array $MY_RIGHTS): array {
+        $query = $this->find()
+            ->select([
+                'Containers.name',
+                'Hostgroups.id'
+            ])
+            ->innerJoin(
+                ['HostsToHostgroupsTable' => 'hosts_to_hostgroups'],
+                [
+                    'HostsToHostgroupsTable.hostgroup_id = Hostgroups.id',
+                    'HostsToHostgroupsTable.host_id' => $hostId
+                ]
+            )
+            ->innerJoin(
+                ['Containers' => 'containers'],
+                [
+                    'Hostgroups.container_id = Containers.id'
+                ]
+            )
+            ->where([
+                'host_id' => $hostId
+            ])
+            ->disableHydration();
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+        $return = [];
+        foreach ($query->toArray() as $result) {
+            $return[] = [
+                'name' => $result['Containers']['name'],
+                'id'   => $result['id']
+            ];
+        }
+        return $return;
+    }
+
+    /**
+     * This method provides a unified way to create new hostgroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Hostgroup $entity The entity that will be saved by the Table
+     * @param array $hostgroup The contactgroup as array ( [ Contactgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Hostgroup
+     */
+    public function createHostgroup(Hostgroup $entity, array $hostgroup, int $userId): Hostgroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $extDataForChangelog = $this->resolveDataForChangelog($hostgroup);
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'hostgroups',
+            $entity->get('id'),
+            OBJECT_HOSTGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($hostgroup, $extDataForChangelog)
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing hostgroup. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     * VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param Hostgroup $entity The entity that will be updated by the Table
+     * @param array $newHostgroup The new hostgroup as array ( [ Hostgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldHostgroup The old hostgroup as array ( [ Hostgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return Hostgroup
+     */
+    public function updateHostgroup(Hostgroup $entity, array $newHostgroup, array $oldHostgroup, int $userId): Hostgroup {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'hostgroups',
+            $entity->get('id'),
+            OBJECT_HOSTGROUP,
+            $entity->get('container')->get('parent_id'),
+            $userId,
+            $entity->get('container')->get('name'),
+            array_merge($this->resolveDataForChangelog($newHostgroup), $newHostgroup),
+            array_merge($this->resolveDataForChangelog($oldHostgroup), $oldHostgroup)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
     }
 }

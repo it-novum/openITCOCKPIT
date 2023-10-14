@@ -44,7 +44,7 @@ angular.module('openITCOCKPIT')
 
             var services = [];
             for(var index in $scope.post.services){
-                if($scope.post.services[index].createService === true){
+                if($scope.post.services[index].createService === true && $scope.filteredItems.includes($scope.post.services[index])){
                     services.push($scope.post.services[index]);
                 }
             }

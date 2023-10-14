@@ -24,15 +24,15 @@
 ?>
 
 <div class="text-center" ng-if="allowView && (item.label_possition == 1 || item.label_possition == 2)">
-    <div ng-show="item.show_label && item.label_possition == 1">{{lable}}</div>
+    <div ng-show="item.show_label && item.label_possition == 1">{{label}}</div>
     <img ng-src="/map_module/img/items/{{item.iconset}}/{{currentIcon}}"
          onerror="this.src='/map_module/img/items/missing.png';"/>
-    <div ng-show="item.show_label && item.label_possition == 2">{{lable}}</div>
+    <div ng-show="item.show_label && item.label_possition == 2">{{label}}</div>
 </div>
 
 <div class="text-center" ng-if="allowView && (item.label_possition == 3 || item.label_possition == 4)">
-    <span ng-show="item.show_label && item.label_possition == 4">{{lable}}</span>
+    <span ng-show="item.show_label && item.label_possition == 4">{{label}}</span>
     <img ng-src="/map_module/img/items/{{item.iconset}}/{{currentIcon}}"
          onerror="this.src='/map_module/img/items/missing.png';" style="vertical-align:middle"/>
-    <span ng-show="item.show_label && item.label_possition == 3">{{lable}}</span>
+    <span ng-show="item.show_label && item.label_possition == 3">{{label}}</span>
 </div>

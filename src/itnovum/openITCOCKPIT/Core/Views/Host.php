@@ -85,6 +85,11 @@ class Host {
     private $tags;
 
     /**
+     * @var int
+     */
+    private $usageFlag;
+
+    /**
      * @var bool
      */
     private $allow_edit = false;
@@ -98,6 +103,11 @@ class Host {
      * @var int
      */
     private $priority;
+
+    /**
+     * @var string|null
+     */
+    private $notes;
 
     /**
      * Host constructor.
@@ -130,17 +140,32 @@ class Host {
             $this->address = $host['Host']['address'];
         }
 
-        if (isset($host['Host']['description'])) {
-            $this->description = $host['Host']['description'];
+        if (empty($host['Host']['description']) && isset($host['Hosttemplate']['description'])) {
+            $this->description = $host['Hosttemplate']['description'];
+        } else {
+            $this->description = $host['Host']['description'] ?? null;
+        }
+
+        if (empty($host['Host']['notes']) && isset($host['Hosttemplate']['notes'])) {
+            $this->notes = $host['Hosttemplate']['notes'];
+        } else {
+            $this->notes = $host['Host']['notes'] ?? null;
         }
 
         if (isset($host['Host']['hosttemplate_id'])) {
             $this->hosttemplate_id = (int)$host['Host']['hosttemplate_id'];
         }
 
-        if (isset($host['Host']['active_checks_enabled'])) {
-            $this->active_checks_enabled = (bool)$host['Host']['active_checks_enabled'];
+        if (empty($host['Host']['active_checks_enabled']) && isset($host['Host']['hosttemplate']['active_checks_enabled'])) {
+            $this->active_checks_enabled = (bool)$host['Host']['hosttemplate']['active_checks_enabled'];
+        } else if (empty($host['Host']['active_checks_enabled']) && isset($host['Hosttemplate']['active_checks_enabled'])) {
+            $this->active_checks_enabled = (bool)$host['Hosttemplate']['active_checks_enabled'];
+        } else {
+            if (!empty($host['Host']['active_checks_enabled'])) {
+                $this->active_checks_enabled = (bool)$host['Host']['active_checks_enabled'];
+            }
         }
+
 
         if (isset($host['Host']['satellite_id'])) {
             $this->satelliteId = (int)$host['Host']['satellite_id'];
@@ -152,7 +177,7 @@ class Host {
 
         if (isset($host['Container'])) {
             //MySQL
-            $this->containerIds = \Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+            $this->containerIds = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
         }
 
         if (isset($host['HostsToContainers'])) {
@@ -165,7 +190,7 @@ class Host {
 
         if (isset($host['Host']['Container'])) {
             //MySQL belongsTo
-            $this->containerIds = \Hash::extract($host['Host']['Container'], '{n}.HostsToContainer.container_id');
+            $this->containerIds = Hash::extract($host['Host']['Container'], '{n}.HostsToContainer.container_id');
         }
 
         if (isset($host['Host']['container_ids'])) {
@@ -180,6 +205,10 @@ class Host {
 
         if (isset($host['Host']['tags'])) {
             $this->tags = $host['Host']['tags'];
+        }
+
+        if (isset($host['Host']['usage_flag'])) {
+            $this->usageFlag = (int)$host['Host']['usage_flag'];
         }
 
         if (isset($host['Host']['disabled'])) {
@@ -233,6 +262,13 @@ class Host {
     }
 
     /**
+     * @return string
+     */
+    public function getNotes() {
+        return $this->notes;
+    }
+
+    /**
      * @return bool|int
      */
     public function isActiveChecksEnabled() {
@@ -275,6 +311,13 @@ class Host {
      */
     public function getTags() {
         return $this->tags;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUsageFlag(): int {
+        return $this->usageFlag ?? 0;
     }
 
     /**

@@ -31,9 +31,9 @@ class DaterangesCreator {
 
 
     /**
-     * @param string $date_start_timestamp
-     * @param string $date_end_timestamp
-     * @param array $time_ranges
+     * @param $date_start_timestamp
+     * @param $date_end_timestamp
+     * @param $time_ranges
      * @return array
      */
     public static function createDateRanges($date_start_timestamp, $date_end_timestamp, $time_ranges = []) {
@@ -48,18 +48,16 @@ class DaterangesCreator {
 
         $time_ranges = Hash::combine($time_ranges, '{n}.id', '{n}', '{n}.day');//group by day
         for ($week = 0; $week <= $week_count; $week++) {
-            $current_day_timestamp = strtotime(date('m.d.Y 00:00', $first_monday_in_week) . '+  ' . $week . ' week');
             if (!$default_week_created) {
                 for ($day = 0; $day < 7; $day++) {
                     //start is always 00:00
                     $current_day_timestamp = strtotime('+ ' . $day . ' day', $first_monday_in_week);
                     $day_of_week = date('N', $current_day_timestamp);
                     if (array_key_exists($day_of_week, $time_ranges)) {
-                        foreach ($time_ranges[$day_of_week] as $day_in_time_range => $time_range) {
+                        foreach ($time_ranges[$day_of_week] as $time_range) {
                             if ($time_range['end'] == '24:00') {
                                 $time_range['end'] = '23:59:59';
                             }
-                            $start = strtotime(date('d.m.Y ', $current_day_timestamp) . ' ' . $time_range['start']);
                             $duration_in_seconds = (strtotime($time_range['end']) - strtotime($time_range['start']));
                             $time_slices_default[] = [
                                 'start' => strtotime(date('d.m.Y ', $current_day_timestamp) . ' ' . $time_range['start']),
@@ -89,14 +87,14 @@ class DaterangesCreator {
      * @param $time_slices array
      * @return array
      */
-    private static function removeUselessTimeslices($date_start, $date_end, $time_slices) {
+    public static function removeUselessTimeslices($date_start, $date_end, $time_slices) {
         $time_slices_new = [];
         foreach ($time_slices as $time_slice) {
             $current_time_slice_start = date('Ymd', $time_slice['start']);
             if ($current_time_slice_start < $date_start) {
                 continue;
             }
-            if($time_slice['end']> time()){
+            if ($time_slice['end'] > time()) {
                 $time_slice['end'] = time();
             }
             if ($current_time_slice_start > $date_end) {
@@ -272,7 +270,7 @@ class DaterangesCreator {
                 return $dateTimeSlices;
                 break;
             case 'WEEK':
-                $w = date('W', $lastUpdateDate); // ISO-8601 week number of year, weeks starting on Monday(=1)
+                $w = date('w', $lastUpdateDate); // ISO-8601 week number of year, weeks starting on Monday(=1)
                 if ($h == 0 && $m == 0 && $s == 0 && $w == 1) {
                     $initialEntryType = 'new'; //midnight and monday -> new day detected
                 }
@@ -467,7 +465,7 @@ class DaterangesCreator {
      * @param $numberOfQuarter
      * @return \DateTime
      */
-    private static function firstDayOfQuarter(\DateTime $date, $numberOfQuarter) {
+    public static function firstDayOfQuarter(\DateTime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
             case 1:
                 $date->modify('first day of january 00:00:00');
@@ -490,7 +488,7 @@ class DaterangesCreator {
      * @param $numberOfQuarter
      * @return \DateTime
      */
-    private static function lastDayOfQuarter(\DateTime $date, $numberOfQuarter) {
+    public static function lastDayOfQuarter(\DateTime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
             case 1:
                 $date->modify('last day of march');
@@ -509,10 +507,10 @@ class DaterangesCreator {
     }
 
     /**
-     * @param $date
+     * @param int $date
      * @return float
      */
-    private static function getNumberFromQuarter($date) {
+    public static function getNumberFromQuarter($date) {
         $currentMonth = date('m', $date);
         return ceil($currentMonth / 3);
     }
@@ -665,16 +663,24 @@ class DaterangesCreator {
     public static function getQuarterDates($year, $quarter, $isStart = true) {
         switch ($quarter) {
             case 1:
-                return $isStart ? strtotime('01.01.' . $year.' 00:00:00') : strtotime('31.03.' . $year. '23:59:59');
+                return $isStart ? strtotime('01.01.' . $year . ' 00:00:00') : strtotime('31.03.' . $year . '23:59:59');
             case 2:
-                return $isStart ? strtotime('01.04.' . $year.' 00:00:00') : strtotime('30.06.' . $year. '23:59:59');
+                return $isStart ? strtotime('01.04.' . $year . ' 00:00:00') : strtotime('30.06.' . $year . '23:59:59');
             case 3:
-                return $isStart ? strtotime('01.07.' . $year.' 00:00:00') : strtotime('30.09.' . $year. '23:59:59');
+                return $isStart ? strtotime('01.07.' . $year . ' 00:00:00') : strtotime('30.09.' . $year . '23:59:59');
             case 4:
-                return $isStart ? strtotime('01.10.' . $year.' 00:00:00') : strtotime('31.12.' . $year. '23:59:59');
+                return $isStart ? strtotime('01.10.' . $year . ' 00:00:00') : strtotime('31.12.' . $year . '23:59:59');
             default:
                 return false;
 
         }
+    }
+
+    /**
+     * @param array $time_slice
+     * @return int
+     */
+    public static function calculateTotalTime($time_slice) {
+        return $time_slice['end'] - $time_slice['start'];
     }
 }

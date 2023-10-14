@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT')
                 }
             }
 
-            return 'ERROR UNKNOWN CONTAINER';
+            return $scope.containerMessage;
         };
 
         $scope.intervalText = 'disabled';
@@ -35,8 +35,9 @@ angular.module('openITCOCKPIT')
                 data.password = '';
                 data.confirm_password = '';
 
-                //Reformat data that it looks like the same like it looks in the add method...
+                //Reformat data that it looks like the same as it looks in the add method...
                 $scope.selectedUserContainers = data.containers._ids;
+                $scope.notPermittedContainerIds = result.data.notPermittedContainerIds;
                 delete data.containers;
 
                 //Add new selected containers
@@ -65,6 +66,14 @@ angular.module('openITCOCKPIT')
                     User: data
                 };
 
+                $scope.UserTypes = result.data.UserTypes;
+
+                if($scope.isLdapUser){
+                    // Load container permissions based on LDAP groups
+                    $scope.loadContainerPermissionsLdap();
+                }
+                $scope.loadUserContainerRoles();
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -91,7 +100,7 @@ angular.module('openITCOCKPIT')
 
             // Query new API Key from Server
             var index = $scope.post.User.apikeys.length;
-            if( index > 0 ) {
+            if(index > 0){
                 // Array is not empty so current array index is lenght - 1, arrays start at 0
                 index = index - 1;
             }
@@ -102,10 +111,12 @@ angular.module('openITCOCKPIT')
             $scope.post.User.apikeys.splice(index, 1);
         };
 
-        $scope.loadUserContaineRoles = function(){
+        $scope.loadUserContainerRoles = function(searchString){
             return $http.get("/users/loadContainerRoles.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Usercontainerroles.name]': searchString,
+                    'selected[]': $scope.post.User.usercontainerroles._ids
                 }
             }).then(function(result){
                 $scope.usercontainerroles = result.data.usercontainerroles;
@@ -113,12 +124,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainer = function(){
-            return $http.get("/containers/loadContainersForAngular.json", {
+            return $http.get("/users/loadContainersForAngular.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.containers = result.data.containers;
+                $scope.containerIdsWithWritePermissions = result.data.containerIdsWithWritePermissions;
             });
         };
 
@@ -168,6 +180,31 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.userContainerRoleContainerPermissions = result.data.userContainerRoleContainerPermissions;
+            });
+        };
+
+        $scope.loadContainerPermissionsLdap = function(){
+            if(typeof $scope.post.User.usercontainerroles_ldap !== "undefined"){ //is undefined on initial page load
+                if($scope.post.User.usercontainerroles_ldap._ids.length === 0){
+                    $scope.userContainerRoleContainerPermissionsLdap = {};
+                }
+            }
+
+            $http.get("/users/loadLdapUserDetails.json", {
+                params: {
+                    'angular': true,
+                    'samaccountname': $scope.post.User.samaccountname
+                }
+            }).then(function(result){
+                var resultUserContainerRoleContainerPermissionsLdap = result.data.ldapUser.userContainerRoleContainerPermissionsLdap
+                if(Array.isArray(resultUserContainerRoleContainerPermissionsLdap)){
+                    if(resultUserContainerRoleContainerPermissionsLdap.length === 0){
+                        resultUserContainerRoleContainerPermissionsLdap = {}; // We want an empty object {} - not an array []
+                    }
+                }
+
+                $scope.userContainerRoleContainerPermissionsLdap = resultUserContainerRoleContainerPermissionsLdap;
+                $scope.ldapUser = result.data.ldapUser;
             });
         };
 
@@ -276,14 +313,9 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
-        var promise1 = $scope.loadUserContaineRoles();
-        var promise2 = $scope.loadContainer();
-        var promise3 = $scope.loadLocaleOptions();
-
-        $q.all([promise1, promise2, promise3]).then(function(result){
-            //Load user config
-            $scope.load();
-        });
+        $scope.loadContainer();
+        $scope.loadLocaleOptions();
+        $scope.load();
 
         $scope.loadUsergroups();
         $scope.loadDateformats();

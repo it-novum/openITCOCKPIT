@@ -32,6 +32,7 @@ use App\Model\Table\ConfigurationQueueTable;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Http\Exception\ServiceUnavailableException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
@@ -49,22 +50,24 @@ class ConfigurationFilesController extends AppController {
         }
 
         $configFilesForFrontend = [];
-        $GeneratorRegistry = new GeneratorRegistry();
-        foreach ($GeneratorRegistry->getAllConfigFilesWithCategory() as $categoryName => $ConfigFileObjects) {
-            $category = [
-                'name'        => $categoryName,
-                'configFiles' => []
-            ];
-
-            foreach ($ConfigFileObjects as $ConfigFileObject) {
-                /** @var ConfigInterface $ConfigFileObject */
-                $category['configFiles'][] = [
-                    'linkedOutfile' => $ConfigFileObject->getLinkedOutfile(),
-                    'dbKey'         => $ConfigFileObject->getDbKey()
+        if (IS_CONTAINER === false) {
+            $GeneratorRegistry = new GeneratorRegistry();
+            foreach ($GeneratorRegistry->getAllConfigFilesWithCategory() as $categoryName => $ConfigFileObjects) {
+                $category = [
+                    'name'        => $categoryName,
+                    'configFiles' => []
                 ];
-            }
 
-            $configFilesForFrontend[] = $category;
+                foreach ($ConfigFileObjects as $ConfigFileObject) {
+                    /** @var ConfigInterface $ConfigFileObject */
+                    $category['configFiles'][] = [
+                        'linkedOutfile' => $ConfigFileObject->getLinkedOutfile(),
+                        'dbKey'         => $ConfigFileObject->getDbKey()
+                    ];
+                }
+
+                $configFilesForFrontend[] = $category;
+            }
         }
 
         $this->set('configFileCategories', $configFilesForFrontend);
@@ -78,6 +81,10 @@ class ConfigurationFilesController extends AppController {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
+        }
+
+        if (IS_CONTAINER) {
+            throw new ServiceUnavailableException('Containerized installations are configured through environment variables');
         }
 
         $GeneratorRegistry = new GeneratorRegistry();
@@ -194,6 +201,10 @@ class ConfigurationFilesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        if (IS_CONTAINER) {
+            throw new ServiceUnavailableException('Containerized installations are configured through environment variables');
+        }
+
         $className = sprintf('itnovum\openITCOCKPIT\ConfigGenerator\%s', $configFile);
         if (!class_exists($className)) {
             throw new NotFoundException('Config file not found');
@@ -251,6 +262,10 @@ class ConfigurationFilesController extends AppController {
 
         /** @var ConfigurationFilesTable $ConfigurationFilesTable */
         $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
+
+        if (IS_CONTAINER) {
+            throw new ServiceUnavailableException('Containerized installations are configured through environment variables');
+        }
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             $dbConfig = $ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());

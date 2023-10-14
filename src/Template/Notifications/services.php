@@ -92,10 +92,10 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><?php echo __('From'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control" style="padding:0.5rem 0.875rem;"
+                                            <input type="datetime-local" class="form-control" style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('From date'); ?>"
-                                                   ng-model="filter.from"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="from_time"
+                                                   ng-model-options="{debounce: 500, timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                                         </div>
                                     </div>
                                 </div>
@@ -107,7 +107,7 @@
                                             </div>
                                             <input type="text" class="form-control"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.NotificationHosts.output"
+                                                   ng-model="filter.NotificationServices.output"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -118,10 +118,10 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><?php echo __('To'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control" style="padding:0.5rem 0.875rem;"
+                                            <input type="datetime-local" class="form-control" style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('To date'); ?>"
-                                                   ng-model="filter.to"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="to_time"
+                                                   ng-model-options="{debounce: 500, timeSecondsFormat:'ss', timeStripZeroSeconds: true}">
                                         </div>
                                     </div>
                                 </div>

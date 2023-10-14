@@ -91,11 +91,19 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
-        $scope.linkForPdf = function(){
+        $scope.linkFor = function(format){
             var baseUrl = '/servicegroups/listToPdf.pdf';
+            if(format === 'csv'){
+                baseUrl = '/servicegroups/listToCsv';
+            }
             baseUrl += '?filter[Containers.name]=' + encodeURI($scope.filter.containers.name);
             baseUrl += '&filter[Servicegroups.description]=' + encodeURI($scope.filter.servicegroups.description);
             return baseUrl;
+        };
+
+        $scope.linkForCopy = function(){
+            var ids = Object.keys(MassChangeService.getSelected());
+            return ids.join(',');
         };
 
         $scope.changepage = function(page){

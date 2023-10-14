@@ -31,6 +31,7 @@ use App\Form\CurrentstatereportForm;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
+use Cake\Core\Plugin;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
@@ -277,6 +278,33 @@ class CurrentstatereportsController extends AppController {
             ];
             $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
             $parsedPerfdata = $PerfdataParser->parse();
+
+            if (Plugin::isLoaded('PrometheusModule') && $service['service_type'] === PROMETHEUS_SERVICE) {
+                $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+
+                $parsedPerfdata = [];
+                // We load one hour of data because we need the latest value. Hopefully this services got monitored within the last 60 minutes by Prometheus.
+                $promPerfdata = $PrometheusPerfdataLoader->getPerfdataByUuid($Service, (time() - 3600), time(), false, false);
+                foreach ($promPerfdata as $promPerfdataRecord) {
+                    $lastValue = array_pop($promPerfdataRecord['data']);
+                    $metricName = $promPerfdataRecord['datasource']['metric'];
+                    if (sizeof($promPerfdata) === 1) {
+                        // Only one metric from this PromQL
+                        $metricName = 'value';
+                    }
+
+                    $parsedPerfdata[$metricName] = [
+                        'current'  => $lastValue,
+                        'unit'     => $promPerfdataRecord['datasource']['unit'],
+                        'warning'  => $promPerfdataRecord['datasource']['warn'],
+                        'critical' => $promPerfdataRecord['datasource']['crit'],
+                        'min'      => $promPerfdataRecord['datasource']['min'],
+                        'max'      => $promPerfdataRecord['datasource']['max'],
+                        'metric'   => $promPerfdataRecord['datasource']['metric'],
+                    ];
+                }
+            }
+
             $tmpRecord['Servicestatus']['perfdataArray'] = $parsedPerfdata;
             $tmpRecord['Servicestatus']['perfdataArrayCounter'] = sizeof($parsedPerfdata);
             $all_services[$currentHostId]['Services'][$currentServiceId] = $tmpRecord;

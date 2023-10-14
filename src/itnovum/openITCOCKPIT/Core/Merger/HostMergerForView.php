@@ -88,7 +88,6 @@ class HostMergerForView {
         $data['customvariables'] = $this->getDataForCustomvariables();
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
         $data['prometheus_exporters'] = $this->getDataForPrometheusExporters();
-
         return [
             'Host' => $data
         ];
@@ -124,6 +123,7 @@ class HostMergerForView {
             'freshness_checks_enabled',
             'freshness_threshold',
             'notifications_enabled',
+            'sla_id'
         ];
 
         $data = [];

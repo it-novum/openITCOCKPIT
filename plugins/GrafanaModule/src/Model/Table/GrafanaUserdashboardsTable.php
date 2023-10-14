@@ -37,7 +37,6 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use GrafanaModule\Model\Entity\GrafanaUserdashboard;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 
@@ -277,12 +276,14 @@ class GrafanaUserdashboardsTable extends Table {
         $rowsWithPanelsAndMetrics = [];
         foreach ($findResult['grafana_userdashboard_panels'] as $k => $panel) {
             $rowsWithPanelsAndMetrics[$panel['row']][$k] = [
-                'id'               => $panel['id'],
-                'userdashboard_id' => $panel['userdashboard_id'],
-                'row'              => $panel['row'],
-                'unit'             => $panel['unit'],
-                'title'            => $panel['title'],
-                'metrics'          => []
+                'id'                 => $panel['id'],
+                'userdashboard_id'   => $panel['userdashboard_id'],
+                'row'                => $panel['row'],
+                'unit'               => $panel['unit'],
+                'title'              => $panel['title'],
+                'visualization_type' => $panel['visualization_type'],
+                'stacking_mode'      => $panel['stacking_mode'],
+                'metrics'            => []
             ];
             foreach ($panel['grafana_userdashboard_metrics'] as $metric) {
                 $metric['servicetemplate'] = [];
@@ -343,5 +344,92 @@ class GrafanaUserdashboardsTable extends Table {
         }
 
         return $list;
+    }
+
+    public function getGrafanaUserdashboardsWithPanelsAndMetricsById($id) {
+        $query = $this->find();
+        $query->innerJoin(['GrafanaUserdashboardPanels' => 'grafana_userdashboard_panels'], [
+            'GrafanaUserdashboardPanels.userdashboard_id = GrafanaUserdashboards.id'
+        ])
+            ->innerJoin(['GrafanaUserdashboardMetrics' => 'grafana_userdashboard_metrics'], [
+                'GrafanaUserdashboardMetrics.panel_id = GrafanaUserdashboardPanels.id',
+            ])
+            ->innerJoin(['Services' => 'services'], [
+                'Services.id = GrafanaUserdashboardMetrics.service_id',
+            ])
+            ->where([
+                    'GrafanaUserdashboards.id' => $id,
+                    'Services.disabled'        => 0
+                ]
+            );
+
+        return $query->first();
+    }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getGrafanaUserdashboardsForCopy($ids = [], array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'GrafanaUserdashboards.id',
+                'GrafanaUserdashboards.name'
+            ])
+            ->where(['GrafanaUserdashboards.id IN' => $ids])
+            ->order(['GrafanaUserdashboards.id' => 'asc']);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'GrafanaUserdashboards.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param $sourceAutomapId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getSourceGrafanaUserdashboardForCopy($sourceAutomapId, array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where(['GrafanaUserdashboards.id' => $sourceAutomapId]);
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'GrafanaUserdashboards.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $result = $query->firstOrFail();
+        $dbResult = $this->emptyArrayIfNull($result->toArray());
+        if (empty($dbResult)) {
+            return [];
+        }
+
+        // Remove IDs of source elements
+        $dashboard = [
+            'container_id'     => $dbResult['container_id'],
+            'configuration_id' => $dbResult['configuration_id']
+        ];
+
+        return $dashboard;
+    }
+
+    /**
+     * @param int $containerId
+     * @return array
+     */
+    public function getOrphanedGrafanaUserdashboardsByContainerId(int $containerId) {
+        $query = $this->find()
+            ->where(['container_id' => $containerId]);
+        $result = $query->all();
+
+        return $result->toArray();
     }
 }

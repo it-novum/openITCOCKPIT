@@ -40,7 +40,7 @@ class ChartRenderClient {
     /**
      * @var string
      */
-    private $address = 'http://127.0.0.1:8084/';
+    private $address = 'http://127.0.0.1:7084/';
 
     /**
      * @var string
@@ -70,6 +70,11 @@ class ChartRenderClient {
     private $endTimestamp = 0;
 
     public function __construct() {
+        $address = env('OITC_PUPPETEER_ADDRESS', null);
+        if (!empty($address)) {
+            $this->address = $address;
+        }
+
         $this->Client = new Client([
             'base_uri' => $this->address,
             'proxy'    => [
@@ -140,7 +145,7 @@ class ChartRenderClient {
      */
     public function getAreaChartAsPngStream($data) {
         try {
-            $response = $this->Client->post('/AreaChart', [
+            $response = $this->Client->post('/area_chart', [
                 RequestOptions::JSON => [
                     'data'     => $this->timestampToDate($data),
                     'settings' => [
@@ -161,7 +166,7 @@ class ChartRenderClient {
                 $response->getStatusCode(),
                 $response->getReasonPhrase()
             ));
-            debug(strip_tags($response->getBody()->getContents()));
+            //debug(strip_tags($response->getBody()->getContents()));
             $ErrorImage->setErrorText($response->getBody()->getContents());
 
             return $ErrorImage->getImageAsPngStream();

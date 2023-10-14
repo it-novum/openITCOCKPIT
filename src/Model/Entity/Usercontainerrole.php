@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -12,8 +13,7 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\UsercontainerrolesToContainer[] $usercontainerroles_to_containers
  * @property \App\Model\Entity\UsersToUsercontainerrole[] $users_to_usercontainerroles
  */
-class Usercontainerrole extends Entity
-{
+class Usercontainerrole extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -24,9 +24,10 @@ class Usercontainerrole extends Entity
      * @var array
      */
     protected $_accessible = [
-        'name' => true,
+        'name'                             => true,
         'usercontainerroles_to_containers' => true,
-        'users_to_usercontainerroles' => true,
-        'containers'              => true
+        'users_to_usercontainerroles'      => true,
+        'containers'                       => true,
+        'ldapgroups'                       => true
     ];
 }

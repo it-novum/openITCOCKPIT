@@ -24,6 +24,7 @@
 //  confirmation.
 ?>
 
+<!-- Desktop menu button -->
 <div class="hidden-md-down dropdown-icon-menu position-relative">
     <a href="javascript:void(0);" class="header-btn btn js-waves-off" data-action="toggle" ng-click="toggleMenuHidden()"
        data-class="nav-function-hidden" title="Hide Navigation">
@@ -48,4 +49,12 @@
             <i class="fas fa-bars"></i>
         </a>
     </div>
+</div>
+
+
+<!-- Mobile menu button -->
+<div class="hidden-lg-up">
+    <a href="#" class="header-btn btn press-scale-down" data-action="toggle" data-class="mobile-nav-on">
+        <i class="ni ni-menu"></i>
+    </a>
 </div>

@@ -235,7 +235,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.execution_fail_on_up">
                                         <label class="custom-control-label"
                                                for="execution_fail_on_up">
-                                            <span class="badge badge-success notify-label"><?php echo __('Recovery'); ?></span>
+                                            <span class="badge badge-success notify-label"><?php echo __('Up'); ?></span>
                                             <i class="checkbox-success"></i>
                                         </label>
                                     </div>
@@ -318,7 +318,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                                ng-model="post.Hostdependency.notification_fail_on_up">
                                         <label class="custom-control-label"
                                                for="notification_fail_on_up">
-                                            <span class="badge badge-success notify-label"><?php echo __('Recovery'); ?></span>
+                                            <span class="badge badge-success notify-label"><?php echo __('Up'); ?></span>
                                             <i class="checkbox-success"></i>
                                         </label>
                                     </div>
