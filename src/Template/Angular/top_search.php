@@ -33,34 +33,52 @@
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-            <li ng-class="{active: type === 'host'}" class="dropdown-item" ng-click="setSearchType('host', '<?= __('Hosts') ?>')">
+            <li ng-class="{active: type === 'host'}" class="dropdown-item"
+                ng-click="setSearchType('host', '<?= __('Hosts') ?>')">
                 <a href="javascript:void(0)">
                     <i class="fa fa-check" ng-show="type === 'host'"></i>
                     <?= __('Hosts') ?>
                 </a>
             </li>
-            <li ng-class="{active: type === 'service'}" class="dropdown-item" ng-click="setSearchType('service', '<?= __('Services') ?>')">
+            <li ng-class="{active: type === 'service'}" class="dropdown-item"
+                ng-click="setSearchType('service', '<?= __('Services') ?>')">
                 <a href="javascript:void(0)">
                     <i class="fa fa-check" ng-show="type === 'service'"></i>
                     <?= __('Services') ?>
                 </a>
             </li>
-            <li ng-class="{active: type === 'uuid'}" class="dropdown-item" ng-click="setSearchType('uuid', '<?= __('UUID') ?>')">
+            <li ng-class="{active: type === 'uuid'}" class="dropdown-item"
+                ng-click="setSearchType('uuid', '<?= __('UUID') ?>')">
                 <a href="javascript:void(0)">
                     <i class="fa fa-check" ng-show="type === 'uuid'"></i>
                     <?= __('UUID') ?>
                 </a>
             </li>
-            <li ng-class="{active: type === 'address'}" class="dropdown-item" ng-click="setSearchType('address', '<?= __('IP address') ?>')">
+            <li ng-class="{active: type === 'address'}" class="dropdown-item"
+                ng-click="setSearchType('address', '<?= __('IP address') ?>')">
                 <a href="javascript:void(0)">
                     <i class="fa fa-check" ng-show="type === 'address'"></i>
                     <?= __('IP address') ?>
                 </a>
             </li>
+            <li ng-class="{active: type === 'tags_host'}" class="dropdown-item"
+                ng-click="setSearchType('tags_host', '<?= __('Tags (Host)') ?>')">
+                <a href="javascript:void(0)">
+                    <i class="fa fa-check" ng-show="type === 'tags_host'"></i>
+                    <?= __('Tags (Host)') ?>
+                </a>
+            </li>
+            <li ng-class="{active: type === 'tags_service'}" class="dropdown-item"
+                ng-click="setSearchType('tags_service', '<?= __('Tags (Service)') ?>')">
+                <a href="javascript:void(0)">
+                    <i class="fa fa-check" ng-show="type === 'tags_service'"></i>
+                    <?= __('Tags (Service)') ?>
+                </a>
+            </li>
         </ul>
     </div>
 
-    <input id="search-fld"
+    <input ng-show="type !== 'tags_host' && type!== 'tags_service'"
            type="text"
            class="form-control top-search-border"
            placeholder="<?= __('Type to search') ?>"
@@ -68,5 +86,12 @@
            ng-keydown="isReturnKey($event)"
            ng-disabled="isSearching"
            style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
-
+    <input ng-hide="type !== 'tags_host' && type!== 'tags_service'"
+           type="text"
+           class="form-control top-search-border"
+           placeholder="<?= __('Type to search. Please use comma separated list to search multiple values') ?>"
+           ng-model="searchStr"
+           ng-keydown="isReturnKey($event)"
+           ng-disabled="isSearching"
+           style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
 </div>
